@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Rel
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Monotonicity.Basic
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Data.Rel.Cover
+public import Mathlib.Topology.Order
 
 /-!
 # Uniform spaces
@@ -81,8 +80,10 @@ operations on filters, without directly manipulating entourages.
 
 ## Notation
 
-Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
-and `○` for composition of relations, seen as terms with type `Set (X × X)`.
+Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`.
+This file also uses a lot the notation `○` for composition of relations, seen as terms with
+type `SetRel X X`. This notation (defined in the file `Mathlib/Data/Rel.lean`) is
+localized in `SetRel`.
 
 ## Implementation notes
 
@@ -104,6 +105,8 @@ The formalization uses the books:
 
 But it makes a more systematic use of the filter library.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -173,14 +176,11 @@ theorem Monotone.compRel [Preorder β] {f g : β → SetRel α α} (hf : Monoton
 @[deprecated (since := "2025-10-17")] alias compRel_left_mono := SetRel.comp_subset_comp_left
 @[deprecated (since := "2025-10-17")] alias compRel_right_mono := SetRel.comp_subset_comp_right
 @[deprecated (since := "2025-10-17")] alias prodMk_mem_compRel := SetRel.prodMk_mem_comp
-@[deprecated (since := "2025-03-10")] alias prod_mk_mem_compRel := SetRel.prodMk_mem_comp
-
 set_option linter.deprecated false in
 @[deprecated SetRel.id_comp (since := "2025-10-17")]
 theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=
   SetRel.id_comp _
 
-set_option linter.deprecated false in
 @[deprecated SetRel.comp_assoc (since := "2025-10-17")]
 theorem compRel_assoc {r s t : SetRel α α} : r ○ s ○ t = r ○ (s ○ t) := by
   apply SetRel.comp_assoc
@@ -213,83 +213,80 @@ theorem subset_iterate_compRel {s t : SetRel α α} (h : idRel ⊆ s) (n : ℕ) 
 def IsSymmetricRel (V : SetRel α α) : Prop :=
   Prod.swap ⁻¹' V = V
 
-set_option linter.deprecated false in
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel := IsSymmetricRel
-
 /-- The maximal symmetric relation contained in a given relation. -/
-@[deprecated SetRel.symmetrize (since := "2025-03-05")]
+@[deprecated SetRel.symmetrize (since := "2025-10-17")]
 def symmetrizeRel (V : SetRel α α) : SetRel α α :=
   V ∩ Prod.swap ⁻¹' V
 
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_symmetrize (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_symmetrize (since := "2025-10-17")]
 theorem symmetric_symmetrizeRel (V : SetRel α α) : IsSymmetricRel (symmetrizeRel V) := by
   simp [IsSymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.symmetrize_subset_self (since := "2025-03-05")]
+@[deprecated SetRel.symmetrize_subset_self (since := "2025-10-17")]
 theorem symmetrizeRel_subset_self (V : SetRel α α) : symmetrizeRel V ⊆ V :=
   sep_subset _ _
 
 set_option linter.deprecated false in
-@[deprecated SetRel.symmetrize_mono (since := "2025-03-05")]
+@[deprecated SetRel.symmetrize_mono (since := "2025-10-17")]
 theorem symmetrize_mono {V W : SetRel α α} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
   inter_subset_inter h <| preimage_mono h
 
 set_option linter.deprecated false in
-@[deprecated SetRel.comm (since := "2025-03-05")]
+@[deprecated SetRel.comm (since := "2025-10-17")]
 theorem IsSymmetricRel.mk_mem_comm {V : SetRel α α} (hV : IsSymmetricRel V) {x y : α} :
     (x, y) ∈ V ↔ (y, x) ∈ V :=
   Set.ext_iff.1 hV (y, x)
 
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.mk_mem_comm := IsSymmetricRel.mk_mem_comm
-
 set_option linter.deprecated false in
-@[deprecated SetRel.inv_eq_self (since := "2025-03-05")]
+@[deprecated SetRel.inv_eq_self (since := "2025-10-17")]
 theorem IsSymmetricRel.eq {U : SetRel α α} (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U :=
   hU
 
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.eq := IsSymmetricRel.eq
-
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_inter (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_inter (since := "2025-10-17")]
 theorem IsSymmetricRel.inter {U V : SetRel α α} (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
     IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
 
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.inter := IsSymmetricRel.inter
-
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_iInter (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_iInter (since := "2025-10-17")]
 theorem IsSymmetricRel.iInter {U : (i : ι) → SetRel α α} (hU : ∀ i, IsSymmetricRel (U i)) :
     IsSymmetricRel (⋂ i, U i) := by
   simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.IsSymm.sInter (since := "2025-03-05")]
+@[deprecated SetRel.IsSymm.sInter (since := "2025-10-17")]
 lemma IsSymmetricRel.sInter {s : Set (SetRel α α)} (h : ∀ i ∈ s, IsSymmetricRel i) :
     IsSymmetricRel (⋂₀ s) := by
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_preimage (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_id (since := "2025-10-17")]
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+set_option linter.deprecated false in
+@[deprecated SetRel.isSymm_univ (since := "2025-10-17")]
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
+  simp [IsSymmetricRel]
+
+set_option linter.deprecated false in
+@[deprecated SetRel.isSymm_preimage (since := "2025-10-17")]
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
 
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_image (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_image (since := "2025-10-17")]
 lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f '' U) := by
   rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
       image_swap_eq_preimage_swap, ht]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.prod_subset_comm (since := "2025-03-05")]
+@[deprecated SetRel.prod_subset_comm (since := "2025-10-17")]
 lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
     t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
   rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
@@ -299,7 +296,7 @@ lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm
   rw [← R.inv_eq_self, SetRel.inv, ← mem_map, ← prod_comm, ← SetRel.inv, R.inv_eq_self]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.mem_filter_prod_comm (since := "2025-03-05")]
+@[deprecated SetRel.mem_filter_prod_comm (since := "2025-10-17")]
 lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
     (hs : IsSymmetricRel s) :
     s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
@@ -471,6 +468,9 @@ instance uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
 theorem refl_mem_uniformity {x : α} {s : SetRel α α} (h : s ∈ 𝓤 α) : (x, x) ∈ s :=
   refl_le_uniformity h rfl
 
+theorem isRefl_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s.IsRefl :=
+  ⟨fun _ => refl_mem_uniformity h⟩
+
 theorem mem_uniformity_of_eq {x y : α} {s : SetRel α α} (h : s ∈ 𝓤 α) (hx : x = y) : (x, y) ∈ s :=
   refl_le_uniformity h hx
 
@@ -481,8 +481,8 @@ theorem comp_le_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) �
   UniformSpace.comp
 
 theorem lift'_comp_uniformity : ((𝓤 α).lift' fun s : SetRel α α => s ○ s) = 𝓤 α :=
-  comp_le_uniformity.antisymm <| le_lift'.2 fun s hs ↦ mem_of_superset hs <|
-    have : SetRel.IsRefl s := ⟨fun _ ↦ refl_mem_uniformity hs⟩; SetRel.left_subset_comp
+  comp_le_uniformity.antisymm <| le_lift'.2 fun _s hs ↦ mem_of_superset hs <|
+    have := isRefl_of_mem_uniformity hs; SetRel.left_subset_comp
 
 theorem tendsto_swap_uniformity : Tendsto (@Prod.swap α α) (𝓤 α) (𝓤 α) :=
   symm_le_uniformity
@@ -511,15 +511,15 @@ theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a
   tendsto_diag_uniformity (fun _ => a) f
 
 theorem symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, (∀ a b, (a, b) ∈ t → (b, a) ∈ t) ∧ t ⊆ s :=
+    ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ⊆ s :=
   have : preimage Prod.swap s ∈ 𝓤 α := symm_le_uniformity hs
-  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left⟩
+  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, ⟨fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩⟩, inter_subset_left⟩
 
 theorem comp_symm_of_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, (∀ {a b}, (a, b) ∈ t → (b, a) ∈ t) ∧ t ○ t ⊆ s :=
   let ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
-  let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
-  ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
+  let ⟨t', ht', _, ht'₂⟩ := symm_of_uniformity ht₁
+  ⟨t', ht', SetRel.symm _, Subset.trans (monotone_id.relComp monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ map Prod.swap (𝓤 α) := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
@@ -562,7 +562,7 @@ theorem uniformity_lift_le_comp {f : SetRel α α → Filter β} (h : Monotone f
 theorem comp3_mem_uniformity {s : SetRel α α} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
-  have : SetRel.IsRefl t := SetRel.id_subset_iff.1 <| refl_le_uniformity ht
+  have := isRefl_of_mem_uniformity ht
   ⟨t, ht, (SetRel.comp_subset_comp (SetRel.left_subset_comp.trans htt') htt').trans ht's⟩
 
 /-- See also `comp3_mem_uniformity`. -/
@@ -581,7 +581,7 @@ theorem comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     _ ⊆ s := w_sub
 
 theorem subset_comp_self_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
-  have : SetRel.IsRefl s := SetRel.id_subset_iff.1 <| refl_le_uniformity h; SetRel.left_subset_comp
+  have := isRefl_of_mem_uniformity h; SetRel.left_subset_comp
 
 theorem comp_comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ○ t ○ t ⊆ s := by
@@ -653,6 +653,13 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
   · rintro ⟨⟨w, z⟩, ⟨w_in, z_in⟩, hwz⟩
     rw [mem_ball_symmetry] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
+
+lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β} :
+    U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, ball y U := by
+  simp [SetRel.IsCover, subset_def, ball, U.comm]
+
+alias ⟨_root_.SetRel.IsCover.subset_iUnion_ball, _root_.SetRel.IsCover.of_subset_iUnion_ball⟩ :=
+  isCover_iff_subset_iUnion_ball
 
 end UniformSpace
 
@@ -733,6 +740,16 @@ theorem UniformSpace.mem_closure_iff_symm_ball {s : Set α} {x} :
 theorem UniformSpace.mem_closure_iff_ball {s : Set α} {x} :
     x ∈ closure s ↔ ∀ {V}, V ∈ 𝓤 α → (ball x V ∩ s).Nonempty := by
   simp [mem_closure_iff_nhds_basis' (nhds_basis_uniformity' (𝓤 α).basis_sets)]
+
+theorem UniformSpace.closure_subset_preimage
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.preimage s := by
+  intro x hx
+  obtain ⟨y, hxy, hy⟩ := mem_closure_iff_ball.mp hx hU
+  exact ⟨y, hy, hxy⟩
+
+theorem UniformSpace.closure_subset_image
+    {U : SetRel α α} (hU : U ∈ 𝓤 α) (s : Set α) : closure s ⊆ U.image s :=
+  closure_subset_preimage (symm_le_uniformity hU) s
 
 theorem nhds_eq_uniformity {x : α} : 𝓝 x = (𝓤 α).lift' (ball x) :=
   (nhds_basis_uniformity' (𝓤 α).basis_sets).eq_biInf

@@ -3,9 +3,11 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Algebra.Algebra.Pi
+module
+
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Algebra.Algebra.Pi
 
 /-!
 # Zero and Bounded at filter
@@ -16,6 +18,8 @@ that are `ZeroAtFilter`. Similarly, we construct the `Submodule` and `Subalgebra
 that are `BoundedAtFilter`.
 
 -/
+
+@[expose] public section
 
 
 namespace Filter

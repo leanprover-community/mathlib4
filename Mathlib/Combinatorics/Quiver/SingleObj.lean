@@ -3,8 +3,10 @@ Copyright (c) 2023 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Combinatorics.Quiver.Cast
-import Mathlib.Combinatorics.Quiver.Symmetric
+module
+
+public import Mathlib.Combinatorics.Quiver.Cast
+public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Single-object quiver
@@ -20,6 +22,8 @@ An element `x : α` can be reinterpreted as an element of `star α ⟶ star α` 
 More generally, a list of elements of `a` can be reinterpreted as a path from `star α` to
 itself using `pathEquivList`.
 -/
+
+@[expose] public section
 
 namespace Quiver
 

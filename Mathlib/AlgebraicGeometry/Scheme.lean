@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Spec
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.AlgebraicGeometry.Spec
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes
@@ -17,6 +19,8 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -50,7 +54,7 @@ instance : CoeSort Scheme Type* where
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for coercing schemes to types. -/
 @[app_delab TopCat.carrier]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
@@ -203,8 +207,10 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
   cases f; cases g; congr 1
-  exact LocallyRingedSpace.Hom.ext' <| SheafedSpace.ext _ _ h_base
-    (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
+  apply LocallyRingedSpace.Hom.ext'
+  ext : 1
+  · exact h_base
+  · exact TopCat.Presheaf.ext (fun U ↦ by simpa using h_app U)
 
 /-- An alternative ext lemma for scheme morphisms. -/
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
@@ -301,8 +307,7 @@ instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
 /-- forgetful functor to `TopCat` is the same as coercion -/
-unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
-  forgetToTop.obj X ≟ (X : TopCat)
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
@@ -311,8 +316,7 @@ nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCa
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
 -- poor performance consequences.
-unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
-  forget.obj X ≟ (X : Type*)
+unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
 @[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = f := rfl
@@ -384,6 +388,10 @@ theorem eqToHom_app {X Y : Scheme} (e : X = Y) (U) :
 instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHom :=
   forgetToLocallyRingedSpace.map_isIso f
 
+instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHom :=
+  inferInstanceAs (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
+    SheafedSpace.forgetToPresheafedSpace).map f.toLRSHom))
+
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
@@ -414,7 +422,7 @@ lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
   subst h
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
-  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  simp only [Hom.copyBase]
   congr
   cat_disch
 
@@ -447,6 +455,19 @@ end Hom
 end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
+
+The notation `Spec(R)` for `(R : Type*) [CommRing R]` to mean `Spec (CommRingCat.of R)` is
+enabled in the scope `SpecOfNotation`. Please do not use it within Mathlib, but it can be
+used in downstream projects if desired. To use this, do:
+```lean
+import Mathlib.AlgebraicGeometry.Scheme
+
+variable (R : Type*) [CommRing R]
+
+open scoped SpecOfNotation
+
+#check Spec(R)
+```
 -/
 def Spec (R : CommRingCat) : Scheme where
   local_affine _ := ⟨⟨⊤, trivial⟩, R, ⟨(Spec.toLocallyRingedSpace.obj (op R)).restrictTopIso⟩⟩
@@ -506,7 +527,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).base = ofHom (PrimeSpectrum.comap f.hom) := rfl
+lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
 
 @[deprecated (since := "2025-10-07")] alias Spec.map_base_apply := Spec.map_apply
@@ -569,7 +590,7 @@ The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natura
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
 
@@ -767,7 +788,7 @@ lemma zeroLocus_mono {U : X.Opens} {s t : Set Γ(X, U)} (h : s ⊆ t) :
   exact fun x H f hf hxf ↦ H f (h hf) hxf
 
 lemma preimage_zeroLocus {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (s : Set Γ(Y, U)) :
-    f.base ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
+    f ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
   ext
   simp [← Scheme.preimage_basicOpen]
 
@@ -841,7 +862,7 @@ alias Scheme.iso_hom_base_inv_base := Scheme.hom_base_inv_base
 @[simp]
 lemma Scheme.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     e.inv (e.hom x) = x := by
-  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom ≫ e.inv) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[deprecated (since := "2025-10-07")]
@@ -858,7 +879,7 @@ alias Scheme.iso_inv_base_hom_base := Scheme.inv_base_hom_base
 @[simp]
 lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     e.hom (e.inv y) = y := by
-  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv ≫ e.hom) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 @[deprecated (since := "2025-10-07")]

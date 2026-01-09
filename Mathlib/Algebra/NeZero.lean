@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.PartialOrder
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass
@@ -12,6 +14,8 @@ import Mathlib.Order.Defs.PartialOrder
 We give basic facts about the `NeZero n` typeclass.
 
 -/
+
+public section
 
 variable {R : Type*} [Zero R]
 

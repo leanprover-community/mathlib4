@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
 /-!
 # Translation and scaling of integral curves
@@ -21,6 +23,8 @@ This file mirrors `Mathlib/Analysis/ODE/Transform`.
 
 integral curve, vector field
 -/
+
+public section
 
 open Function Set
 
@@ -125,7 +129,8 @@ section Scaling
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
-  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
+  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.one_apply (R₁ := ℝ) a,
+    ← ContinuousLinearMap.smulRight_comp_smulRight]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
@@ -189,12 +194,12 @@ lemma isMIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_comp_mul_ne_zero :=
   isMIntegralCurve_comp_mul_ne_zero
 
+open ContinuousLinearMap in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
 is a global integral curve of `v`. -/
 lemma isMIntegralCurve_const {x : M} (h : v x = 0) : IsMIntegralCurve (fun _ ↦ x) v := by
   intro t
-  rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
-    ContinuousLinearMap.smulRight_one_one]
+  rw [h, smulRight_one_eq_toSpanSingleton, toSpanSingleton_zero]
   exact hasMFDerivAt_const ..
 
 @[deprecated (since := "2025-08-12")] alias isIntegralCurve_const := isMIntegralCurve_const

@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
@@ -31,6 +33,8 @@ We provide the definition and related lemmas about associated primes of modules.
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
@@ -119,7 +123,7 @@ contained in the union of those of `M` and `M''`. -/
 theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
     associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
   rintro p ⟨_, x, hx⟩
-  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
+  by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
   · obtain ⟨a, ha, y, h⟩ := h
     left
     refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
@@ -131,10 +135,9 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       apply_fun f at hb
       rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
         ← LinearMap.mem_ker, ← hx] at hb
-      contrapose! hb
+      contrapose hb
       exact p.primeCompl.mul_mem hb ha
-  · push_neg at h
-    right
+  · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
       rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢
@@ -142,7 +145,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
     · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
         hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
-      by_contra! H
+      by_contra H
       exact h b H y hy
 
 variable (R M M') in

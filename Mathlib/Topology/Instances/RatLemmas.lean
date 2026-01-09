@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Rat
-import Mathlib.Topology.Compactification.OnePoint.Basic
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Instances.Rat
+public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Additional lemmas about the topology on rational numbers
@@ -26,6 +28,8 @@ compactification.
 
 - `ℚ∞` is used as a local notation for `OnePoint ℚ`
 -/
+
+@[expose] public section
 
 
 open Set Metric Filter TopologicalSpace

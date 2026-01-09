@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Order.Sublattice
 
 /-!
 # Boolean subalgebras
 
 This file defines Boolean subalgebras.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -167,11 +171,11 @@ instance instBot : Bot (BooleanSubalgebra α) where
 
 /-- The inf of two Boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where
-  min L M :=  { carrier := L ∩ M
-                bot_mem' := ⟨bot_mem, bot_mem⟩
-                compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
-                supClosed' := L.supClosed.inter M.supClosed
-                infClosed' := L.infClosed.inter M.infClosed }
+  min L M := { carrier := L ∩ M
+               bot_mem' := ⟨bot_mem, bot_mem⟩
+               compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
+               supClosed' := L.supClosed.inter M.supClosed
+               infClosed' := L.infClosed.inter M.infClosed }
 
 /-- The inf of Boolean subalgebras is their intersection. -/
 instance instInfSet : InfSet (BooleanSubalgebra α) where
@@ -280,7 +284,7 @@ lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.m
 
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : BooleanSubalgebra α) :
     L.map f = L.comap (f.symm : BoundedLatticeHom β α) :=
-  SetLike.coe_injective <| f.toEquiv.image_eq_preimage L
+  SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : BooleanSubalgebra α) :
     L.comap f = L.map (f.symm : BoundedLatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm

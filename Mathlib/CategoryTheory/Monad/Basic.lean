@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads
@@ -14,11 +16,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 We construct the categories of monads and comonads, and their forgetful functors to endofunctors.
 
 (Note that these are the category theorist's monads, not the programmers monads.
-For the translation, see the file `CategoryTheory.Monad.Types`.)
+For the translation, see the file `Mathlib/CategoryTheory/Monad/Types.lean`.)
 
 For the fact that monads are "just" monoids in the category of endofunctors, see the file
 `CategoryTheory.Monad.EquivMon`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

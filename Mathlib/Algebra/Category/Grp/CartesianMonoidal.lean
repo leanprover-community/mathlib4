@@ -3,14 +3,18 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Biproducts
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Biproducts
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Chosen finite products in `GrpCat` and friends
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits MonoidalCategory
 
@@ -116,9 +120,6 @@ noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommG
 
 @[deprecated (since := "2025-10-10")]
 alias cartesianMonoidalCategoryAddCommGrp := cartesianMonoidalCategory
-
-@[deprecated (since := "2025-05-15")]
-alias chosenFiniteProductsAddCommGrp := cartesianMonoidalCategory
 
 attribute [local instance] cartesianMonoidalCategory
 

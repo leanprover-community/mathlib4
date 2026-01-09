@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Defs
-import Mathlib.Combinatorics.Additive.Corner.Defs
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.Additive.Corner.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
 /-!
 # The corners theorem and Roth's theorem
@@ -18,6 +20,8 @@ This file proves the corners theorem and Roth's theorem on arithmetic progressio
 * [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
+
+@[expose] public section
 
 open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph
@@ -41,6 +45,8 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 
 @[simp] private lemma card_triangleIndices : #(triangleIndices A) = #A := card_map _
 
+-- TODO: fix non-terminal simp (operates on three goals, leaving two)
+set_option linter.flexible false in
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
   constructor
   all_goals
@@ -112,24 +118,24 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     rintro a b hab
     have := hAn hab
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
     refine Set.image_subset_iff.2 <| hAn.trans fun x hx ↦ ?_
     simp only [coe_range, Set.mem_prod, Set.mem_Iio] at hx
-    exact ⟨Fin.natCast_strictMono (by cutsat) hx.1, Fin.natCast_strictMono (by cutsat) hx.2⟩
+    exact ⟨Fin.natCast_strictMono (by lia) hx.1, Fin.natCast_strictMono (by lia) hx.2⟩
   rw [← coe_image] at this
-  refine corners_theorem (ε / 9) (by positivity) (by simp; cutsat) _ ?_ this
+  refine corners_theorem (ε / 9) (by positivity) (by simp; lia) _ ?_ this
   calc
     _ = ε / 9 * (2 * n + 1) ^ 2 := by simp
-    _ ≤ ε / 9 * (2 * n + n) ^ 2 := by gcongr; simp; unfold cornersTheoremBound at hn; cutsat
+    _ ≤ ε / 9 * (2 * n + n) ^ 2 := by gcongr; simp; unfold cornersTheoremBound at hn; lia
     _ = ε * n ^ 2 := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
       have : Set.InjOn Nat.cast (range n) :=
-        (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono (by simp; cutsat)
+        (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono (by simp; lia)
       exact (this.prodMap this).mono hAn
 
 /-- **Roth's theorem** for finite abelian groups.
@@ -171,23 +177,23 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     rintro a ha
     have := hAn ha
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|
-      hAn.trans fun x hx ↦ Fin.natCast_strictMono (by cutsat) <| by
+      hAn.trans fun x hx ↦ Fin.natCast_strictMono (by lia) <| by
         simpa only [coe_range, Set.mem_Iio] using hx
   rw [← coe_image] at this
-  refine roth_3ap_theorem (ε / 3) (by positivity) (by simp; cutsat) _ ?_ this
+  refine roth_3ap_theorem (ε / 3) (by positivity) (by simp; lia) _ ?_ this
   calc
     _ = ε / 3 * (2 * n + 1) := by simp
-    _ ≤ ε / 3 * (2 * n + n) := by gcongr; simp; unfold cornersTheoremBound at hG; cutsat
+    _ ≤ ε / 3 * (2 * n + n) := by gcongr; simp; unfold cornersTheoremBound at hG; lia
     _ = ε * n := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
       exact (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono <| hAn.trans <| by
-        simp; cutsat
+        simp; lia
 
 open Asymptotics Filter
 

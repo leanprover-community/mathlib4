@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Loop
+module
+
+public import Mathlib.Combinatorics.Matroid.Loop
 
 /-!
 # Matroid Deletion
@@ -21,16 +23,18 @@ the relation `M ↾ R ≤r M` holds only with the assumption `R ⊆ M.E`,
 whereas `M ＼ D`, being defined as `M ↾ (M.E \ D)`, satisfies `M ＼ D ≤r M` unconditionally.
 This is often quite convenient.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`,
   or equivalently the matroid on `M.E \ D` whose independent sets are the `M`-independent sets.
 
-# Naming conventions
+## Naming conventions
 
 We use the abbreviation `deleteElem` in lemma names to refer to the deletion `M ＼ {e}`
 of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -204,9 +208,6 @@ lemma IsNonloop.of_delete (h : (M ＼ D).IsNonloop e) : M.IsNonloop e :=
 
 lemma isNonloop_iff_delete_of_notMem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ D).IsNonloop e :=
   ⟨fun h ↦ delete_isNonloop_iff.2 ⟨h, he⟩, fun h ↦ h.of_delete⟩
-
-@[deprecated (since := "2025-05-23")]
-alias isNonloop_iff_delete_of_not_mem := isNonloop_iff_delete_of_notMem
 
 lemma delete_loops_eq_removeLoops (M : Matroid α) : M ＼ M.loops = M.removeLoops := by
   rw [removeLoops, delete_eq_restrict, compl_loops_eq]

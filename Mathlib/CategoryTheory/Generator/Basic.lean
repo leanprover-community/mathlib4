@@ -3,10 +3,15 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Separating and detecting sets
@@ -53,8 +58,10 @@ See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.
 
 -/
 
+@[expose] public section
 
-universe w v₁ v₂ u₁ u₂
+
+universe w' w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
@@ -99,7 +106,7 @@ section Equivalence
 variable {P}
 
 lemma IsSeparating.of_equivalence
-    (h : IsSeparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
@@ -107,7 +114,7 @@ lemma IsSeparating.of_equivalence
       H _ (P.strictMap_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
-    (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
@@ -181,6 +188,16 @@ theorem IsDetecting.isSeparating [HasEqualizers C] (hP : IsDetecting P) :
 theorem IsCodetecting.isCoseparating [HasCoequalizers C] :
     IsCodetecting P → IsCoseparating P := by
   simpa only [← isSeparating_op_iff, ← isDetecting_op_iff] using IsDetecting.isSeparating
+
+lemma IsSeparating.mono_iff (hP : IsSeparating P) {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : G ⟶ X), g₁ ≫ f = g₂ ≫ f → g₁ = g₂ :=
+  ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_mono] using h,
+    fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [h]))⟩⟩
+
+lemma IsCoseparating.epi_iff (hP : IsCoseparating P) {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : Y ⟶ G), f ≫ g₁ = f ≫ g₂ → g₁ = g₂ :=
+  ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_epi] using h,
+    fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [reassoc_of% h]))⟩⟩
 
 theorem IsSeparating.isDetecting [Balanced C] (hP : IsSeparating P) :
     IsDetecting P := by
@@ -287,31 +304,117 @@ lemma isCodetecting_bot_of_isGroupoid [IsGroupoid C] :
 
 end Empty
 
+lemma IsSeparating.mk_of_exists_epi
+    (hP : ∀ (X : C), ∃ (ι : Type w) (s : ι → C) (_ : ∀ i, P (s i)) (c : Cofan s) (_ : IsColimit c)
+      (p : c.pt ⟶ X), Epi p) :
+    P.IsSeparating := by
+  intro X Y f g h
+  obtain ⟨ι, s, hs, c, hc, p, _⟩ := hP X
+  rw [← cancel_epi p]
+  exact Cofan.IsColimit.hom_ext hc _ _
+    (fun i ↦ by simpa using h _ (hs i) (c.inj i ≫ p))
+
+lemma IsCoseparating.mk_of_exists_mono
+    (hP : ∀ (X : C), ∃ (ι : Type w) (s : ι → C) (_ : ∀ i, P (s i)) (c : Fan s) (_ : IsLimit c)
+      (j : X ⟶ c.pt), Mono j) :
+    P.IsCoseparating := by
+  intro X Y f g h
+  obtain ⟨ι, s, hs, c, hc, j, _⟩ := hP Y
+  rw [← cancel_mono j]
+  exact Fan.IsLimit.hom_ext hc _ _
+    (fun i ↦ by simpa using h _ (hs i) (j ≫ c.proj i))
+
+lemma IsSeparating.mk_of_exists_colimitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
+    P.IsSeparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP X
+  exact p.isColimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
+
+lemma IsCoseparating.mk_of_exists_limitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.limitsOfShape J X) :
+    P.IsCoseparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP Y
+  exact p.isLimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
+
 variable (P)
 
+section
+
+/-- Given `P : ObjectProperty C` and `X : C`, this is the map which
+sends `i : CostructuredArrow P.ι X` to `i.left.obj : C`. The coproduct
+of this family is the source of the morphism `P.coproductFrom X`. -/
+abbrev coproductFromFamily (X : C) (i : CostructuredArrow P.ι X) : C := i.left.obj
+
+variable (X : C)
+
+variable [HasCoproduct (P.coproductFromFamily X)]
+
+/-- Given `P : ObjectProperty C` and `X : C`, this is the coproduct of
+all the morphisms `Y ⟶ X` such that `P Y` holds. -/
+noncomputable abbrev coproductFrom : ∐ (P.coproductFromFamily X) ⟶ X :=
+  Sigma.desc (fun i ↦ i.hom)
+
+variable {X} in
+/-- The inclusion morphisms to `∐ (P.coproductFromFamily X)`. -/
+noncomputable abbrev ιCoproductFrom {Y : C} (f : Y ⟶ X) (hY : P Y) :
+    Y ⟶ ∐ (P.coproductFromFamily X) := by
+  exact Sigma.ι (P.coproductFromFamily X) (CostructuredArrow.mk (Y := ⟨Y, hY⟩) (by exact f))
+
+end
+
+variable {P} in
+lemma IsSeparating.epi_coproductFrom (hP : P.IsSeparating)
+    (X : C) [HasCoproduct (P.coproductFromFamily X)] :
+    Epi (P.coproductFrom X) where
+  left_cancellation u v huv :=
+    hP _ _ (fun G hG h ↦ by simpa using P.ιCoproductFrom h hG ≫= huv)
+
 theorem isSeparating_iff_epi
-    [∀ A : C, HasCoproduct fun f : Σ G : Subtype P, G.1 ⟶ A ↦ f.1.1] :
-    IsSeparating P ↔
-      ∀ A : C, Epi (Sigma.desc (Sigma.snd (β := fun (G : Subtype P) ↦ G.1 ⟶ A))) := by
-  let β (A : C) (G : Subtype P) := G.1 ⟶ A
-  let b (A : C) (x : Σ G, β A G) := x.1.1
-  refine ⟨fun h A ↦ ⟨fun u v huv ↦ h _ _ fun G hG f ↦ ?_⟩, fun h X Y f g hh ↦ ?_⟩
-  · simpa [β, b] using Sigma.ι (b A) ⟨⟨G, hG⟩, f⟩ ≫= huv
-  · rw [← cancel_epi (Sigma.desc (Sigma.snd (β := β X)))]
-    ext ⟨⟨_, hG⟩, _⟩
-    simpa using hh _ hG _
+    [∀ (X : C), HasCoproduct (P.coproductFromFamily X)] :
+    IsSeparating P ↔ ∀ X : C, Epi (P.coproductFrom X) :=
+  ⟨fun hP X ↦ hP.epi_coproductFrom X,
+    fun hP ↦ IsSeparating.mk_of_exists_epi (fun X ↦ ⟨_, P.coproductFromFamily X,
+      fun i ↦ i.left.2, _, colimit.isColimit _, _, hP X⟩)⟩
+
+section
+
+/-- Given `P : ObjectProperty C` and `X : C`, this is the map which
+sends `i : StructuredArrow P.ι X` to `i.right.obj : C`. The product
+of this family is the target of the morphism `P.productTo X`. -/
+abbrev productToFamily (X : C) (i : StructuredArrow X P.ι) : C := i.right.obj
+
+variable (X : C)
+
+variable [HasProduct (P.productToFamily X)]
+
+/-- Given `P : ObjectProperty C` and `X : C`, this is the product of
+all the morphisms `X ⟶ Y` such that `P Y` holds. -/
+noncomputable abbrev productTo : X ⟶ ∏ᶜ (P.productToFamily X) :=
+  Pi.lift (fun i ↦ i.hom)
+
+variable {X} in
+/-- The projection morphisms from `∏ᶜ (P.productToFamily X)`. -/
+noncomputable abbrev πProductTo {Y : C} (f : X ⟶ Y) (hY : P Y) :
+    ∏ᶜ (P.productToFamily X) ⟶ Y := by
+  exact Pi.π (P.productToFamily X) (StructuredArrow.mk (Y := ⟨Y, hY⟩) (by exact f))
+
+end
+
+variable {P} in
+lemma IsCoseparating.mono_productTo (hP : P.IsCoseparating)
+    (X : C) [HasProduct (P.productToFamily X)] :
+    Mono (P.productTo X) where
+  right_cancellation u v huv :=
+    hP _ _ (fun G hG h ↦ by simpa using huv =≫ P.πProductTo h hG)
 
 theorem isCoseparating_iff_mono
-    [∀ A : C, HasProduct fun f : Σ G : Subtype P, A ⟶ G.1 ↦ f.1.1] :
-    IsCoseparating P ↔
-      ∀ A : C, Mono (Pi.lift (Sigma.snd (β := fun (G : Subtype P) ↦ A ⟶ G.1))) := by
-  let β (A : C) (G : Subtype P) := A ⟶ G.1
-  let b (A : C) (x : Σ G, β A G) := x.1.1
-  refine ⟨fun h A ↦ ⟨fun u v huv ↦ h _ _ fun G hG f ↦ ?_⟩, fun h X Y f g hh ↦ ?_⟩
-  · simpa [β, b] using huv =≫ Pi.π (b A) ⟨⟨G, hG⟩, f⟩
-  · rw [← cancel_mono (Pi.lift (Sigma.snd (β := β Y)))]
-    ext ⟨⟨_, hG⟩, _⟩
-    simpa using hh _ hG _
+    [∀ (X : C), HasProduct (P.productToFamily X)] :
+    IsCoseparating P ↔ ∀ X : C, Mono (P.productTo X) :=
+  ⟨fun hP X ↦ hP.mono_productTo X,
+    fun hP ↦ IsCoseparating.mk_of_exists_mono (fun X ↦ ⟨_, P.productToFamily X,
+      fun i ↦ i.right.2, _, limit.isLimit _, _, hP X⟩)⟩
 
 end ObjectProperty
 
@@ -324,16 +427,17 @@ theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
     [HasLimitsOfSize.{w, w} C] {P : ObjectProperty C} [ObjectProperty.Small.{w} P]
     (hP : P.IsCoseparating) : HasInitial C := by
   have := hasFiniteLimits_of_hasLimitsOfSize C
-  haveI : HasProductsOfShape (Subtype P) C := hasProductsOfShape_of_small C (Subtype P)
-  haveI := fun A => hasProductsOfShape_of_small.{w} C (Σ G : Subtype P, A ⟶ (G : C))
+  haveI := hasProductsOfShape_of_small C (Subtype P)
+  haveI := fun A => hasProductsOfShape_of_small.{w} C (StructuredArrow A P.ι)
   letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : Subtype P → C)))
   suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : Subtype P → C))) : C) ⟶ A) by
     exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : Subtype P → C))) : C)
+  have := hP.mono_productTo
   refine fun A => ⟨⟨?_⟩, fun f => ?_⟩
-  · let s := Pi.lift fun f : Σ G : Subtype P, A ⟶ (G : C) => Pi.π (Subtype.val : Subtype P → C) f.1
-    let t := Pi.lift (@Sigma.snd (Subtype P) fun G => A ⟶ (G : C))
-    haveI : Mono t := P.isCoseparating_iff_mono.1 hP A
-    exact Subobject.ofLEMk _ (pullback.fst _ _ : pullback s t ⟶ _) bot_le ≫ pullback.snd _ _
+  · let s : ∏ᶜ (Subtype.val (p := P)) ⟶ ∏ᶜ P.productToFamily A :=
+      Pi.lift (fun f ↦ Pi.π Subtype.val ⟨f.right.obj, f.right.property⟩)
+    exact Subobject.ofLEMk _
+      (pullback.fst _ _ : pullback s (P.productTo A) ⟶ _) bot_le ≫ pullback.snd _ _
   · suffices ∀ (g : Subobject.underlying.obj ⊥ ⟶ A), f = g by
       apply this
     intro g
@@ -400,7 +504,7 @@ namespace StructuredArrow
 variable (S : D) (T : C ⥤ D)
 
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
-    (P.inverseImage (proj S T)).IsCoseparating  := by
+    (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
 
@@ -411,7 +515,7 @@ namespace CostructuredArrow
 variable (S : C ⥤ D) (T : D)
 
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
-    (P.inverseImage (proj S T)).IsSeparating  := by
+    (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
 

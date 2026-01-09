@@ -3,19 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.OfMap
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.List.FinRange
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.List.FinRange
 
 /-!
 # Instances for finite types
 
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -280,7 +284,7 @@ some relation `r` with respect to all the points in `s`. Then one may construct 
 function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
-    [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
+    [Std.Symm r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩

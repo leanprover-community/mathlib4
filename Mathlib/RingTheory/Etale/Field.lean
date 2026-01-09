@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Pi
-import Mathlib.RingTheory.Unramified.Field
+module
+
+public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Unramified.Field
 
 /-!
 # Étale algebras over fields
@@ -29,10 +31,12 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
+public section
+
 
 universe u
 
-variable (K L A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
+variable (K L : Type*) (A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
 
 open Algebra Polynomial
 
@@ -52,10 +56,10 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   -- IsSeparable + EssFiniteType => FormallyUnramified + Finite
   have := FormallyUnramified.of_isSeparable K L
   have := FormallyUnramified.finite_of_free (R := K) (S := L)
-  constructor
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
-  intro B _ _ I h
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
+  refine ⟨FormallyUnramified.iff_comp_injective_of_small.mp
+    (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
   -- By separability and finiteness, we may assume `L = K(α)` with `p` the minpoly of `α`.
   let pb := Field.powerBasisOfFiniteOfSeparable K L
@@ -89,12 +93,12 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
 
 open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
-  constructor
-  intro B _ _ I h
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
   -- But we already know that there exists a unique lift for every finite subfield of `L`
   -- by `of_isSeparable_aux`, so we can glue them all together.
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  refine ⟨FormallyUnramified.iff_comp_injective_of_small.mp
+    (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
   have : ∀ k : L, ∃! g : K⟮k⟯ →ₐ[K] B,
       (Ideal.Quotient.mkₐ K I).comp g = f.comp (IsScalarTower.toAlgHom K _ L) := by
@@ -115,7 +119,6 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     rw [← hg₂ _ ((g _).comp (IntermediateField.inclusion e))]
     · rfl
     apply AlgHom.ext
-    intro ⟨a, _⟩
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
     simp
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by

@@ -3,12 +3,16 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Basic
 
 /-! Lemmas about `size`. -/
+
+public section
 
 namespace Nat
 
@@ -31,7 +35,7 @@ theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => by dsimp [shiftLeft', bit]; cutsat
+  | succ _, _ => by dsimp [shiftLeft', bit]; lia
 
 /-! ### `size` -/
 
@@ -106,7 +110,7 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [shiftLeft_succ] at *
         refine lt_of_le_of_lt ?_ h
-        cases b <;> dsimp [bit] <;> omega⟩
+        cases b <;> dsimp [bit] <;> lia⟩
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
   rw [← not_lt, Decidable.iff_not_comm, not_lt, size_le]

@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.CommGrp_
-import Mathlib.CategoryTheory.Preadditive.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Monoidal.CommGrp_
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # Commutative group objects in additive categories.
@@ -14,6 +16,8 @@ We construct an inverse of the forgetful functor `CommGrp C ⥤ C` if `C` is an 
 This looks slightly strange because the additive structure of `C` maps to the multiplicative
 structure of the commutative group objects.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -43,10 +47,11 @@ always an equivalence, see `commGrpEquivalence`. -/
 @[simps]
 def toCommGrp : C ⥤ CommGrp C where
   obj X := ⟨X⟩
-  map {X Y} f := .mk' f
+  map {X Y} f := InducedCategory.homMk (Grp.homMk'' f)
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
 -- `CartesianMonoidalCategory` in preadditive categories, to give this lemma a proper home.
+set_option backward.privateInPublic true in
 omit [BraidedCategory C] in
 private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
     (h₁ : lift (𝟙 X) 0 ≫ f = lift (𝟙 X) 0 ≫ g) (h₂ : lift 0 (𝟙 Y) ≫ f = lift 0 (𝟙 Y) ≫ g) :
@@ -54,6 +59,8 @@ private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
   BinaryCofan.IsColimit.hom_ext
     (binaryBiconeIsBilimitOfLimitConeOfIsLimit (tensorProductIsBinaryProduct X Y)).isColimit h₁ h₂
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `commGrpEquivalence`. -/
 @[simps!]
 def commGrpEquivalenceAux : CommGrp.forget C ⋙ toCommGrp C ≅

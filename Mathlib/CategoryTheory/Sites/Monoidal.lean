@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.SheafHom
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.CategoryTheory.Sites.SheafHom
 
 /-!
 # Monoidal category structure on categories of sheaves
@@ -29,12 +30,14 @@ chosen finite products.
 
 -/
 
-universe v v' u u'
+@[expose] public section
+
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-  {A : Type u} [Category.{v} A] [MonoidalCategory A]
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
+  {A : Type u₃} [Category.{v₃} A] [MonoidalCategory A]
 
 open Opposite Limits MonoidalCategory MonoidalClosed Enriched.FunctorCategory
 
@@ -67,7 +70,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
       congr 1
       let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
         (Quiver.Hom.op_inj (by simp))
-      simpa using (g.naturality α.op).symm )
+      simpa using (g.naturality α.op).symm)
   left_inv f := by
     dsimp
     ext j
@@ -107,11 +110,19 @@ end Presheaf
 
 namespace GrothendieckTopology
 
+namespace W
+
+variable (J A) in
+lemma transport_isMonoidal {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
+    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
+    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
+    (J.W (A := A)).IsMonoidal := by
+  rw [← J.W_inverseImage_whiskeringLeft K G]
+  infer_instance
+
 variable [MonoidalClosed A]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasFunctorEnrichedHom A F₁ F₂]
   [∀ (F₁ F₂ : Cᵒᵖ ⥤ A), HasEnrichedHom A F₁ F₂]
-
-namespace W
 
 open MonoidalClosed.FunctorCategory
 

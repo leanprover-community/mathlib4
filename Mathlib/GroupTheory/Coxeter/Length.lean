@@ -3,10 +3,12 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Coxeter.Basic
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Zify
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Coxeter.Basic
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Zify
 
 /-!
 # The length function, reduced words, and descents
@@ -47,6 +49,8 @@ prove analogous results.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
@@ -62,10 +66,13 @@ local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
+set_option backward.privateInPublic true in
 private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
@@ -169,7 +176,7 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
   intro eq
   have length_mod_two := cs.length_mul_mod_two w (s i)
   rw [eq, length_simple] at length_mod_two
-  cutsat
+  lia
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
   convert cs.length_mul_simple_ne w⁻¹ i using 1
@@ -185,13 +192,13 @@ theorem length_mul_simple (w : W) (i : B) :
     have length_ge := cs.length_mul_ge_length_sub_length w (s i)
     simp only [length_simple, tsub_le_iff_right] at length_ge
     -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
-    cutsat
+    lia
   · -- gt : ℓ w < ℓ (w * s i)
     left
     have length_le := cs.length_mul_le w (s i)
     simp only [length_simple] at length_le
     -- length_le : ℓ (w * s i) ≤ ℓ w + 1
-    cutsat
+    lia
 
 theorem length_simple_mul (w : W) (i : B) :
     ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
@@ -228,7 +235,7 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
     _ = ℓ (π (ω.take j) * π (ω.drop j)) := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j)) := cs.length_mul_le _ _
   unfold IsReduced
-  cutsat
+  lia
 
 theorem IsReduced.take {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
     cs.IsReduced (ω.take j) :=
@@ -245,17 +252,17 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
-      cutsat
+      lia
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by lia
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
-      _ ≤ (alternatingWord i' i (M i i' - 1)).length  := cs.length_wordProd_le _
-      _ = M i i' - 1                                  := length_alternatingWord _ _ _
-      _ ≤ M i i'                                      := Nat.sub_le _ _
-      _ < M i i' + 1                                  := Nat.lt_succ_self _
+      _ ≤ (alternatingWord i' i (M i i' - 1)).length := cs.length_wordProd_le _
+      _ = M i i' - 1 := length_alternatingWord _ _ _
+      _ ≤ M i i' := Nat.sub_le _ _
+      _ < M i i' + 1 := Nat.lt_succ_self _
   | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
@@ -304,32 +311,32 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_left (by cutsat)
-  · cutsat
+    exact (cs.length_simple_mul w i).resolve_left (by lia)
+  · lia
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
   unfold IsLeftDescent
   constructor
   · intro _
-    exact (cs.length_simple_mul w i).resolve_right (by cutsat)
-  · cutsat
+    exact (cs.length_simple_mul w i).resolve_right (by lia)
+  · lia
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_left (by cutsat)
-  · cutsat
+    exact (cs.length_mul_simple w i).resolve_left (by lia)
+  · lia
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
   unfold IsRightDescent
   constructor
   · intro _
-    exact (cs.length_mul_simple w i).resolve_right (by cutsat)
-  · cutsat
+    exact (cs.length_mul_simple w i).resolve_right (by lia)
+  · lia
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

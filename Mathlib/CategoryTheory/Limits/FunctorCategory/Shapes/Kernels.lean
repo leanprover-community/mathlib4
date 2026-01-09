@@ -3,12 +3,16 @@ Copyright (c) 2025 Yaël Dillies, Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # (Co)kernels in functor categories
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 universe u

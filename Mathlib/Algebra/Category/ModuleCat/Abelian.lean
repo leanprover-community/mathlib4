@@ -3,16 +3,20 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of left R-modules is abelian.
 
 Additionally, two linear maps are exact in the categorical sense iff `range f = ker g`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -77,7 +81,7 @@ instance abelian : Abelian (ModuleCat.{v} R) where
 section ReflectsLimits
 
 /-- Add this instance to help Lean with universe levels. -/
-instance : HasLimitsOfSize.{v,v} (ModuleCat.{max v w} R) :=
+instance : HasLimitsOfSize.{v, v} (ModuleCat.{max v w} R) :=
   ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Theory of monic polynomials
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Regular.SMul
 We give several tools for proving that polynomials are monic, e.g.
 `Monic.mul`, `Monic.map`, `Monic.pow`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -52,15 +56,9 @@ theorem Monic.as_sum (hp : p.Monic) :
 @[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
   Monic.ne_zero_of_polynomial_ne
 
-theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
-  unfold Monic
-  nontriviality
-  have : f p.leadingCoeff ≠ 0 := by
-    rw [show _ = _ from hp, f.map_one]
-    exact one_ne_zero
-  rw [Polynomial.leadingCoeff, coeff_map]
-  suffices p.coeff (p.map f).natDegree = 1 by simp [this]
-  rwa [natDegree_eq_of_degree_eq (degree_map_eq_of_leadingCoeff_ne_zero f this)]
+theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
+  subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦
+    f.map_one ▸ hp ▸ leadingCoeff_map_eq_of_isUnit_leadingCoeff _ <| hp ▸ isUnit_one
 
 theorem monic_C_mul_of_mul_leadingCoeff_eq_one {b : R} (hp : b * p.leadingCoeff = 1) :
     Monic (C b * p) := by
@@ -227,6 +225,52 @@ theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associate
   obtain ⟨u, rfl⟩ := hpq
   rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
 
+section MonicDegreeEq
+
+variable [Semiring S]
+
+variable (R n) in
+/--
+The type of monic polynomials of degree `n`.
+
+The implementation is slightly different because it is useful to still contain `X ^ n` when
+`R` is trivial. See `MonicDegreeEq.mk` for the usual constructor.
+-/
+abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.coeff i = 0 }
+
+@[simp]
+lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :
+    p.1.natDegree = n :=
+  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.2.2) (by simp [p.2.1])
+
+@[simp]
+lemma MonicDegreeEq.degree [Nontrivial R] (p : MonicDegreeEq R n) :
+    p.1.degree = n :=
+  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le) (by simp [p.2.1])
+
+lemma MonicDegreeEq.monic (p : MonicDegreeEq R n) :
+    p.1.Monic := by
+  nontriviality R
+  rw [Monic, leadingCoeff, p.natDegree, p.2.1]
+
+lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i) :
+    p.1.coeff i = if i = n then 1 else 0 := by
+  split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
+
+/-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
+@[simps]
+def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
+    MonicDegreeEq R n :=
+  ⟨p, by rw [← hp', ← leadingCoeff, hp], fun i hi ↦ coeff_eq_zero_of_natDegree_lt (hp'.trans_lt hi)⟩
+
+/-- The image of a monic polynomial of degree `n` under a ring homomorphism. -/
+@[simps] noncomputable
+def MonicDegreeEq.map (p : MonicDegreeEq R n) (f : R →+* S) :
+    MonicDegreeEq S n :=
+  ⟨p.1.map f, by simp +contextual [coeff_map, p.2]⟩
+
+end MonicDegreeEq
+
 end Semiring
 
 section CommSemiring
@@ -279,8 +323,8 @@ lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
-          (isUnit_of_mul_eq_one f _)
-          (isUnit_of_mul_eq_one g _)⟩⟩
+          (.of_mul_eq_one _)
+          (.of_mul_eq_one _)⟩⟩
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm, ← hfg, ← Monic]
   · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, ← hfg, ← Monic]
   · rw [mul_mul_mul_comm, ← C_mul, ← leadingCoeff_mul, ← hfg, hp.leadingCoeff, C_1, mul_one,
@@ -352,7 +396,7 @@ variable [Semiring R]
 theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).natDegree = P.natDegree := by
   refine le_antisymm natDegree_map_le (le_natDegree_of_ne_zero ?_)
-  rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
+  rw [coeff_map, Monic.coeff_natDegree hmo, map_one]
   exact one_ne_zero
 
 @[simp]
@@ -366,31 +410,10 @@ open Function
 
 variable [Semiring S] {f : R →+* S}
 
-theorem degree_map_eq_of_injective (hf : Injective f) (p : R[X]) : degree (p.map f) = degree p :=
-  letI := Classical.decEq R
-  if h : p = 0 then by simp [h]
-  else
-    degree_map_eq_of_leadingCoeff_ne_zero _
-      (by rw [← f.map_zero]; exact mt hf.eq_iff.1 (mt leadingCoeff_eq_zero.1 h))
-
-theorem natDegree_map_eq_of_injective (hf : Injective f) (p : R[X]) :
-    natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map_eq_of_injective hf p)
-
-theorem leadingCoeff_map_of_injective (hf : Injective f) (p : R[X]) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  unfold leadingCoeff
-  rw [coeff_map, natDegree_map_eq_of_injective hf p]
-
 @[deprecated (since := "2025-10-26")]
 alias leadingCoeff_map' := leadingCoeff_map_of_injective
 @[deprecated (since := "2025-10-26")]
 alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
-
-theorem nextCoeff_map (hf : Injective f) (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
-  unfold nextCoeff
-  rw [natDegree_map_eq_of_injective hf]
-  split_ifs <;> simp [*]
 
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf

@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Lua Viana Reis
 -/
-import Mathlib.Dynamics.BirkhoffSum.Average
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+module
+
+public import Mathlib.Dynamics.BirkhoffSum.Average
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Birkhoff sum and average for quasi-measure-preserving maps
@@ -18,6 +20,8 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
   corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
 
 -/
+
+public section
 
 namespace MeasureTheory.Measure.QuasiMeasurePreserving
 

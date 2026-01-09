@@ -3,15 +3,19 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action
 
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
+
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -238,8 +242,8 @@ variable {G : Type*} [CommGroup G] (s : Set G)
 @[to_additive (attr := simp)]
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]
 
-local notation " Q " => G ⧸ stabilizer G s
-local notation " q " => ((↑) : G → Q)
+local notation "Q" => G ⧸ stabilizer G s
+local notation "q" => ((↑) : G → Q)
 
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by

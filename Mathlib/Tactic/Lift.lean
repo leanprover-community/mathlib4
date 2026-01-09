@@ -3,9 +3,11 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Basic
-import Batteries.Lean.Expr
-import Batteries.Lean.Meta.UnusedNames
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Batteries.Lean.Expr
+public meta import Batteries.Lean.Meta.UnusedNames
 
 /-!
 # lift tactic
@@ -17,6 +19,8 @@ under a specified condition.
 
 lift, tactic
 -/
+
+public meta section
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/

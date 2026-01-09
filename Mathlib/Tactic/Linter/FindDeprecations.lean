@@ -3,8 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init -- `import ImportGraph.Imports` is enough
+public import Mathlib.Init -- `import ImportGraph.Imports` is enough
 
 /-!
 # The `#clear_deprecations` command
@@ -18,12 +19,16 @@ ending with `date₂`.
 See the doc-string for the command for more information.
 -/
 
+meta section
+
 open Lean Elab Command
 
 namespace Mathlib.Tactic
 
-/-- A convenience instance to print a `String.Range` as the corresponding pair of `String.Pos`. -/
-local instance : ToString String.Range where
+/--
+A convenience instance to print a `Lean.Syntax.Range` as the corresponding pair of `String.Pos`.
+-/
+local instance : ToString Lean.Syntax.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
 
 /--
@@ -72,7 +77,7 @@ after the imports of `fname`.
 def addAfterImports (fname s : String) : CommandElabM String := do
   let pos ← getPosAfterImports fname
   let file ← IO.FS.readFile fname
-  let fileSubstring := file.toSubstring
+  let fileSubstring := file.toRawSubstring
   return {fileSubstring with stopPos := pos}.toString ++ s ++
     {fileSubstring with startPos := pos}.toString
 
@@ -118,7 +123,7 @@ The output contains all the declarations that were deprecated after `oldDate`
 and before `newDate`.
 -/
 def deprecatedHashMap (oldDate newDate : String) :
-    CommandElabM (Std.HashMap (Name × String) (Array (Name × String.Range))) := do
+    CommandElabM (Std.HashMap (Name × String) (Array (Name × Lean.Syntax.Range))) := do
   let mut fin := ∅
   --let searchPath ← getSrcSearchPath
   for (nm, _) in (← getEnv).constants.map₁ do
@@ -131,10 +136,11 @@ def deprecatedHashMap (oldDate newDate : String) :
       -- However, while this works locally, CI throws the error ` unknown module prefix 'Mathlib'`
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
+          |>.copy
       --let lean ← findLean searchPath modName
       let file ← IO.FS.readFile lean
       let fm := FileMap.ofString file
-      let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
+      let rg : Lean.Syntax.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       fin := fin.alter (modName, lean) fun a =>
         (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
   return fin
@@ -147,9 +153,10 @@ def deprecatedHashMap (oldDate newDate : String) :
 * The command makes the assumption that `rgs` is *sorted*.
 * The command removes all consecutive whitespace following the end of each range.
 -/
-def removeRanges (file : String) (rgs : Array String.Range) : String := Id.run do
+public -- for use in unit tests, but perhaps useful more broadly
+def removeRanges (file : String) (rgs : Array Lean.Syntax.Range) : String := Id.run do
   let mut curr : String.Pos.Raw := 0
-  let mut fileSubstring := file.toSubstring
+  let mut fileSubstring := file.toRawSubstring
   let mut tot := ""
   let last := fileSubstring.stopPos
   for next in rgs.push ⟨last, last⟩ do
@@ -166,7 +173,7 @@ whose ranges are in the array `rgs`.
 
 The command makes the assumption that `rgs` is *sorted*.
 -/
-def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :=
+def removeDeprecations (fname : String) (rgs : Array Lean.Syntax.Range) : IO String :=
   return removeRanges (← IO.FS.readFile fname) rgs
 
 /--
@@ -180,8 +187,9 @@ It makes the assumption that there is a unique `: [` substring and then retrieve
 Note that this is the output of `Mathlib.Linter.CommandRanges.commandRangesLinter`
 that the script here is parsing.
 -/
+public -- for use in unit tests, but perhaps useful more broadly
 def parseLine (line : String) : Option (List String.Pos.Raw) :=
-  match (line.dropRight 1).splitOn ": [" with
+  match (line.dropEnd 1).copy.splitOn ": [" with
   | [_, rest] =>
     let nums := rest.splitOn ", "
     if nums == [""] then some [] else
@@ -201,7 +209,7 @@ In the course of doing so, the function creates a temporary file from `fname`, b
 It parses the temporary file, capturing the output and uses the command ranges to remove the
 ranges of the *commands* that generated the passed declaration ranges.
 -/
-def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
+def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
     CommandElabM (String × String) := do
   -- `option` is the extra text that we add to the files that contain deprecations.
   -- We save these modified files with a different name then their originals, so that all their
@@ -214,9 +222,9 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   -- corresponding position in the original file.
   -- Since we added the modification right after the imports, the command positions of the old file
   -- are always smaller than the command positions of the new file.
-  let offset := option.toSubstring.stopPos
+  let offset := option.toRawSubstring.stopPos
   let fileWithOptionAdded ← addAfterImports fname option
-  let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
+  let fname_with_option := (fname.dropEnd ".lean".length).copy ++ "_with_option.lean"
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
@@ -253,7 +261,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   -- comments.  This means that we may err on the side of preserving comments that may have to be
   -- manually removed, instead of having to manually add them back later on.
   let rems : Std.HashSet _ := removals.fold (init := ∅) fun tot ↦ fun
-    | [a, b, _c] => tot.insert (⟨a, b⟩ : String.Range)
+    | [a, b, _c] => tot.insert (⟨a, b⟩ : Lean.Syntax.Range)
     | _ => tot
   return (fname_with_option, ← removeDeprecations fname (rems.toArray.qsort (·.1 < ·.1)))
 

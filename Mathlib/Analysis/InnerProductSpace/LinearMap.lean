@@ -3,8 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Linear maps on inner product spaces
@@ -13,8 +14,7 @@ This file studies linear maps on inner product spaces.
 
 ## Main results
 
-- We define `innerSL` as the inner product bundled as a continuous sesquilinear map, and
-  `innerₛₗ` for the non-continuous version.
+- We define `innerSL` as the inner product bundled as a continuous sesquilinear map
 - We prove a general polarization identity for linear maps (`inner_map_polarization`)
 - We show that a linear map preserving the inner product is an isometry
   (`LinearMap.isometryOfInner`) and conversely an isometry preserves the inner product
@@ -25,6 +25,8 @@ This file studies linear maps on inner product spaces.
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -54,7 +56,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ -
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -65,7 +67,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ +
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -156,45 +158,22 @@ end
 
 variable (𝕜)
 
-/-- The inner product as a sesquilinear map. -/
-def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
-  LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
-    inner_add_right fun _ _ _ => inner_smul_right _ _ _
-
-@[simp]
-theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
-  rfl
-
-@[simp]
-theorem innerₛₗ_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
-  rfl
-
-variable (F)
-/-- The inner product as a bilinear map in the real case. -/
-def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
-
-@[simp] lemma flip_innerₗ : (innerₗ F).flip = innerₗ F := by
-  ext v w
-  exact real_inner_comm v w
-
-variable {F}
-
-@[simp] lemma innerₗ_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
-
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
 def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
-    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply]
+    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
 
 @[simp]
-theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
-@[simp]
-theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
+theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
+
+@[simp] theorem ContinuousLinearMap.toLinearMap_innerSL_apply (v : E) :
+    (innerSL 𝕜 v).toLinearMap = innerₛₗ 𝕜 v := rfl
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
@@ -202,13 +181,21 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
     (innerSL 𝕜)
 
 @[simp]
-theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
+theorem innerSLFlip_apply_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
 variable (F) in
-@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
+@[simp] lemma flip_innerSL_real : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
   exact real_inner_comm _ _
+
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
 
 variable {𝕜}
 
@@ -301,8 +288,91 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
-  simp only [ContinuousLinearMap.map_smul, ContinuousLinearMap.reApplyInnerSelf_apply,
-    inner_smul_left, inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
+  simp only [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
+    inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 
 end ReApplyInnerSelf_Seminormed
+
+namespace InnerProductSpace
+variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+
+open ContinuousLinearMap
+
+variable (𝕜) in
+/-- A rank-one operator on an inner product space is given by `x ↦ y ↦ z ↦ ⟪y, z⟫ • x`.
+
+This is also sometimes referred to as an outer product of vectors on a Hilbert space.
+This corresponds to the matrix outer product `Matrix.vecMulVec`, see
+`InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
+`Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
+noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
+  .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
+
+lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x := rfl
+
+lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y := rfl
+
+lemma toLinearMap_rankOne (x : E) (y : F) :
+    (rankOne 𝕜 x y).toLinearMap = (innerₛₗ 𝕜 y).smulRight x := rfl
+
+@[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
+  rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
+
+@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+  NNReal.eq <| norm_rankOne _ _
+
+@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
+  ENNReal.coe_inj.mpr <| nnnorm_rankOne _ _
+
+@[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
+
+lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
+  simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
+
+theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
+    IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
+
+@[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
+    rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
+
+@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
+
+lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
+    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+
+lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
+    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+  simp [inner_smul_left, inner_conj_symm]
+
+lemma inner_right_rankOne_apply (x y : F) (z w : G) :
+    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+  simp [inner_smul_right, mul_comm]
+
+section Normed
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+  simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
+    ext_iff_inner_right 𝕜 (E := F)]
+
+lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
+  grind [rankOne_eq_zero]
+
+theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
+    IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
+  refine ⟨?_, isIdempotentElem_rankOne_self⟩
+  simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
+    map_smul, coe_smul', Pi.smul_apply]
+  nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
+  rw [← sub_eq_zero, ← sub_smul]
+  simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
+    FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
+  grind [norm_nonneg]
+
+end Normed
+
+end InnerProductSpace

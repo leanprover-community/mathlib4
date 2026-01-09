@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.Nonunits
-import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.Ideal.Prod
+public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings
@@ -35,6 +37,8 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -556,3 +560,12 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ { I : Ideal R | ¬I.I
   exact hs ⟨⟨x, rfl⟩⟩
 
 end PrincipalOfPrime_old
+
+open Ideal in
+lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :
+    span {n} ⊓ span {m} = span {lcm n m} := by
+  rw [Ideal.ext_iff]
+  intro x
+  rw [Ideal.mem_inf]
+  simp only [Ideal.mem_span_singleton]
+  exact lcm_dvd_iff.symm

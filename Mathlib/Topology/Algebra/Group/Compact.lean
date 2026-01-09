@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Additional results on topological groups
@@ -12,6 +14,8 @@ import Mathlib.Topology.Sets.Compacts
 A result on topological groups that has been separated out
 as it requires more substantial imports developing positive compacts.
 -/
+
+public section
 
 
 universe u

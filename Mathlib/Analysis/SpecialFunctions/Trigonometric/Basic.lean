@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.Field.NegOnePow
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Exp
+module
+
+public import Mathlib.Algebra.Field.NegOnePow
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Trigonometric functions
@@ -40,6 +42,8 @@ in terms of Chebyshev polynomials.
 
 sin, cos, tan, angle
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -172,7 +176,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
     assertInstancesCommute
@@ -366,8 +370,14 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
 
+theorem cos_int_mul_pi (n : ℤ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_int_mul_pi 0 n
+
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.add_nat_mul_eq n
+
+theorem cos_nat_mul_pi (n : ℕ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_nat_mul_pi 0 n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
@@ -417,6 +427,12 @@ theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π �
 
 @[deprecated (since := "2025-07-27")]
 alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
+
+lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
+  rcases lt_or_ge x 0 with h | h
+  · rw [abs_of_neg h, sin_neg,
+      abs_of_nonpos (sin_nonpos_of_nonpos_of_neg_pi_le h.le (abs_le.1 hx).1)]
+  · rw [abs_of_nonneg h, abs_of_nonneg (sin_nonneg_of_nonneg_of_le_pi h (abs_le.1 hx).2)]
 
 @[simp]
 theorem sin_pi_div_two : sin (π / 2) = 1 :=
@@ -501,7 +517,7 @@ theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = 
     fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+  contrapose!; exact sin_eq_zero_iff
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, right_eq_add, mul_eq_zero, or_self]
@@ -531,7 +547,7 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
-    obtain rfl : n = 0 := le_antisymm (by cutsat) (by cutsat)
+    obtain rfl : n = 0 := le_antisymm (by lia) (by lia)
     simp, fun h => by simp [h]⟩
 
 theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) (hy₂ : y ≤ π / 2)
@@ -812,7 +828,7 @@ theorem quadratic_root_cos_pi_div_five :
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
-    omega
+    lia
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]

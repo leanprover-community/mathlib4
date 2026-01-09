@@ -3,9 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Substitution
-import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
+public import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.Data.Finsupp.Weight
 
 /-! # Substitutions in power series
 
@@ -19,6 +21,8 @@ Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
 do not immediately apply and a “primed” version is provided here.
 
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 
@@ -252,6 +256,34 @@ theorem subst_coe (ha : HasSubst a) (p : Polynomial R) :
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
+
+omit [Algebra R S] in
+theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
+    (f.subst a).map h = (f.map h).subst (a.map h) := by
+  ext n
+  have {r : R} : h r = h.toAddMonoidHom r := rfl
+  rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
+    AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
+  intro d
+  simp [← map_pow]
+
+section
+
+theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeries R) :
+    f.order * a.weightedOrder w ≤ (f.subst a).weightedOrder w := by
+  refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
+  simp only [ne_eq, Function.comp_const, le_iInf_iff]
+  intro i hi
+  trans i () * MvPowerSeries.weightedOrder w a
+  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert hi; aesop)) _
+  · simp [Finsupp.weight_apply, Finsupp.sum_fintype]
+
+theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
+    a.order * f.order ≤ (f.subst a).order := by
+  refine .trans ?_ (MvPowerSeries.le_order_subst (PowerSeries.hasSubst_iff.mp ha) _)
+  simp [order_eq_order]
+
+end
 
 theorem HasSubst.comp
     {a : PowerSeries S} (ha : HasSubst a) {b : MvPowerSeries υ T} (hb : HasSubst b) :

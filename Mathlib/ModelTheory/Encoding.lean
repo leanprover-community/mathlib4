@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Computability.Encoding
-import Mathlib.Logic.Small.List
-import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Computability.Encoding
+public import Mathlib.Logic.Small.List
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -31,6 +33,8 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
   incompleteness
 
 -/
+
+@[expose] public section
 
 
 universe u v w u'

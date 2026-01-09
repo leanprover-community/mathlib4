@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The characteristic predicate of tensor product
@@ -27,6 +29,8 @@ import Mathlib.RingTheory.TensorProduct.Maps
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/
+
+@[expose] public section
 
 
 universe u v₁ v₂ v₃ v₄
@@ -259,9 +263,11 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
+@[simp]
 theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
   rfl
 
+@[simp]
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 
@@ -487,7 +493,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
   out := .of_equiv
     { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
       map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
-        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp +contextual) }
     fun _ ↦ by simp [equiv_tmul]
 
 variable (R S R' S')
@@ -511,6 +517,18 @@ instance TensorProduct.isPushout {R S T : Type*} [CommSemiring R] [CommSemiring 
 instance TensorProduct.isPushout' {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (S ⊗[R] T) :=
   Algebra.IsPushout.symm inferInstance
+
+lemma Algebra.IsPushout.tensorProduct_tensorProduct
+    (R S A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring A] [CommSemiring B]
+    [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B] [Algebra R S]
+    {_ : Algebra (A ⊗[R] S) (B ⊗[R] S)} {_ : IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)}
+    (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
+      Algebra.TensorProduct.includeRight.toRingHom) :
+    Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
+  constructor
+  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  ext s
+  simpa using congr($H s)
 
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.

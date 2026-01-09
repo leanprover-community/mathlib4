@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Cover.Over
-import Mathlib.AlgebraicGeometry.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.Over
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Over
+public import Mathlib.AlgebraicGeometry.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Small sites
@@ -28,6 +30,8 @@ generating pretopologies.
   with `AlgebraicGeometry.Scheme.smallGrothendieckTopology`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -226,7 +230,7 @@ variable {P Q}
 lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
       ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left),
-        R f ∧ P f.left ∧ f.left.base y = x := by
+        R f ∧ P f.left ∧ f.left y = x := by
   rw [Pretopology.mem_toGrothendieck]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨T, ⟨𝒰, h, p, rfl⟩, hle⟩

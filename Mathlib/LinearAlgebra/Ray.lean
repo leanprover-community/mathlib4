@@ -3,13 +3,15 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Algebra
+public import Mathlib.Algebra.Ring.Subring.Units
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Rays in modules
@@ -24,6 +26,8 @@ This file defines rays in modules.
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
   common positive multiple.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,9 +72,8 @@ theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
 
 /-- `SameRay` is reflexive. -/
 @[refl]
-theorem refl (x : M) : SameRay R x x := by
-  nontriviality R
-  exact Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
+theorem refl (x : M) : SameRay R x x :=
+  Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
 
 protected theorem rfl : SameRay R x x :=
   refl _
@@ -252,7 +255,7 @@ def RayVector.mapLinearEquiv (e : M ≃ₗ[R] N) : RayVector R M ≃ RayVector R
 
 /-- An equivalence between modules implies an equivalence between rays. -/
 def Module.Ray.map (e : M ≃ₗ[R] N) : Module.Ray R M ≃ Module.Ray R N :=
-  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _=> (SameRay.sameRay_map_iff _).symm
+  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _ => (SameRay.sameRay_map_iff _).symm
 
 @[simp]
 theorem Module.Ray.map_apply (e : M ≃ₗ[R] N) (v : M) (hv : v ≠ 0) :
@@ -360,7 +363,6 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
 theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
-  nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
 

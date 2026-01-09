@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Moments.ComplexMGF
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-import Mathlib.Analysis.Calculus.Taylor
+module
+
+public import Mathlib.Probability.Moments.ComplexMGF
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Analysis.Calculus.Taylor
 
 /-!
 # The moment-generating function is analytic
@@ -23,6 +25,8 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
   `integrableExpSet X μ`.
 
 -/
+
+public section
 
 
 open MeasureTheory Filter Finset Real

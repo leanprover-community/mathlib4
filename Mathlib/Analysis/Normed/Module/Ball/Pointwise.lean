@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Module.RCLike.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
@@ -13,6 +15,8 @@ We explore the relationships between scalar multiplication of sets in vector spa
 Notably, we express arbitrary balls as rescaling of other balls, and we show that the
 multiplication of bounded sets remain bounded.
 -/
+
+public section
 
 
 open Metric Set
@@ -26,7 +30,7 @@ section SMulZeroClass
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
 variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
-theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
+theorem ediam_smul_le (c : 𝕜) (s : Set E) : ediam (c • s) ≤ ‖c‖₊ • ediam s :=
   (lipschitzWith_smul c).ediam_image_le s
 
 end SMulZeroClass
@@ -36,7 +40,7 @@ section DivisionRing
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
-theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
+theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
   obtain rfl | hc := eq_or_ne c 0
   · obtain rfl | hs := s.eq_empty_or_nonempty
@@ -122,10 +126,10 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bornology
   have I : ‖r • z‖ ≤ ε :=
     calc
       ‖r • z‖ = ‖r‖ * ‖z‖ := norm_smul _ _
-      _ ≤ ε / R * R :=
-        (mul_le_mul (mem_closedBall_zero_iff.1 hr) (mem_closedBall_zero_iff.1 (hR zs))
-          (norm_nonneg _) (div_pos εpos Rpos).le)
-      _ = ε := by field_simp
+      _ ≤ ε / R * R := by
+        gcongr
+        exacts [mem_closedBall_zero_iff.1 hr, mem_closedBall_zero_iff.1 (hR zs)]
+      _ = ε := by field
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
   simpa only [this, dist_eq_norm, add_sub_cancel_left, mem_closedBall] using I

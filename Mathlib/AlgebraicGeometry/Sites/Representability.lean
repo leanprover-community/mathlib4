@@ -3,13 +3,15 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Representable
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.AlgebraicGeometry.GluingOneHypercover
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Representable
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.AlgebraicGeometry.GluingOneHypercover
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Representability of schemes is a local property
@@ -31,6 +33,8 @@ locally representable.
 * https://stacks.math.columbia.edu/tag/01JJ
 
 -/
+
+@[expose] public section
 
 namespace AlgebraicGeometry
 

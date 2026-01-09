@@ -3,7 +3,9 @@ Copyright (c) 2018 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 ## TODO
 Properly develop the material in the context of lattices.
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 open Module
@@ -115,7 +119,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis_flip hB]
 
@@ -124,7 +128,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
     dualBasis_flip_dualBasis hB]
 
@@ -133,7 +137,7 @@ lemma dualSubmodule_dualSubmodule_of_basis
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis hB hB']
 

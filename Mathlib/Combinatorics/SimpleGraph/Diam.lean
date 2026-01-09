@@ -3,7 +3,9 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Diameter of a simple graph
@@ -25,6 +27,8 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -313,7 +317,7 @@ lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius  :=
+lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
 lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :

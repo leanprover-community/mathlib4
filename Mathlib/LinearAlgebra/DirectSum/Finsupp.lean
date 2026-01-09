@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+module
+
+public import Mathlib.Algebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.
@@ -58,6 +60,8 @@ This belongs to a companion PR.
 
 * reprove `TensorProduct.finsuppLeft'` using existing heterobasic version of `TensorProduct.congr`
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -156,7 +160,7 @@ lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
   | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]
 
 variable (R M N ι S)
-/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N``
+/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N`
   is an `S`-linear equiv -/
 noncomputable def finsuppLeft' :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N where
@@ -232,6 +236,28 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
     (finsuppScalarRight R M ι).symm (Finsupp.single i m) =
       m ⊗ₜ[R] (Finsupp.single i 1) := by
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
+
+theorem finsuppScalarRight_smul (s : S) (t) :
+    finsuppScalarRight R M ι (s • t) = s • finsuppScalarRight R M ι t := by
+  induction t using TensorProduct.induction_on with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | tmul m x =>
+    simp only [smul_tmul', finsuppScalarRight_apply_tmul, Finsupp.smul_sum]
+    congr
+    ext i n j
+    simp [smul_comm n s m]
+
+variable (R S M ι) in
+/-- When `M` is also an `S`-module, `TensorProduct.finsuppScalarRight R M ι` is `S`-linear. -/
+noncomputable def finsuppScalarRight' :
+    M ⊗[R] (ι →₀ R) ≃ₗ[S] ι →₀ M where
+  toAddEquiv := finsuppScalarRight R M ι
+  map_smul' s x := finsuppScalarRight_smul s x
+
+theorem coe_finsuppScalarRight' :
+    ⇑(finsuppScalarRight' R M ι S) = finsuppScalarRight R M ι :=
+  rfl
 
 end TensorProduct
 

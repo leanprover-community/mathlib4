@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.RingHom.Locally
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
 
@@ -55,6 +57,8 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -183,11 +187,11 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.affineOpens) (U₂ : Y.affineOpens) (V₁ : X.affineOpens) (V₂ : X.affineOpens)
     (hx₁ : x ∈ V₁.1) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f.base x ∈ U₁.1) :
+    (hfx₁ : f x ∈ U₁.1) :
     ∃ (r : Γ(Y, U₁)) (s : Γ(X, V₁)) (_ : x ∈ X.basicOpen s)
       (e : X.basicOpen s ≤ f ⁻¹ᵁ Y.basicOpen r),
         P (f.appLE (Y.basicOpen r) (X.basicOpen s) e).hom := by
-  obtain ⟨r, r', hBrr', hBfx⟩ := exists_basicOpen_le_affine_inter U₁.2 U₂.2 (f.base x)
+  obtain ⟨r, r', hBrr', hBfx⟩ := exists_basicOpen_le_affine_inter U₁.2 U₂.2 (f x)
     ⟨hfx₁, e₂ hx₂⟩
   have ha : IsAffineOpen (X.basicOpen (f.appLE U₂ V₂ e₂ r')) := V₂.2.basicOpen _
   have hxa : x ∈ X.basicOpen (f.appLE U₂ V₂ e₂ r') := by
@@ -219,10 +223,10 @@ lemma exists_affineOpens_le_appLE_of_appLE
     (hPa : StableUnderCompositionWithLocalizationAwayTarget P) (hPl : LocalizationAwayPreserves P)
     (x : X) (U₁ : Y.Opens) (U₂ : Y.affineOpens) (V₁ : X.Opens) (V₂ : X.affineOpens)
     (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
-    (hfx₁ : f.base x ∈ U₁.1) :
+    (hfx₁ : f x ∈ U₁.1) :
     ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.1 ≤ U₁) (_ : V'.1 ≤ V₁) (_ : x ∈ V'.1)
-      (e : V'.1 ≤ f⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
-  obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f.base x, hfx₁⟩ (e₂ hx₂)
+      (e : V'.1 ≤ f ⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
+  obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
   obtain ⟨s, hBs, hBx⟩ := V₂.2.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
   obtain ⟨r', s', hBx', e', hf'⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine hPa hPl x
     ⟨Y.basicOpen r, U₂.2.basicOpen _⟩ U₂ ⟨X.basicOpen s, V₂.2.basicOpen _⟩ V₂ hBx hx₂ e₂ h₂ hBfx
@@ -393,7 +397,7 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
     simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_X, ← Spec.map_comp,
       Scheme.AffineOpenCover.openCover_f, Scheme.affineOpenCoverOfSpanRangeEqTop_f]
     exact H i
-  · intro R S _ _  f s hs H
+  · intro R S _ _ f s hs H
     apply IsZariskiLocalAtTarget.of_iSup_eq_top _ (PrimeSpectrum.iSup_basicOpen_eq_top_iff
       (f := fun i : s ↦ (i : R)).mpr (by simpa))
     intro i
@@ -588,7 +592,7 @@ lemma iff_exists_appLE_locally
   refine ⟨fun hf x ↦ ?_,
       fun hf ↦ (IsZariskiLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
-      (Opens.mem_top <| f.base x)
+      (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)
     simp_rw [HasRingHomProperty.iff_appLE (P := P), locally_iff_isLocalization hQi] at hf
@@ -680,20 +684,20 @@ lemma stalkMap
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
-      (Opens.mem_top <| f.base x)
+      (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)
     rw [← hQi.arrow_mk_iso_iff (Scheme.Hom.resLEStalkMap f e ⟨x, hx⟩)]
     exact this (IsZariskiLocalAtSource.resLE _ hf) _ ⟨hV, hU⟩
   obtain ⟨hX, hY⟩ := h
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
-  · have : Q ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom.base x)).hom := by
-      refine this ?_ (X.isoSpec.hom.base x) inferInstance inferInstance ?_
+  · have : Q ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom x)).hom := by
+      refine this ?_ (X.isoSpec.hom x) inferInstance inferInstance ?_
       · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
       · use Γ(Y, ⊤), Γ(X, ⊤)
     rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp,
       hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
-    have heq : (X.isoSpec.inv.base (X.isoSpec.hom.base x)) = x := by simp
+    have heq : (X.isoSpec.inv (X.isoSpec.hom x)) = x := by simp
     rwa [hQi.arrow_mk_iso_iff (f.arrowStalkMapIsoOfEq heq)] at this
   obtain ⟨R, S, rfl, rfl⟩ := hXY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets in uniform spaces
@@ -13,6 +15,8 @@ import Mathlib.Topology.Compactness.Compact
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
 
 -/
+
+public section
 
 universe u v ua ub uc ud
 
@@ -188,3 +192,15 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
 
 end Compact
+
+theorem IsClosed.relPreimage_of_isCompact [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set β} (ht : IsCompact t) :
+    IsClosed (s.preimage t) := by
+  rw [← isOpen_compl_iff, isOpen_iff_eventually] at hs ⊢
+  simp_rw [Set.mem_compl_iff, SetRel.mem_preimage, not_exists, not_and]
+  exact fun y hy => ht.eventually_forall_of_forall_eventually fun x hx => hs _ <| hy _ hx
+
+theorem IsClosed.relImage_of_isCompact [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsClosed s) {t : Set α} (ht : IsCompact t) :
+    IsClosed (s.image t) :=
+  hs.relInv.relPreimage_of_isCompact ht

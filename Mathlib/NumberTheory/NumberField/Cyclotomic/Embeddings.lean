@@ -3,9 +3,10 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+module
 
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
@@ -13,9 +14,11 @@ We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
 `NrRealPlaces K = 0` if `IsCyclotomicExtension {n} ℚ K` and `2 < n`.
 
 ## Main results
-* `nrRealPlaces_eq_zero`: If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
+* `nrRealPlaces_eq_zero`: If `K` is an `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
   then there are no real places of `K`.
 -/
+
+public section
 
 universe u
 
@@ -25,18 +28,22 @@ open NumberField InfinitePlace Module Complex Nat Polynomial
 
 variable {n : ℕ} [NeZero n] (K : Type u) [Field K] [CharZero K]
 
-/-- If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`, then there are no real places
+/-- If `K` is an `n`-th cyclotomic extension of `ℚ`, where `2 < n`, then there are no real places
 of `K`. -/
-theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
-    (hn : 2 < n) :
+theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K] (hn : 2 < n) :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
     nrRealPlaces K = 0 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
 
+theorem isTotallyComplex [IsCyclotomicExtension {n} ℚ K] (hn : 2 < n) :
+    IsTotallyComplex K := by
+  have := IsCyclotomicExtension.numberField {n} ℚ K
+  exact nrRealPlaces_eq_zero_iff.mp <| nrRealPlaces_eq_zero K hn
+
 variable (n)
 
-/-- If `K` is a `n`-th cyclotomic extension of `ℚ`, then there are `φ n / n` complex places
+/-- If `K` is an `n`-th cyclotomic extension of `ℚ`, then there are `φ n / n` complex places
 of `K`. Note that this uses `1 / 2 = 0` in the cases `n = 1, 2`. -/
 theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K] :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
@@ -58,6 +65,5 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     rw [this]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one
     rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n)), this]
-
 
 end IsCyclotomicExtension.Rat

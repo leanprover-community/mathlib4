@@ -3,8 +3,10 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
-import Mathlib.Tactic.ComputeDegree
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
+public import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Division polynomials of Weierstrass curves
@@ -47,6 +49,8 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 
 elliptic curve, division polynomial, torsion point
 -/
+
+public section
 
 open Polynomial
 
@@ -172,7 +176,7 @@ private lemma expDegree_rec (m : ℕ) :
       expDegree (m + 1) + 3 * expDegree (m + 3) + (if Even m then 0 else 2 * 3)) := by
   push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (expDegree _ : ℤ)) two_pos,
     mul_add, mul_left_comm (2 : ℤ)]
-  repeat rw [expDegree_cast <| by cutsat]
+  repeat rw [expDegree_cast <| by lia]
   push_cast [Nat.even_add_one, ite_not, even_two_mul]
   constructor <;> constructor <;> split_ifs <;> ring1
 

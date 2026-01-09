@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -28,6 +30,8 @@ More exciting, however, would be to make possible one of the following options:
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.
 -/
+
+@[expose] public section
 
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃

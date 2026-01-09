@@ -425,7 +425,7 @@ example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
 /-!
-# Nat operations
+## Nat operations
 -/
 
 section Nat.sub
@@ -465,7 +465,7 @@ example : 1099 / 100 = 10 := by norm_num1
 end Nat.div
 
 /-!
-# Numbers in algebraic structures
+## Numbers in algebraic structures
 -/
 
 noncomputable def foo : ℝ := 1
@@ -572,9 +572,6 @@ example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
 example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 
 end
-
--- user command
-set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1

@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.MeasureTheory.Group.LIntegral
-import Mathlib.MeasureTheory.Integral.Marginal
-import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.MeasureTheory.Group.LIntegral
+public import Mathlib.MeasureTheory.Integral.Marginal
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`
@@ -28,12 +30,14 @@ More properties of the Lebesgue measure are deduced from this in
 additive Haar measure on a finite-dimensional real vector space.
 -/
 
+@[expose] public section
+
 
 assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
+open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open ENNReal (ofReal)
 
@@ -95,6 +99,10 @@ theorem volume_real_Icc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Icc a b
 theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [volume_val]
 
 @[simp]
+theorem volume_uIoo {a b : ℝ} : volume (uIoo a b) = ofReal |b - a| := by
+  simp [uIoo, volume_Ioo, max_sub_min_eq_abs]
+
+@[simp]
 theorem volume_real_Ioo {a b : ℝ} : volume.real (Ioo a b) = max (b - a) 0 := by
   simp [measureReal_def, ENNReal.toReal_ofReal']
 
@@ -103,6 +111,10 @@ theorem volume_real_Ioo_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioo a b
 
 @[simp]
 theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
+
+@[simp]
+theorem volume_uIoc {a b : ℝ} : volume (uIoc a b) = ofReal |b - a| := by
+  simp [uIoc, volume_Ioc, max_sub_min_eq_abs]
 
 @[simp]
 theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := by
@@ -203,7 +215,7 @@ instance isFiniteMeasure_restrict_Ioc (x y : ℝ) : IsFiniteMeasure (volume.rest
 instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioo x y)) :=
   ⟨by simp⟩
 
-theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
+theorem volume_le_diam (s : Set ℝ) : volume s ≤ ediam s := by
   by_cases hs : Bornology.IsBounded s
   · rw [Real.ediam_eq hs, ← volume_Icc]
     exact volume.mono hs.subset_Icc_sInf_sSup
@@ -269,21 +281,21 @@ nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr) _).symm
 
 theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
-    volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
+    volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
   calc
     volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
     _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
-    _ ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
-      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (EMetric.diam_closure _)
+    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
+      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (ediam_closure _)
 
-theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam s ^ Fintype.card ι :=
+theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fintype.card ι :=
   calc
-    volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) := volume_pi_le_prod_diam s
-    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * EMetric.diam s :=
+    volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) := volume_pi_le_prod_diam s
+    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s :=
       (Finset.prod_le_prod' fun i _ => (LipschitzWith.eval i).ediam_image_le s)
-    _ = EMetric.diam s ^ Fintype.card ι := by
+    _ = ediam s ^ Fintype.card ι := by
       simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
 /-!
@@ -347,14 +359,14 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :
     (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
-    simp only [LinearMap.coe_proj, Algebra.id.smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
+    simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i

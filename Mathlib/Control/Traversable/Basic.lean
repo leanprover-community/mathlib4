@@ -3,10 +3,12 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Control.Functor
-import Batteries.Data.List.Basic
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Control.Functor
+public import Batteries.Data.List.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
@@ -54,6 +56,8 @@ traversable iterator functor applicative
   in Mathematically-Structured Functional Programming, 2012,
   online at <http://arxiv.org/pdf/1202.2919>
 -/
+
+@[expose] public section
 
 open Function hiding comp
 
@@ -113,10 +117,7 @@ theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, 
 
 @[ext]
 theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
-    η = η' := by
-  apply coe_inj
-  ext1 α
-  exact funext (h α)
+    η = η' := coe_inj (by grind)
 
 section Preserves
 

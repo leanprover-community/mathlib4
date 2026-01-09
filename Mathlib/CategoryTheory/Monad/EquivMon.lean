@@ -3,9 +3,11 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 
@@ -13,7 +15,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 A monad "is just" a monoid in the category of endofunctors.
 
-# Definitions/Theorems
+## Definitions/Theorems
 
 1. `toMon` associates a monoid object in `C ⥤ C` to any monad on `C`.
 2. `monadToMon` is the functorial version of `toMon`.
@@ -21,6 +23,8 @@ A monad "is just" a monoid in the category of endofunctors.
 4. `monadMonEquiv` is the equivalence between `Monad C` and `Mon (C ⥤ C)`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

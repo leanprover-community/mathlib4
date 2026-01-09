@@ -3,8 +3,10 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.Topology.Algebra.Field
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.Topology.Algebra.Field
 
 /-!
 # Continuous actions related to intermediate fields
@@ -13,6 +15,8 @@ In this file we define the instances related to continuous actions of
 intermediate fields. The topology on intermediate fields is already defined
 in earlier file `Mathlib/Topology/Algebra/Field.lean` as the subspace topology.
 -/
+
+@[expose] public section
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
     [TopologicalSpace L] [IsTopologicalRing L]

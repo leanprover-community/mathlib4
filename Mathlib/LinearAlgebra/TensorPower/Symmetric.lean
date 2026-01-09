@@ -3,8 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
@@ -28,6 +29,8 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Relate to homogneous (multivariate) polynomials of degree `n`.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Filtration
-import Mathlib.Topology.Instances.Discrete
+module
+
+public import Mathlib.Probability.Process.Filtration
+public import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Adapted and progressively measurable processes
@@ -31,6 +33,8 @@ at a specific time and are the first step in formalizing stochastic processes.
 adapted, progressively measurable
 
 -/
+
+@[expose] public section
 
 
 open Filter Order TopologicalSpace

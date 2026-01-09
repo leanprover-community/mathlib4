@@ -3,8 +3,10 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Data.Set.Function
 
 /-!
 # Comparing sums and integrals
@@ -39,6 +41,8 @@ At the moment it contains several lemmas in this direction, for antitone or mono
 
 analysis, comparison, asymptotics
 -/
+
+public section
 
 
 open Set MeasureTheory MeasureSpace
@@ -203,14 +207,14 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
     have I0 : (i : ℝ) ≤ b - 1 := by
       simp only [le_sub_iff_add_le]
       norm_cast
-      omega
+      lia
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; cutsat, I0⟩
+      exact ⟨by norm_cast; lia, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
-      omega
+      lia
     apply mul_le_mul
     · apply hf
       · simp only [mem_Icc, Nat.cast_le]
@@ -221,7 +225,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        cutsat
+        lia
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans
@@ -249,14 +253,14 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     have I0 : (i : ℝ) ≤ b - 1 := by
       simp only [le_sub_iff_add_le]
       norm_cast
-      omega
+      lia
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; cutsat, I0⟩
+      exact ⟨by norm_cast; lia, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
-      omega
+      lia
     apply mul_le_mul
     · apply hf
       · simp only [mem_Icc, Nat.cast_le]
@@ -267,7 +271,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        cutsat
+        lia
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans

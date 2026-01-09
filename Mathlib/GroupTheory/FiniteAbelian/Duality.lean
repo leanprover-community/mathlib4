@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.GroupTheory.FiniteAbelian.Basic
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+module
+
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Duality for finite abelian groups
@@ -15,6 +17,8 @@ of unity, where `n` is the exponent of `G`. The main results in this file are
   elements of `G`.
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.
 -/
+
+public section
 
 namespace CommGroup
 

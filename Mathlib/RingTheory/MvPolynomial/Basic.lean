@@ -3,12 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Data.DFinsupp.Small
-import Mathlib.Data.Fintype.Pi
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.DFinsupp.Small
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Multivariate polynomials over commutative rings
@@ -34,6 +36,8 @@ that the monomials form a basis.
 
 Generalise to noncommutative (semi)rings
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,6 +68,15 @@ instance [CharZero R] : CharZero (MvPolynomial σ R) where
   cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
+
+section ExpChar
+
+variable [ExpChar R p]
+
+instance : ExpChar (MvPolynomial σ R) p := by
+  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+
+end ExpChar
 
 section Homomorphism
 

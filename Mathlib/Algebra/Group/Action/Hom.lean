@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pretransitive
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pretransitive
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Homomorphisms and group actions
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -42,8 +46,8 @@ See note [reducible non-instances]. -/
 @[to_additive]
 abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
-  one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..
-  mul_smul _ _ _ := by simpa [(· • ·)] using MulAction.mul_smul ..
+  one_smul _ := by simpa [(· • ·)] using one_smul ..
+  mul_smul _ _ _ := by simpa [(· • ·)] using mul_smul ..
 
 /-- An additive action of `M` on `α` and an additive monoid homomorphism `N → M` induce
 an additive action of `N` on `α`.

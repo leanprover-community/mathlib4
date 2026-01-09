@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets
@@ -23,6 +25,8 @@ quotient of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -116,7 +120,7 @@ protected def Subset (x y : PSet) : Prop :=
 instance : HasSubset PSet :=
   ⟨PSet.Subset⟩
 
-instance : IsRefl PSet (· ⊆ ·) :=
+instance : @Std.Refl PSet (· ⊆ ·) :=
   ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
 
 instance : IsTrans PSet (· ⊆ ·) :=
@@ -182,6 +186,9 @@ protected def Mem (y x : PSet.{u}) : Prop :=
 
 instance : Membership PSet PSet :=
   ⟨PSet.Mem⟩
+
+theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
+  Iff.rfl
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
@@ -252,8 +259,6 @@ theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
 theorem notMem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
-
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -308,8 +313,6 @@ theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
 @[simp]
 theorem notMem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]

@@ -3,12 +3,16 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # The category of additive commutative groups is preadditive.
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup
 
@@ -50,7 +54,7 @@ instance : Sub (M ⟶ N) where
 instance : SMul ℤ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance (P Q : AddCommGrpCat) : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (Hom.hom) ConcreteCategory.hom_injective

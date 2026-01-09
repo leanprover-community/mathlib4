@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
-import Mathlib.Data.Finset.CastCard
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+public import Mathlib.Data.Finset.CastCard
 
 /-!
 # Triangle removal lemma
@@ -18,6 +20,8 @@ In this file, we prove the triangle removal lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 open Finset Fintype Nat SzemerediRegularity
 
@@ -35,10 +39,10 @@ This definition is meant to be used for small values of `ε`, and in particular 
 of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
 `0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
-  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - min 1 ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
+  min (2 * ⌈4 / ε⌉₊ ^ 3)⁻¹ ((1 - min 1 ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3)
 
 lemma triangleRemovalBound_pos (hε : 0 < ε) : 0 < triangleRemovalBound ε := by
-  have : 0 < 1 - min 1 ε/4 := by have := min_le_left 1 ε; linarith
+  have : 0 < 1 - min 1 ε / 4 := by have := min_le_left 1 ε; linarith
   unfold triangleRemovalBound
   positivity
 
@@ -53,7 +57,7 @@ lemma triangleRemovalBound_mul_cube_lt (hε : 0 < ε) :
     _ < 1 := by norm_num
 
 lemma triangleRemovalBound_le (hε₁ : ε ≤ 1) :
-    triangleRemovalBound ε ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊)) ^ 3 := by
+    triangleRemovalBound ε ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 := by
   simp [triangleRemovalBound, hε₁]
 
 private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) := by
@@ -91,7 +95,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
   have : 0 ≤ 1 - 2 * (ε / 8) := by
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
-    _ ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
+    _ ≤ (1 - ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3 * card α ^ 3 := by
       gcongr; exact triangleRemovalBound_le hε₁
     _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) *
           (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) := by
@@ -110,7 +114,7 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
   let C := (P.sparsePairs G (ε / 4)).biUnion fun (U, V) ↦ G.interedges U V
   calc
     _ = (#((univ ×ˢ univ).filter fun (x, y) ↦
-          G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y) : ℝ) := by
+          G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε / 4)).Adj x y) : ℝ) := by
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
       · norm_cast
         rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
@@ -172,7 +176,7 @@ if `ε` is.
 
 This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
-def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure

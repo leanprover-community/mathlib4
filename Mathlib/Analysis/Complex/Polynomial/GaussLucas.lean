@@ -3,7 +3,9 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Aristotle AI
 -/
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Gauss-Lucas Theorem
@@ -12,6 +14,8 @@ In this file we prove Gauss-Lucas Theorem:
 the roots of the derivative of a nonconstant complex polynomial
 are included in the convex hull of the roots of the polynomial.
 -/
+
+@[expose] public section
 open scoped BigOperators Polynomial ComplexConjugate
 
 namespace Polynomial
@@ -43,8 +47,8 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
       suffices z ≠ w by simpa [sq_pos_iff, sub_eq_zero]
       rintro rfl
       simp_all
-    · rw [Multiset.toFinset_nonempty, ← P.map_id]
-      apply P.roots_ne_zero_of_splits _ (IsAlgClosed.splits _)
+    · rw [Multiset.toFinset_nonempty]
+      apply Splits.roots_ne_zero (IsAlgClosed.splits _)
       rwa [← pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
 
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
@@ -56,7 +60,6 @@ See also `rootSet_derivative_subset_convexHull_rootSet` below.
 theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     (hz : P.derivative.eval z = 0) :
     z = P.roots.toFinset.centerMass (P.derivRootWeight z) id := by
-  have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
   set weight : ℂ → ℝ := P.derivRootWeight z
   set s := P.roots.toFinset
   suffices ∑ x ∈ s, weight x • (z - x) = 0 by calc
@@ -82,7 +85,7 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     _ = conj (P.roots.map fun x ↦ 1 / (z - x)).sum := by
       simp only [Finset.sum_multiset_map_count, P.count_roots, s]
     _ = 0 := by
-      rw [← eval_derivative_div_eval_of_ne_zero_of_splits (IsAlgClosed.splits _) hzP]
+      rw [← (IsAlgClosed.splits _).eval_derivative_div_eval_of_ne_zero hzP]
       simp [hz]
 
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,

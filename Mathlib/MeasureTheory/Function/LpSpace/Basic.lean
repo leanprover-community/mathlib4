@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.NNNorm
-import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
+module
+
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 
 /-!
 # Lp space
@@ -53,6 +55,8 @@ The lemma `coeFn_add` states that the coercion of `f + g` coincides almost every
 of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to distinguish the
 function coercion from the coercion to almost everywhere defined functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -137,10 +141,8 @@ instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
 
 @[ext high]
 theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
-  cases f
-  cases g
-  simp only [Subtype.mk_eq_mk]
-  exact AEEqFun.ext h
+  ext
+  exact h
 
 theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
@@ -169,11 +171,11 @@ theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
 theorem eLpNorm_ne_top (f : Lp E p μ) : eLpNorm f p μ ≠ ∞ :=
   (eLpNorm_lt_top f).ne
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem stronglyMeasurable (f : Lp E p μ) : StronglyMeasurable f :=
   f.val.stronglyMeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem aestronglyMeasurable (f : Lp E p μ) : AEStronglyMeasurable f μ :=
   f.val.aestronglyMeasurable
 
@@ -288,7 +290,7 @@ theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f =
   cases hf with
   | inl hf =>
     rw [eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
-    exact Subtype.eq (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
+    exact Subtype.ext (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
   | inr hf =>
     exact absurd hf (eLpNorm_ne_top f)
 
@@ -378,7 +380,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
-            simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
+            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)

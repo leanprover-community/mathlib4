@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.SetTheory.Cardinal.Free
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Cardinality of free algebras
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Free
 This file contains some results about the cardinality of `FreeAlgebra`,
 parallel to that of `MvPolynomial`.
 -/
+
+public section
 
 universe u v
 

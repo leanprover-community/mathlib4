@@ -3,20 +3,27 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.CategoryTheory.Localization.StructuredArrow
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Localization.StructuredArrow
 
 /-!
 # Pointwise right derived functors
 
-We define the pointwise right derived functors using the notion
+We define pointwise right derived functors using the notion
 of pointwise left Kan extensions.
 
 We show that if `F : C ⥤ H` inverts `W : MorphismProperty C`,
 then it has a pointwise right derived functor.
 
+Note: the file `Mathlib/CategoryTheory/Functor/Derived/PointwiseLeftDerived.lean` was obtained
+by dualizing this file. These two files should be kept in sync.
+
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -159,7 +166,35 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
   intro X
   rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
   exact (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W
-    (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
+    (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension _
+
+lemma isRightDerivedFunctor_of_inverts
+    [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :
+    F'.IsRightDerivedFunctor e.inv W where
+  isLeftKanExtension :=
+    (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W e.symm).isLeftKanExtension
+
+instance [L.IsLocalization W] (hF : W.IsInvertedBy F) :
+    (Localization.lift F hF L).IsRightDerivedFunctor (Localization.fac F hF L).inv W :=
+  isRightDerivedFunctor_of_inverts W _ _
+
+variable {W} in
+lemma isIso_of_isRightDerivedFunctor_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) [RF.IsRightDerivedFunctor α W] :
+    IsIso α := by
+  have : α = (Localization.fac F hF L).inv ≫
+    whiskerLeft _ (rightDerivedUnique _ _ (Localization.fac F hF L).inv α W).hom := by simp
+  rw [this]
+  infer_instance
+
+variable {W} in
+lemma isRightDerivedFunctor_iff_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) :
+    RF.IsRightDerivedFunctor α W ↔ IsIso α :=
+  ⟨fun _ ↦ isIso_of_isRightDerivedFunctor_of_inverts RF α hF, fun _ ↦
+    isRightDerivedFunctor_of_inverts W RF (asIso α).symm⟩
 
 end
 

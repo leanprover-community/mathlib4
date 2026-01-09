@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Full and faithful functors
@@ -26,13 +28,15 @@ equivalence if and only if it is fully faithful and essentially surjective.
 
 -/
 
+@[expose] public section
+
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category E]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category* E]
 
 namespace Functor
 
@@ -50,6 +54,7 @@ class Faithful (F : C ⥤ D) : Prop where
 
 variable {X Y : C}
 
+@[grind inj]
 theorem map_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
@@ -212,7 +217,20 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
 
+/-- If `F` is fully faithful and `F ≅ G`, then `G` is fully faithful. -/
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.FullyFaithful where
+  preimage f := hF.preimage (e.hom.app _ ≫ f ≫ e.inv.app _)
+  map_preimage f := by simp [← NatIso.naturality_1 e]
+
 end
+
+variable (F) in
+lemma nonempty_iff_map_bijective :
+    Nonempty F.FullyFaithful ↔ ∀ (X Y : C), Function.Bijective (F.map : (X ⟶ Y) → _) :=
+  ⟨fun ⟨hF⟩ ↦ hF.map_bijective, fun hF ↦ by
+    have : F.Faithful := ⟨fun h ↦ (hF _ _).injective h⟩
+    have : F.Full := ⟨(hF _ _).surjective⟩
+    exact ⟨.ofFullyFaithful _⟩⟩
 
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :
@@ -301,15 +319,8 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
     map_id := by
       intro X
       apply G.map_injective
-      apply eq_of_heq
-      trans F.map (𝟙 X)
-      · exact h_map
-      · rw [F.map_id, G.map_id, h_obj X]
-    map_comp := by
-      intro X Y Z f g
-      refine G.map_injective <| eq_of_heq <| h_map.trans ?_
-      simp only [Functor.map_comp]
-      grind }
+      grind
+    map_comp := by grind }
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
 -- but importing `CategoryTheory.EqToHom` causes an import loop:

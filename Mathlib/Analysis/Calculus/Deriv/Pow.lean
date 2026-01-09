@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Pow
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Pow
 
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
@@ -20,6 +22,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, power
 -/
+
+public section
 
 variable {𝕜 𝔸 : Type*}
 

@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # The Chevalley–Warning theorem
@@ -32,6 +34,8 @@ and `q` is notation for the cardinality of `K`.
 - `σ` is the indexing type for the variables of a multivariate polynomial ring over `K`
 
 -/
+
+public section
 
 
 universe u v

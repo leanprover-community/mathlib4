@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Disjointed
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Order.Ring.Prod
-import Mathlib.Data.Int.Interval
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Zify
+module
+
+public import Mathlib.Algebra.Order.Disjointed
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Order.Ring.Prod
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Zify
 
 /-!
 # Decomposing a locally finite ordered ring into boxes
@@ -20,6 +22,8 @@ differences of consecutive intervals.
 
 We don't need the full ring structure, only that there is an order embedding `ℤ → `
 -/
+
+@[expose] public section
 
 /-! ### General locally finite ordered ring -/
 
@@ -85,7 +89,7 @@ end Prod
 namespace Int
 variable {x : ℤ × ℤ}
 
-attribute [norm_cast] toNat_ofNat
+attribute [norm_cast] toNat_natCast
 
 lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by

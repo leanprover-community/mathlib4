@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions
@@ -20,6 +22,8 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
@@ -29,7 +33,7 @@ namespace Pi
 @[to_additive]
 instance smul' [∀ i, SMul (α i) (β i)] : SMul (∀ i, α i) (∀ i, β i) where smul s x i := s i • x i
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : s • x = fun i ↦ s i • x i :=
   rfl
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -15,6 +17,8 @@ where `C` is endowed with a Grothendieck topology `J`.
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.GrothendieckTopology
@@ -156,7 +160,7 @@ theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
 theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P ⟶ Q) = 0 := by
   ext : 2
   refine colimit.hom_ext (fun S => ?_)
-  erw [comp_zero, colimit.ι_map, J.diagramNatTrans_zero, zero_comp]
+  simp [plusMap]
 
 @[simp, reassoc]
 theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :

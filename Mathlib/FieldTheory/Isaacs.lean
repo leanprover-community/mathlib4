@@ -3,9 +3,11 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.CosetCover
+module
+
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism
@@ -27,6 +29,8 @@ The American Mathematical Monthly
 
 -/
 
+public section
+
 namespace Field
 
 open Polynomial IntermediateField
@@ -37,12 +41,13 @@ variable [alg : Algebra.IsAlgebraic F E]
 theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpoly F x) = 0) :
     Nonempty (E →ₐ[F] K) := by
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
-  let p := (S.prod <| minpoly F).map (algebraMap F K)
+  let p := (S.prod <| fun x ↦ (minpoly F x).map (algebraMap F K))
   let K' := SplittingField p
-  have splits s (hs : s ∈ S) : (minpoly F s).Splits (algebraMap F K') := by
-    apply splits_of_splits_of_dvd _
-      (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ minpoly.ne_zero <| (alg.isIntegral).1 _)
-      ((splits_map_iff _ _).mp <| SplittingField.splits p) (Finset.dvd_prod_of_mem _ hs)
+  have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
+    apply (SplittingField.splits p).of_dvd (map_ne_zero (Finset.prod_ne_zero_iff.mpr
+      fun _ _ ↦ Polynomial.map_ne_zero (minpoly.ne_zero <| alg.isIntegral.1 _))) ?_
+    rw [IsScalarTower.algebraMap_eq F K K', ← Polynomial.map_map, map_dvd_map']
+    exact Finset.dvd_prod_of_mem _ hs
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'
@@ -112,6 +117,6 @@ theorem _root_.IsAlgClosure.of_exist_roots
     have ⟨σ⟩ := nonempty_algHom_of_exist_roots fun x : p.SplittingField ↦
       have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
       h _ (minpoly.monic this) (minpoly.irreducible this)
-    splits_of_algHom (SplittingField.splits _) σ
+    Splits.of_algHom (SplittingField.splits _) σ
 
 end Field

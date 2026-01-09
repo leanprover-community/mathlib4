@@ -3,11 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -35,6 +36,8 @@ Instances are defined:
   of commutative rings is a *local* morphism.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -151,7 +154,7 @@ instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
     intro φ
     obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff φ) <;>
         [left; right] <;>
-      · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
+      · refine .of_mul_eq_one _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
 
 -- TODO(jmc): once adic topology lands, show that this is complete
@@ -174,7 +177,7 @@ theorem map.isLocalHom : IsLocalHom (map (σ := σ) f) :=
     have : IsUnit (constantCoeff ψ.val) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
-    exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
+    exact .of_mul_eq_one (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
 
 end IsLocalRing
 

@@ -3,10 +3,14 @@ Copyright (c) 2020 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.AbelLimit
-import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
+module
+
+public import Mathlib.Analysis.Complex.AbelLimit
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 
 /-! ### Leibniz's series for `π` -/
+
+public section
 
 namespace Real
 

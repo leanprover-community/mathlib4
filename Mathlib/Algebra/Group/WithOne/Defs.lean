@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
@@ -24,6 +26,8 @@ information about these structures (which are not that standard in informal math
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
+
+@[expose] public section
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:

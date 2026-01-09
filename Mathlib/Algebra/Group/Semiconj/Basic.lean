@@ -3,13 +3,17 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.Semiconj.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Lemmas about semiconjugate elements of a group
 
 -/
+
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

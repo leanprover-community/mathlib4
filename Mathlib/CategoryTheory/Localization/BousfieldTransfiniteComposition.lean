@@ -3,17 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
-# LeftBousfield.W is stable under transfinite compositions
+# ObjectProperty.isLocal is stable under transfinite compositions
 
-If `P : ObjectProperty C`, then `Localization.LeftBousfield.W P : MorphismProperty C`
+If `P : ObjectProperty C`, then `P.isLocal : MorphismProperty C`
 is stable under transfinite compositions.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -23,12 +27,12 @@ open Limits Opposite
 
 variable {C : Type u} [Category.{v} C]
 
-namespace Localization.LeftBousfield
+namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
 instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
-    (W P).IsStableUnderTransfiniteCompositionOfShape J where
+    P.isLocal.IsStableUnderTransfiniteCompositionOfShape J where
   le := fun X Y f ⟨hf⟩ Z hZ ↦ by
     refine ⟨fun g₁ g₂ h ↦ hf.isColimit.hom_ext (fun j ↦ ?_), fun g ↦ ?_⟩
     · dsimp at h ⊢
@@ -61,8 +65,8 @@ instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT 
         simp only [← hf.fac, Category.assoc, hf.isColimit.fac c ⊥, c, σ,
           d.sectionsMk_val_op_bot, Iso.inv_hom_id_assoc]⟩
 
-instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} (W P) where
+instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} P.isLocal where
 
-end Localization.LeftBousfield
+end ObjectProperty
 
 end CategoryTheory

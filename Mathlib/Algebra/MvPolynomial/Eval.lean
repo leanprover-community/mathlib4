@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials
@@ -38,6 +40,8 @@ In the definitions below, we use the following notation:
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -184,8 +188,7 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
 
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
-  simp only [monomial_eq, RingHom.map_mul, eval₂Hom_C, Finsupp.prod, map_prod,
-    RingHom.map_pow, eval₂Hom_X']
+  simp only [monomial_eq, map_mul, eval₂Hom_C, Finsupp.prod, map_prod, map_pow, eval₂Hom_X']
 
 section
 
@@ -368,6 +371,14 @@ theorem map_eval₂ (f : R →+* S₁) (g : S₂ → MvPolynomial S₃ R) (p : M
     rw [eval₂_mul, (map f).map_mul, hp, (map f).map_mul, map_X, eval₂_mul, eval₂_X, eval₂_X,
       comp_apply]
 
+lemma eval₂_map_comp_C {ι : Type*} (f : R →+* S₁) (h : ι → MvPolynomial σ S₁)
+    (p : MvPolynomial ι R) : eval₂ ((map f).comp C) h p = eval₂ C h (map f p) := by
+  induction p using MvPolynomial.induction_on <;> simp_all
+
+lemma map_eval {S₂ : Type*} [CommSemiring S₂] (q : S₁ →+* S₂) (g : σ → S₁) (p : MvPolynomial σ S₁) :
+    q (eval g p) = eval (q ∘ g) (map q p) := by
+  rw [← eval₂_eq_eval_map, ← eval₂_id, eval₂_comp_right, map_id]
+
 theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map f p) = f (coeff m p) := by
   classical
   apply MvPolynomial.induction_on p <;> clear p
@@ -397,7 +408,7 @@ theorem map_surjective (hf : Function.Surjective f) :
   | add a b ha hb =>
     obtain ⟨a, rfl⟩ := ha
     obtain ⟨b, rfl⟩ := hb
-    exact ⟨a + b, RingHom.map_add _ _ _⟩
+    exact ⟨a + b, map_add _ _ _⟩
 
 theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
   ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
@@ -445,7 +456,7 @@ theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.sup
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
   contrapose! hx
-  rw [coeff_map, hx, RingHom.map_zero]
+  rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
     (map f p).support = p.support := by
