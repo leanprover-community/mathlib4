@@ -122,10 +122,10 @@ theorem comm_left (h : ![a, b, c] ∼ ![a', b', c']) :
     ![b, a, c] ∼ ![b', a', c'] := by
   have hl : ![b, a, c] = ![a, b, c] ∘ Equiv.swap 0 1 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   have hr : ![b', a', c'] = ![a', b', c'] ∘ Equiv.swap 0 1 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   grind [index_equiv]
 
 /-- Swapping the last two vertices preserves similarity. -/
@@ -133,10 +133,10 @@ theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
     ![a, c, b] ∼ ![a', c', b'] := by
   have hl : ![a, c, b] = ![a, b, c] ∘ Equiv.swap 1 2 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   have hr : ![a', c', b'] = ![a', b', c'] ∘ Equiv.swap 1 2 := by
     ext i
-    fin_cases i <;> simp; rfl
+    fin_cases i <;> simp [Equiv.swap_apply_of_ne_of_ne]
   grind [index_equiv]
 
 /-- Reversing the order of vertices preserves similarity. -/
@@ -189,34 +189,16 @@ lemma similar_iff_exists_pairwise_dist_eq :
 lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
     (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_dist_eq]
-  constructor
-  · intro h
-    rcases h with ⟨r_nn, hr_ne, hdist⟩
-    set r : ℝ := r_nn.toReal with hr
-    have hr_pos : 0 < r := by positivity
-    use r
-  · intro h
-    rcases h with ⟨r, hr_pos, hdist⟩
-    set r_nn : ℝ≥0 := Real.toNNReal r with hr_nn
-    have hr_ne : r_nn ≠ 0 := by grind [Real.toNNReal_eq_zero]
-    have hr : r = r_nn.toReal := by grind [Real.coe_toNNReal']
-    use r_nn
-    grind
+  simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
+  grind
 
 /-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
 lemma similar_iff_exists_pos_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_dist_eq]
-  constructor
-  · rintro ⟨r, hr0, h⟩
-    refine ⟨r, NNReal.coe_pos.mpr ?_, h⟩
-    positivity
-  · rintro ⟨r, hr0, h⟩
-    refine ⟨Real.toNNReal r, by simp [hr0], ?_⟩
-    intro i₁ i₂ hi
-    rw [h hi, Real.coe_toNNReal]
-    positivity
+  simp_rw [← pos_iff_ne_zero, NNReal.exists, ← NNReal.coe_pos, NNReal.coe_mk]
+  grind
 
 namespace Similar
 
