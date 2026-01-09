@@ -302,4 +302,11 @@ lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := b
   contrapose! hs
   simpa [hs] using IsMeagre.empty
 
+lemma residualEq_empty {s : Set X} : s =ᶠ[residual X] (∅ : Set X) ↔ IsMeagre s := by
+  rw [← Filter.compl_eventuallyEq_iff, Set.compl_empty, Filter.eventuallyEq_univ]
+  rfl
+
+/-- A set is called nowhere meagre if its intersection with each nonempty open set is not meagre. -/
+def NowhereMeagre [TopologicalSpace X] (s : Set X) :=
+  ∀ {o : Set X}, IsOpen o → o.Nonempty → ¬IsMeagre (s ∩ o)
 end IsMeagre

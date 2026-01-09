@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
+import Mathlib.Topology.Baire.BaireMeasurable
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -518,6 +519,31 @@ theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [Op
   rcases hs.measurablySeparable hsc disjoint_compl_right with ⟨u, hsu, hdu, hmu⟩
   obtain rfl : s = u := hsu.antisymm (disjoint_compl_left_iff_subset.1 hdu)
   exact hmu
+
+/-- The intersection of two analytic sets is nonempty if one is nowhere meagre and the other is
+nonmeagre. -/
+lemma AnalyticSet.inter_nonempty_of_nowhereMeagre [T2Space α] {s t : Set α}
+    (hs : AnalyticSet s) (ht : AnalyticSet t)
+    (hs' : ¬IsMeagre s) (ht' : NowhereMeagre t) : (s ∩ t).Nonempty := by
+  borelize α
+  by_contra! empty
+  have disjoint : Disjoint s t := by
+    rwa [Set.disjoint_iff_inter_eq_empty]
+  have ⟨b, sb, tb, hb⟩ :=
+      AnalyticSet.measurablySeparable hs ht disjoint
+  refine Set.Nonempty.not_disjoint ?_ tb
+  apply nonempty_of_not_isMeagre
+  obtain ⟨u, isOpen_u, hu⟩ := hb.residualEq_isOpen
+  have u_nonempty : u.Nonempty := by
+    contrapose! hs' with empty
+    grw [sb]
+    rw [← residualEq_empty]
+    exact empty ▸ hu
+  have := ht' isOpen_u u_nonempty
+  contrapose! this
+  rw [← residualEq_empty] at ⊢ this
+  refine Filter.EventuallyEq.trans ?_ this
+  gcongr
 
 end MeasureTheory
 
