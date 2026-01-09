@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 import Mathlib.Algebra.Central.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
