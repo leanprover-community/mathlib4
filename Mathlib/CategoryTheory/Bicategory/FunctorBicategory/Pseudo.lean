@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Product
 
 /-!
 # The bicategory of pseudofunctors
@@ -85,5 +86,31 @@ scoped instance : Bicategory (Pseudofunctor B C) where
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end StrongTrans
+
+open StrongTrans
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
+
+/-- Object-wise evaluation as a strict pseudofunctor from `B ⥤ᵖ C` to `C`. -/
+@[simps!] -- remove eqToIso simps...!
+def eval (b : B) : StrictPseudofunctor (B ⥤ᵖ C) C := .mk' {
+  obj P := P.obj b
+  map θ := θ.app b
+  map₂ Γ := Γ.as.app b }
+
+/-- The evaluation pseudofunctor, sending `X : B` and `F : B ⥤ᵖ C` to `F.obj X`. It is
+pseudofunctorial in both `X` and `F`. -/
+@[simps!]
+def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
+  obj b := (eval C b).toPseudofunctor
+  map f := {
+    app P := P.map f
+    naturality θ := (θ.naturality f).symm }
+  map₂ η :=
+    { as :=
+      { app P := P.map₂ η
+        naturality θ := by simp [map₂_whiskerRight_app] }}
+  mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
+  mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
 
 end CategoryTheory.Pseudofunctor

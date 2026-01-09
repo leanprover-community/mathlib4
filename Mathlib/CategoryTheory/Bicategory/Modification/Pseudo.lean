@@ -56,13 +56,18 @@ structure Modification where
       F.map f ◁ app b ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ app a ▷ G.map f := by cat_disch
 
-attribute [reassoc (attr := simp)] Modification.naturality
+attribute [to_app (attr := reassoc)] Modification.naturality
 
 variable {η θ}
 
 namespace Modification
 
 variable (Γ : Modification η θ)
+
+@[to_app (attr := reassoc (attr := simp))]
+theorem map_whiskerLeft_app {a b : B} (f : a ⟶ b) :
+    F.map f ◁ Γ.app b = (η.naturality f).hom ≫ Γ.app a ▷ G.map f ≫ (θ.naturality f).inv := by
+  simp [← naturality_assoc]
 
 /-- The modification between the corresponding strong transformation of the underlying oplax
 functors. -/
@@ -94,13 +99,13 @@ section
 
 variable {a b c : B} {a' : C}
 
-@[reassoc (attr := simp)]
+@[to_app (attr := reassoc)]
 theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
     f ◁ F.map g ◁ Γ.app c ≫ f ◁ (θ.naturality g).hom =
       f ◁ (η.naturality g).hom ≫ f ◁ Γ.app b ▷ G.map g :=
   Oplax.StrongTrans.Modification.whiskerLeft_naturality Γ.toOplax _ _
 
-@[reassoc (attr := simp)]
+@[to_app (attr := reassoc (attr := simp))]
 theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
     F.map f ◁ Γ.app b ▷ g ≫ (α_ _ _ _).inv ≫ (θ.naturality f).hom ▷ g =
       (α_ _ _ _).inv ≫ (η.naturality f).hom ▷ g ≫ Γ.app a ▷ G.map f ▷ g :=
