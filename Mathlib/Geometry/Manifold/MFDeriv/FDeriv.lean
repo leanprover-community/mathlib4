@@ -15,7 +15,7 @@ manifold structure, coincides with the usual Fréchet derivative `fderiv`. In th
 this and related statements.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

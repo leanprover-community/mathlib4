@@ -17,7 +17,7 @@ that hold when the coefficient (semi)ring has no zero divisors.
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Equiv
 
