@@ -589,7 +589,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
 /-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i ∈ s, 2^i
+  invFun s := ∑ i ∈ s, 2 ^ i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 

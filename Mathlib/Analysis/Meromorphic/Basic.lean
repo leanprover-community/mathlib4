@@ -5,7 +5,6 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
@@ -647,7 +646,7 @@ theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelS
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
   exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
-    (by simp [- mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
+    (by simp [-mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
 
 @[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
 

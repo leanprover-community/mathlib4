@@ -5,9 +5,9 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
 module
 
-public meta import Mathlib.Data.Rat.Cast.Order
-public meta import Mathlib.Data.Real.Basic
-public meta import Mathlib.Tactic.Qify
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
 
 /-!
 # `rify` tactic
