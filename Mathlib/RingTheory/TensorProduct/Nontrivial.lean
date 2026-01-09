@@ -17,7 +17,7 @@ This file contains some more results on nontriviality of tensor product of algeb
 
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

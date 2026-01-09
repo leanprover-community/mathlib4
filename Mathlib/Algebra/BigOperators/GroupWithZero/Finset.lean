@@ -17,7 +17,7 @@ This file contains the results concerning the interaction of finset big operator
 zero.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
