@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -109,18 +110,28 @@ theorem map_comap (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
-theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
+theorem comap_map_of_isPrimary_disjoint
+    (I : Ideal R) (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
-  refine le_antisymm ?_ Ideal.le_comap_map
-  refine (fun a ha => ?_)
-  obtain ⟨⟨b, s⟩, h⟩ := (mem_map_algebraMap_iff M S).1 (Ideal.mem_comap.1 ha)
+  have key : Disjoint (M : Set R) I.radical := by
+    contrapose! hM
+    rw [Set.not_disjoint_iff] at hM ⊢
+    obtain ⟨a, ha, k, hk⟩ := hM
+    exact ⟨a ^ k, pow_mem ha k, hk⟩
+  refine le_antisymm (fun a ha ↦ ?_) Ideal.le_comap_map
+  rw [Ideal.mem_comap, IsLocalization.mem_map_algebraMap_iff M S] at ha
+  obtain ⟨⟨b, s⟩, h⟩ := ha
   replace h : algebraMap R S (s * a) = algebraMap R S b := by
     simpa only [← map_mul, mul_comm] using h
-  obtain ⟨c, hc⟩ := (eq_iff_exists M S).1 h
-  have : ↑c * ↑s * a ∈ I := by
-    rw [mul_assoc, hc]
+  obtain ⟨c, hc⟩ := (IsLocalization.eq_iff_exists M S).1 h
+  have : a * (c * s : M) ∈ I := by
+    rw [mul_comm, Submonoid.coe_mul, mul_assoc, hc]
     exact I.mul_mem_left c b.2
-  exact (hI.mem_or_mem this).resolve_left fun hsc => hM.le_bot ⟨(c * s).2, hsc⟩
+  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
+
+theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
+    Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I :=
+  comap_map_of_isPrimary_disjoint M S I hI.isPrimary hM
 
 /-- If `S` is the localization of `R` at a submonoid, the ordering of ideals of `S` is
 embedded in the ordering of ideals of `R`. -/
