@@ -203,34 +203,29 @@ lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} 
 lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Prop}
     {x : A} (mem : x ∈ ⨆ i, S i)
     (basic : ∀ i, ∀ a ∈ S i, motive a)
-    (zero : motive 0) (one : motive 1)
     (add : ∀ a b, motive a → motive b → motive (a + b))
     (mul : ∀ a b, motive a → motive b → motive (a * b))
     (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
   let T : Subalgebra R A :=
   { carrier := {x | motive x}
     mul_mem' {a b} := mul a b
-    one_mem' := one
     add_mem' {a b} := add a b
-    zero_mem' := zero
     algebraMap_mem' := algebraMap }
   suffices iSup S ≤ T from this mem
   rwa [iSup_le_iff]
 
-set_option backward.proofsInPublic true in
 /-- A dependent version of `Subalgebra.iSup_induction`. -/
 @[elab_as_elim]
 theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     {x : A} (mem : x ∈ ⨆ i, S i)
     (basic : ∀ (i) (x) (hx : x ∈ S i), motive x (mem_iSup_of_mem i hx))
-    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
-    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem (⨆ i, S i) ‹_›)) :
     motive x mem := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
   exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
-    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) ⟨_, zero⟩ ⟨_, one⟩ (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
+    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
     (fun _ _ h h' ↦ ⟨_, mul _ _ _ _ h.2 h'.2⟩) fun _ ↦ ⟨_, algebraMap _⟩
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩

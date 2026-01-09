@@ -56,7 +56,7 @@ section NeImp
 
 variable {r : α → α → Prop}
 
-theorem IsRefl.reflexive [IsRefl α r] : Reflexive r := fun x ↦ IsRefl.refl x
+theorem Std.Refl.reflexive [Std.Refl r] : Reflexive r := fun x ↦ Std.Refl.refl x
 
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
@@ -69,9 +69,9 @@ theorem Reflexive.ne_imp_iff (h : Reflexive r) {x y : α} : x ≠ y → r x y �
   ⟨h.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
-then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[IsRefl α r]`. -/
-theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
-  IsRefl.reflexive.ne_imp_iff
+then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[Std.Refl r]`. -/
+theorem reflexive_ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
+  Std.Refl.reflexive.ne_imp_iff
 
 theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
   grind [Reflexive, Subrelation]
@@ -324,7 +324,7 @@ theorem mono {p : α → α → Prop} (hp : Subrelation r p) : Subrelation (Refl
   | a, _, ReflGen.refl => by rfl
   | a, b, single h => single <| hp h
 
-instance : IsRefl α (ReflGen r) :=
+instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
@@ -598,7 +598,7 @@ instance : Trans r (ReflTransGen r) (ReflTransGen r) :=
 instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
   ⟨tail⟩
 
-instance : IsRefl α (ReflTransGen r) :=
+instance : Std.Refl (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
 
 instance : IsTrans α (ReflTransGen r) :=

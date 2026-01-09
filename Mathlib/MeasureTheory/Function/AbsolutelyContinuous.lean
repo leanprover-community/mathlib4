@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.Order.SuccPred.IntervalSucc
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Absolutely Continuous Functions
@@ -25,13 +26,13 @@ and `AbsolutelyContinuousOnInterval.disjWithin` and prove its equivalence with t
 definition in `absolutelyContinuousOnInterval_iff`.
 
 We use the filter version to prove that absolutely continuous functions are closed under
-* addition - `AbsolutelyContinuousOnInterval.fun_add`, `AbsolutelyContinuousOnInterval.add`;
-* negation - `AbsolutelyContinuousOnInterval.fun_neg`, `AbsolutelyContinuousOnInterval.neg`;
-* subtraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
+* addition - `AbsolutelyContinuousOnInterval.add`;
+* negation - `AbsolutelyContinuousOnInterval.neg`;
+* subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
 `AbsolutelyContinuousOnInterval.const_mul`;
-* multiplication - `AbsolutelyContinuousOnInterval.fun_smul`, `AbsolutelyContinuousOnInterval.smul`,
-`AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
+* multiplication - `AbsolutelyContinuousOnInterval.smul`,
+`AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
@@ -43,8 +44,10 @@ We use the `ε`-`δ` definition to prove that
 
 We conclude that
 * absolutely continuous functions are a.e. differentiable -
-`AbsolutelyContinuousOnInterval.ae_differentiableAt`.
-
+`AbsolutelyContinuousOnInterval.ae_differentiableAt`;
+* if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
+is absolutely continuous on `uIcc a b` -
+`IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 ## Tags
 absolutely continuous
 -/
@@ -53,7 +56,7 @@ absolutely continuous
 
 variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
 
-open Set Filter Function
+open Set Filter Function MeasureTheory
 
 open scoped Topology NNReal
 
@@ -97,6 +100,50 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
   grind [disjWithin]
 
+lemma uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
+    (hnI : (n, I) ∈ disjWithin a b) {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
+  simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
+  have := hnI.left i hi
+  dsimp only [uIoc]; gcongr 1
+  · simp only [le_inf_iff]; tauto
+  · simp only [sup_le_iff]; tauto
+
+lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ}
+    (hnI : (n, I) ∈ disjWithin a b) :
+    (⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2) ⊆ uIoc a b := by
+  simp only [iUnion_subset_iff, Finset.mem_range]
+  exact fun i hi ↦ uIoc_subset_of_mem_disjWithin hnI hi
+
+lemma tendsto_volume_totalLengthFilter_nhds_zero :
+    Tendsto (fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume (⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2))
+    totalLengthFilter (𝓝 0) := by
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
+  · convert ENNReal.tendsto_ofReal (Filter.tendsto_comap)
+    simp
+  · intro; simp
+  · intro E
+    simp only
+    grw [measure_biUnion_finset_le]
+    rw [ENNReal.ofReal_sum_of_nonneg (fun _ _ ↦ dist_nonneg)]
+    apply Eq.le
+    apply Finset.sum_congr rfl
+    simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
+
+lemma tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero (a b : ℝ) :
+    Tendsto (fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume.restrict (uIoc a b)
+        (⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2))
+      (totalLengthFilter ⊓ 𝓟 (disjWithin a b))
+      (𝓝 0) := by
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (h := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume (⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2))
+  · apply tendsto_volume_totalLengthFilter_nhds_zero.mono_left
+    simp
+  · intro; simp
+  · intro E
+    simp only [Finset.mem_range]
+    apply Measure.restrict_le_self
+
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
 `∑ i ∈ Finset.range n, dist (f (a i)) (f (b i))` tendsto `𝓝 0` wrt `totalLengthFilter` restricted
@@ -136,40 +183,28 @@ theorem mono (hf : AbsolutelyContinuousOnInterval f a b) (habcd : uIcc c d ⊆ u
 
 variable {f g : ℝ → F}
 
-theorem fun_add (hf : AbsolutelyContinuousOnInterval f a b)
+@[to_fun]
+theorem add (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x + g x) a b := by
-  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.add hg)
+    AbsolutelyContinuousOnInterval (f + g) a b := by
+  apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using Tendsto.add hf hg)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · rw [← Finset.sum_add_distrib]
     gcongr
     exact dist_add_add_le _ _ _ _
 
-theorem add (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f + g) a b :=
-  hf.fun_add hg
-
-theorem fun_neg (hf : AbsolutelyContinuousOnInterval f a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ -(f x)) a b := by
+@[to_fun]
+theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
+    AbsolutelyContinuousOnInterval (-f) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
   · simp
 
-theorem neg (hf : AbsolutelyContinuousOnInterval f a b) :
-    AbsolutelyContinuousOnInterval (-f) a b :=
-  hf.fun_neg
-
-theorem fun_sub (hf : AbsolutelyContinuousOnInterval f a b)
-    (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x - g x) a b := by
-  simp_rw [fun x ↦ show f x - g x = f x + (-(g x)) by abel]
-  exact hf.fun_add (hg.fun_neg)
-
+@[to_fun]
 theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
     (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f - g) a b :=
-  hf.fun_sub hg
+    AbsolutelyContinuousOnInterval (f - g) a b := by
+  simpa [sub_eq_add_neg] using hf.add (hg.neg)
 
 theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -215,10 +250,11 @@ theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
 
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+@[to_fun]
+theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
     {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x • g x) a b := by
+    AbsolutelyContinuousOnInterval (f • g) a b := by
   obtain ⟨C, hC⟩ := hf.exists_bound
   obtain ⟨D, hD⟩ := hg.exists_bound
   unfold AbsolutelyContinuousOnInterval at hf hg
@@ -243,27 +279,13 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
       rw [dist_zero_right]
       exact hD _ (hnI.left i hi |>.right)
 
-/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
-on `uIcc a b`. -/
-theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
-    {f : ℝ → M} {g : ℝ → F}
-    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (f • g) a b :=
-  hf.fun_smul hg
-
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_mul {f g : ℝ → ℝ}
-    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
-  hf.fun_smul hg
-
-/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
-on `uIcc a b`. -/
+@[to_fun]
 theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f * g) a b :=
-  hf.fun_mul hg
+  hf.smul hg
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K : ℝ≥0}
@@ -344,7 +366,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           linarith [@hp₁ i (i + 1) (by lia)]
         linarith [mem_Icc.mp (hp₂ p.1), mem_Icc.mp (hp₂ 0)]
     -- Reduce edist in the goal to dist and clear up
-    have veq: (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
+    have veq : (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
       rw [ENNReal.toReal_sum (by simp [edist_ne_top])]
       simp_rw [← dist_edist]; congr; ext i; nth_rw 1 [dist_comm]
@@ -374,5 +396,51 @@ theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
   hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
+
+/-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
+absolutely continuous on `uIcc a b`. -/
+theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ}
+    {a b c : ℝ} (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
+    AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
+  -- Step 1: Use `MeasureTheory.tendsto_setLIntegral_zero` to conclude that the function sending
+  -- `E` to `∫⁻ (x : ℝ) in s E, ‖f x‖ₑ ∂volume.restrict (uIoc a b))` tends to `0` along
+  -- `totalLengthFilter ⊓ 𝓟 (disjWithin a b)`.
+  let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
+  have : Tendsto (fun i ↦ ∫⁻ (x : ℝ) in s i, ‖f x‖ₑ ∂volume.restrict (uIoc a b))
+      (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0) :=
+    tendsto_setLIntegral_zero
+    (ne_of_lt <| intervalIntegrable_iff.mp h |>.hasFiniteIntegral)
+    (tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero _ _)
+  -- Step 2: Use the lintegral in Step 1 to bound the sum of the distances between
+  -- `∫ v in c..(E.2 i).2, f v` and `∫ v in c..(E.2 i).2, f v` that occurs in the definition
+  -- of absolutely continuous.
+  have := ENNReal.toReal_zero ▸ (ENNReal.continuousAt_toReal (by simp)).tendsto.comp this
+  refine squeeze_zero' ?_ ?_ this
+  · filter_upwards with (n, I)
+    exact Finset.sum_nonneg (fun _ _ ↦ dist_nonneg)
+  simp only [comp_apply, s]
+  have : ∀ᶠ (E : ℕ × (ℕ → ℝ × ℝ)) in totalLengthFilter ⊓ 𝓟 (disjWithin a b),
+      E ∈ disjWithin a b :=
+    eventually_inf_principal.mpr (by simp)
+  filter_upwards [this] with (n, I) hnI
+  obtain ⟨hnI1, hnI2⟩ := mem_setOf_eq ▸ hnI
+  simp only
+  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
+      integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
+  · refine Finset.sum_le_sum (fun i hi ↦ ?_)
+    rw [Real.dist_eq,
+        intervalIntegral.integral_interval_sub_left
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc])
+          (by apply IntervalIntegrable.mono_set' h; grind [uIoc, uIcc]),
+        Measure.restrict_restrict_of_subset
+          (uIoc_subset_of_mem_disjWithin hnI (Finset.mem_range.mp hi)),
+        intervalIntegral.integral_symm, abs_neg,
+        intervalIntegral.abs_intervalIntegral_eq]
+    exact abs_integral_le_integral_abs
+  · intro i hi
+    unfold IntegrableOn
+    have h_subset := uIoc_subset_of_mem_disjWithin hnI (Finset.mem_range.mp hi)
+    rw [Measure.restrict_restrict_of_subset h_subset]
+    exact IntegrableOn.mono_set h.def'.norm h_subset |>.integrable
 
 end AbsolutelyContinuousOnInterval

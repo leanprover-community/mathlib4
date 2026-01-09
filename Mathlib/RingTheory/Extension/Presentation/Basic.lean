@@ -111,8 +111,6 @@ lemma fg_ker [Finite σ] : P.ker.FG := by
   use (Set.finite_range P.relation).toFinset
   simp [span_range_relation_eq_ker]
 
-@[deprecated (since := "2025-05-27")] alias ideal_fg_of_isFinite := fg_ker
-
 /-- If a presentation is finite, the corresponding quotient is
 of finite presentation. -/
 instance [Finite σ] [Finite ι] : FinitePresentation R P.Quotient :=
@@ -159,6 +157,20 @@ def ofFinitePresentation [FinitePresentation R S] :
   (exists_presentation_fin R S).choose_spec.choose_spec.some
 
 section Construction
+
+/-- Transport a presentation along an algebra isomorphism. -/
+@[simps toGenerators relation]
+def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) :
+    Presentation R T ι σ where
+  __ := Generators.ofAlgEquiv P.toGenerators e
+  relation i := P.relation i
+  span_range_relation_eq_ker := by simp [P.span_range_relation_eq_ker]
+
+@[simp]
+lemma dimension_ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) : (P.ofAlgEquiv e).dimension = P.dimension :=
+  rfl
 
 /-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
 noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :

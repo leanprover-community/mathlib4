@@ -119,9 +119,6 @@ theorem Finset.card_lt_univ_of_notMem [Fintype α] {s : Finset α} {x : α} (hx 
     #s < Fintype.card α :=
   card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
 
-@[deprecated (since := "2025-05-23")]
-alias Finset.card_lt_univ_of_not_mem := Finset.card_lt_univ_of_notMem
-
 theorem Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
     #s < Fintype.card α ↔ s ≠ Finset.univ :=
   s.card_le_univ.lt_iff_ne.trans (not_congr s.card_eq_iff_eq_univ)
@@ -242,9 +239,6 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
     _ < card β :=
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
-
-@[deprecated (since := "2025-05-23")]
-alias card_lt_of_injective_of_not_mem := card_lt_of_injective_of_notMem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
@@ -423,7 +417,7 @@ namespace Finite
 
 variable [Finite α]
 
-theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [Std.Irrefl r] :
     WellFounded r := by
   classical
   cases nonempty_fintype α
