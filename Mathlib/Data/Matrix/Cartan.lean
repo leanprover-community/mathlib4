@@ -299,8 +299,7 @@ theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by
 
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by
   intro hs
-  have h01 : (0 : Fin 2) ≠ 1 := by decide
-  have := hs h01
+  have := hs (i := 0) (j := 1) (by decide)
   rcases this with h | h <;> simp_all [G₂]
 end Properties
 
