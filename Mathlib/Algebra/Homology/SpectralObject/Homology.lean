@@ -172,7 +172,7 @@ lemma dKernelSequence_exact :
   obtain ⟨A₂, π₂, _, y₁, hy₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄
     f₂₃ h₂₃ _ rfl).exact 0).exact_up_to_refinements y₂ hy₂'.symm
   dsimp [sequenceΨ] at y₁ hy₁
-  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _ , y₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅, ?_⟩
+  refine ⟨A₂, π₂ ≫ π₁, inferInstance, y₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅, ?_⟩
   rw [assoc, assoc, hy₂, reassoc_of% hy₁,
     X.πE_EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
     (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) (by ext <;> simp; rfl)]
