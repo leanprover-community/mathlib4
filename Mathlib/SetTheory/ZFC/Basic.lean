@@ -231,7 +231,7 @@ instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : IsRefl ZFSet (· ⊆ ·) :=
+instance : @Std.Refl ZFSet (· ⊆ ·) :=
   ⟨fun _ _ => id⟩
 
 instance : IsTrans ZFSet (· ⊆ ·) :=

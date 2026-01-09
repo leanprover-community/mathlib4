@@ -215,8 +215,7 @@ end Torsion
 variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
-  finite_torsion_of_isSMulRegular _ _ <|
-    .of_right_eq_zero_of_smul fun _ ↦ (nsmul_eq_zero_iff hn.ne').mp
+  finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
