@@ -149,15 +149,17 @@ Factored out of `insertEnter` for easy testing. -/
 public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) :
     MetaM Syntax := do
   let some pos := locations[0]? | throwError "You must select something."
-  let (fvar, subexprPos) ← match pos with
-  | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
-  | ⟨_, .hypType fvar subexprPos⟩ => pure (some fvar, subexprPos)
+  let (expr, subexprPos, fvarUserName?) ← match pos with
+  | ⟨_, .target subexprPos⟩ => pure (goalType, subexprPos, none)
+  | ⟨_, .hypType fvarId subexprPos⟩ => do
+    let expr ← fvarId.getType
+    let userName ← fvarId.getUserName
+    pure (expr, subexprPos, some userName)
   | _ => throwError "You must select something in the goal or in the type of a local hypothesis."
-  let expr ← fvar.elim (pure goalType) fun fvarId => fvarId.getType
   let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
   let path ← Path.ofSubExprPos expr subexprPos
-  pathToStx path (← fvar.mapM FVarId.getUserName)
+  pathToStx path fvarUserName?
 
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
