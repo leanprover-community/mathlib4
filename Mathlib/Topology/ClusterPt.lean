@@ -18,7 +18,7 @@ clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map 
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 
@@ -137,9 +137,18 @@ theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
   hu.tendsto_comp' (hf.mono_left inf_le_left)
 
+theorem mapClusterPt_id_iff [TopologicalSpace α] {a : α} : MapClusterPt a F id ↔ ClusterPt a F := by
+  rw [MapClusterPt, map_id]
+
+alias ⟨_, ClusterPt.mapClusterPt_id⟩ := mapClusterPt_id_iff
+
 theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
     (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
   hu.tendsto_comp hf
+
+theorem ContinuousAt.mapClusterPt [TopologicalSpace α] {a : α} (hf : ContinuousAt u a)
+    (hu : ClusterPt a F) : MapClusterPt (u a) F u :=
+  hu.mapClusterPt_id.continuousAt_comp hf
 
 theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
     (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
@@ -240,9 +249,6 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 
 lemma notMem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_closure_iff_nhdsWithin_eq_bot := notMem_closure_iff_nhdsWithin_eq_bot
 
 theorem mem_interior_iff_not_clusterPt_compl : x ∈ interior s ↔ ¬ClusterPt x (𝓟 sᶜ) := by
   rw [← mem_closure_iff_clusterPt, closure_compl, mem_compl_iff, not_not]

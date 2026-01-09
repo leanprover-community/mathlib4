@@ -28,7 +28,7 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LieAlgebra
 

@@ -23,7 +23,7 @@ We gather several results about minimal polynomial of root of unity.
 
 -/
 
-@[expose] public section
+public section
 
 
 open minpoly Polynomial

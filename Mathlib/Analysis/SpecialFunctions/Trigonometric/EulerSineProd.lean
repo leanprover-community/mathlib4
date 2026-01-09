@@ -20,7 +20,7 @@ is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Real Topology
 
