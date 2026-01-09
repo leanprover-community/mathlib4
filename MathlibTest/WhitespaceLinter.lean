@@ -1053,26 +1053,8 @@ structure DFX where
   /-- A doc -/
   x : Nat
 
-#exit
-open Lean Elab Command Mathlib.Linter in
-elab "#final_scan " stx:command : command => do
-  elabCommand stx
-  let ustx := stx.raw.uniformizeSpaces
-  let simplySpaced ← pretty ustx <|> return default
-  let final := scanWatching true #[] stx.raw.getKind stx ustx (simplySpaced).toSubstring
 
-  logInfo <| m!"Syntax with no spaces:\n{ustx}\n{InspectSyntax.toMessageData ustx}"
-  logInfo <| m!"Reconstructed string:\n{simplySpaced}"
-  let ok? := captureException (← getEnv) Parser.topLevelCommandParserFn simplySpaced
-  if let .ok es := ok? then
-    logInfo <| m!"Reconstruced syntax:\n{es}\n{InspectSyntax.toMessageData es}"
-    logInfo <| m!"Compare: {ustx.compare es}"
-  else
-    logWarning "Did not parse correctly"
-  logInfo m!"{final.1}"
-  logInfo m!"{final.2}"
 
-#final_scan
 open Nat in /- hi -/
 /-- Here is also   -/
 example : True := trivial
@@ -1090,14 +1072,8 @@ example : 0 = 0 :=
        _ = 1 * (0 + 0) := Nat.mul_add .. |>.symm
        _ = 0 := rfl
 
-#eval
-  let s1 := "/--    asd awe  adg ghdrt \n\n ñk -/".toSubstring
-  let s2 := "/-- asd  awe adg ghdrt\n\nñk-/ this one continues".toSubstring
-  Mathlib.Linter.consumeIgnoring s1 s2 (·.all Char.isWhitespace)
-
-
 run_cmd
-  let mut a := "⟨ακ⟩".toSubstring
+  let mut a := "⟨ακ⟩".toRawSubstring
   let mut con := 0
   while !a.isEmpty do
     dbg_trace "Step {con}: {a}"
@@ -1106,8 +1082,6 @@ run_cmd
   IO.println con
 
 
---inspect
-#final_scan
 open Function in
 theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
     (rfg : RightInverse f g) : LeftInverse f g := fun y =>
@@ -1117,61 +1091,9 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
       _ = f x := Eq.symm (rfg x) ▸ rfl
       _ = y := hx
 
-open Lean Elab Command in
-elab "us " cmd:command : command => do
-  let s := cmd.raw.uniformizeSpaces
-  let pretty ← Elab.Command.liftCoreM do Mathlib.Linter.ppCategory' `command s
-  let pretty := " ".intercalate <| (pretty.pretty.split (·.isWhitespace)).filter (!·.isEmpty)
-  logInfo m!"cmd:\n{cmd}\n---\ns:\n{s}\n---\npretty:\n{pretty}\n---"
-  logInfo <| InspectSyntax.toMessageData s
-  elabCommand cmd
-
-open Lean in
-run_cmd
-  let stx ← `(section     X)
-  let s := stx.raw.uniformizeSpaces
-  let pretty ← Mathlib.Linter.pretty s
-  logInfo <| InspectSyntax.toMessageData s
-
-open Lean Parser Mathlib.Linter in
-run_cmd
-  let str := "example : True := trivial"
-  let s := captureException (← getEnv) topLevelCommandParserFn str
-  match s with
-  | .ok s =>
-    logInfo <| InspectSyntax.toMessageData s
-  | _ => logWarning "error!"
 
 
 
-open Lean Elab Command in
-elab "#again " verb?:(&" verbose")? stx:command : command => do
-  elabCommand stx
-  let s := stx.raw.uniformizeSpaces
-  let sstring := reduceWhitespace s.regString
-  let pretty ← Mathlib.Linter.pretty s
-  let sNoSpaces := sstring.replace " " ""
-  let prettyNoSpaces := pretty.replace " " ""
-  let eq? := sNoSpaces == prettyNoSpaces
-  let withSpaces ← insertSpaces verb?.isSome stx -- pretty
-  logInfo <| InspectSyntax.toMessageData withSpaces
-  logInfo
-    m!"{eq?}: reduced and pretty are {if eq? then "" else "not "}equal up to spaces\n\n\
-      Syntax:\n{s}\nReduced:\n{sstring}\nPretty:\n{pretty}\n{withSpaces.regString}\nRegener↑\n{pretty == (reduceWhitespace withSpaces.regString)}"
-
-set_option linter.style.whitespace false in
-#again verbose
-example := 0
-
-
-set_option linter.style.whitespace false in
-#again
-inspect
-/--This    he las      -/
-theorem «--» /- -/ : --
-    ({ True } : Set Prop) = { True } /- as -/ := rfl
-
-#again
 open Function in
 theorem leftInverse_of_surjective_of_rightInverse1 {f : α → β} {g : β → α} (surjf : Surjective f)
     (rfg : RightInverse f g) : LeftInverse f g := fun y =>
@@ -1183,25 +1105,17 @@ theorem leftInverse_of_surjective_of_rightInverse1 {f : α → β} {g : β → �
 
 
 
-
-#again
-inspect
-#final_scan
-theorem «--» /- -/ : --
-    ({ True } : Set Prop) = { True } /- as -/ := rfl
-
-
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
 def Prop.Hello := 0
 def Type.Hello := 0
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'F  : True'
+  'F  :'
 should be written as
-  'F : True'
+  'F :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1233,99 +1147,101 @@ end noFalsePositives
 
 -- Miscellaneous constructs: variable, include, omit statements; aesop rulesets
 section misc
+
+-- TODO: cannot redeclare a private declaration A or B
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field1     : Nat'
+  'field1     :'
 should be written as
-  'field1 : Nat'
+  'field1 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
-structure A where
+structure A' where
   field1     : Nat
   field2 : Nat
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field2     : Nat'
+  'field2     :'
 should be written as
-  'field2 : Nat'
+  'field2 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
-structure B where
+structure B' where
   field1 : Nat
   field2     : Nat
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   ':     Nat'
 should be written as
-  ': Nat field2'
+  ': Nat'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field2     : Nat'
+  'field2     :'
 should be written as
-  'field2 : Nat'
+  'field2 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
-structure C where
+structure C' where
   field1 :     Nat
   field2     : Nat
 
 -- Note that the linter does not attempt to recognise or respect manual alignment of fields:
 -- this is often brittle and should usually be removed.
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field1    :  '
+  'field1    :'
 should be written as
-  'field1 : Nat'
+  'field1 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   ':     Nat'
 should be written as
-  ': Nat field2'
+  ': Nat'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'field2    : Nat'
+  'field2    :'
 should be written as
-  'field2 : Nat'
+  'field2 :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
-structure D where
+structure D' where
   field1    :     Nat
   field2    : Nat
 
@@ -1333,12 +1249,12 @@ structure D where
 /--
 warning: declaration uses 'sorry'
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   'instance   {R}'
 should be written as
-  'instance {R} :'
+  'instance {R}'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1348,12 +1264,12 @@ instance   {R} : Add R := sorry
 /--
 warning: declaration uses 'sorry'
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   'instance   {R}'
 should be written as
-  'instance {R} :'
+  'instance {R}'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1364,52 +1280,52 @@ instance   {R} : Add R := sorry
 variable [h : Add Nat] [Add Nat]
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'variable    [ h'
+  'variable    ['
 should be written as
-  'variable [h :'
+  'variable [h'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  '[ h  '
+  '[ h'
 should be written as
-  '[h : Add'
+  '[h'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'h    : Add'
+  'h    :'
 should be written as
-  '[h : Add'
+  '[h :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove spaces in the source
 
 This part of the code
-  'Nat   ] ['
+  'Nat   ]'
 should be written as
-  'Nat] [Add'
+  'Nat]'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   '[ Add'
 should be written as
-  '[Add Nat]'
+  '[Add'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1418,17 +1334,17 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 variable    [ h    : Add Nat   ] [ Add Nat]
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'omit  [h :'
+  'omit  [h'
 should be written as
-  'omit [h :'
+  'omit [h'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   'Nat]  [Add'
@@ -1442,12 +1358,10 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 omit  [h : Add Nat]  [Add Nat]
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'include     h
-
-'
+  'include     h'
 should be written as
   'include h'
 
@@ -1473,21 +1387,17 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 
 end misc
 
-/--
-warning: 'section' starts on column 1, but all commands should start at the beginning of the line.
-
-Note: This linter can be disabled with `set_option linter.style.whitespace false`
--/
+-- TODO: should this warn? right now, it does not (any more?)
 #guard_msgs in
  section
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'example    : True'
+  'example    :'
 should be written as
-  'example : True'
+  'example :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1496,7 +1406,7 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example    : True := trivial
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   ':     True'
@@ -1510,17 +1420,17 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example :     True := trivial
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'example  :  True'
+  'example  :'
 should be written as
-  'example : True'
+  'example :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   ':  True'
@@ -1530,7 +1440,7 @@ should be written as
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
   ':=trivial'
@@ -1544,12 +1454,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example  :  True :=trivial
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
-  '(a: Nat)'
+  '(a:'
 should be written as
-  '(a : Nat)'
+  '(a :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1558,12 +1468,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 variable (a: Nat)
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
-  '(_a: Nat)'
+  '(_a:'
 should be written as
-  '(_a : Nat)'
+  '(_a :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1572,12 +1482,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example (_a: Nat) : True := trivial
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
-  '{a: Nat}'
+  '{a:'
 should be written as
-  '{a : Nat}'
+  '{a :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1593,7 +1503,7 @@ d -/
 example (_a : Nat) (_b : Int) : True := trivial
 
 /--
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
   ':Nat}'
@@ -1607,17 +1517,17 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example {a :Nat} : a = a := rfl
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'example  {a :Nat}'
+  'example  {a'
 should be written as
-  'example {a :'
+  'example {a'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
 ---
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
   ':Nat}'
@@ -1635,12 +1545,12 @@ warning: unused variable `b`
 
 Note: This linter can be disabled with `set_option linter.unusedVariables false`
 ---
-warning: missing space in the source
+warning: add space in the source
 
 This part of the code
-  'Nat}{b :'
+  'Nat}{b'
 should be written as
-  'Nat} {b :'
+  'Nat} {b'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1649,12 +1559,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example {a : Nat}{b : Nat} : a = a := rfl
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'Nat}  : a'
+  'Nat}  :'
 should be written as
-  'Nat} : a ='
+  'Nat} :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1663,12 +1573,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example {a : Nat}  : a = a := rfl
 
 /--
-warning: extra space in the source
+warning: remove spaces in the source
 
 This part of the code
-  'alpha   ] {a'
+  'alpha   ]'
 should be written as
-  'alpha] {a'
+  'alpha]'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1677,12 +1587,12 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
-  'example  : True'
+  'example  :'
 should be written as
-  'example : True'
+  'example :'
 
 
 Note: This linter can be disabled with `set_option linter.style.whitespace false`
@@ -1690,53 +1600,3 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 #guard_msgs in
 /-- Check that doc/strings do not get removed as comments. -/
 example  : True := trivial
-
--- Unit tests for internal functions in the linter.
-section internal
-
-/--
-info: #[srcNat: 12, srcPos: 12, fmtPos: 2, msg: extra space, length: 7
-, srcNat: 4, srcPos: 4, fmtPos: 1, msg: extra space, length: 3
-]
--/
-#guard_msgs in
-#eval
-  let s := "example        f   g"
-  let t := "example fg"
-  Mathlib.Linter.parallelScan s t
-
-/--
-info: #[srcNat: 19, srcPos: 19, fmtPos: 21, msg: extra space, length: 1
-, srcNat: 16, srcPos: 16, fmtPos: 19, msg: extra space, length: 2
-, srcNat: 7, srcPos: 7, fmtPos: 12, msg: missing space, length: 1
-]
--/
-#guard_msgs in
-#eval
-  let s := "example  :   True :=trivial"
-  let t := "example : True :=
-    trivial"
-  Mathlib.Linter.parallelScan s t
-
-/--
-info: #[srcNat: 4, srcPos: 4, fmtPos: 5, msg: missing space, length: 1
-, srcNat: 2, srcPos: 2, fmtPos: 1, msg: extra space, length: 1
-]
--/
-#guard_msgs in
-#eval
-  let l := "hac d"
-  let m := "h  acd"
-  Mathlib.Linter.parallelScan l m
-
--- Starting from `c` (due to the `"d ef gh".length` input), form a "window" of successive sizes
--- `1, 2,..., 6`.  The output is trimmed and contains only full words, even partially overlapping
--- with the given lengths.
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 1 == "cd"
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 2 == "cd"
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 3 == "cd ef"
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 4 == "cd ef"
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 5 == "cd ef"
-#guard Mathlib.Linter.Style.Whitespace.mkWindow "ab cd ef gh" "d ef gh".length 6 == "cd ef gh"
-
-end internal
