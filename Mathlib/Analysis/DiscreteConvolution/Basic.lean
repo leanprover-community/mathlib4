@@ -97,10 +97,12 @@ This is `Set.addAntidiagonal Set.univ Set.univ x`. -/]
 abbrev mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ x
 
 @[to_additive]
-theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by simp
+theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by
+  simp only [Set.mem_mulAntidiagonal, Set.mem_univ, true_and]
 
 @[to_additive]
-theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by simp
+theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
+  simp only [Set.mem_mulAntidiagonal, Set.mem_univ, mul_one, and_self]
 
 end Fiber
 
