@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 /-!
 # Higher differentiability of usual operations

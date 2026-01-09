@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 

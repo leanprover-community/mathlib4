@@ -7,6 +7,7 @@ module
 
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
+public import Batteries.Tactic.Trans
 
 /-!
 # List Sub-permutations

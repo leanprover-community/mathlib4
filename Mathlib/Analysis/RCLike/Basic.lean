@@ -13,6 +13,7 @@ public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

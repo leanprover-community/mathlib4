@@ -5,10 +5,10 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Data.Set.NAry
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Pointwise scalar operations of sets
@@ -59,8 +59,6 @@ variable {F α β γ : Type*}
 
 namespace Set
 
-open Pointwise
-
 /-! ### Translation/scaling of sets -/
 
 section SMul
@@ -79,6 +77,8 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
+
+open Pointwise
 
 section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
@@ -277,6 +277,8 @@ lemma union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ 
   image2_union_inter_subset_union
 
 end VSub
+
+open Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

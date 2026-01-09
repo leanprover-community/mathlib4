@@ -5,8 +5,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 module
 
-public import Batteries.Data.RBMap.Basic
-public import Mathlib.Data.Tree.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree and RBMaps
@@ -30,7 +29,5 @@ namespace Tree
 universe u
 
 variable {α : Type u}
-
-open Batteries (RBNode)
 
 end Tree

@@ -6,11 +6,11 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Tactic.Linarith.Verification
-public meta import Mathlib.Tactic.Linarith.Preprocessing
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Util.ElabWithoutMVars
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals

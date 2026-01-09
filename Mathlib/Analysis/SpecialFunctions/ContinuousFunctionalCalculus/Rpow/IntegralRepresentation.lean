@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Integral representations of `rpow`

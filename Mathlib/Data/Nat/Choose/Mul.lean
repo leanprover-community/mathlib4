@@ -5,6 +5,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.Common
 
 deprecated_module (since := "2025-12-15")

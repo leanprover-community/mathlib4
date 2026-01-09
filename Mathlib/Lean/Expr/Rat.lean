@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kim Morrison
 module
 
 public import Mathlib.Init
-public import Batteries.Tactic.Alias
 public import Lean.ToExpr
 
 /-!

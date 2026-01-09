@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups

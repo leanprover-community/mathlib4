@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Tactic.Linarith
 
 /-! # The mapping cone of a morphism of cochain complexes
 

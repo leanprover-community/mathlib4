@@ -11,9 +11,9 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fin.Rotate
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Linear independence

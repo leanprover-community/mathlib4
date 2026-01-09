@@ -6,7 +6,6 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
-public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 
 /-!
 # The bicategory of pseudofunctors

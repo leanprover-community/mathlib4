@@ -13,6 +13,7 @@ public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
+public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem

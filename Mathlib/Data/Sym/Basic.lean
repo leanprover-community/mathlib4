@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.ApplyFun
 
 /-!

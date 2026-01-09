@@ -5,13 +5,12 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Tactic.HaveI
-public meta import Mathlib.Algebra.Order.Invertible
-public meta import Mathlib.Algebra.Order.Ring.Cast
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Data.Nat.Cast.Basic
 public meta import Qq
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## `positivity` core functionality
@@ -122,6 +121,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
+      -- TODO: track what `[positivity]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
 }
 
