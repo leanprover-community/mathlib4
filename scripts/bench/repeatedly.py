@@ -37,6 +37,7 @@ def temporarily_move_outfile():
     if OUTFILE_TMP.exists():
         raise Exception(f"{OUTFILE_TMP} already exists")
 
+    OUTFILE.touch()
     OUTFILE.rename(OUTFILE_TMP)
     try:
         yield
