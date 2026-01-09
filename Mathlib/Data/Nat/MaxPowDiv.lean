@@ -29,7 +29,7 @@ Find largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`, as well as the
 TODO: implementation notes.
 -/
 def maxPowDvdDiv (p n : ℕ) : ℕ × ℕ :=
-  if 1 < p ∧ 0 < n then
+  if 1 < p ∧ n ≠ 0 then
     go p n
   else
     (0, n)
@@ -51,7 +51,7 @@ def _root_.padicValNat (p n : ℕ) : ℕ := (maxPowDvdDiv p n).fst
 /-- Divide `n` by the maximal power of `p` that divides `n`. -/
 def divMaxPow (n p : ℕ) : ℕ := (maxPowDvdDiv p n).snd
 
-theorem maxPowDvdDiv.go_spec {n p fuel : ℕ} (hp : 1 < p) (hn : 0 < n) (hfuel : n < p ^ fuel) :
+theorem maxPowDvdDiv.go_spec {n p fuel : ℕ} (hp : 1 < p) (hn : n ≠ 0) (hfuel : n < p ^ fuel) :
     (go n p fuel).2 * p ^ (go n p fuel).1 = n ∧ ¬p ∣ (go n p fuel).2 := by
   induction fuel generalizing p with
   | zero => simp_all
@@ -61,11 +61,11 @@ theorem maxPowDvdDiv.go_spec {n p fuel : ℕ} (hp : 1 < p) (hn : 0 < n) (hfuel :
         refine @ih (p * p) (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hp hp) ?_
         cases fuel with
         | zero =>
-          refine absurd hfuel <| Nat.not_lt_of_le <| Nat.le_of_dvd hn ?_
+          refine absurd hfuel <| Nat.not_lt_of_le <| Nat.le_of_dvd (Nat.pos_of_ne_zero hn) ?_
           simpa [dvd_iff_mod_eq_zero]
         | succ fuel =>
           rw [← Nat.pow_two, ← Nat.pow_mul]
-          refine Nat.lt_of_lt_of_le hfuel <| Nat.pow_le_pow_right (Nat.zero_lt_of_lt hp) (by cutsat)
+          refine Nat.lt_of_lt_of_le hfuel <| Nat.pow_le_pow_right (Nat.zero_lt_of_lt hp) (by lia)
       simp only [go, if_pos hnp]
       split <;> simp_all [← dvd_iff_mod_eq_zero, @Nat.pow_add_one' _ (2 * _), ← Nat.mul_assoc,
         Nat.div_mul_cancel, ← Nat.pow_two, ← Nat.pow_mul]
@@ -130,10 +130,10 @@ theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ padicVal
 theorem pow_padicValNat_mul_divMaxPow (p n : ℕ) : p ^ padicValNat p n * divMaxPow n p = n := by
   rw [Nat.mul_comm, divMaxPow_mul_pow_padicValNat]
 
-theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : 0 < n) : ¬p ∣ divMaxPow n p := by
+theorem not_dvd_divMaxPow {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) : ¬p ∣ divMaxPow n p := by
   simp [divMaxPow, maxPowDvdDiv, Nat.lt_pow_self, maxPowDvdDiv.go_spec, *]
 
-private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : 0 < n)
+private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n ≠ 0)
     (hab : p ^ a * b = n) (hb : ¬p ∣ b) : p ^ k ∣ n ↔ k ≤ a := by
   subst hab
   cases Nat.lt_or_ge a k with
@@ -149,14 +149,14 @@ private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : 0 < 
 
 /-- If `p > 1`, `n > 0`, then the first component of `maxPowDvdDiv` is the maximal power of `p`
 that divides `n`. -/
-theorem pow_dvd_iff_le_padicValNat {p k n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
+theorem pow_dvd_iff_le_padicValNat {p k n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     p ^ k ∣ n ↔ k ≤ padicValNat p n := by
   obtain rfl | hp₁ : p = 0 ∨ 1 < p := by grind
   · rcases k.eq_zero_or_pos with rfl | hk <;> simp [Nat.ne_of_gt, *]
   · exact pow_dvd_iff_le_of_spec hp₁ hn (pow_padicValNat_mul_divMaxPow p n)
       (not_dvd_divMaxPow hp₁ hn)
 
-theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : 0 < n) (h : p ^ k * l = n)
+theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : n ≠ 0) (h : p ^ k * l = n)
     (hl : ¬p ∣ l) : maxPowDvdDiv p n = (k, l) := by
   obtain rfl | rfl | hp : p = 0 ∨ p = 1 ∨ 1 < p := by grind
   · cases k.eq_zero_or_pos <;> simp_all
@@ -173,14 +173,15 @@ theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : 0 < n) (h : p ^ k * l =
     · exact Nat.pow_pos <| Nat.zero_lt_of_lt hp
 
 @[simp]
-theorem maxPowDvdDiv_base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (k : ℕ) :
+theorem maxPowDvdDiv_base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (k : ℕ) :
     p.maxPowDvdDiv (p ^ k * n) = (padicValNat p n + k, divMaxPow n p) := by
-  apply maxPowDvdDiv_of_pow_mul_eq (Nat.mul_pos (Nat.pow_pos <| Nat.zero_lt_of_lt hp) hn)
+  apply maxPowDvdDiv_of_pow_mul_eq
+  · exact Nat.mul_ne_zero (Nat.ne_of_gt <| Nat.pow_pos <| Nat.zero_lt_of_lt hp) hn
   · rw [Nat.pow_add, Nat.mul_assoc, Nat.mul_left_comm, pow_padicValNat_mul_divMaxPow]
   · exact not_dvd_divMaxPow hp hn
 
 @[simp]
-theorem _root_.padicValNat_base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (k : ℕ) :
+theorem _root_.padicValNat_base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (k : ℕ) :
     padicValNat p (p ^ k * n) = padicValNat p n + k := by
   simp [padicValNat, *]
 
@@ -189,15 +190,15 @@ theorem divMaxPow_base_pow_mul {p : ℕ} (hp : p ≠ 0) (n k : ℕ) :
     (p ^ k * n).divMaxPow p = n.divMaxPow p := by
   obtain rfl | hp1 : p = 1 ∨ 1 < p := by grind
   · simp
-  · rcases n.eq_zero_or_pos with rfl | hn <;> simp [divMaxPow, *]
+  · rcases eq_or_ne n 0 with rfl | hn <;> simp [divMaxPow, *]
 
 @[simp]
-theorem maxPowDvdDiv_base_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+theorem maxPowDvdDiv_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
     p.maxPowDvdDiv (p * n) = (padicValNat p n + 1, divMaxPow n p) := by
   simpa using maxPowDvdDiv_base_pow_mul hp hn 1
 
 @[simp]
-theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
     padicValNat p (p * n) = padicValNat p n + 1 := by
   simp [padicValNat, *]
 
@@ -208,7 +209,7 @@ theorem divMaxPow_base_mul {p : ℕ} (hp : p ≠ 0) (n : ℕ) :
 
 @[simp]
 theorem maxPowDvdDiv_base_pow {p : ℕ} (hp : 1 < p) (k : ℕ) : p.maxPowDvdDiv (p ^ k) = (k, 1) := by
-  simpa using maxPowDvdDiv_base_pow_mul hp Nat.one_pos k
+  simpa using maxPowDvdDiv_base_pow_mul hp Nat.one_ne_zero k
 
 @[simp]
 theorem _root_.padicValNat_base_pow {p : ℕ} (hp : 1 < p) (k : ℕ) : padicValNat p (p ^ k) = k := by

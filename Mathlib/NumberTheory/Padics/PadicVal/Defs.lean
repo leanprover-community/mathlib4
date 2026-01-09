@@ -32,10 +32,10 @@ open Nat
 
 variable {p : ℕ}
 
-theorem padicValNat_eq_emultiplicity {p n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
+theorem padicValNat_eq_emultiplicity' {p n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n := by
-  rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp (pos_iff_ne_zero.mpr hn),
-    pow_dvd_iff_le_padicValNat hp (pos_iff_ne_zero.mpr hn)]
+  rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp hn,
+    pow_dvd_iff_le_padicValNat hp hn]
   simp
 
 theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicValNat p n := by
@@ -43,13 +43,12 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicV
   · simp
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · simp [← padicValNat_eq_emultiplicity, *]
-
+    · simp [← padicValNat_eq_emultiplicity', *]
 
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n :=
   .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
-    padicValNat_eq_emultiplicity hp hn
+    padicValNat_eq_emultiplicity' hp hn
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -60,10 +59,8 @@ theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
 theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
-    padicValNat p n = emultiplicity p n := by
-  rw [(finiteMultiplicity_iff.2
-    ⟨hp.out.ne_one, Nat.pos_iff_ne_zero.mpr hn⟩).emultiplicity_eq_multiplicity]
-  exact_mod_cast padicValNat_def hn
+    padicValNat p n = emultiplicity p n :=
+  padicValNat_eq_emultiplicity' hp.elim.ne_one hn
 
 namespace padicValNat
 
@@ -79,8 +76,9 @@ protected theorem one : padicValNat p 1 = 0 := by simp [padicValNat]
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, ne_eq, pos_iff_ne_zero, dite_eq_right_iff, find_eq_zero, zero_add,
-    pow_one, and_imp, ← or_iff_not_imp_left]
+  rcases eq_or_ne n 0 with rfl | hn₀; · simp
+  rcases eq_or_ne p 1 with rfl | hp₁; · simp
+  simpa [*] using pow_dvd_iff_le_padicValNat (k := 1) hp₁ hn₀ |>.symm |>.not
 
 end padicValNat
 

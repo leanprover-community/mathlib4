@@ -82,32 +82,31 @@ theorem self (hp : 1 < p) : padicValNat p p = 1 := by
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
-open Nat.maxPowDvd
+-- theorem maxPowDvd_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
+--     p.maxPowDvd n = emultiplicity p n := by
+--   apply (emultiplicity_eq_of_dvd_of_not_dvd pow_dvd _).symm
+--   intro h
+--   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
+--   simp
 
-theorem maxPowDvd_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
-    p.maxPowDvd n = emultiplicity p n := by
-  apply (emultiplicity_eq_of_dvd_of_not_dvd pow_dvd _).symm
-  intro h
-  apply Nat.not_lt.mpr <| le_of_dvd hp hn h
-  simp
+-- theorem maxPowDvd_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0)
+--  (h : FiniteMultiplicity p n) :
+--     p.maxPowDvd n = multiplicity p n := by
+--   exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDvd_eq_emultiplicity hp hn
 
-theorem maxPowDvd_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : FiniteMultiplicity p n) :
-    p.maxPowDvd n = multiplicity p n := by
-  exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDvd_eq_emultiplicity hp hn
-
-/-- Allows for more efficient code for `padicValNat` -/
-@[csimp]
-theorem padicValNat_eq_maxPowDvd : @padicValNat = @maxPowDvd := by
-  ext p n
-  by_cases h : 1 < p ∧ 0 < n
-  · rw [padicValNat_def' h.1.ne' h.2, maxPowDvd_eq_multiplicity h.1 h.2]
-    exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · rcases h with (h | h)
-    · interval_cases p
-      · simp [Classical.em]
-      · dsimp [padicValNat, maxPowDvd]
-        rw [go, if_neg]; simp
-    · simp [Nat.le_zero.mp h]
+-- /-- Allows for more efficient code for `padicValNat` -/
+-- @[csimp]
+-- theorem padicValNat_eq_maxPowDvd : @padicValNat = @maxPowDvd := by
+--   ext p n
+--   by_cases h : 1 < p ∧ 0 < n
+--   · rw [padicValNat_def' h.1.ne' h.2, maxPowDvd_eq_multiplicity h.1 h.2]
+--     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
+--   · rcases h with (h | h)
+--     · interval_cases p
+--       · simp [Classical.em]
+--       · dsimp [padicValNat, maxPowDvd]
+--         rw [go, if_neg]; simp
+--     · simp [Nat.le_zero.mp h]
 
 end padicValNat
 
