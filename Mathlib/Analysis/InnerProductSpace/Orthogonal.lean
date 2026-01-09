@@ -116,6 +116,10 @@ instance isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp only [coe_iInf]
 
+/-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
+instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
+  K.isClosed_orthogonal.completeSpace_coe
+
 lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
