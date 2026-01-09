@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
 /-!
 # t-exact functors
@@ -154,12 +154,12 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
     simpa [h₂] using e.hom.comm₂
 
 instance (n : ℤ) (X : C) : IsIso ((truncGEComparison F t₁ t₂ n).app X) := by
-  obtain ⟨e, _, h₃, _⟩ := triangleGELEIso_aux F t₁ t₂ (n-1) n (by linarith) X
+  obtain ⟨e, _, h₃, _⟩ := triangleGELEIso_aux F t₁ t₂ (n-1) n (by lia) X
   rw [← h₃]
   infer_instance
 
 instance (n : ℤ) (X : C) : IsIso ((truncLEComparison F t₁ t₂ n).app X) := by
-  obtain ⟨e, h₁, _, _⟩ := triangleGELEIso_aux F t₁ t₂ n (n + 1) (by linarith) X
+  obtain ⟨e, h₁, _, _⟩ := triangleGELEIso_aux F t₁ t₂ n (n + 1) (by lia) X
   rw [← h₁]
   infer_instance
 

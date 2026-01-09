@@ -272,18 +272,18 @@ lemma π_descTruncGT :
 
 end
 
-lemma isIso_truncLEmap_iff {X Y : C} (f : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) :
+lemma isIso_truncLE_map_iff {X Y : C} (f : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) :
     IsIso ((t.truncLE a).map f) ↔
       ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ ((t.truncLE a).obj X)⟦1⟧)
         (_ : Triangle.mk ((t.truncLEι a).app X ≫ f) g h ∈ distTriang _), t.IsGE Z b := by
   subst h
-  apply isIso_truncLTmap_iff
+  apply isIso_truncLT_map_iff
 
-lemma isIso_truncGTmap_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
+lemma isIso_truncGT_map_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
     IsIso ((t.truncGT n).map g) ↔
       ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGT n).obj Z) ⟶ X⟦(1 : ℤ)⟧)
         (_ : Triangle.mk f (g ≫ (t.truncGTπ n).app Z) h ∈ distTriang _), t.IsLE X n :=
-  t.isIso_truncGEmap_iff g n (n + 1) rfl
+  t.isIso_truncGE_map_iff g n (n + 1) rfl
 
 instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLE a).obj X) b := by
   dsimp [truncLE]
@@ -345,6 +345,9 @@ lemma isIso_truncGT_map_truncGTπ_app (a b : ℤ) (h : b ≤ a) (X : C) :
 
 instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) :=
   t.isIso_truncLE_map_truncLEι_app _ _ (by lia) _
+
+noncomputable def truncGELEIsoLEGE (a b : ℤ) : t.truncGELE a b ≅ t.truncLEGE a b :=
+  t.truncGELTIsoLTGE a (b + 1)
 
 end
 

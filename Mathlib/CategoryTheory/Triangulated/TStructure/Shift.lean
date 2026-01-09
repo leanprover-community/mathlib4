@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
 /-!
 # Truncations and shifts
@@ -41,7 +41,7 @@ lemma hom_ι : hom t X h ≫ (t.truncLEι _).app _ = ((t.truncLEι a').app X)⟦
 
 /-- inv' -/
 noncomputable def inv' : ((t.truncLE a).obj (X⟦n⟧))⟦-n⟧ ⟶ (t.truncLE a').obj X := by
-  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by lia)
   apply t.liftTruncLE
   exact (shiftEquiv C n).inverse.map ((t.truncLEι a).app (X⟦n⟧)) ≫
     (shiftEquiv C n).unitIso.inv.app X
@@ -50,7 +50,7 @@ noncomputable def inv' : ((t.truncLE a).obj (X⟦n⟧))⟦-n⟧ ⟶ (t.truncLE a
 lemma inv'_ι :
     inv' t X h ≫ (t.truncLEι a').app X =
       ((t.truncLEι a).app (X⟦n⟧))⟦-n⟧' ≫ (shiftEquiv C n).unitIso.inv.app X := by
-  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by lia)
   apply liftTruncLE_ι
 
 noncomputable def inv :
@@ -87,7 +87,7 @@ noncomputable def iso : ((t.truncLE a').obj X)⟦n⟧ ≅ (t.truncLE a).obj (X�
     apply ((shiftEquiv C n).symm.toAdjunction.homEquiv _ _).symm.injective
     dsimp
     have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
-    have := t.isLE_shift ((((t.truncLE a').obj X)⟦n⟧)) a (-n) a' (by linarith)
+    have := t.isLE_shift ((((t.truncLE a').obj X)⟦n⟧)) a (-n) a' (by lia)
     apply to_truncLE_obj_ext
     dsimp
     simp only [Equivalence.symm, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
@@ -115,7 +115,7 @@ lemma π_hom : (t.truncGEπ a).app (X⟦n⟧) ≫ hom t X h = ((t.truncGEπ a').
 
 /-- inv' -/
 noncomputable def inv' : (t.truncGE a').obj X ⟶ ((t.truncGE a).obj (X⟦n⟧))⟦-n⟧  := by
-  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by lia)
   apply t.descTruncGE
   exact (shiftEquiv C n).unitIso.hom.app X ≫ ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧'
 
@@ -124,7 +124,7 @@ noncomputable def inv' : (t.truncGE a').obj X ⟶ ((t.truncGE a).obj (X⟦n⟧))
 lemma π_inv' :
     (t.truncGEπ a').app X ≫ inv' t X h =
       (shiftEquiv C n).unitIso.hom.app X ≫ ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧' := by
-  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by lia)
   apply t.π_descTruncGE
 
 noncomputable def inv :
@@ -166,7 +166,7 @@ noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)�
     apply ((shiftEquiv C n).toAdjunction.homEquiv _ _).injective
     dsimp
     have := t.isGE_shift ((t.truncGE a').obj X) a' n a h
-    have := t.isGE_shift (((t.truncGE a').obj X)⟦n⟧) a (-n) a' (by linarith)
+    have := t.isGE_shift (((t.truncGE a').obj X)⟦n⟧) a (-n) a' (by lia)
     apply from_truncGE_obj_ext
     dsimp
     simp only [Adjunction.homEquiv_unit, Functor.comp_obj,

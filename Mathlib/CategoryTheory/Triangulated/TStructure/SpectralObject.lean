@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -14,9 +14,6 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 -/
 
 @[expose] public section
-
--- This is a refactor of the construction in `Trunc.lean`
--- There are sorries in `ETrunc.lean`
 
 namespace CategoryTheory
 
@@ -51,29 +48,28 @@ noncomputable def ω₁δ :
         ((associator _ _ _).hom ≫ whiskerLeft _ (t.eTruncLTGEIsoLEGT a b).hom ≫
           (associator _ _ _).inv ≫ whiskerRight (t.eTruncLTLTToLT c b) _) _
 
-attribute [local simp] Precomp.obj in
 @[reassoc]
 lemma ω₁δ_naturality (a' b' c' : EInt) (hab' : a' ≤ b') (hbc' : b' ≤ c')
     (φ : mk₂ (homOfLE hab) (homOfLE hbc) ⟶ mk₂ (homOfLE hab') (homOfLE hbc')) :
     t.ω₁.map (homMk₁ (φ.app 1) (φ.app 2)) ≫ t.ω₁δ a' b' c' hab' hbc' =
       t.ω₁δ a b c hab hbc ≫ Functor.whiskerRight (t.ω₁.map (homMk₁ (φ.app 0) (φ.app 1))) _ := by
   ext X
-  simp only [Nat.reduceAdd, homOfLE_leOfHom, ω₁_obj, Fin.isValue, mk₁_obj, Mk₁.obj,
-    Functor.comp_obj, ω₁_map, homMk₁_app, NatTrans.comp_app, NatTrans.hcomp_app, ω₁δ_app,
+  simp only [ω₁_obj, mk₁_obj, Mk₁.obj, Functor.comp_obj, ω₁_map, homMk₁_app,
+    NatTrans.comp_app, NatTrans.hcomp_app, ω₁δ_app,
     ← Functor.map_comp, Category.assoc, NatTrans.naturality_assoc, Functor.comp_map,
     ← Functor.map_comp_assoc, NatTrans.naturality_app_assoc, Functor.whiskeringRight_obj_obj,
     Functor.whiskeringRight_obj_map, Functor.whiskerRight_app, NatTrans.naturality]
   congr 2
   have h₁ := t.eTruncLTGEIsoLEGT_naturality_app a b hab a' b' hab' (homMk₁ (φ.app 0) (φ.app 1))
   dsimp at h₁
-  simp only [homOfLE_leOfHom, Fin.isValue, Functor.map_comp, Category.assoc, ← reassoc_of% h₁]
-  erw [← NatTrans.naturality]
-  dsimp
-  --??
-  have h₂ := (t.eTruncLTGEIsoLEGT a' b').hom.naturality ((t.eTruncLT.map (φ.app 2)).app X)
-  dsimp at h₂
-  have h₃ := t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X
-  sorry
+  simp only [Functor.map_comp, Category.assoc]
+  rw [← reassoc_of% h₁, ← eTruncLTGEIsoLEGT_hom_naturality, ← eTruncLTGEIsoLEGT_hom_naturality,
+    ← t.eTruncLT_map_app_eTruncLTι_app (φ.app 2) X, NatTrans.naturality_assoc,
+    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc,
+    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+  simp only [homOfLE_leOfHom, Fin.isValue, Category.assoc, eTruncGEπ_naturality,
+    eTruncLT_map_app_eTruncLTι_app_assoc, Functor.map_comp, eTruncGEπ_app_eTruncGE_map_app,
+    eTruncLT_map_app_eTruncLTι_app]
 
 @[simps!]
 noncomputable def triangleω₁δ : C ⥤ Triangle C :=
@@ -85,16 +81,33 @@ noncomputable def triangleω₁δObjIso (X : C) :
       (t.eTriangleLTGE.obj b).obj ((t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).obj X) := by
   refine Triangle.isoMk _ _
     ((t.eTruncGE.obj a).mapIso ((t.eTruncLTLTIsoLT c b hbc).symm.app X) ≪≫
-      (t.eTruncLTGEIsoLEGT a b).symm.app _) (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _)
-    ?_ ?_ ?_
+      (t.eTruncLTGEIsoLEGT a b).symm.app _)
+    (Iso.refl _) ((t.eTruncGEIsoGEGE a b hab).app _) ?_ ?_ ?_
   · dsimp
     simp only [triangleω₁δ_obj_mor₁, homOfLE_leOfHom, Category.comp_id, Category.assoc]
     rw [← cancel_epi ((t.eTruncGE.obj a).map ((t.eTruncLTLTIsoLT c b hbc).hom.app X)),
       ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp]
     rw [← cancel_epi ((t.eTruncLTGEIsoLEGT a b).hom.app ((t.eTruncLT.obj c).obj X)),
       Iso.hom_inv_id_app_assoc]
-    sorry
-  · sorry
+    rw [eTruncLTLTIsoLT_hom, eTruncLTLTToLT_app]
+    rw [← Functor.map_comp]
+    -- this should be cleanup and made a separate lemma
+    have : ((t.eTruncLT.obj b).map ((t.eTruncLTι c).app X) ≫
+        (t.eTruncLT.map (homOfLE hbc)).app X) = (t.eTruncLTι _).app _ := by
+      dsimp [eTruncLTι]
+      rw [← homOfLE_comp hbc le_top, Functor.map_comp, NatTrans.comp_app,
+        NatTrans.naturality]
+      congr 1
+      induction c with
+      | bot => simp
+      | coe c => simp [truncLT_map_truncLTι_app]
+      | top => simp
+    rw [this]
+    simp
+  · dsimp
+    simp only [triangleω₁δ_obj_mor₂, eTruncGEToGEGE_app, Category.id_comp,
+      ← t.eTruncGEπ_app_eTruncGE_map_app (homOfLE hab), ← NatTrans.naturality,
+      eTruncGE_obj_map_eTruncGEπ_app]
   · simp [← Functor.map_comp_assoc, ← Functor.map_comp]
 
 lemma triangleω₁δ_distinguished (X : C) :
@@ -105,7 +118,7 @@ lemma triangleω₁δ_distinguished (X : C) :
 end
 
 @[simps ω₁]
-noncomputable def newSpectralObject (X : C) : SpectralObject C EInt where
+noncomputable def spectralObject (X : C) : SpectralObject C EInt where
   ω₁ := t.ω₁ ⋙ (evaluation _ _).obj X
   δ'.app D := (t.ω₁δ (D.obj 0) (D.obj 1) (D.obj 2)
     (leOfHom (D.map' 0 1)) (leOfHom (D.map' 1 2))).app X
@@ -119,12 +132,12 @@ noncomputable def newSpectralObject (X : C) : SpectralObject C EInt where
     exact t.triangleω₁δ_distinguished a b c (leOfHom f) (leOfHom g) X
 
 @[simp]
-lemma newSpectralObject_δ (X : C) {a b c : EInt} (f : a ⟶ b) (g : b ⟶ c) :
-    (t.newSpectralObject X).δ f g = (t.ω₁δ a b c (leOfHom f) (leOfHom g)).app X := rfl
+lemma spectralObject_δ (X : C) {a b c : EInt} (f : a ⟶ b) (g : b ⟶ c) :
+    (t.spectralObject X).δ f g = (t.ω₁δ a b c (leOfHom f) (leOfHom g)).app X := rfl
 
 @[simps]
 noncomputable def spectralObjectFunctor : C ⥤ SpectralObject C EInt where
-  obj := t.newSpectralObject
+  obj := t.spectralObject
   map φ :=
     { hom := Functor.whiskerLeft _ ((evaluation _ _).map φ)
       comm f g := ((t.ω₁δ _ _ _ (leOfHom f) (leOfHom g)).naturality φ).symm }

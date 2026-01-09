@@ -143,6 +143,11 @@ noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
 @[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
 @[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
 
+@[reassoc (attr := simp)]
+lemma eTruncLTι_naturality (i : EInt) {X Y : C} (f : X ⟶ Y) :
+    (t.eTruncLT.obj i).map f ≫ (t.eTruncLTι i).app Y = (t.eTruncLTι i).app X ≫ f :=
+  (t.eTruncLTι i).naturality f
+
 instance : IsIso (t.eTruncLTι ⊤) := by
   dsimp [eTruncLTι]
   infer_instance
@@ -168,6 +173,11 @@ noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 _ ⟶ t.eTruncGE.obj i :=
 @[simp] lemma eTruncGEπ_bot : t.eTruncGEπ ⊥ = 𝟙 _ := rfl
 @[simp] lemma eTruncGEπ_coe (n : ℤ) : t.eTruncGEπ n = t.truncGEπ n := rfl
 @[simp] lemma eTruncGEπ_top : t.eTruncGEπ ⊤ = 0 := rfl
+
+@[reassoc (attr := simp)]
+lemma eTruncGEπ_naturality (i : EInt) {X Y : C} (f : X ⟶ Y) :
+    (t.eTruncGEπ i).app X ≫ (t.eTruncGE.obj i).map f = f ≫ (t.eTruncGEπ i).app Y :=
+  ((t.eTruncGEπ i).naturality f).symm
 
 instance : IsIso (t.eTruncGEπ ⊥) := by
   dsimp [eTruncGEπ]
@@ -289,6 +299,13 @@ lemma isIso_eTruncLT_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
     obtain rfl : b = ⊤ := by simpa using h
     infer_instance
 
+instance (a : EInt) (X : C) : IsIso ((t.eTruncLT.obj a).map ((t.eTruncLTι a).app X)) :=
+  isIso_eTruncLT_obj_map_truncLTπ_app t a a (by rfl) X
+
+instance (a : EInt) (X : C) : IsIso ((t.eTruncLTι a).app ((t.eTruncLT.obj a).obj X)) := by
+  rw [← eTruncLT_obj_map_eTruncLTι_app]
+  infer_instance
+
 instance (X : C) (n : ℤ) [t.IsGE X n] (i : EInt) :
     t.IsGE ((t.eTruncLT.obj i).obj X) n := by
   induction i with
@@ -408,8 +425,9 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
     induction a with
     | bot => simpa using inferInstanceAs (IsIso ((t.truncLT b).map ((t.truncLTι b).app X)))
     | coe a =>
-      have : IsTriangulated C := inferInstance
-      sorry
+      simp only [eTruncLT_obj_mk, eTruncGE_obj_mk, Functor.comp_obj, eTruncLTGELTSelfToLTGE_app,
+        eTruncLT_map_eq_truncLTι]
+      infer_instance
     | top =>
       simp only [eTruncLT_obj_mk, eTruncGE_obj_top, Functor.comp_obj, eTruncLTGELTSelfToLTGE_app,
         eTruncLT_map_eq_truncLTι, zero_map, Functor.map_zero, isIsoZero_iff_source_target_isZero]
@@ -417,9 +435,25 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
       all_goals exact Functor.map_isZero _ (Functor.zero_obj _)
   | top => simpa using inferInstanceAs (IsIso (𝟙 _))
 
+variable (b : EInt) (X : C)
+
 instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
-  have : IsTriangulated C := inferInstance
-  sorry
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  induction a with
+  | bot => simpa using inferInstanceAs (IsIso ((t.eTruncLTι b).app ((t.eTruncLT.obj b).obj X)))
+  | coe a =>
+    induction b with
+    | bot => simpa [isIsoZero_iff_source_target_isZero] using
+        (t.eTruncGE.obj a).map_isZero (Functor.zero_obj _)
+    | coe b =>
+      simp only [eTruncLT_obj_mk, eTruncGE_obj_mk, Functor.comp_obj, eTruncLTGELTSelfToGELT_app,
+        eTruncLT_map_eq_truncLTι]
+      infer_instance
+    | top => simpa using inferInstanceAs (IsIso (𝟙 _))
+  | top =>
+    exact ⟨0, ((t.eTruncLT.obj b).map_isZero (by simp)).eq_of_src _ _,
+      IsZero.eq_of_src (by simp) _ _⟩
 
 end
 
@@ -428,10 +462,22 @@ noncomputable def eTruncLTGEIsoLEGT (a b : EInt) :
   (asIso (t.eTruncLTGELTSelfToLTGE a b)).symm ≪≫ asIso (t.eTruncLTGELTSelfToGELT a b)
 
 @[reassoc (attr := simp)]
+lemma eTruncLTGEIsoLEGT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
+    (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map f) ≫ (t.eTruncLTGEIsoLEGT a b).hom.app Y =
+      (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
+  (t.eTruncLTGEIsoLEGT a b).hom.naturality f
+
+@[reassoc (attr := simp)]
 lemma eTruncLTGEIsoLEGT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
       (t.eTruncLTGEIsoLEGT a b).hom.app X =
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
+  simp [eTruncLTGEIsoLEGT]
+
+@[reassoc (attr := simp)]
+lemma eTruncLTGEIsoLEGT_hom_app_fac' (a b : EInt) (X : C) :
+    (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =
+      (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoLEGT]
 
 open ComposableArrows in

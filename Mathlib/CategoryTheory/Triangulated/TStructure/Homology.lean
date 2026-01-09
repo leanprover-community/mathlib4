@@ -6,8 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Shift
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
+public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
@@ -1120,15 +1122,6 @@ end
 section
 
 variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence ℤ]
-
-/-noncomputable def homology'ιHeart'IsoHomoloyιHeart (q : ℤ) :
-    t.homology' q ⋙ t.ιHeart' ≅ t.homology q ⋙ t.ιHeart :=
-  t.shiftTruncGELE q 0 q 0 q (add_zero q) (add_zero q) ≪≫
-    isoWhiskerLeft _ t.homology₀ιHeart.symm ≪≫
-    (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (isoWhiskerLeft _ (t.homology₀.isoShiftZero ℤ).symm ≪≫
-    t.homology₀.shiftIso q 0 q (by simp)) _
-    -/
 
 noncomputable def homologyCompιHeartIso (q : ℤ) :
     t.homology q ⋙ t.ιHeart ≅ t.truncGELE q q ⋙ shiftFunctor C q :=
