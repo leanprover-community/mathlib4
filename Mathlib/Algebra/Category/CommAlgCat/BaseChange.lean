@@ -20,39 +20,37 @@ variable {R S : CommRingCat.{u}} (φ : R ⟶ S)
 
 /-- `Under.pushout` in `CommRingCat` is isomorphic to `ModuleCat.extendScalars` after
 composing with suitable forgetful functors. -/
-def CommRingCat.pushoutIsoExtendScalars : (((Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse) ⋙
-    forget₂ (CommAlgCat ↑S) (AlgCat ↑S)) ⋙ forget₂ (AlgCat ↑S) (ModuleCat ↑S)) ≅
-      (commAlgCatEquivUnder R).inverse ⋙ forget₂ (CommAlgCat R) (AlgCat R) ⋙
-        forget₂ (AlgCat R) (ModuleCat R) ⋙ ModuleCat.extendScalars φ.hom := by
+def CommRingCat.pushoutIsoExtendScalars :
+    Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse ⋙
+      forget₂ (CommAlgCat ↑S) (AlgCat ↑S) ⋙ forget₂ (AlgCat ↑S) (ModuleCat ↑S) ≅
+    (commAlgCatEquivUnder R).inverse ⋙ forget₂ (CommAlgCat R) (AlgCat R) ⋙
+      forget₂ (AlgCat R) (ModuleCat R) ⋙ ModuleCat.extendScalars φ.hom := by
   letI := φ.hom.toAlgebra
-  letI e (A : Under R) : pushout A.hom φ ≅ .of (S ⊗[R] A.right) :=
-    pushoutSymmetry _ _ ≪≫ (colimit.isColimit _).coconePointUniqueUpToIso
-      (CommRingCat.pushoutCoconeIsColimit R _ _)
-  haveI hel (A : Under R) : pushout.inl _ _ ≫ (e A).hom =
+  letI e (A : Under R) : (Under.pushout φ).obj A ≅
+     (commAlgCatEquivUnder S).functor.obj (.of _ <| S ⊗[R] A.right) :=
+    Under.isoMk (pushoutSymmetry _ _ ≪≫ (colimit.isColimit _).coconePointUniqueUpToIso
+        (CommRingCat.pushoutCoconeIsColimit R _ _))
+      (by simpa [-IsColimit.comp_coconePointUniqueUpToIso_hom] using
+        (colimit.isColimit _).comp_coconePointUniqueUpToIso_hom _ _)
+  haveI hel (A : Under R) : pushout.inl _ _ ≫ (e A).hom.right =
       CommRingCat.ofHom Algebra.TensorProduct.includeRight.toRingHom := by
     simpa [e, -IsColimit.comp_coconePointUniqueUpToIso_hom] using
       (colimit.isColimit _).comp_coconePointUniqueUpToIso_hom _ _
-  haveI her (A : Under R) : pushout.inr _ _ ≫ (e A).hom =
+  haveI her (A : Under R) : pushout.inr _ _ ≫ (e A).hom.right =
       CommRingCat.ofHom (Algebra.TensorProduct.includeLeft (S := R)).toRingHom := by
     simpa [e, -IsColimit.comp_coconePointUniqueUpToIso_hom] using
       (colimit.isColimit _).comp_coconePointUniqueUpToIso_hom _ _
   refine NatIso.ofComponents (fun A ↦
     LinearEquiv.toModuleIso
-      { __ := (e A).commRingCatIsoToRingEquiv.toAddEquiv, map_smul' s m := ?_ }) ?_
-  · dsimp [Iso.commRingCatIsoToRingEquiv, ModuleCat.restrictScalars] at m ⊢
-    simp only [Algebra.smul_def, map_mul,
-      RingHom.algebraMap_toAlgebra, Under.mk_hom]
-    rw [@Algebra.smul_def S (↑S ⊗[↑R] ↑A.right)]
-    change (pushout.inr A.hom φ ≫ (e A).hom) s * _ =
-      (CommRingCat.ofHom (algebraMap S (S ⊗[R] A.right))) s * _
-    congr 3
-    simp only [Functor.const_obj_obj, Functor.id_obj, her]
-    rfl
+      ((forget₂ (CommAlgCat ↑S) (AlgCat ↑S)).mapIso
+        ((commAlgCatEquivUnder S).inverse.mapIso (e A) ≪≫
+        (commAlgCatEquivUnder S).unitIso.symm.app _)).toAlgEquiv.toLinearEquiv ) ?_
   · intros X Y f
     ext x
-    change (pushout.desc (f.right ≫ pushout.inl Y.hom φ) (pushout.inr Y.hom φ) _ ≫ (e Y).hom) _ =
-      ((e X).hom ≫ CommRingCat.ofHom
-        (Algebra.TensorProduct.map (.id R S) (CommRingCat.toAlgHom f))) _
+    change
+      (pushout.desc (f.right ≫ pushout.inl Y.hom φ) (pushout.inr Y.hom φ) _ ≫ (e Y).hom.right) _ =
+        ((e X).hom.right ≫ CommRingCat.ofHom
+          (Algebra.TensorProduct.map (.id R S) (CommRingCat.toAlgHom f))) _
     congr 2
     ext1
     · rw [reassoc_of% hel]
