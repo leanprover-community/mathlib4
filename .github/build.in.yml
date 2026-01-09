@@ -503,7 +503,7 @@ jobs:
           cd pr-branch
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
           # We use .lake/ for the output file because landrun restricts /tmp access
-          if ! env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --trace Mathlib 2>&1 | tee .lake/lint_output.txt; then
+          if ! env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee .lake/lint_output.txt; then
             if grep -q "cannot parse arguments" .lake/lint_output.txt; then
               echo ""
               echo "=============================================================================="
