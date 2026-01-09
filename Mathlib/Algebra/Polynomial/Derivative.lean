@@ -552,7 +552,7 @@ theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
   rcases n with rfl | n; · simp
   rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
   suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by
-    simp [this, -nsmul_eq_mul, sum_range_succ, Nat.choose_two_right]
+    simp -implicitDefEqProofs [this, -nsmul_eq_mul, sum_range_succ, Nat.choose_two_right]
     ring
   rw [mul_comm (n + 1 + 1)]
   exact Nat.div_mul_cancel (Nat.two_dvd_mul_add_one _)
