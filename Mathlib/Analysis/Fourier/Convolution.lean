@@ -22,9 +22,9 @@ In this file we calculate the Fourier transform of a convolution.
 
 @[expose] public section
 
-namespace Real
-
 variable {𝕜 R E F F₁ F₂ F₃ : Type*}
+
+namespace Real
 
 open MeasureTheory Convolution
 
@@ -145,3 +145,72 @@ theorem fourier_mul_convolution_eq {f₁ : E → R} {f₂ : E → R}
   fourier_bilin_convolution_eq (mul ℂ R) hf₁ hf₂ hf₁' hf₂' ξ
 
 end Real
+
+namespace SchwartzMap
+
+variable [RCLike 𝕜]
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+  [BorelSpace E]
+  [NormedAddCommGroup F₁] [NormedSpace ℂ F₁] [NormedSpace 𝕜 F₁] [SMulCommClass ℂ 𝕜 F₁]
+  [NormedAddCommGroup F₂] [NormedSpace ℂ F₂] [NormedSpace 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace ℂ F₃] [NormedSpace 𝕜 F₃] [SMulCommClass ℂ 𝕜 F₃]
+
+open FourierTransform Convolution
+
+variable [CompleteSpace F₃]
+
+variable (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁))
+
+#check (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L pairing B (𝓕 f) ∘L fourierTransformCLM 𝕜
+
+/-- The bilinear pairing of Schwartz functions.
+
+The continuity in the left argument is provided in `SchwartzMap.pairing_continuous_left`. -/
+noncomputable
+def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →ₗ[𝕜] 𝓢(E, F₂) →L[𝕜] 𝓢(E, F₃) where
+  toFun f := (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L pairing B (𝓕 f) ∘L
+    fourierTransformCLM 𝕜
+  map_add' := by simp [FourierTransform.fourier_add (R := 𝕜)]
+  map_smul' := by simp [FourierTransform.fourier_smul]
+
+theorem fourier_convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
+    𝓕 (convolution B f g) = pairing B (𝓕 f) (𝓕 g) := by simp [convolution]
+
+variable [CompleteSpace F₁] [CompleteSpace F₂]
+
+theorem coe_convolution (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
+    (convolution B f g : E → F₃) =
+      𝓕⁻ (𝓕 (f : E → F₁) ⋆[B] 𝓕 (g : E → F₂)) := by
+  ext x
+
+  sorry
+
+theorem fourier_convolution' (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) (x : E) :
+    𝓕 (convolution B f g) x = 𝓕 ((f : E → F₁) ⋆[B] (g : E → F₂)) x := sorry
+
+theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) (x : E) :
+    convolution B f g x = (f ⋆[B] g) x := by
+  rw [coe_convolution, fourier_convolution']
+  rw [← Real.fourier_bilin_convolution_eq B f.integrable g.integrable f.continuous g.continuous]
+  sorry
+  /-_ = 𝓕⁻ (𝓕 (convolution B f g)) x := by simp
+  _ = 𝓕⁻ (fun y ↦ 𝓕 (f ⋆[B] g) y) x := by
+    rw [fourierInv_coe]
+    -- the next three should be `fourier_congr`
+    apply MeasureTheory.integral_congr_ae
+    filter_upwards with x
+    congr
+    simp [fourier_convolution, fourier_coe,
+      Real.fourier_bilin_convolution_eq B f.integrable g.integrable f.continuous g.continuous]
+  _ = _ := by
+    rw [Continuous.fourierInv_fourier_eq]
+    · refine BddAbove.continuous_convolution_right_of_integrable B ?_ f.integrable g.continuous
+      use SchwartzMap.seminorm ℂ 0 0 g
+      rw [mem_upperBounds]
+      rintro x ⟨y, rfl⟩
+      simp [norm_le_seminorm]
+    · exact f.integrable.integrable_convolution B g.integrable
+    · sorry-/
+
+
+end SchwartzMap
