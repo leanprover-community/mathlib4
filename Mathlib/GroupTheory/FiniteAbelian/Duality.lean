@@ -87,7 +87,8 @@ theorem card_monoidHom_of_hasEnoughRootsOfUnity :
 /--
 Let `G` be a finite commutative group and let `H` be a subgroup. If `M` is a commutative monoid
 such that `G →* Mˣ` and `H →* Mˣ` are both finite (this is the case for example if `M` is a
-commutative domain), then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
+commutative domain) and with enough `n`th roots of unity, where `n` is the exponent
+of `G`, then any homomorphism `H →* Mˣ` can be extended to an homomorphism `G →* Mˣ`.
 -/
 theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* Mˣ)]
     [Finite (H →* Mˣ)] : Function.Surjective (MonoidHom.restrictHom H Mˣ) := by
