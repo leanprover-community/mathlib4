@@ -49,6 +49,8 @@ open Matrix
 
 /-! ### Exceptional Cartan matrices -/
 
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
 /-- The Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
 def E₆ : Matrix (Fin 6) (Fin 6) ℤ :=
   !![ 2,  0, -1,  0,  0,  0;
