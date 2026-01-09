@@ -1253,6 +1253,7 @@ theorem MDifferentiable.comp_mdifferentiableOn (hg : MDifferentiable I' I'' g)
   rw [← mdifferentiableOn_univ] at hg
   exact hg.comp hf (by simp)
 
+@[fun_prop]
 theorem MDifferentiable.comp (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I I' f) :
     MDifferentiable I I'' (g ∘ f) := fun x => MDifferentiableAt.comp x (hg (f x)) (hf x)
 
