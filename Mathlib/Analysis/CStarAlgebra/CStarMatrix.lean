@@ -357,6 +357,12 @@ instance instSemiring [Fintype n] [DecidableEq n] [Semiring A] :
 instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
   inferInstanceAs <| Ring (Matrix n n A)
 
+noncomputable instance instInv [Fintype n] [DecidableEq n] [Semiring A] :
+    Inv (CStarMatrix n n A) := Ring.invOfLawful _
+
+instance instLawfulInv [Fintype n] [DecidableEq n] [Semiring A] :
+    LawfulInv (CStarMatrix n n A) := Ring.lawfulInv_invOfLawful _
+
 /-- `ofMatrix` bundled as a ring equivalence. -/
 def ofMatrixRingEquiv [Fintype n] [Semiring A] :
     Matrix n n A ≃+* CStarMatrix n n A :=
