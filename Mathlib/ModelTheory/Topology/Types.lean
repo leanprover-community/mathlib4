@@ -30,7 +30,7 @@ universe u
 
 variable {L : Language} {T : L.Theory} {α : Type*}
 
-instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
+public instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
 
 public lemma typesWith_range_basis : IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
   exists_subset_inter := by
