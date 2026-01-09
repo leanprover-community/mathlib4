@@ -418,7 +418,8 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
   invFun W := ⟨f '' W.1,
     image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
   toFun W := ⟨f ⁻¹' W.1,
-    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
+    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.2 hf₁ hf₂ hf₃
+      (by simp [hf₄.range_eq, W.2.1.1])⟩
   right_inv W := Subtype.ext <| by
     refine (Set.subset_preimage_image _ _).antisymm' (W.2.2 ?_ (Set.subset_preimage_image _ _))
     refine ⟨?_, (W.2.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
