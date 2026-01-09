@@ -72,7 +72,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
     S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
   pullback := by
     rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
-    obtain ⟨β,_,X₂,π₂,h,i,ι,hh⟩ := Precoherent.pullback f α X₁ π₁ hS
+    obtain ⟨β, _, X₂, π₂, h, i, ι, hh⟩ := Precoherent.pullback f α X₁ π₁ hS
     refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, ?_⟩
     rintro _ _ ⟨b⟩
     exact ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩
