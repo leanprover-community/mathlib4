@@ -5,11 +5,13 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-public import
-  Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
+import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Order properties of the operator logarithm
@@ -27,7 +29,7 @@ the strictly positive elements of a unital C⋆-algebra.
 * Show that `x => x * log x` is operator convex
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

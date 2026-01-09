@@ -24,13 +24,14 @@ open CategoryTheory CategoryTheory.MonoidalCategory CategoryTheory.MonoidalClose
 
 namespace CategoryTheory.Functor
 
-variable {D C : Type*} [Groupoid D] [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {D C : Type*} [Groupoid D] [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The internal hom functor `F ⟶[C] -` -/
 @[simps!]
 def closedIhom (F : D ⥤ C) : (D ⥤ C) ⥤ D ⥤ C :=
-  ((whiskeringRight₂ D Cᵒᵖ C C).obj internalHom).obj (Groupoid.invFunctor D ⋙ F.op)
+  ((whiskeringRight₂ D Cᵒᵖ C C).obj internalHom).obj
+    ((Groupoid.invEquivalence D).functor ⋙ F.op)
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The unit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/

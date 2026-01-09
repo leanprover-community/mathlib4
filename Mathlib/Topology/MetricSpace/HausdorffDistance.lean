@@ -127,12 +127,12 @@ theorem infEdist_le_edist_add_infEdist : infEdist x s ≤ edist x y + infEdist y
   rw [add_comm]
   exact infEdist_le_infEdist_add_edist
 
-theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + diam s := by
+theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s + Metric.ediam s := by
   simp_rw [infEdist, ENNReal.iInf_add]
   refine le_iInf₂ fun i hi => ?_
   calc
     edist x y ≤ edist x i + edist i y := edist_triangle _ _ _
-    _ ≤ edist x i + diam s := add_le_add le_rfl (edist_le_diam_of_mem hi hy)
+    _ ≤ edist x i + Metric.ediam s := add_le_add le_rfl (Metric.edist_le_ediam_of_mem hi hy)
 
 /-- The edist to a set depends continuously on the point -/
 @[continuity, fun_prop]
@@ -174,25 +174,15 @@ theorem infEdist_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x E ↔ x ∉ closure E := by
   rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 
-@[deprecated (since := "2025-05-23")]
-alias infEdist_pos_iff_not_mem_closure := infEdist_pos_iff_notMem_closure
-
 theorem infEdist_closure_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x (closure E) ↔ x ∉ closure E := by
   rw [infEdist_closure, infEdist_pos_iff_notMem_closure]
-
-@[deprecated (since := "2025-05-23")]
-alias infEdist_closure_pos_iff_not_mem_closure := infEdist_closure_pos_iff_notMem_closure
 
 theorem exists_real_pos_lt_infEdist_of_notMem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEdist x E := by
   rw [← infEdist_pos_iff_notMem_closure, ENNReal.lt_iff_exists_real_btwn] at h
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
-
-@[deprecated (since := "2025-05-23")]
-alias exists_real_pos_lt_infEdist_of_not_mem_closure :=
-  exists_real_pos_lt_infEdist_of_notMem_closure
 
 theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x s) :
     Disjoint (closedBall x r) s := by
@@ -341,14 +331,14 @@ theorem hausdorffEdist_image (h : Isometry Φ) :
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
-    hausdorffEdist s t ≤ diam (s ∪ t) := by
+    hausdorffEdist s t ≤ Metric.ediam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffEdist_le_of_mem_edist ?_ ?_
   · intro z hz
-    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
+    exact ⟨y, yt, Metric.edist_le_ediam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
-    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
+    exact ⟨x, xs, Metric.edist_le_ediam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + hausdorffEdist t u := by
@@ -536,8 +526,6 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
   h.not_ge <| infDist_le_dist_of_mem hy
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_dist_lt_infDist := notMem_of_dist_lt_infDist
-
 theorem disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
   disjoint_left.2 fun _y hy => notMem_of_dist_lt_infDist <| mem_ball'.1 hy
 
@@ -591,9 +579,6 @@ theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
     x ∉ closure s ↔ 0 < infDist x s :=
   (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.lt_iff_ne'.symm
 
-@[deprecated (since := "2025-05-23")]
-alias infDist_pos_iff_not_mem_closure := infDist_pos_iff_notMem_closure
-
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes -/
 theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) :
     x ∈ s ↔ infDist x s = 0 := by rw [← mem_closure_iff_infDist_zero hs, h.closure_eq]
@@ -602,9 +587,6 @@ theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) 
 theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
     x ∉ s ↔ 0 < infDist x s := by
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.lt_iff_ne']
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.IsClosed.not_mem_iff_infDist_pos := _root_.IsClosed.notMem_iff_infDist_pos
 
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by

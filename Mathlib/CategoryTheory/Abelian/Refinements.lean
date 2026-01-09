@@ -70,13 +70,13 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [Abelian C] {X Y : C} (S : ShortComplex C)
+variable {C : Type _} [Category* C] [Abelian C] {X Y : C} (S : ShortComplex C)
   {S₁ S₂ : ShortComplex C}
 
 lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :

@@ -194,6 +194,34 @@ theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B
   rw [inertiaDegIn_eq_inertiaDeg p P G]
   exact inertiaDeg_ne_zero _ _
 
+section tower
+
+variable (C : Type*) [CommRing C] [IsDomain C] [Algebra A C] [Algebra B C] [Module.Finite B C]
+  [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+  (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
+  (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
+
+include G GAC GBC in
+theorem inertiaDegIn_mul_inertiaDegIn [p.IsMaximal] [P.IsMaximal] :
+    p.inertiaDegIn B * P.inertiaDegIn C = p.inertiaDegIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDegIn_eq_inertiaDeg p P G, inertiaDegIn_eq_inertiaDeg p Q GAC,
+    inertiaDegIn_eq_inertiaDeg P Q GBC, inertiaDeg_algebra_tower p P Q]
+
+variable {p} in
+include G GAC GBC in
+theorem ramificationIdxIn_mul_ramificationIdxIn [IsDedekindDomain B] [IsDedekindDomain C]
+    (hp : map (algebraMap A C) p ≠ ⊥) (hP : map (algebraMap B C) P ≠ ⊥) :
+    p.ramificationIdxIn B * P.ramificationIdxIn C = p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, hQ⟩⟩ := P.nonempty_primesOver (S := C)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p P G, ramificationIdxIn_eq_ramificationIdx p Q GAC,
+    ramificationIdxIn_eq_ramificationIdx P Q GBC, ramificationIdx_algebra_tower hP hp]
+  exact over_def Q P ▸ map_comap_le
+
+end tower
+
 end RamificationInertia
 
 section fundamental_identity
@@ -219,6 +247,43 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
 end fundamental_identity
+
+section tower
+
+variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
+  [Algebra A B] [NoZeroSMulDivisors A B] {p : Ideal A} (P : Ideal B) [p.IsMaximal]
+  [P.IsMaximal] [P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+  [IsGaloisGroup G A B] (C : Type*) [CommRing C] [IsDedekindDomain C] [Algebra A C] [Algebra B C]
+  [Module.Finite A B] [Module.Finite A C] [Module.Finite B C] [NoZeroSMulDivisors A C]
+  [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+  (GAC : Type*) [Group GAC] [Finite GAC] [MulSemiringAction GAC C] [IsGaloisGroup GAC A C]
+  (GBC : Type*) [Group GBC] [Finite GBC] [MulSemiringAction GBC C] [IsGaloisGroup GBC B C]
+
+include G GAC GBC in
+theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
+    (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
+  have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
+  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GAC A C
+  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GBC B C
+  have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
+    mul_ne_zero (ramificationIdxIn_ne_zero GAC hp) (inertiaDegIn_ne_zero GAC)
+  rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C GAC]
+  calc
+    _ = ((p.primesOver B).ncard * (p.ramificationIdxIn B * p.inertiaDegIn B)) *
+          ((P.primesOver C).ncard * (P.ramificationIdxIn C * P.inertiaDegIn C)) := by
+      rw [← inertiaDegIn_mul_inertiaDegIn p P G C GAC GBC,
+        ← ramificationIdxIn_mul_ramificationIdxIn P G C GAC GBC
+        (map_ne_bot_of_ne_bot hp) (map_ne_bot_of_ne_bot hP)]
+      ring
+    _ = Nat.card GAC := by
+      rw [ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G,
+        ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP C GBC,
+        (IsGaloisGroup.toFractionRing G A B).card_eq_finrank,
+        (IsGaloisGroup.toFractionRing GAC A C).card_eq_finrank,
+        (IsGaloisGroup.toFractionRing GBC B C).card_eq_finrank, Module.finrank_mul_finrank]
+
+end tower
 
 section inertia
 
@@ -272,5 +337,31 @@ lemma card_inertia_eq_ramificationIdxIn
     Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G]
 
 end inertia
+
+section galRestrict
+
+variable (R K L S : Type*) [CommRing R] [CommRing S] [Algebra R S] [Field K] [Field L]
+    [Algebra R K] [IsFractionRing R K] [Algebra S L]
+    [Algebra K L] [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
+    [IsIntegralClosure S R L] [FiniteDimensional K L]
+
+lemma exists_comap_galRestrict_eq [IsDedekindDomain R] [IsGalois K L] {p : Ideal R}
+    {P₁ P₂ : Ideal S} (hP₁ : P₁ ∈ primesOver p S) (hP₂ : P₂ ∈ primesOver p S) :
+    ∃ σ, P₁.comap (galRestrict R K L S σ) = P₂ := by
+  have : IsDomain S :=
+    (IsIntegralClosure.equiv R S L (integralClosure R L)).toMulEquiv.isDomain (integralClosure R L)
+  have := IsIntegralClosure.isDedekindDomain R K L S
+  have : Module.Finite R S := IsIntegralClosure.finite R K L S
+  have := hP₁.1
+  have := hP₁.2
+  have := hP₂.1
+  have := hP₂.2
+  have : IsFractionRing S L := IsIntegralClosure.isFractionRing_of_finite_extension R K L S
+  let : MulSemiringAction Gal(L/K) S := IsIntegralClosure.MulSemiringAction R K L S
+  have : IsGaloisGroup Gal(L/K) R S := IsGaloisGroup.of_isFractionRing _ _ _ K L
+  obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup p P₂ P₁ Gal(L/K)
+  exact ⟨σ, comap_map_of_bijective _ ((galRestrict R K L S σ).bijective)⟩
+
+end galRestrict
 
 end Ideal
