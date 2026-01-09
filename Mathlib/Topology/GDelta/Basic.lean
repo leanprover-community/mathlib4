@@ -244,7 +244,7 @@ lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :
     mem_interior_iff_mem_nhds]
 
 /-- The image of a nowhere dense set through an inducing map is nowhere dense. -/
-lemma Topology.IsInducing.isNowhereDense_image {f : X → Y} [TopologicalSpace Y]
+lemma Topology.IsInducing.isNowhereDense_image [TopologicalSpace Y] {f : X → Y}
     (hf : Topology.IsInducing f) {s : Set X} (h : IsNowhereDense s) : IsNowhereDense (f '' s) := by
   rw [isNowhereDense_iff_forall_notMem_nhds, forall_mem_image] at *
   simp_rw [hf.nhds_eq_comap, hf.closure_eq_preimage_closure_image] at h
@@ -283,6 +283,14 @@ lemma isMeagre_iUnion [Countable ι'] {f : ι' → Set X} (hs : ∀ i, IsMeagre 
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
+lemma isMeagre_biUnion {I : Set ι} (c : I.Countable) {f : ι → Set X}
+    (h : ∀ i ∈ I, IsMeagre (f i)) : IsMeagre (⋃ i ∈ I, f i) := by
+  suffices IsMeagre (⋃ i : I, f i) by simpa
+  have : Countable I := c
+  apply isMeagre_iUnion
+  intro ⟨i, hi⟩
+  exact h i hi
+
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
@@ -301,5 +309,34 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
 lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := by
   contrapose! hs
   simpa [hs] using IsMeagre.empty
+
+/-- A nowhere dense set is meagre. -/
+lemma IsNowhereDense.isMeagre {s : Set X} (h : IsNowhereDense s) : IsMeagre s := by
+  rw [isMeagre_iff_countable_union_isNowhereDense]
+  exact ⟨{s}, by simpa, by simp, by simp⟩
+
+lemma exists_of_not_isMeagre_biUnion {I : Set ι}
+    (c : I.Countable) {A : ι → Set X} (h : ¬IsMeagre (⋃ i ∈ I, A i)) :
+    ∃ i ∈ I, ¬IsMeagre (A i) := by
+  contrapose! h
+  exact isMeagre_biUnion c h
+
+/-- The image of a meagre set through an inducing map is meagre. -/
+lemma Topology.IsInducing.isMeagre_image [TopologicalSpace Y] {f : X → Y}
+    (hf : Topology.IsInducing f) {s : Set X} (h : IsMeagre s) : IsMeagre (f '' s) := by
+  rw [isMeagre_iff_countable_union_isNowhereDense] at *
+  obtain ⟨T, isNowhereDense, countable, cover⟩ := h
+  refine ⟨(Set.image f) '' T, ?isNowhereDense, countable.image _, ?cover⟩
+  case isNowhereDense =>
+    intro u ⟨t, tT, tu⟩
+    rw [← tu]
+    apply hf.isNowhereDense_image (isNowhereDense t tT)
+  case cover =>
+    rw [← Set.image_sUnion]
+    grw [cover]
+
+/-- A set is meagre if it is meagre in some subspace. -/
+lemma IsMeagre.image_val {s : Set X} {m : Set s} (h : IsMeagre (m : Set s)) :
+    IsMeagre (m : Set X) := Topology.IsInducing.subtypeVal.isMeagre_image h
 
 end IsMeagre
