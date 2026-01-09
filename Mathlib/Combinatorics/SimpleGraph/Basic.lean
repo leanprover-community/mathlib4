@@ -142,7 +142,7 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
-instance {V : Type u} [DecidableEq  (r : V → V → Prop)
+instance {V : Type u} [DecidableEq V] (r : V → V → Prop)
     [DecidableRel r] : DecidableRel (SimpleGraph.fromRel r).Adj :=
   inferInstanceAs (DecidableRel fun a b ↦ a ≠ b ∧ (r a b ∨ r b a))
 
