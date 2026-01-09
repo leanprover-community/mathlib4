@@ -17,8 +17,7 @@ lifted to a continuous semilinear map between the completions of those modules.
 ## Main declarations:
 
 * `ContinuousLinearMap.completion`: promotes a continuous semilinear map
-  from `G` to `H` into a continuous semilinear map
-  from `Completion G` to `Completion H`.
+  from `G` to `H` to a continuous semilinear map from `Completion G` to `Completion H`.
 -/
 
 @[expose] public section
