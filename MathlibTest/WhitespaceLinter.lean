@@ -1,6 +1,6 @@
 module
 
-public import Aesop.Frontend.Command
+public import Aesop.Frontend.Attribute
 import all Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Lemma
@@ -12,35 +12,6 @@ public import Batteries.Linter.UnreachableTactic
 public import Qq
 import Mathlib.Tactic.FindSyntax
 public import Mathlib.Util.Superscript
-
-meta section
-
-open Lean Elab Command Mathlib Linter Style.Whitespace in
-elab tk:"#reformat " cmd:command : command => do
-  let tktxt := "#reformat"
-  if let some cmdSubstring := cmd.raw.getSubstring? then
-  if let .error .. :=
-    GuardExceptions.captureException (← getEnv) Parser.topLevelCommandParserFn cmd.raw.getSubstring?.get!.toString
-  then
-    logWarningAt tk m!"{tktxt}: Parsing failed"
-    return
-  elabCommand cmd
-  if (← get).messages.hasErrors then
-    logWarningAt tk m!"{tktxt}: Command has errors"
-    return
-  match ← getExceptions (verbose? := false) cmd with
-  | none => logWarningAt tk m!"{tktxt} internal error!"
---  | some #[] => logInfoAt tk "All is good!"
-  | some mex =>
-    let (reported, _) := reportedAndUnreportedExceptions mex
-    if reported.isEmpty then
-      logInfoAt tk "All is good!"
-      return
-    let parts := mkStrings cmdSubstring (reported.map (·.rg.start))
-    let reformatted := parts.foldl (· ++ ·.toString) ""
-    liftTermElabM do Meta.liftMetaM do Lean.Meta.Tactic.TryThis.addSuggestion cmd reformatted
-
-end
 
 namespace Bundle
 set_option linter.style.whitespace true
@@ -293,14 +264,9 @@ end Bundle
 set_option linter.style.whitespace true in
 meta def New  := 0
 
-/-- info: All is good! -/
-#guard_msgs in
-#reformat
 set_option linter.style.whitespace true
 
-/-- info: All is good! -/
 #guard_msgs in
-#reformat
 example : True ∧ True := by
   refine ?_
   constructor
@@ -308,20 +274,158 @@ example : True ∧ True := by
   · apply ?_
     first | assumption | done | assumption | trivial
 
-set_option linter.style.whitespace false in
 /--
-info: Try this:
-  [apply] example : True ∧
-     True := by
-    refine ?_
-    constructor
-    · {exact  trivial}
-    · apply ?_;
-      first | assumption |
-       done | assumption | trivial
+warning: remove space in the source
+
+This part of the code
+  'example    :'
+should be written as
+  'example :'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove space in the source
+
+This part of the code
+  ':   True∧'
+should be written as
+  ': True'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'True∧'
+should be written as
+  'True ∧'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove space in the source
+
+This part of the code
+  'True    :=by'
+should be written as
+  'True :='
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  ':=by'
+should be written as
+  ':= by'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  '·{exact'
+should be written as
+  '· {'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove space in the source
+
+This part of the code
+  'apply  ?_'
+should be written as
+  'apply ?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove spaces in the source
+
+This part of the code
+  '?_    ;'
+should be written as
+  '?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'first |'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'first|assumption|'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  'done |'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'done|assumption'
+should be written as
+  '| assumption'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove space in the source
+
+This part of the code
+  'done|assumption   |'
+should be written as
+  'assumption |'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: remove space in the source
+
+This part of the code
+  '|     trivial'
+should be written as
+  '| trivial'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
 -/
 #guard_msgs in
-#reformat
 example    :   True∧
    True    :=by
   refine ?_
@@ -1072,16 +1176,6 @@ example : 0 = 0 :=
        _ = 1 * (0 + 0) := Nat.mul_add .. |>.symm
        _ = 0 := rfl
 
-run_cmd
-  let mut a := "⟨ακ⟩".toRawSubstring
-  let mut con := 0
-  while !a.isEmpty do
-    dbg_trace "Step {con}: {a}"
-    con := con + 1
-    a := a.drop 1
-  IO.println con
-
-
 open Function in
 theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
     (rfg : RightInverse f g) : LeftInverse f g := fun y =>
@@ -1372,7 +1466,7 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 include     h
 
 /--
-warning: extra space in the source
+warning: remove space in the source
 
 This part of the code
   '@[aesop  (rule_sets'
