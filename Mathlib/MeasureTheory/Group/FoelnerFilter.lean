@@ -42,13 +42,23 @@ This file defines Følner filters for measurable spaces acted on by a group.
 * `amenable_of_maxFoelner_ne_bot` : If the maximal Følner filter is non-trivial,
   then there exists a `G`-invariant finitely additive probability measure on `X`.
 
+## Temporary design adaptations
+
+* In the current version, we refer to the amenability of the action of a group on a measure space
+  (e.g. in `IsFoelner.amenable` and `amenable_of_maxFoelner_ne_bot`), even though a definition of
+  amenability has not yet been given in Mathlib.
+  This is because there are different notions of amenability for groups and for group actions,
+  and a Mathlib definition should be provided at the greatest level of generality, on which there
+  has not yet been a general consensus.
+  At the present moment, `amenable` corresponds to the existence of a `G`-invariant finitely
+  additive probability measure.
+
 ## Tags
 
 Foelner, Følner filter, amenability, amenable group
 -/
 
 @[expose] public section
-
 
 open MeasureTheory Filter Set Tendsto
 open scoped ENNReal Pointwise symmDiff Topology Filter
@@ -58,12 +68,11 @@ variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 
 namespace Filter
 
-
 variable (G μ l F) in
 /-- A Følner sequence with respect to some group `G` acting on a measure space `X`
     is a sequence of sets `F` such that:
-      1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-      2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+    1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+    2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
 @[mk_iff]
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -129,19 +138,16 @@ theorem IsFoelner.mean_smul_eq_mean [SMulInvariantMeasure G X μ]
     set A := s ∩ h⁻¹ • F i
     set B := s ∩ h'⁻¹ • F i
     calc
-      μ A ≤ μ B + μ (A \ B) := by
-        simpa [Set.inter_union_diff] using
-          (measure_union_le (A ∩ B) (A \ B)).trans <| add_le_add_left (measure_mono (by simp)) _
-      _ ≤ μ B + μ ((h⁻¹ • F i) ∆ (h'⁻¹ • F i)) :=
-        add_le_add_right (by
-          rw [← inter_diff_distrib_left]
-          apply measure_mono
-          exact inter_subset_right.trans <| by simp [symmDiff_def]) _
+      μ A ≤ μ (A ∩ B) + μ (A \ B) := measure_le_inter_add_diff _ _ _
+      _ ≤ μ B + μ (A ∆ B) := by gcongr <;> simp [symmDiff]
+      _ ≤ μ B + μ ((h⁻¹ • F i) ∆ (h'⁻¹ • F i)) := by
+        gcongr
+        simp [A, B, ← inter_symmDiff_distrib_left]
   rw [← add_zero <| mean μ u F (h' • s)]
   exact le_of_tendsto_of_tendsto'
     (hfoel.tendsto_nhds_mean _)
     ((hfoel.tendsto_nhds_mean _).add tendsto₀)
-    (by simp only [← ENNReal.add_div]; exact fun i ↦ by gcongr; exact h_le_add i)
+    (by intro i; rw [← ENNReal.add_div]; gcongr; exact h_le_add i)
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
     space `X`, then it exists a `G`-invariant finitely additive probability measure on `X`. -/
@@ -167,7 +173,7 @@ variable (l F) in
 theorem isFoelner_iff_tendsto : IsFoelner G μ l F ↔ Tendsto F l (maxFoelner G μ) := by
   simp [maxFoelner, tendsto_inf, tendsto_iInf, isFoelner_iff, Function.comp_def, and_assoc]
 
-theorem amenable_of_maxFoelner_ne_bot [SMulInvariantMeasure G X μ] (h : NeBot (maxFoelner G μ)) :
+theorem amenable_of_maxFoelner_ne_bot [SMulInvariantMeasure G X μ] [NeBot (maxFoelner G μ)] :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
         ∀ (g : G) (s : Set X), m (g • s) = m s :=
