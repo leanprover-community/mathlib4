@@ -122,7 +122,6 @@ theorem simply_connected_iff_loops_nullhomotopic :
       _ = trans (trans ⟦p₁⟧ (symm ⟦p₂⟧)) ⟦p₂⟧ := by simp
       _ = ⟦p₂⟧ := by grind
 
-
 /-!
 ### Simply connected sets
 -/
