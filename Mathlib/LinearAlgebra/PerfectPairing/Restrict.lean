@@ -23,7 +23,7 @@ We provide API for restricting perfect pairings to submodules and for restrictin
 
 -/
 
-@[expose] public section
+public section
 
 open Function Module Set
 open Submodule (span subset_span)
@@ -48,7 +48,7 @@ include hi hj hij
 set_option backward.privateInPublic true in
 private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
-  · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toPerfPair.symm := by
+  · replace hm : i m ∈ j.range.dualAnnihilator.map (p.toPerfPair.symm : Dual R N →ₗ[R] M) := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
       refine ⟨p.toPerfPair (i m), ?_, LinearEquiv.symm_apply_apply _ _⟩
       rintro - ⟨n, rfl⟩
@@ -71,17 +71,6 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
 
 /-- The restriction of a perfect pairing to submodules is a perfect pairing. -/
 lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
-  bijective_left := p.restrict_aux i j hi hj hij
-  bijective_right := p.flip.restrict_aux j i hj hi hij.flip
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-set_option linter.deprecated false in
-/-- The restriction of a perfect pairing to submodules (expressed as injections to provide
-definitional control). -/
-@[deprecated IsPerfPair.restrict (since := "2025-05-28")]
-def _root_.PerfectPairing.restrict : PerfectPairing R M' N' where
-  toLinearMap := p.compl₁₂ i j
   bijective_left := p.restrict_aux i j hi hj hij
   bijective_right := p.flip.restrict_aux j i hj hi hij.flip
 
@@ -149,28 +138,6 @@ lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
     p.restrictScalars_surjective_aux i j h₁ hp⟩
   bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM fun m n ↦ hp n m,
     p.flip.restrictScalars_surjective_aux j i h₂ fun m n ↦ hp n m⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-set_option linter.deprecated false in
-/-- Restriction of scalars for a perfect pairing taking values in a subring. -/
-@[deprecated IsPerfPair.restrictScalars (since := "2025-05-28")]
-def _root_.PerfectPairing.restrictScalars
-    (hi : Injective i) (hj : Injective j)
-    (hM : span R (LinearMap.range i : Set M) = ⊤)
-    (hN : span R (LinearMap.range j : Set N) = ⊤)
-    (h₁ : ∀ g : Module.Dual S N', ∃ m,
-      (p.toPerfPair (i m)).restrictScalars S ∘ₗ j = Algebra.linearMap S R ∘ₗ g)
-    (h₂ : ∀ g : Module.Dual S M', ∃ n,
-      (p.flip.toPerfPair (j n)).restrictScalars S ∘ₗ i = Algebra.linearMap S R ∘ₗ g)
-    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
-    PerfectPairing S M' N' :=
-  { toLinearMap := LinearMap.restrictScalarsRange₂ i j (Algebra.linearMap S R)
-      (FaithfulSMul.algebraMap_injective S R) p hp
-    bijective_left := ⟨p.restrictScalars_injective_aux i j hi hN hp,
-      p.restrictScalars_surjective_aux i j h₁ hp⟩
-    bijective_right := ⟨p.flip.restrictScalars_injective_aux j i hj hM (fun m n ↦ hp n m),
-      p.flip.restrictScalars_surjective_aux j i h₂ (fun m n ↦ hp n m)⟩}
 
 end RestrictScalars
 

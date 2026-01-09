@@ -120,7 +120,7 @@ protected def Subset (x y : PSet) : Prop :=
 instance : HasSubset PSet :=
   ⟨PSet.Subset⟩
 
-instance : IsRefl PSet (· ⊆ ·) :=
+instance : @Std.Refl PSet (· ⊆ ·) :=
   ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
 
 instance : IsTrans PSet (· ⊆ ·) :=
@@ -259,8 +259,6 @@ theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
 theorem notMem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
-
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -315,8 +313,6 @@ theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
 @[simp]
 theorem notMem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]

@@ -723,8 +723,6 @@ theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
   rw [mem_ker, map_one]
   exact one_ne_zero
 
-@[deprecated (since := "2025-05-23")] alias not_one_mem_ker := one_notMem_ker
-
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
 

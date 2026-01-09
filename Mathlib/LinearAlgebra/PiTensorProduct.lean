@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Curry
 We define the tensor product of an indexed family `s : ι → Type*` of modules over commutative
 semirings. We denote this space by `⨂[R] i, s i` and define it as `FreeAddMonoid (R × Π i, s i)`
 quotiented by the appropriate equivalence relation. The treatment follows very closely that of the
-binary tensor product in `LinearAlgebra/TensorProduct.lean`.
+binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
 
 ## Main definitions
 
@@ -657,7 +657,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
   toFun := piTensorHomMapFun₂
   map_add' x y := piTensorHomMapFun₂_add x y
-  map_smul' x y :=  piTensorHomMapFun₂_smul x y
+  map_smul' x y := piTensorHomMapFun₂_smul x y
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
