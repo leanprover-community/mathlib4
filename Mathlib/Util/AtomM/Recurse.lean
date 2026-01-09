@@ -42,6 +42,8 @@ structure Recurse.Config where
   red := TransparencyMode.reducible
   /-- if true, local let variables can be unfolded -/
   zetaDelta := false
+  /-- if true, implication hypotheses are added to the local context of the discharger -/
+  contextual := false
 deriving Inhabited, BEq, Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
@@ -103,7 +105,8 @@ partial def RecurseM.run
     {α : Type} (s : IO.Ref State) (cfg : Recurse.Config) (wellBehavedDischarge : Bool)
     (eval : Expr → AtomM Simp.Result) (simp : Simp.Result → MetaM Simp.Result) (x : RecurseM α) :
     MetaM α := do
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true}
+  let ctx ← Simp.mkContext
+    { zetaDelta := cfg.zetaDelta, singlePass := true, contextual := cfg.contextual }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
