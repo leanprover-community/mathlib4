@@ -44,10 +44,10 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] (f : A →ₚ[�
 namespace PositiveLinearMap
 
 set_option linter.unusedVariables false in
-/-- The Gelfand─Naimark─Segal space constructed from a positive linear functional on a
+/-- The Gelfand─Naimark─Segal (GNS) space constructed from a positive linear functional on a
 non-unital C⋆-algebra. This is a type synonym of `A`.
 
-This space is only a pre-inner product space. It's Hilbert space completion is
+This space is only a pre-inner product space. Its Hilbert space completion is
 `PositiveLinearMap.GNS`. -/
 @[nolint unusedArguments]
 def PreGNS (f : A →ₚ[ℂ] ℂ) := A
@@ -71,7 +71,7 @@ variable [StarOrderedRing A]
 
 /--
 The (semi-)inner product space whose elements are the elements of `A`, but which has an
-inner product-induced norm induced by `f` which is different from the norm on `A`.
+inner product-induced norm that is different from the norm on `A` and which is induced by `f`.
 -/
 abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.PreGNS where
   inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
@@ -108,7 +108,7 @@ The continuous linear map from a C⋆-algebra `A` to the `PositiveLinearMap.preG
 a positive linear functional `f : A →ₚ[ℂ] ℂ`. This map is given by left-multiplication by `a`:
 `x ↦ f.toPreGNS (a * f.ofPreGNS x)`.
 
-This map is lifted to the completion of `f.PreGNS` (i.e. `f.GNS`) in order to construct
+This is the map that is lifted to the completion of `f.PreGNS` (i.e. `f.GNS`) in order to define
 `gnsNonUnitalStarAlgHom`.
 -/
 @[simps!]
@@ -132,8 +132,9 @@ lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
   ext c; simp [mul_assoc]
 
 /--
-The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
-that is constructed from a positive linear functional `f` on a possibly non-unital C⋆-algebra.
+The non-unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on
+a Hilbert space that is constructed from a positive linear functional `f` on a possibly non-unital
+C⋆-algebra.
 -/
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
   toFun a := (f.leftMulMapPreGNS a).completion
@@ -183,8 +184,8 @@ private lemma gnsNonUnitalStarAlgHom_map_one : f.gnsNonUnitalStarAlgHom 1 = 1 :=
   | ih b => simp [gnsNonUnitalStarAlgHom]
 
 /--
-The unital ⋆-homomorphism/⋆-representation of A into the bounded operators on a Hilbert space
-that is constructed from a positive linear functional `f` on a unital C⋆-algebra.
+The unital ⋆-homomorphism/⋆-representation of `A` into the algebra of bounded operators on a Hilbert
+space that is constructed from a positive linear functional `f` on a unital C⋆-algebra.
 
 This is the unital version of `gnsNonUnitalStarAlgHom`.
 -/
