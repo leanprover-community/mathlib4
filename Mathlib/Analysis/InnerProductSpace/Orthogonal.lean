@@ -416,9 +416,8 @@ theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := I
 
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
-theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
-  simp only [mem_orthogonal]
-  exact Submodule.mem_orthogonal' (K.toSubmodule) v
+theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
+  Submodule.mem_orthogonal' (K.toSubmodule) v
 
 variable {K}
 
