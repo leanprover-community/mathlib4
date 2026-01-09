@@ -108,7 +108,7 @@ lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
     Finite c.pt :=
   Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
 
-/-- Any functor from a finite category to `Type _` that only involves finite objects,
+/-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (colimit K) := by
