@@ -170,7 +170,11 @@ public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType 
   let enterStx ← insertEnterSyntax locations goalType
   let enterFormat ← PrettyPrinter.ppCategory `tactic enterStx
   let enterString := enterFormat.pretty (width := 100) (indent := indent) (column := indent)
-  return ("Generate conv", enterString, none)
+  -- highlight trailing `skip` after insertion
+  let trailingSkipRange? : Option (String.Pos.Raw × String.Pos.Raw) :=
+    let trimmed := enterString.trimAsciiEnd
+    trimmed.dropSuffix? "skip" |>.map (·.rawEndPos, trimmed.rawEndPos)
+  return ("Generate conv", enterString, trailingSkipRange?)
 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]
