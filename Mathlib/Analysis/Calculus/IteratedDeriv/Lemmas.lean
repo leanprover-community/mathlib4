@@ -209,7 +209,7 @@ lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
 
--- TODO: `@[to_fun]` generates the wrong name. Same for the various lemmas below
+-- TODO: `@[to_fun]` generates the wrong name. Same for the various lemmas below.
 lemma iteratedDeriv_fun_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (fun z ↦ f z + g z) x = iteratedDeriv n f x + iteratedDeriv n g x :=
   iteratedDeriv_add hf hg
