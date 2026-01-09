@@ -10,6 +10,12 @@ public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 /-!
 # Truncations for a t-structure
 
+Let `t` be a t-structure on a (pre)triangulated category `C`.
+In this file, for any `n : ℤ`, we introduce the truncation functors
+`t.truncLE n : C ⥤ C` and `t.truncGT n : C ⥤ C`, as variants of the functors
+`t.truncLT n : C ⥤ C` and `t.truncGE n : C ⥤ C` introduced in the file
+`Mathlib/CategoryTheory/Triangulated/TStucture/TruncLTGE.lean`.
+
 -/
 
 @[expose] public section
