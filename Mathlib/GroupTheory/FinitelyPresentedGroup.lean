@@ -10,7 +10,15 @@ import Mathlib
 /-!
 # Finitely Presented Groups
 
-This file defines finitely presented groups and proves their basic properties.
+This file defines when a group is finitely presented and proves their basic properties.
+The formal definition of when a group is (finitely) presented is when there exists an isomorphism
+between G and F_S / << R >> where S is the generating set and R are the relations.
+Here, we define a `Is(Finitely)Presented` directly in terms of the existence of F_S / << R >>
+for ease, ignoring the isomorphism.
+
+TODO : maybe just define FinitelyPresentedGroup, then IsFinitelyPresented should be in terms of
+the isomorphism? And you can define that FinitelyPresentedGroup IsFinitelyPresented!
+OR: look at Group.FG and how that package works.
 
 ## Main definitions
 
@@ -20,7 +28,7 @@ This file defines finitely presented groups and proves their basic properties.
 finitely presented group, normal closure finitely generated,
 -/
 
-universe u
+universe u v
 -- TODO not sure if this is the right abstraction / right name for this.
 /-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
 the homomorphism mapped by the inverse isomorphism. -/
@@ -30,8 +38,21 @@ lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
   rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm]
   rfl
 
-def FinitelyPresentedGroup (n : ℕ) (rels : Set (FreeGroup (Fin n))) (_h : rels.Finite) : Type :=
-  FreeGroup (Fin n) ⧸ Subgroup.normalClosure (rels : Set (FreeGroup (Fin n)))
+def FinitelyPresentedGroup (n : ℕ) (rels : Set (FreeGroup (Fin n))) (_h : rels.Finite) :=
+  FreeGroup (Fin n) ⧸ Subgroup.normalClosure rels
+
+def FinitelyPresentedGroup' (α : Type*) (_ : Finite α) (rels : Set (FreeGroup α))
+(_h : rels.Finite) := FreeGroup α ⧸ Subgroup.normalClosure rels
+
+namespace FinitelyPresentedGroup
+
+instance (n : ℕ) (rels : Set (FreeGroup (Fin n))) (h : rels.Finite) :
+Group (FinitelyPresentedGroup n rels h) :=
+  QuotientGroup.Quotient.group _
+
+/- instance (α : Type*) (_ : Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite) :
+Group (FinitelyPresentedGroup' α rels h) :=
+  QuotientGroup.Quotient.group _ -/
 
 open Subgroup
 
@@ -54,6 +75,14 @@ elements whose normal closure of its kernel is finitely generated. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out : ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)
+
+class IsFinitelyPresented' (G : Type*) [Group G] : Prop where
+  out: ∃ (n : ℕ) (rels : Set (FreeGroup (Fin n))) (h : rels.Finite),
+  Nonempty (G ≃* (FinitelyPresentedGroup n rels h))
+
+/- class IsFinitelyPresented'' (G : Type*) [Group G] : Prop where
+  out: ∃ (α : Type*) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
+  Nonempty (G ≃* (FinitelyPresentedGroup' α rels h)) -/
 
 -- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
   -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
@@ -176,29 +205,40 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
   use S, hSfinite, f, hfsurj
 
--- `u` is chosen as the universe as otw creates problems with other FP group def.
--- This is fine as `PresentedGroup` is defined as having the same type as its generators.
-def IsPresentedGroup (G : Type u) [Group G] : Prop :=
+/-  `u` is chosen as the universe as otw creates problems with other FP group def.
+ `PresentedGroup` is defined as having the same type as its generators in #PresentedGroup. -/
+def IsPresented (G : Type u) [Group G] : Prop :=
   ∃ (α : Type u) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
-  Function.Surjective f ∧ (f.ker = normalClosure rels)
+  Function.Surjective f ∧ (normalClosure rels = f.ker)
 
-instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresentedGroup G := by
+def IsPresented' (G : Type u) [Group G] : Prop :=
+  ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+
+/- If we use `α : Type for isFinitelyPresented_iff_finite` then creates type incompatibility
+with def of `IsPresentedGroup`. -/
+instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresented G := by
   rw [isFinitelyPresented_iff_finite] at h
   obtain ⟨α, _, f, hfsurj, hfker⟩ := h
   obtain ⟨S, hSfinite, hSclosure⟩ := hfker
-  exact ⟨ α, S, f, hfsurj, hSclosure.symm⟩
+  exact ⟨α, S, f, hfsurj, hSclosure⟩
 
-/-   lemma fpGroup_is_fgGroup (G: Type*) [Group G] (h: IsFinitelyPresented G) : Group.FG G := by
-  rw [Group.fg_iff_exists_freeGroup_hom_surjective]
-  apply isFinitelyPresented_iff at G
-  --constructor
-  sorry -/
+-- TODO PresentedGroup with finite assumptions is FP. (Valerio had a proof)
 
-/- lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
+lemma isFP_isP {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresented' G := by
+  obtain ⟨n, rels, hrels, ⟨ iso ⟩ ⟩ := h
+  unfold IsPresented'
+  sorry
+
+
+-- TODO? every group is isomorphic to a `PresentedGroup`.
+
+
+
+/-  lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
     IsFinitelyPresented ((FreeGroup α) ⧸ normalClosure s) := by
-    rw [isFinitelyPresented_iff]
+    rw [isFinitelyPresented_iff_finite]
     constructor
-    sorry -/
+    sorry  -/
 
 /- namespace IsFinitelyPresented
 
@@ -207,6 +247,17 @@ variable {G H : Type*} [Group G] [Group H]
 -- Finitely presented groups are closed under isomorphism
 lemma of_equiv (e : G ≃* H) (h : IsFinitelyPresented G) :
     IsFinitelyPresented H := by
+  sorry
+
+-- Direct products of finitely presented groups are finitely presented
+instance instProd [IsFinitelyPresented G] [IsFinitelyPresented H] :
+    IsFinitelyPresented (G × H) := by
+  sorry
+
+-- Quotients of finitely presented groups by finitely generated normal subgroups
+lemma quotient_of_fg_normal (N : Subgroup G) [N.Normal]
+    [IsFinitelyPresented G] (hN : IsNormalClosureFG N) :
+    IsFinitelyPresented (G ⧸ N) := by
   sorry
 
 -- Trivial group is finitely presented
@@ -219,7 +270,7 @@ instance instFinite [Finite G] : IsFinitelyPresented G := by
 
 end IsFinitelyPresented -/
 
-/- -- Free groups are finitely presented
+/- -- Finitely generated free groups are finitely presented
 instance FreeGroup.instFinitelyPresented (α : Type*) [Fintype α] :
     IsFinitelyPresented (FreeGroup α) := by
   sorry
