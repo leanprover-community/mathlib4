@@ -221,8 +221,8 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 /-! ### Subset and strict subset relations -/
 
 
-instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Refl (Set α) (· ⊆ ·) :=
+  show Std.Refl (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (· ≤ ·) by infer_instance
