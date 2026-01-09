@@ -529,6 +529,9 @@ section
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
 
+/-- An homology data for `X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)`,
+expressing `(X.H n₁).obj (mk₁ f)` as the homology of this short complex,
+see `EIsoH`. -/
 @[simps!]
 noncomputable def homologyDataEIdId :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).HomologyData :=
@@ -546,9 +549,9 @@ lemma EIsoH_hom_naturality
     (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
       (by simp) (naturality' α 0 1) (by simp [Precomp.obj, Precomp.map])) :
-  X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
-    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
-  (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
+    X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
+      (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
   obtain rfl : α = homMk₁ (β.app 1) (β.app 2) (naturality' β 1 2) := by
     subst hβ
     exact hom_ext₁ rfl rfl
