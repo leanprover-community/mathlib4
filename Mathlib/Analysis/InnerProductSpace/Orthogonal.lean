@@ -412,7 +412,7 @@ lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := If
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
-theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := Iff.of_eq rfl
+theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := Iff.rfl
 
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
