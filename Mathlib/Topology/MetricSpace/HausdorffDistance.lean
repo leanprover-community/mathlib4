@@ -582,7 +582,7 @@ theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
 theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
 
 /-- The minimal distance to the empty set is 0 (if you want to have the more reasonable
-value `∞` instead, use `EMetric.infEDist`, which takes values in `ℝ≥0∞`) -/
+value `∞` instead, use `Metric.infEDist`, which takes values in `ℝ≥0∞`) -/
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
@@ -811,7 +811,7 @@ theorem hausdorffDist_comm : hausdorffDist s t = hausdorffDist t s := by
   simp [hausdorffDist, hausdorffEDist_comm]
 
 /-- The Hausdorff distance to the empty set vanishes (if you want to have the more reasonable
-value `∞` instead, use `EMetric.hausdorffEDist`, which takes values in `ℝ≥0∞`). -/
+value `∞` instead, use `Metric.hausdorffEDist`, which takes values in `ℝ≥0∞`). -/
 @[simp]
 theorem hausdorffDist_empty : hausdorffDist s ∅ = 0 := by
   rcases s.eq_empty_or_nonempty with h | h
@@ -819,7 +819,7 @@ theorem hausdorffDist_empty : hausdorffDist s ∅ = 0 := by
   · simp [hausdorffDist, hausdorffEDist_empty h]
 
 /-- The Hausdorff distance to the empty set vanishes (if you want to have the more reasonable
-value `∞` instead, use `EMetric.hausdorffEDist`, which takes values in `ℝ≥0∞`). -/
+value `∞` instead, use `Metric.hausdorffEDist`, which takes values in `ℝ≥0∞`). -/
 @[simp]
 theorem hausdorffDist_empty' : hausdorffDist ∅ s = 0 := by simp [hausdorffDist_comm]
 
