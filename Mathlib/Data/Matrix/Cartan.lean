@@ -246,9 +246,11 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 
 /-! ### Exceptional matrix determinants -/
 
-theorem G₂_det : G₂.det = 1 := by decide
+theorem G₂_det : G₂.det = 1 := by simp [G₂]
 
-theorem F₄_det : F₄.det = 1 := by decide
+theorem F₄_det : F₄.det = 1 := by
+  simp +decide [F₄, det, detRowAlternating, MultilinearMap.alternatization,
+    Equiv.instFintypeAux, Equiv.instFintype]
 
 /-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively.
 `decide` fails for these larger matrices without increasing the max recursion depth.
