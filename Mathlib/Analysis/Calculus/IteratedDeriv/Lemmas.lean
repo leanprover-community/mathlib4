@@ -142,7 +142,19 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
--- TODO: `𝕜'` could be generalized to normed algebras.
+lemma iteratedDerivWithin_id :
+    iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
+  obtain (_ | n) := n
+  · simp
+  · rw [iteratedDerivWithin_succ', iteratedDerivWithin_congr (g := fun _ ↦ 1) _ hx]
+    · simp [iteratedDerivWithin_const]
+    · exact fun y hy ↦ derivWithin_id _ _ (h.uniqueDiffWithinAt hy)
+
+lemma iteratedDerivWithin_fun_id :
+    iteratedDerivWithin n (·) s x = if n = 0 then x else if n = 1 then 1 else 0 :=
+  iteratedDerivWithin_id hx h
+
+-- TODO: `𝕜'` could be generalized to normed algebras not necessarily fields.
 lemma iteratedDerivWithin_smul {f : 𝕜 → 𝕜'} {g : 𝕜 → F}
     (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x) :
     iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),
@@ -159,15 +171,36 @@ lemma iteratedDerivWithin_smul {f : 𝕜 → 𝕜'} {g : 𝕜 → F}
         have : ∀ i ∈ Finset.range n, 1 ≤ n - i := by simp; lia
         simp +contextual [← iteratedDerivWithin_succ', ← n.sub_sub, Nat.sub_add_cancel, this]
         abel
-      · clear IH H U hU; fun_prop (disch := simp_all)
-      · clear IH H U hU; fun_prop (disch := simp_all)
-      · clear IH H U hU; fun_prop (disch := simp_all)
-      · clear IH H U hU; fun_prop (disch := simp_all)
-      · clear IH H U hU; fun_prop (disch := simp_all)
-      · clear IH H U hU; fun_prop (disch := simp_all)
+      all_goals clear IH H U hU; fun_prop (disch := simp_all)
     · filter_upwards [hf.eventually (by simp), hg.eventually (by simp)] with y hfy hgy
       rw [derivWithin_smul (hfy.differentiableWithinAt _) (hgy.differentiableWithinAt _)]
       all_goals simp
+
+lemma iteratedDerivWithin_mul {f g : 𝕜 → 𝕜'}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    iteratedDerivWithin n (f * g) s x = ∑ i ∈ .range (n + 1),
+      n.choose i * iteratedDerivWithin i f s x * iteratedDerivWithin (n - i) g s x := by
+  simp [← smul_eq_mul, iteratedDerivWithin_smul hx h hf hg]
+
+theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
+    iteratedDerivWithin k (· ^ m) s x = m.descFactorial k * x ^ (m - k) := by
+  induction m generalizing k with
+  | zero => cases k <;> simp [iteratedDerivWithin_const]
+  | succ i IH =>
+    obtain (_ | k) := k
+    · simp
+    simp only [pow_succ]
+    refine (iteratedDerivWithin_mul hx h (by fun_prop) (by fun_prop)).trans ?_
+    have : ((i + 1).descFactorial (k + 1)) =
+        (k + 1) * (i.descFactorial k) + (i.descFactorial (k + 1)) := by
+      rw [Nat.succ_descFactorial_succ]
+      cases le_or_gt k i <;> simp [Nat.descFactorial, ← add_mul, *]; lia
+    obtain hik | hik := le_or_gt i k <;>
+      simp +contextual [IH, iteratedDerivWithin_fun_id, h, hx, Finset.sum_range_succ,
+        show ∀ x ∈ Finset.range k, k + 1 - x ≠ 0 by simp; lia, -Nat.descFactorial_succ,
+        show ∀ x ∈ Finset.range k, k + 1 - x ≠ 1 by simp; lia, this,
+        Nat.descFactorial_eq_zero_iff_lt.mpr, hik,
+        show k < i → i - k = (i - (k + 1) + 1) by lia]; ring
 
 end
 
@@ -253,18 +286,16 @@ lemma iteratedDeriv_fun_id_zero :
     iteratedDeriv n (fun a ↦ a) (0 : 𝕜) = if n = 1 then 1 else 0 := by
   simp +contextual [iteratedDeriv_fun_id]
 
-lemma iteratedDerivWithin_mul {f g : 𝕜 → 𝕜'}
-    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedDerivWithin n (f * g) s x = ∑ i ∈ .range (n + 1),
-      n.choose i * iteratedDerivWithin i f s x * iteratedDerivWithin (n - i) g s x := by
-  simp [← smul_eq_mul, iteratedDerivWithin_smul hx hs hf hg]
-
 lemma iteratedDeriv_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f * g) x = ∑ i ∈ .range (n + 1),
       n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x := by
-  simpa [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_mul hf.contDiffWithinAt hg.contDiffWithinAt uniqueDiffOn_univ trivial
+  simpa using iteratedDerivWithin_mul
+    (Set.mem_univ x) uniqueDiffOn_univ hf.contDiffWithinAt hg.contDiffWithinAt
+
+@[simp]
+theorem iteratedDeriv_pow (m : ℕ) (k : ℕ) :
+    iteratedDeriv k (· ^ m) x = m.descFactorial k * x ^ (m - k) := by
+  simpa using iteratedDerivWithin_pow (Set.mem_univ x) uniqueDiffOn_univ m k
 
 lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (fun x ↦ f x * g x) x = ∑ i ∈ .range (n + 1),
@@ -273,14 +304,8 @@ lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) 
 
 lemma iteratedDeriv_fun_pow_zero {n m : ℕ} :
     iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
-  induction m generalizing n with
-  | zero => simp [iteratedDeriv_const]
-  | succ m IH =>
-    obtain rfl | hn := eq_or_ne n (m + 1)
-    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
-        IH (n := m), Nat.factorial_succ]
-    · simp (discharger := fun_prop) [pow_succ', iteratedDeriv_fun_mul, iteratedDeriv_fun_id_zero,
-        IH (n := n - 1), hn]; grind
+  obtain h | h | h := lt_trichotomy n m <;>
+    simp_all [Nat.descFactorial_self, Nat.descFactorial_eq_zero_iff_lt.mpr, ne_of_lt, ne_of_gt]
 
 lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[𝓝 x] g) :
     iteratedDeriv n f x = iteratedDeriv n g x := by
