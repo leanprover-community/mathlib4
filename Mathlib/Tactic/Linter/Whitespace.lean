@@ -239,15 +239,6 @@ def readWhile (s t : Substring.Raw) : Substring.Raw :=
   guard <| (readWhile (" :=".toRawSubstring) t).toString == " 0"
   guard <| (readWhile (" := ".toRawSubstring) t).toString == "0"
 
-structure mex where
-  rg : Lean.Syntax.Range
-  error : String
-  kinds : Array SyntaxNodeKind
-
-def mex.toString {m} [Monad m] [MonadFileMap m] (ex : mex) : m String := do
-  let fm ← getFileMap
-  return s!"{ex.error} {(fm.toPosition ex.rg.start, fm.toPosition ex.rg.stop)} ({ex.kinds})"
-
 /--
 A structure combining the various exceptions to the `whitespace` linter.
 * `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `whitespace` linter.
@@ -401,11 +392,6 @@ def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array S
     Bool :=
   let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
   !(lastNodes.filter exc.kinds.contains).isEmpty
-
---def filterSortExceptions (as : Array mex) : Array mex :=
---  let filtered := as.filter fun a =>
---    (!totalExclusions.contains a.kinds) && (!ignoreSpaceAfter.contains a.kinds)
---  filtered.qsort (·.rg.start < ·.rg.start)
 
 structure PPref where
   pos : String.Pos.Raw
@@ -570,13 +556,6 @@ def mkExpectedWindow (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
 #guard mkExpectedWindow "0123 abcdef    \n ghi".toRawSubstring ⟨8⟩ == "abc def"
 
 #guard mkExpectedWindow "0123 abc    \n def ghi".toRawSubstring ⟨9⟩ == "abc def"
-
-def _root_.Mathlib.Linter.mex.toLinterWarning (m : mex) (orig : Substring.Raw) : MessageData :=
-  let origWindow := mkWindowSubstring' orig m.rg.start
-  let expectedWindow := mkExpectedWindow orig m.rg.start
-  m!"{m.error} in the source\n\n\
-  This part of the code\n  '{origWindow.trimAscii}'\n\
-  should be written as\n  '{expectedWindow}'\n"
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
