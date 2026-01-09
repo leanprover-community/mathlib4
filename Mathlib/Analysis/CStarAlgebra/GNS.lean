@@ -69,7 +69,7 @@ variable [StarOrderedRing A]
 The (semi-)inner product space whose elements are the elements of `A`, but which has an
 inner product-induced norm induced by `f` which is different from the norm on `A`.
 -/
-abbrev preGNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.preGNS where
+abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.preGNS where
   inner a b := f (star (f.ofPreGNS a) * f.ofPreGNS b)
   conj_inner_symm := by simp [← Complex.star_def, ← map_star f]
   re_inner_nonneg _ := RCLike.nonneg_iff.mp (f.map_nonneg (star_mul_self_nonneg _)) |>.1
@@ -77,9 +77,9 @@ abbrev preGNSInnerProdSpace : PreInnerProductSpace.Core ℂ f.preGNS where
   smul_left := by simp [smul_mul_assoc]
 
 noncomputable instance : SeminormedAddCommGroup f.preGNS :=
-  InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.preGNSInnerProdSpace)
+  InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.preGNSpreInnerProdSpace)
 noncomputable instance : InnerProductSpace ℂ f.preGNS :=
-  InnerProductSpace.ofCore f.preGNSInnerProdSpace
+  InnerProductSpace.ofCore f.preGNSpreInnerProdSpace
 
 lemma preGNS_inner_def (a b : f.preGNS) :
     ⟪a, b⟫_ℂ = f (star (f.ofPreGNS a) * f.ofPreGNS b) := rfl
@@ -88,7 +88,7 @@ lemma preGNS_norm_def (a : f.preGNS) :
     ‖a‖ = √(f (star (f.ofPreGNS a) * f.ofPreGNS a)).re := rfl
 
 lemma preGNS_norm_sq (a : f.preGNS) :
-    ‖a‖ ^ 2 = (f (star (f.ofPreGNS a) * f.ofPreGNS a)) := by
+    ‖a‖ ^ 2 = f (star (f.ofPreGNS a) * f.ofPreGNS a) := by
   have : 0 ≤ f (star (f.ofPreGNS a) * f.ofPreGNS a) := map_nonneg f <| star_mul_self_nonneg _
   rw [preGNS_norm_def, ← ofReal_pow, Real.sq_sqrt]
   · rw [conj_eq_iff_re.mp this.star_eq]
@@ -102,7 +102,7 @@ abbrev GNS := UniformSpace.Completion f.preGNS
 /--
 The continuous linear map from a C⋆-algebra `A` to the `PositiveLinearMap.preGNS` space induced by
 a positive linear functional `f : A →ₚ[ℂ] ℂ`. This map is given by left-multiplication by `a`:
-`fun (a : A) (x : f.preGNS) ↦ f.toPreGNS (a * f.ofPreGNS x)`.
+`x ↦ f.toPreGNS (a * f.ofPreGNS x)`.
 -/
 @[simps!]
 noncomputable def leftMulMapPreGNS (a : A) : f.preGNS →L[ℂ] f.preGNS :=
@@ -121,7 +121,7 @@ noncomputable def leftMulMapPreGNS (a : A) : f.preGNS →L[ℂ] f.preGNS :=
 
 @[simp]
 lemma leftMulMapPreGNS_mul_eq_comp (a b : A) :
-    f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘ f.leftMulMapPreGNS b := by
+    f.leftMulMapPreGNS (a * b) = f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b := by
   ext c; simp [mul_assoc]
 
 /--
@@ -129,7 +129,7 @@ The non-unital ⋆-homomorphism/⋆-representation of A into the bounded operato
 that is constructed from a positive linear functional `f` on a possibly non-unital C⋆-algebra.
 -/
 noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] f.GNS) where
-  toFun a := completion (f.leftMulMapPreGNS a)
+  toFun a := (f.leftMulMapPreGNS a).completion
   map_smul' r a := by
     ext x
     induction x using Completion.induction_on with
@@ -149,19 +149,17 @@ noncomputable def gnsNonUnitalStarAlgHom : A →⋆ₙₐ[ℂ] (f.GNS →L[ℂ] 
     ext c
     induction c using Completion.induction_on with
       | hp => apply isClosed_eq <;> fun_prop
-      | ih c =>
-      have := map_coe (f.leftMulMapPreGNS a ∘L f.leftMulMapPreGNS b).uniformContinuous
-      simp_all [mul_assoc]
+      | ih c => simp
   map_star' a := by
-    refine (eq_adjoint_iff (completion (f.leftMulMapPreGNS (star a)))
-      (completion (f.leftMulMapPreGNS a))).mpr ?_
+    refine (eq_adjoint_iff (f.leftMulMapPreGNS (star a)).completion
+      (f.leftMulMapPreGNS a).completion).mpr ?_
     intro x y
     induction x, y using Completion.induction_on₂ with
     | hp => apply isClosed_eq <;> fun_prop
     | ih x y => simp [mul_assoc, preGNS_inner_def]
 
 lemma gnsNonUnitalStarAlgHom_apply {a : A} :
-    f.gnsNonUnitalStarAlgHom a = completion (f.leftMulMapPreGNS a) := rfl
+    f.gnsNonUnitalStarAlgHom a = (f.leftMulMapPreGNS a).completion := rfl
 
 @[simp]
 lemma gnsNonUnitalStarAlgHom_apply_coe {a : A} {b : f.preGNS} :

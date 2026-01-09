@@ -48,14 +48,14 @@ noncomputable def completion (f : α →SL[σ] β) : (Completion α) →SL[σ] (
   cont := continuous_map
 
 @[simp]
-lemma toAddMonoidHom_mapCLM (f : α →SL[σ] β) :
-    (completion f).toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
+lemma toAddMonoidHom_completion (f : α →SL[σ] β) :
+    f.completion.toAddMonoidHom = f.toAddMonoidHom.completion f.continuous := rfl
 
-lemma mapCLM_apply (f : α →SL[σ] β) :
-    completion f = Completion.map f := rfl
+lemma completion_apply (f : α →SL[σ] β) :
+    f.completion = Completion.map f := rfl
 
 @[simp]
-theorem mapCLM_apply_coe (f : α →SL[σ] β) (a : α) :
-    completion f a = f a := by simp [mapCLM_apply, map_coe]
+theorem completion_apply_coe (f : α →SL[σ] β) (a : α) :
+    f.completion a = f a := by simp [completion_apply, map_coe]
 
 end ContinuousLinearMap
