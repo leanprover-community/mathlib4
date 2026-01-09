@@ -138,6 +138,7 @@ def whiskerRight (H : SimplicialHomotopy f g) :
     simpa [SimplicialObject.σ] using
       congrArg (fun k => F.map k) (H.h_comp_σ_succ_of_lt i j hji)
 
+/-- Postcompose a simplicial homotopy with a morphism of simplicial objects. -/
 @[simps]
 def postcomp (H : SimplicialHomotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y') :
     SimplicialHomotopy (f ≫ p) (g ≫ p) where
@@ -157,6 +158,7 @@ def postcomp (H : SimplicialHomotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y
   h_comp_σ_succ_of_lt i j hji := by
     simpa using H.h_comp_σ_succ_of_lt i j hji =≫ p.app _
 
+/-- Precompose a simplicial homotopy with a morphism of simplicial objects. -/
 @[simps]
 def precomp (H : SimplicialHomotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X) :
     SimplicialHomotopy (p ≫ f) (p ≫ g) where
