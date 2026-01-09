@@ -338,20 +338,6 @@ theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU :
 theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
   ht.open_subset isOpen_interior interior_subset
 
-theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
-  rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
-    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
-      ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
-  cases hf.injective h₄
-  exact ⟨y, h₁, h₂, h₃⟩
-
-theorem IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
-    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
-  obtain ⟨-, hx, x, rfl⟩ := h
-  exact ⟨⟨x, hx⟩, ht.2.preimage hf⟩
-
 section
 
 open Set.Notation
@@ -375,6 +361,24 @@ lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
     IsPreirreducible (f ⁻¹' V) := by
   refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
   simp [hf'', subset_closure]
+
+lemma IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X} (hf : IsOpenEmbedding f) :
+    IsPreirreducible (f ⁻¹' t) :=
+  IsPreirreducible.preimage_of_isPreirreducible_fiber ht f hf.isOpenMap
+    fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible
+
+lemma IsIrreducible.preimage_of_isIrreducible_fiber (ht : IsIrreducible t)
+    (f : Y → X) (hf : IsOpenMap f) (hf' : ∀ x, IsPreirreducible (f ⁻¹' {x}))
+    (h : (t ∩ Set.range f).Nonempty) :
+    IsIrreducible (f ⁻¹' t) := by
+  refine ⟨?_, IsPreirreducible.preimage_of_isPreirreducible_fiber ht.2 f hf hf'⟩
+  obtain ⟨-, hx, x, rfl⟩ := h
+  exact ⟨x, hx⟩
+
+lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
+  refine IsIrreducible.preimage_of_isIrreducible_fiber ht f hf.isOpenMap
+    (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
 
 theorem preimage_mem_irreducibleComponents {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {C : Set Y} (hC : C ∈ irreducibleComponents Y)
