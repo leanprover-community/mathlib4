@@ -164,16 +164,36 @@ public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goa
   pathToStx path fvarUserName?
 
 open Lean Syntax in
-/-- Return the link text and inserted text above and below of the conv widget. -/
+/-- Return the text for the link in the conv widget that inserts the replacement,
+and also return the replacement, and the range within the file to highlight after the
+replacement is inserted. -/
 public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (params : SelectInsertParams) :
     MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
-  -- prepare `enter` indentation
-  let indent := (SelectInsertParamsClass.replaceRange params).start.character
-  -- build `enter [...]` string
+  /-
+  TODO: figure out a better way to determine indentation here
+  The current method assumes the indentation level is the same as the column position of
+  the `c` in the `conv?` syntax
+  This is of course not always true, and so `conv?` will produce weirdly indented syntax sometimes
+  For example,
+  ```
+  example : True := by conv?
+  ```
+  turns into
+  ```
+  example : True := by conv =>
+                         skip
+  ```
+  Fortunately, the `conv` indentation is extremely permissive
+  (relative indentation can be positive negative or zero),
+  so this will probably never create non-working `conv` code.
+  -/
+  -- prepare indentation
+  let column := (SelectInsertParamsClass.replaceRange params).start.character
+  -- build `conv` syntax
   let enterStx ← insertEnterSyntax locations goalType
   let enterFormat ← PrettyPrinter.ppCategory `tactic enterStx
-  let enterString := enterFormat.pretty (width := 100) (indent := indent) (column := indent)
+  let enterString := enterFormat.pretty (width := 100) (indent := column) (column := column)
   -- highlight trailing `skip` after insertion
   let trailingSkipRange? : Option (String.Pos.Raw × String.Pos.Raw) :=
     let trimmed := enterString.trimAsciiEnd
@@ -195,7 +215,7 @@ public def ConvSelectionPanel : Component SelectInsertParams :=
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
-in the goal. -/
+in the goal or in the type of a local hypothesis or let-decl. -/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
