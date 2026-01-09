@@ -397,19 +397,51 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
     · intro n
       exfalso
       exact h n
-    · intro _
-      exact rfl
+    · intro
+      rfl
   (sigmaSubtypeEquivOfSubset _ _ h').symm.trans (sigmaCongrLeft' (optionIsSomeEquiv α))
 
+section Sigma
+
+variable {α ι : Type*} {π : ι → Type*} {p : ι → Prop}
+
+/-- Functions to a `Sigma` type are in bijection with a `Sigma` type of dependent functions. -/
+def arrowSigma : (α → Σ i, π i) ≃ Σ i : α → ι, ∀ x, π (i x) where
+  toFun f := ⟨Sigma.fst ∘ f, fun x ↦ (f x).2⟩
+  invFun f a := .mk _ (f.2 a)
+
+/-- The `Sigma` type indexed by a subtype can be canonically identified with a subtype of the
+`Sigma` type indexed by the whole type. -/
+def sigmaSubtypeComm : (Σ i : Subtype p, π i) ≃ { f : Σ i, π i // p f.1 } where
+  toFun f := ⟨⟨_, f.2⟩, f.1.2⟩
+  invFun f := ⟨⟨_, f.2⟩, f.1.2⟩
+
+variable (ι π) in
 /-- The `Pi`-type `∀ i, π i` is equivalent to the type of sections `f : ι → Σ i, π i` of the
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
-def piEquivSubtypeSigma (ι) (π : ι → Type*) :
-    (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
-  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
-  invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
-  right_inv := fun ⟨f, hf⟩ =>
-    Subtype.ext <| funext fun i =>
-      Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
+def piEquivSubtypeSigma : (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
+  toFun f := ⟨fun i ↦ .mk _ (f i), fun _ ↦ rfl⟩
+  invFun f i := cast (congr_arg π (f.2 i)) (f.1 i).2
+  right_inv f := Subtype.ext <| funext fun i ↦ Sigma.ext (f.2 i).symm <| by simp
+
+/-- The `Pi`-type `∀ i : Subtype p, π i` indexed by a subtype is equivalent to the type of
+sections of the `Sigma` type `Σ i, π i` over the subtype. -/
+def piSubtypeEquivSubtypeSigma :
+    (∀ i : Subtype p, π i) ≃ { f : Subtype p → Σ i, π i // Sigma.fst ∘ f = (↑) } :=
+  (piEquivSubtypeSigma ..).trans <| .trans
+    (subtypeEquivOfSubtype' (arrowCongr (.refl _) sigmaSubtypeComm))
+    { toFun f := ⟨val ∘ f.1, funext (congr_arg val <| f.2 ·)⟩
+      invFun f := ⟨fun i ↦ ⟨_, by apply congr_fun f.2 i ▸ i.2⟩, (Subtype.ext <| congr_fun f.2 ·)⟩ }
+
+lemma mk_piEquivSubtypeSigma_symm {f : {f : ι → Σ i, π i // ∀ i, (f i).1 = i}} {i : ι} :
+    Sigma.mk _ ((piEquivSubtypeSigma ι π).symm f i) = f.1 i :=
+  congr_fun (congr_arg val ((piEquivSubtypeSigma ..).right_inv f)) i
+
+lemma mk_piSubtypeEquivSubtypeSigma {f : {f : Subtype p → Σ i, π i // Sigma.fst ∘ f = val}}
+    {i : Subtype p} : Sigma.mk _ (piSubtypeEquivSubtypeSigma.symm f i) = f.1 i :=
+  congr_fun (congr_arg val (piSubtypeEquivSubtypeSigma.right_inv f)) i
+
+end Sigma
 
 /-- The type of functions `f : ∀ a, β a` such that for all `a` we have `p a (f a)` is equivalent
 to the type of functions `∀ a, {b : β a // p a b}`. -/
