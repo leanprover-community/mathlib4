@@ -33,7 +33,7 @@ nonnegative function with `v 0 = 0` and `c ≥ 0`.
   is nonnegative, there exists a minimal index `i` such that the Gauss norm of `p` at `c` is
   attained at `i`.
 * `Polynomial.isNonarchimedean_gaussNorm`: if `v` is a nonnegative nonarchimedean function with
-  `v 0 = 0` and `c` is nonnegative, the Gauss Norm is nonarchimedean.
+  `v 0 = 0` and `c` is nonnegative, the Gauss norm is nonarchimedean.
 * `Polynomial.gaussNorm_mul`: if `v` is a nonarchimedean absolute value, then the Gauss norm is
   multiplicative.
 * `Polynomial.gaussNorm_isAbsoluteValue`: if `v` is a nonarchimedean absolute value, then the
@@ -151,7 +151,7 @@ lemma gaussNorm_of_c_eq_zero [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] :
 index `i` such that the Gauss norm of `p` at `c` is attained at `i`. -/
 lemma exists_min_eq_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p : R[X]) (hc : 0 ≤ c) :
     ∃ i, p.gaussNorm v c = v (p.coeff i) * c ^ i ∧
-    ∀ j, j < i →  v (p.coeff j) * c ^ j < p.gaussNorm v c := by
+    ∀ j, j < i → v (p.coeff j) * c ^ j < p.gaussNorm v c := by
   have h_nonempty : {i | gaussNorm v c p = v (p.coeff i) * c ^ i}.Nonempty := by
     obtain ⟨i, hi⟩ := exists_eq_gaussNorm v c p
     exact ⟨i, Set.mem_setOf.mpr hi⟩
@@ -161,7 +161,7 @@ lemma exists_min_eq_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] (p
   exact lt_of_le_of_ne (le_gaussNorm v _ hc j) fun a ↦ hj_lt j (Nat.le_refl j) a.symm
 
 /-- If `v` is a nonnegative nonarchimedean function with `v 0 = 0` and `c` is nonnegative, the
-Gauss Norm is nonarchimedean. -/
+Gauss norm is nonarchimedean. -/
 theorem isNonarchimedean_gaussNorm [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]
     (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 ≤ c) : IsNonarchimedean (gaussNorm v c) := by
   intro p q
