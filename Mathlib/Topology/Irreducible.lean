@@ -347,6 +347,11 @@ theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
   cases hf.injective h₄
   exact ⟨y, h₁, h₂, h₃⟩
 
+theorem IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
+  obtain ⟨-, hx, x, rfl⟩ := h
+  exact ⟨⟨x, hx⟩, ht.2.preimage hf⟩
+
 section
 
 open Set.Notation
@@ -371,6 +376,19 @@ lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
   refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
   simp [hf'', subset_closure]
 
+theorem preimage_mem_irreducibleComponents {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    {C : Set Y} (hC : C ∈ irreducibleComponents Y)
+    {f : X → Y} (hf : Topology.IsOpenEmbedding f)
+    (h : (C ∩ Set.range f).Nonempty) :
+    f ⁻¹' C ∈ irreducibleComponents X := by
+  refine ⟨hC.1.preimage hf h, fun S hS hfS ↦ ?_⟩
+  replace hC := @hC.2 (closure (f '' S)) ?_ ?_
+  · exact Set.image_subset_iff.mp (subset_closure.trans hC)
+  · exact IsIrreducible.closure (hS.image f hf.continuous.continuousOn)
+  · suffices C ≤ closure (f '' (f ⁻¹' C)) from this.trans (closure_mono (Set.image_mono hfS))
+    rw [Set.image_preimage_eq_inter_range]
+    exact subset_closure_inter_of_isPreirreducible_of_isOpen hC.1.2 hf.isOpen_range h
+
 variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
 variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
 
@@ -391,6 +409,27 @@ lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
       ((Set.image_preimage_eq V hf₄).symm.trans_le (Set.image_mono hWZ))
   rw [hWZ']
   exact ⟨hZ', fun s hs hs' ↦ (H s hs.2 hs').le⟩
+
+omit hf₄ in
+lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber'
+    {V : Set Y} (hV : V ∈ irreducibleComponents Y) (h : (V ∩ Set.range f).Nonempty) :
+    f ⁻¹' V ∈ irreducibleComponents X := by
+  have key := hV.1.2.preimage_of_isPreirreducible_fiber f hf₂ hf₃
+  refine ⟨⟨by obtain ⟨-, hx, x, rfl⟩ := h; exact ⟨x, hx⟩, key⟩, fun U hU hVU ↦ ?_⟩
+  refine Set.image_subset_iff.mp ?_
+  replace hV := preimage_mem_irreducibleComponents hV  hf₂.isOpen_range.isOpenEmbedding_subtypeVal
+    (by rwa [Subtype.range_coe_subtype])
+  let g := Set.codRestrict f (Set.range f) mem_range_self
+  have hg₁ : Continuous g := Continuous.codRestrict hf₁ mem_range_self
+  suffices g '' U ⊆ Subtype.val ⁻¹' V by simpa using this
+  refine hV.2 (IsIrreducible.image hU g hg₁.continuousOn) ?_
+  simp only [le_eq_subset]
+  simp only [le_eq_subset] at hVU
+  rw [← Set.image_subset_image_iff Subtype.val_injective]
+  simp only [Subtype.image_preimage_coe]
+  replace hVU := Set.image_mono (f := f) hVU
+  rw [Set.image_preimage_eq_inter_range, inter_comm] at hVU
+  grind
 
 lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
     {V : Set X} (hV : V ∈ irreducibleComponents X) :
