@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.DMatrix
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.Tactic.Field

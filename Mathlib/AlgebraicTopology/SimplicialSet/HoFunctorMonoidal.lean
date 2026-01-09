@@ -6,9 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Functor.CurryingThree
-public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 /-!
 # The homotopy category functor is monoidal

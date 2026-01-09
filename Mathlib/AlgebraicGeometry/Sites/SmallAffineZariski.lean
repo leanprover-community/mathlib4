@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Cover.Directed
-public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!

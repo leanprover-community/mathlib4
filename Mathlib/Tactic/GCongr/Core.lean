@@ -7,10 +7,14 @@ module
 
 public meta import Lean
 public meta import Batteries.Lean.Except
-public meta import Batteries.Tactic.Exact
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
-public meta import Mathlib.Order.Defs.Unbundled
 import all Lean.Meta.Tactic.Apply
+public import Batteries.Tactic.Exact
+public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.GCongr.ForwardAttr
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

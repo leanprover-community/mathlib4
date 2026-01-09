@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Completion of an inner product space

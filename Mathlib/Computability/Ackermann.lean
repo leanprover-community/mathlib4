@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function

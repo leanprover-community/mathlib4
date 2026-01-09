@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Products and coproducts in the category of topological spaces

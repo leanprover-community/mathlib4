@@ -5,8 +5,9 @@ Authors: Miyahara Kō
 -/
 module
 
-public meta import Mathlib.SetTheory.Ordinal.Exponential
-public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` extensions for Ordinals

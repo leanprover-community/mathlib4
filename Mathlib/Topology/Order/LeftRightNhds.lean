@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pointwise.Set
 public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic

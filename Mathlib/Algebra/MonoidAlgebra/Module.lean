@@ -6,13 +6,11 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Defs
 
-import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # Module structure on monoid algebras

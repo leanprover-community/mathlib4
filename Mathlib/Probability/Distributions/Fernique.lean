@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Fernique's theorem for rotation-invariant measures

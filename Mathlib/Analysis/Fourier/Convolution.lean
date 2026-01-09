@@ -5,8 +5,12 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.FourierSchwartz
 public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 
 /-! # The Fourier transform of the convolution
 

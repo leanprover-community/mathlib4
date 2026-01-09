@@ -6,11 +6,12 @@ Authors: Mario Carneiro
 module
 
 public meta import Mathlib.Lean.Expr.Rat
-public meta import Mathlib.Tactic.Hint
-public meta import Mathlib.Tactic.NormNum.Result
-public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.Qq
 public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.NormNum.Result
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality
@@ -186,6 +187,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       normNumExt.add ((keys, declName), ext) kind
+      -- TODO: track what `[norm_num]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
     let s := normNumExt.getState (← getEnv)

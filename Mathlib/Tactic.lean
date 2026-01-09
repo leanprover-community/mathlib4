@@ -1,4 +1,4 @@
-module
+module  -- shake: keep-all
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote

@@ -6,10 +6,10 @@ Authors: Kim Morrison, Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-public meta import Mathlib.CategoryTheory.Functor.Basic
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Util.AddRelatedDecl
+public meta import Aesop
 
 /-!
 # The `reassoc` attribute

@@ -6,11 +6,10 @@ Authors: Mario Carneiro
 module
 
 public meta import Lean.Elab.Tactic.Induction
-public meta import Batteries.Tactic.OpenPrivate
 public meta import Batteries.Data.List.Basic
 public meta import Batteries.Lean.Expr
-public meta import Mathlib.Init
 import all Lean.Elab.Tactic.Induction
+public import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic

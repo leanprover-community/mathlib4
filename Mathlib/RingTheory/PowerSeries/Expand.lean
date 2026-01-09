@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Expand
-public import Mathlib.Algebra.Polynomial.Expand
 
 /-!
 ## Expand power series

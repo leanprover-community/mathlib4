@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 

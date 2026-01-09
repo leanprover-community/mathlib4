@@ -10,7 +10,7 @@ public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring
 meta import Mathlib.Algebra.Order.Floor.Defs
-meta import Mathlib.Algebra.Order.Round
+public meta import Mathlib.Algebra.Order.Round
 
 /-!
 # Floor Function for Rational Numbers

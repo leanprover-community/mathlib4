@@ -9,6 +9,10 @@ public import Mathlib.Data.Int.Order.Basic
 public meta import Mathlib.Data.List.Monad
 public meta import Mathlib.Data.PNat.Defs
 public import Plausible.Sampleable
+public import Plausible.Arbitrary
+public import Plausible.Gen
+public import Plausible.Random
+public meta import Plausible.Sampleable
 
 /-!
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib

@@ -3,15 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-module
+module  -- shake: keep-all, shake: keep-downstream
 
 public meta import Lean
-public meta import Mathlib.Tactic.PPWithUniv
-public meta import Mathlib.Tactic.ExtendDoc
-public meta import Mathlib.Tactic.Lemma
-public meta import Mathlib.Tactic.TypeStar
-public meta import Mathlib.Tactic.Linter.OldObtain
-public meta import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!

@@ -1,5 +1,6 @@
 module
 
-public import Mathlib.Analysis.Normed.Algebra.DualNumber
+public import Mathlib.Algebra.Order.Algebra
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 deprecated_module (since := "2025-09-02")

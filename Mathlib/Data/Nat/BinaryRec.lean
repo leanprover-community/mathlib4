@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!

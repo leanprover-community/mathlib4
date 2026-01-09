@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
-public import Mathlib.Algebra.HierarchyDesign
 
 /-!
 # Sober spaces

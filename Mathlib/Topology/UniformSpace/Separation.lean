@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Basic
 

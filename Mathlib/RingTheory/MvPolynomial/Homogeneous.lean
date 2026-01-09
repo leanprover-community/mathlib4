@@ -8,10 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Homogeneous polynomials

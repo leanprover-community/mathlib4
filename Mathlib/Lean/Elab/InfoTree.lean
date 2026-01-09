@@ -11,7 +11,9 @@ public import Lean.Meta.TryThis
 public import Batteries.Tactic.Lint.Misc
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Lint.Basic
+import Lean.Elab.Term.TermElabM
 
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`

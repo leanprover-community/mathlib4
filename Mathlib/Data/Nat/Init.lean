@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
-public import Batteries.Tactic.Init
 public import Mathlib.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation

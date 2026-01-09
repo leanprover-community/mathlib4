@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Util.Delaborators
 
 /-!
 # Centers of magmas and semigroups

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Linarith
 
 /-! Shifting cochains
 

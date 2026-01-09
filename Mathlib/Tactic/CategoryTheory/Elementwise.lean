@@ -5,9 +5,9 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public meta import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Util.AddRelatedDecl
-public meta import Batteries.Tactic.Lint
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

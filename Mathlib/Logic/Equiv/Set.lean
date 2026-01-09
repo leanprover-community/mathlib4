@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.Function
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Says
 
 /-!
 # Equivalences and sets

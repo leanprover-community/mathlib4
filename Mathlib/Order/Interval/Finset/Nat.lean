@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Multiset
 
 /-!

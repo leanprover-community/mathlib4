@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.Real.Sqrt

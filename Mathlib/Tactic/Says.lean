@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Batteries.Linter.UnreachableTactic
 public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Tactic.Basic
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `says` tactic combinator.

@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # The `@[push]` attribute for the `push`, `push_neg` and `pull` tactics

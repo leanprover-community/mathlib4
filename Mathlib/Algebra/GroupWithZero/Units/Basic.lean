@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
-public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Nat.Basic  -- shake: keep (non-recorded `nontrivial` dependency?)
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
