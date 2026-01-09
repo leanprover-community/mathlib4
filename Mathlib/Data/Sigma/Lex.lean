@@ -80,10 +80,10 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
       · exact Lex.left _ _ h
       · exact Lex.right _ _ h
 
-instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
+instance [∀ i, Std.Refl (s i)] : Std.Refl (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
-instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
+instance [Std.Irrefl r] [∀ i, Std.Irrefl (s i)] : Std.Irrefl (Lex r s) :=
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
     · exact irrefl _ hi
@@ -104,8 +104,6 @@ instance [Std.Symm r] [∀ i, Std.Symm (s i)] : Std.Symm (Lex r s) :=
     · exact Lex.left _ _ (symm hij)
     · exact Lex.right _ _ (symm hab)
       ⟩
-
-attribute [local instance] Std.Asymm.isIrrefl
 
 instance [Std.Asymm r] [∀ i, Std.Antisymm (s i)] : Std.Antisymm (Lex r s) :=
   ⟨by

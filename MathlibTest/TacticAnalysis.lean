@@ -71,6 +71,29 @@ example : Fact (x = z) where
     rw [xy]
     rw [yz]
 
+-- Tactics inside `have ... := by ...` should be analyzed.
+-- Previously these were missed because `have ... := by ...` is parsed as one node.
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  have _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
+-- Same for `let ... := by ...`
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  let _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
 universe u
 
 def a : PUnit.{u} := ⟨⟩
@@ -208,6 +231,15 @@ example : ∀ a b : Unit, a = b := by
 example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
+
+-- Intros separated by an intervening tactic should NOT be merged.
+-- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
+#guard_msgs in
+example : True → ∀ n > 0, True := by
+  intro h
+  have := 0
+  intro n hn
+  trivial
 
 end introMerge
 

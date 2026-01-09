@@ -114,13 +114,18 @@ jobs:
         run: |
           JOB_NAME="check-lean4checker (${{ matrix.branch_type }})"
           
-          # Get URL to the specific step
-          LEAN4CHECKER_URL=$(gh run view ${{ github.run_id }} --json jobs --jq \
-            ".jobs[] | select(.name == \"$JOB_NAME\") \
-            | (.url + (.steps[] | select(.name == \"Check environments using lean4checker\") \
-              | \"#step:\(.number):1\"))")
+          # Get URL and conclusion for the specific job
+          JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
+            ".jobs[] | select(.name == \"$JOB_NAME\")")
+          
+          LEAN4CHECKER_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Check environments using lean4checker") 
+            | "#step:\(.number):1"))')
+          
+          JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
           
           echo "lean4checker_url=${LEAN4CHECKER_URL}" | tee -a "$GITHUB_OUTPUT"
+          echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -139,7 +144,7 @@ jobs:
           fi
 
       - name: Post success message for lean4checker on Zulip
-        if: needs.check-lean4checker.result == 'success'
+        if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -152,7 +157,7 @@ jobs:
             ✅ lean4checker [succeeded](${{ steps.get-status.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for lean4checker on Zulip
-        if: needs.check-lean4checker.result != 'success'
+        if: steps.get-status.outputs.job_conclusion != 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -162,7 +167,7 @@ jobs:
           type: 'stream'
           topic: 'lean4checker failure'
           content: |
-            ❌ lean4checker [${{ needs.check-lean4checker.result }}](${{ steps.get-status.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ lean4checker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.lean4checker_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
   check-mathlib_test_executable:
     runs-on: ubuntu-latest
@@ -232,13 +237,18 @@ jobs:
         run: |
           JOB_NAME="check-mathlib_test_executable (${{ matrix.branch_type }})"
           
-          # Get URL to the specific step
-          MATHLIB_TEST_EXECUTABLE_URL=$(gh run view ${{ github.run_id }} --json jobs --jq \
-            ".jobs[] | select(.name == \"$JOB_NAME\") \
-            | (.url + (.steps[] | select(.name == \"Run mathlib_test_executable\") \
-              | \"#step:\(.number):1\"))")
+          # Get URL and conclusion for the specific job
+          JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
+            ".jobs[] | select(.name == \"$JOB_NAME\")")
+          
+          MATHLIB_TEST_EXECUTABLE_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Run mathlib_test_executable") 
+            | "#step:\(.number):1"))')
+          
+          JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
           
           echo "mathlib_test_executable_url=${MATHLIB_TEST_EXECUTABLE_URL}" | tee -a "$GITHUB_OUTPUT"
+          echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -257,7 +267,7 @@ jobs:
           fi
 
       - name: Post success message for mathlib_test_executable on Zulip
-        if: needs.check-mathlib_test_executable.result == 'success'
+        if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -270,7 +280,7 @@ jobs:
             ✅ mathlib_test_executable [succeeded](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for mathlib_test_executable on Zulip
-        if: needs.check-mathlib_test_executable.result != 'success'
+        if: steps.get-status.outputs.job_conclusion != 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -280,7 +290,7 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [${{ needs.check-mathlib_test_executable.result }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
   check-nanoda:
     runs-on: ubuntu-latest
@@ -392,13 +402,18 @@ jobs:
         run: |
           JOB_NAME="check-nanoda (${{ matrix.branch_type }})"
 
-          # Get URL to the specific step
-          NANODA_URL=$(gh run view ${{ github.run_id }} --json jobs --jq \
-            ".jobs[] | select(.name == \"$JOB_NAME\") \
-            | (.url + (.steps[] | select(.name == \"Check Mathlib using nanoda\") \
-              | \"#step:\(.number):1\"))")
+          # Get URL and conclusion for the specific job
+          JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
+            ".jobs[] | select(.name == \"$JOB_NAME\")")
+
+          NANODA_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Check Mathlib using nanoda") 
+            | "#step:\(.number):1"))')
+
+          JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
 
           echo "nanoda_url=${NANODA_URL}" | tee -a "$GITHUB_OUTPUT"
+          echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -417,7 +432,7 @@ jobs:
           fi
 
       - name: Post success message for nanoda on Zulip
-        if: needs.check-nanoda.result == 'success'
+        if: steps.get-status.outputs.job_conclusion == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -430,7 +445,7 @@ jobs:
             ✅ nanoda [succeeded](${{ steps.get-status.outputs.nanoda_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
 
       - name: Post failure / cancelled message for nanoda on Zulip
-        if: needs.check-nanoda.result != 'success'
+        if: steps.get-status.outputs.job_conclusion != 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -440,4 +455,4 @@ jobs:
           type: 'stream'
           topic: 'nanoda failure'
           content: |
-            ❌ nanoda [${{ needs.check-nanoda.result }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
