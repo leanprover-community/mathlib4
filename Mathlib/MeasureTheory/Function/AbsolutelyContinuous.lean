@@ -84,22 +84,6 @@ lemma hasBasis_totalLengthFilter : totalLengthFilter.HasBasis (fun (ε : ℝ) =>
   suffices 0 ≤ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 by grind
   exact Finset.sum_nonneg (fun _ _ ↦ dist_nonneg)
 
-lemma tendsto_volume_totalLengthFilter_nhds_zero :
-    Tendsto (fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume (⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2))
-    totalLengthFilter (𝓝 0) := by
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
-  · convert ENNReal.tendsto_ofReal (Filter.tendsto_comap)
-    simp
-  · intro; simp
-  · intro E
-    simp only
-    grw [measure_biUnion_finset_le]
-    rw [ENNReal.ofReal_sum_of_nonneg (fun _ _ ↦ dist_nonneg)]
-    apply Eq.le
-    apply Finset.sum_congr rfl
-    simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
-
 /-- The subcollection of all the finite sequences of `uIoc` intervals consisting of
 `uIoc (a i) (b i)`, `i < n` where `a i`, `b i` are all in `uIcc a b` for `i < n` and
 `uIoc (a i) (b i)` are mutually disjoint for `i < n`. Technically the finite sequence
@@ -129,6 +113,22 @@ lemma biUnion_uIoc_subset_of_mem_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → �
     (⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2) ⊆ uIoc a b := by
   simp only [iUnion_subset_iff, Finset.mem_range]
   exact fun i hi ↦ uIoc_subset_of_mem_disjWithin hnI hi
+
+lemma tendsto_volume_totalLengthFilter_nhds_zero :
+    Tendsto (fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume (⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2))
+    totalLengthFilter (𝓝 0) := by
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (h := fun E ↦ ENNReal.ofReal (∑ i ∈ Finset.range E.1, (dist (E.2 i).1 (E.2 i).2)))
+  · convert ENNReal.tendsto_ofReal (Filter.tendsto_comap)
+    simp
+  · intro; simp
+  · intro E
+    simp only
+    grw [measure_biUnion_finset_le]
+    rw [ENNReal.ofReal_sum_of_nonneg (fun _ _ ↦ dist_nonneg)]
+    apply Eq.le
+    apply Finset.sum_congr rfl
+    simp [uIoc, Real.dist_eq, max_sub_min_eq_abs']
 
 lemma tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero (a b : ℝ) :
     Tendsto (fun E : ℕ × (ℕ → ℝ × ℝ) ↦ volume.restrict (uIoc a b)
@@ -425,7 +425,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
   filter_upwards [this] with (n, I) hnI
   obtain ⟨hnI1, hnI2⟩ := mem_setOf_eq ▸ hnI
   simp only
-  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_uIoc.restrict),
+  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
       integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
   · refine Finset.sum_le_sum (fun i hi ↦ ?_)
     rw [Real.dist_eq,
