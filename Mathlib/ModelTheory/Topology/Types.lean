@@ -43,17 +43,17 @@ public lemma typesWith_range_basis : IsTopologicalBasis (range (typesWith (α :=
     exact Set.subset_sUnion_of_mem ⟨_, typesWith_top⟩
   eq_generateFrom := rfl
 
-lemma isOpen_typesWith (φ : (L[[α]]).Sentence) : IsOpen (typesWith (T := T) φ) :=
+public lemma isOpen_typesWith (φ : (L[[α]]).Sentence) : IsOpen (typesWith (T := T) φ) :=
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
-lemma isClosed_typesWith (φ : (L[[α]]).Sentence) : IsClosed (typesWith (T := T) φ) where
+public lemma isClosed_typesWith (φ : (L[[α]]).Sentence) : IsClosed (typesWith (T := T) φ) where
   isOpen_compl := by rw [←typesWith_compl]; exact isOpen_typesWith _
 
-lemma isClopen_typesWith (φ : (L[[α]]).Sentence) : IsClopen (typesWith (T := T) φ) where
+public lemma isClopen_typesWith (φ : (L[[α]]).Sentence) : IsClopen (typesWith (T := T) φ) where
   left := isClosed_typesWith _
   right := isOpen_typesWith _
 
-instance : TotallySeparatedSpace (CompleteType T α) := by
+public instance : TotallySeparatedSpace (CompleteType T α) := by
   rw [totallySeparatedSpace_iff_exists_isClopen]
   intro p q hpq
   simp only [ne_eq, SetLike.ext_iff, not_forall, not_iff] at hpq
