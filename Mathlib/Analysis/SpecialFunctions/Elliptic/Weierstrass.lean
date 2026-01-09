@@ -619,8 +619,8 @@ def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
 See `PeriodPair.hasFPowerSeriesOnBall_weierstrassPExcept`. -/
 def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
-  .ofScalars _ fun i ↦ i.casesOn (℘[L - l₀] x) fun i ↦ (i + 2) *
-    (L.sumInvPow x (i + 3) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 3))⁻¹ else 0)
+  .ofScalars _ fun i ↦ if i = 0 then (℘[L - l₀] x) else (i + 1) *
+    (L.sumInvPow x (i + 2) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 2))⁻¹ else 0)
 
 lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.weierstrassPExceptSeries l₀ x).coeff i =
@@ -633,6 +633,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     · trans (i + 2) * (L.sumInvPow x (i + 3) -
         ∑' l : L.lattice, if l = ⟨l₀, hl₀⟩ then (l₀ - x) ^ (-↑(i + 3) : ℤ) else 0)
       · rw [FormalMultilinearSeries.coeff_ofScalars, tsum_ite_eq, zpow_neg, zpow_natCast]
+        simp [add_assoc, one_add_one_eq_two]
       · rw [sumInvPow, ← (hasSum_sumInvPow _ _ (by linarith)).summable.tsum_sub, ← tsum_mul_left]
         · simp_rw [Subtype.ext_iff, zpow_neg]
           congr with l
@@ -751,7 +752,7 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
 
 lemma hasFPowerSeriesAt_weierstrassPExcept (l : ℂ) :
     HasFPowerSeriesAt ℘[L - l] (.ofScalars (𝕜 := ℂ) ℂ fun i : ℕ ↦
-      i.rec (℘[L - l] l) fun n _ ↦ (↑n + 2) * L.sumInvPow l (n + 3)) l := by
+      if i = 0 then ℘[L - l] l else (i + 1) * L.sumInvPow l (i + 2)) l := by
   obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
     (L.compl_lattice_diff_singleton_mem_nhds l)
   lift r to NNReal using h₁.le
@@ -771,7 +772,7 @@ lemma iteratedDeriv_weierstrassPExcept (l : ℂ) {n : ℕ} :
       if n = 0 then ℘[L - l] l else (n + 1).factorial * L.sumInvPow l (n + 2) := by
   rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n.factorial)
     (by simp [n.factorial_pos.ne']), ← eq_div_iff_mul_eq (by simp)]
-  trans n.rec (℘[L - l] l) fun n _ ↦ (↑n + 2) * L.sumInvPow l (n + 3)
+  trans if n = 0 then ℘[L - l] l else (n + 1) * L.sumInvPow l (n + 2)
   · simpa using congr($((L.analyticAt_weierstrassPExcept l).hasFPowerSeriesAt
       |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_weierstrassPExcept l)).coeff n)
   · obtain (_ | n) := n
@@ -797,13 +798,8 @@ lemma hasFPowerSeriesOnBall_derivWeierstrassPExcept (l₀ x : ℂ) (r : NNReal) 
   · have := (L.hasFPowerSeriesOnBall_weierstrassPExcept l₀ x r hr0 hr).fderiv
     convert (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall this
     ext n
-    simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, smul_eq_mul,
-      ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, map_smul,
-      ContinuousLinearMap.apply_apply, FormalMultilinearSeries.derivSeries_coeff_one, nsmul_eq_mul,
-      Nat.cast_add, Nat.cast_one, mul_eq_mul_left_iff]
-    left
-    simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries, mul_assoc]
+    simp [weierstrassPExceptSeries, derivWeierstrassPExceptSeries]
+    ring
   · simpa using Metric.ball_subset_closedBall
 
 lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
@@ -853,7 +849,7 @@ def weierstrassPSummand (x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
 
 /-- The power series exansion of `℘` at `x`. See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
 def weierstrassPSeries (x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
-  .ofScalars _ fun i ↦ i.casesOn (℘[L] x) fun i ↦ (i + 2) * L.sumInvPow x (i + 3)
+  .ofScalars _ fun i ↦ if i = 0 then (℘[L] x) else (i + 1) * L.sumInvPow x (i + 2)
 
 lemma weierstrassPExceptSeries_of_notMem (l₀ : ℂ) (hl₀ : l₀ ∉ L.lattice) :
     L.weierstrassPExceptSeries l₀ = L.weierstrassPSeries := by
