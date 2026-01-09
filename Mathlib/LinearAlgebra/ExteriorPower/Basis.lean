@@ -135,6 +135,33 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
   · rw [ιMulti_dual_apply_nondiag R n b s t heq, ← basis_apply,
       Basis.repr_self, Finsupp.single_eq_of_ne (by rw [ne_eq]; exact heq)]
 
+lemma basis_repr_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (x : ⋀[R]^n M)
+    (s : {a : Finset I // a.card = n}) :
+    Basis.repr (Basis.exteriorPower R n b) x s = ιMulti_dual R n b s x := by
+  rw [← Basis.coord_apply]
+  congr
+  exact basis_coord R n b s
+
+@[simp]
+lemma basis_repr_self {I : Type*} [LinearOrder I] (b : Basis I R M)
+    (s : {a : Finset I // a.card = n}) :
+    Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) s = 1 := by
+  rw [basis_repr_apply]
+  exact ιMulti_dual_apply_diag R n b s
+
+@[simp]
+lemma basis_repr_ne {I : Type*} [LinearOrder I] (b : Basis I R M)
+    {s t : {a : Finset I // a.card = n}} (hst : s ≠ t) :
+    Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) t = 0 := by
+  rw [basis_repr_apply]
+  exact ιMulti_dual_apply_nondiag R n b t s (id (Ne.symm hst))
+
+lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M)
+    (s : {a : Finset I // a.card = n}) :
+    Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) = Finsupp.single s 1 := by
+  ext t
+  by_cases hst : s = t <;> simp [hst]
+
 /-! ### Freeness and dimension of `⋀[R]^n M. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/

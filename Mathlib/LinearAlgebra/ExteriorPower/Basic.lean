@@ -129,6 +129,49 @@ lemma ιMulti_span_of_span {s : Set M} (hs : Submodule.span R s = ⊤) :
     Submodule.range_subtype]
   exact ιMulti_span_fixedDegree_of_span R n M hs
 
+section mul
+
+variable {n R M} {m o : ℕ}
+
+lemma ιMulti_mul_ιMulti_aux (a : Fin m → M) (b : Fin n → M) :
+    ExteriorAlgebra.ιMulti R m a * ExteriorAlgebra.ιMulti R n b =
+    ExteriorAlgebra.ιMulti R (m+n) (Fin.append a b) := by
+  simp only [ExteriorAlgebra.ιMulti_apply]
+  rw [show (fun i => (ExteriorAlgebra.ι R) (Fin.append a b i)) =
+    (ExteriorAlgebra.ι R) ∘ Fin.append a b by ext; simp]
+  rw [← List.map_ofFn, List.ofFn_fin_append, List.map_append, List.prod_append]
+  simp only [List.map_ofFn]
+  congr
+
+lemma ιMulti_mul_ιMulti (a : Fin m → M) (b : Fin n → M) :
+    (ιMulti R m a : ExteriorAlgebra R M) * ιMulti R n b = ιMulti R (m+n) (Fin.append a b) := by
+  simp [ιMulti_mul_ιMulti_aux]
+
+lemma mul_mem_add (x : ⋀[R]^m M) (y : ⋀[R]^n M) :
+    (x : ExteriorAlgebra R M) * y ∈ ⋀[R]^(m+n) M := by
+  apply Submodule.span_induction₂ (R := R) (s := Set.range (ιMulti R m))
+    (t := Set.range (ιMulti R n)) (a := x) (b := y)
+    (p := fun x y hx hy => (x : ExteriorAlgebra R M) * (y : ExteriorAlgebra R M) ∈ ⋀[R]^(m+n) M)
+  · rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; rw [ιMulti_mul_ιMulti]; apply ExteriorAlgebra.ιMulti_range; simp
+  · intros; simp
+  · intros; simp
+  · rintro _ _ _ _ _ _ h₁ h₂; rw [Submodule.coe_add, add_mul]; exact Submodule.add_mem _ h₁ h₂
+  · rintro _ _ _ _ _ _ h₁ h₂; rw [Submodule.coe_add, mul_add]; exact Submodule.add_mem _ h₁ h₂
+  · rintro _ _ _ _ _ h; rw [Submodule.coe_smul, smul_mul_assoc]; exact Submodule.smul_mem _ _ h
+  · rintro _ _ _ _ _ h; rw [Submodule.coe_smul, mul_smul_comm]; exact Submodule.smul_mem _ _ h
+  · rw [ιMulti_span]; trivial
+  · rw [ιMulti_span]; trivial
+
+lemma eq_of_deg_eq (h : m = n) : ⋀[R]^m M = ⋀[R]^n M := by
+  simp only [ExteriorAlgebra.exteriorPower, h]
+
+lemma mul_mem_of_add_eq (x : ⋀[R]^m M) (y : ⋀[R]^n M) (h : m + n = o) :
+    (x : ExteriorAlgebra R M) * y ∈ ⋀[R]^o M := by
+  rw [eq_of_deg_eq h.symm]
+  exact mul_mem_add x y
+
+end mul
+
 namespace presentation
 
 /-- The index type for the relations in the standard presentation of `⋀[R]^n M`,
