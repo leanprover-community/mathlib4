@@ -378,10 +378,7 @@ theorem convolution_assoc_at
   -- Derive right-sigma summability from left-sigma summability via assocEquiv
   have hSumR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
       L₃ (f p.1.1.1) (L₄ (g p.2.1.1) (h p.2.1.2)) := by
-    rw [← (assocEquiv x).summable_iff]
-    convert hSumL using 1
-    funext p
-    exact (hφ p).symm
+    rw [← (assocEquiv x).summable_iff]; convert hSumL using 1; funext p; exact (hφ p).symm
   -- Chain transformations: left-nested → left-sigma → right-sigma → right-nested
   have h1 : ∑' cd : mulFiber x, ∑' ab : mulFiber cd.1.1, L₂ (L (f ab.1.1) (g ab.1.2)) (h cd.1.2) =
         ∑' (p : Σ cd : mulFiber x, mulFiber cd.1.1),
@@ -426,9 +423,7 @@ theorem convolution_assoc
       L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2) := by
     have : Summable ((fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))) ∘
         (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr (hTriple x)
-    convert this using 1
-    ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩
-    simp [leftAssocEquiv, hL]
+    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, hL]
   exact convolution_assoc_at L L₂ L₃ L₄ hL f g h x hSigmaL (hFiberL x) (hFiberR x)
     (hcontL x) (hcontR x)
 
