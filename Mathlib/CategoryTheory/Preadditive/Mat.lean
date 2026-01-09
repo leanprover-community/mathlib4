@@ -364,11 +364,11 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
-/-- A natural transformation between additive functors `Mat_ C ⥤ D` is determined by its
+/-- A natural transformation between functors `Mat_ C ⥤ D` is determined by its
 components on objects coming from `C` via `embedding C`. -/
 @[ext]
 theorem natTrans_ext
-    {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
+    {F G : Mat_ C ⥤ D} [Functor.Additive G]
     (η θ : F ⟶ G)
     (h : ∀ X : C, η.app ((embedding C).obj X) = θ.app ((embedding C).obj X)) :
     η = θ := by
@@ -386,11 +386,11 @@ theorem natTrans_ext
         simp [h (M.X i)]
       _ = θ.app M ≫ G.map p := θ.naturality p)
 
-/-- A natural isomorphism between additive functors `Mat_ C ⥤ D` is determined by its
+/-- A natural isomorphism between functors `Mat_ C ⥤ D` is determined by its
 components on objects coming from `C` via `embedding C`. -/
 @[ext]
 theorem natIso_ext
-    {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
+    {F G : Mat_ C ⥤ D} [Functor.Additive G]
     (η θ : F ≅ G)
     (h : ∀ X : C, η.hom.app ((embedding C).obj X) = θ.hom.app ((embedding C).obj X)) :
     η = θ := by
@@ -481,7 +481,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D] [HasFiniteBiproducts D]
 variable (F : C ⥤ D) [Functor.Additive F]
-variable (L : Mat_ C ⥤ D) [Functor.Additive L]
+variable (L : Mat_ C ⥤ D)
 
 /-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`,
 their components at `(embedding C).obj X` become equal after composing with
