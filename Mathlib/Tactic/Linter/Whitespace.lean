@@ -323,11 +323,6 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
-    -- the `suffices` tactic; the pretty-printer does not take line length into account
-    -- TODO: can we keep inspecting the contents of that node?
-    ``Lean.Parser.Tactic.tacticSuffices_,
-    ``Lean.Parser.Term.suffices, -- term-mode suffices, e.g. `supportsStmt_read` in PostTuringMachine
-    -- `Mathlib.Tactic.tacticSuffices_, -- at the moment, it seems this branch is never taken
   ]
   depth := none
 
@@ -345,6 +340,16 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term¬_»,
   ]
   depth := some 2
+
+/--
+`suffices` requires a higher depth, since it inserts a further `hygieneInfo` node into the syntax.
+-/
+-- TODO: this still ignores a bit too much, since also some spaces after `suffices` are ignored.
+def ignoreSpaceAfter3 : ExcludedSyntaxNodeKind where
+  kinds := #[
+    ``Parser.Term.sufficesDecl,
+  ]
+  depth := some 3
 
 /--
 These are the `SyntaxNodeKind`s for which the pretty-printer would likely not space out from the
@@ -598,7 +603,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let pp := pretty.toRawSubstring
     let (_, corr) ← generateCorrespondence true ∅ #[] stx pp
     let (reported, excluded) := corr.partition fun _ {kinds := ks,..} =>
-      (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks)
+      (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks && !ignoreSpaceAfter3.contains ks)
     let fm ← getFileMap
     -- Sort by position to stabilize output.
     let reported := reported.toArray.qsort (·.1 < ·.1)

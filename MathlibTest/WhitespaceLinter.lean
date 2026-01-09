@@ -13,6 +13,7 @@ public import Batteries.Linter.UnreachableTactic
 public import Qq
 import Mathlib.Tactic.FindSyntax
 public import Mathlib.Util.Superscript
+public import Mathlib.adomaniLeanUtils.Inspect
 
 namespace Bundle
 set_option linter.style.whitespace true
@@ -918,27 +919,35 @@ example: True := trivial
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
 
--- This should not warn, because `k + k = 0` could be a very long expression!
+-- This should not warn, because `True` could be a very long expression!
 #guard_msgs in
-example {k : Int} (hk : k = 0) : k + k + k = 0 := by
+example : True := by
   suffices
-      k + k = 0 by
-    rw [this, hk, Int.add_zero]
-  simp [hk]
+  True by
+    trivial
+  trivial
 
+-- TODO: this *should* report the two double spaces surrounding `by`, but doesn't.
 #guard_msgs in
-example {k : Int} (hk : k = 0) : k + k + k = 0 := by
-  suffices
-      h : k + k = 0 by
-    rw [h, hk, Int.add_zero]
-  simp [hk]
+example : True :=
+  suffices True  by  refine ?_; trivial
+  trivial
 
+/--
+warning: remove space in the source
+
+This part of the code
+  'refine  ?_;'
+should be written as
+  'refine ?_;'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+-/
 #guard_msgs in
-example {k : Int} (hk : k = 0) : k + k + k = 0 := by
-  suffices
-      h : k + k + k = 0
-    from h
-  simp [hk]
+example : True :=
+  suffices True  by refine  ?_; trivial
+  trivial
 
 -- TODO: ideally, we could keep linting the contents of the `suffices`
 #guard_msgs in
