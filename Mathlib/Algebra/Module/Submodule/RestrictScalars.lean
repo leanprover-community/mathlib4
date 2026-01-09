@@ -82,6 +82,14 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   inj' := restrictScalars_injective S R M
   map_rel_iff' := by simp [SetLike.le_def]
 
+lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
+  (restrictScalarsEmbedding S R M).monotone
+
+variable {R M} in
+@[mono]
+lemma restrictScalars_mono {s t : Submodule R M} (hst : s ≤ t) :
+    s.restrictScalars S ≤ t.restrictScalars S := restrictScalars_monotone S R M hst
+
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
 @[simps +simpRhs]
