@@ -84,7 +84,7 @@ instance [DecidableEq X] : SetLike (DecSubObj X) X where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
 
-instance : PartialOrder (DecSubObj X) := .ofSetLike (DecSubObj X) X
+instance [DecidableEq X] : PartialOrder (DecSubObj X) := .ofSetLike (DecSubObj X) X
 
 -- Note: this is testing instance arguments after the type.
 def DecSubObj.prod [DecidableEq X] [DecidableEq Y] (s : DecSubObj X) (t : DecSubObj Y) :
