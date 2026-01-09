@@ -403,7 +403,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   suffices F ⊔ fromEdgeSet {s(v', u')} ≤ F by
     grind [Adj.reachable, sup_le_iff, le_iff_adj, fromEdgeSet_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, G.symm huv]
+  grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, huv.symm]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
