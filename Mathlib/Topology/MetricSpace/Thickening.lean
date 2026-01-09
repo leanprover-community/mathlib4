@@ -543,7 +543,7 @@ theorem closure_eq_iInter_thickening (E : Set α) :
   rw [← cthickening_zero]
   exact cthickening_eq_iInter_thickening rfl.ge E
 
-/-- The frontier of the closed thickening of a set is contained in an `EMetric.infEDist` level
+/-- The frontier of the closed thickening of a set is contained in an `Metric.infEDist` level
 set. -/
 theorem frontier_cthickening_subset (E : Set α) {δ : ℝ} :
     frontier (cthickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
