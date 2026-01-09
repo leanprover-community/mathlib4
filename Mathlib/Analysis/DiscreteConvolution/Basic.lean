@@ -226,13 +226,13 @@ theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M 
     (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
 /-- Left zero: `0 ⋆[L] f = 0`. -/
-@[simp]
+@[to_additive (dont_translate := S E E' F) (attr := simp) zero_addConvolution]
 theorem zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
     (0 : M → E) ⋆[L] f = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, LinearMap.zero_apply, tsum_zero]
 
 /-- Right zero: `f ⋆[L] 0 = 0`. -/
-@[simp]
+@[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_zero]
 theorem convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
