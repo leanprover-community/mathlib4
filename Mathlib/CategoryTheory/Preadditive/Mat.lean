@@ -369,32 +369,18 @@ components on objects coming from `C` via `embedding C`. -/
 @[ext]
 theorem natTrans_ext
     {F G : Mat_ C ⥤ D} [Functor.Additive G]
-    (η θ : F ⟶ G)
+    {η θ : F ⟶ G}
     (h : ∀ X : C, η.app ((embedding C).obj X) = θ.app ((embedding C).obj X)) :
     η = θ := by
   ext M
-  refine (cancel_mono (additiveObjIsoBiproduct G M).hom).1 ?_
+  rw [← cancel_mono (additiveObjIsoBiproduct G M).hom]
   ext i
   let p : M ⟶ (embedding C).obj (M.X i) :=
     M.isoBiproductEmbedding.hom ≫
       biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
-  simpa [p, Category.assoc, additiveObjIsoBiproduct_hom_π] using
-    (calc
-      η.app M ≫ G.map p =
-        F.map p ≫ η.app ((embedding C).obj (M.X i)) := (η.naturality p).symm
-      _ = F.map p ≫ θ.app ((embedding C).obj (M.X i)) := by
-        simp [h (M.X i)]
-      _ = θ.app M ≫ G.map p := θ.naturality p)
-
-/-- A natural isomorphism between functors `Mat_ C ⥤ D` is determined by its
-components on objects coming from `C` via `embedding C`. -/
-@[ext]
-theorem natIso_ext
-    {F G : Mat_ C ⥤ D} [Functor.Additive G]
-    (η θ : F ≅ G)
-    (h : ∀ X : C, η.hom.app ((embedding C).obj X) = θ.hom.app ((embedding C).obj X)) :
-    η = θ := by
-  exact Iso.ext (natTrans_ext (η := η.hom) (θ := θ.hom) h)
+  have : η.app M ≫ G.map p = θ.app M ≫ G.map p := by
+    rw [← η.naturality p, ← θ.naturality p, h]
+  simpa [p, Category.assoc, additiveObjIsoBiproduct_hom_π] using this
 
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -488,14 +474,12 @@ their components at `(embedding C).obj X` become equal after composing with
 `(embeddingLiftIso F).hom.app X`. -/
 theorem liftIso_ext_comp_embeddingLiftIso
     {β γ : L ≅ lift F}
-    (h :
-      ∀ X : C,
-        β.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X =
-          γ.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X) :
+    (h : ∀ X : C,
+      β.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X =
+        γ.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X) :
     β = γ := by
-  apply Mat_.natIso_ext (η := β) (θ := γ)
-  intro X
-  exact (cancel_mono ((embeddingLiftIso F).hom.app X)).1 (h X)
+  ext X
+  simpa only [← cancel_mono ((embeddingLiftIso F).hom.app X)] using h X
 
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
