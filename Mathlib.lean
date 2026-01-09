@@ -1589,6 +1589,7 @@ public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.DerivativeTest
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
+public import Mathlib.Analysis.Calculus.DifferentialForm.VectorField
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
