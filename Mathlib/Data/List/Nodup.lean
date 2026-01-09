@@ -26,7 +26,7 @@ variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → 
 
 namespace List
 
-protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
+protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irrefl r] (h : Pairwise r l) :
     Nodup l :=
   h.imp ne_of_irrefl
 

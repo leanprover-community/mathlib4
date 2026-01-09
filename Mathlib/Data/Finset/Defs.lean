@@ -211,11 +211,11 @@ instance : IsRefl (Finset α) (· ⊆ ·) :=
 instance : IsTrans (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
 
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)
+instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Antisymm (· ≤ ·)
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
+instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· < ·)
