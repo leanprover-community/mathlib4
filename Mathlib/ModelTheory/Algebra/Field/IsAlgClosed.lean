@@ -3,16 +3,17 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.IsAlgClosed.Classification
-import Mathlib.ModelTheory.Algebra.Field.CharP
-import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsAlgClosed.Classification
+public import Mathlib.ModelTheory.Algebra.Field.CharP
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 
-# The First Order Theory of Algebraically Closed Fields
+# The First-Order Theory of Algebraically Closed Fields
 
 This file defines the theory of algebraically closed fields of characteristic `p`, as well
 as proving completeness of the theory and the Lefschetz Principle.
@@ -36,12 +37,14 @@ defined saying that these assumptions imply `Theory.field.Model K` and `(Theory.
 
 ## References
 
-The first order theory of algebraically closed fields, along with the Lefschetz Principle and
+The first-order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 variable {K : Type*}
 
@@ -87,8 +90,8 @@ instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
 instance [Field K] [CompatibleRing K] {p : ℕ} [CharP K p] [IsAlgClosed K] :
     (Theory.ACF p).Model K := by
   refine Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp]
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp]
   rintro _ n hn0 rfl
   simp only [realize_genericMonicPolyHasRoot]
   rintro ⟨p, _, rfl⟩
@@ -116,8 +119,8 @@ theorem isAlgClosed_of_model_ACF (p : ℕ) (K : Type*)
   intro p hpm hpi
   have h : K ⊨ genericMonicPolyHasRoot '' {n | 0 < n} :=
     Theory.Model.mono h (by simp [Theory.ACF])
-  simp only [Theory.model_iff, Set.mem_image, Set.mem_singleton_iff,
-    exists_prop, forall_exists_index, and_imp] at h
+  simp only [Theory.model_iff, Set.mem_image,
+    forall_exists_index, and_imp] at h
   have := h _ p.natDegree (natDegree_pos_iff_degree_pos.2
     (degree_pos_of_irreducible hpi)) rfl
   rw [realize_genericMonicPolyHasRoot] at this
@@ -218,7 +221,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 
-/-- The **Lefschetz principle**. A first order sentence is modeled by the theory
+/-- The **Lefschetz principle**. A first-order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
@@ -230,7 +233,7 @@ theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sent
       fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
     finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
 
-/-- Another statement of the **Lefschetz principle**. A first order sentence is modeled by the
+/-- Another statement of the **Lefschetz principle**. A first-order sentence is modeled by the
 theory of algebraically closed fields of characteristic zero if and only if it is modeled by the
 theory of algebraically closed fields of characteristic `p` for all but finitely many primes `p`.
 -/

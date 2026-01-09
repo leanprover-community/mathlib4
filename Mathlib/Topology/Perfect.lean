@@ -3,8 +3,9 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Perfect Sets
@@ -14,12 +15,16 @@ including a version of the Cantor-Bendixson Theorem.
 
 ## Main Definitions
 
+* `Preperfect C`: A set `C` is preperfect if every point of `C` is an accumulation point
+  of `C`. Equivalently, if it has no isolated points in the induced topology.
+  This property is also called dense-in-itself.
 * `Perfect C`: A set `C` is perfect, meaning it is closed and every point of it
   is an accumulation point of itself.
 * `PerfectSpace X`: A topological space `X` is perfect if its universe is a perfect set.
 
 ## Main Statements
 
+* `preperfect_iff_perfect_closure`: In a T1 space, a set is preperfect iff its closure is perfect.
 * `Perfect.splitting`: A perfect nonempty set contains two disjoint perfect nonempty subsets.
   The main inductive step in the construction of an embedding from the Cantor space to a
   perfect nonempty complete metric space.
@@ -30,10 +35,6 @@ including a version of the Cantor-Bendixson Theorem.
 ## Implementation Notes
 
 We do not require perfect sets to be nonempty.
-
-We define a nonstandard predicate, `Preperfect`, which drops the closed-ness requirement
-from the definition of perfect. In T1 spaces, this is equivalent to having a perfect closure,
-see `preperfect_iff_perfect_closure`.
 
 ## See also
 
@@ -46,9 +47,11 @@ namely Polish spaces.
 
 ## Tags
 
-accumulation point, perfect set, cantor-bendixson.
+accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 
 -/
+
+@[expose] public section
 
 
 open Topology Filter Set TopologicalSpace
@@ -68,8 +71,8 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
   exact h_acc
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
-If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
-See `preperfect_iff_perfect_closure`. -/
+If `α` is a T1 space, this is equivalent to the closure of `C` being perfect,
+see `preperfect_iff_perfect_closure`. This property is also called dense-in-itself. -/
 def Preperfect (C : Set α) : Prop :=
   ∀ x ∈ C, AccPt x (𝓟 C)
 
@@ -188,6 +191,12 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
+  constructor
+  apply isPreconnected_univ.preperfect_of_nontrivial
+  rw [Set.nontrivial_univ_iff]
+  infer_instance
+
 end Preperfect
 
 section Kernel
@@ -201,7 +210,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   let V := ⋃ U ∈ v, U
   let D := C \ V
   have Vct : (V ∩ C).Countable := by
-    simp only [V, iUnion_inter, mem_sep_iff]
+    simp only [V, iUnion_inter]
     apply Countable.biUnion
     · exact Countable.mono inter_subset_left bct
     · exact inter_subset_right

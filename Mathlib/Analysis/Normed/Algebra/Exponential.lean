@@ -3,12 +3,13 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.Analysis.Analytic.ChangeOrigin
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.SpecificLimits.RCLike
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Exponential in a Banach algebra
@@ -85,6 +86,8 @@ but we want to move `exp` out of the root namespace in any case to avoid this am
 In the long term is may be possible to replace `Real.exp` and `Complex.exp` with this one.
 
 -/
+
+@[expose] public section
 
 
 namespace NormedSpace
@@ -280,9 +283,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
-  congr 1
-  have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
-  field_simp [this]
+  field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp 𝕂 x` has explicit two-sided inverse `NormedSpace.exp 𝕂 (-x)`. -/
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
@@ -307,8 +308,8 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp 𝕂 x)] :
-    ⅟ (exp 𝕂 x) = exp 𝕂 (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp 𝕂 x) = _)
+    ⅟(exp 𝕂 x) = exp 𝕂 (-x) := by
+  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp 𝕂 x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
@@ -391,7 +392,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
     apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
-    exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
+    exact tendsto_inv_atTop_nhds_zero_nat
   · simp [this]
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
@@ -430,7 +431,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt (exp 𝕂) (expSeries �
 
 @[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
 
@@ -460,7 +461,7 @@ noncomputable def invertibleExp (x : 𝔸) : Invertible (exp 𝕂 x) :=
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp 𝕂 x) :=
   isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
-theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟ (exp 𝕂 x) = exp 𝕂 (-x) :=
+theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟(exp 𝕂 x) = exp 𝕂 (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp 𝕂 (-x) :=
@@ -469,7 +470,7 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp �
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 
@@ -483,8 +484,9 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_

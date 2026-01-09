@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Locally small localizations
@@ -17,7 +18,11 @@ the category `D` is locally `w`-small.
 
 -/
 
+@[expose] public section
+
 universe w v₁ v₂ u₁ u₂
+
+open CategoryTheory.Functor
 
 namespace CategoryTheory.MorphismProperty
 
@@ -45,16 +50,16 @@ noncomputable irreducible_def hasLocalizationOfLocallySmall'
     (L : C ⥤ D) [L.IsLocalization W] :
     HasLocalization.{w} W := by
   have : LocallySmall.{w} (InducedCategory _ L.obj) :=
-    ⟨fun X Y ↦ inferInstanceAs (Small.{w} (L.obj X ⟶ L.obj Y))⟩
+    ⟨fun X Y ↦ small_of_injective InducedCategory.homEquiv.injective⟩
   let L' : C ⥤ (InducedCategory _ L.obj) :=
     { obj X := X
-      map f := L.map f }
+      map f := InducedCategory.homMk (L.map f) }
   have := Localization.essSurj L W
   have : (inducedFunctor L.obj).EssSurj := ⟨fun Y ↦ ⟨_, ⟨L.objObjPreimageIso Y⟩⟩⟩
   have : (inducedFunctor L.obj).IsEquivalence := { }
   let e := (inducedFunctor L.obj).asEquivalence
   let e' : (L' ⋙ e.functor) ⋙ e.inverse ≅ L' :=
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft L' e.unitIso.symm ≪≫ L'.rightUnitor
+    associator _ _ _ ≪≫ isoWhiskerLeft L' e.unitIso.symm ≪≫ L'.rightUnitor
   have : L'.IsLocalization W :=
     Functor.IsLocalization.of_iso W (L₁ := L ⋙ e.inverse) e'
   exact hasLocalizationOfLocallySmall.{w} W L'

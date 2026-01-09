@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.NoncommProd
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # support of a permutation
@@ -27,6 +29,8 @@ Assume `α` is a Fintype:
   (Equivalently, `f.support` has at least 2 elements.)
 
 -/
+
+@[expose] public section
 
 
 open Equiv Finset Function
@@ -49,7 +53,7 @@ theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint,
 
 theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
 
-instance : IsSymm (Perm α) Disjoint :=
+instance : Std.Symm (α := Perm α) Disjoint :=
   ⟨Disjoint.symmetric⟩
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
@@ -205,15 +209,7 @@ theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) 
       · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
       · rw [swap_apply_of_ne_of_ne] <;>
         simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne]
-      · intro h
-        apply hz
-        rw [h]
-        exact Subtype.prop x
-      intro h
-      apply hz
-      rw [h]
-      exact Subtype.prop y
+    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne] <;> grind
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
     (h : f.IsSwap) : (ofSubtype f).IsSwap :=
@@ -226,9 +222,7 @@ theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (
 theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
     f y ≠ y ∧ y ≠ x := by
   simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
-  by_cases h : f y = x
-  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
-  · split_ifs at hy with h <;> try { simp [*] at * }
+  grind
 
 end IsSwap
 
@@ -238,10 +232,10 @@ section Set
 
 variable (p q : Perm α)
 
-theorem set_support_inv_eq : { x | p⁻¹ x ≠ x } = { x | p x ≠ x } := by
-  ext x
-  simp only [Set.mem_setOf_eq, Ne]
-  rw [inv_def, symm_apply_eq, eq_comm]
+lemma set_support_symm_eq : {x | p.symm x ≠ x} = {x | p x ≠ x} := by
+  ext; simp [eq_symm_apply, eq_comm]
+
+@[deprecated (since := "2025-11-17")] alias set_support_inv_eq := set_support_symm_eq
 
 theorem set_support_apply_mem {p : Perm α} {a : α} :
     p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
@@ -253,9 +247,8 @@ theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p 
   simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
 
 theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } ∪ { x | q x ≠ x } := by
-  intro x
-  simp only [Perm.coe_mul, Function.comp_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
-  by_cases hq : q x = x <;> simp [hq]
+  simp only [coe_mul]
+  grind
 
 end Set
 
@@ -279,8 +272,6 @@ theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
   rw [support, mem_filter, and_iff_right (mem_univ x)]
 
 theorem notMem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support := notMem_support
 
 theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
   ext
@@ -325,11 +316,8 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
   | nil => rfl
   | cons f l ih =>
     rw [List.prod_cons, mul_apply, ih, hx]
-    · simp only [List.find?, List.mem_cons, true_or]
-    intros f' hf'
-    refine hx f' ?_
-    simp only [List.find?, List.mem_cons]
-    exact Or.inr hf'
+    · simp only [List.mem_cons, true_or]
+    grind
 
 theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
   mem_support.mpr fun h2 => mem_support.mp h1 (pow_apply_eq_self_of_apply_eq_self h2 n)
@@ -345,7 +333,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
     c x ∈ s ↔ x ∈ s := by
   by_cases hx' : x ∈ c.support
-  · simp only [hcs hx', true_iff, hcs (apply_mem_support.mpr hx')]
+  · simp only [hcs hx', hcs (apply_mem_support.mpr hx')]
   · rw [notMem_support.mp hx']
 
 /-- A permutation c is the extension of a restriction of g to s
@@ -379,7 +367,7 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
     exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
-  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
+  · simp only [forall_prop_of_false hx, ofSubtype_apply_of_not_mem u hx]
 
 theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
     {s : Finset α} {f : α → Perm β}
@@ -412,7 +400,7 @@ theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g
     rwa [mem_inter, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter]
 
 theorem disjoint_iff_disjoint_support : Disjoint f g ↔ _root_.Disjoint f.support g.support := by
-  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff, not_and_or,
+  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff,
     imp_iff_not_or]
 
 theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support g.support :=
@@ -479,12 +467,12 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
   simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
-    List.mem_singleton, and_self_iff, List.nodup_nil] at h
+    and_self_iff, List.nodup_nil] at h
   push_neg at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
-    simp [Finset.ext_iff]
+    simp [-Finset.union_singleton]
   · intro
     simp only [mem_insert, mem_singleton]
     rintro (rfl | rfl | rfl | _) <;>
@@ -512,16 +500,12 @@ theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
   · simp [hzf, hx, h, swap_apply_of_ne_of_ne]
   by_cases hzfx : f z = x
   · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx]
-  · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx, f.injective.ne hzx, swap_apply_of_ne_of_ne]
+  · simp [hzx, hzfx, f.injective.ne hzx, swap_apply_of_ne_of_ne]
 
 theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (swap x (f x) * f)) :
     y ∈ support f ∧ y ≠ x := by
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
-  by_cases h : f y = x
-  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
-  · split_ifs at hy with heq
-    · subst heq; exact ⟨h, hy⟩
-    · exact ⟨hy, heq⟩
+  grind
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
@@ -559,24 +543,13 @@ variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [Decidable
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
     support (g.extendDomain f) = g.support.map f.asEmbedding := by
   ext b
-  simp only [exists_prop, Function.Embedding.coeFn_mk, toEmbedding_apply, mem_map, Ne,
-    Function.Embedding.trans_apply, mem_support]
+  simp only [mem_map, Ne,
+    mem_support]
   by_cases pb : p b
   · rw [extendDomain_apply_subtype _ _ pb]
-    constructor
-    · rintro h
-      refine ⟨f.symm ⟨b, pb⟩, ?_, by simp⟩
-      contrapose! h
-      simp [h]
-    · rintro ⟨a, ha, hb⟩
-      contrapose! ha
-      obtain rfl : a = f.symm ⟨b, pb⟩ := by
-        rw [eq_symm_apply]
-        exact Subtype.coe_injective hb
-      rw [eq_symm_apply]
-      exact Subtype.coe_injective ha
+    grind [asEmbedding_apply]
   · rw [extendDomain_apply_not_subtype _ _ pb]
-    simp only [not_exists, false_iff, not_and, eq_self_iff_true, not_true]
+    simp only [not_exists, false_iff, not_and, not_true]
     rintro a _ rfl
     exact pb (Subtype.prop _)
 

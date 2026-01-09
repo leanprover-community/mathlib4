@@ -3,7 +3,9 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Periodicity
@@ -24,6 +26,8 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 
 period, periodic, periodicity, antiperiodic
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -76,7 +80,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
-  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
+  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic])
 
 @[to_additive]
 protected theorem Periodic.smul [Add α] [SMul γ β] (h : Periodic f c) (a : γ) :
@@ -122,7 +126,7 @@ theorem Periodic.sub_const [SubtractionCommMonoid α] (h : Periodic f c) (a : α
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
-  induction n <;> simp_all [add_nsmul, ← add_assoc, zero_nsmul]
+  induction n <;> simp_all [add_nsmul, ← add_assoc]
 
 theorem Periodic.nat_mul [NonAssocSemiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by
   simpa only [nsmul_eq_mul] using h.nsmul n
@@ -150,7 +154,7 @@ theorem Periodic.nat_mul_sub_eq [NonAssocRing α] (h : Periodic f c) (n : ℕ) :
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
   rcases n with n | n
-  · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
+  · simpa only [Int.ofNat_eq_natCast, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 
 protected theorem Periodic.int_mul [NonAssocRing α] (h : Periodic f c) (n : ℤ) :
@@ -191,6 +195,15 @@ theorem Periodic.int_mul_eq [NonAssocRing α] (h : Periodic f c) (n : ℤ) : f (
 
 theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f 0 := fun x => by
   rw [add_zero]
+
+/-- The iterates `a`, `f a`, `f^[2] a` etc form a periodic sequence with period `n`
+iff `a` is a periodic point for `f`. -/
+theorem periodic_iterate_iff {f : α → α} {n : ℕ} {a : α} :
+    Periodic (f^[·] a) n ↔ IsPeriodicPt f n a := by
+  refine ⟨fun h ↦ h.eq, fun h k ↦ ?_⟩
+  simp only [Function.iterate_add_apply, h.eq]
+
+alias ⟨Periodic.isPeriodicPt, IsPeriodicPt.periodic_iterate⟩ := periodic_iterate_iff
 
 theorem Periodic.map_vadd_zmultiples [AddCommGroup α] (hf : Periodic f c)
     (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x := by

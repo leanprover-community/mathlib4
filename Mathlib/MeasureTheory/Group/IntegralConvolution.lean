@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.MeasureTheory.Integral.Prod
+module
+
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Bochner integrals of convolutions
@@ -22,6 +24,8 @@ integrals over there.
 * `integral_conv`: if `f` is integrable with respect to the convolution `μ ∗ ν`, then
   `∫ x, f x ∂(μ ∗ₘ ν) = ∫ x, ∫ y, f (x + y) ∂ν ∂μ`.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

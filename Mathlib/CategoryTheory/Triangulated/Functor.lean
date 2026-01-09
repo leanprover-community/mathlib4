@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Triangulated functors
@@ -19,6 +21,8 @@ distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
@@ -27,7 +31,7 @@ open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
   (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
@@ -57,7 +61,7 @@ instance [Faithful F] : Faithful F.mapTriangle where
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
-   ⟨{ hom₁ := F.preimage f.hom₁
+    ⟨{hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
@@ -67,7 +71,7 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
+          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by cat_disch⟩
 
 section Additive
 
@@ -84,7 +88,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
+        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 
@@ -93,6 +97,7 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
 -- Split out from the following instance for faster elaboration.
+set_option backward.privateInPublic true in
 private theorem mapTriangleCommShiftIso_add
     [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
@@ -101,10 +106,12 @@ private theorem mapTriangleCommShiftIso_add
         (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
   ext <;> simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
-  iso := F.mapTriangleCommShiftIso
-  add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso := F.mapTriangleCommShiftIso
+  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
@@ -114,7 +121,7 @@ def mapTriangleRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       ((F.commShiftIso (1 : ℤ)).symm.app _)
-      (by simp) (by simp) (by simp)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by cat_disch)
 
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
@@ -123,7 +130,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp) (by simp)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by cat_disch)
 
 
 variable (C) in
@@ -147,7 +154,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
       simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
-        NatTrans.naturality_assoc])) (by aesop_cat)
+        NatTrans.naturality_assoc])) (by cat_disch)
 
 end Additive
 
@@ -262,7 +269,7 @@ lemma isTriangulated_of_precomp_iso {H : C ⥤ E} (e : F ⋙ G ≅ H) [H.CommShi
 
 end Functor
 
-variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ]
+variable {C D : Type*} [Category* C] [Category* D] [HasShift C ℤ] [HasShift D ℤ]
   [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
@@ -299,7 +306,7 @@ end Triangulated
 open Triangulated
 
 /-- If `F : C ⥤ D` is a triangulated functor from a triangulated category, then `D`
-is also triangulated if tuples of composables arrows in `D` can be lifted to `C`. -/
+is also triangulated if tuples of composable arrows in `D` can be lifted to `C`. -/
 lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
     [(F.mapComposableArrows 2).EssSurj] [IsTriangulated C] :

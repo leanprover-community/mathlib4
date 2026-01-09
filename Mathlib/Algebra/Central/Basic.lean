@@ -3,8 +3,9 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 -/
+module
 
-import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.Defs
 
 /-!
 # Central Algebras
@@ -15,9 +16,11 @@ In this file, we prove some basic results about central algebras over a commutat
 
 - `Algebra.IsCentral.center_eq_bot`: the center of a central algebra over `K` is equal to `K`.
 - `Algebra.IsCentral.self`: a commutative ring is a central algebra over itself.
-- `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` is a tower of scalars where
+- `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -63,7 +66,7 @@ open MulOpposite in
 /-- Opposite algebra of a central algebra is central. This instance combined with the coming
   `IsSimpleRing` instance for the opposite of central simple algebra will be an
   inverse for an element in `BrauerGroup`, find out more about this in
-  `Mathlib/Algebra/BrauerGroup/Basic.lean`. -/
+  `Mathlib/Algebra/BrauerGroup/Defs.lean`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz :=
     have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)

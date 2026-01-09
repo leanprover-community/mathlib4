@@ -3,7 +3,9 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
@@ -11,6 +13,8 @@ This file provides the additive action `AffineSubspace.pointwiseAddAction` in th
 `Pointwise` locale.
 
 -/
+
+@[expose] public section
 
 
 open Affine Pointwise
@@ -57,7 +61,7 @@ theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
   ext; simp [pointwise_vadd_eq_map, map_bot]
 
 @[simp] lemma pointwise_vadd_top (v : V) : v +ᵥ (⊤ : AffineSubspace k P) = ⊤ := by
-  ext; simp [pointwise_vadd_eq_map, map_top, vadd_eq_iff_eq_neg_vadd]
+  ext; simp [pointwise_vadd_eq_map, vadd_eq_iff_eq_neg_vadd]
 
 theorem pointwise_vadd_direction (v : V) (s : AffineSubspace k P) :
     (v +ᵥ s).direction = s.direction := by

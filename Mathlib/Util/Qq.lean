@@ -3,8 +3,11 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Init
-import Qq
+module
+
+public import Mathlib.Init
+public meta import Qq
+public meta import Lean.Expr
 
 /-!
 # Extra `Qq` helpers
@@ -12,9 +15,21 @@ import Qq
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
 
+public meta section
+
 open Lean Elab Tactic Meta
 
 namespace Qq
+
+/-- If `e` has type `Sort u` for some level `u`, return `u` and `e : Q(Sort u)`. -/
+def getLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Sort u)) := do
+  return ⟨← getLevel e, e⟩
+
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
+def getLevelQ' (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let u ← getLevel e
+  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  return ⟨v, e⟩
 
 /-- Variant of `inferTypeQ` that yields a type in `Type u` rather than `Sort u`.
 Throws an error if the type is a `Prop` or if it's otherwise not possible to represent
@@ -22,8 +37,7 @@ the universe as `Type u` (for example due to universe level metavariables). -/
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
-  let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  let ⟨v, α⟩ ← getLevelQ' α
   pure ⟨v, α, e⟩
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
@@ -60,5 +74,17 @@ def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
   | [] => q(∅)
   | [x] => q({$x})
   | x :: xs => q(Insert.insert $x $(mkSetLiteralQ β xs))
+
+/-- Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
+application. Recall that all theorems and definitions containing numeric literals are encoded using
+`OfNat.ofNat` applications in the frontend.
+
+This is a Qq version of `Lean.mkNatLit`. -/
+def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
+
+/-- Returns the integer literal `n`.
+
+This is a Qq version of `Lean.mkIntLit`. -/
+def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
 end Qq

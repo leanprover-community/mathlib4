@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -26,6 +28,8 @@ While the name `WType` is somewhat verbose, it is preferable to putting a single
 identifier `W` in the root namespace.
 -/
 
+@[expose] public section
+
 -- For "W_type"
 
 /--
@@ -44,12 +48,12 @@ variable {α : Type*} {β : α → Type*}
 
 /-- The canonical map to the corresponding sigma type, returning the label of a node as an
   element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
-def toSigma : WType β → Σa : α, β a → WType β
+def toSigma : WType β → Σ a : α, β a → WType β
   | ⟨a, f⟩ => ⟨a, f⟩
 
 /-- The canonical map from the sigma type into a `WType`. Given a node `a : α`, and
   its children as a function `β a → WType β`, return the corresponding tree. -/
-def ofSigma : (Σa : α, β a → WType β) → WType β
+def ofSigma : (Σ a : α, β a → WType β) → WType β
   | ⟨a, f⟩ => WType.mk a f
 
 @[simp]
@@ -57,14 +61,14 @@ theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
   | ⟨_, _⟩ => rfl
 
 @[simp]
-theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
+theorem toSigma_ofSigma : ∀ s : Σ a : α, β a → WType β, toSigma (ofSigma s) = s
   | ⟨_, _⟩ => rfl
 
 variable (β) in
 /-- The canonical bijection with the sigma type, showing that `WType` is a fixed point of
   the polynomial functor `X ↦ Σ a : α, β a → X`. -/
 @[simps]
-def equivSigma : WType β ≃ Σa : α, β a → WType β where
+def equivSigma : WType β ≃ Σ a : α, β a → WType β where
   toFun := toSigma
   invFun := ofSigma
   left_inv := ofSigma_toSigma
@@ -95,9 +99,10 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         ?_
     intro n m h
-    induction' n with n ih generalizing m
-    · rcases m with - | m <;> simp_all
-    · rcases m with - | m
+    induction n generalizing m with
+    | zero => rcases m with - | m <;> simp_all
+    | succ n ih =>
+      rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩
@@ -115,6 +120,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
   Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 
+set_option backward.privateInPublic true in
 /-
 Show that W types are encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable.
@@ -129,6 +135,7 @@ private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β 
 
 variable [∀ a : α, Encodable (β a)]
 
+set_option backward.privateInPublic true in
 private def encodable_zero : Encodable (WType' β 0) :=
   let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
@@ -137,14 +144,14 @@ private def encodable_zero : Encodable (WType' β 0) :=
   have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   Encodable.ofLeftInverse f finv this
 
-private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
+private def f (n : ℕ) : WType' β (n + 1) → Σ a : α, β a → WType' β n
   | ⟨t, h⟩ => by
     obtain ⟨a, f⟩ := t
     have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
     exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩
 
-private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n + 1)
+private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
     have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
@@ -152,18 +159,21 @@ private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n +
 
 variable [Encodable α]
 
+set_option backward.privateInPublic true in
 private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
   Encodable.ofLeftInverse (f n) (finv n)
     (by
       rintro ⟨⟨_, _⟩, _⟩
       rfl)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
-  let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
+  let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
+  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl
   exact Encodable.ofLeftInverse f finv this
 

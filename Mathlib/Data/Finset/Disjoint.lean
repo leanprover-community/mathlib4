@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
+module
+
+public import Mathlib.Data.Finset.Insert
 
 /-!
 # Disjoint finite sets
@@ -19,6 +21,8 @@ import Mathlib.Data.Finset.Insert
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -49,16 +53,10 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left_finset := Disjoint.notMem_of_mem_left_finset
-
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right_finset := Disjoint.notMem_of_mem_right_finset
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -125,10 +123,11 @@ end Disjoint
 /-- `disjUnion s t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`.
 It is the same as `s ∪ t`, but it does not require decidable equality on the type. The hypothesis
 ensures that the sets are disjoint. -/
+@[simps]
 def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
   ⟨s.1 + t.1, Multiset.nodup_add.2 ⟨s.2, t.2, disjoint_val.2 h⟩⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 
@@ -140,6 +139,16 @@ theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
 theorem disjUnion_comm (s t : Finset α) (h : Disjoint s t) :
     disjUnion s t h = disjUnion t s h.symm :=
   eq_of_veq <| Multiset.add_comm _ _
+
+@[simp]
+theorem disjUnion_inj_left {s₁ s₂ t : Finset α} (h₁ : Disjoint s₁ t) (h₂ : Disjoint s₂ t) :
+    s₁.disjUnion t h₁ = s₂.disjUnion t h₂ ↔ s₁ = s₂ := by
+  simp [← val_inj, Multiset.add_left_inj]
+
+@[simp]
+theorem disjUnion_inj_right {s t₁ t₂ : Finset α} (h₁ : Disjoint s t₁) (h₂ : Disjoint s t₂) :
+    s.disjUnion t₁ h₁ = s.disjUnion t₂ h₂ ↔ t₁ = t₂ := by
+  simp [← val_inj, Multiset.add_right_inj]
 
 @[simp]
 theorem empty_disjUnion (t : Finset α) (h : Disjoint ∅ t := disjoint_bot_left) :
@@ -165,11 +174,11 @@ section Insert
 
 variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
   simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 

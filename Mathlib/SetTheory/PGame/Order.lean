@@ -3,9 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Logic.Small.Defs
-import Mathlib.Order.GameAdd
-import Mathlib.SetTheory.PGame.Basic
+module
+
+public import Mathlib.Logic.Small.Defs
+public import Mathlib.Order.GameAdd
+public import Mathlib.SetTheory.PGame.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Order properties of pregames
@@ -27,6 +34,8 @@ The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no m
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
 `Antisymmetrization` of `SetTheory.PGame`.
 -/
+
+@[expose] public section
 
 namespace SetTheory.PGame
 
@@ -553,7 +562,7 @@ scoped infixl:50 " ‖ " => PGame.Fuzzy
 theorem Fuzzy.swap {x y : PGame} : x ‖ y → y ‖ x :=
   And.symm
 
-instance : IsSymm _ (· ‖ ·) :=
+instance : Std.Symm (· ‖ ·) :=
   ⟨fun _ _ => Fuzzy.swap⟩
 
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=

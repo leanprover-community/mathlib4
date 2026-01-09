@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets
@@ -19,6 +21,8 @@ but this would be unnecessarily confusing given the existing notion of a simplic
 homotopy type theory.)
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -51,8 +55,12 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
   SimplicialObject.hom_ext _ _ w
 
 @[simp]
+lemma id_app (X : SSet) (n : SimplexCategoryᵒᵖ) :
+    NatTrans.app (𝟙 X) n = 𝟙 _ := rfl
+
+@[simp, reassoc]
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
-    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+    (f ≫ g).app n = f.app n ≫ g.app n := rfl
 
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]
@@ -107,9 +115,20 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
   NatTrans.ext (funext w)
 
 /-- Further truncation of truncated simplicial sets. -/
-abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
+abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
+
+@[simp]
+lemma id_app {n : ℕ} (X : Truncated n) (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    NatTrans.app (𝟙 X) d = 𝟙 _ :=
+  rfl
+
+@[simp, reassoc]
+lemma comp_app {n : ℕ} {X Y Z : Truncated n} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (d : (SimplexCategory.Truncated n)ᵒᵖ) :
+    (f ≫ g).app d = f.app d ≫ g.app d :=
+  rfl
 
 end Truncated
 
@@ -253,12 +272,12 @@ open Opposite
 
 lemma δ_naturality_apply {n : ℕ} (i : Fin (n + 2)) (x : S _⦋n + 1⦌) :
     f.app (op ⦋n⦌) (S.δ i x) = T.δ i (f.app (op ⦋n + 1⦌) x) := by
-  show (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
+  change (S.δ i ≫ f.app (op ⦋n⦌)) x = (f.app (op ⦋n + 1⦌) ≫ T.δ i) x
   exact congr_fun (SimplicialObject.δ_naturality f i) x
 
 lemma σ_naturality_apply {n : ℕ} (i : Fin (n + 1)) (x : S _⦋n⦌) :
     f.app (op ⦋n + 1⦌) (S.σ i x) = T.σ i (f.app (op ⦋n⦌) x) := by
-  show (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
+  change (S.σ i ≫ f.app (op ⦋n + 1⦌)) x = (f.app (op ⦋n⦌) ≫ T.σ i) x
   exact congr_fun (SimplicialObject.σ_naturality f i) x
 
 end applications

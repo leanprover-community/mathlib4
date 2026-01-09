@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+module
+
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
 # Unique factorization and ascending chain condition on ideals
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
   chain condition on principal ideals.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

@@ -3,8 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
 
 /-!
 # Lexicographic order on a sigma type
@@ -26,6 +29,8 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`. Can be thought of as the special case of
   `Sigma.Lex` where all summands are the same
 -/
+
+@[expose] public section
 
 
 namespace Sigma
@@ -94,7 +99,7 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
     · exact Lex.left _ _ hk
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
-instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
+instance [Std.Symm r] [∀ i, Std.Symm (s i)] : Std.Symm (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -26,6 +28,8 @@ to hold many of these basic facts.
 The spelling `s.PairwiseDisjoint id` is preferred over `s.Pairwise Disjoint` to permit dot notation
 on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
+
+@[expose] public section
 
 
 open Function Order Set
@@ -101,7 +105,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     · apply IsRefl.refl
     · exact H hx hy hne
   · rintro ⟨z, hz⟩ x hx y hy _
-    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (IsSymm.symm _ _ <| hz _ hy)
+    exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)
 
 /-- For a nonempty set `s`, a function `f` takes pairwise equal values on `s` if and only if
 for some `z` in the codomain, `f` takes value `z` on all `x ∈ s`. See also
@@ -144,8 +148,6 @@ theorem pairwise_insert_of_notMem (ha : a ∉ s) :
   pairwise_insert.trans <|
     and_congr_right' <| forall₂_congr fun b hb => by simp [(ne_of_mem_of_not_mem hb ha).symm]
 
-@[deprecated (since := "2025-05-23")] alias pairwise_insert_of_not_mem := pairwise_insert_of_notMem
-
 protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b → r a b ∧ r b a) :
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
@@ -153,8 +155,6 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
 theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
   (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
-
-@[deprecated (since := "2025-05-23")] alias Pairwise.insert_of_not_mem := Pairwise.insert_of_notMem
 
 theorem pairwise_insert_of_symmetric (hr : Symmetric r) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
@@ -164,20 +164,9 @@ theorem pairwise_insert_of_symmetric_of_notMem (hr : Symmetric r) (ha : a ∉ s)
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
   simp only [pairwise_insert_of_notMem ha, hr.iff a, and_self_iff]
 
-@[deprecated (since := "2025-05-23")]
-alias pairwise_insert_of_symmetric_of_not_mem := pairwise_insert_of_symmetric_of_notMem
-
 theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
-
-@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
-theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
-
-@[deprecated (since := "2025-05-23")]
-alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric_of_notMem
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
@@ -216,7 +205,7 @@ end Pairwise
 
 theorem pairwise_subtype_iff_pairwise_set (s : Set α) (r : α → α → Prop) :
     (Pairwise fun (x : s) (y : s) => r x y) ↔ s.Pairwise r := by
-  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff, Subtype.coe_mk]
+  simp only [Pairwise, Set.Pairwise, SetCoe.forall, Ne, Subtype.ext_iff]
 
 alias ⟨Pairwise.set_of_subtype, Set.Pairwise.subtype⟩ := pairwise_subtype_iff_pairwise_set
 
@@ -261,9 +250,6 @@ theorem pairwiseDisjoint_insert_of_notMem {i : ι} (hi : i ∉ s) :
     (insert i s).PairwiseDisjoint f ↔ s.PairwiseDisjoint f ∧ ∀ j ∈ s, Disjoint (f i) (f j) :=
   pairwise_insert_of_symmetric_of_notMem (symmetric_disjoint.comap f) hi
 
-@[deprecated (since := "2025-05-23")]
-alias pairwiseDisjoint_insert_of_not_mem := pairwiseDisjoint_insert_of_notMem
-
 protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
@@ -271,9 +257,6 @@ protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
 theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (hi : i ∉ s)
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   (pairwiseDisjoint_insert_of_notMem hi).2 ⟨hs, h⟩
-
-@[deprecated (since := "2025-05-23")]
-alias PairwiseDisjoint.insert_of_not_mem := PairwiseDisjoint.insert_of_notMem
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by

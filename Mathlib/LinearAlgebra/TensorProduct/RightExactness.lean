@@ -3,11 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Right-exactness properties of tensor product
 
@@ -83,6 +84,10 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 section Modules
 
@@ -221,9 +226,8 @@ lemma lTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [lTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul,
-      lift.tmul, flip_apply, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (n ⊗ₜ[R] h (g q)) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by
+    simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
@@ -289,7 +293,7 @@ theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
 
 /-- Right-exactness of tensor product -/
 lemma lTensor_mkQ (N : Submodule R M) :
-    ker (lTensor Q (N.mkQ)) = range (lTensor Q N.subtype) := by
+    ker (lTensor Q N.mkQ) = range (lTensor Q N.subtype) := by
   rw [← exact_iff]
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
@@ -304,7 +308,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
-  TensorProduct.lift  {
+  TensorProduct.lift {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
@@ -328,9 +332,7 @@ lemma rTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [rTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, rTensor_tmul,
-      lift.tmul, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (h (g n) ⊗ₜ[R] q) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
@@ -400,11 +402,10 @@ open Submodule LinearEquiv in
 lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
-  rw [← comap_coe_toLinearMap, ← ker_comp]
+  rw [← ker_comp]
   convert rTensor_mkQ Q I
   · ext; simp
-  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
-    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
+  rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
@@ -447,7 +448,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
   rw [← SetLike.coe_set_eq]
   apply le_antisymm
   · intro x hx
-    simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, LinearMap.mem_range]
+    simp only [SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -472,7 +473,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [smul_eq_mul]
           with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -498,7 +499,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
@@ -535,7 +536,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
-          use (a * x) ⊗ₜ[R] (b •y)
+          use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>
@@ -562,7 +563,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]

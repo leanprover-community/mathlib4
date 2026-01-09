@@ -3,10 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Star.Prod
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Continuity of `star`
@@ -14,6 +15,8 @@ import Mathlib.Topology.ContinuousMap.Defs
 This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, `Prod`,
 `MulOpposite`, and `Units`.
 -/
+
+@[expose] public section
 
 open Filter Topology
 

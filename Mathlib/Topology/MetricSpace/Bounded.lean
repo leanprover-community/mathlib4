@@ -1,12 +1,16 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.EMetricSpace.Diam
+module
+
+public import Mathlib.Topology.Order.Bornology
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.MetricSpace.Cauchy
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 ## Boundedness in (pseudo)-metric spaces
@@ -30,7 +34,9 @@ This file contains one definition, and various results on boundedness in pseudo-
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
-assert_not_exists Basis
+@[expose] public section
+
+assert_not_exists Module.Basis
 
 open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise
@@ -38,13 +44,30 @@ open scoped ENNReal Uniformity Topology Pointwise
 universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
-variable [PseudoMetricSpace α]
+
+section UniformSpace
+variable [UniformSpace α] [Preorder α] [CompactIccSpace α]
+
+lemma totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
+  isCompact_Icc.totallyBounded
+
+lemma totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
+  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
+
+lemma totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
+  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
+
+lemma totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
+  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
+
+end UniformSpace
 
 namespace Metric
 
 section Bounded
 
 variable {x : α} {s t : Set α} {r : ℝ}
+variable [PseudoMetricSpace α]
 
 /-- Closed balls are bounded -/
 theorem isBounded_closedBall : IsBounded (closedBall x r) :=
@@ -147,6 +170,7 @@ theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : Is
   ((isBounded_biUnion fint).2 fun _ _ => isBounded_ball).subset subs
 
 /-- A compact set is bounded -/
+@[aesop 50% apply, grind ←]
 theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s :=
   -- A compact set is totally bounded, thus bounded
   h.totallyBounded.isBounded
@@ -300,18 +324,6 @@ section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
 
-theorem _root_.totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
-  isCompact_Icc.totallyBounded
-
-theorem _root_.totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
-
-theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
-
 theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
   (totallyBounded_Icc a b).isBounded
 
@@ -324,21 +336,51 @@ theorem isBounded_Ioc (a b : α) : IsBounded (Ioc a b) :=
 theorem isBounded_Ioo (a b : α) : IsBounded (Ioo a b) :=
   (totallyBounded_Ioo a b).isBounded
 
-/-- In a pseudo metric space with a conditionally complete linear order such that the order and the
-    metric structure give the same topology, any order-bounded set is metric-bounded. -/
+/-- In a pseudometric space with a conditionally complete linear order such that the order and the
+metric structure give the same topology, any order-bounded set is metric-bounded. -/
 theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂ : BddBelow s) :
     IsBounded s :=
   let ⟨u, hu⟩ := h₁
   let ⟨l, hl⟩ := h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
 
+open Metric in
+lemma _root_.IsOrderBornology.of_isCompactIcc (x : α)
+    (bddBelow_ball : ∀ r, BddBelow (closedBall x r))
+    (bddAbove_ball : ∀ r, BddAbove (closedBall x r)) : IsOrderBornology α where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨?_, fun hs ↦ Metric.isBounded_of_bddAbove_of_bddBelow hs.2 hs.1⟩
+    rw [Metric.isBounded_iff_subset_closedBall x]
+    rintro ⟨r, hr⟩
+    exact ⟨(bddBelow_ball _).mono hr, (bddAbove_ball _).mono hr⟩
+
 end CompactIccSpace
+
+section CompactIccSpace_abs
+
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
+  [CompactIccSpace α]
+
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
+  convert Metric.isBounded_Icc (-C) C
+  ext1 x
+  simp [abs_le]
+
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
+  convert Metric.isBounded_Ioo (-C) C
+  ext1 x
+  simp [abs_lt]
+
+end CompactIccSpace_abs
 
 end Bounded
 
 section Diam
 
 variable {s : Set α} {x y z : α}
+
+section PseudoMetricSpace
+variable [PseudoMetricSpace α]
 
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
 should be infinite, we express it in terms of the `EMetric.diam` -/
@@ -449,8 +491,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
-    (add_le_add_right ENNReal.toReal_add_le _)
+  grw [ENNReal.toReal_le_add' (EMetric.diam_union xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
@@ -507,6 +548,16 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
     (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) : (⋂ n, s n).Nonempty :=
   (hs 0).isComplete.nonempty_iInter_of_nonempty_biInter hs h's h h'
 
+end PseudoMetricSpace
+
+section MetricSpace
+
+theorem diam_pos [MetricSpace α] (hs1 : s.Nontrivial) (hs2 : IsBounded s) : 0 < diam s := by
+  rcases hs1 with ⟨x, hx, y, hy, hxy⟩
+  exact (dist_pos.mpr hxy).trans_le <| Metric.dist_le_diam_of_mem hs2 hx hy
+
+end MetricSpace
+
 end Diam
 
 end Metric
@@ -517,7 +568,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
     assertInstancesCommute
@@ -526,7 +577,11 @@ def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
+section
+
 open Metric
+
+variable [PseudoMetricSpace α]
 
 theorem Metric.cobounded_eq_cocompact [ProperSpace α] : cobounded α = cocompact α := by
   nontriviality α; inhabit α
@@ -548,8 +603,44 @@ theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter
     (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
   ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 
-theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} (hsd : IsDiscrete s)
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
-  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  refine (IsCompact.finite ?_ ?_).subset (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
+  · exact hsd.mono Set.inter_subset_right
+
+end
+
+namespace Continuous
+
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+  [PseudoMetricSpace β] [ProperSpace β]
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≤ f x₀` is bounded for some `x₀`,
+then `f` has a global minimum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_le'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x ≤ f x₀}) :
+    ∃ x, ∀ y, f x ≤ f y := by
+  refine hf.exists_forall_le' (x₀ := x₀) ?_
+  have hU : {x : β | f x₀ < f x} ∈ Filter.cocompact β := by
+    refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
+    simp only [Set.compl_setOf, not_lt]
+    exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
+  filter_upwards [hU] with x hx using hx.le
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≥ f x₀` is bounded for some `x₀`,
+then `f` has a global maximum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_ge'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x₀ ≤ f x}) :
+    ∃ x, ∀ y, f y ≤ f x :=
+  hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
+
+end Continuous

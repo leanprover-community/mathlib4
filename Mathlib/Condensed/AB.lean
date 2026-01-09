@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.AB
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
-import Mathlib.Condensed.Equivalence
-import Mathlib.Condensed.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.AB
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Condensed.Limits
 /-!
 
 # AB axioms in condensed modules
@@ -16,13 +18,15 @@ This file proves that the category of condensed modules over a ring satisfies Gr
 AB5, AB4, and AB4*.
 -/
 
+@[expose] public section
+
 universe u
 
 open Condensed CategoryTheory Limits
 
 namespace Condensed
 
-variable (A J : Type*) [Category A] [Category J] [Preadditive A]
+variable (A J : Type*) [Category* A] [Category* J] [Preadditive A]
   [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
   [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
   [HasWeakSheafify (extensiveTopology Stonean.{u}) A]
@@ -34,8 +38,6 @@ lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape 
     [HasFiniteLimits A] : HasExactColimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
-  have : HasColimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
-    hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape e.inverse
   exact HasExactColimitsOfShape.domain_of_functor _ e.functor
 
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
@@ -43,8 +45,6 @@ lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     [HasFiniteColimits A] : HasExactLimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
-  have : HasLimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
-    hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape e.inverse
   exact HasExactLimitsOfShape.domain_of_functor _ e.functor
 
 section Module

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
@@ -130,7 +130,7 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => refine isClosed_le continuous_fst ?_
   case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
@@ -144,7 +144,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+    simp only [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
@@ -215,7 +215,7 @@ lemma buffon_integral :
     MeasureTheory.integral_integral_swap ?integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
-  simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]
+  simp only [needleCrossesIndicator, needleProjX]
   have indicator_eq (x θ : ℝ) :
       Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
       Set.indicator (Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)) (1 : ℝ → ℝ) x := by
@@ -279,11 +279,11 @@ lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
-Then, `∫ θ in (0)..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
+Then, `∫ θ in 0..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
 point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 -/
 lemma integral_min_eq_two_mul :
-    ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
+    ∫ θ in 0..π, min d (θ.sin * l) = 2 * ∫ θ in 0..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
   · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
@@ -293,11 +293,11 @@ lemma integral_min_eq_two_mul :
 
 include hd hl in
 /--
-The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
-have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
+The first of two adjacent integrals in the long case. In the range `0..(d / l).arcsin`, we
+have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in 0..(d / l).arcsin, θ.sin * l`.
 -/
 lemma integral_zero_to_arcsin_min :
-    ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
+    ∫ θ in 0..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
@@ -342,9 +342,9 @@ theorem buffon_long (h : d ≤ l) :
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
       ENNReal.toReal (ENNReal.ofReal (min d (θ.sin * l))) = min d (θ.sin * l) := by
     have (θ : ℝ) (hθ : θ ∈ Set.Icc 0 π) : 0 ≤ min d (θ.sin * l) := by
-      by_cases h : d ≤ θ.sin * l
+      by_cases! h : d ≤ θ.sin * l
       · rw [min_eq_left h]; exact hd.le
-      · rw [min_eq_right (not_le.mp h).le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
+      · rw [min_eq_right h.le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
     simp_rw [ENNReal.toReal_ofReal_eq_iff, MeasureTheory.ae_of_all _ this]
   rw [MeasureTheory.setIntegral_congr_ae measurableSet_Icc this,
     MeasureTheory.integral_Icc_eq_integral_Ioc,
@@ -353,6 +353,7 @@ theorem buffon_long (h : d ≤ l) :
       (intervalIntegrable_min_const_sin_mul d l _ _) (intervalIntegrable_min_const_sin_mul d l _ _),
     integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
   field_simp
-  ring_nf
+  simp (disch := positivity)
+  field
 
 end BuffonsNeedle

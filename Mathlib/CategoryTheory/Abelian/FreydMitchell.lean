@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 
 /-!
 # The Freyd-Mitchell embedding theorem
@@ -44,7 +46,7 @@ To prove (2), there are multiple options.
 
 * Some sources (for example Freyd's "Abelian Categories") choose `D := LeftExactFunctor C Ab`. The
   main difficulty with this approach is that it is not obvious that `D` is abelian. This approach
-  has a very algebraic flavor and requires a relatively large armount of ad-hoc reasoning.
+  has a very algebraic flavor and requires a relatively large amount of ad-hoc reasoning.
 * In the Stacks project, it is suggested to choose `D := Sheaf J Ab` for a suitable Grothendieck
   topology on `Cᵒᵖ` and there are reasons to believe that this `D` is in fact equivalent to
   `LeftExactFunctor C Ab`. This approach translates many of the interesting properties along the
@@ -71,6 +73,8 @@ small category, then this does not change anything.
 * https://stacks.math.columbia.edu/tag/05PL
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 9.6
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -99,19 +103,24 @@ noncomputable instance : Ring (EmbeddingRing C) :=
     IsGrothendieckAbelian.OppositeModuleEmbedding.EmbeddingRing
       (Ind.yoneda (C := (AsSmall.{max u v} C)ᵒᵖ)).rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private def F : C ⥤ AsSmall.{max u v} C :=
   AsSmall.equiv.functor
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def G : AsSmall.{max u v} C ⥤ (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ :=
   Ind.yoneda.rightOp
 
+set_option backward.privateInPublic true in
 variable (C) in
 private noncomputable def H :
     (Ind (AsSmall.{max u v} C)ᵒᵖ)ᵒᵖ ⥤ ModuleCat.{max u v} (EmbeddingRing C) :=
   IsGrothendieckAbelian.OppositeModuleEmbedding.embedding (G C)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (C) in
 /-- This is the full, faithful and exact embedding `C ⥤ ModuleCat (EmbeddingRing C)`. The fact that
 such a functor exists is called the Freyd-Mitchell embedding theorem.

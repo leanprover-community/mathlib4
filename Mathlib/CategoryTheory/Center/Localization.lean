@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Center.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Localization of the center of a category
@@ -16,6 +18,8 @@ of these categories. In case `L` is an additive functor between preadditive
 categories, we promote this to a ring morphism `CatCenter C →+* CatCenter D`.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 
@@ -30,13 +34,13 @@ namespace CatCenter
 to `W : MorphismProperty D`, this is the induced element in `CatCenter D`
 obtained by localization. -/
 noncomputable def localization : CatCenter D :=
-  Localization.liftNatTrans L W L L (𝟭 D) (𝟭 D) (whiskerRight r L)
+  Localization.liftNatTrans L W L L (𝟭 D) (𝟭 D) (Functor.whiskerRight r L)
 
 @[simp]
 lemma localization_app (X : C) :
     (r.localization L W).app (L.obj X) = L.map (r.app X) := by
   dsimp [localization]
-  simp only [Localization.liftNatTrans_app, Functor.id_obj, whiskerRight_app,
+  simp only [Localization.liftNatTrans_app, Functor.id_obj, Functor.whiskerRight_app,
     NatTrans.naturality, Functor.comp_map, Functor.id_map, Iso.hom_inv_id_app_assoc]
 
 include W
@@ -63,9 +67,7 @@ lemma localization_zero :
 
 lemma localization_add :
     (r + s).localization L W = r.localization L W + s.localization L W :=
-  ext_of_localization L W _ _ (fun X => by
-    rw [localization_app, NatTrans.app_add, NatTrans.app_add, L.map_add,
-      localization_app, localization_app])
+  ext_of_localization L W _ _ (by simp)
 
 /-- The morphism of rings `CatCenter C →+* CatCenter D` when `L : C ⥤ D`
 is an additive localization functor between preadditive categories. -/

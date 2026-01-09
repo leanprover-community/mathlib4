@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -22,10 +24,6 @@ has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
-
-Two classes helping construct concrete categories in the two most
-common cases are provided in the files `BundledHom` and
-`UnbundledHom`, see their documentation for details.
 
 ## Implementation notes
 
@@ -54,6 +52,8 @@ have a `HasForget` instance.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+
+@[expose] public section
 
 
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
@@ -84,7 +84,7 @@ abbrev forget (C : Type u) [Category.{v} C] [HasForget.{w} C] : C ⥤ Type w :=
   HasForget.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
-@[instance] abbrev HasForget.types : HasForget.{u, u, u+1} (Type u) where
+@[instance] abbrev HasForget.types : HasForget.{u, u, u + 1} (Type u) where
   forget := 𝟭 _
 
 /-- Provide a coercion to `Type u` for a concrete category. This is not marked as an instance
@@ -112,7 +112,7 @@ abbrev HasForget.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
 attribute [local instance] HasForget.instFunLike
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations. -/
-@[ext low] -- Porting note: lowered priority
+@[ext low]
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply (forget C).map_injective
   dsimp [forget]
@@ -209,7 +209,7 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [HasForget.{w} 
     [Category.{v'} D] [HasForget.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, (forget D).map (map f) ≍ (forget C).map f) :
     HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
@@ -222,7 +222,7 @@ def HasForget₂.trans (C : Type u) [Category.{v} C] [HasForget.{w} C]
     [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
   forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
   forget_comp := by
-    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    change (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
     simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
@@ -252,11 +252,11 @@ class ConcreteCategory (C : Type u) [Category.{v} C]
   (hom : ∀ {X Y}, (X ⟶ Y) → FC X Y)
   /-- Convert a bundled function to a morphism of `C`. -/
   (ofHom : ∀ {X Y}, FC X Y → (X ⟶ Y))
-  (hom_ofHom : ∀ {X Y} (f : FC X Y), hom (ofHom f) = f := by aesop_cat)
-  (ofHom_hom : ∀ {X Y} (f : X ⟶ Y), ofHom (hom f) = f := by aesop_cat)
-  (id_apply : ∀ {X} (x : CC X), hom (𝟙 X) x = x := by aesop_cat)
+  (hom_ofHom : ∀ {X Y} (f : FC X Y), hom (ofHom f) = f := by cat_disch)
+  (ofHom_hom : ∀ {X Y} (f : X ⟶ Y), ofHom (hom f) = f := by cat_disch)
+  (id_apply : ∀ {X} (x : CC X), hom (𝟙 X) x = x := by cat_disch)
   (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X),
-    hom (f ≫ g) x = hom g (hom f x) := by aesop_cat)
+    hom (f ≫ g) x = hom g (hom f x) := by cat_disch)
 
 export ConcreteCategory (id_apply comp_apply)
 
@@ -324,12 +324,10 @@ instance toHasForget : HasForget C where
 
 end ConcreteCategory
 
-theorem forget_obj (X : C) : (forget C).obj X = ToType X := by
-  with_reducible_and_instances rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 @[simp]
-theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := by
-  with_reducible_and_instances rfl
+theorem ConcreteCategory.forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
@@ -351,7 +349,7 @@ theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 
 /-- Using the `FunLike` coercion of `HasForget` does the same as the original coercion.
 -/
-theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+theorem coe_toHasForget_instFunLike {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
     [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
@@ -370,7 +368,7 @@ instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   ((forget C).mapIso (asIso f)).isIso_hom
 
 @[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+lemma NatTrans.naturality_apply {C D : Type*} [Category* C] [Category* D] {FD : D → D → Type*}
     {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
     {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by
@@ -446,23 +444,24 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
     {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{w} D FD] (f : C → D) :
     ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
-  hom := hom (C := D)
-  ofHom := ofHom (C := D)
-  hom_ofHom := hom_ofHom (C := D)
-  ofHom_hom := ofHom_hom (C := D)
-  comp_apply := ConcreteCategory.comp_apply (C := D)
-  id_apply := ConcreteCategory.id_apply (C := D)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
+open ObjectProperty in
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
     (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
-  hom := hom (C := C)
-  ofHom := ofHom (C := C)
-  hom_ofHom := hom_ofHom (C := C)
-  ofHom_hom := ofHom_hom (C := C)
-  comp_apply := ConcreteCategory.comp_apply (C := C)
-  id_apply := ConcreteCategory.id_apply (C := C)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
 end ConcreteCategory
 

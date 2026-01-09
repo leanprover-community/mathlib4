@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.CategoryTheory.Sites.Canonical
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
@@ -14,6 +16,8 @@ the category of types, and make this an equivalence of categories.
 
 Then we prove that the topology defined is the canonical topology.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -59,8 +63,6 @@ theorem Presheaf.isSheaf_yoneda' {α : Type u} :
     Presheaf.IsSheaf typesGrothendieckTopology (yoneda.obj α) := by
   rw [isSheaf_iff_isSheaf_of_type]
   exact Presieve.isSheaf_yoneda'
-
-@[deprecated (since := "2024-11-26")] alias isSheaf_yoneda' := Presieve.isSheaf_yoneda'
 
 /-- The yoneda functor that sends a type to a sheaf over the category of types. -/
 @[simps]

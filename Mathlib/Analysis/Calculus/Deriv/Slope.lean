@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.LinearAlgebra.AffineSpace.Slope
-import Mathlib.Topology.Algebra.Module.PerfectSpace
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+public import Mathlib.Topology.Algebra.Module.PerfectSpace
 
 /-!
 # Derivative as the limit of the slope
@@ -18,12 +20,14 @@ use `slope f x y = (y - x)⁻¹ • (f y - f x)` instead of division.
 We also prove some estimates on the upper/lower limits of the slope in terms of the derivative.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, slope
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -69,6 +73,12 @@ theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
 theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
   hasDerivAtFilter_iff_tendsto_slope
 
+alias ⟨HasDerivAt.tendsto_slope, _⟩ := hasDerivAt_iff_tendsto_slope
+
+theorem hasDerivAt_iff_tendsto_slope_left_right [LinearOrder 𝕜] : HasDerivAt f f' x ↔
+    Tendsto (slope f x) (𝓝[<] x) (𝓝 f') ∧ Tendsto (slope f x) (𝓝[>] x) (𝓝 f') := by
+  simp [hasDerivAt_iff_tendsto_slope, ← Iio_union_Ioi, nhdsWithin_union]
+
 theorem hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
   have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (𝓝[≠] 0) := by
@@ -113,7 +123,7 @@ theorem range_derivWithin_subset_closure_span_image
     exact mem_image_of_mem _ hy.1.2
   · apply Submodule.closure_subset_topologicalClosure_span
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
-      closure_mono (image_subset _ inter_subset_right) A
+      closure_mono (image_mono inter_subset_right) A
     apply ContinuousWithinAt.mem_closure_image
     · apply H'.continuousWithinAt.mono inter_subset_left
     rw [mem_closure_iff_nhdsWithin_neBot]
@@ -161,15 +171,7 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
   simp only [mem_diff, mem_singleton_iff] at hy
-  rcases lt_or_gt_of_ne hy.2 with h'y | h'y
-  · simp only [slope, vsub_eq_sub, smul_eq_mul]
-    apply mul_nonneg_of_nonpos_of_nonpos
-    · simpa using h'y.le
-    · simpa using h'g (by simp [hy]) (by simp) h'y.le
-  · simp only [slope, vsub_eq_sub, smul_eq_mul]
-    apply mul_nonneg
-    · simpa using h'y.le
-    · simpa [sub_nonneg] using h'g (by simp) (by simp [hy]) h'y.le
+  exact h'g.slope_nonneg (by simp) (by simp [hy])
 
 /-- The derivative within a set of a monotone function is nonnegative. -/
 lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
@@ -201,8 +203,7 @@ lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
 /-- The derivative within a set of an antitone function is nonpositive. -/
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
-  have : MonotoneOn (fun x ↦ -g x) s := hg.neg
-  simpa [derivWithin.neg] using this.derivWithin_nonneg
+  simpa [derivWithin.fun_neg] using hg.neg.derivWithin_nonneg
 
 /-- If an antitone function has a derivative, then this derivative is nonpositive. -/
 lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by

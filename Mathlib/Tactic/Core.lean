@@ -3,17 +3,21 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Lean.Elab.PreDefinition.Basic
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Util.Paths
-import Lean.Meta.Tactic.Intro
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
+module
+
+public meta import Lean.Elab.PreDefinition.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Intro
+public meta import Batteries.Tactic.OpenPrivate
+public meta import Batteries.Lean.Expr
+public import Mathlib.Init
 
 /-!
 # Generally useful tactics.
 
 -/
+
+public meta section
 
 open Lean.Elab.Tactic
 
@@ -30,15 +34,14 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
-    else if isProtected env nm then
-      Visibility.regular
     else
-      Visibility.protected
-    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
+      Visibility.regular
+    isProtected := isProtected env nm
+    computeKind := if (env.find? <| nm.mkStr "_cstage1").isSome then .regular else .noncomputable
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
     attrs := #[] }
@@ -57,6 +60,7 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
+    binders := mkNullNode #[]
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
     modifiers := mods
@@ -75,7 +79,7 @@ def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
-  let type ← instantiateMVars type
+  let type ← Lean.instantiateMVars type
   let n := getIntrosSize type
   let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then
@@ -211,7 +215,7 @@ def iterateAtMost : Nat → m Unit → m Unit
 -/
 def iterateExactly' : Nat → m Unit → m Unit
   | 0, _ => pure ()
-  | n+1, tac => tac *> iterateExactly' n tac
+  | n + 1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and

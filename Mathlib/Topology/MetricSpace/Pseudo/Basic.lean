@@ -1,12 +1,16 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -14,6 +18,8 @@ import Mathlib.Topology.MetricSpace.Pseudo.Defs
 Further results about pseudo-metric spaces.
 
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
@@ -141,7 +147,7 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace β] {F : ι → β → α}
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, dist (f y) (F n y) < ε := by
   simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, nhdsWithin_univ,
-    mem_univ, forall_const, exists_prop]
+    mem_univ, forall_const]
 
 /-- Expressing uniform convergence using `dist`. -/
 theorem tendstoUniformly_iff {F : ι → β → α} {f : β → α} {p : Filter ι} :
@@ -157,15 +163,15 @@ variable {s : Set α}
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is an open ball
 centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_ball_inter_eq_singleton_of_mem_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_ball_inter_eq_singleton_of_mem_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.ball x ε ∩ s = {x} :=
-  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is a closed ball
 of positive radius centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_closedBall_inter_eq_singleton_of_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_closedBall_inter_eq_singleton_of_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.closedBall x ε ∩ s = {x} :=
-  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 end Metric
 
@@ -208,15 +214,9 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.isSeparable_preimage := IsInducing.isSeparable_preimage
-
 protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
 
 end Topology
 

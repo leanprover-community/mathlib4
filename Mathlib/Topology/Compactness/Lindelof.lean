@@ -3,9 +3,11 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Compactness.SigmaCompact
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Compactness.SigmaCompact
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -31,6 +33,8 @@ We define the following properties for sets in a topological space:
 * This API is mainly based on the API for IsCompact and follows notation and style as much
   as possible.
 -/
+
+@[expose] public section
 open Set Filter Topology TopologicalSpace
 
 
@@ -212,7 +216,7 @@ theorem IsLindelof.disjoint_nhdsSet_right {l : Filter X} [CountableInterFilter l
     (hs : IsLindelof s) : Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
-/-- For every family of closed sets whose intersection avoids a Lindelö set,
+/-- For every family of closed sets whose intersection avoids a Lindelöf set,
 there exists a countable subfamily whose intersection avoids this Lindelöf set. -/
 theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelof s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
@@ -341,7 +345,7 @@ theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i
   s.finite_toSet.isLindelof_biUnion hf
 
 theorem isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
-    IsLindelof (Accumulate K n) :=
+    IsLindelof (accumulate K n) :=
   (finite_le_nat n).isLindelof_biUnion fun k _ => hK k
 
 theorem Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
@@ -353,7 +357,7 @@ theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
 theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
-    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
+    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion <| forall_mem_range.2 h
 
 theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
@@ -564,10 +568,6 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf. -/
-instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
-
 theorem countable_of_Lindelof_of_discrete [LindelofSpace X] [DiscreteTopology X] : Countable X :=
   countable_univ_iff.mp isLindelof_univ.countable_of_discrete
 
@@ -608,15 +608,10 @@ theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isLindelof_iff := IsInducing.isLindelof_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is Lindelöf
 if and only if `s` is Lindelöf. -/
 theorem Topology.IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.isInducing.isLindelof_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLindelof_iff := IsEmbedding.isLindelof_iff
 
 /-- The preimage of a Lindelöf set under an inducing map is a Lindelöf set. -/
 theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f)
@@ -624,15 +619,12 @@ theorem Topology.IsInducing.isLindelof_preimage {f : X → Y} (hf : IsInducing f
   replace hK := hK.inter_right hf'
   rwa [hf.isLindelof_iff, image_preimage_eq_inter_range]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLindelof_preimage := IsInducing.isLindelof_preimage
-
 /-- The preimage of a Lindelöf set under a closed embedding is a Lindelöf set. -/
 theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
+/-- A closed embedding is proper, i.e., inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see
 `Topology.IsClosedEmbedding.isLindelof_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :
@@ -657,6 +649,9 @@ theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
+theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
+    s.Countable := hs.countable hs'.to_subtype
+
 protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
@@ -676,7 +671,7 @@ instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
     exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)
 
 instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
-    LindelofSpace (Σi, X i) where
+    LindelofSpace (Σ i, X i) where
   isLindelof_univ := by
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
@@ -732,7 +727,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc

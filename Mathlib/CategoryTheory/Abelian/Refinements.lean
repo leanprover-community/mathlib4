@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Refinements
@@ -37,7 +39,7 @@ locally. Then, arguing "up to refinements" is very similar to
 arguing locally for a Grothendieck topology (TODO: indeed,
 show that it corresponds to the "refinements" topology on an
 abelian category `C` that is defined by saying that
-a sieve is covering if it contains an epimorphism).
+a sieve is covering if it contains an epimorphism)).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
@@ -68,11 +70,13 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [Abelian C] {X Y : C} (S : ShortComplex C)
+variable {C : Type _} [Category* C] [Abelian C] {X Y : C} (S : ShortComplex C)
   {S₁ S₂ : ShortComplex C}
 
 lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :

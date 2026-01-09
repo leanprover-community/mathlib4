@@ -3,14 +3,19 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sum
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 
 /-!
 # fintype instances relating to units
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -28,7 +33,7 @@ theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
 instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
   Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
 
-instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
+instance [Monoid α] [Finite α] : Finite αˣ := .of_injective _ Units.val_injective
 
 variable (α)
 

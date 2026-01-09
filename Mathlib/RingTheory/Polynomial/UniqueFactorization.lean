@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+module
+
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Unique factorization for univariate and multivariate polynomials
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
   If an integral domain is a `UniqueFactorizationMonoid`, then so is its polynomial ring (of any
   number of variables).
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -47,7 +51,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         apply Prod.Lex.left
         exact WithTop.coe_lt_top _
       have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
+      simp only [Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = (0 : ℕ)
       · simp only [hdeg, Nat.cast_zero, add_zero]
         refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
@@ -109,13 +113,16 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
+private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
+  have := Fintype.ofFinite σ
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
-    induction' Fintype.card σ with d hd
-    · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
+    induction Fintype.card σ with
+    | zero =>
+      apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    · apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
+    | succ d hd =>
+      apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
 instance (priority := 100) uniqueFactorizationMonoid :

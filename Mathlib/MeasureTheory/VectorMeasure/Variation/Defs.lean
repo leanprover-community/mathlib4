@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.MeasureTheory.VectorMeasure.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 /-!
 # Total variation for vector-valued measures
@@ -41,6 +43,8 @@ of `s ↦ ‖μ s‖ₑ`.
 
 -/
 
+@[expose] public section
+
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
 namespace MeasureTheory.VectorMeasure
@@ -61,7 +65,8 @@ variable {X : Type*} [MeasurableSpace X]
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
 the entire set and the the number of partition elements is required to be finite. -/
 def IsInnerPart (s : Set X) (P : Finset (Set X)) : Prop :=
-    (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ (P.toSet.PairwiseDisjoint id) ∧ (∀ p ∈ P, p ≠ ∅)
+    (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+    (∀ p ∈ P, p ≠ ∅)
 
 lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = ∅ := by
   obtain ⟨h, _, _, h'⟩ := hP
@@ -73,8 +78,8 @@ lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = �
 lemma isInnerPart_self {s : Set X} (hs : MeasurableSet s) (hs' : s ≠ ∅) : IsInnerPart s {s} := by
   simpa [IsInnerPart] using ⟨hs, hs'⟩
 
-lemma isInnerPart_monotone  {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
-    (hP :  IsInnerPart s₁ P) : IsInnerPart s₂ P := by
+lemma isInnerPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
+    (hP : IsInnerPart s₁ P) : IsInnerPart s₂ P := by
   obtain ⟨h1, h2, h3, _⟩ := hP
   exact ⟨fun p hp ↦ subset_trans (h1 p hp) h, h2, h3, by simp_all⟩
 
@@ -85,7 +90,8 @@ lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
   suffices (∀ t, ∀ x < n, t ∈ P x → t ⊆ ⋃ i, s i) ∧ (∀ t, ∀ x < n, t ∈ P x → MeasurableSet t) ∧
-      (⋃ x, ⋃ (_ : x < n), (P x).toSet).PairwiseDisjoint id ∧ ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
+      (⋃ x, ⋃ (_ : x < n), (P x : Set (Set X))).PairwiseDisjoint id ∧
+      ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
     simpa [IsInnerPart]
   refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun _ i _ h' ↦ ?_⟩
   · exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
@@ -106,7 +112,8 @@ lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (
   intro R hRP hRQ
   simp only [Finset.bot_eq_empty, Finset.le_eq_subset, Finset.subset_empty]
   by_contra! hc
-  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc
+  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr
+    (Finset.nonempty_iff_ne_empty.mp hc)
   have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
   exact hP.2.2.2 r (hRP hr) <| Set.subset_eq_empty this rfl
 
@@ -172,7 +179,7 @@ lemma var_aux_monotone {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s�
 lemma var_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < var_aux f s) :
     ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
   obtain ⟨P, hP, hP'⟩ : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
-    simp_all [var_aux, hs, lt_iSup_iff]
+    simp_all [var_aux, lt_iSup_iff]
   exact ⟨P, hP, by gcongr⟩
 
 lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
@@ -194,7 +201,7 @@ lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
         exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
       _ ≤ ∑ p ∈ P, f p + ε := by gcongr
   · simp_rw [hw, zero_le, and_true]
-    exact ⟨{ }, by simp, by simp [hs], by simp, by simp⟩
+    exact ⟨{ }, by simp, by simp, by simp, by simp⟩
 
 lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
@@ -327,7 +334,7 @@ lemma var_aux_iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
 lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
-  refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_le ?_ ?_)
+  refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_ge ?_ ?_)
   · exact le_var_aux_iUnion f hs hs'
   · exact var_aux_iUnion_le f hs hs' hf hf'
 

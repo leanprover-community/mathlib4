@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -14,20 +16,23 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
+@[expose] public section
+
 open TensorProduct Module
+
+variable {R A B : Type*}
 
 namespace LinearMap
 
 section NonUnitalNonAssoc
-variable (R A : Type*)
 
 section one_side
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 section left
-variable {A} [SMulCommClass R A A]
+variable (R) [SMulCommClass R A A]
 
-/-- The multiplication on the left in a algebra is a linear map.
+/-- The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
@@ -50,7 +55,7 @@ theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
 end left
 
 section right
-variable {A} [IsScalarTower R A A]
+variable (R) [IsScalarTower R A A]
 
 /-- The multiplication on the right in an algebra is a linear map.
 
@@ -77,7 +82,7 @@ end right
 
 end one_side
 
-variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -88,9 +93,11 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
--- TODO: upgrade to A-linear map if A is a semiring.
-noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
+def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
+
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "μ" => LinearMap.mul' _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "μ[" R "]" => LinearMap.mul' R _
 
 variable {A}
 
@@ -112,13 +119,20 @@ theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+
+theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
+    lift (lsmul R M ∘ₗ mul R R r) = lsmul R M r ∘ₗ lift (lsmul R M) := by
+  apply TensorProduct.ext'
+  intro x a
+  simp [← mul_smul, mul_comm]
+
 end NonUnitalNonAssoc
 
 section NonUnital
-variable (R A B : Type*)
 
 section one_side
-variable [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
+variable (R A) [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 
 @[simp]
 theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
@@ -138,6 +152,7 @@ variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R 
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 variable [SMulCommClass R B B] [IsScalarTower R B B]
 
+variable (R A) in
 /-- The multiplication in a non-unital algebra is a bilinear map.
 
 A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
@@ -145,8 +160,6 @@ def _root_.NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A where
   __ := mul R A
   map_mul' := mulLeft_mul _ _
   map_zero' := mulLeft_zero_eq_zero _ _
-
-variable {R A B}
 
 @[simp]
 theorem _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
@@ -168,9 +181,22 @@ theorem map_mul_iff (f : A →ₗ[R] B) :
 
 end NonUnital
 
+section Injective
+variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
+
+@[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
+    mulLeft R a = mulLeft R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+@[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
+    mulRight R a = mulRight R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+end Injective
+
 section Semiring
 
-variable (R A : Type*)
+variable (R A)
 section one_side
 variable [Semiring R] [Semiring A]
 
@@ -181,11 +207,8 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ => one_mul _
 
 @[simp]
-theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  · rw [← mul_one a, ← mulLeft_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulLeft_zero_eq_zero _ _
+theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+  mulLeft_zero_eq_zero R A ▸ mulLeft_inj
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) :=
@@ -202,11 +225,8 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ => mul_one _
 
 @[simp]
-theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  · rw [← one_mul a, ← mulRight_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulRight_zero_eq_zero _ _
+theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
+  mulRight_zero_eq_zero R A ▸ mulRight_inj
 
 @[simp]
 theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :=
@@ -246,26 +266,52 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by
   ext; simp
 
+variable (R A) in
+/-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
+@[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
+  __ := mul' R A
+  map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
+    (by simp+contextual [mul_add])
+
 end Semiring
 
-section Ring
+section CommSemiring
+-- TODO: Generalise to `NonUnitalNonAssocCommSemiring`. This can't currently be done
+-- because there is no instance **to** `NonUnitalNonAssocCommSemiring`.
+variable [CommSemiring R] [NonUnitalCommSemiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
-variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+@[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
 
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulLeft R x) :=
-  mul_right_injective₀ hx
+lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A := by
+  simp [mul', lift_comp_comm_eq]
 
-@[deprecated mul_left_injective₀ (since := "2024-11-18")]
-theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulRight R x) :=
-  mul_left_injective₀ hx
+lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
+  congr($mul'_comp_comm _)
 
-@[deprecated mul_right_injective₀ (since := "2024-11-18")]
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) :=
-   mul_right_injective₀ hx
-
-end Ring
-
+end CommSemiring
 end LinearMap
+
+open scoped RingTheory.LinearMap
+
+namespace NonUnitalAlgHom
+variable [CommSemiring R]
+  [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+  [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
+  TensorProduct.ext' <| by simp
+
+end NonUnitalAlgHom
+
+namespace AlgHom
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toLinearMap ⊗ₘ f.toLinearMap) :=
+  TensorProduct.ext' <| by simp
+
+end AlgHom
+
+lemma LinearMap.toSpanSingleton_one_eq_algebraLinearMap [CommSemiring R] [Semiring A]
+    [Algebra R A] : toSpanSingleton R A 1 = Algebra.linearMap R A := by
+  ext; simp

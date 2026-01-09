@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Complete lattice structure of subalgebras
@@ -13,6 +15,8 @@ In this file we define `Algebra.adjoin` and the complete lattice structure on su
 
 More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Polynomial
 
@@ -48,11 +52,17 @@ instance : CompleteLattice (Subalgebra R A) where
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(min S₁ S₂) S₁ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_left).toRingHom
+
+instance {C : Type*} [CommSemiring C] [Algebra R C] (S₁ S₂ : Subalgebra R C) :
+  Algebra ↑(S₁ ⊓ S₂) S₂ := RingHom.toAlgebra (Subalgebra.inclusion inf_le_right).toRingHom
+
 theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
 
 theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
 
 @[simp]
@@ -126,6 +136,7 @@ theorem sup_toSubsemiring (S T : Subalgebra R A) :
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (Subalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -159,7 +170,8 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
 theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →ₐ[R] B) (hf : Function.Injective f)
@@ -213,7 +225,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x
     (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
     (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
     (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
-    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem (⨆ i, S i) ‹_›)) :
     motive x mem := by
   refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
   exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
@@ -228,8 +240,13 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
 theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
   Submodule.one_eq_range.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
+
+@[simp]
+theorem toSubring_bot (A : Type*) [CommRing A] (R : Subring A) :
+    (⊥ : Subalgebra R A).toSubring = R := by
+  aesop (add norm Subalgebra.mem_carrier.symm)
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
@@ -238,8 +255,6 @@ theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
 theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
-
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
 
 @[simp]
 theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
@@ -283,7 +298,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.ext hx⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
@@ -329,7 +344,7 @@ instance : Unique (Subalgebra R R) :=
       intro S
       refine le_antisymm ?_ bot_le
       intro _ _
-      simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
+      simp only [Set.mem_range, mem_bot, algebraMap_self_apply, exists_apply_eq_apply, default] }
 
 section Center
 
@@ -419,9 +434,12 @@ variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
 variable [Algebra R S] [Algebra R A] [Algebra S A] [Algebra R B] [IsScalarTower R S A]
 variable {s t : Set A}
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
@@ -562,8 +580,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
     clear hr
-    induction' L with hd tl ih
-    · exact zero_mem _
+    induction L with
+    | nil => exact zero_mem _
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
     refine Submodule.add_mem _ ?_ (ih HL.2)
@@ -573,8 +592,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
-    induction' hd with hd tl ih
-    · exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    induction hd with
+    | nil => exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]
@@ -604,9 +624,8 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
   le_antisymm (adjoin_le (span_le_adjoin _ _)) (adjoin_mono Submodule.subset_span)
 
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
-  le_antisymm (adjoin_le <| Set.image_subset _ subset_adjoin) <|
+  le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
@@ -666,6 +685,7 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R)
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 
@@ -698,20 +718,15 @@ theorem adjoin_singleton_intCast (n : ℤ) : adjoin R {(n : A)} = ⊥ := by
 theorem adjoin_insert_intCast (n : ℤ) (s : Set A) : adjoin R (insert (n : A) s) = adjoin R s := by
   simpa using adjoin_insert_algebraMap (n : R) s
 
-theorem mem_adjoin_iff {s : Set A} {x : A} :
-    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  ⟨fun hx =>
-    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
-      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx,
-    suffices Subring.closure (Set.range (algebraMap R A) ∪ s) ≤ (adjoin R s).toSubring
-      from (show (_ : Set A) ⊆ _ from this) (a := x)
-    -- Porting note: Lean doesn't seem to recognize the defeq between the order on subobjects and
-    -- subsets of their coercions to sets as easily as in Lean 3
-    Subring.closure_le.2 Subsemiring.subset_closure⟩
-
 theorem adjoin_eq_ring_closure (s : Set A) :
     (adjoin R s).toSubring = Subring.closure (Set.range (algebraMap R A) ∪ s) :=
-  Subring.ext fun _x => mem_adjoin_iff
+  .symm <| Subring.closure_eq_of_le (by simp [adjoin]) fun x hx =>
+    Subsemiring.closure_induction Subring.subset_closure (Subring.zero_mem _) (Subring.one_mem _)
+      (fun _ _ _ _ => Subring.add_mem _) (fun _ _ _ _ => Subring.mul_mem _) hx
+
+theorem mem_adjoin_iff {s : Set A} {x : A} :
+    x ∈ adjoin R s ↔ x ∈ Subring.closure (Set.range (algebraMap R A) ∪ s) := by
+  rw [← Subalgebra.mem_toSubring, adjoin_eq_ring_closure]
 
 variable (R)
 
@@ -747,7 +762,7 @@ theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃φ₁ φ₂ :
     (hs : s.EqOn φ₁ φ₂) : φ₁ = φ₂ :=
   ext fun _x => adjoin_le_equalizer φ₁ φ₂ hs <| h.symm ▸ trivial
 
-/-- Two algebra morphisms are equal on `Algebra.span s`iff they are equal on s -/
+/-- Two algebra morphisms are equal on `Algebra.span s` iff they are equal on `s`. -/
 theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A} :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl

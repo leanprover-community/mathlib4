@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Iterate
-import Aesop
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Iterate
+public import Aesop
+public import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`
@@ -15,6 +17,8 @@ This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
+@[expose] public section
+
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
@@ -22,8 +26,10 @@ namespace Prod
 lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
@@ -58,27 +64,18 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 
 theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
-@[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
-
 theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
-
-@[deprecated (since := "2025-03-06")] alias mk.inj_left := mk_right_injective
 
 theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
-@[deprecated (since := "2025-03-06")] alias mk.inj_right := mk_left_injective
-
 lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
     (mk_right_injective _).eq_iff
 
 lemma mk_left_inj {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk_left_injective _).eq_iff
-
-@[deprecated (since := "2025-03-06")] alias mk_inj_left := mk_right_inj
-@[deprecated (since := "2025-03-06")] alias mk_inj_right := mk_left_inj
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -167,7 +164,7 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
-  IsTrans (α × β) (Prod.Lex r s) :=
+    IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
@@ -192,7 +189,7 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inr (.left _ _ hji) ⟩
 
 instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
-  IsTrichotomous (α × β) (Prod.Lex r s) :=
+    IsTrichotomous (α × β) (Prod.Lex r s) :=
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
@@ -308,19 +305,19 @@ open Lean PrettyPrinter Delaborator
 When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
 rather than as `x.fst` and `x.snd`.
 -/
-register_option pp.numericProj.prod : Bool := {
+meta register_option pp.numericProj.prod : Bool := {
   defValue := true
   descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
 }
 
 /-- Tell whether pretty-printing should use numeric projection notations `.1`
 and `.2` for `Prod.fst` and `Prod.snd`. -/
-def getPPNumericProjProd (o : Options) : Bool :=
+meta def getPPNumericProjProd (o : Options) : Bool :=
   o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
 @[app_delab Prod.fst]
-def delabProdFst : Delab :=
+meta def delabProdFst : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|
@@ -330,7 +327,7 @@ def delabProdFst : Delab :=
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
 @[app_delab Prod.snd]
-def delabProdSnd : Delab :=
+meta def delabProdSnd : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|

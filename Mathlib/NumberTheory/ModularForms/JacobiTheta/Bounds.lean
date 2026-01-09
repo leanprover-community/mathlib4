@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
 # Asymptotic bounds for Jacobi theta functions
@@ -34,6 +35,8 @@ hence Dirichlet L-functions, etc).
   `∞`.
 -/
 
+@[expose] public section
+
 open Set Filter Topology Asymptotics Real
 
 noncomputable section
@@ -54,7 +57,7 @@ private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
 
 private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
-  refine ((Tendsto.const_sub _ ?_).inv₀ (by norm_num)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
+  refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
   simpa only [neg_mul, tendsto_exp_comp_nhds_zero, tendsto_neg_atBot_iff]
     using tendsto_id.const_mul_atTop pi_pos
 
@@ -207,7 +210,7 @@ def f_int (k : ℕ) (a t : ℝ) (n : ℤ) : ℝ := |n + a| ^ k * exp (-π * (n +
 
 lemma f_int_ofNat (k : ℕ) {a : ℝ} (ha : 0 ≤ a) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.ofNat n) = f_nat k a t n := by
-  rw [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, abs_of_nonneg (by positivity)]
+  rw [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, abs_of_nonneg (by positivity)]
 
 lemma f_int_negSucc (k : ℕ) {a : ℝ} (ha : a ≤ 1) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.negSucc n) = f_nat k (1 - a) t n := by
@@ -221,7 +224,7 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
       (summable_f_nat k (1 - a) ht).hasSum).summable.norm
   intro n
   rcases n with - | m
-  · simp only [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
+  · simp only [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
       (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]

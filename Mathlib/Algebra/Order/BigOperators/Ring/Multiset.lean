@@ -3,8 +3,10 @@ Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Order.BigOperators.Ring.List
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.Ring.List
 
 /-!
 # Big operators on a multiset in ordered rings
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.BigOperators.Ring.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 rings.
 -/
+
+@[expose] public section
 
 open Multiset
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 
@@ -18,6 +20,8 @@ is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the
 the idempotent endomorphism `𝟙 P.X - P.p`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,7 +68,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_f, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
-        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, zero_def]
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero]
 
 end Biproducts
 
@@ -72,17 +76,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
   { out := fun n =>
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
-          simp only [hom_ext_iff]
-          refine biproduct.hom_ext' _ _ (fun j => ?_)
-          simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
-            biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
-            idem_assoc, id_f, Biproducts.bicone_pt_p, comp_sum]
-          rw [Finset.sum_eq_single j]
-          · simp only [bicone_ι_π_self_assoc]
-          · intro b _ hb
-            simp only [biproduct.ι_π_ne_assoc _ hb.symm, zero_comp]
-          · intro hj
-            simp only [Finset.mem_univ, not_true] at hj } }
+          simpa using biproduct.map_eq.symm } }
 
 attribute [instance] karoubi_hasFiniteBiproducts
 

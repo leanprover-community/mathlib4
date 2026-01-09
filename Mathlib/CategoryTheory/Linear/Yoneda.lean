@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -18,10 +20,12 @@ TODO: `linearYoneda R C` is `R`-linear.
 TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 -/
 
+@[expose] public section
+
 
 universe w v u
 
-open Opposite
+open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -63,7 +67,7 @@ theorem whiskering_linearYoneda :
 
 @[simp]
 theorem whiskering_linearYoneda₂ :
-    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
+    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) =
       preadditiveYoneda :=
   rfl
 
@@ -75,12 +79,12 @@ theorem whiskering_linearCoyoneda :
 @[simp]
 theorem whiskering_linearCoyoneda₂ :
     linearCoyoneda R C ⋙
-        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
+        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) =
       preadditiveCoyoneda :=
   rfl
 
 instance full_linearYoneda : (linearYoneda R C).Full :=
-  let _ :  Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
+  let _ : Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
     (forget (ModuleCat.{v} R))) := Yoneda.yoneda_full
   Functor.Full.of_comp_faithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))

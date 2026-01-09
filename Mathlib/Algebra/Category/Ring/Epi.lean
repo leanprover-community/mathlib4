@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Epimorphisms in `CommRingCat`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 ## Main results
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
+
+@[expose] public section
 
 open CategoryTheory TensorProduct
 
@@ -23,11 +27,9 @@ lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] 
       ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s := by
   constructor
   · intro H
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we need to add `(R := R) (A := S)` in the next line to deal with unification issues. -/
-    have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom (R := R))
+    have := H.1 (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom)
       (CommRingCat.ofHom <| (Algebra.TensorProduct.includeRight (R := R) (A := S)).toRingHom)
-      (by ext r; show algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
+      (by ext r; change algebraMap R S r ⊗ₜ 1 = 1 ⊗ₜ algebraMap R S r;
           simp only [Algebra.algebraMap_eq_smul_one, smul_tmul])
     exact RingHom.congr_fun (congrArg Hom.hom this)
   · refine fun H ↦ ⟨fun {T} f g e ↦ ?_⟩

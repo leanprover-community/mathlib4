@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.Data.Set.Card
 
 /-!
 # Dimension of modules and vector spaces
@@ -30,6 +32,8 @@ inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
 and `M₁`, `M₂`, ... all live in the same universe.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -52,7 +56,7 @@ We define this as the supremum of the cardinalities of linearly independent subs
 The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
-(e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
+(e.g. left-Noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
 In particular this agrees with the usual notion of the dimension of a vector space.
@@ -102,10 +106,60 @@ theorem _root_.LinearIndepOn.encard_le_toENat_rank {ι : Type*} {v : ι → M} {
 
 end LinearIndependent
 
+namespace Module
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Nontrivial R]
+
+/-- Note: if the rank of a module is infinite, it may not contain a linear independent subset
+with cardinality equal to the rank, see
+https://mathoverflow.net/questions/263020/maximum-cardinal-of-a-set-of-linearly-independent-vectors-in-a-module. -/
+theorem le_rank_iff_exists_finset {n : ℕ} :
+    n ≤ Module.rank R M ↔ ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) where
+  mp le := by
+    contrapose! le
+    obtain _ | n := n; · simp at le
+    rw [Module.rank, nat_succ, Order.lt_succ_iff, ciSup_le_iff (bddAbove_range _)]
+    intro s
+    contrapose! le
+    rw [← Order.succ_le_iff, ← nat_succ] at le
+    have ⟨t, ht⟩ := exists_finset_eq_card le
+    exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
+  mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
+
+theorem le_rank_iff {n : ℕ} : n ≤ Module.rank R M ↔ ∃ v : Fin n → M, LinearIndependent R v := by
+  refine le_rank_iff_exists_finset.trans ⟨fun ⟨s, s_card, s_ind⟩ ↦ ?_, fun ⟨v, v_ind⟩ ↦ ?_⟩
+  · exact ⟨_, s_ind.comp _ (s.equivFinOfCardEq s_card).symm.injective⟩
+  · refine ⟨.map ⟨_, v_ind.injective⟩ .univ, by simp, ?_⟩
+    simpa using (linearIndepOn_id_range_iff v_ind.injective).mpr v_ind
+
+theorem le_rank_iff_exists_linearMap {n : ℕ} :
+    n ≤ Module.rank R M ↔ ∃ f : (Fin n → R) →ₗ[R] M, Injective f := by
+  refine le_rank_iff.trans ⟨fun ⟨v, v_ind⟩ ↦ ?_, fun ⟨f, f_inj⟩ ↦
+    ⟨_, (Module.Basis.ofEquivFun <| .refl ..).linearIndependent.map_injOn f f_inj.injOn⟩⟩
+  have := Injective.comp v_ind (Finsupp.linearEquivFunOnFinite R ..).symm.injective
+  exact ⟨Finsupp.linearCombination .. ∘ₗ _, this⟩
+
+end Module
+
 section SurjectiveInjective
 
 section Semiring
 variable [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R']
+
+variable (R M) in
+@[nontriviality, simp]
+theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
+  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
+  · have := Module.subsingleton R M
+    simp [Set.subsingleton_of_subsingleton]
+  · intro w hw
+    exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
+
+theorem Module.one_le_rank_iff : 1 ≤ Module.rank R M ↔ ∃ f : R →ₗ[R] M, Injective f := by
+  nontriviality R
+  refine le_rank_iff_exists_linearMap.trans ⟨fun ⟨f, hf⟩ ↦ ?_, fun ⟨f, hf⟩ ↦ ?_⟩
+  · exact ⟨f ∘ₗ _, by apply hf.comp (LinearEquiv.piUnique R ..).symm.injective⟩
+  · exact ⟨f ∘ₗ _, hf.comp (LinearEquiv.piUnique R ..).injective⟩
 
 section
 variable [AddCommMonoid M'] [Module R' M']
@@ -146,7 +200,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M')
     lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injectiveₛ i j.symm hi.1
-      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by simp_all
 end
 
 section
@@ -174,6 +228,22 @@ theorem rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M₁)
 
 end
 end Semiring
+
+/-- TODO: prove that nontrivial commutative semirings satisfy the strong rank condition,
+following *Free sets and free subsemimodules in a semimodule* by Yi-Jia Tan, Theorem 3.2.
+
+Rings `R` that fail the strong rank condition but satisfy `rank R R = 1` are expected to exist, see
+https://mathoverflow.net/questions/317422/rings-that-fail-to-satisfy-the-strong-rank-condition. -/
+theorem CommSemiring.rank_self (R) [CommSemiring R] : Module.rank R R = 1 := by
+  nontriviality R
+  rw [le_antisymm_iff, ← not_lt, ← Order.succ_le_iff, ← Nat.cast_one, ← nat_succ,
+    Module.le_rank_iff_exists_linearMap, Nat.cast_one, Module.one_le_rank_iff]
+  refine ⟨fun ⟨f, inj⟩ ↦ ?_, _, (LinearEquiv.refl ..).injective⟩
+  have := inj (a₁ := f ![0, 1] • ![1, 0]) (a₂ := f ![1, 0] • ![0, 1]) <| by
+    simp_rw [map_smul, smul_eq_mul]; apply mul_comm
+  have h₁ : f ![0, 1] = 0 := by simpa using congr($this 0)
+  have h₂ : 0 = f ![1, 0] := by simpa using congr($this 1)
+  exact zero_ne_one (α := R) (by simpa using congr($(inj (h₁.trans h₂)) 1))
 
 section Ring
 variable [Ring R] [AddCommGroup M] [Module R M] [Ring R']
@@ -229,7 +299,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -240,7 +310,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 
@@ -312,7 +382,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
-    Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+    Subtype.ext <| show x = y from Subtype.ext_iff.1 eq
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
@@ -375,9 +445,6 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
     Module.rank R L ≤ Module.rank R L' :=
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
-
-@[deprecated (since := "2024-11-21")]
-alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
 variable (R R' M) in
 lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]

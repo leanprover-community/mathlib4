@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # Ends and coends
@@ -13,12 +15,14 @@ which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all
 For this shape of limits, cones are named wedges: the corresponding type is `Wedge F`.
 
 We also introduce `coend F` as multicoequalizers of
-`(F.obj (op j)).obj j` for all `j : J`. In this cases, cocones are named cowedges.
+`(F.obj (op j)).obj j` for all `j : J`. In these cases, cocones are named cowedges.
 
 ## References
 * https://ncatlab.org/nlab/show/end
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -76,6 +80,16 @@ namespace Wedge
 
 variable {F}
 
+/-- A variant of `CategoryTheory.Limits.Cones.ext` specialized to produce
+isomorphisms of wedges. -/
+@[simps!]
+def ext {W₁ W₂ : Wedge F} (e : W₁.pt ≅ W₂.pt)
+    (he : ∀ j : J, W₁.ι j = e.hom ≫ W₂.ι j := by cat_disch) : W₁ ≅ W₂ :=
+  Cones.ext e (fun j =>
+    match j with
+    | .left _ => he _
+    | .right f => by simpa using (he f.left) =≫ _)
+
 section Constructor
 
 variable (pt : C) (π : ∀ (j : J), pt ⟶ (F.obj (op j)).obj j)
@@ -129,6 +143,16 @@ abbrev Cowedge := Multicofork (multispanIndexCoend F)
 namespace Cowedge
 
 variable {F}
+
+/-- A variant of `CategoryTheory.Limits.Cocones.ext` specialized to produce
+isomorphisms of cowedges. -/
+@[simps!]
+def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
+    (he : ∀ j : J, W₁.π j ≫ e.hom = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
+  Cocones.ext e (fun j =>
+    match j with
+    | .right _ => he _
+    | .left f => by simpa using _ ≫= (he f.left))
 
 section Constructor
 
@@ -200,9 +224,6 @@ lemma end_.hom_ext {X : C} {f g : X ⟶ end_ F} (h : ∀ j, f ≫ end_.π F j = 
     f = g :=
   Multiequalizer.hom_ext _ _ _ (fun _ ↦ h _)
 
-@[deprecated (since := "2025-06-06")] alias _root_.CategoryTheory.Limits.hom_ext :=
-  end_.hom_ext
-
 section
 
 variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
@@ -216,13 +237,45 @@ noncomputable def end_.lift : X ⟶ end_ F :=
 lemma end_.lift_π (j : J) : lift f hf ≫ π F j = f j := by
   apply IsLimit.fac
 
+variable {F' : Jᵒᵖ ⥤ J ⥤ C} [HasEnd F'] (f : F ⟶ F')
+
+/-- A natural transformation of functors F ⟶ F' induces a map end_ F ⟶ end_ F'. -/
+noncomputable def end_.map : end_ F ⟶ end_ F' :=
+  end_.lift (fun x ↦ end_.π _ _ ≫ (f.app (op x)).app x) (fun j j' φ ↦ by
+    have e := (f.app (op j)).naturality φ
+    simp only [Category.assoc]
+    rw [← e, reassoc_of% end_.condition F φ]
+    simp)
+
+@[reassoc (attr := simp)]
+lemma end_.map_π (j : J) :
+    end_.map f ≫ end_.π F' j = end_.π _ _ ≫ (f.app (op j)).app j := by
+  simp [end_.map]
+
+@[reassoc (attr := simp)]
+lemma end_.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasEnd F''] (g : F' ⟶ F'') :
+    end_.map f ≫ end_.map g = end_.map (f ≫ g) := by
+  cat_disch
+
+@[simp]
+lemma end_.map_id : end_.map (𝟙 F) = 𝟙 _ := by cat_disch
+
 end
+
+variable (J C) in
+/-- If all bifunctors `Jᵒᵖ ⥤ J ⥤ C` have an end, then the construction
+`F ↦ end_ F` defines a functor `(Jᵒᵖ ⥤ J ⥤ C) ⥤ C`. -/
+@[simps]
+noncomputable def endFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasEnd F] :
+    (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
+  obj F := end_ F
+  map f := end_.map f
 
 end End
 
 section Coend
 
-/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the end of `F`. -/
+/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this property asserts the existence of the coend of `F`. -/
 abbrev HasCoend := HasMulticoequalizer (multispanIndexCoend F)
 
 variable [HasCoend F]
@@ -237,7 +290,7 @@ noncomputable def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F :=
 
 @[reassoc]
 lemma coend.condition {i j : J} (f : i ⟶ j) :
-     (F.map f.op).app i ≫ ι F i  = (F.obj (op j)).map f ≫ ι F j := by
+     (F.map f.op).app i ≫ ι F i = (F.obj (op j)).map f ≫ ι F j := by
   apply Cowedge.condition
 
 variable {F}
@@ -252,7 +305,7 @@ section
 variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), (F.map g.op).app i ≫ f i = (F.obj (op j)).map g ≫ f j)
 
-/-- Constructor for morphisms to the end of a functor. -/
+/-- Constructor for morphisms to the coend of a functor. -/
 noncomputable def coend.desc : coend F ⟶ X :=
   Cowedge.IsColimit.desc (colimit.isColimit _) f hf
 
@@ -260,7 +313,36 @@ noncomputable def coend.desc : coend F ⟶ X :=
 lemma coend.ι_desc (j : J) : ι F j ≫ desc f hf = f j := by
   apply IsColimit.fac
 
+variable {F' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F'] (f : F ⟶ F')
+
+/-- A natural transformation of functors F ⟶ F' induces a map coend F ⟶ coend F'. -/
+noncomputable def coend.map : coend F ⟶ coend F' :=
+  coend.desc (fun x ↦ (f.app (op x)).app x ≫ coend.ι _ _) (fun j j' φ ↦ by
+    simp [coend.condition])
+
+@[reassoc (attr := simp)]
+lemma coend.ι_map (j : J) :
+    coend.ι _ _ ≫ coend.map f = (f.app (op j)).app j ≫ coend.ι _ _ := by
+  simp [coend.map]
+
+@[reassoc (attr := simp)]
+lemma coend.map_comp {F'' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F''] (g : F' ⟶ F'') :
+    coend.map f ≫ coend.map g = coend.map (f ≫ g) := by
+  cat_disch
+
+@[simp]
+lemma coend.map_id : coend.map (𝟙 F) = 𝟙 _ := by cat_disch
+
 end
+
+variable (J C) in
+/-- If all bifunctors `Jᵒᵖ ⥤ J ⥤ C` have a coend, then the construction
+`F ↦ coend F` defines a functor `(Jᵒᵖ ⥤ J ⥤ C) ⥤ C`. -/
+@[simps]
+noncomputable def coendFunctor [∀ (F : Jᵒᵖ ⥤ J ⥤ C), HasCoend F] :
+    (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
+  obj F := coend F
+  map f := coend.map f
 
 end Coend
 

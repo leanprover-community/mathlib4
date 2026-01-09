@@ -3,16 +3,22 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Basis.Submodule
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Basis.Submodule
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # The basis of ideals
 
 Some results involving `Ideal` and `Basis`.
 -/
+
+@[expose] public section
+
+open Module
 
 namespace Ideal
 
@@ -34,7 +40,7 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
     (basisSpanSingleton b hx i : S) = x * b i := by
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
-    LinearEquiv.restrictScalars_apply, LinearMap.mulLeft_apply, LinearMap.mul_apply']
+    LinearEquiv.restrictScalars_apply, LinearMap.mulLeft_apply]
 
 @[simp]
 theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCommClass R N S]
@@ -44,7 +50,6 @@ theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCom
 
 end Ideal
 
--- Porting note: added explicit coercion `(b i : S)`
 /-- If `I : Ideal S` has a basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff {ι R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]

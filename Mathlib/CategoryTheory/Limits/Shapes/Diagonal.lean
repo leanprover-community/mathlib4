@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 /-!
 # The diagonal object of a morphism.
@@ -16,6 +18,8 @@ of a morphism `f : X ⟶ Y`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -23,7 +27,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X Y Z : C}
+variable {C : Type*} [Category* C] {X Y Z : C}
 
 namespace pullback
 
@@ -198,7 +202,7 @@ theorem pullback_fst_map_snd_isPullback :
         (by simp [condition])) :=
   IsPullback.of_iso_pullback ⟨by ext <;> simp [condition_assoc]⟩
     (pullbackDiagonalMapIso f i i₁ i₂).symm (pullbackDiagonalMapIso.inv_fst f i i₁ i₂)
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 
@@ -376,7 +380,7 @@ lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
   · simp [e]
   · ext <;> simp [e, i]
   · constructor
-    ext <;> simp [condition]
+    ext <;> simp
 
 end
 
@@ -429,15 +433,15 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
       · apply pullback.hom_ext
         · simp only [Category.assoc, lift_fst, lift_fst_assoc, Category.id_comp]
           rw [condition]
-        · simp [Category.assoc, lift_snd, condition_assoc, condition]
-      · simp only [Category.assoc, lift_fst_assoc, lift_snd, lift_fst, Category.id_comp]
+        · simp [Category.assoc, condition]
+      · simp only [Category.assoc, lift_snd, lift_fst, Category.id_comp]
     · apply pullback.hom_ext
       · apply pullback.hom_ext
         · simp only [Category.assoc, lift_snd_assoc, lift_fst_assoc, lift_fst, Category.id_comp]
           rw [← condition_assoc, condition]
         · simp only [Category.assoc, lift_snd, lift_fst_assoc, lift_snd_assoc, Category.id_comp]
           rw [condition]
-      · simp only [Category.assoc, lift_snd_assoc, lift_snd, Category.id_comp]
+      · simp only [Category.assoc, lift_snd, Category.id_comp]
   inv_hom_id := by
     apply pullback.hom_ext
     · simp only [Category.assoc, lift_fst, lift_fst_assoc, lift_snd, Category.id_comp]
@@ -458,5 +462,24 @@ theorem pullback_lift_map_isPullback {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y �
       (pullback.fst _ _) (pullback.fst _ _) :=
   IsPullback.of_iso_pullback ⟨by rw [lift_fst, lift_fst]⟩
     (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).symm (by simp) (by simp)
+
+lemma isPullback_map_snd_snd {X Y Z S : C} (f : X ⟶ S) (g : Y ⟶ S) (h : Z ⟶ S) :
+    IsPullback (pullback.map _ _ _ _ (pullback.snd f g) (pullback.snd f h) f
+        pullback.condition pullback.condition)
+      (pullback.fst (pullback.fst f g) (pullback.fst f h))
+      (pullback.fst g h) (pullback.snd f g) := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+  · intro c
+    refine pullback.lift c.snd
+        (pullback.lift (c.snd ≫ pullback.fst _ _) (c.fst ≫ pullback.snd _ _) ?_) ?_
+    · simp [pullback.condition, ← c.condition_assoc]
+    · simp
+  · intro c
+    apply pullback.hom_ext <;> simp [c.condition]
+  · intro c
+    apply pullback.hom_ext <;> simp
+  · intro c m hfst hsnd
+    refine pullback.hom_ext (by simpa) ?_
+    apply pullback.hom_ext <;> simp [← hsnd, pullback.condition, ← hfst]
 
 end CategoryTheory.Limits

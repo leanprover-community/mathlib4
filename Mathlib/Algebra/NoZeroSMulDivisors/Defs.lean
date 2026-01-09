@@ -3,15 +3,26 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
 
 This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
+
+## TODO
+
+`NoZeroSMulDivisors` is mathematically incorrect for semimodules. Replace it with a new typeclass
+`Module.IsTorsionFree`, cf https://github.com/kbuzzard/ClassFieldTheory. Torsion-free monoids have
+seen the same change happen already.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Ring Module
 
@@ -47,6 +58,11 @@ instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
 theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
   (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
+
+theorem noZeroSMulDivisors_iff_right_eq_zero_of_smul [Zero R] [Zero M] [SMul R M] :
+    NoZeroSMulDivisors R M ↔ ∀ r : R, r ≠ 0 → ∀ m : M, r • m = 0 → m = 0 := by
+  simp_rw [noZeroSMulDivisors_iff, or_iff_not_imp_left]
+  exact ⟨fun h r hr m eq ↦ h eq hr, fun h r m eq hr ↦ h r hr m eq⟩
 
 section SMulWithZero
 

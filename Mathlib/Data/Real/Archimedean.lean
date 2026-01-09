@@ -3,16 +3,22 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Pointwise.Bounds
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Set.Disjoint
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Interval.Set.Disjoint
+
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -168,6 +174,9 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 
+theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
+  simp [sInf_def]
+
 @[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
@@ -202,6 +211,18 @@ theorem sInf_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = 0 :=
 
 theorem iInf_of_not_bddBelow (hf : ¬BddBelow (Set.range f)) : ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
+
+@[simp]
+theorem sSup_neg (s : Set ℝ) : sSup (-s) = -sInf s := by
+  obtain rfl | hn := s.eq_empty_or_nonempty; · simp
+  by_cases hb : BddBelow s
+  · rw [csSup_neg hn hb]
+  · rw [csInf_of_not_bddBelow hb, Real.sInf_empty, csSup_of_not_bddAbove (bddAbove_neg.not.2 hb),
+      Real.sSup_empty, neg_zero]
+
+@[simp]
+theorem sInf_neg (s : Set ℝ) : sInf (-s) = -sSup s := by
+  rw [← neg_eq_iff_eq_neg, ← Real.sSup_neg, neg_neg]
 
 /-- As `sSup s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
 are at most some nonnegative number `a` to show that `sSup s ≤ a`.
@@ -374,7 +395,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    omega
+    lia
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

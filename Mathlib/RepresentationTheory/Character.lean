@@ -3,9 +3,11 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.RepresentationTheory.FDRep
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.RepresentationTheory.FDRep
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Characters of representations
@@ -27,6 +29,8 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -89,7 +93,7 @@ theorem char_linHom (V W : FDRep k G) (g : G) :
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
-    ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
+    ⅟(Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
   rw [← (isProj_averageMap V.ρ).trace]
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
@@ -99,7 +103,7 @@ scalar product of their characters is equal to the dimension of the space of
 equivariant maps from `V` to `W`.
 -/
 theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
-    ⅟ (Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
+    ⅟(Fintype.card G : k) • ∑ g : G, W.character g * V.character g⁻¹ =
     Module.finrank k (V ⟶ W) := by
   conv_lhs => congr; rfl; congr; rfl; intro _; rw [mul_comm, ← FDRep.char_linHom]
   -- The scalar product is the character of `Hom(V, W).`
@@ -122,7 +126,7 @@ open scoped Classical in
 /-- Orthogonality of characters for irreducible representations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
-    ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
+    ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
       if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   rw [scalar_product_char_eq_finrank_equivariant]
   -- The scalar products of the characters is equal to the dimension of the space of

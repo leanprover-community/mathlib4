@@ -3,12 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for `Set α`, when `α` is a fintype
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -40,7 +44,7 @@ lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ #s = k
 variable (α)
 
 @[simp] lemma univ_filter_card_eq (k : ℕ) :
-   ({s | #s = k} : Finset (Finset α)) = univ.powersetCard k := by ext; simp
+    ({s | #s = k} : Finset (Finset α)) = univ.powersetCard k := by ext; simp
 
 end Finset
 

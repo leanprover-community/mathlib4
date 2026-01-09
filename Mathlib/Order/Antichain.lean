@@ -3,27 +3,31 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
 
 This file defines antichains. An antichain is a set where any two distinct elements are not related.
 If the relation is `(≤)`, this corresponds to incomparability and usual order antichains. If the
-relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
+relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
 
 ## Definitions
 
 * `IsAntichain r s`: Any two elements of `s : Set α` are unrelated by `r : α → α → Prop`.
 * `IsStrongAntichain r s`: Any two elements of `s : Set α` are not related by `r : α → α → Prop`
   to a common element.
-* `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
+* `IsMaxAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
-open Function Set
+open Function Set Set.Notation
 
 section General
 
@@ -37,6 +41,12 @@ def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
   s.Pairwise rᶜ
 
 namespace IsAntichain
+
+@[simp] protected theorem empty : IsAntichain r ∅ :=
+  pairwise_empty _
+
+@[simp] protected theorem singleton : IsAntichain r {a} :=
+  pairwise_singleton _ _
 
 protected theorem subset (hs : IsAntichain r s) (h : t ⊆ s) : IsAntichain r t :=
   hs.mono h
@@ -163,10 +173,25 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
+@[simp] protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
+  h.subset Set.diff_subset
+
 end IsAntichain
 
-theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
-  pairwise_singleton _ _
+theorem isAntichain_preimage_subtypeVal (s t : Set α) :
+    @IsAntichain ↑s (r · ·) (s ↓∩ t) ↔ IsAntichain r (s ∩ t) := by
+  simp [IsAntichain, Set.Pairwise]
+
+theorem isAntichain_coe_univ_iff {s : Set α} : @IsAntichain ↑s (r · ·) univ ↔ IsAntichain r s := by
+  simpa using isAntichain_preimage_subtypeVal s univ
+
+theorem isAntichain_union :
+    IsAntichain r (s ∪ t) ↔
+      IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
+  rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
+
+@[deprecated (since := "2025-09-20")]
+alias isAntichain_singleton := IsAntichain.singleton
 
 theorem Set.Subsingleton.isAntichain (hs : s.Subsingleton) (r : α → α → Prop) : IsAntichain r s :=
   hs.pairwise _
@@ -203,12 +228,12 @@ theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb :
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isLeast_singleton⟩⟩
 
 theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
   ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
-    exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
+    exact ⟨IsAntichain.singleton, isGreatest_singleton⟩⟩
 
 theorem IsAntichain.least_iff (hs : IsAntichain (· ≤ ·) s) : IsLeast s a ↔ s = {a} :=
   (and_iff_right hs).symm.trans isAntichain_and_least_iff
@@ -228,15 +253,51 @@ theorem IsAntichain.bot_mem_iff [OrderBot α] (hs : IsAntichain (· ≤ ·) s) :
 theorem IsAntichain.top_mem_iff [OrderTop α] (hs : IsAntichain (· ≤ ·) s) : ⊤ ∈ s ↔ s = {⊤} :=
   isGreatest_top_iff.symm.trans hs.greatest_iff
 
+theorem IsAntichain.minimal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Minimal (· ∈ s) a ↔ a ∈ s :=
+  ⟨fun h ↦ h.prop, fun h ↦ ⟨h, fun _ hys hyx ↦ (hs.eq hys h hyx).symm.le⟩⟩
+
+theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (· ∈ s) a ↔ a ∈ s :=
+  hs.to_dual.minimal_mem_iff
+
+/-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
+then `t` *is* the set of maximal elements of `s`. -/
+theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
+    {x | Maximal (· ∈ s) x} = t := by
+  refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
+  obtain ⟨y, hyx, hy⟩ := hs x hx
+  rwa [← ht.eq (h y hy) hx hyx]
+
+/-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
+then `t` *is* the set of minimal elements of `s`. -/
+theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
+    {x | Minimal (· ∈ s) x} = t :=
+  ht.to_dual.eq_setOf_maximal h hs
+
 end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α]
+variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+
+lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
+
+lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
+
+theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
+  fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
+
+theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
+  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
 
 end PartialOrder
 
@@ -269,10 +330,10 @@ protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s
   let ⟨_, hac, hbc⟩ := directed_of r a b
   h.eq ha hb hac hbc
 
-protected theorem flip [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
+protected theorem flip [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (flip r) s :=
   fun _ ha _ hb h c => (hs ha hb h c).imp (mt <| symm_of r) (mt <| symm_of r)
 
-theorem swap [IsSymm α r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
+theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap r) s :=
   hs.flip
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
@@ -300,15 +361,40 @@ theorem Set.Subsingleton.isStrongAntichain (hs : s.Subsingleton) (r : α → α 
     IsStrongAntichain r s :=
   hs.pairwise _
 
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+/-! ### Maximal antichains -/
 
-lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
+/-- An antichain `s` is a maximal antichain if there does not exists an antichain strictly including
+`s`. -/
+def IsMaxAntichain (r : α → α → Prop) (s : Set α) : Prop :=
+  IsAntichain r s ∧ ∀ ⦃t⦄, IsAntichain r t → s ⊆ t → s = t
 
-lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
+namespace IsMaxAntichain
+
+theorem isAntichain (h : IsMaxAntichain r s) : IsAntichain r s :=
+  h.1
+
+protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxAntichain r c) :
+    IsMaxAntichain s (e '' c) where
+  left := hc.isAntichain.image _ fun _ _ ↦ e.map_rel_iff'.mp
+  right t ht hf := by
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, ← Equiv.image_symm_eq_preimage]
+    exact hc.2 (ht.image _ fun _ _ ↦ e.symm.map_rel_iff.mp)
+      ((e.toEquiv.subset_symm_image _ _).2 hf)
+
+protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ s = ∅ := by
+  refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  constructor
+  intro x
+  simp only [IsMaxAntichain, h', IsAntichain.empty, empty_subset, forall_const, true_and] at h
+  exact singleton_ne_empty x (h IsAntichain.singleton).symm
+
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
+
+protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
+  ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
+
+end IsMaxAntichain
 
 end General
 

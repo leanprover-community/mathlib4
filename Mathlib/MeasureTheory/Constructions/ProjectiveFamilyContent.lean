@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.Projective
-import Mathlib.MeasureTheory.Measure.AddContent
-import Mathlib.MeasureTheory.SetAlgebra
+module
+
+public import Mathlib.MeasureTheory.Constructions.Projective
+public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Additive content built from a projective family of measures
@@ -31,6 +33,8 @@ the Kolmogorov extension theorem.
   family of measures.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -146,9 +150,7 @@ lemma projectiveFamilyContent_ne_top [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyContent hP s ≠ ∞ := by
   rw [projectiveFamilyContent_eq hP, projectiveFamilyFun]
-  split_ifs with hs
-  · exact measure_ne_top _ _
-  · exact ENNReal.zero_ne_top
+  split_ifs with hs <;> finiteness
 
 lemma projectiveFamilyContent_diff (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) :
