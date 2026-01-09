@@ -58,6 +58,13 @@ theorem Homeomorph.image_mem_irreducibleComponents_iff {X Y : Type*}
 
 namespace AlgebraicGeometry
 
+def component' {R : Type*} [CommSemiring R] {p : Ideal R} (hp : p ∈ minimalPrimes R) : Ideal R :=
+  have := hp.1.1; Ideal.component ⊥ p
+
+-- better gluing API in our case?
+-- in our case, for each of our affine opens, we construct some sort of ring or affine scheme
+-- and this construction is somehow nice and functorial
+
 def tada' (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
     (hC : C ∈ irreducibleComponents X) : AlgebraicGeometry.Scheme.GlueData where
   J := {U : X.affineOpens | (C ∩ U).Nonempty}
@@ -87,17 +94,8 @@ def tada' (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
     have hp : p ∈ minimalPrimes _ := by
       rw [← PrimeSpectrum.vanishingIdeal_irreducibleComponents]
       exact Set.mem_image_of_mem PrimeSpectrum.vanishingIdeal hZ
-    have : IsNoetherianRing Γ(X, i) := IsLocallyNoetherian.component_noetherian i.1
-    have : IsLasker Γ(X, i) := Ideal.isLasker ↑Γ(X, ↑↑i)
-
-
-    -- AlgebraicGeometry.Scheme.eq_zeroLocus_of_isClosed_of_isAffine
-
-    -- i is an affine open of X
-    -- vanishing ideal is a minimal prime
-    -- (see `PrimeSpectrum.vanishingIdeal_irreducibleComponents` and following)
-    -- then use theory of minimal primes
-    sorry
+    let q := component' hp
+    exact Spec (Γ(X, i) ⧸ q)
   V i := by
 
     sorry
