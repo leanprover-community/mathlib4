@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Jack McKoen
 -/
 module
 
@@ -27,6 +27,8 @@ If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
 projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -94,6 +96,13 @@ lemma ι_flip : sq.flip.ι = sq.ι := by
   · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
   · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
 
+@[simp]
+lemma ofHasPushout_ι
+    [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
+    (ofHasPushout F f₁ f₂).ι =
+    (IsPushout.of_hasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)).desc
+      ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (((F.map f₁).naturality f₂).symm) := rfl
+
 end PushoutObjObj
 
 end
@@ -116,16 +125,11 @@ noncomputable
 def leftFunctor_map_left (f₁ : Arrow C₁) {f₂ f₂' : Arrow C₂} (sq : f₂ ⟶ f₂')
     (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
     (sq₁₂' : F.PushoutObjObj f₁.hom f₂'.hom) :
-    sq₁₂.pt ⟶ sq₁₂'.pt := by
-  refine sq₁₂.isPushout.desc ?_ ?_ ?_
-  · exact ((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl
-  · exact ((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr
-  · simp only [id_obj]
-    rw [← Category.assoc, ← Category.assoc, ← Functor.map_comp]
-    erw [← sq.w, ← (F.map f₁.hom).naturality sq.left]
-    have := sq₁₂'.isPushout.w
-    dsimp at this ⊢
-    simp only [this, Functor.map_comp, Category.assoc]
+    sq₁₂.pt ⟶ sq₁₂'.pt :=
+  sq₁₂.isPushout.desc
+    (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
+    (((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr)
+    (by grind [sq.w, sq₁₂'.isPushout.w])
 
 @[simp]
 noncomputable
@@ -136,13 +140,9 @@ def leftFunctor_map (f₁ : Arrow C₁) {f₂ f₂' : Arrow C₂} (sq : f₂ ⟶
   left := leftFunctor_map_left F f₁ sq sq₁₂ sq₁₂'
   right := (F.obj f₁.right).map sq.right
   w := by
-    dsimp
     apply sq₁₂.isPushout.hom_ext
-    · simp only [Functor.id_obj, IsPushout.inl_desc_assoc, Category.assoc,
-        Functor.PushoutObjObj.inl_ι, ← Functor.map_comp, Arrow.w_mk_right, Arrow.mk_right,
-        Functor.PushoutObjObj.inl_ι_assoc]
-    · simp only [Functor.id_obj, IsPushout.inr_desc_assoc, Category.assoc,
-        Functor.PushoutObjObj.inr_ι, NatTrans.naturality, Functor.PushoutObjObj.inr_ι_assoc]
+    · simp [← map_comp]
+    · cat_disch
 
 noncomputable
 def iso_of_arrow_iso (f₁ : Arrow C₁) {f₂ f₂' : Arrow C₂} (iso : f₂ ≅ f₂')
@@ -154,60 +154,47 @@ def iso_of_arrow_iso (f₁ : Arrow C₁) {f₂ f₂' : Arrow C₂} (iso : f₂ �
   hom_inv_id := by
     apply Arrow.hom_ext
     · apply sq₁₂.isPushout.hom_ext
-      all_goals simp [← Functor.map_comp_assoc]
-    · simp [← Functor.map_comp]
+      all_goals simp [← map_comp_assoc]
+    · simp [← map_comp]
   inv_hom_id := by
     apply Arrow.hom_ext
     · apply sq₁₂'.isPushout.hom_ext
-      all_goals simp [← Functor.map_comp_assoc]
-    · simp [← Functor.map_comp]
+      all_goals simp [← map_comp_assoc]
+    · simp [← map_comp]
 
 @[simp]
 noncomputable
-def PushoutProduct.leftFunctor [HasPushouts C₃] (f₁ : Arrow C₁) : Arrow C₂ ⥤ Arrow C₃ where
+def leftFunctor [HasPushouts C₃] (f₁ : Arrow C₁) : Arrow C₂ ⥤ Arrow C₃ where
   obj f₂ := f₁.hom [F] f₂.hom
-  map sq := leftFunctor_map F f₁ sq (Functor.PushoutObjObj.ofHasPushout _ _ _)
-    (Functor.PushoutObjObj.ofHasPushout _ _ _)
+  map sq := leftFunctor_map F f₁ sq (PushoutObjObj.ofHasPushout _ _ _)
+    (PushoutObjObj.ofHasPushout _ _ _)
 
 @[simp]
 noncomputable
 def leftBifunctor_map_left {f₁ f₁' : Arrow C₁} (f₂ : Arrow C₂) (sq : f₁ ⟶ f₁')
     (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
     (sq₁₂' : F.PushoutObjObj f₁'.hom f₂.hom) :
-    sq₁₂.pt ⟶ sq₁₂'.pt := by
-  refine sq₁₂.isPushout.desc ?_ ?_ ?_
-  · exact (F.map sq.right).app f₂.left ≫ sq₁₂'.inl
-  · exact (F.map sq.left).app f₂.right ≫ sq₁₂'.inr
-  · simp only [id_obj, NatTrans.naturality_assoc]
-    rw [← Category.assoc, ← Category.assoc, ← NatTrans.comp_app, ← Functor.map_comp]
-    erw [← sq.w]
-    dsimp only [Functor.id_obj, Functor.id_map]
-    rw [Functor.map_comp, NatTrans.comp_app, Category.assoc, Category.assoc]
-    have := sq₁₂'.isPushout.w
-    dsimp at this ⊢
-    rw [← this]
+    sq₁₂.pt ⟶ sq₁₂'.pt :=
+  sq₁₂.isPushout.desc
+    ((F.map sq.right).app f₂.left ≫ sq₁₂'.inl)
+    ((F.map sq.left).app f₂.right ≫ sq₁₂'.inr)
+    (by grind [sq.w, sq₁₂'.isPushout.w])
 
 @[simp]
 noncomputable
-def PushoutProduct.leftBifunctor_map [HasPushouts C₃] {f₁ f₁' : Arrow C₁} (sq : f₁ ⟶ f₁') :
+def leftBifunctor_map [HasPushouts C₃] {f₁ f₁' : Arrow C₁} (sq : f₁ ⟶ f₁') :
     leftFunctor F f₁ ⟶ leftFunctor F f₁' where
   app f₂ := {
-    left := leftBifunctor_map_left F f₂ sq (Functor.PushoutObjObj.ofHasPushout _ _ _)
-      (Functor.PushoutObjObj.ofHasPushout _ _ _)
+    left := leftBifunctor_map_left F f₂ sq (PushoutObjObj.ofHasPushout _ _ _)
+      (PushoutObjObj.ofHasPushout _ _ _)
     right := (F.map sq.right).app f₂.right
     w := by
       apply pushout.hom_ext
-      · simp [Functor.PushoutObjObj.ι]
-      · simp [Functor.PushoutObjObj.ι, ← NatTrans.comp_app, ← Functor.map_comp] }
-  naturality f' g' sq' := by
-    apply Arrow.hom_ext
-    · apply pushout.hom_ext
-      all_goals simp
-    · simp [Functor.PushoutObjObj.ι]
+      all_goals simp [← NatTrans.comp_app, ← Functor.map_comp] }
 
 @[simps!]
 noncomputable
-def PushoutProduct.leftBifunctor [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ where
+def leftBifunctor [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ where
   obj := leftFunctor F
   map := leftBifunctor_map F
 
@@ -255,8 +242,17 @@ lemma π_fst : sq.π ≫ sq.fst = (G.map f₁.op).app X₃ := by simp [π]
 @[reassoc (attr := simp)]
 lemma π_snd : sq.π ≫ sq.snd = (G.obj (op Y₁)).map f₃ := by simp [π]
 
+@[simp]
+lemma ofHasPullback_π
+    [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
+    (ofHasPullback G f₁ f₃).π =
+    (IsPullback.of_hasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)).lift
+      ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) ((G.map f₁.op).naturality f₃).symm := rfl
+
 end PullbackObjObj
 
+end
 
+end Functor
 
 end CategoryTheory
