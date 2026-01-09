@@ -35,7 +35,7 @@ def IsPushout_ofWhiskerLeft [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensor
   isColimit' := ⟨Limits.isColimitOfHasPushoutOfPreservesColimit (tensorLeft W) _ _⟩
 
 -- need (F.obj A).obj ((F.obj B).obj C) ≅ (F.obj ((F.obj A).obj B)).obj C for general F
-@[simp]
+@[simps!]
 noncomputable
 def tensorLeft_PushoutObjObj_iso
     [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorLeft W)] :
@@ -55,7 +55,7 @@ def IsPushout_ofWhiskerRight [PreservesColimit (span (f ▷ X) (A ◁ g)) (tenso
   w := by simp only [← MonoidalCategory.comp_whiskerRight, pushout.condition]
   isColimit' := ⟨Limits.isColimitOfHasPushoutOfPreservesColimit (tensorRight W) _ _⟩
 
-@[simp]
+@[simps!]
 noncomputable
 def PushoutObjObj_whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight W)] :
     (PushoutObjObj.ofHasPushout (curriedTensor C) f g).pt ⊗ W ≅
@@ -68,6 +68,7 @@ def PushoutObjObj_whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) 
   · exact (associator_naturality_left f X W).symm
   · exact (associator_naturality_middle A g W).symm
 
+@[simps!?]
 noncomputable
 def PushoutProduct.whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight W)] :
     Arrow.mk ((f □ g) ▷ W) ≅ Arrow.mk (f □ (g ▷ W)) := by
@@ -75,6 +76,7 @@ def PushoutProduct.whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g))
   · apply (IsPushout_ofWhiskerRight _ _).hom_ext
     all_goals simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
+@[simps!]
 noncomputable
 def PushoutProduct.whiskerLeft_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorLeft W)] :
     Arrow.mk (W ◁ (f □ g)) ≅ Arrow.mk ((W ◁ f) □ g) := by
@@ -211,9 +213,11 @@ instance [HasPushouts C] [HasInitial C]
   associator X Y Z := Arrow.associator X.hom Y.hom Z.hom
   associator_naturality := by
     intro X₁ X₂ X₃ Y₁ Y₂ Y₃ f₁ f₂ f₃
+    dsimp only
     apply Arrow.hom_ext
     · apply pushout.hom_ext
-      · sorry
+      ·
+        sorry
       · sorry
     · sorry
   pentagon := by
