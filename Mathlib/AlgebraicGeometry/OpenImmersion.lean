@@ -81,6 +81,10 @@ theorem isOpenEmbedding : IsOpenEmbedding f :=
 def opensRange : Y.Opens :=
   ⟨_, f.isOpenEmbedding.isOpen_range⟩
 
+@[simp]
+theorem mem_opensRange {X Y : Scheme} {f : X ⟶ Y} [H : IsOpenImmersion f] {y : Y} :
+    y ∈ opensRange f ↔ ∃ x, (ConcreteCategory.hom f.base) x = y := .rfl
+
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
