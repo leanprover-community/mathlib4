@@ -997,10 +997,10 @@ attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma iteratedDeriv_six_relation_mul_id_pow_six :
     iteratedDeriv 6 (L.relation * id ^ 6) 0 = 0 := by
   rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
+  simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
-    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
-    pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
+    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept]
   simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃,
     show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
   ring
@@ -1028,10 +1028,10 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   by_cases hi₄ : i = 6
   · exact hi₄ ▸ L.iteratedDeriv_six_relation_mul_id_pow_six
   rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
+  simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
-    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
-    pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
+    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept]
   interval_cases i
   · cases hi₃ rfl
   · cases hi₂ (by decide)
