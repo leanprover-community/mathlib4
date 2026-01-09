@@ -71,7 +71,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]

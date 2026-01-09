@@ -67,7 +67,7 @@ these instances non-computably.
 -/
 
 section
-set_option linter.style.whitespace false -- linter does not recognise manual alignment
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance

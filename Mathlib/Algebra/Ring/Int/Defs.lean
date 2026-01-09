@@ -81,7 +81,7 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
-set_option linter.style.whitespace false -- linter does not recognise manual alignment
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance

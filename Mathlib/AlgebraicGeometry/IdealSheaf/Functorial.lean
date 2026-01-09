@@ -119,7 +119,7 @@ variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : 
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
 section
-set_option linter.style.whitespace false -- linter does not recognise manual alignment
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
