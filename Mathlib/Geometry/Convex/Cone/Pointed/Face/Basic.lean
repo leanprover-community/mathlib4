@@ -117,8 +117,8 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
   nontriviality R using Module.subsingleton R M
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
-theorem add_mem_iff_mem (hF : F.IsFaceOf C) {x y : M}
-    (hx : x ∈ C) (hy : y ∈ C) : x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
+theorem mem_add_iff (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
+    x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ => F.add_mem hx hy⟩
   exact fun h => ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
@@ -151,8 +151,7 @@ theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
     (F.map (e : M →ₗ[R] N)).IsFaceOf (C.map e) := hF.map _ e.injective
 
 /-- The comap of a face of a cone under a linear map is a face of the comap of the cone. -/
-theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) :
-    (F.comap f).IsFaceOf (C.comap f) := by
+theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) : (F.comap f).IsFaceOf (C.comap f) := by
   refine ⟨comap_mono hF.le, ?_⟩
   simp only [mem_comap, map_add, map_smul]
   exact hF.mem_of_smul_add_mem
@@ -173,8 +172,8 @@ end Map
 end IsFaceOf
 
 variable [AddCommGroup N] [Module R N] in
-/-- The image of a face of a cone under an injective linear map is a face of the
-  image of the cone. -/
+/-- The image of a cone `F` under an injective linear map is a face of the
+  image of another cone `C` if and only if `F` is a face of `C`. -/
 theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
     (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C := by
   refine ⟨?_, IsFaceOf.map _ hf⟩
@@ -186,6 +185,13 @@ theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
       obtain ⟨_, ⟨hx', hhx'⟩⟩ := hF _ hx rfl _ hy rfl ha _ h (by simp)
       convert hx'
       exact hf hhx'.symm
+
+variable [AddCommGroup N] [Module R N] in
+/-- The comap of a cone `F` under a surjective linear map is a face of the
+  comap of another cone `F` if and only if `F` is a face of `C`. -/
+theorem isFaceOf_comap_iff {f : N →ₗ[R] M} (hf : Function.Surjective f) :
+    (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C := by
+  refine ⟨IsFaceOf.of_comap_surjective hf, IsFaceOf.comap _⟩
 
 end Semiring
 
