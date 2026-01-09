@@ -689,6 +689,14 @@ instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
+instance instInv {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
+    [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
+    Inv (α →ᵇ R) := Ring.invOfLawful _
+
+instance instLawfulInv {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
+    [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
+    LawfulInv (α →ᵇ R) := Ring.lawfulInv_invOfLawful _
+
 section IsBoundedSMul
 
 /-!
