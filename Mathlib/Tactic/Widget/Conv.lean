@@ -109,7 +109,7 @@ where
 
 open Lean.Parser.Tactic.Conv in
 def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
-    (path : Path) (loc : Option Lean.Name) (xs : Syntax.TSepArray [``enterArg] "," := ⟨#[]⟩) :
+    (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
     m (TSyntax `tactic) := do
   match path with
   | Path.arg arg all next =>
