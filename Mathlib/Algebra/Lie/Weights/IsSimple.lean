@@ -266,26 +266,6 @@ lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
--- This should probably be somewhere in the file `Algebra.Lie.Weights.RootSystem`
-open LieSubmodule in
-@[simp]
-lemma biSup_corootSpace_eq_top :
-    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ := by
-  simp only [← toSubmodule_inj, top_toSubmodule, iSup_toSubmodule,
-    ← RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H),
-    coe_corootSpace_eq_span_singleton, Submodule.iSup_span]
-  congr
-  ext α
-  simp [eq_comm]
-
--- This should probably be below `bisup_corootSpace_eq_top`
-@[simp]
-lemma biSup_corootSubmodule_eq_cartan :
-    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
-  suffices ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ from
-    le_antisymm (by simp) (by simp [← LieSubmodule.map_iSup, this])
-  simp
-
 open LieSubmodule in
 @[simp] lemma invtSubmoduleToLieIdeal_top :
     invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
