@@ -13,7 +13,6 @@ public import Batteries.Linter.UnreachableTactic
 public import Qq
 import Mathlib.Tactic.FindSyntax
 public import Mathlib.Util.Superscript
-public import Mathlib.adomaniLeanUtils.Inspect
 
 namespace Bundle
 set_option linter.style.whitespace true
@@ -1114,28 +1113,7 @@ run_cmd
 
 def Card : Type → Nat := fun _ => 0
 
--- TODO: the linter should not warn about these!
-/--
-warning: remove line break in the source
-
-This part of the code
-  'Type)⏎  ⧸--'
-should be written as
-  'Type)⧸--'
-
-
-Note: This linter can be disabled with `set_option linter.style.whitespace false`
----
-warning: remove line break in the source
-
-This part of the code
-  'N⏎  ⧸--'
-should be written as
-  'N⧸--'
-
-
-Note: This linter can be disabled with `set_option linter.style.whitespace false`
--/
+-- TODO: the linter is silenced on `inductive`s.
 #guard_msgs in
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type)
@@ -1145,6 +1123,34 @@ inductive Symbol (T N : Type)
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr
+
+/--
+info: inductive A where/-- -/
+
+  | _✝/-- -/
+
+  | _✝
+---
+info: inductive A where
+  | _✝
+  | _✝
+-/
+#guard_msgs in
+open Lean in
+run_cmd
+  let A := mkIdent `A
+  let stx ← `(inductive $A where /-- -/| _ /-- -/ | _)
+  logInfo stx
+  let stx ← `(inductive $A where|_|_)
+  logInfo stx
+
+-- `inductive`s with internal docstrings have undesirable pretty-printing.
+#guard_msgs in
+inductive S
+  /-- t -/
+  | t   :    S
+  /-- t -/
+  | n : S
 
 -- embedded comments do not cause problems!
 #guard_msgs in

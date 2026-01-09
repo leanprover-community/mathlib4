@@ -314,6 +314,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
+    -- `inductive`s with docstrings for their constructors have undesirable printing
+    ``Parser.Command.inductive,
   ]
   depth := none
 
