@@ -64,7 +64,7 @@ theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
   simp [apply_natCast_le_one_of_isNonarchimedean hna]
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
@@ -79,7 +79,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by

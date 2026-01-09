@@ -164,7 +164,7 @@ variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModul
 
 variable [CharZero k] [Module.Finite k V]
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open Submodule in
 theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable k L V]
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)

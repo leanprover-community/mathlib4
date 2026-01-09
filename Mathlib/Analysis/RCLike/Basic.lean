@@ -356,7 +356,7 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
-set_option linter.style.whitespace false in -- linter does not recognise manual alignment
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
