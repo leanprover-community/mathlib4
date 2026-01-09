@@ -361,6 +361,7 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
+@[to_dual]
 instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
     WellFoundedLT (α × β) where
   wf := by
@@ -372,10 +373,6 @@ instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [Well
     obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
     · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
     · exact ihb x.2 hb x.1 (ha'.trans ha)
-
-instance Prod.wellFoundedGT [Preorder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 
