@@ -35,7 +35,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
   simp only [comp_obj, FintypeCat.incl_obj]
   infer_instance
 
-/-- Any functor from a finite category to Types that only involve finite objects,
+/-- Any functor from a finite category to `Type _` that only involves finite objects,
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
