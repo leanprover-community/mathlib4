@@ -54,13 +54,13 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
-  {n : ℕ∞}
+  {n k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -406,5 +406,109 @@ lemma postcompCLM_apply (T : F →L[𝕜] F')
   rfl
 
 end postcomp
+
+section IteratedFDeriv
+
+variable (𝕜 n k) in
+/-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
+its `i`-th iterated derivative as an element of `𝓓^{k}(Ω, E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
+
+See `iteratedFDerivLM` for the very common case where everything is infinitely differentiable.
+
+This is subsumed by `iteratedFDerivWithOrderCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivWithOrderLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω, E [×i]→L[ℝ] F) where
+  /-
+  Note: it is tempting to define this as some linear map if `k + i ≤ n`,
+  and the zero map otherwise. However, we would lose the definitional equality between
+  `iteratedFDerivWithOrderLM 𝕜 n k i f` and `iteratedFDerivWithOrderLM ℝ n k i f`.
+
+  This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
+  is not definitional.
+  -/
+  toFun f :=
+    if hi : k + i ≤ n then
+      ⟨iteratedFDeriv ℝ i f, f.contDiff.iteratedFDeriv_right (mod_cast hi),
+        f.hasCompactSupport.iteratedFDeriv _,
+        tsupport_iteratedFDeriv_subset _ |>.trans f.tsupport_subset⟩
+    else 0
+  map_add' f g := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+      ext
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+    · simp
+  map_smul' c f := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+      ext
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+    · simp
+
+@[simp]
+lemma iteratedFDerivWithOrderLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  rw [iteratedFDerivWithOrderLM]
+  split_ifs <;> rfl
+
+lemma iteratedFDerivWithOrderLM_apply_of_le [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : k + i ≤ n) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+  simp [hin]
+
+lemma iteratedFDerivWithOrderLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : ¬ (k + i ≤ n)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
+  ext : 1
+  simp [hin]
+
+lemma iteratedFDerivWithOrderLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivWithOrderLM 𝕜 n k i : 𝓓^{n}(Ω, F) → _)
+      = iteratedFDerivWithOrderLM 𝕜' n k i :=
+  rfl
+
+variable (𝕜) in
+/-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓(Ω, F)` to
+its `i`-th iterated derivative as an element of `𝓓(Ω, E [×i]→L[ℝ] F)`.
+
+See also `iteratedFDerivWithOrderLM` if you need more control on the regularities.
+
+This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    𝓓(Ω, F) →ₗ[𝕜] 𝓓(Ω, E [×i]→L[ℝ] F) where
+  toFun f := ⟨iteratedFDeriv ℝ i f, f.contDiff.iteratedFDeriv_right le_rfl,
+      f.hasCompactSupport.iteratedFDeriv _,
+      tsupport_iteratedFDeriv_subset _ |>.trans f.tsupport_subset⟩
+  map_add' f g := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    ext
+    simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
+  map_smul' c f := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    ext
+    simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
+
+@[simp]
+lemma iteratedFDerivLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓(Ω, F)) :
+    iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
+  rfl
+
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `iteratedFDerivLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
+lemma iteratedFDerivLM_eq_withOrder [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
+  rfl
+
+lemma iteratedFDerivLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) → _) = iteratedFDerivLM 𝕜' i :=
+  rfl
+
+end IteratedFDeriv
 
 end TestFunction
