@@ -296,12 +296,12 @@ variable [LieModule.IsTriangularizable K H L]
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
 
 lemma cartan_sup_iSup_rootSpace_eq_top :
-    H.toLieSubmodule ⊔ ⨆ α : H.root, rootSpace H α = ⊤ := by
+    H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
   rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
   intro α
   by_cases hα : α.IsZero
   · simp [hα]
-  · exact le_sup_of_le_right <| le_iSup_of_le ⟨α, by simpa⟩ (le_refl _)
+  · exact le_sup_of_le_right <| le_iSup₂_of_le α hα (le_refl _)
 
 end FiniteDimensional
 
