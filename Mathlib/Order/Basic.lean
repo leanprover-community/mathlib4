@@ -601,10 +601,10 @@ theorem Pi.compl_apply [∀ i, HasCompl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
 
-instance Std.Irrefl.compl (r) [Std.Irrefl r] : IsRefl α rᶜ :=
+instance Std.Irrefl.compl (r : α → α → Prop) [Std.Irrefl r] : Std.Refl rᶜ :=
   ⟨@irrefl α r _⟩
 
-instance IsRefl.compl (r) [IsRefl α r] : Std.Irrefl rᶜ :=
+instance Std.Refl.compl (r : α → α → Prop) [Std.Refl r] : Std.Irrefl rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
 theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
