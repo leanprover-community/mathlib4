@@ -1206,40 +1206,6 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
     simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 
-@[to_additive]
-theorem mulSupport_finprod_subset_image (f : α → β) (g : α → M)
-    (hg : (Function.mulSupport g).Finite) :
-    (Function.mulSupport fun b ↦ ∏ᶠ (a : α) (_ : f a = b), g a) ⊆ (hg.image f).toFinset := by
-  intro b hb
-  obtain ⟨a, h, ha⟩ := exists_ne_one_of_finprod_mem_ne_one hb
-  exact Finset.mem_coe.mpr <| ((hg.image f).mem_toFinset).mpr <|
-    ((Function.mulSupport g).mem_image f b).mpr <| Exists.intro a ⟨ha, h⟩
-
-@[to_additive]
-theorem finprod_fiberwise (f : α → β) (g : α → M) (hg : (Function.mulSupport g).Finite) :
-    ∏ᶠ (b : β) (a : α) (_ : f a = b), g a = ∏ᶠ (a : α), g a := by
-  rw [finprod_eq_prod g hg, finprod_eq_prod_of_mulSupport_subset (s := (hg.image f).toFinset)]
-  swap; · exact mulSupport_finprod_subset_image f g hg
-  have (i : β) : (Function.mulSupport fun a ↦ ∏ᶠ (_ : f a = i), g a).Finite := by
-    refine (hg.subset fun a ha ha0 ↦ ?_)
-    rw [Function.mem_mulSupport, ha0, finprod_one] at ha
-    exact ha rfl
-  classical
-  simp_rw [finprod_eq_prod _ (this _), finprod_eq_if]
-  rw [Finset.prod_sigma']
-  refine Eq.symm (Finset.prod_of_injOn (fun x ↦ ⟨f x, x⟩) (fun _ _ _ _ _ ↦ by simp_all) ?_ ?_
-    (fun _ _ ↦ by simp))
-  · intro a h
-    simp only [Finset.coe_sigma, Set.Finite.coe_toFinset, Set.mem_sigma_iff, Set.mem_image,
-      Function.mem_mulSupport, ↓reduceIte]
-    have : g a ≠ 1 := by simpa using h
-    exact ⟨Exists.intro a ⟨this, rfl⟩, this⟩
-  · intro ⟨_, a⟩ _ h
-    simp only [Set.Finite.coe_toFinset, Set.mem_image, Function.mem_mulSupport, not_exists] at h
-    simp only [ite_eq_right_iff]
-    contrapose
-    simpa using h a
-
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
 we can simplify the right-hand side of this lemma. However the form stated here is more useful for
 iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/

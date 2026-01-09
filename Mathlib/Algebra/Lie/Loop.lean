@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 module
 
+public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
@@ -127,38 +128,39 @@ def residuePairingFinsupp [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R 
     intro k
     simp [mul_smul_comm]
 
-/-- The 2-cochain on the loop algebra of a Lie algebra `L` induced by a symmetric bilinear form on
-`L` -/
-def twoCochain_of_Bilinear {Φ : LinearMap.BilinForm R L} (hΦ : LinearMap.BilinForm.IsSymm Φ) :
-    LieModule.Cohomology.twoCochain R (LoopAlgebra R ℤ L)
-      (TrivialLieModule R (LoopAlgebra R ℤ L) R) where
-  val := (((residuePairingFinsupp R ℤ L Φ).compr₂
-    ((TrivialLieModule.equiv R (LoopAlgebra R ℤ L) R).symm.toLinearMap)).compl₂
-    (toFinsupp R ℤ L).toLinearMap).comp (toFinsupp R ℤ L).toLinearMap
+/-- A 2-cochain on a loop algebra given by an invariant bilinear form. The alternating condition
+follows from the fact that Res f df = 0 -/
+def twoCochainOfBilinear [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
+    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
+    (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) :
+    LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
+      (TrivialLieModule R (LoopAlgebra R A L) R) where
+  val := (((residuePairingFinsupp R A L Φ).compr₂
+    ((TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm.toLinearMap)).compl₂
+    (toFinsupp R A L).toLinearMap).comp (toFinsupp R A L).toLinearMap
   property := by
     simp only [LieModule.Cohomology.mem_twoCochain_iff]
     intro f
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       LinearMap.compl₂_apply, LinearMap.compr₂_apply, residuePairingFinsupp_apply_apply,
       EmbeddingLike.map_eq_zero_iff]
-    rw [← finsum_fiberwise Int.natAbs _ (residuePairing_finite_support R ℤ L Φ (toFinsupp R ℤ L f)
-      (toFinsupp R ℤ L f)), finsum_eq_zero_of_forall_eq_zero]
-    intro n
-    rw [finsum_eq_sum_of_support_subset (s := {(n : ℤ), -(n : ℤ)})]
-    · by_cases hn : n = 0
-      · simp [hn]
-      · simp [hn, hΦ.eq (toFinsupp R ℤ L f n) (toFinsupp R ℤ L f (-(n : ℤ)))]
-    · intro z hz
-      contrapose! hz
-      have : ¬ z.natAbs = n := by simpa [Int.natAbs_eq_iff] using hz
-      simp [this]
+    have zerosmul (r : R) : (0 : A) • r = (0 : R) := by
+      have : (0 : A) • r = (0 : A) • r + (0 : A) • r := by rw [← h, zero_add (0 : A)]
+      rwa [right_eq_add] at this
+    set φ := fun n ↦ n • (Φ (((toFinsupp R A L) f) (-n))) (((toFinsupp R A L) f) n) with hφ
+    have : Function.Odd φ := by
+      intro n
+      simp only [hφ, neg_neg, hΦ.eq (toFinsupp R A L f n) (toFinsupp R A L f (-n))]
+      rw [eq_neg_iff_add_eq_zero, ← h, neg_add_cancel, zerosmul]
+    simpa [neg_eq_self, finsum_neg_distrib, funext this] using finsum_comp_equiv (.neg A) (f := φ)
 
 @[simp]
-lemma twoCochain_of_Bilinear_apply_apply {Φ : LinearMap.BilinForm R L}
-    (hΦ : LinearMap.BilinForm.IsSymm Φ) (x y : LoopAlgebra R ℤ L) :
-    twoCochain_of_Bilinear R L hΦ x y =
-      (TrivialLieModule.equiv R (LoopAlgebra R ℤ L) R).symm
-        ((residuePairingFinsupp R ℤ L Φ) (toFinsupp R ℤ L x) (toFinsupp R ℤ L y)) :=
+lemma twoCochain_of_Bilinear_apply_apply [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
+    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
+    (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) (x y : LoopAlgebra R A L) :
+    twoCochainOfBilinear R A L Φ hΦ h x y =
+      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
+        ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
   rfl
 
 end LoopAlgebra
