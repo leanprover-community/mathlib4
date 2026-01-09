@@ -96,7 +96,7 @@ noncomputable def lift : F.pt ⟶ P.obj (Opposite.op X) :=
       F.condition {
         fst := { hf := le _ (Sieve.ofArrows_mk _ _ i₁), .. }
         snd := { hf := le _ (Sieve.ofArrows_mk _ _ i₂), .. }
-        r := { w := E.w j, ..}
+        r := { w := E.w j, .. }
       })
 
 @[reassoc]
@@ -115,7 +115,7 @@ lemma fac [H.IsGenerating] {Y : C} (f : Y ⟶ X) (hf : S f) :
   exact F.condition {
     fst := { hf := le _ (Sieve.ofArrows_mk _ _ _), .. }
     snd := { hf := hf, .. }
-    r := { w := fac, ..}
+    r := { w := fac, .. }
   }
 
 end

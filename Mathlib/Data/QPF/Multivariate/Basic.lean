@@ -268,11 +268,11 @@ def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]
     (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
       f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :
     MvQPF F where
-  P         := q.P
-  abs α     := (eqv _).symm <| q.abs α
-  repr α    := q.repr <| eqv _ α
-  abs_repr  := by simp [q.abs_repr]
-  abs_map   := by simp [q.abs_map, map_eq]
+  P        := q.P
+  abs α    := (eqv _).symm <| q.abs α
+  repr α   := q.repr <| eqv _ α
+  abs_repr := by simp [q.abs_repr]
+  abs_map  := by simp [q.abs_map, map_eq]
 
 end MvQPF
 

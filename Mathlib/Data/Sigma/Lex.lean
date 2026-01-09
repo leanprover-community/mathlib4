@@ -80,7 +80,7 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
       · exact Lex.left _ _ h
       · exact Lex.right _ _ h
 
-instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
+instance [∀ i, Std.Refl (s i)] : Std.Refl (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
 instance [Std.Irrefl r] [∀ i, Std.Irrefl (s i)] : Std.Irrefl (Lex r s) :=

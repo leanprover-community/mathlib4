@@ -526,11 +526,11 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+  { isLindelof_univ := isCompact_univ.isLindelof }
 
 /-- A sigma-compact space `X` is Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof }
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where

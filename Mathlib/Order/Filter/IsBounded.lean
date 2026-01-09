@@ -69,7 +69,7 @@ theorem IsBoundedUnder.mono_ge [Preorder β] {l : Filter α} {u v : α → β}
     (hu : IsBoundedUnder (· ≥ ·) l u) (hv : u ≤ᶠ[l] v) : IsBoundedUnder (· ≥ ·) l v :=
   IsBoundedUnder.mono_le (β := βᵒᵈ) hu hv
 
-theorem isBoundedUnder_const [IsRefl α r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
+theorem isBoundedUnder_const [Std.Refl r] {l : Filter β} {a : α} : IsBoundedUnder r l fun _ => a :=
   ⟨a, eventually_map.2 <| Eventually.of_forall fun _ => refl _⟩
 
 theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}

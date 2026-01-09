@@ -665,7 +665,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
       apply
-        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :) )).symm
+        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :))).symm
 
 /-- If `C` has limits then any coreflective subcategory has limits. -/
 theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSize.{v, u} C] :

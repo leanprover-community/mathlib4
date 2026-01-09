@@ -109,7 +109,7 @@ attribute [reassoc (attr := local simp)] Hom.comm
 
 instance : Category (F.DescentData f) where
   Hom := Hom
-  id D := { hom _ := 𝟙 _}
+  id D := { hom _ := 𝟙 _ }
   comp φ φ' := { hom i := φ.hom i ≫ φ'.hom i }
 
 @[ext]

@@ -18,7 +18,8 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
-See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
+See also `Prime`, `Associated`, and `Irreducible` in
+`Mathlib/Algebra/GroupWithZero/Associated.lean`.
 
 ## Notation
 

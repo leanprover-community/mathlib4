@@ -81,8 +81,8 @@ attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The inclusion map from `F(S)` into `∫ᶜ F`. -/
 @[simps]
 def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where
-  obj a := { base := S, fiber := a}
-  map {a b} φ := { base := 𝟙 S, fiber := φ ≫ (F.mapId ⟨op S⟩).inv.toNatTrans.app b}
+  obj a := { base := S, fiber := a }
+  map {a b} φ := { base := 𝟙 S, fiber := φ ≫ (F.mapId ⟨op S⟩).inv.toNatTrans.app b }
   map_comp {a b c} φ ψ := by
     ext
     · simp

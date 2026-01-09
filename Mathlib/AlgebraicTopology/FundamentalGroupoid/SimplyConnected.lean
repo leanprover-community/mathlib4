@@ -67,7 +67,8 @@ theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p
 instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [ContractibleSpace Y] :
     SimplyConnectedSpace Y where
   equiv_unit :=
-    let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u+1} := (ContractibleSpace.hequiv Y PUnit.{u+1}).some
+    let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u + 1} :=
+      (ContractibleSpace.hequiv Y PUnit.{u + 1}).some
     ⟨(FundamentalGroupoidFunctor.equivOfHomotopyEquiv H).trans
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
 

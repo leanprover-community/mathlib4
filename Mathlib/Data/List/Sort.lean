@@ -159,15 +159,15 @@ theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort
 alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
-theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
+theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind [Std.Refl]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)

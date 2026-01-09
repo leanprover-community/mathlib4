@@ -151,7 +151,7 @@ attribute [local instance] inverseObj
 -/
 @[simps]
 def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
-  obj A := { X := ModuleCat.of R A, mon := inverseObj A}
+  obj A := { X := ModuleCat.of R A, mon := inverseObj A }
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
       isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes
