@@ -157,7 +157,7 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
   calc
     _ = ∫⁻ p in polarCoord.symm '' polarCoord.target, f p := by
       rw [← setLIntegral_univ, setLIntegral_congr polarCoord_source_ae_eq_univ.symm,
-        polarCoord.symm_image_target_eq_source ]
+        polarCoord.symm_image_target_eq_source]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal |p.1| • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]

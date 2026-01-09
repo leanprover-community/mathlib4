@@ -76,8 +76,6 @@ attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
     (Rₚ) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p.asIdeal] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ (Rₚ ⊗[R] M) := by
-  have := (isLocalizedModule_iff_isBaseChange p.asIdeal.primeCompl _ _).mpr
-    (TensorProduct.isBaseChange R M Rₚ)
   exact mem_freeLocus_of_isLocalization p Rₚ (f := TensorProduct.mk R Rₚ M 1)
 
 lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :

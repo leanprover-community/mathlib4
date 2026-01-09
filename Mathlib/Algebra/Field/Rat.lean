@@ -32,7 +32,7 @@ instance instField : Field ℚ where
   qsmul := _
   qsmul_def := fun _ _ => rfl
   nnratCast_def q := by
-    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
+    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact (num_div_den _).symm
   ratCast_def _ := (num_div_den _).symm
 
 /-!
