@@ -65,7 +65,7 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
     (fun h ↦ ⟨
         typesWith ∼φ,
         isClopen_typesWith _, h,
-        by change ¬∼φ∈q; rwa [not_mem_iff,←hφ, not_not, ←not_mem_iff]⟩)
+        by rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ←not_mem_iff]⟩)
 
 
 end CompleteType

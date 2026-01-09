@@ -193,6 +193,7 @@ lemma mem_typesWith_iff (φ : L[[α]].Sentence) (p : CompleteType T α) : p ∈ 
 lemma typesWith_inf (φ ψ : L[[α]].Sentence) :
     typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
   ext p
+  simp only [mem_typesWith_iff, mem_inter_iff]
   change φ ⊓ ψ ∈ (p : Set (L[[α]]).Sentence)
     ↔ φ ∈ (p : Set (L[[α]]).Sentence) ∧ ψ ∈ (p : Set (L[[α]]).Sentence)
   simp only [p.isMaximal.mem_iff_models, ModelsBoundedFormula, ←forall_and]
