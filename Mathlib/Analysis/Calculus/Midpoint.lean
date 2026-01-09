@@ -7,7 +7,6 @@ module
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
