@@ -47,7 +47,7 @@ public lemma isOpen_typesWith (φ : (L[[α]]).Sentence) : IsOpen (typesWith (T :
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
 public lemma isClosed_typesWith (φ : (L[[α]]).Sentence) : IsClosed (typesWith (T := T) φ) where
-  isOpen_compl := by rw [←typesWith_compl]; exact isOpen_typesWith _
+  isOpen_compl := by rw [←typesWith_not]; exact isOpen_typesWith _
 
 public lemma isClopen_typesWith (φ : (L[[α]]).Sentence) : IsClopen (typesWith (T := T) φ) where
   left := isClosed_typesWith _
@@ -59,12 +59,13 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
   simp only [ne_eq, SetLike.ext_iff, not_forall, not_iff] at hpq
   obtain ⟨φ, hφ⟩ := hpq
   exact (mem_or_not_mem p φ).elim
-    (fun h ↦ ⟨typesWith φ, isClopen_typesWith _, h, by change ¬φ ∈ q; rwa [←hφ, not_not]⟩)
+    (fun h ↦ ⟨
+      typesWith φ, isClopen_typesWith _, h,
+      by rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]⟩)
     (fun h ↦ ⟨
         typesWith ∼φ,
         isClopen_typesWith _, h,
-        by change ¬∼φ∈q; rwa [not_mem_iff,←hφ, not_not, ←not_mem_iff]
-      ⟩)
+        by change ¬∼φ∈q; rwa [not_mem_iff,←hφ, not_not, ←not_mem_iff]⟩)
 
 
 end CompleteType

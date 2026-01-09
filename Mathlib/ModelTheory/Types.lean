@@ -186,6 +186,10 @@ theorem formula_mem_typeOf {φ : L.Formula α} :
 /-- The clopen set of complete types which contain a formula. -/
 def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p}
 
+@[simp]
+lemma mem_typesWith_iff (φ : L[[α]].Sentence) (p : CompleteType T α) : p ∈ typesWith φ ↔ φ ∈ p := by
+  simp [typesWith]
+
 lemma typesWith_inf (φ ψ : L[[α]].Sentence) :
     typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
   ext p
