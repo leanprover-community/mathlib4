@@ -3,15 +3,19 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 ### Relations between vector space derivative and manifold derivative
 
 The manifold derivative `mfderiv`, when considered on the model vector space with its trivial
-manifold structure, coincides with the usual Frechet derivative `fderiv`. In this section, we prove
+manifold structure, coincides with the usual Fréchet derivative `fderiv`. In this section, we prove
 this and related statements.
 -/
+
+public section
 
 noncomputable section
 

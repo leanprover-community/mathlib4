@@ -328,7 +328,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
 -/
 theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
   /- The next three lines have the effect of introducing `count U en` as a variable that can be used
-   for induction -/
+  for induction -/
   have hu : ∃ n, count U en = n := exists_eq'
   obtain ⟨n, hu⟩ := hu
   induction n generalizing en with

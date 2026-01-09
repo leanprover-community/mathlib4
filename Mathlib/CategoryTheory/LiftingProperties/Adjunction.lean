@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -18,12 +20,14 @@ has the left lifting property in `C` with respect to `F.map p`.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
+variable {C D : Type*} [Category* C] [Category* D] {G : C ⥤ D} {F : D ⥤ C}
 
 namespace CommSq
 
@@ -57,8 +61,8 @@ def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftS
       fac_right := by
         rw [← Adjunction.homEquiv_naturality_right_symm, l.fac_right]
         apply (adj.homEquiv _ _).left_inv }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A square has a lifting if and only if its (right) adjoint square has a lifting. -/
 theorem right_adjoint_hasLift_iff : HasLift (sq.right_adjoint adj) ↔ HasLift sq := by
@@ -102,8 +106,8 @@ def leftAdjointLiftStructEquiv :
       fac_right := by
         rw [← adj.homEquiv_naturality_right, l.fac_right]
         apply (adj.homEquiv _ _).right_inv }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A (left) adjoint square has a lifting if and only if the original square has a lifting. -/
 theorem left_adjoint_hasLift_iff : HasLift (sq.left_adjoint adj) ↔ HasLift sq := by

@@ -3,8 +3,10 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centralizers of magmas and monoids
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset
@@ -29,7 +33,7 @@ section
 variable [Monoid M] (S)
 
 /-- The centralizer of a subset of a monoid `M`. -/
-@[to_additive "The centralizer of a subset of an additive monoid."]
+@[to_additive /-- The centralizer of a subset of an additive monoid. -/]
 def centralizer : Submonoid M where
   carrier := S.centralizer
   one_mem' := S.one_mem_centralizer
@@ -90,8 +94,8 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative monoid."]
+      /-- If all the elements of a set `s` commute, then `closure s` forms an additive
+      commutative monoid. -/]
 abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommMonoid (closure s) :=
   { (closure s).toMonoid with

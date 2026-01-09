@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 /-!
 # The action of bifunctors on graded objects
 
@@ -19,11 +21,13 @@ on `GradedObject I C` (TODO @joelriou).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject
@@ -47,8 +51,8 @@ variable {I J K : Type*} (p : I × J → K)
 `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
-  [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
-    (((mapBifunctor F I J).obj X).obj Y).mapObj p
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
+  (((mapBifunctor F I J).obj X).obj Y).mapObj p
 
 /-- The inclusion of `(F.obj (X i)).obj (Y j)` in `mapBifunctorMapObj F p X Y k`
 when `i + j = k`. -/

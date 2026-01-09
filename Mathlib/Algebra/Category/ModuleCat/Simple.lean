@@ -3,11 +3,13 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin, Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Algebra
-import Mathlib.Algebra.Category.ModuleCat.Subobject
-import Mathlib.CategoryTheory.Simple
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Algebra
+public import Mathlib.Algebra.Category.ModuleCat.Subobject
+public import Mathlib.CategoryTheory.Simple
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Simple objects in the category of `R`-modules
@@ -15,13 +17,16 @@ import Mathlib.RingTheory.SimpleModule.Basic
 We prove simple modules are exactly simple objects in the category of `R`-modules.
 -/
 
+@[expose] public section
+
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 open CategoryTheory ModuleCat
 
-theorem simple_iff_isSimpleModule : Simple (of R M) ↔ IsSimpleModule R M :=
-  (simple_iff_subobject_isSimpleOrder _).trans (subobjectModule (of R M)).isSimpleOrder_iff
+theorem simple_iff_isSimpleModule : Simple (of R M) ↔ IsSimpleModule R M := by
+  rw [simple_iff_subobject_isSimpleOrder, (subobjectModule (of R M)).isSimpleOrder_iff,
+    isSimpleModule_iff]
 
 theorem simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
   simple_iff_isSimpleModule
@@ -41,4 +46,5 @@ attribute [local instance] moduleOfAlgebraModule isScalarTower_of_algebra_module
 /-- Any `k`-algebra module which is 1-dimensional over `k` is simple. -/
 theorem simple_of_finrank_eq_one {k : Type*} [Field k] [Algebra k R] {V : ModuleCat R}
     (h : finrank k V = 1) : Simple V :=
-  (simple_iff_isSimpleModule' V).mpr (is_simple_module_of_finrank_eq_one h)
+  (simple_iff_isSimpleModule' V).mpr <| (isSimpleModule_iff ..).mpr <|
+    is_simple_module_of_finrank_eq_one h

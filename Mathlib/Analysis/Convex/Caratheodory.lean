@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Carathéodory's convexity theorem
@@ -35,6 +37,8 @@ This theorem was formalized as part of the Sphere Eversion project.
 convex hull, caratheodory
 
 -/
+
+@[expose] public section
 
 
 open Set Finset
@@ -66,7 +70,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
+  have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by

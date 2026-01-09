@@ -3,9 +3,11 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Data.ZMod.Units
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Dirichlet Characters
@@ -26,6 +28,8 @@ Main definitions:
 dirichlet character, multiplicative character
 -/
 
+@[expose] public section
+
 /-!
 ### Definitions
 -/
@@ -42,8 +46,6 @@ namespace DirichletCharacter
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
 lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
-
-@[deprecated (since := "2024-12-29")] alias toUnitHom_eq_iff := toUnitHom_inj
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
@@ -148,7 +150,7 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
 
 lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
   ext
-  simp [units_eq_one]
+  simp [Units.eq_one]
 
 lemma level_one' (hn : n = 1) : χ = 1 := by
   subst hn
@@ -238,8 +240,10 @@ lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPrimitive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
+
+@[deprecated (since := "2025-07-27")] alias isPritive_one_level_zero := isPrimitive_one_level_zero
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
@@ -318,12 +322,12 @@ lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
   rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
-lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (-x) = - ψ x := by
   rw [Odd] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
 
-lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (-x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]

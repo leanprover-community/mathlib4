@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Intersecting families
@@ -13,7 +15,7 @@ This file defines intersecting families and proves their basic properties.
 
 ## Main declarations
 
-* `Set.Intersecting`: Predicate for a set of elements in a generalized boolean algebra to be an
+* `Set.Intersecting`: Predicate for a set of elements in a generalized Boolean algebra to be an
   intersecting family.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
@@ -23,6 +25,8 @@ This file defines intersecting families and proves their basic properties.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -45,9 +49,6 @@ theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting :
   hs (h ha) (h hb)
 
 theorem Intersecting.bot_notMem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
-
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_bot_mem := Intersecting.bot_notMem
 
 theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
   ne_of_mem_of_not_mem ha hs.bot_notMem
@@ -134,13 +135,8 @@ variable [BooleanAlgebra α]
 theorem Intersecting.compl_notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_compl_mem := Intersecting.compl_notMem
-
 theorem Intersecting.notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
-
-@[deprecated (since := "2025-05-23")] alias Intersecting.not_mem := Intersecting.notMem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by
@@ -186,9 +182,8 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   revert hs
   refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
-  by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
+  by_cases! h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
-  push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]

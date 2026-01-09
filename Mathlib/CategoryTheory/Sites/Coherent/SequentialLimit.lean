@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.CategoryTheory.Sites.Subcanonical
+module
+
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.CategoryTheory.Sites.Subcanonical
 /-!
 
 # Limits of epimorphisms in coherent topoi
@@ -24,6 +26,8 @@ the projection map `lim Xₙ ⟶ X₀` is an epimorphism (see `coherentTopology.
 This is deduced from the corresponding statement about locally surjective morphisms of sheaves
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
+
+public section
 
 universe w v u
 

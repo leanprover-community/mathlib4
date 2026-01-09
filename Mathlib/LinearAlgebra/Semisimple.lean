@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.RingTheory.Artinian.Instances
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.RingTheory.Artinian.Instances
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms
@@ -40,6 +42,8 @@ In finite dimensions over a field:
 
 -/
 
+@[expose] public section
+
 open Set Function Polynomial
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -67,7 +71,7 @@ variable {f}
 See also `Module.End.isSemisimple_iff`. -/
 lemma isSemisimple_iff' :
     f.IsSemisimple ↔ ∀ p : invtSubmodule f, ∃ q : invtSubmodule f, IsCompl p q := by
-  rw [IsSemisimple, IsSemisimpleModule, (AEval.mapSubmodule R M f).symm.complementedLattice_iff,
+  rw [IsSemisimple, isSemisimpleModule_iff, (AEval.mapSubmodule R M f).symm.complementedLattice_iff,
     complementedLattice_iff]
   rfl
 
@@ -81,7 +85,7 @@ lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
   let e : Submodule R[X] (AEval' (f.restrict hp)) ≃o Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
     (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans
       (Submodule.mapIic _)
-  simp_rw [IsSemisimple, IsSemisimpleModule, e.complementedLattice_iff, disjoint_iff,
+  simp_rw [IsSemisimple, isSemisimpleModule_iff, e.complementedLattice_iff, disjoint_iff,
     ← (OrderIso.Iic _ _).complementedLattice_iff, Iic.complementedLattice_iff, Subtype.forall,
     Subtype.exists, Subtype.mk_le_mk, Sublattice.mk_inf_mk, Sublattice.mk_sup_mk, Subtype.mk.injEq,
     exists_and_left, exists_and_right, invtSubmodule.mk_eq_bot_iff, exists_prop, and_assoc]
@@ -120,7 +124,8 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
     f.IsSemisimple ↔ g.IsSemisimple := by
   let e : AEval' f ≃ₗ[R[X]] AEval' g := LinearEquiv.ofAEval _ (e.trans (AEval'.of g)) fun x ↦ by
     simpa [AEval'.X_smul_of] using LinearMap.congr_fun he x
-  exact (Submodule.orderIsoMapComap e).complementedLattice_iff
+  simp_rw [IsSemisimple, isSemisimpleModule_iff,
+    (Submodule.orderIsoMapComap e).complementedLattice_iff]
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
@@ -166,7 +171,7 @@ lemma IsSemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule) (hf
       Iic (AEval.mapSubmodule R M f ⟨p, hp⟩) :=
     (Submodule.orderIsoMapComap <| AEval.restrict_equiv_mapSubmodule f p hp).trans <|
       Submodule.mapIic _
-  exact e.complementedLattice_iff.mpr inferInstance
+  exact (isSemisimpleModule_iff ..).mpr (e.complementedLattice_iff.mpr inferInstance)
 
 lemma IsSemisimple.isFinitelySemisimple (hf : f.IsSemisimple) :
     f.IsFinitelySemisimple :=
@@ -274,7 +279,6 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : Module.Finite R S :=
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
-  have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|

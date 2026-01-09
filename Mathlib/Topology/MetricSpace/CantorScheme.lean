@@ -3,7 +3,9 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.MetricSpace.PiNat
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -37,6 +39,8 @@ in this file. See instead `PiNat.res`.
 scheme, cantor scheme, lusin scheme, approximation.
 
 -/
+
+@[expose] public section
 
 namespace CantorScheme
 
@@ -111,7 +115,7 @@ variable [PseudoMetricSpace α]
 
 /-- A scheme on a metric space has vanishing diameter if diameter approaches 0 along each branch. -/
 def VanishingDiam : Prop :=
-  ∀ x : ℕ → β, Tendsto (fun n : ℕ => EMetric.diam (A (res x n))) atTop (𝓝 0)
+  ∀ x : ℕ → β, Tendsto (fun n : ℕ => Metric.ediam (A (res x n))) atTop (𝓝 0)
 
 variable {A}
 
@@ -124,7 +128,7 @@ theorem VanishingDiam.dist_lt (hA : VanishingDiam A) (ε : ℝ) (ε_pos : 0 < ε
   use n
   intro y hy z hz
   rw [← ENNReal.ofReal_lt_ofReal_iff ε_pos, ← edist_dist]
-  apply lt_of_le_of_lt (EMetric.edist_le_diam_of_mem hy hz)
+  apply lt_of_le_of_lt (Metric.edist_le_ediam_of_mem hy hz)
   apply lt_of_le_of_lt (hn _ (le_refl _))
   rw [ENNReal.ofReal_lt_ofReal_iff ε_pos]
   linarith

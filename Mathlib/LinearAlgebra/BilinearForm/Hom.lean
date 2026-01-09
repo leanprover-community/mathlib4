@@ -3,10 +3,12 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form and linear maps
@@ -19,10 +21,10 @@ A lot of this file is now redundant following the replacement of the dedicated `
 structure with `LinearMap.BilinForm`, which is just an alias for `M →ₗ[R] M →ₗ[R] R`. For example
 `LinearMap.BilinForm.toLinHom` is now just the identity map. This redundant code should be removed.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
+the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
@@ -38,8 +40,11 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
+@[expose] public section
+
 open LinearMap (BilinForm)
 open LinearMap (BilinMap)
+open Module
 
 universe u v w
 
@@ -70,7 +75,7 @@ theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
 
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
     (∑ i ∈ t, B i) v w = ∑ i ∈ t, B i v w := by
-  simp only [coeFn_sum, Finset.sum_apply]
+  simp only [coe_sum, Finset.sum_apply]
 
 variable {B}
 
@@ -205,8 +210,6 @@ theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
 
 @[simp]
 theorem congr_symm (e : M ≃ₗ[R] M') : (congr e).symm = congr e.symm := by
-  ext
-  simp only [congr_apply, LinearEquiv.symm_symm]
   rfl
 
 @[simp]

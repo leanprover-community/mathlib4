@@ -3,16 +3,20 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Preord
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.Category.Preord
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Specialization order
 
 This file defines a type synonym for a topological space considered with its specialisation order.
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology
 
@@ -59,13 +63,13 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 
 @[simp] lemma toEquiv_le_toEquiv {a b : α} : toEquiv a ≤ toEquiv b ↔ b ⤳ a := Iff.rfl
 @[simp] lemma ofEquiv_specializes_ofEquiv {a b : Specialization α} :
-  ofEquiv a ⤳ ofEquiv b ↔ b ≤ a := Iff.rfl
+    ofEquiv a ⤳ ofEquiv b ↔ b ≤ a := Iff.rfl
 
 @[simp] lemma isOpen_toEquiv_preimage [AlexandrovDiscrete α] {s : Set (Specialization α)} :
-  IsOpen (toEquiv ⁻¹' s) ↔ IsUpperSet s := isOpen_iff_forall_specializes.trans forall_swap
+    IsOpen (toEquiv ⁻¹' s) ↔ IsUpperSet s := isOpen_iff_forall_specializes.trans forall_swap
 
 @[simp] lemma isUpperSet_ofEquiv_preimage [AlexandrovDiscrete α] {s : Set α} :
-  IsUpperSet (ofEquiv ⁻¹' s) ↔ IsOpen s := isOpen_toEquiv_preimage.symm
+    IsUpperSet (ofEquiv ⁻¹' s) ↔ IsOpen s := isOpen_toEquiv_preimage.symm
 
 /-- A continuous map between topological spaces induces a monotone map between their specialization
 orders. -/

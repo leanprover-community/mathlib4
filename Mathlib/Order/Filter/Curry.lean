@@ -3,7 +3,9 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.Order.Filter.Prod
+module
+
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # Curried Filters
@@ -44,6 +46,8 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 uniform convergence, curried filters, product filters
 -/
 
+public section
+
 
 namespace Filter
 
@@ -63,7 +67,7 @@ theorem mem_curry_iff {s : Set (α × β)} :
 theorem curry_le_prod : l.curry m ≤ l ×ˢ m := fun _ => Eventually.curry
 
 theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
-    (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
+    (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto ↿f (la.curry lb) lc :=
   fun _s hs => h.mono fun _a ha => ha hs
 
 theorem frequently_curry_prod_iff :

@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Mapping divisibility across multiplication-preserving homomorphisms
@@ -19,10 +21,13 @@ import Mathlib.Algebra.Group.Hom.Defs
 divisibility, divides
 -/
 
+public section
+
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 
 variable {M N : Type*}
 
+@[gcongr]
 theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
     (f : F) {a b} : a ∣ b → f a ∣ f b
   | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩

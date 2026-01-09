@@ -3,9 +3,11 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.SemiNormedGrp
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Analysis.Normed.Group.HomCompletion
+module
+
+public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
@@ -29,6 +31,8 @@ objects and morphisms).
   is left adjoint to the forgetful functor.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,7 +77,7 @@ from the completion of `V` to the completion of `W`.
 The difference from the definition obtained from the functoriality of completion is in that the
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGrp.{u}) :
-   (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
+     (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
   @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g =>
     SemiNormedGrp.hom_ext (f.hom.completion_add g.hom)
 

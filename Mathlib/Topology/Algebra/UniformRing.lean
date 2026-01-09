@@ -3,17 +3,20 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Completion of topological rings:
 
-This files endows the completion of a topological ring with a ring structure.
-More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
+This file endows the completion of a topological ring with a ring structure.
+More precisely, the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
 `IsUniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
@@ -28,11 +31,13 @@ the main constructions deal with continuous ring morphisms.
 
 * `UniformSpace.Completion.extensionHom`: extends a continuous ring morphism from `R`
   to a complete separated group `S` to `Completion R`.
-* `UniformSpace.Completion.mapRingHom` : promotes a continuous ring morphism
+* `UniformSpace.Completion.mapRingHom`: promotes a continuous ring morphism
   from `R` to `S` into a continuous ring morphism from `Completion R` to `Completion S`.
 
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -54,6 +59,9 @@ instance mul : Mul (Completion α) :=
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
   rfl
 
+@[simp] lemma coe_eq_one_iff [T0Space α] {x : α} : (x : Completion α) = 1 ↔ x = 1 :=
+  Completion.coe_inj
+
 end one_and_mul
 
 variable {α : Type*} [Ring α] [UniformSpace α] [IsTopologicalRing α]
@@ -71,15 +79,6 @@ instance : ContinuousMul (Completion α) where
     have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
-
-@[deprecated _root_.continuous_mul (since := "2024-12-21")]
-protected theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
-  _root_.continuous_mul
-
-@[deprecated _root_.Continuous.mul (since := "2024-12-21")]
-protected theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
-  hf.mul hg
 
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
@@ -178,6 +177,33 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
 
+@[simp] theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
+theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
+
+variable {f}
+
+theorem mapRingHom_coe (hf : Continuous f) (a : α) : mapRingHom f hf a = f a := by
+  rw [mapRingHom_apply, map_coe (uniformContinuous_addMonoidHom_of_continuous hf)]
+
+theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
+    [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
+    (mapRingHom g hg).comp (mapRingHom f hf) = mapRingHom (g.comp f) (hg.comp hf) :=
+  DFunLike.ext' <| map_comp
+    (uniformContinuous_addMonoidHom_of_continuous hg)
+    (uniformContinuous_addMonoidHom_of_continuous hf)
+
+@[simp]
+theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
+  simp [RingHom.ext_iff, mapRingHom_apply]
+
+/-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
+lifts to a ring isomorphism between corresponding uniform space completions. -/
+@[simps!]
+def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
+    Completion α ≃+* Completion β :=
+  .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
+    (by simp [mapRingHom_comp]) (by simp [mapRingHom_comp])
+
 section Algebra
 
 variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]
@@ -234,7 +260,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
+continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where

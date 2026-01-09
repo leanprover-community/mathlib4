@@ -3,7 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Recursive computation rules for the Clifford algebra
@@ -27,6 +29,8 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 * `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
 * `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3
@@ -175,7 +179,6 @@ theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] 
 theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
-  obtain ⟨x, fx⟩ := x_fx
   simp only [foldr'Aux_apply_apply]
   rw [← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, hf, Prod.smul_mk]
 

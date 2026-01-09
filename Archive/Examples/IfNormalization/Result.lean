@@ -48,8 +48,10 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
+set_option linter.flexible false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Normalizes the expression at the same time as assigning all variables in
-`e` to the literal booleans given by `l` -/
+`e` to the literal Booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
         (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))

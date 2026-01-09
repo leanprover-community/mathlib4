@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Adjoin.FG
+module
+
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
@@ -12,9 +14,11 @@ import Mathlib.RingTheory.Adjoin.FG
 
 * `Algebra.fg_trans'`: if `S` is finitely generated as `R`-algebra and `A` as `S`-algebra,
   then `A` is finitely generated as `R`-algebra
-* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is noetherian, and
+* `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is Noetherian, and
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
+
+public section
 
 
 open Pointwise
@@ -138,7 +142,7 @@ variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
-A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
+A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
 
 References: Atiyah--Macdonald Proposition 7.8; Altman--Kleiman 16.17. -/

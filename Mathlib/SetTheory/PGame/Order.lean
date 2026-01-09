@@ -3,9 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Logic.Small.Defs
-import Mathlib.Order.GameAdd
-import Mathlib.SetTheory.PGame.Basic
+module
+
+public import Mathlib.Logic.Small.Defs
+public import Mathlib.Order.GameAdd
+public import Mathlib.SetTheory.PGame.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Order properties of pregames
@@ -27,6 +34,8 @@ The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no m
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
 `Antisymmetrization` of `SetTheory.PGame`.
 -/
+
+@[expose] public section
 
 namespace SetTheory.PGame
 
@@ -186,7 +195,7 @@ alias _root_.LT.lt.lf := lf_of_lt
 theorem lf_irrefl (x : PGame) : ¬x ⧏ x :=
   le_rfl.not_gf
 
-instance : IsIrrefl _ (· ⧏ ·) :=
+instance : Std.Irrefl (· ⧏ ·) :=
   ⟨lf_irrefl⟩
 
 protected theorem not_lt {x y : PGame} : ¬ x < y ↔ y ⧏ x ∨ y ≤ x := not_lt_iff_not_le_or_ge
@@ -553,7 +562,7 @@ scoped infixl:50 " ‖ " => PGame.Fuzzy
 theorem Fuzzy.swap {x y : PGame} : x ‖ y → y ‖ x :=
   And.symm
 
-instance : IsSymm _ (· ‖ ·) :=
+instance : Std.Symm (· ‖ ·) :=
   ⟨fun _ _ => Fuzzy.swap⟩
 
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
@@ -561,7 +570,7 @@ theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
 
 theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
 
-instance : IsIrrefl _ (· ‖ ·) :=
+instance : Std.Irrefl (· ‖ ·) :=
   ⟨fuzzy_irrefl⟩
 
 theorem lf_iff_lt_or_fuzzy {x y : PGame} : x ⧏ y ↔ x < y ∨ x ‖ y := by

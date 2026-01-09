@@ -3,10 +3,12 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.BoxIntegral.Integrability
-import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Unit Partition
@@ -52,6 +54,8 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 variable {ι : Type*}
@@ -74,7 +78,7 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
-  let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
+  let I : Box ι := Box.mk (fun _ ↦ -C) (fun _ ↦ C)
     (fun _ ↦ by simp [C, neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩
@@ -98,7 +102,7 @@ and of side length `1 / n`. -/
 def box [NeZero n] (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ (ν i + 1) / n
-  lower_lt_upper := fun _ ↦ by norm_num [add_div, n.pos_of_neZero]
+  lower_lt_upper := fun _ ↦ by simp [add_div, n.pos_of_neZero]
 
 @[simp]
 theorem box_lower [NeZero n] (ν : ι → ℤ) :
@@ -173,7 +177,7 @@ theorem box_injective : Function.Injective (fun ν : ι → ℤ ↦ box n ν) :=
   exact Box.ne_of_disjoint_coe (disjoint.mp h)
 
 lemma box.upper_sub_lower (ν : ι → ℤ) (i : ι) :
-    (box n ν ).upper i - (box n ν).lower i = 1 / n := by
+    (box n ν).upper i - (box n ν).lower i = 1 / n := by
   simp_rw [box, add_div, add_sub_cancel_left]
 
 variable [Fintype ι]
@@ -181,7 +185,7 @@ variable [Fintype ι]
 theorem diam_boxIcc (ν : ι → ℤ) :
     Metric.diam (Box.Icc (box n ν)) ≤ 1 / n := by
   rw [BoxIntegral.Box.Icc_eq_pi]
-  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| EMetric.diam_pi_le_of_le (fun i ↦ ?_)
+  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| Metric.ediam_pi_le_of_le fun i ↦ ?_
   simp_rw [Real.ediam_Icc, box.upper_sub_lower, le_rfl]
 
 @[simp]
@@ -195,11 +199,11 @@ theorem volume_box (ν : ι → ℤ) :
 theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs₂ : volume s ≠ ⊤) :
     Set.Finite {ν : ι → ℤ | ↑(box n ν) ⊆ s} := by
   refine (Measure.finite_const_le_meas_of_disjoint_iUnion₀ volume (ε := 1 / n ^ card ι)
-    (by norm_num) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ h ↦ ?_) ?_).subset
+    (by simp) (As := fun ν : ι → ℤ ↦ (box n ν) ∩ s) (fun ν ↦ ?_) (fun _ _ h ↦ ?_) ?_).subset
       (fun _ hν ↦ ?_)
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet
-  · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _ ).aedisjoint
+  · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
       (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
@@ -282,14 +286,15 @@ private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
   rw [le_div_iff₀' h, le_sub_iff_add_le,
     show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
-    Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul, Int.cast_natCast, mul_lt_mul_left h]
+    Int.cast_le, Int.add_one_le_iff, Int.lt_ceil, Int.cast_mul, Int.cast_natCast,
+    mul_lt_mul_iff_right₀ h]
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
   rw [sub_add_cancel, div_le_iff₀' h,
     show (n : ℝ) * a = (n * a : ℤ) by norm_cast,
-    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left h]
+    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_iff_right₀ h]
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then the index of
 `x` is admissible for `B`. -/
@@ -323,8 +328,8 @@ local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Basis.mem_span_iff_repr_mem]
-  simp_rw [Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
+  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
+  simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :
@@ -394,7 +399,7 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
     rw [Set.indicator]
     split_ifs with hs
     · exact le_max_of_le_right (h₀ x hx)
-    · exact norm_zero.trans_le <|le_max_left 0 _
+    · exact norm_zero.trans_le <| le_max_left 0 _
   have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
     filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
       using (hF.continuousOn).continuousAt_indicator h
@@ -469,7 +474,6 @@ private theorem tendsto_card_div_pow₆ :
     (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
           =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
   filter_upwards [eventually_ge_atTop 1] with x hx
-  have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
   rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
 
 /-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/

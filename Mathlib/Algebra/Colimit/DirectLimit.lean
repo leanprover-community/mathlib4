@@ -3,10 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Order.DirectedInverseSystem
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Order.DirectedInverseSystem
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of algebraic structures
@@ -41,12 +43,14 @@ the same pattern. Since any two colimits are isomorphic, this allows us to golf 
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 variable {R ι : Type*} [Preorder ι] {G : ι → Type*}
 variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
 variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f · · ·)]
-variable [IsDirected ι (· ≤ ·)]
+variable [IsDirectedOrder ι]
 
 namespace DirectLimit
 
@@ -287,18 +291,9 @@ instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomCl
   zero_mul := zero_mul
   mul_zero := mul_zero
 
-instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
-    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalNonAssocCommSemiring (DirectLimit G f) where
-  mul_comm := mul_comm
-
 instance [∀ i, NonUnitalSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalSemiring (DirectLimit G f) where
   mul_assoc := mul_assoc
-
-instance [∀ i, NonUnitalCommSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalCommSemiring (DirectLimit G f) where
-  mul_comm := mul_comm
 
 instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     NonAssocSemiring (DirectLimit G f) where
@@ -307,24 +302,45 @@ instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
   natCast_zero := Nat.cast_zero
   natCast_succ := Nat.cast_succ
 
--- There is no NonAssocCommSemiring
-
 instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semiring (DirectLimit G f) where
-  __ : NonAssocSemiring _ := inferInstance
-  __ : Monoid _ := inferInstance
+
+instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
+    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalNonAssocCommSemiring (DirectLimit G f) where
+
+instance [∀ i, NonUnitalCommSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalCommSemiring (DirectLimit G f) where
+
+instance [∀ i, NonAssocCommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocCommSemiring (DirectLimit G f) where
 
 instance [∀ i, CommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     CommSemiring (DirectLimit G f) where
-  mul_comm := mul_comm
+
+instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalNonAssocRing (DirectLimit G f) where
+
+instance [∀ i, NonUnitalRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalRing (DirectLimit G f) where
+
+instance [∀ i, NonAssocRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocRing (DirectLimit G f) where
 
 instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
-  __ : Semiring _ := inferInstance
-  __ : AddCommGroupWithOne _ := inferInstance
+
+instance [∀ i, NonUnitalNonAssocCommRing (G i)]
+    [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalNonAssocCommRing (DirectLimit G f) where
+
+instance [∀ i, NonUnitalCommRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalCommRing (DirectLimit G f) where
+
+instance [∀ i, NonAssocCommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocCommRing (DirectLimit G f) where
 
 instance [∀ i, CommRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     CommRing (DirectLimit G f) where
-  mul_comm := mul_comm
 
 section Action
 
@@ -442,6 +458,7 @@ variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
+@[simps -isSimp]
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
@@ -451,7 +468,15 @@ def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
+@[simp]
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
+    (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) : g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
 
 end Module
 
@@ -488,6 +513,13 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
 
 end Ring
 

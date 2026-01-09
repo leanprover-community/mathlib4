@@ -3,8 +3,10 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Nonarchimedean functions
@@ -13,6 +15,8 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of
 nonarchimedean functions.
 -/
+
+public section
 
 namespace IsNonarchimedean
 
@@ -25,7 +29,7 @@ theorem add_le [IsStrictOrderedRing R] {α : Type*} [Add α] {f : α → R} (hf 
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
   exact ⟨hf _, hf _⟩
 
-/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+/-- If `f` is a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F α R]
     [NonnegHomClass F α R] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
@@ -37,7 +41,7 @@ theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F 
     apply le_trans <| hna (n • a) (1 • a)
     simpa
 
-/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+/-- If `f` is a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n * a) ≤ (f a)`. -/
 theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomClass F α R]
     [NonnegHomClass F α R] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
@@ -60,6 +64,7 @@ theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
   simp [apply_natCast_le_one_of_isNonarchimedean hna]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
@@ -74,6 +79,7 @@ lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
@@ -126,7 +132,7 @@ theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempt
   apply multiset_image_add_of_nonempty hna
   simp_all [Finset.nonempty_iff_ne_empty]
 
-/-- Given a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
+/-- Given a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
   and a multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (s.sum g) ≤ f (g b)` . -/
 theorem multiset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R] [ZeroHomClass F α R]
@@ -139,7 +145,7 @@ theorem multiset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
       hna g Multiset.cons_ne_zero
     exact ⟨b, fun _ ↦ hb1, hb2⟩
 
-/-- Given a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
+/-- Given a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
   and a finset `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
 theorem finset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
@@ -171,7 +177,7 @@ theorem finset_powerset_image_add [IsStrictOrderedRing R]
     (b : β → α) (m : ℕ) :
     ∃ u : powersetCard (s.card - m) s,
       f ((powersetCard (s.card - m) s).sum fun t : Finset β ↦
-        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β  ↦ -b i)  := by
+        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β ↦ -b i) := by
   set g := fun t : Finset β ↦ t.prod fun i : β ↦ - b i
   obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
   exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩

@@ -3,13 +3,17 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.InnerProductSpace.Laplacian
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
 /-!
 # Harmonic Functions
 
 This file defines harmonic functions on real, finite-dimensional, inner product spaces `E`.
 -/
+
+@[expose] public section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -59,7 +63,7 @@ If `f` is harmonic at `x`, then it is harmonic at all points in a neighborhood o
 -/
 theorem HarmonicAt.eventually {f : E → F} {x : E} (h : HarmonicAt f x) :
     ∀ᶠ y in 𝓝 x, HarmonicAt f y := by
-  filter_upwards [h.1.eventually (by aesop), h.2.eventually_nhds] with a h₁a h₂a
+  filter_upwards [h.1.eventually (by simp), h.2.eventually_nhds] with a h₁a h₂a
   exact ⟨h₁a, h₂a⟩
 
 variable (f) in

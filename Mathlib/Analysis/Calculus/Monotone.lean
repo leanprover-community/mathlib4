@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Covering.OneDim
-import Mathlib.Order.Monotone.Extension
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Covering.OneDim
+public import Mathlib.Order.Monotone.Extension
 
 /-!
 # Differentiability of monotone functions
@@ -29,11 +31,15 @@ limit of `(f y - f x) / (y - x)` by a lower and upper approximation argument fro
 behavior of `μ [x, y]`.
 -/
 
+public section
+
 
 open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDoublingMeasure
 
 open scoped Topology
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- If `(f y - f x) / (y - x)` converges to a limit as `y` tends to `x`, then the same goes if
 `y` is shifted a little bit, i.e., `f (y + (y-x)^2) - f x) / (y - x)` converges to the same limit.
 This lemma contains a slightly more general version of this statement (where one considers
@@ -57,11 +63,11 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
   apply Tendsto.congr' _ Z
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
   filter_upwards [this] with y hy
-  field_simp [sub_ne_zero.2 hy]
+  simp [field, sub_ne_zero.2 hy]
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
-theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
+theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction ℝ) :
     ∀ᵐ x, HasDerivAt f (rnDeriv f.measure volume x).toReal x := by
   /- Denote by `μ` the Stieltjes measure associated to `f`.
     The general theorem `VitaliFamily.ae_tendsto_rnDeriv` ensures that `μ [x, y] / (y - x)` tends
