@@ -65,7 +65,7 @@ alias Eq.antisymmRel := AntisymmRel.of_eq
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
   And.symm
 
-instance : IsSymm α (AntisymmRel r) where
+instance : Std.Symm (AntisymmRel r) where
   symm _ _ := AntisymmRel.symm
 
 theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
@@ -83,7 +83,7 @@ instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r
   fun _ _ ↦ instDecidableAnd
 
 @[simp]
-theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b ↔ a = b :=
+theorem antisymmRel_iff_eq [IsRefl α r] [Std.Antisymm r] : AntisymmRel r a b ↔ a = b :=
   antisymm_iff
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
