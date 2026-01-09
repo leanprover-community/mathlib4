@@ -15,6 +15,7 @@ to learn about it as well!
   If these web pages are deprecated or removed, we should remove these scripts.
 
 **Repository analysis and reporting**
+- `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
   Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
