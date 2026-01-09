@@ -205,17 +205,17 @@ instance partialOrder : PartialOrder (Finset α) := inferInstance
 
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
-instance : IsRefl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsRefl (Finset α) (· ≤ ·)
+instance : @Std.Refl (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Refl (· ≤ ·)
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
 
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)
+instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Antisymm (· ≤ ·)
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
+instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· < ·)

@@ -361,7 +361,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
@@ -538,12 +538,12 @@ instance isTrans_symmetrize [R.IsTrans] : R.symmetrize.IsTrans where
 
 variable (R) in
 /-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
-protected abbrev IsIrrefl : Prop := IsIrrefl α (· ~[R] ·)
+protected abbrev IsIrrefl : Prop := Std.Irrefl (· ~[R] ·)
 
 variable (R a) in
 protected lemma irrefl [R.IsIrrefl] : ¬ a ~[R] a := irrefl_of (· ~[R] ·) _
 
-instance {R : α → α → Prop} [IsIrrefl α R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
+instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
 
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
@@ -578,6 +578,10 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 @[simp] lemma graph_id : graph (id : α → α) = .id := by aesop
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
+
+/-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
+def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
+  { v | f (v ∘ some) = v none }
 
 end Function
 

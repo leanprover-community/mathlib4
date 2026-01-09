@@ -61,7 +61,7 @@ lemma wInner_cWeight_eq_boole [Fintype G] (ψ₁ ψ₂ : AddChar G R) :
     ⟪(ψ₁ : G → R), ψ₂⟫ₙ_[R] = if ψ₁ = ψ₂ then 1 else 0 := by
   split_ifs with h
   · rw [h, wInner_cWeight_self]
-  have : ψ₂ * ψ₁⁻¹  ≠ 1 := by rwa [Ne, mul_inv_eq_one, eq_comm]
+  have : ψ₂ * ψ₁⁻¹ ≠ 1 := by rwa [Ne, mul_inv_eq_one, eq_comm]
   simp_rw [wInner_cWeight_eq_expect, RCLike.inner_apply, ← inv_apply_eq_conj]
   simpa [map_neg_eq_inv] using expect_eq_zero_iff_ne_zero.2 this
 

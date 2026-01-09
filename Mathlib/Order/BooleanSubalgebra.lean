@@ -171,11 +171,11 @@ instance instBot : Bot (BooleanSubalgebra α) where
 
 /-- The inf of two Boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where
-  min L M :=  { carrier := L ∩ M
-                bot_mem' := ⟨bot_mem, bot_mem⟩
-                compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
-                supClosed' := L.supClosed.inter M.supClosed
-                infClosed' := L.infClosed.inter M.infClosed }
+  min L M := { carrier := L ∩ M
+               bot_mem' := ⟨bot_mem, bot_mem⟩
+               compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
+               supClosed' := L.supClosed.inter M.supClosed
+               infClosed' := L.infClosed.inter M.infClosed }
 
 /-- The inf of Boolean subalgebras is their intersection. -/
 instance instInfSet : InfSet (BooleanSubalgebra α) where
