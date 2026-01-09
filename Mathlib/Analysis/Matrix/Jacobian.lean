@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Your Name. All rights reserved.
+Copyright (c) 2026 Zebo Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Your Name
+Authors: Zebo Liu
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Matrix.Normed
@@ -90,7 +90,7 @@ theorem fderiv_eq_jacobian_mul [Fintype m] [Fintype n]
   intro l _
   -- rewrite `single j l (H j l)` as a scalar multiple of `single j l 1`
   have hs : Matrix.single j l (H j l) = (H j l) • Matrix.single j l (1 : ℝ) := by
-    simp [smul_eq_mul]
+    simp only [smul_single, smul_eq_mul, mul_one]
   -- apply `map_smul` and commute the scalar
   calc
     (fderiv ℝ F X) (Matrix.single j l (H j l)) i k
@@ -159,7 +159,7 @@ theorem jacobianMatrix_linear
     jacobianMatrix (fun Y => L Y) X (i, k) (j, l) =
       L (Matrix.single j l (1 : ℝ)) i k := by
   classical
-  simp [jacobianMatrix]
+  simp only [jacobianMatrix, ContinuousLinearMap.fderiv]
 
 theorem jacobianMatrix_id
     (X : Matrix m n ℝ)
@@ -167,22 +167,25 @@ theorem jacobianMatrix_id
     jacobianMatrix (id : Matrix m n ℝ → Matrix m n ℝ) X (i, k) (j, l) =
       if i = j ∧ k = l then (1 : ℝ) else 0 := by
   classical
-  simp [jacobianMatrix]
+  simp only [jacobianMatrix, fderiv_id, ContinuousLinearMap.coe_id', id_eq]
   by_cases h : (i = j ∧ k = l)
   · rcases h with ⟨rfl, rfl⟩
-    simp [Matrix.single_apply_same]
+    simp only [Matrix.single_apply_same]
+    simp only [and_self, ↓reduceIte]
   · have h' : ¬ (j = i ∧ l = k) := by
       intro hji
       apply h
       exact ⟨hji.1.symm, hji.2.symm⟩
-    simp [h, Matrix.single_apply_of_ne (i := j) (j := l) (c := (1 : ℝ)) (i' := i) (j' := k) h']
+    simp only [h, Matrix.single_apply_of_ne (i := j) (j := l) (c := (1 : ℝ)) (i' := i) (j' := k) h']
+    simp only [↓reduceIte]
 
 theorem jacobianMatrix_const
     (C : Matrix p q ℝ) (X : Matrix m n ℝ)
     (i : p) (k : q) (j : m) (l : n) :
     jacobianMatrix (fun _ : Matrix m n ℝ => C) X (i, k) (j, l) = 0 := by
   classical
-  simp [jacobianMatrix]
+  simp only [jacobianMatrix, fderiv_fun_const, Pi.zero_apply, ContinuousLinearMap.zero_apply,
+    zero_apply]
 
 theorem jacobianMatrix_add
     (F G : Matrix m n ℝ → Matrix p q ℝ) (X : Matrix m n ℝ)
