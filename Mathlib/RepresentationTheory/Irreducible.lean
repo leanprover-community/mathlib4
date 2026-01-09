@@ -24,8 +24,8 @@ open scoped MonoidAlgebra
 variable {G k V : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
     (ρ : Representation k G V)
 
-/-- A representation `ρ` is irreducible if it has no proper non-trivial subrepresentations.
--/
+/-- A representation `ρ` is irreducible if it is non-trivial and has no proper non-trivial
+subrepresentations. -/
 @[mk_iff] class IsIrreducible extends
   IsSimpleOrder (Subrepresentation ρ)
 
