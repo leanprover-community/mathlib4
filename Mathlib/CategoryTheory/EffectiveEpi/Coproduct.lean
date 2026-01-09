@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an

@@ -31,7 +31,7 @@ namespace CategoryTheory
 
 open Functor
 
-variable {C D : Type _} [Category C] [Category D]
+variable {C D : Type _} [Category* C] [Category* D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
   [((whiskeringLeft C D D).obj F).Full] [((whiskeringLeft C D D).obj F).Faithful]
@@ -138,7 +138,7 @@ noncomputable def induced : HasShift D A :=
         ext X
         dsimp
         have eq := F.congr_map (shiftFunctorAdd'_assoc_hom_app
-          m₁ m₂ m₃ _ _ (m₁+m₂+m₃) rfl rfl rfl X)
+          m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at eq
         simp only [Functor.comp_obj, Functor.map_comp, shiftFunctorAdd',
           Iso.trans_hom, eqToIso.hom, NatTrans.comp_app, eqToHom_app,

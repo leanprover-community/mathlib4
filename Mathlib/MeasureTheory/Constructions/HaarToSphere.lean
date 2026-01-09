@@ -68,6 +68,15 @@ theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
 theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
   rw [μ.toSphere_apply' .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
 
+instance toSphere.instIsOpenPosMeasure [FiniteDimensional ℝ E] [μ.IsOpenPosMeasure] :
+    μ.toSphere.IsOpenPosMeasure where
+  open_pos := by
+    nontriviality E using not_nonempty_iff_eq_empty
+    rintro U hUo hU
+    rw [μ.toSphere_apply' hUo.measurableSet]
+    apply mul_ne_zero (by simp [Module.finrank_pos.ne'])
+    exact isOpen_Ioo.smul_sphere one_ne_zero (by simp) hUo |>.measure_ne_zero _ (by simpa)
+
 variable [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 
 @[simp]

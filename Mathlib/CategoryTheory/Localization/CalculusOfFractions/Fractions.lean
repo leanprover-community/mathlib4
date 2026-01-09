@@ -36,7 +36,7 @@ Many definitions have been made reducible so as to ease rewrites when this API i
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C)
   [L.IsLocalization W]
 
 namespace MorphismProperty

@@ -25,7 +25,7 @@ the class of isomorphisms by `G`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -33,7 +33,7 @@ open MorphismProperty
 
 namespace Adjunction
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁}
 
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)

@@ -15,7 +15,7 @@ public import Mathlib.LinearAlgebra.Trace
 This file contains various results about traces of linear operators in inner product spaces.
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 
@@ -49,5 +49,12 @@ lemma IsSymmetric.re_trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsS
     RCLike.re (T.trace 𝕜 E) = ∑ i, hT.eigenvalues hn i := by
   rw [hT.trace_eq_sum_eigenvalues]
   exact RCLike.ofReal_re_ax _
+
+open InnerProductSpace in
+lemma _root_.InnerProductSpace.trace_rankOne (x y : E) :
+    (rankOne 𝕜 x y).trace 𝕜 E = inner 𝕜 y x := by
+  rw [rankOne_def', ContinuousLinearMap.coe_comp, trace_comp_comm',
+    ← ContinuousLinearMap.coe_comp, ContinuousLinearMap.comp_toSpanSingleton]
+  simp [trace_eq_sum_inner _ (OrthonormalBasis.singleton Unit 𝕜)]
 
 end LinearMap

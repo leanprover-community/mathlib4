@@ -52,6 +52,10 @@ theorem quasiCompact_iff_isSpectralMap : QuasiCompact f ↔ IsSpectralMap f :=
 theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
   rwa [← quasiCompact_iff_isSpectralMap]
 
+lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
+    (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
+  f.isSpectralMap.2 U.2 hU
+
 @[deprecated (since := "2025-10-07")]
 alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
 

@@ -80,8 +80,6 @@ theorem range_succ : range (succ n) = insert n (range n) := range_add_one
 
 theorem notMem_range_self : n ∉ range n := by grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
-
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) := by grind
 
 @[grind =]

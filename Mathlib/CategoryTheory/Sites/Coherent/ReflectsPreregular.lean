@@ -17,11 +17,11 @@ object `X` of `D` there exists an object `W` of `C` with an effective epi `π : 
 category `C` is `Preregular`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.EffectivelyEnough]
   [Preregular D] [F.Full] [F.Faithful]

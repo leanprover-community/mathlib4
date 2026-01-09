@@ -50,9 +50,6 @@ theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting :
 
 theorem Intersecting.bot_notMem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
 
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_bot_mem := Intersecting.bot_notMem
-
 theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
   ne_of_mem_of_not_mem ha hs.bot_notMem
 
@@ -138,13 +135,8 @@ variable [BooleanAlgebra α]
 theorem Intersecting.compl_notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_compl_mem := Intersecting.compl_notMem
-
 theorem Intersecting.notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
-
-@[deprecated (since := "2025-05-23")] alias Intersecting.not_mem := Intersecting.notMem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by

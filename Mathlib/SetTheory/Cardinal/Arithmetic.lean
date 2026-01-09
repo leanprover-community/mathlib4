@@ -10,9 +10,9 @@ public import Mathlib.SetTheory.Cardinal.Aleph
 /-!
 # Cardinal arithmetic
 
-Arithmetic operations on cardinals are defined in `SetTheory/Cardinal/Order.lean`. However, proving
-the important theorem `c * c = c` for infinite cardinals and its corollaries requires the use of
-ordinal numbers. This is done within this file.
+Arithmetic operations on cardinals are defined in `Mathlib/SetTheory/Cardinal/Order.lean`. However,
+proving the important theorem `c * c = c` for infinite cardinals and its corollaries requires the
+use of ordinal numbers. This is done within this file.
 
 ## Main statements
 
@@ -25,7 +25,7 @@ ordinal numbers. This is done within this file.
 cardinal arithmetic (for infinite cardinals)
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
@@ -575,7 +575,8 @@ theorem mk_arrow_eq_zero_iff : #(α → β') = 0 ↔ #α ≠ 0 ∧ #β' = 0 := b
 
 theorem mk_surjective_eq_zero_iff_lift :
     #{f : α → β' | Surjective f} = 0 ↔ lift.{v} #α < lift.{u} #β' ∨ (#α ≠ 0 ∧ #β' = 0) := by
-  rw [← not_iff_not, not_or, not_lt, lift_mk_le', ← Ne, not_and_or, not_ne_iff, and_comm]
+  contrapose! +distrib
+  rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
     Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
 
@@ -610,15 +611,15 @@ theorem mk_equiv_eq_arrow_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') :
   obtain ⟨e⟩ := lift_mk_eq'.mp leq
   have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
   have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
-  rw [lift_id'.{u,v}] at e₁ e₂
+  rw [lift_id'.{u, v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
 theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :=
   mk_equiv_eq_arrow_of_lift_eq congr(lift $eq)
 
 theorem mk_equiv_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') : #(α ≃ β') = 2 ^ lift.{v} #α := by
-  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u,v} _),
-    lift_umax.{u,v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
+  erw [← (lift_mk_eq'.2 ⟨.equivCongr (.refl α) (lift_mk_eq'.1 leq).some⟩).trans (lift_id'.{u, v} _),
+    lift_umax.{u, v}, mk_perm_eq_two_power, lift_power, lift_natCast]; rfl
 
 theorem mk_equiv_of_eq (eq : #α = #β) : #(α ≃ β) = 2 ^ #α := by
   rw [mk_equiv_of_lift_eq (lift_inj.mpr eq), lift_id]
@@ -639,7 +640,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
     #{f : α → β' | Surjective f} = #(α → β') :=
   (mk_set_le _).antisymm <|
     have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
-      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u,v}, eq_comm]
+      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
@@ -663,18 +664,30 @@ theorem mk_list_eq_mk (α : Type u) [Infinite α] : #(List α) = #α :=
 theorem mk_list_eq_aleph0 (α : Type u) [Countable α] [Nonempty α] : #(List α) = ℵ₀ :=
   mk_le_aleph0.antisymm (aleph0_le_mk _)
 
-theorem mk_list_eq_max_mk_aleph0 (α : Type u) [Nonempty α] : #(List α) = max #α ℵ₀ := by
+theorem mk_list_eq_max (α : Type u) [Nonempty α] : #(List α) = max ℵ₀ #α := by
   cases finite_or_infinite α
-  · rw [mk_list_eq_aleph0, eq_comm, max_eq_right]
+  · rw [mk_list_eq_aleph0, eq_comm, max_eq_left]
     exact mk_le_aleph0
-  · rw [mk_list_eq_mk, eq_comm, max_eq_left]
+  · rw [mk_list_eq_mk, eq_comm, max_eq_right]
     exact aleph0_le_mk α
+
+-- TODO: standardize whether we write `max ℵ₀ x` or `max x ℵ₀`.
+theorem mk_list_eq_max_mk_aleph0 (α : Type u) [Nonempty α] : #(List α) = max #α ℵ₀ := by
+  rw [mk_list_eq_max, max_comm]
+
+theorem sum_pow_eq_max_aleph0 {x : Cardinal} (h : x ≠ 0) : sum (fun n ↦ x ^ n) = max ℵ₀ x := by
+  have := nonempty_out h
+  conv_lhs => rw [← x.mk_out, ← mk_list_eq_sum_pow, mk_list_eq_max, mk_out]
 
 theorem mk_list_le_max (α : Type u) : #(List α) ≤ max ℵ₀ #α := by
   cases finite_or_infinite α
   · exact mk_le_aleph0.trans (le_max_left _ _)
   · rw [mk_list_eq_mk]
     apply le_max_right
+
+theorem sum_pow_le_max_aleph0 (x : Cardinal) : sum (fun n ↦ x ^ n) ≤ max ℵ₀ x := by
+  rw [← x.mk_out, ← mk_list_eq_sum_pow]
+  exact mk_list_le_max _
 
 @[simp]
 theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α := by

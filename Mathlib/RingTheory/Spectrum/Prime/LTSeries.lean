@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -47,7 +47,7 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   simp_rw [show q = closedPoint R from PrimeSpectrum.ext hqm] at h
   have hph : (e ⟨p₁, h₀.le⟩).1.height ≤ 0 :=
     Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance (by simpa using h₁))
-  refine ENat.not_lt_zero (e ⟨p₀, le_refl p₀⟩).1.height (height_le_iff.mp hph _ inferInstance ?_)
+  refine not_lt_zero (a := (e ⟨p₀, le_refl p₀⟩).1.height) (height_le_iff.mp hph _ inferInstance ?_)
   simpa using h₀
 
 theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}

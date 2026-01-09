@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -20,7 +20,7 @@ In this file, given `P : ObjectProperty C`, we define
 
 @[expose] public section
 
-universe w v v' u u'
+universe w' w v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
@@ -194,19 +194,56 @@ instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.unop := by
   simpa
 
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+instance [EssentiallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (⊤ : ObjectProperty C) where
+  exists_small_le' :=
+    ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
+      fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
+
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
     ObjectProperty.Small.{w} (P.strictMap F) :=
   small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
     rintro ⟨_, ⟨X, hX⟩⟩
     exact ⟨⟨X, hX⟩, rfl⟩)
 
-instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] (F : C ⥤ D) :
-    ObjectProperty.EssentiallySmall.{w} (P.map F) := by
-  obtain ⟨Q, _, hQ⟩ := EssentiallySmall.exists_small_le'.{w} P
-  have : P.map F ≤ (Q.strictMap F).isoClosure := by
-    rintro X ⟨Y, hY, ⟨e⟩⟩
-    obtain ⟨Z, hZ, ⟨e'⟩⟩ := hQ _ hY
-    exact ⟨_, ⟨_, hZ⟩, ⟨e.symm ≪≫ F.mapIso e'⟩⟩
-  exact EssentiallySmall.of_le this
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P]
+    (F : C ⥤ D) : ObjectProperty.EssentiallySmall.{w} (P.map F) := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  exact ⟨Q.strictMap F, inferInstance, (map_monotone h₂ F).trans (by simp)⟩
 
-end CategoryTheory.ObjectProperty
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :
+    (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.FullSubcategory ≌ J)) ↔
+      ObjectProperty.EssentiallySmall.{w} P := by
+  refine ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ?_, fun _ ↦ ?_⟩
+  · exact ⟨.ofObj (e.inverse ⋙ P.ι).obj, inferInstance,
+      fun X hX ↦ ⟨_, ⟨⟨(e.functor.obj ⟨X, hX⟩)⟩, ⟨P.ι.mapIso (e.unitIso.app ⟨X, hX⟩)⟩⟩⟩⟩
+  · obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le.{w} P
+    rw [← isEquivalence_ιOfLE_iff h₁] at h₂
+    exact ⟨_, _, ⟨((ιOfLE h₁).asEquivalence.symm.trans
+      (Shrink.equivalence.{w} Q.FullSubcategory)).trans (ShrinkHoms.equivalence.{w'} _)⟩⟩
+
+end ObjectProperty
+
+lemma exists_equivalence_iff_of_locallySmall
+    (C : Type u) [Category.{v} C] [LocallySmall.{w'} C] :
+    (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (C ≌ J)) ↔
+      ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
+  rw [← ObjectProperty.exists_equivalence_iff]
+  exact ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).trans e⟩⟩,
+    fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).symm.trans e⟩⟩⟩
+
+end CategoryTheory

@@ -15,11 +15,11 @@ This is mostly useful to define pointwise operations and `Set.seq`.
 
 ## Notes
 
-This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
-`Data.Option.NAry`. Please keep them in sync.
+This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Filter/NAry.lean`, and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -138,6 +138,16 @@ theorem image2_inter_subset_left : image2 f (s ∩ s') t ⊆ image2 f s t ∩ im
 
 theorem image2_inter_subset_right : image2 f s (t ∩ t') ⊆ image2 f s t ∩ image2 f s t' :=
   Monotone.map_inf_le (fun _ _ ↦ image2_subset_left) t t'
+
+theorem subset_image2_diff_left :
+    image2 f s t \ image2 f s' t ⊆ image2 f (s \ s') t := by
+  rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
+  exact ⟨_, ⟨ha, fun ha' ↦ h ⟨_, ha', _, hb, rfl⟩⟩, _, hb, rfl⟩
+
+theorem subset_image2_diff_right :
+    image2 f s t \ image2 f s t' ⊆ image2 f s (t \ t') := by
+  rintro - ⟨⟨a, ha, b, hb, rfl⟩, h⟩
+  exact ⟨_, ha, _, ⟨hb, fun hb' ↦ h ⟨_, ha, _, hb', rfl⟩⟩, rfl⟩
 
 @[simp]
 theorem image2_singleton_left : image2 f {a} t = f a '' t :=

@@ -63,28 +63,23 @@ instance : Inhabited (CommGrp C) where
   default := trivial C
 
 instance : Category (CommGrp C) :=
-  InducedCategory.category CommGrp.toGrp
+  inferInstanceAs (Category (InducedCategory _ CommGrp.toGrp))
 
-omit [BraidedCategory C] in
 @[simp]
-theorem id_hom (A : Grp C) : Mon.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : CommGrp C) : (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.toGrp :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommGrp C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
 @[ext]
-theorem hom_ext {A B : CommGrp C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon.Hom.ext h
+theorem hom_ext {A B : CommGrp C} (f g : A ⟶ B) (h : f.hom.hom.hom = g.hom.hom.hom) : f = g :=
+  InducedCategory.hom_ext (Grp.hom_ext _ _ h)
 
-@[simp]
-lemma id' (A : CommGrp C) : (𝟙 A : A.toMon ⟶ A.toMon) = 𝟙 (A.toMon) := rfl
-
-@[simp]
-lemma comp' {A₁ A₂ A₃ : CommGrp C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon ⟶ A₃.toMon) = @CategoryStruct.comp (Mon C) _ _ _ _ f g := rfl
+@[deprecated (since := "2025-12-18")] alias id' := id_hom
+@[deprecated (since := "2025-12-18")] alias comp' := comp_hom
 
 section
 
@@ -115,26 +110,24 @@ theorem forget₂Grp_obj_mul (A : CommGrp C) : μ[((forget₂Grp C).obj A).X] = 
   rfl
 
 @[simp]
-theorem forget₂Grp_map_hom {A B : CommGrp C} (f : A ⟶ B) : ((forget₂Grp C).map f).hom = f.hom :=
+theorem forget₂Grp_map_hom {A B : CommGrp C} (f : A ⟶ B) :
+    ((forget₂Grp C).map f).hom = f.hom.hom :=
   rfl
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects. -/
-@[simps! obj_X]
-def forget₂CommMon : CommGrp C ⥤ CommMon C :=
-  inducedFunctor CommGrp.toCommMon
+def forget₂CommMon : CommGrp C ⥤ CommMon C where
+  obj G := CommMon.mk G.X
+  map f := CommMon.homMk f.hom.hom
 
 @[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
-def fullyFaithfulForget₂CommMon : (forget₂CommMon C).FullyFaithful :=
-  fullyFaithfulInducedFunctor _
+def fullyFaithfulForget₂CommMon : (forget₂CommMon C).FullyFaithful where
+  preimage f := InducedCategory.homMk (Grp.homMk' f.hom)
 
-@[deprecated (since := "2025-09-15")]
-alias fullyFaithfulForget₂CommMon_ := fullyFaithfulForget₂CommMon
-
-instance : (forget₂CommMon C).Full := InducedCategory.full _
-instance : (forget₂CommMon C).Faithful := InducedCategory.faithful _
+instance : (forget₂CommMon C).Full := (fullyFaithfulForget₂CommMon _).full
+instance : (forget₂CommMon C).Faithful := (fullyFaithfulForget₂CommMon _).faithful
 
 @[simp]
 theorem forget₂CommMon_obj_one (A : CommGrp C) : η[((forget₂CommMon C).obj A).X] = η[A.X] :=
@@ -146,7 +139,7 @@ theorem forget₂CommMon_obj_mul (A : CommGrp C) : μ[((forget₂CommMon C).obj 
 
 @[simp]
 theorem forget₂CommMon_map_hom {A B : CommGrp C} (f : A ⟶ B) :
-    ((forget₂CommMon C).map f).hom = f.hom :=
+    ((forget₂CommMon C).map f).hom = f.hom.hom :=
   rfl
 
 /-- The forgetful functor from commutative group objects to the ambient category. -/
@@ -163,7 +156,10 @@ theorem forget₂Grp_comp_forget : forget₂Grp C ⋙ Grp.forget C = forget C :=
 theorem forget₂CommMon_comp_forget : forget₂CommMon C ⋙ CommMon.forget C = forget C := rfl
 
 instance {G H : CommGrp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
-  inferInstanceAs <| IsIso <| (forget C).map f
+  inferInstanceAs (IsIso ((forget₂Grp C).map f))
+
+instance {G H : CommGrp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
+  inferInstanceAs (IsIso ((forget₂Grp C ⋙ Grp.forget₂Mon C).map f))
 
 end
 
@@ -174,15 +170,31 @@ def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMonObj G] [GrpObj H] [IsCom
     [IsMonHom e.hom] : mk G ≅ mk H :=
   (fullyFaithfulForget₂Grp C).preimageIso (Grp.mkIso' e)
 
+section
+
+variable {G H : CommGrp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+  (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch)
+
+set_option backward.privateInPublic true in
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-abbrev mkIso {G H : CommGrp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
-    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
+abbrev mkIso : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
+set_option backward.privateInPublic true in
+@[simp] lemma mkIso_hom_hom_hom_hom : (mkIso e one_f mul_f).hom.hom.hom.hom = e.hom := rfl
+set_option backward.privateInPublic true in
+@[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
+
+@[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom
+@[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom_hom
+
+end
+
 instance uniqueHomFromTrivial (A : CommGrp C) : Unique (trivial C ⟶ A) :=
-  Mon.uniqueHomFromTrivial A.toMon
+  Equiv.unique (show _ ≃ (Grp.trivial C ⟶ A.toGrp) from
+    InducedCategory.homEquiv)
 
 instance : HasInitial (CommGrp C) :=
   hasInitial_of_unique (trivial C)
@@ -209,20 +221,20 @@ def mapCommGrp : CommGrp C ⥤ CommGrp D where
         { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm] } }
-  map f := F.mapMon.map f
-  map_id X := show F.mapMon.map (𝟙 X.toGrp.toMon) = _ by cat_disch
+  map f := InducedCategory.homMk (F.mapGrp.map f.hom)
 
 protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful where
-  map_injective hfg := F.mapMon.map_injective hfg
-
-protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full where
-  map_surjective := F.mapMon.map_surjective
+  map_injective hfg :=
+    (CommGrp.forget _ ⋙ F).map_injective ((CommGrp.forget _).congr_map hfg)
 
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `CommGrpCat(F) : CommGrpCat C ⥤ CommGrpCat D` is fully faithful too. -/
 @[simps]
-protected def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
-  preimage f := .mk <| hF.preimage f.hom
+protected def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) : F.mapCommGrp.FullyFaithful where
+  preimage f := InducedCategory.homMk (Grp.homMk' (hF.mapMon.preimage f.hom.hom))
+
+protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full :=
+  (FullyFaithful.ofFullyFaithful F).mapCommGrp.full
 
 @[simp]
 theorem mapCommGrp_id_one (A : CommGrp C) :
@@ -258,7 +270,7 @@ def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
 def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
-  app X := .mk' (f.app _)
+  app X := InducedCategory.homMk ((mapGrpNatTrans f).app X.toGrp)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
@@ -270,7 +282,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D where
   obj F := F.1.mapCommGrp
-  map {F G} α := { app A := .mk' (α.app A.X) }
+  map α := mapCommGrpNatTrans α.hom
 
 end Functor
 

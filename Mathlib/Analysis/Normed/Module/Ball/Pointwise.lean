@@ -16,7 +16,7 @@ Notably, we express arbitrary balls as rescaling of other balls, and we show tha
 multiplication of bounded sets remain bounded.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric Set
@@ -30,7 +30,7 @@ section SMulZeroClass
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
 variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
-theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
+theorem ediam_smul_le (c : 𝕜) (s : Set E) : ediam (c • s) ≤ ‖c‖₊ • ediam s :=
   (lipschitzWith_smul c).ediam_image_le s
 
 end SMulZeroClass
@@ -40,7 +40,7 @@ section DivisionRing
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
-theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
+theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
   obtain rfl | hc := eq_or_ne c 0
   · obtain rfl | hs := s.eq_empty_or_nonempty

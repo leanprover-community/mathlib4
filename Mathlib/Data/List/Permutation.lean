@@ -47,7 +47,7 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
    `[0, 3, 2, 1], [3, 0, 2, 1], [3, 2, 0, 1], [3, 2, 1, 0]]`
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -450,9 +450,6 @@ theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     rw [nodup_map_iff]
     · exact IH hx.right
     · simp
-
-@[deprecated (since := "2025-05-23")]
-alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
 
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
   refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩

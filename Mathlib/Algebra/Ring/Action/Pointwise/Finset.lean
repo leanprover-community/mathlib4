@@ -20,7 +20,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

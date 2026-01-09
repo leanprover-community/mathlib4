@@ -20,7 +20,7 @@ When you update this file, you can also try to make a corresponding update in
 `RingTheory.Polynomial.Tower`.
 -/
 
-@[expose] public section
+public section
 
 
 variable (R A B : Type*) {σ : Type*}

@@ -67,6 +67,7 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
@@ -76,12 +77,16 @@ structure GrpCat.Hom (A B : GrpCat.{u}) where
 
 namespace GrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
@@ -276,6 +281,7 @@ structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
@@ -285,12 +291,16 @@ structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
 
 namespace CommGrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
@@ -586,7 +596,7 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
--- this variant is then renamed with a `Aux` suffix
+-- this variant is then renamed with an `Aux` suffix
 
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux

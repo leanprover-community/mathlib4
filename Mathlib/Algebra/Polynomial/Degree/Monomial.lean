@@ -13,7 +13,7 @@ public import Mathlib.Data.Nat.SuccPred
 # Degree of univariate monomials
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

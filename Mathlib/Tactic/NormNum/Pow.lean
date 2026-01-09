@@ -214,7 +214,7 @@ such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -
 @[norm_num _ ^ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
-  let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
+  let ⟨nb, pb⟩ ← deriveNat b q(Nat.instAddMonoidWithOne)
   let sα ← inferSemiring α
   let ra ← derive a
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))

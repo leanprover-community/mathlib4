@@ -31,7 +31,7 @@ open CategoryTheory Category Limits
 namespace ComplexShape
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
-  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 namespace Embedding
 

@@ -31,7 +31,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -119,7 +119,6 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     rw [← hg₂ _ ((g _).comp (IntermediateField.inclusion e))]
     · rfl
     apply AlgHom.ext
-    intro ⟨a, _⟩
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
     simp
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by

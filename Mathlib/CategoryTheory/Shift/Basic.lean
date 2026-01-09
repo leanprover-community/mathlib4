@@ -181,7 +181,7 @@ def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
   eqToIso (by rw [h]) ≪≫ shiftFunctorAdd C i j
 
 lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
-    shiftFunctorAdd' C i j (i+j) rfl = shiftFunctorAdd C i j := by
+    shiftFunctorAdd' C i j (i + j) rfl = shiftFunctorAdd C i j := by
   ext1
   apply Category.id_comp
 
@@ -583,7 +583,7 @@ lemma shiftFunctorComm_symm (i j : A) :
     (shiftFunctorComm C i j).symm = shiftFunctorComm C j i := by
   ext1
   dsimp
-  rw [shiftFunctorComm_eq C i j (i+j) rfl, shiftFunctorComm_eq C j i (i+j) (add_comm j i)]
+  rw [shiftFunctorComm_eq C i j (i + j) rfl, shiftFunctorComm_eq C j i (i + j) (add_comm j i)]
   rfl
 
 variable {C}
@@ -659,11 +659,25 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
     shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃
       (m₁ + m₂) (m₂ + m₃) (m₁ + (m₂ + m₃)) rfl rfl (add_assoc _ _ _) X]
 
+@[reassoc]
+lemma shiftFunctorComm_hom_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).hom.app X =
+      (shiftFunctorCompIsoId C m n hmn).hom.app X ≫
+        (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
+
+@[reassoc]
+lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).inv.app X =
+      (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).hom.app X ≫
+        (shiftFunctorCompIsoId C m n hmn).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
+
 end AddCommMonoid
 
 namespace Functor.FullyFaithful
 
-variable {D : Type*} [Category D] [AddMonoid A] [HasShift D A]
+variable {D : Type*} [Category* D] [AddMonoid A] [HasShift D A]
 variable {F : C ⥤ D} (hF : F.FullyFaithful)
 variable (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 
@@ -721,7 +735,7 @@ def hasShift :
       zero := zero hF s i
       add := add hF s i
       assoc_hom_app := fun m₁ m₂ m₃ X => hF.map_injective (by
-        have h := shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ _ _ (m₁+m₂+m₃) rfl rfl rfl (F.obj X)
+        have h := shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl (F.obj X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at h
         rw [← cancel_mono ((i m₃).hom.app ((s m₂).obj ((s m₁).obj X)))]
         simp only [Functor.comp_obj, Functor.map_comp, map_add_hom_app,
@@ -736,7 +750,7 @@ def hasShift :
         simp [shiftFunctorAdd', eqToHom_map])
       zero_add_hom_app := fun n X => hF.map_injective (by
         have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
-        rw [← cancel_mono ((i n).hom.app ((s 0).obj X)) ]
+        rw [← cancel_mono ((i n).hom.app ((s 0).obj X))]
         simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
           Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,
           Category.comp_id, map_comp, eqToHom_map]

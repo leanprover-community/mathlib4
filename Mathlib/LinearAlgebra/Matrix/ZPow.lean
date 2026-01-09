@@ -25,7 +25,7 @@ The lemma names are taken from `Algebra.GroupWithZero.Power`.
 matrix inverse, matrix powers
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix

@@ -224,16 +224,16 @@ instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
 end FreeAbelianGroup
 
 namespace AddMonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R S[ι] := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-variable {ι R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
+variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]
 
-instance : Module.Free R (MonoidAlgebra S ι) := .finsupp ..
+instance : Module.Free R S[M] := .finsupp ..
 
 end MonoidAlgebra
 

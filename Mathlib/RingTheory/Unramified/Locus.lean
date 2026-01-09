@@ -64,7 +64,7 @@ end
 
 section
 
-variable {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 lemma unramifiedLocus_eq_compl_support :
     unramifiedLocus R A = (Module.support A Ω[A⁄R])ᶜ := by

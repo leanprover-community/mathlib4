@@ -15,7 +15,7 @@ public import Mathlib.Data.Set.Function
 Proves various lemmas about `List.iterate`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

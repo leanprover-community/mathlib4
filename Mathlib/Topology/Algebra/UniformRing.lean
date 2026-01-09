@@ -177,14 +177,32 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
 
-theorem mapRingHom_apply {x : UniformSpace.Completion α} :
-    UniformSpace.Completion.mapRingHom f hf x = UniformSpace.Completion.map f x := rfl
+@[simp] theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
+theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
 
 variable {f}
 
-theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) :
-    mapRingHom f hf.continuous a = f a := by
-  rw [mapRingHom_apply, map_coe hf]
+theorem mapRingHom_coe (hf : Continuous f) (a : α) : mapRingHom f hf a = f a := by
+  rw [mapRingHom_apply, map_coe (uniformContinuous_addMonoidHom_of_continuous hf)]
+
+theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
+    [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
+    (mapRingHom g hg).comp (mapRingHom f hf) = mapRingHom (g.comp f) (hg.comp hf) :=
+  DFunLike.ext' <| map_comp
+    (uniformContinuous_addMonoidHom_of_continuous hg)
+    (uniformContinuous_addMonoidHom_of_continuous hf)
+
+@[simp]
+theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
+  simp [RingHom.ext_iff, mapRingHom_apply]
+
+/-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
+lifts to a ring isomorphism between corresponding uniform space completions. -/
+@[simps!]
+def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
+    Completion α ≃+* Completion β :=
+  .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
+    (by simp [mapRingHom_comp]) (by simp [mapRingHom_comp])
 
 section Algebra
 
@@ -242,7 +260,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
+continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where

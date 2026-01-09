@@ -33,7 +33,7 @@ In many cases, the maximal Bayes risk and the minimax risk are equal
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Function
 open scoped ENNReal NNReal

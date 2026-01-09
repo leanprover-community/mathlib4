@@ -100,6 +100,10 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
 @[simp]
 theorem edgeSet_map : (p.map f).edgeSet = Sym2.map f '' p.edgeSet := by ext; simp
 
+@[simp]
+theorem getVert_map (n : ℕ) : (p.map f).getVert n = f (p.getVert n) := by
+  induction p generalizing n <;> cases n <;> simp [*]
+
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
   intro p p' h
@@ -110,7 +114,6 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | nil => simp at h
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
-      cases hinj h.1
       grind
 
 section mapLe

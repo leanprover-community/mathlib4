@@ -218,7 +218,7 @@ theorem first_vote_pos :
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
         Nat.cast_add, Nat.cast_one, mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
       · norm_cast
-        rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
+        rw [mul_comm _ (p + 1), add_right_comm, Nat.add_one_mul_choose_eq,
           mul_comm]
       all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
     · simp

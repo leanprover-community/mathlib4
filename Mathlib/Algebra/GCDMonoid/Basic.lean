@@ -977,14 +977,14 @@ def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates 
       apply mul_left_cancel₀ (mul_ne_zero ha hb) _
       simpa only [mul_assoc, mul_comm, mul_left_comm] using this
     rw [map_mk_unit_aux hinv a, map_mk_unit_aux hinv (a * b), map_mk_unit_aux hinv b, ←
-      MonoidHom.map_mul, Associates.mk_mul_mk]
+      map_mul, Associates.mk_mul_mk]
   normUnit_coe_units u := by
     nontriviality α
     simp_rw [if_neg (Units.ne_zero u), Units.ext_iff]
     apply mul_left_cancel₀ (Units.ne_zero u)
     rw [Units.mul_inv, map_mk_unit_aux hinv u,
       Associates.mk_eq_mk_iff_associated.2 (associated_one_iff_isUnit.2 ⟨u, rfl⟩),
-      Associates.mk_one, MonoidHom.map_one]
+      Associates.mk_one, map_one]
 
 /-- Define `GCDMonoid` on a structure just from the `gcd` and its properties. -/
 noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)

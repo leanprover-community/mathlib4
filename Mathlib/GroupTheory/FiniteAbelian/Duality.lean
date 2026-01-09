@@ -18,7 +18,7 @@ of unity, where `n` is the exponent of `G`. The main results in this file are
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.
 -/
 
-@[expose] public section
+public section
 
 namespace CommGroup
 

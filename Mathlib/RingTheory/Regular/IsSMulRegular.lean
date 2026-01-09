@@ -26,7 +26,7 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 module, regular element, commutative algebra
 -/
 
-@[expose] public section
+public section
 
 section Congr
 

@@ -22,7 +22,7 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
@@ -91,7 +91,7 @@ def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-variable {D : Type*} [Category D] [Preadditive D]
+variable {D : Type*} [Category* D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 

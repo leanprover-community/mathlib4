@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

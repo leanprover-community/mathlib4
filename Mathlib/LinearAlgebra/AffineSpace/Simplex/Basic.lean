@@ -129,7 +129,7 @@ def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Si
   s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
 
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
-    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
+    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ := by
   simp [faceOpposite]
 
 lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
@@ -160,17 +160,21 @@ instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 
-@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
-lemma mem_affineSpan_range_face_points_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
-    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
-    s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
-  simp
-
-@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
-lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZero n]
-    (s : Simplex k P n) {i j : Fin (n + 1)} :
-    s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
-  simp
+lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
+    {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
+    Finset.univ.affineCombination k s.points w ∈
+      affineSpan k (Set.range (s.faceOpposite i).points) ↔ w i = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [range_faceOpposite_points] at h
+    exact s.independent.eq_zero_of_affineCombination_mem_affineSpan hw h (Finset.mem_univ i)
+      (by simp)
+  · rw [range_faceOpposite_points]
+    rcases subsingleton_or_nontrivial k with hk | hk
+    · have : Subsingleton V := Module.subsingleton k _
+      have : Subsingleton P := (AddTorsor.subsingleton_iff V P).1 inferInstance
+      rw [(affineSpan_eq_top_iff_nonempty_of_subsingleton k).2 (by simp)]
+      simp
+    · exact affineCombination_mem_affineSpan_image hw (by simpa using h) s.points
 
 /-- Push forward an affine simplex under an injective affine map. -/
 @[simps -fullyApplied]
@@ -245,6 +249,20 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
+lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
+    {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
+    Set.range ((s.reindex e).face h).points =
+      Set.range (s.face (fs := fs.map e.symm.toEmbedding) (h ▸ Finset.card_map _)).points := by
+  simp only [range_face_points, reindex_points, Set.image_comp]
+  simp
+
+lemma range_faceOpposite_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
+    (e : Fin (m + 1) ≃ Fin (n + 1)) (i : Fin (n + 1)) :
+    Set.range ((s.reindex e).faceOpposite i).points =
+      Set.range (s.faceOpposite (e.symm i)).points := by
+  rw [faceOpposite, range_face_reindex]
+  simp [Equiv.image_compl]
+
 section restrict
 
 /-- Restrict an affine simplex to an affine subspace that contains it. -/
@@ -283,8 +301,7 @@ theorem restrict_map_restrict
     letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
     letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
     (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
-      (s.map f hf).restrict S₂ (
-        Eq.trans_le
+      (s.map f hf).restrict S₂ (Eq.trans_le
           (by simp [AffineSubspace.map_span, Set.range_comp])
           (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
   rfl

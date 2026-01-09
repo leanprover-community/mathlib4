@@ -12,7 +12,7 @@ public import Mathlib.Data.Set.Finite.Basic
 # Finiteness of support
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 

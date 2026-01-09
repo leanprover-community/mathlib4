@@ -16,7 +16,7 @@ degenerate) right-angled triangles in real inner product spaces and Euclidean af
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

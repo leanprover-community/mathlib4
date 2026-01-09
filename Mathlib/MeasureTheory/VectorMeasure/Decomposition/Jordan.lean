@@ -279,7 +279,10 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
-  all_goals first | linarith | assumption
+  · linarith
+  · linarith
+  · assumption
+  · assumption
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/

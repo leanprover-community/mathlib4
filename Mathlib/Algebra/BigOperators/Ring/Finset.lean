@@ -20,7 +20,7 @@ We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -219,6 +219,11 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
     rw [filter_insert, if_neg (ha i hi).not_gt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
+
+theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+    ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
+  rw [prod_add_ordered]
+  simp
 
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/

@@ -16,7 +16,7 @@ In this file we use Zorn's lemma to prove that a partial order is atomic if ever
 statement.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

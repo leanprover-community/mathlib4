@@ -15,7 +15,7 @@ public import Mathlib.FieldTheory.IntermediateField.Algebraic
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
 
-@[expose] public section
+public section
 
 open Module Polynomial
 

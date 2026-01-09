@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 These results are kept separate from `Algebra.Star.Basic` to avoid it needing to import `Finset`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*}

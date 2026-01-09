@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Higher differentiability of usual operations
 
-We prove that the usual operations (addition, multiplication, difference, composition, and
+We prove that the usual operations (addition, multiplication, difference, and
 so on) preserve `C^n` functions.
 
 ## Notation
@@ -674,8 +675,6 @@ theorem contDiffAt_ringInverse [HasSummableGeomSeries R] (x : Rˣ) :
   have := AnalyticOnNhd.contDiffOn (analyticOnNhd_inverse (𝕜 := 𝕜) (A := R)) (n := n)
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
-
-@[deprecated (since := "2025-04-22")] alias contDiffAt_ring_inverse := contDiffAt_ringInverse
 
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 

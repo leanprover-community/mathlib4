@@ -26,7 +26,7 @@ We show that this notion is invariant under reparameterization by a monotone map
 
 We define `riemannianEDist x y` as the infimum of the length of `C^1` paths between `x`
 and `y`. We prove, in `exists_lt_locally_constant_of_riemannianEDist_lt`, that it is also the
-infimum on such path that are moreover locally constant near their endpoints. Such paths can be
+infimum on such paths that are moreover locally constant near their endpoints. Such paths can be
 glued while retaining the `C^1` property. We deduce that `riemannianEDist` satisfies the triangle
 inequality, in `riemannianEDist_triangle`.
 
@@ -240,7 +240,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
     rfl
   rw [E, pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn]
   · simp [η, ContinuousAffineMap.coe_lineMap_eq]
-  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn le_rfl
+  · simpa [η, ContinuousAffineMap.coe_lineMap_eq] using hγ.mdifferentiableOn one_ne_zero
   · apply (AffineMap.lineMap_mono hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
@@ -275,7 +275,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
-  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a') ⁻¹ * (t - a'))
+  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a')⁻¹ * (t - a'))
   have A (t) (ht : t < a') : η t = 0 := by
     simp only [η, Real.smoothTransition.zero_iff_nonpos]
     apply mul_nonpos_of_nonneg_of_nonpos
@@ -303,10 +303,10 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       gcongr
       simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
     · simp only [η]
-      apply (ContDiff.contDiffOn _).differentiableOn le_rfl
+      apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero
       fun_prop
     · rw [A a haa', B b hb'b]
-      apply γ_smooth.mdifferentiableOn le_rfl
+      apply γ_smooth.mdifferentiableOn one_ne_zero
   · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
   · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
 
@@ -321,7 +321,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   apply le_of_forall_gt (fun r hr ↦ ?_)
   rcases exists_lt_locally_constant_of_riemannianEDist_lt hr zero_lt_one
     with ⟨γ, γ0, γ1, γ_smooth, hγ, -⟩
-  let η : ℝ → ℝ := fun t ↦ - t
+  let η : ℝ → ℝ := fun t ↦ -t
   have h_smooth : ContMDiff 𝓘(ℝ) I 1 (γ ∘ η) := by
     apply γ_smooth.comp ?_
     simp only [contMDiff_iff_contDiff]
@@ -331,7 +331,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   rw [← pathELength_comp_of_antitoneOn zero_le_one] at this; rotate_left
   · exact monotone_id.neg.antitoneOn _
   · exact differentiableOn_neg _
-  · exact h_smooth.contMDiffOn.mdifferentiableOn le_rfl
+  · exact h_smooth.contMDiffOn.mdifferentiableOn one_ne_zero
   apply this.trans_lt
   convert hγ
   ext t

@@ -25,7 +25,7 @@ functor `yoneda.obj X` for all `X : C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

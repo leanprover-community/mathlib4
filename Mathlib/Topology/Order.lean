@@ -308,7 +308,7 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     isOpen_compl_iff
 
 theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
-    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)):=
+    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)) :=
   ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
 
 @[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]

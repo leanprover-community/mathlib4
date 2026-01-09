@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Nilpotent.Defs
 # Results about characteristic p reduced rings
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

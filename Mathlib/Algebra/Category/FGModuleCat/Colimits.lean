@@ -57,7 +57,7 @@ def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
 instance : CreatesColimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesColimit {F} := forget₂CreatesColimit F
 
-instance (J : Type) [Category J] [FinCategory J] :
+instance (J : Type) [SmallCategory J] [FinCategory J] :
     HasColimitsOfShape J (FGModuleCat.{v} k) :=
   hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))

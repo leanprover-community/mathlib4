@@ -116,7 +116,7 @@ instance : Category (a ⟶ b) where
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
 def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
-    (h : conjugateEquiv β.adj α.adj el.hom = er.hom) :
+    (h : conjugateEquiv β.adj α.adj el.hom = er.hom := by cat_disch) :
     α ≅ β where
   hom :=
     { τl := el.hom

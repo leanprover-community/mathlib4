@@ -25,13 +25,14 @@ namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
 
+set_option linter.flexible false in
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
   set f : ℤ[X] := X ^ 4 - 10 * X ^ 2 + 1 with hf_eq
   have hdeg_f : f.natDegree = 4 := by unfold f; compute_degree!
   have hf_lC : f.leadingCoeff = 1 := by
     simp only [f, leadingCoeff, hdeg_f]; compute_degree!
-  set q : ℤ [X] := X ^ 2 + 1 with hq_eq
+  set q : ℤ[X] := X ^ 2 + 1 with hq_eq
   have hq_deg : q.natDegree = 2 := by unfold q; compute_degree!
   have hq_monic : q.Monic := by unfold q; monicity!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
@@ -57,7 +58,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem,
       CharP.ker_intAlgebraMap_eq_span 3, span_singleton_pow, mem_span_singleton]
       norm_num
-    rw [hfq, ← modByMonicHom_apply, LinearMap.map_add]
+    rw [hfq, ← modByMonicHom_apply, map_add]
     convert zero_add _
     · rw [← LinearMap.mem_ker, mem_ker_modByMonic hq_monic]
       rw [pow_two, ← sub_mul]

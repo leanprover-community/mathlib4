@@ -17,6 +17,7 @@ from typing import Dict, Iterator, List, Optional
 import json
 import base64
 import shutil
+import argparse
 
 # Unicode symbols
 # We don't want to enforce that every project is set up the same,
@@ -37,6 +38,13 @@ def load_repos() -> List[Dict[str, str]]:
     """Load repository information from downstream_repos.yml"""
     with open('scripts/downstream_repos.yml', 'r') as f:
         return yaml.safe_load(f)
+
+def get_file_path(repo: Dict[str, str], relative_path: str) -> str:
+    """Construct the full path to a file in the repository, accounting for the optional 'path' field"""
+    repo_path = repo.get('path', '')
+    if repo_path:
+        return f"{repo_path}/{relative_path}"
+    return relative_path
 
 def check_tag(repo: Dict[str, str], tag: str) -> bool:
     """Check if a tag exists in a repository using GitHub CLI"""
@@ -103,10 +111,11 @@ def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]
     """Check git history of lean-toolchain file for first occurrence of version"""
     github_url = repo['github']
     repo_name = github_url.replace('https://github.com/', '')
+    toolchain_path = get_file_path(repo, 'lean-toolchain')
 
     try:
         result = subprocess.run(
-            ['gh', 'api', f'repos/{repo_name}/commits?path=lean-toolchain'],
+            ['gh', 'api', f'repos/{repo_name}/commits?path={toolchain_path}'],
             capture_output=True,
             text=True
         )
@@ -118,7 +127,7 @@ def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]
         for commit in commits:
             sha = commit['sha']
             result = subprocess.run(
-                ['gh', 'api', f'repos/{repo_name}/contents/lean-toolchain?ref={sha}'],
+                ['gh', 'api', f'repos/{repo_name}/contents/{toolchain_path}?ref={sha}'],
                 capture_output=True,
                 text=True
             )
@@ -140,10 +149,11 @@ def fetch_file_contents(repo: Dict[str, str], path: str) -> Optional[str]:
     """
     github_url = repo['github']
     repo_name = github_url.replace('https://github.com/', '')
+    full_path = get_file_path(repo, path)
 
     try:
         result = subprocess.run(
-            ['gh', 'api', f'repos/{repo_name}/contents/{path}'],
+            ['gh', 'api', f'repos/{repo_name}/contents/{full_path}'],
             capture_output=True,
             text=True
         )
@@ -232,91 +242,246 @@ f"""  {WARN} Detected a workflow {workflow_name} set up by hand.
     See https://github.com/{expected_action}/blob/HEAD/README.md for installation instructions.""")
         return False
 
+def check_release_tag(repo: Dict[str, str]) -> bool:
+    """Check if repo has release-tag workflow. Returns True if present."""
+    return check_workflow_uses_action(repo, 'release-tag', 'leanprover-community/lean-release-tag', silent=True)
+
+def check_build_action(repo: Dict[str, str]) -> bool:
+    """Check if repo has build workflow with lean-action. Returns True if present."""
+    return check_workflow_uses_action(repo, 'build', 'leanprover/lean-action', silent=True)
+
+def check_docs_action(repo: Dict[str, str]) -> bool:
+    """Check if repo has docs workflow with docgen-action. Returns True if present."""
+    return check_workflow_uses_action(repo, 'docs', 'leanprover-community/docgen-action', silent=True)
+
+def check_update_action(repo: Dict[str, str]) -> bool:
+    """Check if repo has update workflow with either update action. Returns True if present."""
+    return (check_workflow_uses_action(repo, 'update', 'leanprover-community/lean-update', silent=True) or
+            check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action', silent=True))
+
+def fetch_license(repo: Dict[str, str]) -> Optional[str]:
+    """Fetch LICENSE file contents, checking both with and without path prefix.
+
+    If the repo has a 'path' field, this will check:
+    1. LICENSE in the subdirectory (e.g., analysis/LICENSE)
+    2. LICENSE at the repository root (e.g., LICENSE)
+
+    Returns the license contents if found, None otherwise.
+    """
+    # First try with the path prefix (if present)
+    license = fetch_file_contents(repo, 'LICENSE')
+    if license is not None:
+        return license
+
+    # If not found and repo has a path field, try at repository root
+    if 'path' in repo:
+        github_url = repo['github']
+        repo_name = github_url.replace('https://github.com/', '')
+        try:
+            result = subprocess.run(
+                ['gh', 'api', f'repos/{repo_name}/contents/LICENSE'],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                content = json.loads(result.stdout)
+                return base64.b64decode(content['content']).decode('utf-8')
+        except Exception:
+            pass
+
+    return None
+
+def check_license(repo: Dict[str, str]) -> bool:
+    """Check if repo has a LICENSE file. Returns True if present."""
+    return fetch_license(repo) is not None
+
+def check_lint_driver(repo: Dict[str, str]) -> bool:
+    """Check if repo has lint driver configured. Returns True if present."""
+    lakefile = fetch_file_contents(repo, 'lakefile.lean')
+    if lakefile is None:
+        lakefile = fetch_file_contents(repo, 'lakefile.toml')
+    if lakefile is None:
+        return False
+    return 'lintDriver' in lakefile or 'lint_driver' in lakefile
+
+def check_test_driver(repo: Dict[str, str]) -> bool:
+    """Check if repo has test driver configured. Returns True if present."""
+    lakefile = fetch_file_contents(repo, 'lakefile.lean')
+    if lakefile is None:
+        lakefile = fetch_file_contents(repo, 'lakefile.toml')
+    if lakefile is None:
+        return False
+    return 'testDriver' in lakefile or 'test_driver' in lakefile
+
 def main():
     # Add gh check at the start of main
     check_gh_installed()
 
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Check downstream repository setup')
+    parser.add_argument('--lean-release-tag', action='store_true',
+                        help='Only check for lean-release-tag action')
+    parser.add_argument('--lean-action', action='store_true',
+                        help='Only check for lean-action (build workflow)')
+    parser.add_argument('--docgen-action', action='store_true',
+                        help='Only check for docgen-action (docs workflow)')
+    parser.add_argument('--update-action', action='store_true',
+                        help='Only check for update action (lean-update or mathlib-update-action)')
+    parser.add_argument('--license', action='store_true',
+                        help='Only check for LICENSE file')
+    parser.add_argument('--lint', action='store_true',
+                        help='Only check for lint driver')
+    parser.add_argument('--test', action='store_true',
+                        help='Only check for test driver')
+    args = parser.parse_args()
+
     repos = load_repos()
 
-    print("Checking downstream repository setup")
-    print("-" * 50)
+    # Determine if we're in single-feature mode
+    single_feature_mode = any([
+        args.lean_release_tag, args.lean_action, args.docgen_action,
+        args.update_action, args.license, args.lint, args.test
+    ])
 
-    success = True
-    for repo in repos:
-        print(f"\nRepository {repo['name']}")
+    if single_feature_mode:
+        # Single feature mode: only show repos missing the specified feature
+        missing_repos = []
 
-        # Check toolchain versions.
-        latest = get_latest_version(repo)
-        if latest:
-            print(f"  {PASS} Latest toolchain tag: {latest}")
+        for repo in repos:
+            if args.lean_release_tag and not check_release_tag(repo):
+                missing_repos.append(repo)
+            elif args.lean_action and not check_build_action(repo):
+                missing_repos.append(repo)
+            elif args.docgen_action and not check_docs_action(repo):
+                missing_repos.append(repo)
+            elif args.update_action and not check_update_action(repo):
+                missing_repos.append(repo)
+            elif args.license and not check_license(repo):
+                missing_repos.append(repo)
+            elif args.lint and not check_lint_driver(repo):
+                missing_repos.append(repo)
+            elif args.test and not check_test_driver(repo):
+                missing_repos.append(repo)
+
+        if missing_repos:
+            # Determine the feature name and action URL
+            if args.lean_release_tag:
+                feature = 'lean-release-tag'
+                action_url = 'https://github.com/leanprover-community/lean-release-tag/blob/HEAD/README.md'
+            elif args.lean_action:
+                feature = 'lean-action (build workflow)'
+                action_url = 'https://github.com/leanprover/lean-action/blob/HEAD/README.md'
+            elif args.docgen_action:
+                feature = 'docgen-action (docs workflow)'
+                action_url = 'https://github.com/leanprover-community/docgen-action/blob/HEAD/README.md'
+            elif args.update_action:
+                feature = 'update action'
+                action_url = 'https://github.com/leanprover-community/mathlib-update-action/blob/HEAD/README.md'
+            elif args.license:
+                feature = 'LICENSE file'
+                action_url = 'https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository'
+            elif args.lint:
+                feature = 'lint driver'
+                action_url = 'https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-linter'
+            elif args.test:
+                feature = 'test driver'
+                action_url = 'https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-test-driver'
+
+            print(f"Repositories missing {feature}:")
+            print("-" * 50)
+            for repo in missing_repos:
+                print(f"{FAIL} {repo['name']}")
+                print(f"    {repo['github']}")
+                if 'zulip-contact' in repo:
+                    print(f"    Contact: @**{repo['zulip-contact']}**")
+            print(f"\nSee {action_url} for installation instructions.")
+            sys.exit(1)
         else:
-            success = False
-            current = get_current_toolchain(repo)
-            print(
+            print(f"All repositories have the checked feature.")
+            sys.exit(0)
+    else:
+        # Original mode: check everything
+        print("Checking downstream repository setup")
+        print("-" * 50)
+
+        success = True
+        for repo in repos:
+            print(f"\nRepository {repo['name']}")
+            if 'zulip-contact' in repo:
+                print(f"  Contact: @**{repo['zulip-contact']}**")
+
+            # Check toolchain versions.
+            latest = get_latest_version(repo)
+            if latest:
+                print(f"  {PASS} Latest toolchain tag: {latest}")
+            else:
+                success = False
+                current = get_current_toolchain(repo)
+                print(
 f"""  {FAIL} No toolchain tags found.
     Adding a tag for new releases helps users of your project to synchronize versions.
     A GitHub Action exists to handle tagging new releases for you.
     See https://github.com/leanprover-community/lean-release-tag/blob/HEAD/README.md for installation instructions.""")
 
-        success = check_workflow_uses_action(repo, 'build', 'leanprover/lean-action') and success
-        success = check_workflow_uses_action(repo, 'docs', 'leanprover-community/docgen-action') and success
-        success = check_workflow_uses_action(repo, 'release-tag', 'leanprover-community/lean-release-tag') and success
-        # We have two actions that can do auto-updating; handle these checks manually.
-        if check_workflow_uses_action(repo, 'update', 'leanprover-community/lean-update', silent=True):
-            print(f"  {PASS} Update workflow installed, using the action: leanprover-community/lean-update")
-        else:
-            # Report failure for mathlib-update-action, since that has more features.
-            success = check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action') and success
+            success = check_workflow_uses_action(repo, 'build', 'leanprover/lean-action') and success
+            success = check_workflow_uses_action(repo, 'docs', 'leanprover-community/docgen-action') and success
+            success = check_workflow_uses_action(repo, 'release-tag', 'leanprover-community/lean-release-tag') and success
+            # We have two actions that can do auto-updating; handle these checks manually.
+            if check_workflow_uses_action(repo, 'update', 'leanprover-community/lean-update', silent=True):
+                print(f"  {PASS} Update workflow installed, using the action: leanprover-community/lean-update")
+            else:
+                # Report failure for mathlib-update-action, since that has more features.
+                success = check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action') and success
 
-        license = fetch_file_contents(repo, 'LICENSE')
-        if license is not None:
-            first_line = license.split('\n')[0].strip()
-            print(f"  {PASS} License: {first_line}")
-        else:
-            success = False
-            print(
+            license = fetch_license(repo)
+            if license is not None:
+                first_line = license.split('\n')[0].strip()
+                print(f"  {PASS} License: {first_line}")
+            else:
+                success = False
+                print(
 f"""  {FAIL} Consider adding a license.
     Choosing a license for your project makes it open-source and encourages contribution and reuse.
     Lean and Mathlib are open-source projects available under the Apache License 2.0: https://choosealicense.com/licenses/apache-2.0/
     For instructions on how to apply a license, please see: https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository""")
 
-        # Determine lakefile contents: this can be found either in `lakefile.lean` or `lakefile.toml`.
-        # (Check in this order to match Lake's own behaviour.)
-        lakefile_format = 'lean'
-        lakefile = fetch_file_contents(repo, 'lakefile.lean')
-        if lakefile is None:
-            lakefile_format = 'toml'
-            lakefile = fetch_file_contents(repo, 'lakefile.toml')
+            # Determine lakefile contents: this can be found either in `lakefile.lean` or `lakefile.toml`.
+            # (Check in this order to match Lake's own behaviour.)
+            lakefile_format = 'lean'
+            lakefile = fetch_file_contents(repo, 'lakefile.lean')
             if lakefile is None:
-                success = False
-                print(
+                lakefile_format = 'toml'
+                lakefile = fetch_file_contents(repo, 'lakefile.toml')
+                if lakefile is None:
+                    success = False
+                    print(
 f"""  {FAIL} No lakefile found.
     This may be caused by a temporary network error. Try running the script again.""")
-                continue
-        # We're not going to parse the whole lakefile to check for these options.
-        if 'lintDriver' in lakefile or 'lint_driver' in lakefile:
-            print(f"  {PASS} Linting enabled.")
-        else:
-            success = False
-            print(
+                    continue
+            # We're not going to parse the whole lakefile to check for these options.
+            if 'lintDriver' in lakefile or 'lint_driver' in lakefile:
+                print(f"  {PASS} Linting enabled.")
+            else:
+                success = False
+                print(
 f"""  {FAIL} Consider adding a lint driver.
     You can configure the `lake lint` command to automatically report code quality suggestions.
     Linters are included with Mathlib or Batteries.
     For instructions on enabling a linter, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-linter""")
-        if 'linter.mathlibStandard' in lakefile:
-            # These linter options are quite strict, so don't complain if they are not enabled.
-            print(f"  {PASS} Linting to Mathlib's standards.")
-        if 'testDriver' in lakefile or 'test_driver' in lakefile:
-            print(f"  {PASS} Testing enabled.")
-        else:
-            success = False
-            # A warning, since a lot of projects seem to be their own test-suite.
-            print(
+            if 'linter.mathlibStandard' in lakefile:
+                # These linter options are quite strict, so don't complain if they are not enabled.
+                print(f"  {PASS} Linting to Mathlib's standards.")
+            if 'testDriver' in lakefile or 'test_driver' in lakefile:
+                print(f"  {PASS} Testing enabled.")
+            else:
+                success = False
+                # A warning, since a lot of projects seem to be their own test-suite.
+                print(
 f"""  {WARN} Consider adding a test driver.
     You can configure the `lake test` command to build and run test files.
     For instructions on creating a test suite, please see: https://github.com/leanprover-community/mathlib4/wiki/Setting-up-linting-and-testing-for-your-Lean-project#adding-a-test-driver""")
 
-    sys.exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
 if __name__ == "__main__":
     main()

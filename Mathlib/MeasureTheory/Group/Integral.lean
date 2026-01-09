@@ -15,7 +15,7 @@ We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -169,7 +169,7 @@ end MeasurableMul
 
 section SMul
 
-variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
+variable {G : Type*} [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableConstSMul G α]
 
 @[to_additive]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :

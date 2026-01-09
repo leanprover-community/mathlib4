@@ -15,7 +15,7 @@ public import Mathlib.Order.Bounds.Basic
 In this file we prove various results about the behaviour of bounds under monotone/antitone maps.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

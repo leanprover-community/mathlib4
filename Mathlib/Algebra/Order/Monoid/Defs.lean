@@ -117,7 +117,7 @@ theorem one_lt_mul_self_iff : 1 < a * a ↔ 1 < a :=
   ⟨(fun h ↦ by push_neg at h ⊢; exact mul_le_one' h h).mtr, fun h ↦ one_lt_mul'' h h⟩
 
 @[to_additive (attr := simp)]
-theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_not]
+theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by contrapose!; exact one_lt_mul_self_iff
 
 @[to_additive (attr := simp)]
-theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]
+theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by contrapose!; exact one_le_mul_self_iff

@@ -20,7 +20,7 @@ differentiability.
 Prove smoothness (in terms of `Smooth`).
 -/
 
-@[expose] public section
+public section
 
 
 open scoped UpperHalfPlane Manifold

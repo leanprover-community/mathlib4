@@ -17,7 +17,7 @@ import all Mathlib.CategoryTheory.Limits.Shapes.Kernels
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Limits

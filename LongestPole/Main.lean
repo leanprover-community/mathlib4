@@ -8,7 +8,7 @@ import ImportGraph.Imports
 import Mathlib.Data.String.Defs
 import Mathlib.Util.FormatTable
 import Cli
-import LongestPole.SpeedCenterJson
+import LongestPole.RadarJson
 
 /-!
 # `lake exe pole`
@@ -29,40 +29,35 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
 def runCurl (args : Array String) (throwFailure := true) : IO String := do
   runCmd "curl" args throwFailure
 
-def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
+namespace RadarAPI
 
-namespace SpeedCenterAPI
+def getRunInfoJson (chash : String) (repo : String := "mathlib4") : IO String :=
+  runCurl #[s!"https://radar.lean-lang.org/api/compare/{repo}/parent/{chash}/"]
 
-def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
-  runCurl #[s!"https://speed.lean-lang.org/mathlib4/api/run/{repoId}?hash={hash}"]
+def getRunInfo (chash : String) : IO JsonGet := do
+  let r ← getRunInfoJson chash
+  let j ← match Json.parse r with
+  | .error e => throw <| IO.userError s!"Could not parse radar JSON: {e}\n{r}"
+  | .ok j => pure j
+  match fromJson? j with
+  | .error e => throw <| IO.userError s!"Could not parse radar JSON: {e}\n{j}"
+  | .ok v => pure v
 
-def getRunResponse (hash : String) : IO RunResponse := do
-  let r ← runJson hash
-  match Json.parse r with
-  | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
-  | .ok j => match fromJson? j with
-    | .ok v => pure v
-    | .error e => match fromJson? j with
-      | .ok (v : ErrorMessage) =>
-        IO.eprintln s!"https://speed.lean-lang.org says: {v.message}"
-        IO.eprintln s!"If you are working on a Mathlib PR, you can comment !bench to make the bot run benchmarks."
-        IO.eprintln s!"Otherwise, try moving to an older commit?"
-        IO.Process.exit 1
-      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
-
-def RunResponse.instructions (response : RunResponse) :
-    NameMap Float := Id.run do
+def JsonGet.instructions (info : JsonGet) : NameMap Float := Id.run do
   let mut r : NameMap Float := ∅
-  for m in response.run.result.measurements do
-    let n := m.dimension.benchmark
-    if n.startsWith "~" then
-      r := r.insert (n.drop 1).toName (m.value/10^6)
+  for comparison in info.comparison.metrics do
+    let module := some comparison.metric
+      |>.bind (·.dropPrefix? "build/module/") |>.map (·.toString)
+      |>.bind (·.dropSuffix? "//instructions") |>.map (·.toName)
+    if let some m := module then
+      if let some v := comparison.second then
+        r := r.insert m (v / 10 ^ 6)
   return r
 
-def instructions (run : String) : IO (NameMap Float) :=
-  return (← getRunResponse run).instructions
+def instructions (chash : String) : IO (NameMap Float) :=
+  return (← getRunInfo chash).instructions
 
-end SpeedCenterAPI
+end RadarAPI
 
 def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
@@ -145,7 +140,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let instructions ← if args.hasFlag "loc" then
       countLOC (graph.toList.map (·.1))
     else
-      SpeedCenterAPI.instructions sha
+      RadarAPI.instructions sha
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
@@ -177,7 +172,7 @@ def pole : Cmd := `[Cli|
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
-    loc;                  "Use lines of code instead of speedcenter instruction counts."
+    loc;                  "Use lines of code instead of radar instruction counts."
 ]
 
 /-- `lake exe pole` -/

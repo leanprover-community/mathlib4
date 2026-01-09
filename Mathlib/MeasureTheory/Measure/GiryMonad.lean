@@ -17,7 +17,7 @@ measurable spaces and measurable functions, called the Giry monad.
 Note that most sources use the term "Giry monad" for the restriction
 to *probability* measures. Here we include all measures on X.
 
-See also `MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
+See also `Mathlib/MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
 monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 ## References
@@ -236,7 +236,7 @@ theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs 
   apply lintegral_map_le
 
 theorem ae_ae_of_ae_bind {m : Measure α} {f : α → Measure β} {p : β → Prop} (hf : AEMeasurable f m)
-    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂ f a, p b :=
+    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂f a, p b :=
   ae_of_ae_map hf <| ae_ae_of_ae_join h
 
 theorem _root_.AEMeasurable.ae_of_bind {γ : Type*} {_ : MeasurableSpace γ} {m : Measure α}

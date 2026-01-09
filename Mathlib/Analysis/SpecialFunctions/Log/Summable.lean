@@ -16,7 +16,7 @@ to relate summability of `f` to multipliability of `1 + f`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*}
 

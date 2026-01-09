@@ -163,7 +163,7 @@ instance : DecompositionMonoid α where
   primal a := by
     obtain rfl | ha := eq_or_ne a 0; · exact isPrimal_zero
     obtain ⟨f, hf, u, rfl⟩ := exists_prime_factors a ha
-    exact ((Submonoid.isPrimal α).multiset_prod_mem f (hf · ·|>.isPrimal)).mul u.isUnit.isPrimal
+    exact ((Submonoid.isPrimal α).multiset_prod_mem f (hf · · |>.isPrimal)).mul u.isUnit.isPrimal
 
 end UniqueFactorizationMonoid
 

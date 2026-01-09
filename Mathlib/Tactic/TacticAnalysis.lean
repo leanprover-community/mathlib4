@@ -178,6 +178,15 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
       let childTactics := relevantChildren.filterMap Prod.fst
       let childSequences := (relevantChildren.map Prod.snd).flatten
       let stx := i.stx
+      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
+      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
+      -- nodes with synthetic source info.
+      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+          ``Lean.Parser.Term.byTactic] then
+        return (none, if childTactics.isEmpty then
+            childSequences
+          else
+            childSequences.push childTactics)
       if let some (.original _ _ _ _) := stx.getHeadInfo? then
         -- Punctuation: skip this.
         if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
@@ -185,13 +194,6 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
         -- Tactic modifiers: return the children unmodified.
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
           return (childTactics[0]?, childSequences)
-        -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-            ``Lean.Parser.Term.byTactic] then
-          return (none, if childTactics.isEmpty then
-              childSequences
-            else
-              childSequences.push childTactics)
 
         -- Remaining options: plain pieces of syntax.
         -- We discard `childTactics` here, because those are either already picked up by a

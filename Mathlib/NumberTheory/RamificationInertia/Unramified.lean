@@ -22,7 +22,7 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

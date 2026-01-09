@@ -23,7 +23,7 @@ Various results on Cauchy sequences in (pseudo-)metric spaces, including
 metric, pseudo_metric, Cauchy sequence
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Uniformity Topology

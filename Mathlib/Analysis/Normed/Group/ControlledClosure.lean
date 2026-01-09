@@ -16,7 +16,7 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 lemmas in this file]."
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Finset

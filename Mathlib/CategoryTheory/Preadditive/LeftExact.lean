@@ -119,7 +119,7 @@ lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEquali
   have := preservesEqualizers_of_preservesKernels F
   have := preservesTerminalObject_of_preservesZeroMorphisms F
   have := preservesLimitsOfShape_pempty_of_preservesTerminal F
-  have : PreservesFiniteProducts F :=.of_preserves_binary_and_terminal F
+  have : PreservesFiniteProducts F := .of_preserves_binary_and_terminal F
   preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits

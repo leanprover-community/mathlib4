@@ -90,7 +90,7 @@ local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
 local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
 
-local instance : IsScalarTower R T E :=  IsScalarTower.to₁₃₄ R S T E
+local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)

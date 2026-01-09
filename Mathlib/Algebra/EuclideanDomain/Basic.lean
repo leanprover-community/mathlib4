@@ -185,9 +185,12 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
 theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
   rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 
+set_option backward.privateInPublic true in
 private def P (a b : R) : R × R × R → Prop
   | (r, s, t) => (r : R) = a * s + b * t
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem xgcdAux_P (a b : R) {r r' : R} {s t s' t'} (p : P a b (r, s, t))
     (p' : P a b (r', s', t')) : P a b (xgcdAux r s t r' s' t') := by
   induction r, r' using GCD.induction generalizing s t s' t' with

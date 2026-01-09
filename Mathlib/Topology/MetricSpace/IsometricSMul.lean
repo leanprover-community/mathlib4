@@ -36,7 +36,7 @@ these two notions are equivalent. A group with a right-invariant metric can be a
 
 open Set
 
-open ENNReal Pointwise
+open scoped ENNReal Pointwise
 
 universe u v w
 
@@ -77,7 +77,7 @@ theorem edist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
 
 @[to_additive (attr := simp)]
 theorem ediam_smul [SMul M X] [IsIsometricSMul M X] (c : M) (s : Set X) :
-    EMetric.diam (c • s) = EMetric.diam s :=
+    Metric.ediam (c • s) = Metric.ediam s :=
   (isometry_smul _ _).ediam_image s
 
 @[to_additive]

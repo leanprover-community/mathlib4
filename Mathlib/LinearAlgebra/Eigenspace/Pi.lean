@@ -26,7 +26,7 @@ for commuting endomorphisms but there are important more general situations wher
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

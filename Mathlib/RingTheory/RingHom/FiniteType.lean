@@ -25,7 +25,7 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 
 -/
 
-@[expose] public section
+public section
 
 section Algebra
 

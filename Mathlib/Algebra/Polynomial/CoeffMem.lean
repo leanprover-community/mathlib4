@@ -19,12 +19,12 @@ Precisely, we show that each summand needs at most one coefficient of `p` and `d
 of `q`.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-local notation "deg("p")" => natDegree p
+local notation3 "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)
 local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
 

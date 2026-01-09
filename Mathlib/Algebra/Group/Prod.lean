@@ -562,7 +562,8 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
-@[to_additive uniqueProd /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) uniqueProd /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.uniqueProd`. -/]
 def uniqueProd [Unique N] : N × M ≃* M :=
@@ -571,7 +572,8 @@ def uniqueProd [Unique N] : N × M ≃* M :=
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
 This is the `MulEquiv` version of `Equiv.prodUnique`. -/
-@[to_additive prodUnique /-- Multiplying by the trivial monoid doesn't change the structure.
+@[to_additive (attr := simps!) prodUnique /-- Multiplying by the trivial monoid doesn't change the
+structure.
 
 This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=
@@ -598,7 +600,7 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where

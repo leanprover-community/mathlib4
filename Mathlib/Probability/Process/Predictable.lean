@@ -188,7 +188,7 @@ lemma measurableSet_predictable_singleton_prod
   · exact measurableSet_predictable_Ioc_prod _ _ hs
   · ext m
     simp only [Set.mem_singleton_iff, Set.mem_Ioc]
-    omega
+    lia
 
 lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}

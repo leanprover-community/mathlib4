@@ -541,7 +541,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 lemma sup_set_smul (s t : Set S) :
     (s ⊔ t) • N = s • N ⊔ t • N :=
   set_smul_eq_of_le _ _ _
-    (by rintro _ _ (hr|hr) hn
+    (by rintro _ _ (hr | hr) hn
         · exact Submodule.mem_sup_left (mem_set_smul_of_mem_mem hr hn)
         · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem hr hn))
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))

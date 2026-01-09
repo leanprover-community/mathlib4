@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace MorphismProperty
 

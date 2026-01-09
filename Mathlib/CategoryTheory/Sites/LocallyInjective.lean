@@ -172,7 +172,7 @@ lemma isLocallyInjective_iff_injective_of_separated
   · apply isLocallyInjective_of_injective
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
+instance (F : Cᵒᵖ ⥤ Type w) (G : Subfunctor F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h

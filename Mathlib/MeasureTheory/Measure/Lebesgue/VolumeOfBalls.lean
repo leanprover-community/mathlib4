@@ -41,7 +41,7 @@ Using these formulas, we compute the volume of the unit balls in several cases.
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/
 
-@[expose] public section
+public section
 
 section general_case
 

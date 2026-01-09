@@ -50,7 +50,7 @@ abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
 /-- Any ring with a `ZMod p`-module structure can be upgraded to a `ZMod p`-algebra. Not an
 instance because this is usually not the default way, and this will cause typeclass search loop. -/
 def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra (ZMod n) R :=
-  Algebra.ofModule' (proof · ·|>.1) (proof · ·|>.2) where
+  Algebra.ofModule' (proof · · |>.1) (proof · · |>.2) where
   proof (r : ZMod n) (x : R) : r • 1 * x = r • x ∧ x * r • 1 = r • x := by
     obtain _ | n := n
     · obtain rfl : (inferInstanceAs (Module ℤ R)) = ‹_› := Subsingleton.elim _ _

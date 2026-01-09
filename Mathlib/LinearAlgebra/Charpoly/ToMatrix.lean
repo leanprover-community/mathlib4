@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.Finiteness.Prod
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

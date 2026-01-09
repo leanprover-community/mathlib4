@@ -26,8 +26,6 @@ open Set Algebra Submodule MeasureTheory
 
 -- some instances for unit circle
 
-attribute [local instance] Real.fact_zero_lt_one
-
 /-- In this file we normalise the measure on `ℝ / ℤ` to have total volume 1. -/
 local instance : MeasureSpace UnitAddCircle := ⟨AddCircle.haarAddCircle⟩
 

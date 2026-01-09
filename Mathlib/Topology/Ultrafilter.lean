@@ -10,7 +10,7 @@ public import Mathlib.Topology.Continuous
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 

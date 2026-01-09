@@ -15,7 +15,7 @@ This file proves that the cardinality of a module without zero divisors is at le
 of its base ring.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

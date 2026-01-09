@@ -121,7 +121,7 @@ instance : (tensoringRight C).Monoidal :=
 end MonoidalCategory
 
 variable {C}
-variable {M : Type*} [Category M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
+variable {M : Type*} [Category* M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
 
 @[reassoc (attr := simp)]
 theorem μ_δ_app (i j : M) (X : C) [F.Monoidal] :

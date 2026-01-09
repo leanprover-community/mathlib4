@@ -28,7 +28,7 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 * `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} {I : Set α}
 

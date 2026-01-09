@@ -569,6 +569,9 @@ This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
+theorem val_comp_rangeRestrict :
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
+
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
     let ⟨x, hx⟩ := hy
@@ -680,6 +683,11 @@ theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
   Subtype.ext rfl
 
 @[simp]
+theorem val_comp_inclusion (hst : S ≤ T) :
+    T.val.comp (inclusion hst) = S.val :=
+  rfl
+
+@[simp]
 theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
   rfl
 
@@ -786,14 +794,19 @@ instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S
   S.toSubsemiring.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
-    (S : Subalgebra R A) : IsScalarTower S α β :=
+instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β] :
+    IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
-instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
-    [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
-    IsScalarTower R S' T :=
-  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
+instance (priority := low) isScalarTower_mid [SMul α R] [SMul α A]
+    [IsScalarTower α R A] [SMul A β] [SMul α β] [IsScalarTower α A β] :
+    IsScalarTower α S β :=
+  ⟨fun a b c ↦ smul_assoc a b.1 c⟩
+
+instance (priority := low) isScalarTower_right [SMul α R] [SMul α A] [IsScalarTower α R A]
+    [SMul β R] [SMul β A] [IsScalarTower β R A] [SMul α β] [IsScalarTower α β A] :
+    IsScalarTower α β S :=
+  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.1)⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)

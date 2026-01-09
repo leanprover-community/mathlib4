@@ -18,8 +18,8 @@ This file records some `PreservesColimits` instance on tensors products on monoi
 namespace CategoryTheory.MonoidalCategory.Limits
 open _root_.CategoryTheory.Limits
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-  {J : Type*} [Category J] (F : J ⥤ C)
+variable {C : Type*} [Category* C] [MonoidalCategory C]
+  {J : Type*} [Category* J] (F : J ⥤ C)
 
 section Colimits
 

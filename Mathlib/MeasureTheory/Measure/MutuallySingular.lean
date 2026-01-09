@@ -164,7 +164,7 @@ lemma absolutelyContinuous_of_add_of_mutuallySingular {ν₁ ν₂ : Measure α}
   have : μ s = μ (s ∩ tᶜ) := by
     conv_lhs => rw [← inter_union_compl s t]
     rw [measure_union, measure_inter_null_of_null_right _ htμ, zero_add]
-    · exact (disjoint_compl_right.inter_right' _ ).inter_left' _
+    · exact (disjoint_compl_right.inter_right' _).inter_left' _
     · exact hs.inter ht.compl
   rw [this]
   refine h ?_

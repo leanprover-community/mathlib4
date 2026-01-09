@@ -65,7 +65,7 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F
 
-instance (J : Type) [Category J] [FinCategory J] :
+instance (J : Type) [SmallCategory J] [FinCategory J] :
     HasLimitsOfShape J (FGModuleCat.{v} k) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))

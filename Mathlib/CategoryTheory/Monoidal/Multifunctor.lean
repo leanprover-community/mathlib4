@@ -24,8 +24,8 @@ by phrasing the pentagon axiom as an equality of natural transformations between
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-  {D : Type*} [Category D] [MonoidalCategory D]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
+  {D : Type*} [Category* D] [MonoidalCategory D]
 
 namespace MonoidalCategory
 
@@ -218,7 +218,7 @@ The top map in the left unitality square.
 @[simps!]
 def topMapₗ {F : C ⥤ D} (ε : 𝟙_ D ⟶ F.obj (𝟙_ C)) :
     F ⋙ tensorUnitLeft D ⟶ (curriedTensorPre F).obj (𝟙_ C) :=
-  whiskerLeft F ((curriedTensor _).map ε )
+  whiskerLeft F ((curriedTensor _).map ε)
 
 /--
 The bottom map in the left unitality square.

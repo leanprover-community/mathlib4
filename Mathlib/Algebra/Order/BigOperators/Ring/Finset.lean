@@ -21,7 +21,7 @@ In particular, this file contains the standard form of the Cauchy-Schwarz inequa
 some of its immediate consequences.
 -/
 
-@[expose] public section
+public section
 
 variable {ι R S : Type*}
 
@@ -262,7 +262,7 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
-private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
+alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and

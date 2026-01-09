@@ -284,8 +284,7 @@ A ring of characteristic zero is not a `ℚ`-algebra iff it has mixed characteri
 -/
 theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   rw [← EqualCharZero.iff_not_mixedCharZero]
   apply EqualCharZero.nonempty_algebraRat_iff
 

@@ -372,7 +372,7 @@ noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) 
   { toFun := fun x => M.map f x
     map_add' := by simp
     map_smul' := fun r x => by
-      simp only [ModuleCat.restrictScalars.smul_def, RingHom.id_apply, M.map_smul]
+      simp only [ModuleCat.restrictScalars.smul_def (R := R.obj X), RingHom.id_apply, M.map_smul]
       rw [← RingCat.comp_apply, ← R.map_comp]
       congr
       apply hX.hom_ext }

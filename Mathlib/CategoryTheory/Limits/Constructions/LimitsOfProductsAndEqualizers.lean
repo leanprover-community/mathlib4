@@ -449,8 +449,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
     refine Cocones.ext (Iso.refl _) ?_
-    intro j
-    dsimp [P, Q, I, i]
+    dsimp [i]
     simp
 
 end

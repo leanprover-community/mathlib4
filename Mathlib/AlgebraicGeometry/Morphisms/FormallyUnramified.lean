@@ -137,9 +137,6 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
   infer_instance
 
-@[deprecated (since := "2025-05-03")]
-alias AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal := isOpenImmersion_diagonal
-
 end FormallyUnramified
 
 end AlgebraicGeometry

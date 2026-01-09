@@ -17,7 +17,7 @@ In this file we prove that the neighborhoods kernel of a set
 is a compact set if and only if the original set is a compact set.
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [TopologicalSpace X] {s : Set X}
 

@@ -26,7 +26,7 @@ In this file we prove Fubini's theorem.
   Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma
   `MeasureTheory.Integrable.integral_prod_right` states that the inner integral of the right-hand
   side is integrable.
-* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini theorem for
+* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini's theorem for
   continuous functions with compact support, which does not assume that the measures are σ-finite
   contrary to all the usual versions of Fubini.
 
@@ -35,7 +35,7 @@ In this file we prove Fubini's theorem.
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

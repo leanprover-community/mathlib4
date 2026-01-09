@@ -22,7 +22,7 @@ important step when proving `c.IsColimit`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w₁ w₀ v u
 

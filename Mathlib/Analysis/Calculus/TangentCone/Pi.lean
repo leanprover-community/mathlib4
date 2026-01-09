@@ -15,7 +15,7 @@ of a family sets with unique differentiability property
 has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped Topology
@@ -43,8 +43,6 @@ theorem mapsTo_tangentConeAt_pi [DecidableEq ι] {i : ι} (hi : ∀ j ≠ i, x j
     · suffices Tendsto (fun n => c n • d' n j) atTop (𝓝 0) by simpa [hj]
       refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
       exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
-
-@[deprecated (since := "2025-04-27")] alias mapsTo_tangentCone_pi := mapsTo_tangentConeAt_pi
 
 variable (ι E)
 variable [Finite ι]

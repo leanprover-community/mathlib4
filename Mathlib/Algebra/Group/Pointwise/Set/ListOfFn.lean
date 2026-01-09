@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 This file proves some lemmas about pointwise algebraic operations with lists of sets.
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 

@@ -82,7 +82,7 @@ theorem ranges_disjoint (l : List ℕ) :
       intro u hu
       rw [mem_map]
       rw [mem_range] at hu
-      cutsat
+      lia
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v

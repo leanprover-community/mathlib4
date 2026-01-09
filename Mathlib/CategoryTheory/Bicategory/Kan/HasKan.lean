@@ -247,7 +247,7 @@ variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The family of 2-morphisms out of the left Kan lift `f₊ g`. -/
 def lanLiftDesc [HasLeftKanLift f g] (s : LeftLift f g) :
-    f ₊ g ⟶ s.lift :=
+    f₊ g ⟶ s.lift :=
   (lanLiftIsKan f g).desc s
 
 @[reassoc (attr := simp)]

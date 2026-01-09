@@ -15,7 +15,7 @@ the algebra for reasons discussed in the module documentation for that file.
 
 Of course, with a metric on the algebra and an isometric continuous functional calculus, the
 algebra must *be* a C⋆-algebra already. As such, it may seem like this class is not useful. However,
-the main purpose is to allow for the continuous functional calculus to be a isometric for the other
+the main purpose is to allow for the continuous functional calculus to be an isometry for the other
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
 

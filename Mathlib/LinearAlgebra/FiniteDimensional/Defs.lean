@@ -47,7 +47,7 @@ We make use of `finrank`, the dimension of a finite-dimensional space, returning
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
 `finrank` is by convention set to `0`. `finrank` is not defined using `FiniteDimensional`.
 For basic results that do not need the `FiniteDimensional` class, import
-`Mathlib/LinearAlgebra/Finrank.lean`.
+`Mathlib/LinearAlgebra/Dimension/Finrank.lean`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
@@ -57,8 +57,9 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
-`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
+Plenty of the results hold for general finitely generated modules (see
+`Mathlib/RingTheory/Finiteness/Basic.lean`) or Noetherian modules (see
+`Mathlib/RingTheory/Noetherian/Basic.lean`).
 -/
 
 @[expose] public section
@@ -154,6 +155,9 @@ This is not an instance because `n` cannot be inferred.
 theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
     FiniteDimensional K V :=
   of_finrank_eq_succ hn.out
+
+lemma of_fact_finrank_eq_two [Fact (finrank K V = 2)] : FiniteDimensional K V :=
+  of_fact_finrank_eq_succ 1
 
 end FiniteDimensional
 

@@ -161,7 +161,6 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
   · apply ωSup_le_ωSup_of_le _
     intro i
     exists i
-    intro x
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i

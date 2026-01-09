@@ -88,7 +88,7 @@ theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal �
   exact IsMaximal.ne_top hMmax
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
+  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
@@ -216,9 +216,6 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
     exacts [I.ne_top_iff_one.mp (ne_of_mem_of_not_mem' Submodule.mem_top haI).symm, haI]
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
-
-@[deprecated (since := "2025-05-24")]
-alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
 
 section IsPrincipalIdealRing
 

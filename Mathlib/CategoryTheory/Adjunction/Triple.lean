@@ -49,7 +49,7 @@ bundle the adjunctions in a structure `Triple F G H`.
 
 open CategoryTheory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (F : C ⥤ D) (G : D ⥤ C) (H : C ⥤ D)
 
 /-- Structure containing the two adjunctions of an adjoint triple `F ⊣ G ⊣ H`. -/
@@ -156,7 +156,7 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
 `F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
 transformation `H ⟶ F`. -/
 @[simp]
-lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
+lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft := by
   ext
   rw [rightToLeft_eq_units, rightToLeft_eq_counits]
   simp

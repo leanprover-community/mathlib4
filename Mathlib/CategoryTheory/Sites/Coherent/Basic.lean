@@ -47,7 +47,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
@@ -62,7 +62,7 @@ class Precoherent : Prop where
     ∀ (α : Type) [Finite α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)), EffectiveEpiFamily X₁ π₁ →
     ∃ (β : Type) (_ : Finite β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
       EffectiveEpiFamily X₂ π₂ ∧
-    ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))), ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
+    ∃ (i : β → α) (ι : (b : β) → (X₂ b ⟶ X₁ (i b))), ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
 
 /--
 The coherent coverage on a precoherent category `C`.
@@ -72,7 +72,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
     S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
   pullback := by
     rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
-    obtain ⟨β,_,X₂,π₂,h,i,ι,hh⟩ := Precoherent.pullback f α X₁ π₁ hS
+    obtain ⟨β, _, X₂, π₂, h, i, ι, hh⟩ := Precoherent.pullback f α X₁ π₁ hS
     refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, ?_⟩
     rintro _ _ ⟨b⟩
     exact ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩

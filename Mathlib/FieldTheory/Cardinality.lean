@@ -28,7 +28,7 @@ a field structure, and so can all types with prime power cardinalities, and this
 
 -/
 
-@[expose] public section
+public section
 
 
 local notation "‖" x "‖" => Fintype.card x

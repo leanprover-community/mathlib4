@@ -75,7 +75,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
-    (K.map f.toLinearIsometry).HasOrthogonalProjection :=
+    (K.map (f.toLinearIsometry : E →ₗ[𝕜] E')).HasOrthogonalProjection :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
@@ -230,7 +230,7 @@ theorem eq_starProjection_of_mem_orthogonal {u v : E} (hv : v ∈ K)
 orthogonal projection. -/
 theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
     (hv : v ∈ K) (hz : z ∈ Kᗮ) (hu : u = v + z) : K.starProjection u = v :=
-  eq_starProjection_of_mem_orthogonal hv (by simpa [hu] )
+  eq_starProjection_of_mem_orthogonal hv (by simpa [hu])
 
 @[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_mem_orthogonal' :=
   eq_starProjection_of_mem_orthogonal'
@@ -304,7 +304,7 @@ lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection :=
 
 @[simp]
 lemma range_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    LinearMap.range U.starProjection = U := by
+    U.starProjection.range = U := by
   ext x
   exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ coe_mem (U.orthogonalProjection y),
     fun h ↦ ⟨x, starProjection_eq_self_iff.mpr h⟩⟩
@@ -325,15 +325,15 @@ theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 
   · simpa
 
 @[simp]
-theorem ker_orthogonalProjection : LinearMap.ker K.orthogonalProjection = Kᗮ := by
+theorem ker_orthogonalProjection : K.orthogonalProjection.ker = Kᗮ := by
   ext; exact orthogonalProjection_eq_zero_iff
 
 open ContinuousLinearMap in
 @[simp]
 lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
-    LinearMap.ker U.starProjection = Uᗮ := by
-  rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
-    range_starProjection]
+    U.starProjection.ker = Uᗮ := by
+  rw [LinearMap.IsIdempotentElem.ker_eq_range U.isIdempotentElem_starProjection.toLinearMap,
+    ← range_starProjection Uᗮ, starProjection_orthogonal, coe_sub, coe_id]
 
 theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -349,8 +349,9 @@ theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGr
 
 theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
-    (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] [(p.map f).HasOrthogonalProjection] (x : E) :
-    f (p.starProjection x) = (p.map f).starProjection (f x) :=
+    (p : Submodule 𝕜 E) [p.HasOrthogonalProjection]
+    [(p.map (f : E →ₗ[𝕜] E')).HasOrthogonalProjection] (x : E) :
+    f (p.starProjection x) = (p.map (f : E →ₗ[𝕜] E')).starProjection (f x) :=
   have : (p.map f.toLinearMap).HasOrthogonalProjection := ‹_›
   f.map_starProjection p x
 
@@ -448,7 +449,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> match_scalars <;> field_simp [hv']
@@ -547,7 +548,7 @@ theorem starProjection_comp_starProjection_of_le {U V : Submodule 𝕜 E}
 
 open ContinuousLinearMap in
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_range [CompleteSpace E]
-    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : (LinearMap.range p).HasOrthogonalProjection :=
+    {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.range.HasOrthogonalProjection :=
   have := hp.isClosed_range.completeSpace_coe
   .ofCompleteSpace _
 
@@ -687,7 +688,7 @@ theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
 open RCLike
 
 lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
-    re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖^2 := by
+    re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖ ^ 2 := by
   rw [starProjection_apply,
     re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
     div_eq_iff (NeZero.ne' 2).symm, pow_two, add_sub_assoc, ← eq_sub_iff_add_eq', coe_norm,

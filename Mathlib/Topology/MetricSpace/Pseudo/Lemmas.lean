@@ -50,6 +50,11 @@ lemma eventually_closedBall_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) :
 lemma tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) (𝓝 x).smallSets :=
   tendsto_smallSets_iff.2 fun _ ↦ eventually_closedBall_subset
 
+/-- If `u` is a neighborhood of `x`, then for small enough `r`, the open ball
+`Metric.ball x r` is contained in `u`. -/
+lemma eventually_ball_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) : ∀ᶠ r in 𝓝 (0 : ℝ), ball x r ⊆ u :=
+  (eventually_closedBall_subset hu).mono fun _r hr ↦ ball_subset_closedBall.trans hr
+
 namespace Metric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 

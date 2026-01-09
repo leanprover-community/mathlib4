@@ -66,7 +66,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
     rw [LinearDisjoint.basisOfBasisRight_apply, traceForm_apply, Function.comp_apply,
       IsScalarTower.coe_toAlgHom', ← map_mul, h₁.trace_algebraMap h₂, b₂.trace_traceDual_mul,
       MonoidWithZeroHom.map_ite_one_zero]
-  rwa [← span_span_of_tower A R₁, h, Set.range_comp, ← map_span,
+  rwa [← span_span_of_tower A R₁, h, Set.range_comp, ← AlgHom.coe_toLinearMap, ← map_span,
     ← traceDual_span_of_basis A (1 : Submodule R₂ F₂) b₂
       (by rw [Basis.localizationLocalization_span K A⁰ F₂]; ext; simp)] at h_main
 
@@ -177,7 +177,7 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) {ι : Type*} (b : Basis ι K F₂)
-    (hb : span A (Set.range b) = LinearMap.range (IsScalarTower.toAlgHom A R₂ F₂)) :
+    (hb : span A (Set.range b) = LinearMap.range (IsScalarTower.toAlgHom A R₂ F₂ : R₂ →ₗ[A] F₂)) :
     span R₁ (Set.range (h₁.basisOfBasisRight h₂ b)) =
       Submodule.restrictScalars R₁ (1 : Submodule B L) := by
   classical
@@ -189,8 +189,8 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
   rw [← coe_one, ← h_main, coe_dual _ _ (by simp), coe_dual_one, restrictScalars_traceDual,
     ← traceDual_eq_span_map_traceDual_of_linearDisjoint A B R₁ R₂ h₁ h₂' h₃,
     ← coe_restrictScalars A, traceDual_span_of_basis A (1 : Submodule R₂ F₂) b,
-    ← IsScalarTower.coe_toAlgHom' A F₂ L, ← map_coe, map_span, span_span_of_tower,
-    IsScalarTower.coe_toAlgHom', ← Set.range_comp]
+    ← IsScalarTower.coe_toAlgHom' A F₂ L, ← AlgHom.coe_toLinearMap, ← map_coe, map_span,
+    span_span_of_tower, AlgHom.coe_toLinearMap, IsScalarTower.coe_toAlgHom', ← Set.range_comp]
   · have : (h₁.basisOfBasisRight h₂ b).traceDual = algebraMap F₂ L ∘ b.traceDual := by
       refine Basis.traceDual_eq_iff.mpr fun i j ↦ ?_
       rw [Function.comp_apply, h₁.basisOfBasisRight_apply, traceForm_apply, ← map_mul,
@@ -225,8 +225,8 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     exact h₁.linearIndependent_right b₂.linearIndependent
   have P₂ : ⊤ ≤ span R₁ (Set.range v) := by
     rw [top_le_iff]
-    apply map_injective_of_injective (by exact FaithfulSMul.algebraMap_injective B L :
-      Function.Injective (IsScalarTower.toAlgHom R₁ B L))
+    apply map_injective_of_injective (f := (IsScalarTower.toAlgHom R₁ B L).toLinearMap)
+      (FaithfulSMul.algebraMap_injective B L)
     rw [map_span, ← Set.range_comp]
     convert Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
       (b.localizationLocalization_span K A⁰ F₂)

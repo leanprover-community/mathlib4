@@ -23,7 +23,7 @@ We deduce that the same is true for the Riemann integral for continuous function
 integral, McShane integral, Bochner integral
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal ENNReal Topology
 

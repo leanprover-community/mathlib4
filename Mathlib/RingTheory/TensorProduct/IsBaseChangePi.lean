@@ -120,9 +120,9 @@ variable {ι : Type*}
 theorem directSum (ibc : ∀ i, IsBaseChange S (ε i)) :
     IsBaseChange S (lmap ε) := by
   classical
-  apply of_equiv <| directSumRight' R S S N ≪≫ₗ congr_linearEquiv fun i ↦ (ibc i).equiv
+  apply of_equiv <| directSumRight' R S S N ≪≫ₗ congrLinearEquiv fun i ↦ (ibc i).equiv
   intros; ext
-  simp [coe_directSumRight', coe_congr_linearEquiv, equiv_tmul]
+  simp [coe_directSumRight', coe_congrLinearEquiv, equiv_tmul]
 
 variable (ι)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M']

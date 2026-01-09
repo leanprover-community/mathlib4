@@ -21,7 +21,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -450,7 +450,7 @@ theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
     (hfg : ∀ b c, f b c = g b c) : ∏'[L] b, ∏'[M] c, f b c = ∏'[L] b, ∏'[M] c, g b c :=
   tprod_congr fun b ↦ tprod_congr fun c ↦ hfg b c
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem tprod_fintype [L.LeAtTop] [Fintype β] (f : β → α) : ∏'[L] b, f b = ∏ b, f b := by
   apply tprod_eq_prod; simp
 
@@ -486,18 +486,18 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
   · simp
   · intro b' hb'; simp [hb']
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
+    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
+  simp [prod_attach]
 
-@[to_additive (attr := simp)]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
-  rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
+@[to_additive]
+theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}

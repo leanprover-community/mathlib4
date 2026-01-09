@@ -117,6 +117,44 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
     (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
     fun a _V hV ↦ isClosed_ball a hV.2
 
+/--
+If the uniformity has a linearly ordered basis, then the space is completely normal.
+-/
+theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [LinearOrder ι]
+    {B : ι → SetRel α α} (hB : (uniformity α).HasAntitoneBasis B) : CompletelyNormalSpace α where
+  completely_normal s t hSt hsT := by
+    let S (b : Bool) : Set α := b.casesOn (false := s) (true := t)
+    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (ball x.1 ((B i).comp (B i).inv)) (S (!b)) := by
+      have hST : Disjoint (S b) (closure (S !b)) := b.casesOn (false := hsT) (true := hSt.symm)
+      rw [← disjoint_nhdsSet_principal, disjoint_principal_right] at hST
+      obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1 (nhds_le_nhdsSet x.2 hST)
+      obtain ⟨(V : SetRel α α), hV, hVs, hVU⟩ := comp_symm_mem_uniformity_sets hUu
+      obtain ⟨i, hi⟩ := hB.mem_iff.1 hV
+      refine ⟨i, subset_compl_iff_disjoint_right.1 (subset_trans (ball_mono ?_ x.1) hU)⟩
+      exact subset_trans (SetRel.comp_subset_comp hi (V.inv_eq_self ▸ (SetRel.inv_mono hi))) hVU
+    choose U hU using hx
+    have hUS (b : Bool) : ⋃ x, ball x.1 (B (U b x)) ∈ nhdsSet (S b) := by
+      rw [mem_nhdsSet_iff_forall]
+      intro x hx
+      apply mem_of_superset (ball_mem_nhds x (hB.mem (U b ⟨x, hx⟩)))
+      exact subset_iUnion (fun x => ball x.1 (B (U b x))) ⟨x, hx⟩
+    rw [Filter.disjoint_iff]
+    refine ⟨_, hUS false, _, hUS true, ?_⟩
+    have hdj (b : Bool) (x : S b) (y : S (!b)) (hxy : U b x ≤ U (!b) y) :
+        Disjoint (ball x.1 (B (U b x))) (ball y.1 (B (U (!b) y))) := by
+      rw [Set.disjoint_iff]
+      intro z hz
+      exact (hU b x).notMem_of_mem_left (mem_ball_comp hz.1 (hB.antitone hxy hz.2)) y.2
+    simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]
+    intro x y
+    exact (le_total (U false x) (U true y)).elim
+      (fun h => hdj false x y h) (fun h => (hdj true y x h).symm)
+
+instance (priority := 100) UniformSpace.completelyNormalSpace_of_isCountablyGenerated_uniformity
+    [(uniformity α).IsCountablyGenerated] : CompletelyNormalSpace α :=
+  (has_seq_basis α).elim fun _ hB =>
+    UniformSpace.completelyNormalSpace_of_hasAntitoneBasis hB.1
+
 theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {x y : α} : x ⤳ y ↔ ∀ i, p i → (x, y) ∈ s i :=
   (nhds_basis_uniformity h).specializes_iff

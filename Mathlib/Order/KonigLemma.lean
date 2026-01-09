@@ -52,7 +52,7 @@ Formulate the lemma as a statement about graphs.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 section Sequence

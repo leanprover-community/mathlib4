@@ -15,7 +15,7 @@ In this file we prove lemmas relating `f = O(g)` etc
 for composition of functions with coercion of a seminormed group to its completion.
 -/
 
-@[expose] public section
+public section
 
 variable {α E F : Type*} [Norm E] [SeminormedAddCommGroup F]
   {f : α → E} {g : α → F} {l : Filter α}

@@ -99,7 +99,7 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((kernel.ι (g y)).app j)
+  obj j := MonoOver.mk ((kernel.ι (g y)).app j)
   map {j j'} f := MonoOver.homMk ((kernel (g y)).map f)
 
 end injectivity₀
@@ -157,7 +157,7 @@ corresponding to the monomorphism
 `(pullback.snd c.ι ((Functor.const _).map z)).app j`. -/
 @[simps]
 noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
-  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
+  obj j := MonoOver.mk ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
 /-- The canonical map `colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X`,

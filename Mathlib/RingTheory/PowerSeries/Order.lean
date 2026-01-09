@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # Formal power series (in one variable) - Order
 
@@ -44,8 +45,7 @@ section OrderBasic
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine not_iff_not.mp ?_
-  push_neg
+  contrapose!
   simp
 
 /-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
@@ -136,6 +136,15 @@ theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
   | top => simp
   | coe n => simp [order_eq_nat]
 
+theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine MvPowerSeries.le_order fun d hd => by
+      have : coeff ↑(Finsupp.degree d) φ = 0 := coeff_of_lt_order _ hd
+      have eq_aux : d.degree = d () := Finset.sum_eq_single _ (by simp) (by simp)
+      exact (PowerSeries.coeff_def rfl (R := R)) ▸ (eq_aux ▸ this)
+  · refine le_order φ (MvPowerSeries.order φ) fun i hi => by
+      rw [← Finsupp.degree_single () i] at hi
+      exact MvPowerSeries.coeff_of_lt_order hi
 
 /-- The order of the sum of two formal power series
 is at least the minimum of their orders. -/
@@ -213,7 +222,7 @@ theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
-  · rw [h, order_eq_top, LinearMap.map_zero]
+  · rw [h, order_eq_top, map_zero]
   · rw [order_eq]
     constructor <;> intro i hi
     · simp only [Nat.cast_inj] at hi
@@ -238,7 +247,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  cutsat
+  lia
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
@@ -446,6 +455,19 @@ theorem divXPowOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontr
   map_prod divXPowOrderHom φ s
 
 end NoZeroDivisors
+
+section Ring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+@[simp]
+theorem order_toSubring : (p.toSubring T hp).order = p.order := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine le_order _ _ fun d hd => by simp [coeff_of_lt_order d hd, ← coeff_toSubring p T hp]
+  · exact le_order _ _ fun d hd => by
+      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order d hd)
+
+end Ring
 
 end PowerSeries
 

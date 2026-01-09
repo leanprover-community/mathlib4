@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 This should be kept in sync with `Mathlib/Data/Set/Pointwise/Interval.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

@@ -28,7 +28,7 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable (I : Ideal R) {N : Submodule R M}

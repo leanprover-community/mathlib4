@@ -32,9 +32,6 @@ lemma RingHom.flat_algebraMap_iff {R S : Type*} [CommRing R] [CommRing S] [Algeb
     (algebraMap R S).Flat ↔ Module.Flat R S := by
   rw [RingHom.Flat, toAlgebra_algebraMap]
 
-@[deprecated (since := "2025-06-03")]
-alias flat_algebraMap_iff := RingHom.flat_algebraMap_iff
-
 namespace RingHom.Flat
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]

@@ -135,10 +135,7 @@ For the same equation in `M`, see `Derivation.compAEval_eq`.
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
-  rw [← mkDerivation_apply]
-  congr
-  apply derivation_ext
-  simp
+  simpa using AEval.of_aeval_smul _ _ _
 
 /--
 A form of the chain rule: if `f` is a polynomial over `R`
