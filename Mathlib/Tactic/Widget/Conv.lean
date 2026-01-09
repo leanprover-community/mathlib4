@@ -35,7 +35,7 @@ where
     if h : i = Fin.last pos.size then pure (Path.fun 0) else
     let i := i.castLT (Fin.val_lt_last h)
     if pos[i] = SubExpr.Pos.typeCoord then
-      throwError m!"conv mode does not support entering types{indentExpr expr}" else
+      throwError m!"conv mode does not support entering types of expressions{indentExpr expr}" else
     let err := throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
     match expr with
     | .bvar i => throwError m!"unexpected bound variable #{i}"
@@ -59,15 +59,17 @@ where
         withReader (fun ctx => {ctx with lctx}) do
           let e := b.instantiate1 (.fvar fvarId)
           unless (← isTypeCorrect e) do
-            throwError m!"failed to abstract let-expression, \
-              result is not type correct{indentExpr expr}"
+            throwError m!"conv mode does not support entering let expressions \
+              for which the type-correctness of the body depends on the let value \n\
+              failed to abstract let-expression, result is not type correct{indentExpr expr}"
           Path.body n <$> go e pos i.succ
       else err
     | .forallE n t b bi =>
       if pos[i] = 0 then do
         unless (← isProp t) || expr.isArrow do
           throwError m!"conv mode only supports rewriting forall binder types \
-            when the binder type is a proposition{indentExpr expr}"
+            when the binder type is a proposition or when the body of the forall \
+            does not depend on the value of the bound variable{indentExpr expr}"
         Path.type <$> go t pos i.succ
       else if pos[i] = 1 then do
         let lctx ← getLCtx
