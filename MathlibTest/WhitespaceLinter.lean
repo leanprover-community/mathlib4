@@ -293,9 +293,13 @@ end Bundle
 set_option linter.style.whitespace true in
 meta def New  := 0
 
+/-- info: All is good! -/
+#guard_msgs in
 #reformat
 set_option linter.style.whitespace true
 
+/-- info: All is good! -/
+#guard_msgs in
 #reformat
 example : True ∧ True := by
   refine ?_
