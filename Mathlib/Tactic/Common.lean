@@ -10,6 +10,7 @@ module
 public meta import Aesop
 public meta import Qq
 public meta import Plausible
+public meta import Canonical
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 public meta import ImportGraph.Imports
