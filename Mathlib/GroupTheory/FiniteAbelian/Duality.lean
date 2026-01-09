@@ -123,6 +123,7 @@ theorem _root_.MonoidHom.restrict_surjective (H : Subgroup G) [Finite (G →* M�
     ← card_monoidHom_of_hasEnoughRootsOfUnity (G ⧸ H) M,
     Nat.card_congr (restrictHomKerEquiv Mˣ H).toEquiv]
 
+@[simp]
 theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
     (∀ (φ : G →* Mˣ), (∀ y ∈ H, φ y = 1) → φ x = 1) ↔ x ∈ H := by
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
@@ -178,13 +179,13 @@ def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup (G →* Rˣ))�
   left_inv H := by
     ext x
     rw [MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MonoidHom.mem_ker]
-    simpa using forall_monoidHom_apply_eq_one_iff R H x
+    simp
   right_inv Φ := by
     have : HasEnoughRootsOfUnity R (Monoid.exponent (G →* Rˣ)) := by
       rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G R).some]
     ext φ
     rw [OrderDual.ofDual_toDual, mem_ker, restrictHom_apply, restrict_eq_one_iff]
-    simpa using forall_monoidHom_apply_eq_one_iff (G := G →* Rˣ) R Φ φ
+    simp
 
 @[simp]
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_iff (H : Subgroup G) (φ : G →* Rˣ) :
