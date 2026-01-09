@@ -1040,8 +1040,8 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
   bicone :=
     { pt := f default
-      π := fun j => eqToHom (by congr; rw [← Unique.uniq] )
-      ι := fun j => eqToHom (by congr; rw [← Unique.uniq] ) }
+      π := fun j => eqToHom (by congr; rw [← Unique.uniq])
+      ι := fun j => eqToHom (by congr; rw [← Unique.uniq]) }
   isBilimit :=
     { isLimit := (limitConeOfUnique f).isLimit
       isColimit := (colimitCoconeOfUnique f).isColimit }

@@ -990,7 +990,7 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
     if b0 : b = 0 then by subst b; exact eq_zero_of_zero_dvd h₂
     else (le_of_dvd b0 h₁).antisymm (le_of_dvd a0 h₂)
 
-instance isAntisymm : IsAntisymm Ordinal (· ∣ ·) :=
+instance antisymm : @Std.Antisymm Ordinal (· ∣ ·) :=
   ⟨@dvd_antisymm⟩
 
 /-- `a % b` is the unique ordinal `o'` satisfying
