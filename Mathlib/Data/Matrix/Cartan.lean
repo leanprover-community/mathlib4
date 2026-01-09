@@ -294,8 +294,7 @@ off-diagonal entries that are neither 0 nor -1. -/
 
 theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by
   intro hs
-  have h12 : (1 : Fin 4) ≠ 2 := by decide
-  have := hs h12
+  have := hs (i := 1) (j := 2) (by decide)
   rcases this with h | h <;> simp_all [F₄]
 
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by
