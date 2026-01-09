@@ -391,13 +391,15 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   ext u v
   refine ⟨.mono h.prop.left, fun ⟨p⟩ ↦ ?_⟩
   by_contra
-  let s := F.connectedComponentMk u
-  have := this ∘ s.reachable_of_mem_supp rfl
-  have ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩ := p.exists_boundary_dart s rfl this
-  have := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
-  have := h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
-  · grind [Adj.reachable, sup_le_iff, le_iff_adj, fromEdgeSet_adj]
-  · grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, G.symm huv]
+  let s : F.ConnectedComponent := .mk _ u
+  have : v ∉ s := this ∘ s.reachable_of_mem_supp rfl
+  have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
+  rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
+  have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
+  suffices F ⊔ fromEdgeSet {s(v', u')} ≤ F by
+    grind [Adj.reachable, sup_le_iff, le_iff_adj, fromEdgeSet_adj]
+  refine h.le_of_ge ⟨?_, h.prop.right.isAcyclic_sup_fromEdgeSet_of_not_reachable this⟩ le_sup_left
+  grind [Maximal, sup_le, le_iff_adj, fromEdgeSet_adj, G.symm huv]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
