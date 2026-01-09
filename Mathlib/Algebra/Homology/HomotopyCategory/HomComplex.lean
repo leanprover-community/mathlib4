@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Tactic.Linarith
 
 /-! The cochain complex of homomorphisms between cochain complexes
 
@@ -320,7 +319,7 @@ lemma comp_assoc_of_third_degree_eq_neg_second_degree {n₁ n₂ n₁₂ : ℤ}
     (z₁.comp z₂ h₁₂).comp z₃
       (show n₁₂ + (-n₂) = n₁ by rw [← h₁₂, add_neg_cancel_right]) =
       z₁.comp (z₂.comp z₃ (add_neg_cancel n₂)) (add_zero n₁) :=
-  comp_assoc _ _ _ _ _ (by linarith)
+  comp_assoc _ _ _ _ _ (by lia)
 
 @[simp]
 protected lemma zero_comp {n₁ n₂ n₁₂ : ℤ} (z₂ : Cochain G K n₂)
@@ -453,14 +452,14 @@ lemma δ_eq (hnm : n + 1 = m) (z : Cochain F G n) :
   ext p q hpq
   dsimp
   simp only [δ_v n m hnm z p q hpq (q-1) (p+1) rfl rfl,
-    Cochain.comp_v _ _ hnm p (q-1) q (by linarith) (by linarith),
-    Cochain.comp_v _ _ (show 1+n = m by linarith) p (p+1) q (by linarith) (by linarith),
+    Cochain.comp_v _ _ hnm p (q-1) q (by lia) (by lia),
+    Cochain.comp_v _ _ (show 1+n = m by lia) p (p+1) q (by lia) (by lia),
     Cochain.diff_v]
 
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
     (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q):= by
-  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by linarith) hpq,
+  simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by lia) hpq,
     Int.negOnePow_one, Units.neg_smul, one_smul, sub_eq_add_neg]
 
 lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
@@ -508,7 +507,7 @@ lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cocha
     (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
   ext p q hpq
   dsimp
-  simp only [map_v, comp_v _ _ h p _ q rfl (by linarith), Φ.map_comp]
+  simp only [map_v, comp_v _ _ h p _ q rfl (by lia), Φ.map_comp]
 
 @[simp]
 lemma map_ofHom :

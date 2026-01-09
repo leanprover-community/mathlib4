@@ -698,8 +698,7 @@ instance (X : SpectralObject C EInt) [X.IsThirdQuadrant] (n : ℕ) :
         rw [← hpq]
         dsimp
         congr 1
-        linarith [Nat.add_sub_of_le (show j.succ ≤ n by lia),
-          Nat.add_sub_of_le (show j ≤ n by lia)]
+        lia
 
 end SpectralObject
 

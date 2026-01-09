@@ -23,9 +23,9 @@ lemma Set.has_min_of_ℤ (S : Set ℤ) (hS : S.Nonempty) (m₀ : ℤ)
   have hT : T.Nonempty := ⟨t₀, hx⟩
   let μ := (Nat.lt_wfRel.wf).min T hT
   refine ⟨m₀ + μ, (Nat.lt_wfRel.wf).min_mem T hT, fun y hy => ?_⟩
-  have hy' : 0 ≤ y - m₀ := by linarith [hm₀ y hy]
+  have hy' : 0 ≤ y - m₀ := by have := hm₀ y hy; lia
   obtain ⟨t, ht⟩ := Int.eq_ofNat_of_zero_le hy'
-  obtain rfl : y = m₀ + t := by linarith
+  obtain rfl : y = m₀ + t := by lia
   simp only [ge_iff_le, add_le_add_iff_left, Nat.cast_le]
   exact (Nat.lt_wfRel.wf).min_le hy _
 
@@ -174,7 +174,7 @@ instance : E.HasEdgeMonoAt pq r where
   zero pq' := E.d_to_eq_zero r pq' pq (E.LE_of_hasEdgeMonoAtFrom pq r)
 
 instance (k : ℕ) : E.HasEdgeMonoAtFrom pq (r + k) where
-  le := by linarith [E.LE_of_hasEdgeMonoAtFrom pq r]
+  le := by have := E.LE_of_hasEdgeMonoAtFrom pq r; lia
 
 instance [E.HasEdgeMonoAtFrom pq 2] : E.HasEdgeMonoAtFrom pq 3 := by
   change E.HasEdgeMonoAtFrom pq (2 + (1 : ℕ))
@@ -341,7 +341,7 @@ instance : E.HasEdgeEpiAt pq r where
   zero pq' := E.d_from_eq_zero r pq pq' (E.LE_of_hasEdgeEpiAtFrom pq r)
 
 instance (k : ℕ) : E.HasEdgeEpiAtFrom pq (r + k) where
-  le := by linarith [E.LE_of_hasEdgeEpiAtFrom pq r]
+  le := by have := E.LE_of_hasEdgeEpiAtFrom pq r; lia
 
 instance [E.HasEdgeEpiAtFrom pq 2] : E.HasEdgeEpiAtFrom pq 3 := by
   change E.HasEdgeEpiAtFrom pq (2 + (1 : ℕ))
@@ -604,8 +604,8 @@ noncomputable def edgeMono (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
       (E.pageInfinityIso' pq).hom ≫ E.edgeMonoSteps pq r _ h
     else
       have : E.HasEdgeEpiAtFrom pq r := ⟨by
-        simp only [not_le] at h
-        linarith [E.rFromMin_LE_rMin pq]⟩
+        have := E.rFromMin_LE_rMin pq
+        lia⟩
       (E.pageInfinityIso pq r).hom
 
 instance (r : ℤ) [E.HasEdgeMonoAtFrom pq r] :
@@ -633,7 +633,7 @@ lemma edgeMono_edgeMonoSteps (r r' : ℤ) (h : r ≤ r' := by lia)
     rw [dif_neg hr, dif_neg (by lia)]
     dsimp [pageInfinityIso]
     simp only [assoc]
-    have : E.HasEdgeEpiAtFrom pq r := ⟨by linarith [E.rFromMin_LE_rMin pq]⟩
+    have : E.HasEdgeEpiAtFrom pq r := ⟨by have := E.rFromMin_LE_rMin pq; lia⟩
     simp only [← cancel_mono (E.edgeIsoSteps pq r r' h).hom,
       assoc, assoc, assoc, edgeIsoSteps_hom, edgeMonoSteps_edgeEpiSteps,
       comp_id, edgeEpiSteps_comp]
@@ -674,8 +674,8 @@ noncomputable def edgeEpi (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
       E.edgeEpiSteps pq r _ h ≫ (E.pageInfinityIso' pq).inv
     else
       have : E.HasEdgeMonoAtFrom pq r := ⟨by
-        simp only [not_le] at h
-        linarith [E.rToMin_LE_rMin pq]⟩
+        have := E.rToMin_LE_rMin pq
+        lia⟩
       (E.pageInfinityIso pq r).inv
 
 instance (r : ℤ) [E.HasEdgeEpiAtFrom pq r] :
@@ -700,7 +700,7 @@ lemma edgeEpiSteps_edgeEpi (r r' : ℤ) (h : r ≤ r')
   · dsimp [edgeEpi]
     rw [dif_neg hr, dif_neg (by lia)]
     dsimp [pageInfinityIso]
-    have : E.HasEdgeMonoAtFrom pq r := ⟨by linarith [E.rToMin_LE_rMin pq]⟩
+    have : E.HasEdgeMonoAtFrom pq r := ⟨by have := E.rToMin_LE_rMin pq; lia⟩
     simp [← cancel_epi (E.edgeIsoSteps pq r r' h).inv]
 
 -- priority less than that of edgeEpiSteps_pageInfinityIso_inv

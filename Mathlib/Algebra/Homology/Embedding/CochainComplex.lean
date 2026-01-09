@@ -391,7 +391,7 @@ noncomputable def truncGEXIso (n : ℤ) (i : ℤ) (hi : n < i) :
       rw [Int.natAbs_of_nonneg (by omega), add_sub_cancel])
     (fun h => by
       rw [boundaryGE_embeddingUpIntGE_iff, Int.natAbs_eq_zero] at h
-      linarith)
+      lia)
 
 noncomputable def truncGEXIsoOpcycles (n : ℤ) :
     (K.truncGE n).X n ≅ K.opcycles n :=

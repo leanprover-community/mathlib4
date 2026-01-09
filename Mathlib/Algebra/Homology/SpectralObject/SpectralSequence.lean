@@ -108,14 +108,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     SpectralSequenceMkData (Fin (l + 1))
     (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
   deg pq := pq.1 + pq.2.1
-  i₀ r hr pq := ⟨(pq.2.1 - (r - 2)).toNat, by
-    by_cases h : 0 ≤ pq.2.1 - (r - 2)
-    · simp only [Int.toNat_lt h, Nat.cast_add, Nat.cast_one]
-      have := pq.2.2
-      linarith [pq.2.2]
-    · refine lt_of_le_of_lt (le_of_eq ?_) (show 0 < l + 1 by lia)
-      rw [Int.toNat_eq_zero]
-      lia⟩
+  i₀ r hr pq := ⟨(pq.2.1 - (r - 2)).toNat, by grind⟩
   i₁ pq := pq.2.castSucc
   i₂ pq := pq.2.succ
   i₃ r hr pq := Fin.clamp (pq.2.1 + (r - 1)).toNat _
@@ -124,65 +117,38 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
   le₂₃ r hr pq := by
     simp only [Fin.le_iff_val_le_val, Fin.val_succ,
       le_min_iff, Fin.clamp]
-    constructor
-    · rw [Int.le_toNat (by lia)]
-      lia
-    · linarith [pq.2.2]
+    grind
   hc _ _ _ _ := fun ⟨h₁, h₂⟩ ↦ by lia
   hc₀₂ r hr := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     ext
-    rw [← Int.ofNat_inj]
-    dsimp at h₁ h₂ ⊢
-    rw [Int.toNat_of_nonneg (by omega)]
-    omega
+    grind
   hc₁₃ r hr := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩
     rw [Fin.ext_iff]
     dsimp at h₁ h₂ ⊢
-    have : b₂ + (r - 1) = a₂ := by omega
-    rw [this]
-    simp only [Int.toNat_natCast]
-    apply le_antisymm
-    · simp only [le_min_iff, le_refl, true_and]
-      omega
-    · exact Nat.min_le_left a₂ l
+    grind
   antitone_i₀ r r' hr hrr' := by
     rintro ⟨a, ⟨a', _⟩⟩
     dsimp
     rw [Fin.mk_le_mk]
-    apply Int.toNat_le_toNat
-    omega
+    lia
   monotone_i₃ r r' hr hrr' := by
     rintro ⟨a, ⟨a', _⟩⟩
     dsimp
     rw [Fin.mk_le_mk]
     apply Fin.clamp_le_clamp
-    apply Int.toNat_le_toNat
-    omega
+    lia
   i₀_prev' r hr := by
     rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
     ext
     dsimp at h₁ h₂ ⊢
-    rw [← Int.ofNat_inj]
-    rw [Int.toNat_of_nonneg (by omega)]
-    omega
+    lia
   i₃_next' r hr := by
     rintro ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩
     ext
     dsimp at h₁ h₂ ⊢
-    apply le_antisymm
-    · refine (min_le_left _ _).trans ?_
-      rw [← Int.ofNat_le, Int.toNat_of_nonneg (by omega)]
-      simp only [Nat.cast_add, Nat.cast_one]
-      omega
-    · dsimp [Fin.clamp]
-      simp only [le_min_iff]
-      constructor
-      · rw [← Int.ofNat_le, Int.toNat_of_nonneg (by omega),
-          Nat.cast_add, Nat.cast_one]
-        omega
-      · omega
+    grind
 
 variable {ι c r₀}
 
@@ -541,12 +507,12 @@ noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
           using data.le₁₂ pq')) (homOfLE (data.le₀₁ r hr pq))
         (homOfLE (data.le₁₂ pq)) (homOfLE (data.le₂₃ r hr pq)) := by
   refine ShortComplex.isoMk
-    (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr pq pq' hpq])
+    (pageXIso X data _ _ _ _ _ _ _ _ (by have := data.hc r hr pq pq' hpq; lia)
       _ _ _ _ rfl rfl rfl rfl)
     (pageXIso X data _ _ _ _ _ _ _ _ hn₂' _ _ _ _
       (by rw [data.hc₀₂ r hr pq' pq'' hpq']) (by rw [data.hc₁₃ r hr pq' pq'' hpq'])
       (by rw [data.hc₀₂ r hr pq pq' hpq]) (by rw [data.hc₁₃ r hr pq pq' hpq]))
-    (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr pq' pq'' hpq'])
+    (pageXIso X data _ _ _ _ _ _ _ _ (by have := data.hc r hr pq' pq'' hpq'; lia)
         _ _ _ _ rfl rfl rfl rfl) ?_ ?_
   · dsimp
     rw [paged_eq X data r hr pq pq' hpq, assoc, assoc, Iso.inv_hom_id, comp_id]
@@ -671,7 +637,7 @@ lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂
         (f₃ data pq' i₁ i₂ hi₁ hi₂) (f₄ data r hr pq' i₂ i₃ hi₂ hi₃) _ rfl)
     refine ShortComplex.isoMk (Iso.refl _)
       (pageXIso X data _ _ _ _ _ _ _ _ hn₁' _ _ _ _ hi₀ hi₁ hi₂ hi₃)
-      (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr _ _ h]) _ _ _ _
+      (pageXIso X data _ _ _ _ _ _ _ _ (by have := data.hc r hr _ _ h; lia) _ _ _ _
         rfl (by rw [hi₀', data.i₀_prev r r' hrr' hr _ _ h]) (by rw [hi₀, data.hc₀₂ r hr _ _ h])
         (by rw [hi₁, data.hc₁₃ r hr _ _ h])) ?_ ?_
     · dsimp
@@ -711,7 +677,7 @@ lemma cc_w :
       (f₃ data pq' i₁ i₂ hi₁ hi₂) (f₄ data r hr pq' i₂ i₃ hi₂ hi₃)
       (f₅ data r r' hrr' hr pq' i₃ i₃' hi₃ hi₃')
       (homOfLE (by simpa only [hi₃', data.i₃_next r r' hrr' hr _ _ h] using data.le₂₃ r hr pq))
-      (by linarith [data.hc r hr pq pq' h]) hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r hr _ _ h])
+      (by have := data.hc r hr pq pq' h; lia) hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r hr _ _ h])
       (by rw [hi₃, data.hc₁₃ r hr _ _ h]) (by rw [hi₃', data.i₃_next r r' hrr' hr _ _ h]) rfl,
       assoc, assoc, Iso.inv_hom_id_assoc]
     erw [d_EMap_fourδ₄Toδ₃]
@@ -759,7 +725,7 @@ lemma ccSc_exact :
       (show i₃' ⟶ data.i₃ r hr pq from homOfLE (by
         simpa only [hi₃', data.i₃_next r r' hrr' hr _ _ h] using data.le₂₃ r hr pq)) _ rfl)
     refine ShortComplex.isoMk
-      (pageXIso X data _ _ _ _ _ _ _ _ (by linarith [data.hc r hr _ _ h]) _ _ _ _
+      (pageXIso X data _ _ _ _ _ _ _ _ (by have := data.hc r hr _ _ h; lia) _ _ _ _
         (by rw [hi₂, data.hc₀₂ r hr _ _ h]) (by rw [hi₃, data.hc₁₃ r hr _ _ h])
         (by rw [hi₃', data.i₃_next r r' hrr' hr _ _ h]) rfl)
       (pageXIso X data _ _ _ _ _ _ _ _ hn₁' _ _ _ _ hi₀ hi₁ hi₂ hi₃) (Iso.refl _) ?_ ?_

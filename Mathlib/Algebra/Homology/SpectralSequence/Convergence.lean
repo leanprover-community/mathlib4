@@ -52,7 +52,7 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
     by_cases hij : i ≤ j
     · obtain ⟨d, rfl⟩ := Int.le.dest hij
       refine ⟨Fintype.ofSurjective (fun (k : Fin (d + 1)) =>
-        ⟨i + k, ⟨by lia, by linarith [k.is_lt]⟩⟩) ?_⟩
+        ⟨i + k, ⟨by lia, by have := k.is_lt; lia⟩⟩) ?_⟩
       rintro ⟨x, h₁, h₂⟩
       obtain ⟨k, rfl⟩ := Int.le.dest h₁
       exact ⟨⟨k, by lia⟩, rfl⟩
@@ -60,7 +60,8 @@ def cohomologicalStripes : ConvergenceStripes (ℤ × ℤ) (fun (_ : ℤ) => ℤ
       rintro ⟨x, h₁, h₂⟩
       lia
   discrete n (i j : ℤ) h := by
-    linarith [show i - 1 < j from WithBot.coe_lt_coe.1 h]
+    simp at h
+    lia
 
 @[simps]
 def cohomomologicalStripesFin (l : ℕ) : ConvergenceStripes (ℤ × Fin l) (fun (_ : ℤ) => Fin l) where
