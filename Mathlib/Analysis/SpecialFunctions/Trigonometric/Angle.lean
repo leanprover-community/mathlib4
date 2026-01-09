@@ -178,7 +178,7 @@ theorem neg_ne_self_iff {θ : Angle} : -θ ≠ θ ↔ θ ≠ 0 ∧ θ ≠ π := 
   rw [← not_or, ← neg_eq_self_iff.not]
 
 theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
-  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ):) := by rw [two_nsmul, add_halves]
+  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ) :) := by rw [two_nsmul, add_halves]
   nth_rw 1 [h]
   rw [coe_nsmul, two_nsmul_eq_iff]
   apply iff_of_eq -- `congr` only works on `Eq`, so rewrite from `Iff` to `Eq`.
@@ -840,17 +840,16 @@ lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_neg_sign_iff]
 
 theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : (2 : ℤ) • a = (2 : ℤ) • b)
-  (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
+    (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
   have h1 := Real.Angle.two_zsmul_eq_iff.mp h
-  rcases h1 with h2 | h3
-  · rw [h2] at h_sign
-    simp only [SignType.self_eq_neg_iff] at h_sign
-    rw [h_sign] at h_ne
-    contradiction
-  · rw [h3]
+  refine h1.resolve_left ?_
+  rintro rfl
+  simp only [SignType.self_eq_neg_iff] at h_sign
+  rw [h_sign] at h_ne
+  contradiction
 
 theorem sub_ne_pi_of_sign_eq_of_sign_ne_zero (a b : Real.Angle) (h_sign : a.sign = b.sign)
-  (h_ne : b.sign ≠ 0) : a - b ≠ π := by
+    (h_ne : b.sign ≠ 0) : a - b ≠ π := by
   intro h
   have h' : a = b + π := by
     simp [← h]

@@ -46,6 +46,7 @@ given by `m/s ↦ (1/s) ⊗ₜ m`.
 -/
 theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseChange A f := by
   refine ⟨fun _ ↦ IsLocalizedModule.isBaseChange S A f, fun h ↦ ?_⟩
+  letI : Module A (LocalizedModule S M) := LocalizedModule.moduleOfIsLocalization ..
   have : IsBaseChange A (LocalizedModule.mkLinearMap S M) := IsLocalizedModule.isBaseChange S A _
   let e := (this.equiv.symm.trans h.equiv).restrictScalars R
   convert IsLocalizedModule.of_linearEquiv S (LocalizedModule.mkLinearMap S M) e
@@ -254,6 +255,18 @@ lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x 
         ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
   simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul,
     RingHom.algebraMap_toAlgebra]
+
+variable (R S) {A} in
+/-- `A[M⁻¹] ⊗[R] S` is the localization of `A ⊗[R] S` at `M`. -/
+lemma IsLocalization.tensorProduct_tensorProduct (M : Submonoid A)
+    (B : Type*) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    [IsLocalization M B]
+    [Algebra (A ⊗[R] S) (B ⊗[R] S)] [IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)]
+    (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
+      Algebra.TensorProduct.includeRight.toRingHom) :
+    IsLocalization (Algebra.algebraMapSubmonoid (A ⊗[R] S) M) (B ⊗[R] S) :=
+  (Algebra.isLocalization_iff_isPushout M _).mpr
+    (Algebra.IsPushout.tensorProduct_tensorProduct R S A B H).symm
 
 namespace IsLocalization.Away
 
