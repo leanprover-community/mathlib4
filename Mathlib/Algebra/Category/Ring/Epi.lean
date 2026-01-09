@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory TensorProduct
 

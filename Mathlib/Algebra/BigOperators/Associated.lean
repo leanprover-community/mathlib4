@@ -17,7 +17,7 @@ and products of multisets, finsets, and finsupps.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

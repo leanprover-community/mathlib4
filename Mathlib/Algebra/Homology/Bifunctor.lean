@@ -29,7 +29,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
 
 namespace CategoryTheory
 
@@ -282,3 +282,31 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
 end
 
 end HomologicalComplex
+
+namespace CategoryTheory.Functor
+
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c : ComplexShape J)
+  [DecidableEq J] [TotalComplexShape c₁ c₂ c]
+
+open HomologicalComplex
+
+/-- The bifunctor on homological complexes that is induced by a bifunctor. -/
+@[simps]
+noncomputable def map₂HomologicalComplex
+    [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂),
+      HasMapBifunctor K₁ K₂ F c] :
+    HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex D c where
+  obj K₁ :=
+    { obj K₂ := mapBifunctor K₁ K₂ F c
+      map g := mapBifunctorMap (𝟙 K₁) g _ _ }
+  map f := { app K₂ := mapBifunctorMap f (𝟙 K₂) _ _ }
+
+/-- The bifunctor on cochain complexes that is induced by a bifunctor. -/
+noncomputable abbrev map₂CochainComplex
+    [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
+    CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
+  F.map₂HomologicalComplex _ _ _
+
+end CategoryTheory.Functor

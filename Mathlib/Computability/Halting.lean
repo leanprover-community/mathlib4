@@ -18,9 +18,6 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
--- TODO: fix all violations in this file
-set_option linter.flexible false
-
 @[expose] public section
 
 open List (Vector)
@@ -30,6 +27,7 @@ namespace Nat.Partrec
 
 open Computable Part
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     ∃ h, Nat.Partrec h ∧
       ∀ a, (∀ x ∈ h a, x ∈ f a ∨ x ∈ g a) ∧ ((h a).Dom ↔ (f a).Dom ∨ (g a).Dom) := by
@@ -328,10 +326,12 @@ theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec'
 theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @prim _ _ <| Nat.Primrec'.get i.succ).of_eq fun v => by
     simp; rw [← ofFn_get v.tail]; congr; funext i; simp
 
+set_option linter.flexible false in -- simp acts on two goals with different simp sets
 protected theorem bind {n f g} (hf : @Partrec' n f) (hg : @Partrec' (n + 1) g) :
     @Partrec' n fun v => (f v).bind fun a => g (a ::ᵥ v) :=
   (@comp n (n + 1) g (fun i => Fin.cases f (fun i v => some (v.get i)) i) hg fun i => by

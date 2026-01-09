@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Group.Basic
 
 Given a topological group `G`, one can naturally build two uniform structures
 (the "left" and "right" ones) on `G` inducing its topology.
-This file defines typeclasses for groups equipped with either of these uniform strucures, as well
+This file defines typeclasses for groups equipped with either of these uniform structures, as well
 as a separate typeclass for the (very common) case where the given uniform structure
 coincides with **both** the left and right uniform structures.
 
@@ -27,7 +27,7 @@ coincides with **both** the left and right uniform structures.
   are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
   i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`. This corresponds
-  to the conjuction of the two conditions above, although this result is not in Mathlib yet.
+  to the conjunction of the two conditions above, although this result is not in Mathlib yet.
 
 ## Main results
 
@@ -357,8 +357,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
             (x.1 * a, x.2 * a) := by simp [Filter.map_map, Function.comp_def]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
-        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
-      )
+        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const))
 
 namespace MulOpposite
 

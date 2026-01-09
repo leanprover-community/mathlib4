@@ -17,7 +17,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

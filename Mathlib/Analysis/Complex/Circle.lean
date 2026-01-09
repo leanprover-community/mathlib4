@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Field.UnitBall
 /-!
 # The circle
 
-This file defines `circle` to be the metric sphere (`Metric.sphere`) in `ℂ` centred at `0` of
+This file defines `Circle` to be the metric sphere (`Metric.sphere`) in `ℂ` centred at `0` of
 radius `1`.  We equip it with the following structure:
 
 * a submonoid of `ℂ`
@@ -19,7 +19,7 @@ radius `1`.  We equip it with the following structure:
 * a topological group
 
 We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
-`circle`, and show that this map is a group homomorphism.
+`Circle`, and show that this map is a group homomorphism.
 
 We define two additive characters onto the circle:
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the

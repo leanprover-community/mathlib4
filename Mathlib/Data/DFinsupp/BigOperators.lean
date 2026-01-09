@@ -253,7 +253,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
 
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
-    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl} := by
+    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
   ext ⟨f, sf, hf⟩
   change (∑ i ∈ _, _) = _
   dsimp

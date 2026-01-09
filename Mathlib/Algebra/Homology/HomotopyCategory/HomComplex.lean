@@ -571,7 +571,7 @@ def HomComplex : CochainComplex AddCommGrpCat ℤ where
   X i := AddCommGrpCat.of (Cochain F G i)
   d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
-  d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
+  d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
 
 namespace HomComplex
 
@@ -599,7 +599,7 @@ instance : Coe (Cocycle F G n) (Cochain F G n) where
   coe x := x.1
 
 @[ext]
-lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
+lemma ext {z₁ z₂ : Cocycle F G n} (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
   Subtype.ext h
 
 instance : SMul R (Cocycle F G n) where
@@ -771,7 +771,7 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
     { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by omega))
+      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by lia))
       comm := fun p => by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
@@ -784,7 +784,7 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
     dsimp
     split_ifs with h
     · rfl
-    · rw [ho.zero i j (fun h' => h (by dsimp at h'; omega))]
+    · rw [ho.zero i j (fun h' => h (by dsimp at h'; lia))]
   right_inv := fun z => by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
@@ -846,34 +846,34 @@ lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
     (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
     δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
   ext p'' q'' hpq''
-  rw [δ_v n m hm (single f n) p'' q'' (by cutsat) (q'' - 1) (p'' + 1) rfl (by cutsat),
+  rw [δ_v n m hm (single f n) p'' q'' (by lia) (q'' - 1) (p'' + 1) rfl (by lia),
     add_v, units_smul_v]
   congr 1
   · by_cases h : p'' = p
     · subst h
       by_cases h : q = q'' - 1
       · subst h
-        obtain rfl : q' = q'' := by cutsat
+        obtain rfl : q' = q'' := by lia
         simp only [single_v]
       · rw [single_v_eq_zero', single_v_eq_zero', zero_comp]
-        all_goals cutsat
+        all_goals lia
     · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero _ _ _ _ _ h, zero_comp]
   · subst hm
     by_cases h : q'' = q
     · subst h
       by_cases h : p'' = p'
       · subst h
-        obtain rfl : p = p'' + 1 := by cutsat
+        obtain rfl : p = p'' + 1 := by lia
         simp
       · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero, comp_zero, smul_zero]
-        cutsat
+        lia
     · simp [single_v_eq_zero' _ _ _ _ _ h]
 
 end Cochain
 
 section
 
-variable {n} {D : Type*} [Category D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)
+variable {n} {D : Type*} [Category* D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)
   (Φ : C ⥤ D) [Φ.Additive]
 
 namespace Cochain

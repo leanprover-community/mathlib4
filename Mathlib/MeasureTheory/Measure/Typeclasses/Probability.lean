@@ -74,6 +74,12 @@ instance (priority := 100) (μ : Measure α) [IsProbabilityMeasure μ] :
     IsZeroOrProbabilityMeasure μ :=
   ⟨Or.inr measure_univ⟩
 
+theorem nonempty_of_isProbabilityMeasure (μ : Measure α) [IsProbabilityMeasure μ] : Nonempty α := by
+  by_contra! maybe_empty
+  have : μ Set.univ = 0 := by
+    rw [Set.univ_eq_empty_iff.mpr maybe_empty, measure_empty]
+  simp at this
+
 theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ ≠ 0 :=
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]
 
@@ -108,7 +114,11 @@ instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-@[simp] lemma probReal_univ : μ.real .univ = 1 := by simp [Measure.real]
+@[simp] lemma probReal_univ : μ.real univ = 1 := by simp [Measure.real]
+
+lemma isProbabilityMeasure_iff_real {μ : Measure α} :
+    IsProbabilityMeasure μ ↔ μ.real univ = 1 := by
+  refine ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=

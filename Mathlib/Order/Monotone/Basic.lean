@@ -51,7 +51,7 @@ monotone, strictly monotone, antitone, strictly antitone, increasing, strictly i
 decreasing, strictly decreasing
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual
 
@@ -243,6 +243,7 @@ theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
+@[to_dual existing]
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
@@ -533,7 +534,7 @@ theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans
   | refl => exact h _ hab
   | step b_lt_k r_b_k => exact _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)
 
-theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
+theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r]
     {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
     ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b ≤ c) : r (f b) (f c) :=
   hbc.eq_or_lt.elim (fun h ↦ h ▸ refl _) (Nat.rel_of_forall_rel_succ_of_le_of_lt r h hab)
@@ -542,7 +543,7 @@ theorem Nat.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a < b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_lt r (fun n _ ↦ h n) le_rfl hab
 
-theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℕ → β}
+theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℕ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_le r (fun n _ ↦ h n) le_rfl hab
 
@@ -648,7 +649,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   | zero => rw [Int.ofNat_one]; apply h
   | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
-theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
+theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   hab.eq_or_lt.elim (fun h ↦ h ▸ refl _) fun h' ↦ Int.rel_of_forall_rel_succ_of_lt r h h'
 
@@ -747,6 +748,6 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     by_cases! h : ∀ n, f n ≤ c
     · exact ih h
     · obtain ⟨N, hN⟩ := h
-      replace hN : f N = c + 1 := by specialize hc N; omega
+      replace hN : f N = c + 1 := by specialize hc N; lia
       use c + 1, N; intro n hn
       specialize mono_f hn; specialize hc n; lia

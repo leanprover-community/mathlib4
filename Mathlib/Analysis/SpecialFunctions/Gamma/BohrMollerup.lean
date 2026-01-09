@@ -49,6 +49,8 @@ open scoped Nat ENNReal Topology Real
 
 namespace Real
 
+local notation "Γ" => Gamma
+
 section Convexity
 
 /-- Log-convexity of the Gamma function on the positive reals (stated in multiplicative form),
@@ -180,7 +182,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :
     f n + x * log (n - 1) ≤ f (n + x) := by
-  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; omega
+  have npos : 0 < (n : ℝ) - 1 := by rw [← Nat.cast_one, sub_pos, Nat.cast_lt]; lia
   have c :=
     (convexOn_iff_slope_mono_adjacent.mp <| hf_conv).2 npos (by linarith : 0 < (n : ℝ) + x)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
@@ -328,8 +330,8 @@ theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
-  -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
-  -- log-convexity to avoid unnecessary imports.
+  -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
+  -- self-contained proof using log-convexity to avoid unnecessary imports.
   have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
@@ -359,6 +361,18 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   symm
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
+
+-- TODO: prove uniqueness once the necessary material to do so makes its way into Mathlib
+theorem exists_isMinOn_Gamma_Ioi : ∃ x ∈ Ioo 1 2, IsMinOn Gamma (Ioi 0) x := by
+  have ⟨x, hx, hmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.mpr one_le_two) <|
+    differentiableOn_Gamma_Ioi.continuousOn.mono <| by grind
+  have ⟨h1, h2, h3half⟩ : Γ (3 / 2) < Γ 1 ∧ Γ (3 / 2) < Γ 2 ∧ Γ x ≤ Γ (3 / 2) := by
+    simpa [Gamma_three_div_two_lt_one] using hmin <| by norm_num
+  refine ⟨x, by grind, fun y _ ↦ ?_⟩
+  obtain hy | hy | hy : y ∈ Ioc 0 1 ∨ y ∈ Icc 1 2 ∨ y ∈ Ici 2 := by grind
+  · exact h3half.trans h1.le |>.trans <| Gamma_strictAntiOn_Ioc.antitoneOn hy (by simp) hy.right
+  · exact hmin hy
+  · exact h3half.trans h2.le |>.trans <| Gamma_strictMonoOn_Ici.monotoneOn (by simp) hy hy
 
 end StrictMono
 
