@@ -426,7 +426,6 @@ def atomOrIdentEndPos {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOpt
         Maybe because the `SyntaxNodeKind`s contain:\n\
         hygieneInfo: {k.contains `hygieneInfo}\n\
         choice: {k.contains `choice}"
-  --dbg_trace "ppDropOrig[{ppDropOrig.startPos}]: '{ppDropOrig.toString.norm}'"
   pure ppDropOrig.startPos
 
 partial
@@ -434,8 +433,6 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     (verbose? : Bool) :
     Correspondence → Array SyntaxNodeKind → Syntax → Substring.Raw → m (Substring.Raw × Correspondence)
   | corr, k, .ident info rawVal _val _pre, str => do
-    --dbg_trace "kinds:\n{k}"
-    --dbg_trace "rawVal: '{rawVal}'"
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `ident rawVal.toString)) rawVal str
     let (_, tail) := info.getLeadTrail
     --dbg_trace "(tail: '{tail.norm}', (tail[0], str[{ppEndPos}]) ('{(tail.take 1).norm}' '{(str.get ppEndPos)}'))\n({str.startPos}, {str.stopPos})\n"
@@ -445,8 +442,6 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
       -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
       corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `ident rawVal.toString)))
   | corr, k, .atom info val, str => do
-    --dbg_trace "kinds:\n{k}"
-    --dbg_trace "val: '{val}'"
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toRawSubstring str
     let (_, tail) := info.getLeadTrail
     --dbg_trace "(tail: '{tail.norm}', (tail[0], str[{ppEndPos}]) ('{(tail.take 1).norm}' '{(str.get ppEndPos)}'))\n"
@@ -456,14 +451,6 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
       -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
       corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `atom val)))
   | corr, k, _stx@(.node _info kind args), str => do
-    --let corr :=
-    --  if (k.back?.getD .anonymous) == ``Parser.Term.structInst then
-    --    --dbg_trace "inserting {stx} {(stx.getRange?.map fun | {start := a, stop := b} => (a, b))}\n"
-    --    corr
-    --    --corr.insert stx.getTailPos?.get! <| PPref.mk stx.getPos?.get! true (some stx.getPos?.get!)
-    --  else
-    --    --dbg_trace "not inserting\n"
-    --    corr
     (getChoiceNode kind args).foldlM (init := (str, corr)) fun (str, corr) arg => do
       generateCorrespondence verbose? corr (k.push kind) arg str
   | corr, _, _stx, str => do
@@ -481,10 +468,7 @@ def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String.Slic
 def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
     Option (Lean.Syntax.Range × MessageData × String) := Id.run do
   let origWs := orig.takeWhile (·.isWhitespace)
-  --dbg_trace "here for '{(orig.take 10).toString}'\n{ks}\n"
-  --dbg_trace ks
   if forceSpaceAfter.contains ks || forceSpaceAfter'.contains ks || forceSpaceAfter''.contains ks then
-    --dbg_trace "forceSpaceAfter"
     let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
       return some (⟨origWs.startPos, origWs.next origWs.startPos⟩, "add space in the source", space)
@@ -495,7 +479,6 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
       let origWsNext := origWs.drop 1
       return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", space)
   else if forceNoSpaceAfter.contains ks then
-    --dbg_trace "forceNoSpaceAfter"
     if !origWs.isEmpty then
       return some (⟨origWs.startPos, origWs.stopPos⟩, "remove space in the source", "")
     else
@@ -504,7 +487,6 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
   let ppNext := pp.take 1
   -- The next pp-character is a space
   if ppNext.trim.isEmpty then
-    --dbg_trace "next is whitespace"
     if onlineComment orig then
       return none
     if origWs.isEmpty then
@@ -518,7 +500,6 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
         return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", "")
   -- The next pp-character is not a space
   if !ppNext.trim.isEmpty then
-    --dbg_trace "next is not whitespace"
     if !origWs.isEmpty then
       let wsName := if (origWs.take 1).toString == " " then "space" else "line break"
       let s := if origWs.toString.length == 1 || (origWs.take 1).toString == "\n" then "" else "s"
@@ -577,8 +558,6 @@ def mkExpectedWindow (orig : Substring.Raw) (start : String.Pos.Raw) : String :=
   let fromError : Substring.Raw := {orig with startPos := start}
   let first := fromError.take 1
   let afterWhitespace := fromError.dropWhile (·.isWhitespace) |>.takeWhile (!·.isWhitespace)
-  --dbg_trace "first: '{first}'"
-  --dbg_trace "afterWhitespace: '{afterWhitespace}'"
   if first.trim.isEmpty then
     -- Case 1: `first` consists of whitespace, so we discard all consecutive whitespace and
     -- keep the following non-whitespace block.
@@ -618,13 +597,12 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if stx.find? (unparseable.contains #[·.getKind]) |>.isSome then
     return
   -- If a command does not start on the first column, emit a warning.
-  --dbg_trace "lint1"
   let orig := stx.getSubstring?.getD default
 
   let stxNoSpaces := stx.eraseLeadTrailSpaces
   if let some pretty := ← Mathlib.Linter.pretty stxNoSpaces then
     let pp := pretty.toRawSubstring
-    let (_, corr) ← generateCorrespondence true Std.HashMap.emptyWithCapacity #[] stx pretty.toRawSubstring
+    let (_, corr) ← generateCorrespondence true ∅ #[] stx pp
     let (reported, excluded) := corr.partition fun _ {kinds := ks,..} =>
       (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks)
     let fm ← getFileMap
