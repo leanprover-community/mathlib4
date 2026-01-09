@@ -448,7 +448,7 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
     IsPresentationCore.{w''} solution where
   desc s := ULift.moduleEquiv.toLinearMap.comp
     (h.desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
-  postcomp_desc s:= by
+  postcomp_desc s := by
     simpa using congr_postcomp
       (h.postcomp_desc (s.postcomp ULift.moduleEquiv.symm.toLinearMap))
         ULift.moduleEquiv.toLinearMap

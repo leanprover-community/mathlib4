@@ -100,7 +100,7 @@ theorem quadraticCharFun_mul (a b : F) :
   -- now `a ≠ 0` and `b ≠ 0`
   have hab := mul_ne_zero ha hb
   by_cases hF : ringChar F = 2
-  ·-- case `ringChar F = 2`
+  · -- case `ringChar F = 2`
     rw [quadraticCharFun_eq_one_of_char_two hF ha, quadraticCharFun_eq_one_of_char_two hF hb,
       quadraticCharFun_eq_one_of_char_two hF hab, mul_one]
   · -- case of odd characteristic

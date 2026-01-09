@@ -102,7 +102,7 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
   · grind [SignType.neg_eq_self_iff]
   rw [if_pos h₄, if_pos ?_]
-  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil ]
+  · grind [Nat.sub_add_cancel, List.length_pos_of_ne_nil, List.destutter'_ne_nil]
   cases _ : SignType.sign P.leadingCoeff
   <;> cases _ : SignType.sign P.eraseLead.leadingCoeff
   <;> grind [= SignType.neg_eq_neg_one, SignType.zero_eq_zero, SignType.pos_eq_one,
@@ -131,10 +131,10 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
   rw [signVariations, signVariations, coeffList_neg]
   simp only [List.map_map, List.filter_map]
-  have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
+  have hsc : SignType.sign ∘ (fun (x : R) => -x) = (fun x => -x) ∘ SignType.sign := by
     grind [Left.sign_neg]
   have h_neg_destutter (l : List SignType) :
-      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·)  := by
+      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·) := by
     grind [List.map_destutter, neg_inj]
   rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
   congr 5
@@ -258,7 +258,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
       rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [leadingCoeff, nextCoeff_of_natDegree_pos, C_mul_monomial, eq_of_sub_eq_zero,
+      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero,
         coeff_X_sub_C_mul]
     · suffices ((X - C η) * P).eraseLead.eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := leadingCoeff_cons_eraseLead h₉
@@ -268,7 +268,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
           monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
           natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
-      grind [coeff_X_sub_C_mul, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
+      grind [coeff_X_sub_C_mul, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
@@ -356,8 +356,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     have : P.signVariations = P.eraseLead.signVariations + ?_ := by
       simp [signVariations_eq_eraseLead_add_ite hP, leadingCoeff_eraseLead_eq_nextCoeff h₁,
         hs_nC, h_lC]
-      exact rfl
-  )
+      exact rfl)
   · /- P starts with [+,+,...]. (X-C)*P starts with [+,?,...]. After dropping the lead of P, this
       becomes [+,...] and [+,...]. So the sign variations on P are unchanged when we induct, while
       (X-C)*P can only lose at most one sign change. -/

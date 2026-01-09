@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
@@ -146,7 +146,7 @@ theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
   constructor
   · rintro h x xs y ys
-    rw [← le_zero_iff, ← h]
+    rw [← nonpos_iff_eq_zero, ← h]
     exact edist_le f xs ys
   · rintro h
     dsimp only [eVariationOn]

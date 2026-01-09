@@ -42,8 +42,8 @@ protected abbrev module (e : α ≃ β) [AddCommMonoid β] [Module R β] :
     Module R α :=
   letI := Equiv.addCommMonoid e
   { Equiv.distribMulAction R e with
-      zero_smul := by simp [smul_def, zero_smul, zero_def]
-      add_smul := by simp [add_def, smul_def, add_smul] }
+    zero_smul := by simp [smul_def, zero_smul, zero_def]
+    add_smul := by simp [add_def, smul_def, add_smul] }
 
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives a linear equivalence `α ≃ₗ[R] β`

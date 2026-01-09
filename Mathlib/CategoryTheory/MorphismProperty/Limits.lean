@@ -125,12 +125,12 @@ instance : P.pushouts.IsStableUnderCobaseChange where
     rintro _ _ _ _ _ _ _ _ h ⟨_, _, _, _, _, hp, hq⟩
     exact P.pushouts_mk (hq.paste_horiz h) hp
 
-/-- `P.HasPullbacksAlong f` states that for any morphism satifying `P` with the same codomain
+/-- `P.HasPullbacksAlong f` states that for any morphism satisfying `P` with the same codomain
 as `f`, the pullback of that morphism along `f` exists. -/
 protected class HasPullbacksAlong {X Y : C} (f : X ⟶ Y) : Prop where
   hasPullback {W} (g : W ⟶ Y) : P g → HasPullback g f
 
-/-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satifying `P` with the same
+/-- `P.IsStableUnderBaseChangeAlong f` states that for any morphism satisfying `P` with the same
 codomain as `f`, any pullback of that morphism along `f` also satisfies `P`. -/
 class IsStableUnderBaseChangeAlong {X Y : C} (f : X ⟶ Y) : Prop where
   of_isPullback {Z W : C} {f' : W ⟶ Z} {g' : W ⟶ X} {g : Z ⟶ Y}
@@ -446,12 +446,6 @@ protected lemma limMap [W.IsStableUnderLimitsOfShape J] {X Y : J ⥤ C}
     W (limMap f) :=
   limitsOfShape_le _ (limitsOfShape_limMap _ hf)
 
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limitsOfShape_le :=
-  limitsOfShape_le
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderLimitsOfShape.limMap :=
-  MorphismProperty.limMap
-
 end LimitsOfShape
 
 section ColimitsOfShape
@@ -506,8 +500,8 @@ instance : (W.colimitsOfShape J).RespectsIso :=
     let e₁ := Arrow.leftFunc.mapIso e
     let e₂ := Arrow.rightFunc.mapIso e
     have fac : e₁.hom ≫ g = h₁.desc (Cocone.mk _ (f ≫ c₂.ι)) ≫ e₂.hom := e.hom.w
-    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom}
-    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom}
+    let c₁' : Cocone X₁ := { pt := Y₁, ι := c₁.ι ≫ (Functor.const _).map e₁.hom }
+    let c₂' : Cocone X₂ := { pt := Y₂, ι := c₂.ι ≫ (Functor.const _).map e₂.hom }
     have h₁' : IsColimit c₁' := IsColimit.ofIsoColimit h₁ (Cocones.ext e₁)
     have h₂' : IsColimit c₂' := IsColimit.ofIsoColimit h₂ (Cocones.ext e₂)
     obtain hg : h₁'.desc (Cocone.mk _ (f ≫ c₂'.ι)) = g :=
@@ -563,12 +557,6 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
     (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
     W (colimMap f) :=
   colimitsOfShape_le _ (colimitsOfShape_colimMap _ hf)
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimMap :=
-  MorphismProperty.colimMap
-
-@[deprecated (since := "2025-05-11")] alias IsStableUnderColimitsOfShape.colimitsOfShape_le :=
-  colimitsOfShape_le
 
 variable (C J) in
 instance IsStableUnderColimitsOfShape.isomorphisms :
@@ -706,14 +694,6 @@ class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderProductsOfShape_of_isStableUnderFiniteProducts :=
-  IsStableUnderFiniteProducts.isStableUnderProductsOfShape
-
-@[deprecated "This is now an instance." (since := "2025-05-11")]
-alias isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts :=
-  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]
