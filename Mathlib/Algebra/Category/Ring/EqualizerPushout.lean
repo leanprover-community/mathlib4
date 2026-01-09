@@ -71,52 +71,48 @@ def IsEffective : Prop := by
 
 namespace Equalizer
 
-section ToEqualizerPushoutCoconeSelf
+section CodRestrictEqLocusPushoutCocone
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 
 /-- The canonical ring map from `R` to the (explicit) equalizer of `includeLeft : S ⟶ S ⊗[R] S` and
 `includeRight : S ⟶ S ⊗[R] S`. -/
-noncomputable def toEqualizerPushoutCoconeSelf :
+noncomputable def codRestrictEqLocusPushoutCocone :
     R →+* (equalizerFork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f).inr).pt := by
   algebraize [f.hom]
   exact RingHom.codRestrict (algebraMap R S)
     ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
       (fun _ ↦ by simp [RingHom.eqLocus, Algebra.TensorProduct.tmul_one_eq_one_tmul])
 
--- lemma toEqualizerPushoutCoconeSelf_apply (r : R) :
---     (toEqualizerPushoutCoconeSelf f r).val = f.hom r := by
---   erw [RingHom.codRestrict_apply, RingHom.algebraMap_toAlgebra]
-
-/-- If `f : R ⟶ S` is an injective map in `CommRingCat`, then `toEqualizerPushoutCoconeSelf f` is
+/-- If `f : R ⟶ S` is an injective map in `CommRingCat`, then `codRestrictEqLocusPushoutCocone f` is
 injective. -/
-lemma toEqualizerPushoutCoconeSelf_inj_of_inj (hf : Function.Injective f.hom) :
-    Function.Injective (toEqualizerPushoutCoconeSelf f) :=
+lemma codRestrictEqLocusPushoutCocone.inj_of_inj (hf : Function.Injective f.hom) :
+    Function.Injective (codRestrictEqLocusPushoutCocone f) :=
   RingHom.injective_codRestrict.mpr hf
 
 /-- If `IsEffective f` is true for a map `f : R ⟶ S` in `CommRingCat`, then
-`toEqualizerPushoutCoconeSelf f` is surjective. -/
-lemma toEqualizerPushoutCoconeSelf_surj_of_isEffective
-    (hf : IsEffective f) : Function.Surjective (toEqualizerPushoutCoconeSelf f) := by
-  algebraize [f.hom]
+`codRestrictEqLocusPushoutCocone f` is surjective. -/
+lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : IsEffective f) :
+    Function.Surjective (codRestrictEqLocusPushoutCocone f) := by
   intro s
+  algebraize [f.hom]
   have := Set.mem_range.mp <|
     Algebra.eqLocus_includeLeft_includeRight_of_isEffective hf ▸ SetLike.mem_coe.mpr s.property
   use this.choose
   apply Subtype.ext
   erw [RingHom.codRestrict_apply, this.choose_spec]
 
-/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `toEqualizerPushoutCoconeSelf f`
-is bijective. -/
-lemma toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
-    Function.Bijective (toEqualizerPushoutCoconeSelf f) := by
+/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then
+`codRestrictEqLocusPushoutCocone f` is bijective. -/
+lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
+    Function.Bijective (codRestrictEqLocusPushoutCocone f) := by
   constructor
-  · exact toEqualizerPushoutCoconeSelf_inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
+  · exact codRestrictEqLocusPushoutCocone.inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
   · algebraize [f.hom]
-    exact toEqualizerPushoutCoconeSelf_surj_of_isEffective _
+    exact codRestrictEqLocusPushoutCocone.surj_of_isEffective _
       (Algebra.isEffective_of_faithfullyFlat _ _)
 
-end ToEqualizerPushoutCoconeSelf
+end CodRestrictEqLocusPushoutCocone
 
 section Fork
 
@@ -125,11 +121,11 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `forkPushoutCoconeSelf` is
 an equalizer diagram.
 See `isLimitForkPushoutSelfOfFaithfullyFlat` for the pushout version. -/
-noncomputable def isLimitforkPushoutCoconeSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
+noncomputable def isLimitForkPushoutCoconeSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (forkPushoutCoconeSelf f) :=
   (Fork.isLimitEquivOfIsos _ (equalizerFork _ _) (Iso.refl _) (Iso.refl _) (RingEquiv.ofBijective _
-    (toEqualizerPushoutCoconeSelf_bij_of_faithfullyFlat _ hf)).toCommRingCatIso (by simp) (by simp)
-      (by cat_disch)).symm (CommRingCat.equalizerForkIsLimit _ _)
+    (codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat _ hf)).toCommRingCatIso
+      (by simp) (by simp) (by cat_disch)).symm (CommRingCat.equalizerForkIsLimit _ _)
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
 ```
@@ -138,7 +134,7 @@ R --f-->
         S ---inr---> pushout f f
 ```
 is an equalizer diagram.
-See `isLimitforkPushoutCoconeSelfOfFaithfullyFlat` for the pushoutCocone version. -/
+See `isLimitForkPushoutCoconeSelfOfFaithfullyFlat` for the pushoutCocone version. -/
 noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by
   algebraize [f.hom]
@@ -146,7 +142,16 @@ noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyF
     ⟨⟨PushoutCocone.condition (pushoutCocone R S S)⟩, ⟨pushoutCoconeIsColimit R S S⟩⟩
   exact Fork.isLimitEquivOfIsos _ _ (Iso.refl _) (IsPushout.isoPushout this) (Iso.refl _)
     (IsPushout.inl_isoPushout_hom this).symm (IsPushout.inr_isoPushout_hom this).symm rfl
-      (isLimitforkPushoutCoconeSelfOfFaithfullyFlat f hf)
+      (isLimitForkPushoutCoconeSelfOfFaithfullyFlat f hf)
+
+/-- A regular monomorphism structure on a map `f : R ⟶ S` in `CommRingCat` with
+faithfully flat `f.hom : R ⟶ S`. -/
+noncomputable def regularMonoOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) : RegularMono f where
+  Z := pushout f f
+  left := pushout.inl f f
+  right := pushout.inr f f
+  w := pushout.condition
+  isLimit := isLimitForkPushoutSelfOfFaithfullyFlat f hf
 
 end Fork
 
@@ -170,7 +175,7 @@ noncomputable def isColimitOfπPullbackOfFaithfullyFlat (hf : f.unop.hom.Faithfu
     (Equalizer.isLimitForkPushoutSelfOfFaithfullyFlat _ hf)
 
 /-- A regular epimorphism structure on a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with
-faithfully flat `f.unop : R.unop ⟶ S.unop`. -/
+faithfully flat `f.unop.hom : R.unop ⟶ S.unop`. -/
 noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -178,7 +183,7 @@ noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : 
   w := pullback.condition
   isColimit := isColimitOfπPullbackOfFaithfullyFlat f hf
 
-/-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop` is
+/-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop.hom : R.unop ⟶ S.unop` is
 an effective epimorphism. -/
 lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f :=
   RegularEpi.effectiveEpi (regularEpiOfFaithfullyFlat f hf)
