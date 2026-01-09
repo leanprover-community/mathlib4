@@ -148,6 +148,7 @@ lemma isOpenMap_iff_lowerHemicontinuous {f : α → β} :
 lemma upperHemicontinuous_singleton_id : UpperHemicontinuous ({·} : α → Set α) := by
   simp [upperHemicontinuous_iff, upperHemicontinuousAt_iff]
 
+@[simp]
 lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x : α} :
     UpperHemicontinuousWithinAt ({f ·}) s x ↔ ContinuousWithinAt f s x := by
   refine ⟨?_, fun hf ↦ upperHemicontinuous_singleton_id.upperHemicontinuousWithinAt _ _ |>.comp hf
@@ -158,18 +159,20 @@ lemma upperHemicontinuousWithinAt_singleton_iff {f : α → β} {s : Set α} {x 
   filter_upwards [h t ht] with x
   exact mem_of_mem_nhds
 
+@[simp]
 lemma upperHemicontinuousAt_singleton_iff {f : α → β} {x : α} :
     UpperHemicontinuousAt ({f ·}) x ↔ ContinuousAt f x := by
-  simpa [upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
-    using upperHemicontinuousWithinAt_singleton_iff (s := univ)
+  simp [← upperHemicontinuousWithinAt_univ_iff, continuousWithinAt_univ]
 
+@[simp]
 lemma upperHemicontinuousOn_singleton_iff {f : α → β} {s : Set α} :
     UpperHemicontinuousOn ({f ·}) s ↔ ContinuousOn f s :=
   forall₂_congr <| fun _ _ ↦ upperHemicontinuousWithinAt_singleton_iff
 
+@[simp]
 lemma upperHemicontinuous_singleton_iff {f : α → β} :
     UpperHemicontinuous ({f ·}) ↔ Continuous f := by
-  simpa [upperHemicontinuousOn_univ_iff] using upperHemicontinuousOn_singleton_iff (s := univ)
+  simp [← upperHemicontinuousOn_univ_iff]
 
 
 /-! ### Union and intersection, and post-composition with the preimage map -/
@@ -312,8 +315,6 @@ lemma UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpace α]
   specialize h (x ∘ φ) (hx.comp hφ.tendsto_atTop) (y ∘ φ) (fun n ↦ (hy _).1) _ hyφ
   exact ⟨y₀, h, ht.closure_eq ▸ mem_closure_of_tendsto hyφ <| .of_forall fun n ↦ (hy _).2⟩
 
--- None of the references I have found for this mention regularity, but most often they are working
--- in metric spaces.
 /-- **Sequential characterization of upper hemicontinuity**:
 If `β` is a regular space and `f : α → Set β` is upper hemicontinuous at `x₀` and `f x₀` is
 closed, then for any sequences `x` and `y` (in `α` and `β`, respectively) tending to `x₀` and `y₀`,
