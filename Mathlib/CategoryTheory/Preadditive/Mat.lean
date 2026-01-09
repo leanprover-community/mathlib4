@@ -376,11 +376,14 @@ theorem natTrans_ext
   refine (cancel_mono (additiveObjIsoBiproduct G M).hom).1 ?_
   ext i
   let p : M ⟶ (embedding C).obj (M.X i) :=
-    M.isoBiproductEmbedding.hom ≫ biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
+    M.isoBiproductEmbedding.hom ≫
+      biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
   simpa [p, Category.assoc, additiveObjIsoBiproduct_hom_π] using
     (calc
-      η.app M ≫ G.map p = F.map p ≫ η.app ((embedding C).obj (M.X i)) := (η.naturality p).symm
-      _ = F.map p ≫ θ.app ((embedding C).obj (M.X i)) := by simp [h (M.X i)]
+      η.app M ≫ G.map p =
+        F.map p ≫ η.app ((embedding C).obj (M.X i)) := (η.naturality p).symm
+      _ = F.map p ≫ θ.app ((embedding C).obj (M.X i)) := by
+        simp [h (M.X i)]
       _ = θ.app M ≫ G.map p := θ.naturality p)
 
 /-- A natural isomorphism between additive functors `Mat_ C ⥤ D` is determined by its
@@ -480,8 +483,9 @@ variable {D : Type u₁} [Category.{v₁} D] [Preadditive D] [HasFiniteBiproduct
 variable (F : C ⥤ D) [Functor.Additive F]
 variable (L : Mat_ C ⥤ D) [Functor.Additive L]
 
-/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`, their components at
-`(embedding C).obj X` become equal after composing with `(embeddingLiftIso F).hom.app X`. -/
+/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`,
+their components at `(embedding C).obj X` become equal after composing with
+`(embeddingLiftIso F).hom.app X`. -/
 theorem liftIso_ext_comp_embeddingLiftIso
     {β γ : L ≅ lift F}
     (h :
