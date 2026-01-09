@@ -3,9 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The good products span
@@ -26,6 +29,8 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -145,7 +150,7 @@ theorem factors_prod_eq_basis (x : π C (· ∈ s)) :
     exact factors_prod_eq_basis_of_ne _ _ h]
 
 theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
-    (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
+    (ha : List.IsChain (· > ·) (a :: as)) {c : Products I →₀ ℤ}
     (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
     (Finsupp.sum c fun a_1 b ↦ e (π C (· ∈ s)) a * b • Products.eval (π C (· ∈ s)) a_1) ∈
       Submodule.span ℤ (Products.eval (π C (· ∈ s)) '' {m | m.val ≤ a :: as}) := by
@@ -162,9 +167,6 @@ theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
 
-@[deprecated (since := "2025-04-06")]
-alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
-
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
@@ -175,19 +177,21 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   rw [← factors_prod_eq_basis]
   let l := s.sort (· ≥ ·)
   dsimp [factors]
-  suffices l.Chain' (· > ·) → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
+  suffices l.SortedGT → (l.map (fun i ↦ if x.val i = true then e (π C (· ∈ s)) i
       else (1 - (e (π C (· ∈ s)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (π C (· ∈ s))) '' {m | m.val ≤ l}) from
-    Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_sorted_gt _).chain')
+    Submodule.span_mono (Set.image_subset_range _ _)
+      (this (Finset.sortedGT_sort _))
+  rw [List.sortedGT_iff_isChain]
   induction l with
   | nil =>
     intro _
     apply Submodule.subset_span
-    exact ⟨⟨[], List.chain'_nil⟩,⟨Or.inl rfl, rfl⟩⟩
+    exact ⟨⟨[], List.isChain_nil⟩,⟨Or.inl rfl, rfl⟩⟩
   | cons a as ih =>
     rw [List.map_cons, List.prod_cons]
     intro ha
-    specialize ih (by rw [List.chain'_cons'] at ha; exact ha.2)
+    specialize ih (by rw [List.isChain_cons] at ha; exact ha.2)
     rw [Finsupp.mem_span_image_iff_linearCombination] at ih
     simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
@@ -197,11 +201,11 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
     split_ifs
     · rw [hmap]
       exact finsuppSum_mem_span_eval _ _ ha hc
-    · ring_nf
+    · noncomm_ring
+      -- we use `noncomm_ring` even though this is a commutative ring, because we want a weaker
+      -- normalization which preserves multiplication order (i.e. doesn't use commutativity rules)
       rw [hmap]
       apply Submodule.add_mem
-      · apply Submodule.neg_mem
-        exact finsuppSum_mem_span_eval _ _ ha hc
       · apply Submodule.finsuppSum_mem
         intro m hm
         apply Submodule.smul_mem
@@ -215,8 +219,10 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         | nil => exact (List.nil_lt_cons a []).le
         | cons b bs =>
           apply le_of_lt
-          rw [List.chain'_cons] at ha
+          rw [List.isChain_cons_cons] at ha
           exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel ha.1)
+      · apply Submodule.smul_mem
+        exact finsuppSum_mem_span_eval _ _ ha hc
 
 end Fin
 

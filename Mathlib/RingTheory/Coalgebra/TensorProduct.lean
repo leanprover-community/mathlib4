@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Tensor products of coalgebras
@@ -22,15 +24,19 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
 
+@[expose] public section
+
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
-    [Algebra R S] [Module R A] [Module S A] [Module R B] [Coalgebra R B]
-    [Coalgebra S A] [IsScalarTower R S A]
+    [Algebra R S] [Module R A] [Module S A] [Module R B] [IsScalarTower R S A]
 
 namespace TensorProduct
 
 open Coalgebra
+
+section CoalgebraStruct
+variable [CoalgebraStruct R B] [CoalgebraStruct S A]
 
 noncomputable
 instance instCoalgebraStruct : CoalgebraStruct S (A ⊗[R] B) where
@@ -45,14 +51,10 @@ lemma comul_def :
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
 lemma counit_def :
     Coalgebra.counit (R := S) (A := A ⊗[R] B) =
       AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
   rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
 lemma comul_tmul (x : A) (y : B) :
@@ -63,6 +65,10 @@ lemma comul_tmul (x : A) (y : B) :
 lemma counit_tmul (x : A) (y : B) :
     counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
 
+end CoalgebraStruct
+
+variable [Coalgebra R B] [Coalgebra S A]
+
 open Lean.Parser.Tactic in
 /-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
 `x₁ ⊗ₜ x₂` via linearity. This is an implementation detail that is used to set up tensor products
@@ -70,7 +76,9 @@ of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstr
 scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction $var with
-      | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
+      | zero =>
+        -- avoid the more general `map_zero` for performance reasons
+        simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
       | add _ _ h₁ h₂ =>
         -- avoid the more general `map_add` for performance reasons
@@ -78,6 +86,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
@@ -85,13 +94,13 @@ private lemma coassoc :
     (comul (R := S) (A := (A ⊗[R] B))).lTensor (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))) := by
   ext x y
-  let F : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) ≃ₗ[S]
-    (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) ≃ₗ[S]
+    A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _ ≪≫ₗ
       AlgebraTensorModule.congr (.refl _ _)
         (AlgebraTensorModule.tensorTensorTensorComm _ _ _ _ _ _ _ _)
-  let F' : (A ⊗[S] A ⊗[S] A) ⊗[R] (B ⊗[R] B ⊗[R] B) →ₗ[S]
-      (A ⊗[R] B) ⊗[S] (A ⊗[R] B) ⊗[S] A ⊗[R] B :=
+  let F' : A ⊗[S] (A ⊗[S] A) ⊗[R] (B ⊗[R] (B ⊗[R] B)) →ₗ[S]
+      A ⊗[R] B ⊗[S] (A ⊗[R] B ⊗[S] (A ⊗[R] B)) :=
     TensorProduct.mapOfCompatibleSMul _ _ _ _ ∘ₗ
         TensorProduct.map .id (TensorProduct.mapOfCompatibleSMul _ _ _ _) ∘ₗ F.toLinearMap
   convert congr(F ($(Coalgebra.coassoc_apply x) ⊗ₜ[R] $(Coalgebra.coassoc_apply y))) using 1
@@ -110,6 +119,8 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)

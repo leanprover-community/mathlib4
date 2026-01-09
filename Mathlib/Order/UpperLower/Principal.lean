@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.UpperLower.CompleteLattice
+module
+
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Principal upper/lower sets
@@ -18,6 +20,8 @@ The results in this file all assume that the underlying type is equipped with at
 * `LowerSet.Iic`: Principal lower set. `Set.Iic` as a lower set.
 * `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as a lower set.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -97,6 +101,10 @@ nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := fun _a _b h
 @[simp] lemma Ici_inj : Ici a = Ici b ↔ a = b := Ici_injective.eq_iff
 
 lemma Ici_ne_Ici : Ici a ≠ Ici b ↔ a ≠ b := Ici_inj.not
+
+@[simp]
+theorem Ioi_eq_top [OrderTop α] {a : α} : Ioi a = ⊤ ↔ a = ⊤ := by
+  simp [UpperSet.ext_iff]
 
 end PartialOrder
 
@@ -196,6 +204,10 @@ nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := fun _a _b h
 @[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
 
 lemma Iic_ne_Iic : Iic a ≠ Iic b ↔ a ≠ b := Iic_inj.not
+
+@[simp]
+theorem Iio_eq_bot [OrderBot α] {a : α} : Iio a = ⊥ ↔ a = ⊥ := by
+  simp [LowerSet.ext_iff]
 
 end PartialOrder
 

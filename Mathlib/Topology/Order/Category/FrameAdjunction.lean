@@ -3,7 +3,9 @@ Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
-import Mathlib.Topology.Category.Locale
+module
+
+public import Mathlib.Topology.Category.Locale
 
 /-!
 # Adjunction between Locales and Topological Spaces
@@ -36,6 +38,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 topological space, frame, locale, Stone duality, adjunction, points
 -/
+
+@[expose] public section
 
 open CategoryTheory Order Set Topology TopologicalSpace
 

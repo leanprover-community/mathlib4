@@ -3,7 +3,9 @@ Copyright (c) 2025 Sebastian Kumar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
 /-!
 # Subpaths
@@ -14,9 +16,17 @@ reparameterized to have domain `[0, 1]` and possibly with a reverse of direction
 The main result `Path.Homotopy.subpathTransSubpath` shows that subpaths concatenate nicely.
 In particular: following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`.
+
+`Path.subpath` is similar in behavior to `Path.truncate`. When t₀ ≤ t₁, they are reparameterizations
+of each other (not yet proven). However, `Path.subpath` works without assuming an order on `t₀` and
+`t₁`, and is convenient for concrete manipulations (e.g., `Path.Homotopy.subpathTransSubpath`).
+
+## TODO
+
+Prove that `Path.truncateOfLE` and `Path.subpath` are reparameterizations of each other.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open unitInterval Set Function
 
@@ -36,7 +46,7 @@ lemma subpathAux_zero (t₀ t₁ : I) : subpathAux t₀ t₁ 0 = t₀ := by simp
 lemma subpathAux_one (t₀ t₁ : I) : subpathAux t₀ t₁ 1 = t₁ := by simp
 
 /-- `subpathAux` is continuous as an uncurried function `I × I × I → I`. -/
-@[continuity]
+@[continuity, fun_prop]
 lemma subpathAux_continuous : Continuous (fun x ↦ subpathAux x.1 x.2.1 x.2.2 : I × I × I → I) := by
   unfold subpathAux
   fun_prop
@@ -46,43 +56,41 @@ def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   toFun := γ ∘ (subpathAux t₀ t₁)
   source' := by rw [comp_apply, subpathAux_zero]
   target' := by rw [comp_apply, subpathAux_one]
+  continuous_toFun := by fun_prop
 
-/-- Reversing `γ.subpath t₀ t₁` yields `γ.subpath t₁ t₀`. -/
+/-- Reversing `γ.subpath t₀ t₁` results in `γ.subpath t₁ t₀`. -/
 @[simp]
 theorem symm_subpath (γ : Path a b) (t₀ t₁ : I) : symm (γ.subpath t₀ t₁) = γ.subpath t₁ t₀ := by
   ext s
   simp [subpath, add_comm]
 
-@[simp]
-lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
-    range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
-  ext z
+lemma range_subpathAux (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t₀ t₁ := by
+  rw [range_eq_iff]
   constructor
-  · rintro ⟨s, rfl⟩
-    apply mem_image_of_mem
-    exact convex_Icc (t₀ : ℝ) t₁ (left_mem_Icc.mpr h) (right_mem_Icc.mpr h) (one_minus_nonneg s)
-      s.prop.left (sub_add_cancel _ _)
-  · rintro ⟨t, ht : (t : ℝ) ∈ Icc (t₀ : ℝ) (t₁ : ℝ), rfl⟩
-    rw [Convex.mem_Icc (show (t₀ : ℝ) ≤ (t₁ : ℝ) from h)] at ht
-    obtain ⟨a, b, ha, hb, hab, ht⟩ := ht
-    rw [mem_range]
-    use ⟨b, hb, Trans.trans (eq_sub_of_add_eq' hab) (sub_le_self 1 ha)⟩
-    simp [subpath, ← eq_sub_of_add_eq hab, ht]
-
-@[simp]
-lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
-    range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
-  rw [← symm_subpath, symm_range, range_subpath_of_le _ _ _ h]
+  · intro s
+    exact convex_uIcc (t₀ : ℝ) t₁ left_mem_uIcc right_mem_uIcc
+      (one_minus_nonneg s) (nonneg s) (sub_add_cancel _ _)
+  · intro t (ht : (t : ℝ) ∈ uIcc (t₀ : ℝ) (t₁ : ℝ))
+    rw [← segment_eq_uIcc, segment_eq_image] at ht
+    obtain ⟨s, hs, hst⟩ := ht
+    use ⟨s, hs⟩
+    ext
+    exact hst
 
 /-- The range of a subpath is the image of the original path on the relevant interval. -/
 @[simp]
 theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
-  rcases le_total t₀ t₁ with h | h
-  · rw [uIcc_of_le h]
-    exact range_subpath_of_le _ _ _ h
-  · rw [uIcc_of_ge h]
-    exact range_subpath_of_ge _ _ _ h
+  rw [← range_subpathAux, ← range_comp]
+  rfl
+
+lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
+    range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
+  simp [h]
+
+lemma range_subpath_of_ge (γ : Path a b) (t₀ t₁ : I) (h : t₁ ≤ t₀) :
+    range (γ.subpath t₀ t₁) = γ '' (Icc t₁ t₀) := by
+  simp [h]
 
 /-- The subpath of `γ` from `t` to `t` is just the constant path at `γ t`. -/
 @[simp]
@@ -110,46 +118,30 @@ copy of `Path.refl`. -/
 def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) ((γ.subpath t₀ t₂).trans (Path.refl _)) where
   toFun x := ((γ.subpath t₀ (subpathAux t₁ t₂ x.1)).trans (γ.subpath _ t₂)) x.2
-  /- Technical note: One would hope the proof of continuity could be made much simpler by using
-  a theorem like `Continuous.pathExtend`, but that does not work in this case because the
-  endpoints of our subpaths depend on our input `x` (i.e., the types don't quite match). -/
   continuous_toFun := by
-    simp only [Path.trans, coe_mk', ContinuousMap.coe_mk, comp_apply]
-    apply continuous_if_le
-    · exact Continuous.comp' continuous_induced_dom continuous_snd
-    · exact continuous_const
-    · simp [extend, IccExtend, projIcc, subpath]
-      fun_prop
-    · simp [extend, IccExtend, projIcc, subpath]
-      fun_prop
-    · intro _ hx
-      simp [hx]
+    let γ₁ (t : I) := γ.subpath t₀ (subpathAux t₁ t₂ t)
+    let γ₂ (t : I) := γ.subpath (subpathAux t₁ t₂ t) t₂
+    refine Path.trans_continuous_family γ₁ ?_ γ₂ ?_ <;>
+    refine γ.subpath_continuous_family.comp (.prodMk ?_ <| .prodMk ?_ ?_) <;>
+    fun_prop
   map_zero_left := by
     intro _
-    congr
-    repeat exact subpathAux_zero t₁ t₂
+    rw [subpathAux_zero]
+    rfl
   map_one_left := by
     intro _
-    congr
-    · exact subpathAux_one t₁ t₂
-    · exact subpathAux_one t₁ t₂
-    · rw [subpathAux_one, subpath_self]
+    rw [subpathAux_one, subpath_self]
+    rfl
   prop' := by
     intro _ _ hx
-    rcases hx with rfl | rfl
-    · simp
-    · simp
+    rcases hx with rfl | rfl <;>
+    simp
 
 /-- Following the subpath of `γ` from `t₀` to `t₁`, and then that from `t₁` to `t₂`,
 is in natural homotopy with following the subpath of `γ` from `t₀` to `t₂`. -/
 def subpathTransSubpath (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
-    ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) := by
-  apply trans
-  · exact subpathTransSubpathRefl γ t₀ t₁ t₂
-  · exact transRefl _
-
-/- Possible extension: It may be worth proving that `Path.truncateOfLE` and `Path.subpath` are
-reparameterizations of one another. -/
+    ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)) (γ.subpath t₀ t₂) :=
+  trans (subpathTransSubpathRefl γ t₀ t₁ t₂) (transRefl _)
 
 end Path.Homotopy
 end

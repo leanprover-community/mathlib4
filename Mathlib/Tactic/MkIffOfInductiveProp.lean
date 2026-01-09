@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean.Elab.DeclarationRange
-import Lean.Meta.Tactic.Cases
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Name
-import Mathlib.Tactic.TypeStar
+module
+
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Meta.Tactic.Cases
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.TypeStar
 
 /-!
 # mk_iff_of_inductive_prop
@@ -24,6 +26,8 @@ the following type:
 This tactic can be called using either the `mk_iff_of_inductive_prop` user command or
 the `mk_iff` attribute.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.MkIff
 
@@ -52,7 +56,7 @@ This relation is user-visible, so we compact it by removing each `b_j` where a `
 hence `a_i = b_j`. We need to take care when there are `p_i` and `p_j` with `p_i = p_j = b_k`.
 -/
 partial def compactRelation :
-  List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
+    List Expr → List (Expr × Expr) → List (Option Expr) × List (Expr × Expr) × (Expr → Expr)
 | [],    as_ps => ([], as_ps, id)
 | b::bs, as_ps =>
   match as_ps.span (fun ⟨_, p⟩ ↦ p != b) with
@@ -329,7 +333,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     value := ← instantiateMVars mvar
   }
   addDeclarationRangesFromSyntax rel (← getRef) relStx
-  addConstInfo relStx rel
+  Term.addTermInfo' relStx (← mkConstWithLevelParams rel) (isBinder := true) |>.run'
 
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule

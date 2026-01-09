@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.Order.Interval.Set.Disjoint
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # Disjointness of `Filter.atTop` and `Filter.atBot`
 -/
+
+public section
 
 assert_not_exists Finset
 
@@ -35,7 +39,7 @@ theorem disjoint_atBot_principal_Ici [Preorder α] [NoBotOrder α] (x : α) :
 
 theorem disjoint_pure_atTop [Preorder α] [NoTopOrder α] (x : α) : Disjoint (pure x) atTop :=
   Disjoint.symm <| (disjoint_atTop_principal_Iic x).mono_right <| le_principal_iff.2 <|
-    mem_pure.2 right_mem_Iic
+    mem_pure.2 self_mem_Iic
 
 theorem disjoint_pure_atBot [Preorder α] [NoBotOrder α] (x : α) : Disjoint (pure x) atBot :=
   @disjoint_pure_atTop αᵒᵈ _ _ _

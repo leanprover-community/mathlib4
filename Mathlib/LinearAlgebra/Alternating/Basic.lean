@@ -3,9 +3,11 @@ Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.LinearAlgebra.Multilinear.Basis
+module
+
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 /-!
 # Alternating Maps
@@ -38,6 +40,8 @@ using `map_swap` as a definition, and does not require `Neg N`.
 * `AlternatingMap.coe_neg`
 * `AlternatingMap.coe_smul`
 -/
+
+@[expose] public section
 
 
 -- semiring / add_comm_monoid
@@ -152,30 +156,22 @@ theorem map_update_add [DecidableEq ι] (i : ι) (x y : M) :
     f (update v i (x + y)) = f (update v i x) + f (update v i y) :=
   f.map_update_add' v i x y
 
-@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
-
 @[simp]
 theorem map_update_sub [DecidableEq ι] (i : ι) (x y : M') :
     g' (update v' i (x - y)) = g' (update v' i x) - g' (update v' i y) :=
   g'.toMultilinearMap.map_update_sub v' i x y
-
-@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 @[simp]
 theorem map_update_neg [DecidableEq ι] (i : ι) (x : M') :
     g' (update v' i (-x)) = -g' (update v' i x) :=
   g'.toMultilinearMap.map_update_neg v' i x
 
-@[deprecated (since := "2024-11-03")] protected alias map_neg := map_update_neg
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
   f.map_update_smul' v i r x
 
-@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
-
--- Cannot be @[simp] because `i` and `j` can not be inferred by `simp`.
+-- Cannot be @[simp] because `i` and `j` cannot be inferred by `simp`.
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
   f.map_eq_zero_of_eq' v i j h hij
 
@@ -234,7 +230,7 @@ instance instIsCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S 
 
 end SMul
 
-/-- The cartesian product of two alternating maps, as an alternating map. -/
+/-- The Cartesian product of two alternating maps, as an alternating map. -/
 @[simps!]
 def prod (f : M [⋀^ι]→ₗ[R] N) (g : M [⋀^ι]→ₗ[R] P) : M [⋀^ι]→ₗ[R] (N × P) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with
@@ -825,7 +821,7 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
   toFun m :=
     { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
-      map_eq_zero_of_eq' := fun v i j hvij hij =>
+      map_eq_zero_of_eq' := private fun v i j hvij hij =>
         alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
   map_add' a b := by
     ext
@@ -888,7 +884,7 @@ variable [Module R' N₁] [Module R' N₂]
 
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
-theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
+theorem Module.Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
   refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear (fun _ ↦ e) fun v => ?_)

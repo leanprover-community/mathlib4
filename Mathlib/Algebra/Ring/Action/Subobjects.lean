@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.DistribMulAction
-import Mathlib.Algebra.Ring.Action.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+public import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Instances of `MulSemiringAction` for subobjects
@@ -17,6 +19,8 @@ Instances for `Subsemiring` and `Subring` are provided next to the other scalar 
 for those subobjects.
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

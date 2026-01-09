@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.Order.Atoms
 
 /-!
 # Simple objects
@@ -16,7 +18,7 @@ We define simple objects in any category with zero morphisms.
 A simple object is an object `Y` such that any monomorphism `f : X ⟶ Y`
 is either an isomorphism or zero (but not both).
 
-This is formalized as a `Prop` valued typeclass `Simple X`.
+This is formalized as a `Prop`-valued typeclass `Simple X`.
 
 In some contexts, especially representation theory, simple objects are called "irreducibles".
 
@@ -30,6 +32,8 @@ and any nonzero morphism into a simple object has trivial cokernel.
 
 We show that any simple object is indecomposable.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -128,7 +132,7 @@ section Abelian
 variable [Abelian C]
 
 /-- In an abelian category, an object satisfying the dual of the definition of a simple object is
-    simple. -/
+simple. -/
 theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso f ↔ f ≠ 0) :
     Simple X :=
   ⟨fun {Y} f I => by
@@ -207,16 +211,15 @@ instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
   nontrivial_of_not_isZero (Simple.not_isZero X)
 
 instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
-  eq_bot_or_eq_top := by
-    rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : Mono f⟩⟩
-    change mk f = ⊥ ∨ mk f = ⊤
-    by_cases h : f = 0
+  eq_bot_or_eq_top a := by
+    obtain ⟨Y, i, _, rfl⟩ := Subobject.mk_surjective a
+    by_cases h : i = 0
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
-    · refine Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+    · exact Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero i).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
-  constructor; intros Y f hf; constructor
+  constructor; intro Y f hf; constructor
   · intro i
     rw [Subobject.isIso_iff_mk_eq_top] at i
     intro w

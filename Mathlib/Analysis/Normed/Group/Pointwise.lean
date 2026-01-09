@@ -3,10 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Properties of pointwise addition of sets in normed groups
@@ -14,6 +15,8 @@ import Mathlib.Topology.MetricSpace.Thickening
 We explore the relationships between pointwise addition of sets in normed groups, and the norm.
 Notably, we show that the sum of bounded sets remain bounded.
 -/
+
+public section
 
 
 open Metric Set Pointwise Topology
@@ -65,7 +68,7 @@ theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹
   rw [← infEdist_inv_inv, inv_inv]
 
 @[to_additive]
-theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
+theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
         (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
         (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|

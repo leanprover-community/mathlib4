@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompHausLike.SigmaComparison
-import Mathlib.Topology.FiberPartition
+module
+
+public import Mathlib.Condensed.Discrete.Basic
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
+public import Mathlib.Topology.FiberPartition
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -23,7 +25,7 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
+Let `S : CompHausLike P` and let `Y` be a finite-product-preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
 decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
@@ -65,6 +67,8 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 
 -/
 
+@[expose] public section
+
 universe u w
 
 open CategoryTheory Limits LocallyConstant TopologicalSpace.Fiber Opposite Function Fiber
@@ -81,7 +85,7 @@ maps.
 def functorToPresheaves : Type (max u w) ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w) where
   obj X := {
     obj := fun ⟨S⟩ ↦ LocallyConstant S X
-    map := fun f g ↦ g.comap f.unop.hom }
+    map := fun f g ↦ g.comap f.unop.hom.hom }
   map f := { app := fun _ t ↦ t.map f }
 
 /--
@@ -178,21 +182,21 @@ variable {T : CompHausLike.{u} P} (g : T ⟶ S)
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
 so that the lemma `incl_comap` works.
 -/
-def componentHom (a : Fiber (f.comap g.hom)) :
+noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
     fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) :=
-  TopCat.ofHom
+  ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
       convert map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
-      exact Continuous.subtype_mk (g.hom.continuous.comp continuous_subtype_val) _ }
+      exact Continuous.subtype_mk (g.hom.hom.continuous.comp continuous_subtype_val) _ }
       -- term mode gives "unknown free variable" error.
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u + 1}))))
-      (g : S ⟶ T) (a : Fiber (f.comap g.unop.hom)) :
-        g ≫ (sigmaIncl (f.comap g.unop.hom) a).op =
+      (g : S ⟶ T) (a : Fiber (f.comap g.unop.hom.hom)) :
+        g ≫ (sigmaIncl (f.comap g.unop.hom.hom) a).op =
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
@@ -205,7 +209,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
   naturality := by
     intro S T g
     ext f
-    apply presheaf_ext (f.comap g.unop.hom)
+    apply presheaf_ext (f.comap g.unop.hom.hom)
     intro a
     simp only [op_unop, functorToPresheaves_obj_obj, types_comp_apply, functorToPresheaves_obj_map,
       incl_of_counitAppApp, ← FunctorToTypes.map_comp_apply, incl_comap]
@@ -263,13 +267,13 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u + 1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
-    apply presheaf_ext (f.comap (sigmaIncl _ _).hom)
+    apply presheaf_ext (f.comap (sigmaIncl _ _).hom.hom)
     intro b
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
     simp only [← g.val.naturality]
-    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom) b ≫ sigmaIncl (f.map _) a =
+    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a).hom.hom) b ≫ sigmaIncl (f.map _) a =
         CompHausLike.ofHom P (X := fiber _ b) (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _)
       by ext; rfl]
     simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
@@ -287,7 +291,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunction is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where

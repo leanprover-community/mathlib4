@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 /-!
 # The monoidal structure on `QuadraticModuleCat` is symmetric.
@@ -17,6 +19,8 @@ In this file we show:
 
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -36,6 +40,6 @@ instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
 instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
 
 end QuadraticModuleCat

@@ -3,8 +3,10 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Derivatives of functions taking values in product types
@@ -20,6 +22,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative
 -/
 
+public section
+
 universe u v w
 
 open Topology Filter Asymptotics Set
@@ -30,7 +34,7 @@ variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter �
 
 section CartesianProduct
 
-/-! ### Derivative of the cartesian product of two functions -/
+/-! ### Derivative of the Cartesian product of two functions -/
 
 
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -40,29 +44,17 @@ nonrec theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasDerivAtFilter f₂ f₂' x L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') x L :=
   hf₁.prodMk hf₂
 
-@[deprecated (since := "2025-03-09")]
-alias HasDerivAtFilter.prod := HasDerivAtFilter.prodMk
-
 nonrec theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
   hf₁.prodMk hf₂
-
-@[deprecated (since := "2025-03-09")]
-alias HasDerivWithinAt.prod := HasDerivWithinAt.prodMk
 
 nonrec theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   hf₁.prodMk hf₂
 
-@[deprecated (since := "2025-03-09")]
-alias HasDerivAt.prod := HasDerivAt.prodMk
-
 nonrec theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
     (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   hf₁.prodMk hf₂
-
-@[deprecated (since := "2025-03-09")]
-alias HasStrictDerivAt.prod := HasStrictDerivAt.prodMk
 
 end CartesianProduct
 
@@ -70,7 +62,7 @@ section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
 
-variable {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+variable {ι : Type*} [Finite ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
 
 @[simp]
@@ -92,12 +84,14 @@ theorem hasDerivWithinAt_pi :
 
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x => φ x i) s x) :
     derivWithin φ s x = fun i => derivWithin (fun x => φ x i) s x := by
+  have := Fintype.ofFinite ι
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · exact (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hsx
   · simp only [derivWithin_zero_of_not_uniqueDiffWithinAt hsx, Pi.zero_def]
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
     deriv φ x = fun i => deriv (fun x => φ x i) x :=
+  have := Fintype.ofFinite ι
   (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
 
 end Pi
