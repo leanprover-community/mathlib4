@@ -6,8 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Topology.Algebra.UniformMulAction
-public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Completion of topological groups:
@@ -260,6 +258,7 @@ theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) 
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 
+@[simp]
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
