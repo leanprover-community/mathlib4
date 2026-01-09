@@ -226,9 +226,9 @@ Q211981:
 
 Q213603:
   title: Ceva's theorem
-  decl: Affine.Triangle.prod_div_one_sub_eq_one_of_mem_line_point_lineMap
+  decl: Affine.Triangle.prod_dist_div_dist_eq_one_of_mem_line_of_mem_line
   authors: Joseph Myers
-  date: 2025-12-30
+  date: 2026-01-09
 
 Q220680:
   title: Banach fixed-point theorem

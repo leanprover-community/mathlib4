@@ -243,7 +243,7 @@
   authors: mathlib
 61:
   title  : Theorem of Ceva
-  decl   : Affine.Triangle.prod_div_one_sub_eq_one_of_mem_line_point_lineMap
+  decl   : Affine.Triangle.prod_dist_div_dist_eq_one_of_mem_line_of_mem_line
   authors: Joseph Myers
 62:
   title  : Fair Games Theorem
