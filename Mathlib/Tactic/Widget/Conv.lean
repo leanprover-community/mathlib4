@@ -128,8 +128,10 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
     let arg ← `(enterArg| $bi:binderIdent)
     pathToStx next loc (xs.push arg)
   | Path.fun depth =>
-    let o1 := xs.elemsAndSeps.isEmpty
-    let mut arr := Array.emptyWithCapacity ((!o1).toNat + depth + 1)
+    let capacity := if xs.elemsAndSeps.isEmpty
+      then depth + 1 -- `fun`*depth; `skip`
+      else depth + 2 -- `conv [args+]`; `fun`*depth; `skip`
+    let mut arr := Array.emptyWithCapacity capacity
     let enterStx ← `(conv| enter [$xs,*])
     let funStx ← `(conv| fun)
     let skipStx ← `(conv| skip)
