@@ -359,22 +359,22 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp, reassoc]
+@[simp, reassoc, push]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem inv_inv [IsIso f] : inv (inv f) = f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_inv (f : X ≅ Y) : inv f.inv = f.hom := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_hom (f : X ≅ Y) : inv f.hom = f.inv := by
   apply inv_eq_of_hom_inv_id
   simp
@@ -566,6 +566,11 @@ instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
   simp [← F.map_comp]
+
+--have to put it in the other direction to tag @[push]
+@[push]
+theorem map_inv' (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : inv (F.map f) = F.map (inv f) :=
+  Eq.symm <| map_inv ..
 
 @[reassoc]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
