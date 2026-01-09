@@ -11,11 +11,19 @@ public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 /-!
 # Duality for finite abelian groups
 
-Let `G` be a finite abelian group and let `M` be a commutative monoid that has enough `n`th roots
-of unity, where `n` is the exponent of `G`. The main results in this file are
+Let `G` be a finite abelian group.
+
+For `M` a commutative monoid that has enough `n`th roots of unity, where `n` is the exponent of `G`,
+the main results in this file are:
 * `CommGroup.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: Homomorphisms `G →* Mˣ` separate
   elements of `G`.
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.
+
+For `R` a commutative domain that has enough `n`th roots of unity, where `n` is the exponent of `G`,
+the main results in this file are:
+* `CommGroup.monoidHomMonoidHomEquiv`: `G` is isomorphic to its double dual `(G →* Rˣ) →* Rˣ`.
+* `CommGroup.subgroupOrderIsoSubgroupMonoidHom`: the order reversing bijection that sends a
+  subgroup of `G` to its dual subgroup in `G →* Rˣ`.
 -/
 
 @[expose] public noncomputable section
@@ -155,7 +163,7 @@ theorem apply_monoidHomMonoidHomEquiv (φ : G →* Rˣ) (η : (G →* Rˣ) →* 
 
 variable (G) in
 /--
-The order reversing bijection that send a subgroup of `G` to its dual subgroup in `G →* Rˣ` where
+The order reversing bijection that sends a subgroup of `G` to its dual subgroup in `G →* Rˣ` where
 `G` is a finite commutative group and `R` is a commutative domain with enough `n`th roots of
 unity, where `n` is the exponent of `G`.
 -/
