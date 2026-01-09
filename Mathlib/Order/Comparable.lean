@@ -88,8 +88,8 @@ theorem AntisymmRel.compRel (h : AntisymmRel r a b) : CompRel r a b :=
   Or.inl h.1
 
 @[simp]
-theorem IsTotal.compRel [IsTotal α r] (a b : α) : CompRel r a b :=
-  IsTotal.total a b
+theorem Std.Total.compRel [Std.Total r] (a b : α) : CompRel r a b :=
+  Std.Total.total a b
 
 end Relation
 
@@ -230,9 +230,9 @@ theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b := by
   rw [← not_compRel_iff, not_not]
 
 @[simp]
-theorem IsTotal.not_incompRel [IsTotal α r] (a b : α) : ¬ IncompRel r a b := by
+theorem Std.Total.not_incompRel [Std.Total r] (a b : α) : ¬ IncompRel r a b := by
   rw [not_incompRel_iff]
-  exact IsTotal.compRel a b
+  exact Std.Total.compRel a b
 
 end Relation
 
