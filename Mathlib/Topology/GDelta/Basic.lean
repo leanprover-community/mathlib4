@@ -302,4 +302,14 @@ lemma nonempty_of_not_isMeagre {s : Set X} (hs : ¬IsMeagre s) : s.Nonempty := b
   contrapose! hs
   simpa [hs] using IsMeagre.empty
 
+lemma isMeagre_congr_residual {s t : Set X} (h : s =ᶠ[residual X] t) : IsMeagre s ↔ IsMeagre t := by
+  constructor <;> {
+    intro h_meagre
+    have : _ᶜ ∩ {x | s x = t x} ∈ residual X := inter_mem h_meagre h
+    refine mem_of_superset this ?_
+    intro x ⟨hs, hx⟩
+    simp only [mem_setOf_eq] at hx
+    tauto
+  }
+
 end IsMeagre
