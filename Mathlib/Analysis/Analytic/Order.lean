@@ -182,7 +182,7 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt fun hg ↦ hf <| hg.congr hfg.symm]
 
-@[simp] lemma analytiOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
+@[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
   analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
 
 @[simp] lemma analyticOrderAt_neg : analyticOrderAt (-f) z₀ = analyticOrderAt f z₀ := by

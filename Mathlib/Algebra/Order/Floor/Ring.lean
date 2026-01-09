@@ -597,10 +597,6 @@ theorem ceil_le_floor_add_one (a : R) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
   rw [ceil_le, Int.cast_add, Int.cast_one]
   exact (lt_floor_add_one a).le
 
-lemma le_floor_add_one [ZeroLEOneClass R] [AddLeftMono R] (a : R) : a ≤ ⌊a⌋ + 1 := by
-  nontriviality R
-  exact (Int.le_ceil a).trans (mod_cast ceil_le_floor_add_one a)
-
 theorem ceil_mono : Monotone (ceil : R → ℤ) :=
   gc_ceil_coe.monotone_l
 

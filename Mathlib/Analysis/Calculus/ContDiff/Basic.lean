@@ -1509,6 +1509,11 @@ theorem ContDiff.differentiable_deriv_two (h : ContDiff 𝕜 2 f₂) : Different
   unfold deriv; fun_prop
 
 @[fun_prop]
+protected lemma ContDiffAt.derivWithin {x : 𝕜} (H : ContDiffAt 𝕜 n f₂ x) (hmn : m + 1 ≤ n) :
+    ContDiffAt 𝕜 m (deriv f₂) x := by
+  simpa using ContDiffWithinAt.derivWithin (s₂ := .univ) H.contDiffWithinAt (by simp) hmn
+
+@[fun_prop]
 theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
   unfold deriv; fun_prop
 

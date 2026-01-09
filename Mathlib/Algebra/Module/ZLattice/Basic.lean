@@ -801,6 +801,6 @@ lemma IsZLattice.isCompact_range_of_periodic
   let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
     fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
   refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩
-  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.le_floor_add_one, add_comm (1 : ℝ)]
+  simp [parallelepiped_basis_eq, x', Int.floor_le, Int.lt_floor_add_one, le_of_lt, add_comm (1 : ℝ)]
 
 end ZLattice
