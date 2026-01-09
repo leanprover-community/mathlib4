@@ -111,14 +111,10 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
   simpa using mem_orthogonal _ _
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
-theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
+instance isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp only [coe_iInf]
-
-/-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
-instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
-  K.isClosed_orthogonal.completeSpace_coe
 
 lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
@@ -422,12 +418,10 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
 variable {K}
 
 theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
-  simp only [mem_orthogonal]
   exact Submodule.sub_mem_orthogonal_of_inner_left h
 
 theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
     x - y ∈ Kᗮ := by
-  simp only [mem_orthogonal]
   exact Submodule.sub_mem_orthogonal_of_inner_right h
 
 variable (K)
@@ -448,10 +442,6 @@ inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
   simpa using mem_orthogonal_iff _ _
-
-/-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
-instance [CompleteSpace E] : CompleteSpace Kᗮ :=
-  Kᗮ.isClosed.completeSpace_coe
 
 variable (𝕜 E)
 
