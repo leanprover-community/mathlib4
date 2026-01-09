@@ -68,7 +68,7 @@ lemma mem_toModuleCatObj (i : ι) {x : M} :
 
 variable {R} in
 /-- An `R`-linear map between `Eᵢᵢ • M` and `Eᵢᵢ • N` induced by an `Mₙ(R)`-linear map
-  from `M` to `N`.-/
+  from `M` to `N`. -/
 @[simps!]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
     [Module R N] [IsScalarTower R (Matrix ι ι R) N] [Module R M] [IsScalarTower R (Matrix ι ι R) M]
@@ -97,7 +97,8 @@ def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat
 open MatrixModCat Matrix
 
 /-- The linear equiv induced by the equality `toModuleCat (toMatrixModCat M) = Eᵢᵢ • Mⁿ`. -/
-def fromModuleCatToModuleCatLinearEquivtoModuleCatObj (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
+def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
+    (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
     (ModuleCat.toMatrixModCat R ι ⋙ MatrixModCat.toModuleCat R i).obj (.of R M) ≃ₗ[R]
     MatrixModCat.toModuleCatObj R (ι → M) i where
   __ := AddEquiv.refl _
