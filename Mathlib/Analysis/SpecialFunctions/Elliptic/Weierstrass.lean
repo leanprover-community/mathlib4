@@ -969,54 +969,43 @@ private lemma meromorphic_relation : Meromorphic L.relation := by
     (L.compl_lattice_diff_singleton_mem_nhds _)] with w hw hw'
   rw [relation, if_neg (by simp_all)]
 
+private lemma relation_mul_id_pow_six_eventuallyEq :
+    (L.relation * id ^ 6) =ᶠ[nhds 0]
+    (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
+      (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
+      (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) := by
+  refine Filter.eventuallyEq_of_mem (L.compl_lattice_diff_singleton_mem_nhds _) fun z hz ↦ ?_
+  by_cases hz0 : z = 0
+  · simp [hz0, relation]; norm_num
+  replace hz : z ∉ L.lattice := by simp_all
+  simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
+    ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
+  simp
+  field [show z ≠ 0 by aesop]
+
+@[fun_prop]
+private lemma analyticAt_relation_mul_id_pow_six :
+    AnalyticAt ℂ (L.relation * id ^ 6) 0 := by
+  refine .congr ?_ L.relation_mul_id_pow_six_eventuallyEq.symm
+  fun_prop
+
+@[simp]
+private lemma relation_neg (x) : L.relation (-x) = L.relation x := by
+  classical simp [relation]
+
 attribute [local fun_prop] AnalyticAt.contDiffAt in
-private lemma analyticAt_relation_zero_aux :
-    7 ≤ analyticOrderAt (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
-    (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
-    (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) 0 := by
-  refine (natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr ?_
-  intro i hi
+private lemma iteratedDeriv_six_relation_mul_id_pow_six :
+    iteratedDeriv 6 (L.relation * id ^ 6) 0 = 0 := by
+  rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
     iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
     pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
-  -- The following is `simp [mul_add, Finset.sum_range_succ', L.G_eq_zero_of_odd 3 (by decide)]`:
-  simp only [sumInvPow_zero, Nat.cast_ite, CharP.cast_eq_zero, mul_ite, mul_zero,
-    Finset.sum_range_succ', tsub_zero, Nat.choose_zero_right, Nat.cast_one, zero_add,
-    Nat.factorial_two, Nat.cast_ofNat, L.G_eq_zero_of_odd 3 (by decide), zero_mul, ite_self,
-    add_zero, Nat.reduceSubDiff, Nat.choose_one_right, Nat.cast_add, Nat.reduceAdd,
-    Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, sub_zero, mul_add, Finset.range_zero,
-    zero_tsub, OfNat.zero_ne_ofNat, Finset.sum_const_zero, zero_sub, mul_neg, one_mul, neg_mul,
-    weierstrassPExcept_zero, mul_one, Nat.choose_zero_succ, ite_mul]
-  simp +contextual only [show ∀ a, ∀ x, a - (x + 1) = 3 ↔ x = a - 4 ∧ 4 ≤ a by lia,
-    show ∀ a, ∀ x, a - (x + 1) = 2 ↔ x = a - 3 ∧ 3 ≤ a by lia,
-    show ∀ a, ∀ x, a - (x + 1) = 6 ↔ x = a - 7 ∧ 7 ≤ a by lia,
-    show ∀ a, ∀ x ∈ Finset.range a, a - (x + 1) = 0 ↔ x = a - 1 ∧ 1 ≤ a by simp_all; lia]
-  -- The following is `simp [ite_and, Finset.sum_add_distrib]`:
-  simp only [ite_and, Finset.sum_ite_eq', Finset.mem_range, tsub_lt_self_iff, Nat.ofNat_pos,
-    and_true, mul_ite, mul_zero, Nat.reduceAdd, Nat.cast_ofNat, tsub_pos_iff_lt,
-    Finset.sum_add_distrib, zero_lt_one]
-  interval_cases i
-  · simp; norm_num
-  · simp
-  · simp [Finset.sum_range_succ]
-  · simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide)]
-  · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
-  · -- This is `simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 5 (by decide)]`
-    -- but squeezed for performance reasons.
-    simp only [Nat.choose_succ_self_right, Nat.reduceAdd, Nat.cast_ofNat, Nat.reduceSubDiff,
-      tsub_le_iff_right, le_add_iff_nonneg_right, zero_le, Nat.sub_eq_zero_of_le, zero_add,
-      Nat.choose_one_right, Nat.add_one_sub_one, Nat.one_le_ofNat, ↓reduceIte,
-      Finset.sum_range_succ, Finset.range_one, Finset.sum_singleton, lt_self_iff_false,
-      OfNat.zero_ne_ofNat, add_zero, Nat.one_lt_ofNat, tsub_zero, le_refl, sub_zero, zero_mul,
-      zero_lt_one, Nat.not_ofNat_le_one, OfNat.one_ne_ofNat, Nat.reduceLT, Nat.reduceLeDiff,
-      sub_self, mul_zero, Nat.ofNat_pos, Nat.reduceEqDiff, Nat.lt_add_one,
-      Nat.choose_self, Nat.cast_one, tsub_self, L.G_eq_zero_of_odd 5 (by decide),
-      Nat.succ_ne_self, zero_sub, mul_neg, neg_zero, OfNat.ofNat_ne_zero, Finset.range_zero,
-      not_lt_zero, Finset.sum_const_zero, add_lt_iff_neg_right, Nat.factorial_two, zero_ne_one]
-  · simp [Finset.sum_range_succ, show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl,
-      L.G_eq_zero_of_odd 3 (by decide), g₃]; ring
+  simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃,
+    show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
+  ring
 
+attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine .of_meromorphicOrderAt_pos ?_ (by simp [relation])
   suffices 1 ≤ meromorphicOrderAt L.relation 0 from lt_of_lt_of_le (b := 0 + 1) (by simp) this
@@ -1025,16 +1014,32 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
       meromorphicOrderAt_pow (by fun_prop)] at this
     rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
     simpa [-LinearOrderedAddCommGroupWithTop.add_le_add_iff_left_of_ne_top] using this
-  refine (ENat.monotone_map_iff.mpr Nat.mono_cast (L.analyticAt_relation_zero_aux)).trans_eq ?_
-  rw [← AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
-  refine meromorphicOrderAt_congr (Filter.eventuallyEq_of_mem (s := L.latticeᶜ) ?_ ?_)
-  · have := (L.isOpen_compl_lattice_diff (s := {0})).mem_nhds (x := 0) (by simp)
-    convert Filter.inter_mem (nhdsWithin_le_nhds this) self_mem_nhdsWithin using 1; aesop
-  · intro z (hz : z ∉ L.lattice)
-    simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
-      ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
-    simp
-    field [show z ≠ 0 by aesop]
+  rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
+  refine ENat.monotone_map_iff.mpr Nat.mono_cast
+    ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr ?_)
+  intro i hi₁
+  by_cases hi₂ : Odd i
+  · rw [← CharZero.eq_neg_self_iff]
+    have := iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0
+    simpa [show ∀ x : ℂ, (-x) ^ 6 = x ^ 6 by intro; ring, hi₂] using
+      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0:)
+  by_cases hi₃ : i = 0
+  · simp [hi₃]
+  by_cases hi₄ : i = 6
+  · exact hi₄ ▸ L.iteratedDeriv_six_relation_mul_id_pow_six
+  rw [L.relation_mul_id_pow_six_eventuallyEq.iteratedDeriv_eq]
+  simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
+    iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
+    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept,
+    pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
+  interval_cases i
+  · cases hi₃ rfl
+  · cases hi₂ (by decide)
+  · simp [Finset.sum_range_succ]
+  · cases hi₂ (by decide)
+  · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
+  · cases hi₂ (by decide)
+  · cases hi₄ rfl
 
 @[simp]
 private lemma relation_add_coe (x : ℂ) (l : L.lattice) :
