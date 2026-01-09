@@ -1,6 +1,7 @@
 module
 
 public import Aesop.Frontend.Attribute
+public import Aesop.Frontend.Command
 import all Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Linter.Whitespace
 import Mathlib.Tactic.Lemma
