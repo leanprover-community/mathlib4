@@ -51,10 +51,10 @@ structure SimplicialHomotopy
     {X Y : SimplicialObject C} (f g : X ⟶ Y) where
   /-- Basic data: `h i : Xₙ ⟶ Yₙ₊₁` for `i = 0..n`. -/
   h {n : ℕ} (i : Fin (n + 1)) : (X _⦋n⦌ ⟶ Y _⦋n+1⦌)
-  /-- Endpoint `d₀ h₀ = f`. -/
-  h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = f.app (op ⦋n⦌)
-  /-- Endpoint `d_{n+1} hₙ = g`. -/
-  h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = g.app (op ⦋n⦌)
+  /-- Endpoint `d₀ h₀ = g`. -/
+  h_zero_comp_δ_zero (n : ℕ) : h 0 ≫ Y.δ 0 = g.app (op ⦋n⦌)
+  /-- Endpoint `d_{n+1} hₙ = f`. -/
+  h_last_comp_δ_last (n : ℕ) : h (Fin.last n) ≫ Y.δ (Fin.last (n + 1)) = f.app (op ⦋n⦌)
   /- nlab: `dᵢ hⱼ = h_{j'-1} dᵢ` if i < j', let j' = j + 1 -/
   /-- `dᵢ h_{j+1} = hⱼ dᵢ` if i < j + 1. -/
   h_succ_comp_δ_castSucc_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (hij : i ≤ j.castSucc) :
@@ -114,37 +114,67 @@ variable (F : C ⥤ D)
 def whiskerRight (H : SimplicialHomotopy f g) :
     SimplicialHomotopy
       (((SimplicialObject.whiskering C D).obj F).map f)
-      (((SimplicialObject.whiskering C D).obj F).map g) := by
-  refine
-    { h := fun {n} i => F.map (H.h i)
-      h_zero_comp_δ_zero := ?_
-      h_last_comp_δ_last := ?_
-      h_succ_comp_δ_castSucc_of_lt := ?_
-      h_succ_comp_δ_castSucc_succ := ?_
-      h_castSucc_comp_δ_succ_of_lt := ?_
-      h_comp_σ_castSucc_of_le := ?_
-      h_comp_σ_succ_of_lt := ?_ }
-  · intro n
+      (((SimplicialObject.whiskering C D).obj F).map g) where
+  h i := F.map (H.h i)
+  h_zero_comp_δ_zero n := by
     simpa [SimplicialObject.δ] using
       congrArg (fun k => F.map k) (H.h_zero_comp_δ_zero n)
-  · intro n
+  h_last_comp_δ_last n := by
     simpa [SimplicialObject.δ] using
       congrArg (fun k => F.map k) (H.h_last_comp_δ_last n)
-  · intro n i j hij
+  h_succ_comp_δ_castSucc_of_lt i j hij := by
     simpa [SimplicialObject.δ] using
       congrArg (fun k => F.map k) (H.h_succ_comp_δ_castSucc_of_lt i j hij)
-  · intro n j
+  h_succ_comp_δ_castSucc_succ j := by
     simpa [SimplicialObject.δ] using
       congrArg (fun k => F.map k) (H.h_succ_comp_δ_castSucc_succ j)
-  · intro n i j hji
+  h_castSucc_comp_δ_succ_of_lt i j hji := by
     simpa [SimplicialObject.δ] using
       congrArg (fun k => F.map k) (H.h_castSucc_comp_δ_succ_of_lt i j hji)
-  · intro n i j hij
+  h_comp_σ_castSucc_of_le i j hij := by
     simpa [SimplicialObject.σ] using
       congrArg (fun k => F.map k) (H.h_comp_σ_castSucc_of_le i j hij)
-  · intro n i j hji
+  h_comp_σ_succ_of_lt i j hji := by
     simpa [SimplicialObject.σ] using
       congrArg (fun k => F.map k) (H.h_comp_σ_succ_of_lt i j hji)
+
+@[simps]
+def postcomp (H : SimplicialHomotopy f g) {Y' : SimplicialObject C} (p : Y ⟶ Y') :
+    SimplicialHomotopy (f ≫ p) (g ≫ p) where
+  h i := H.h i ≫ p.app _
+  h_zero_comp_δ_zero n := by
+    simpa [-h_zero_comp_δ_zero] using H.h_zero_comp_δ_zero n =≫ p.app _
+  h_last_comp_δ_last n := by
+    simpa [-h_last_comp_δ_last] using H.h_last_comp_δ_last n =≫ p.app _
+  h_succ_comp_δ_castSucc_of_lt i j hij := by
+    simpa using H.h_succ_comp_δ_castSucc_of_lt i j hij =≫ p.app _
+  h_succ_comp_δ_castSucc_succ j := by
+    simpa [-h_succ_comp_δ_castSucc_succ] using H.h_succ_comp_δ_castSucc_succ j =≫ p.app _
+  h_castSucc_comp_δ_succ_of_lt i j hji := by
+    simpa using H.h_castSucc_comp_δ_succ_of_lt i j hji =≫ p.app _
+  h_comp_σ_castSucc_of_le i j hij := by
+    simpa using H.h_comp_σ_castSucc_of_le i j hij =≫ p.app _
+  h_comp_σ_succ_of_lt i j hji := by
+    simpa using H.h_comp_σ_succ_of_lt i j hji =≫ p.app _
+
+@[simps]
+def precomp (H : SimplicialHomotopy f g) {X' : SimplicialObject C} (p : X' ⟶ X) :
+    SimplicialHomotopy (p ≫ f) (p ≫ g) where
+  h i := p.app _ ≫ H.h i
+  h_zero_comp_δ_zero n := by
+    simpa [-h_zero_comp_δ_zero] using p.app _ ≫= H.h_zero_comp_δ_zero n
+  h_last_comp_δ_last n := by
+    simpa [-h_last_comp_δ_last] using p.app _ ≫= H.h_last_comp_δ_last n
+  h_succ_comp_δ_castSucc_of_lt i j hij := by
+    simpa using p.app _ ≫= H.h_succ_comp_δ_castSucc_of_lt i j hij
+  h_succ_comp_δ_castSucc_succ j := by
+    simpa [-h_succ_comp_δ_castSucc_succ] using p.app _ ≫= H.h_succ_comp_δ_castSucc_succ j
+  h_castSucc_comp_δ_succ_of_lt i j hji := by
+    simpa using p.app _ ≫= H.h_castSucc_comp_δ_succ_of_lt i j hji
+  h_comp_σ_castSucc_of_le i j hij := by
+    simpa using p.app _ ≫= H.h_comp_σ_castSucc_of_le i j hij
+  h_comp_σ_succ_of_lt i j hji := by
+    simpa using p.app _ ≫= H.h_comp_σ_succ_of_lt i j hji
 
 end SimplicialHomotopy
 

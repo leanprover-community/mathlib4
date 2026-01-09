@@ -51,8 +51,8 @@ noncomputable def hom (H : SimplicialHomotopy f g) : ∀ i j : ℕ,
     else 0
 
 private lemma comm_zero_form (H : SimplicialHomotopy f g) :
-    ((alternatingFaceMapComplex C).map f).f 0 =
-    prevD 0 H.hom + ((alternatingFaceMapComplex C).map g).f 0 := by
+    ((alternatingFaceMapComplex C).map g).f 0 =
+    prevD 0 H.hom + ((alternatingFaceMapComplex C).map f).f 0 := by
   dsimp [prevD, hom, chainHomotopyComponent]
   have h_prev : (ComplexShape.down ℕ).prev 0 = 1 := by simp [(ChainComplex.prev (α := ℕ) 0)]
   have h_last := H.h_last_comp_δ_last 0
@@ -65,8 +65,8 @@ private lemma comm_zero_form (H : SimplicialHomotopy f g) :
     Preadditive.comp_neg, h_last, neg_add_cancel_right]
 
 private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
-    ((alternatingFaceMapComplex C).map f).f (n + 1) = dNext (n + 1) H.hom + prevD (n + 1) H.hom +
-      ((alternatingFaceMapComplex C).map g).f (n + 1) := by
+    ((alternatingFaceMapComplex C).map g).f (n + 1) = dNext (n + 1) H.hom + prevD (n + 1) H.hom +
+      ((alternatingFaceMapComplex C).map f).f (n + 1) := by
   dsimp [dNext, prevD, hom, chainHomotopyComponent]
   rw [(show (ComplexShape.down ℕ).next (n + 1) = n by
       simp only [ChainComplex.next_nat_succ]),
@@ -214,7 +214,7 @@ private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
           _   = -(Sum1 + Sum2) := by abel
   -- Sum3 contains only terms where i is adjacent to j, which telescope to leave only
   -- the endpoints h_0 ∘ d_0 = f and h_n ∘ d_{n+1} = g
-  have h_band : Sum3 = f.app (op ⦋n+1⦌) + -g.app (op ⦋n+1⦌) := by
+  have h_band : Sum3 = g.app (op ⦋n+1⦌) + -f.app (op ⦋n+1⦌) := by
     let A : Finset Q := Finset.univ.image (fun b : Fin (n + 2) => (b.castSucc, b))
     let B : Finset Q := Finset.univ.image (fun b : Fin (n + 2) => (b.succ, b))
     have hU' : U = A ∪ B := by simp [U, A, B]
@@ -248,7 +248,7 @@ private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
       _ = (H.h 0 ≫ Y.δ 0) - (H.h (Fin.last _) ≫ Y.δ (Fin.last _)) := by
         rw [h_cancel]
         abel
-      _ = f.app (op ⦋n+1⦌) + -g.app (op ⦋n+1⦌) := by
+      _ = g.app (op ⦋n+1⦌) + -f.app (op ⦋n+1⦌) := by
         simp only [H.h_zero_comp_δ_zero, H.h_last_comp_δ_last, sub_eq_add_neg]
   rw [← Finset.sum_add_sum_compl S, (show SumQ = Sum3 + Sum4 by simpa [SumQ, Sum3, Sum4] using
     (Finset.sum_add_sum_compl (s := U) (f := t)).symm), ← add_assoc]
@@ -259,8 +259,8 @@ private lemma comm_succ_form (H : SimplicialHomotopy f g) (n : ℕ) :
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
     Homotopy
-      ((alternatingFaceMapComplex C).map f)
-      ((alternatingFaceMapComplex C).map g) := by
+      ((alternatingFaceMapComplex C).map g)
+      ((alternatingFaceMapComplex C).map f) := by
   refine
     { hom := H.hom
       zero := by
@@ -289,7 +289,7 @@ noncomputable def toChainHomotopy (H : SimplicialHomotopy f g) :
 theorem map_homology_eq [CategoryWithHomology C] (H : SimplicialHomotopy f g) (n : ℕ) :
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map f) =
     (HomologicalComplex.homologyFunctor C _ n).map ((alternatingFaceMapComplex C).map g) := by
-  simpa using (H.toChainHomotopy).homologyMap_eq n
+  simpa [eq_comm] using (H.toChainHomotopy).homologyMap_eq n
 
 end SimplicialHomotopy
 end CategoryTheory
