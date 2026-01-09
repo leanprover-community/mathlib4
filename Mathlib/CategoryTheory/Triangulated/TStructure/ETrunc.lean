@@ -11,6 +11,11 @@ public import Mathlib.Algebra.Homology.SpectralSequence.EInt
 /-!
 # Truncations for a t-structure
 
+Let `t` be a t-structure on a triangulated category `C`.
+In this file, we extend the definition of the truncation functors
+`truncLT` and `truncGE` for indices in `ℤ` to `EInt`,
+as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
+
 -/
 
 @[expose] public section
@@ -28,6 +33,8 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+/-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
+`n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
   obj n := by
     induction n with
@@ -73,6 +80,8 @@ lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i <;> constructor <;> cat_disch
 
+/-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to `𝟭 C`,
+`n : ℤ` to `t.truncGE n` and `⊤` to the zero functor. -/
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
   obj n := by
     induction n with
@@ -116,6 +125,8 @@ lemma eTruncGE_obj_mk (n : ℤ) : t.eTruncGE.obj (EInt.mk n) = t.truncGE n := rf
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
   induction i <;> constructor <;> cat_disch
 
+/-- The connecting homomorphism from `t.eTruncGE` to the
+shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
     t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
   app a := by
@@ -136,6 +147,7 @@ noncomputable def eTruncGEδLT :
 lemma eTruncGEδLT_mk (n : ℤ) :
     t.eTruncGEδLT.app (EInt.mk n) = t.truncGEδLT n := rfl
 
+/-- The natural transformation `t.eTruncLT.obj i ⟶ 𝟭 C` for all `i : EInt`. -/
 noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
   t.eTruncLT.map (homOfLE (le_top))
 
@@ -143,7 +155,7 @@ noncomputable abbrev eTruncLTι (i : EInt) : t.eTruncLT.obj i ⟶ 𝟭 _ :=
 @[simp] lemma eTruncLT_ι_coe (n : ℤ) : t.eTruncLTι n = t.truncLTι n := rfl
 @[simp] lemma eTruncLT_ι_top : t.eTruncLTι ⊤ = 𝟙 _ := rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma eTruncLTι_naturality (i : EInt) {X Y : C} (f : X ⟶ Y) :
     (t.eTruncLT.obj i).map f ≫ (t.eTruncLTι i).app Y = (t.eTruncLTι i).app X ≫ f :=
   (t.eTruncLTι i).naturality f
@@ -167,7 +179,8 @@ lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
   | coe n => simp [truncLT_map_truncLTι_app]
   | top => simp
 
-noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 _ ⟶ t.eTruncGE.obj i :=
+/-- The natural transformation `𝟭 C ⟶ t.eTruncGE.obj i` for all `i : EInt`. -/
+noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 C ⟶ t.eTruncGE.obj i :=
   t.eTruncGE.map (homOfLE (bot_le))
 
 @[simp] lemma eTruncGEπ_bot : t.eTruncGEπ ⊥ = 𝟙 _ := rfl
@@ -198,6 +211,8 @@ lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
   | coe n => simp [truncGE_map_truncGEπ_app]
   | top => simp
 
+/-- The (distinguished) triangles given by the natural transformations
+`t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
 @[simps!]
 noncomputable def eTriangleLTGE : EInt ⥤ C ⥤ Triangle C where
   obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLT.app i)
@@ -320,6 +335,8 @@ instance (X : C) (n : ℤ) [t.IsLE X n] (i : EInt) :
   | coe _ => dsimp; infer_instance
   | top => exact isLE_of_isZero _ (by simp) _
 
+/-- The natural transformation `t.eTruncGE.obj b ⟶ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b`
+for all `a` and `b` in `EInt`. -/
 @[simps!]
 noncomputable def eTruncGEToGEGE (a b : EInt) :
     t.eTruncGE.obj b ⟶ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b :=
@@ -336,6 +353,8 @@ section
 
 variable (a b : EInt) (hab : a ≤ b)
 
+/-- The natural isomorphism `t.eTruncGE.obj b ≅ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b`
+when `a` and `b` in `EInt` satisfy `a ≤ b`. -/
 @[simps! hom]
 noncomputable def eTruncGEIsoGEGE :
     t.eTruncGE.obj b ≅ t.eTruncGE.obj a ⋙ t.eTruncGE.obj b :=
@@ -356,6 +375,8 @@ lemma eTruncGEIsoGEGE_inv_hom_id_app (X : C) :
 
 end
 
+/-- The natural transformation `t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ⟶ t.eTruncLT.obj b`
+for all `a` and `b` in `EInt`. -/
 @[simps!]
 noncomputable def eTruncLTLTToLT (a b : EInt) :
     t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ⟶ t.eTruncLT.obj b :=
@@ -372,6 +393,8 @@ section
 
 variable (a b : EInt) (hab : b ≤ a)
 
+/-- The natural isomorphism `t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ⟶ t.eTruncLT.obj b`
+when `a` and `b` in `EInt` satisfy `b ≤ a`. -/
 @[simps! hom]
 noncomputable def eTruncLTLTIsoLT :
     t.eTruncLT.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b :=
@@ -403,12 +426,18 @@ section
 
 variable (a b : EInt)
 
+/-- The natural transformation from
+`t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b` to
+`t.eTruncGE.obj a ⋙ t.eTruncLT.obj b`. (This is an isomorphism.) -/
 @[simps!]
 noncomputable def eTruncLTGELTSelfToLTGE :
     t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ⟶
       t.eTruncGE.obj a ⋙ t.eTruncLT.obj b :=
   Functor.whiskerRight (t.eTruncLTι b) _ ≫ (Functor.leftUnitor _).hom
 
+/-- The natural transformation from
+`t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b` to
+`t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. (This is an isomorphism.) -/
 @[simps!]
 noncomputable def eTruncLTGELTSelfToGELT :
     t.eTruncLT.obj b ⋙ t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ⟶
@@ -457,6 +486,9 @@ instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
 
 end
 
+/-- The commutation natural isomorphism
+`t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`
+for all `a` and `b` in `EInt`. -/
 noncomputable def eTruncLTGEIsoLEGT (a b : EInt) :
     t.eTruncGE.obj a ⋙ t.eTruncLT.obj b ≅ t.eTruncLT.obj b ⋙ t.eTruncGE.obj a :=
   (asIso (t.eTruncLTGELTSelfToLTGE a b)).symm ≪≫ asIso (t.eTruncLTGELTSelfToGELT a b)
@@ -467,7 +499,7 @@ lemma eTruncLTGEIsoLEGT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
       (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
   (t.eTruncLTGEIsoLEGT a b).hom.naturality f
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma eTruncLTGEIsoLEGT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
       (t.eTruncLTGEIsoLEGT a b).hom.app X =

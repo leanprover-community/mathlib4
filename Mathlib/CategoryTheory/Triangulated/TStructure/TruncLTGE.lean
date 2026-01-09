@@ -323,10 +323,12 @@ lemma truncGEδLT_comp_truncLTι (n : ℤ) :
     t.truncGEδLT n ≫ Functor.whiskerRight (t.truncLTι n) (shiftFunctor C (1 : ℤ)) = 0 := by
   cat_disch
 
+/-- The natural transformation `t.truncLT a ⟶ t.truncLT b` when `a ≤ b`. -/
 noncomputable def natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLT a ⟶ t.truncLT b :=
   Functor.whiskerRight (TruncAux.triangleFunctorNatTransOfLE t a b h) Triangle.π₁
 
+/-- The natural transformation `t.truncGE a ⟶ t.truncGE b` when `a ≤ b`. -/
 noncomputable def natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncGE a ⟶ t.truncGE b :=
   Functor.whiskerRight (TruncAux.triangleFunctorNatTransOfLE t a b h) Triangle.π₃
@@ -364,6 +366,8 @@ lemma truncGEδLT_comp_whiskerRight_natTransTruncLTOfLE (a b : ℤ) (h : a ≤ b
 lemma π_natTransTruncGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncGEπ a ≫ t.natTransTruncGEOfLE a b h = t.truncGEπ b := by cat_disch
 
+/-- The natural transformation `t.triangleLTGE a ⟶ t.triangleLTGE b`
+when `a ≤ b`. -/
 noncomputable def natTransTriangleLTGEOfLE (a b : ℤ) (h : a ≤ b) :
     t.triangleLTGE a ⟶ t.triangleLTGE b := by
   refine Triangle.functorHomMk' (t.natTransTruncLTOfLE a b h) (𝟙 _)
@@ -542,6 +546,7 @@ lemma liftTruncLT_aux :
   Triangle.coyoneda_exact₂ _ (t.triangleLTGE_distinguished n₁ Y) f
     (t.zero_of_isLE_of_isGE _ n₀ n₁ (by lia) inferInstance (by dsimp; infer_instance))
 
+/-- Constructor for morphisms to `(t.truncLT n₁).obj Y`. -/
 noncomputable def liftTruncLT {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsLE X n₀] :
     X ⟶ (t.truncLT n₁).obj Y :=
   (t.liftTruncLT_aux f n₀ n₁ h).choose
@@ -562,6 +567,7 @@ lemma descTruncGE_aux :
   Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
     (t.zero_of_isLE_of_isGE _ (n-1)  n (by lia) (by dsimp; infer_instance) inferInstance)
 
+/-- Constructor for morphisms from `(t.truncGE n).obj X`. -/
 noncomputable def descTruncGE :
     (t.truncGE n).obj X ⟶ Y :=
   (t.descTruncGE_aux f n).choose
@@ -663,8 +669,10 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
   · have : t.IsGE X b := t.isGE_of_GE X b a (by lia)
     exact t.isGE_of_iso (show X ≅ _ from asIso ((t.truncGEπ b).app X)) _
 
+/-- The composition `t.truncLT b ⋙ t.truncGE a`. -/
 noncomputable abbrev truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
 
+/-- The composition `t.truncGE b ⋙ t.truncLT a`. -/
 noncomputable abbrev truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
 instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELT a b).obj X) a := by
@@ -747,6 +755,8 @@ instance (a b : ℤ) (X : C) :
   rw [← t.isLE_iff_isIso_truncLTι_app (b - 1) b (by lia)]
   infer_instance
 
+/-- The natural transformation `t.truncGELT a b ⟶ t.truncLTGE a b`
+(which is an isomorphism, see `truncGELTIsoLTGE`.) -/
 noncomputable def truncGELTToLTGE (a b : ℤ) :
     t.truncGELT a b ⟶ t.truncLTGE a b where
   app X := t.liftTruncLT (t.descTruncGE
@@ -776,12 +786,18 @@ lemma truncLT_map_truncGE_map_truncLTι_app_fac (a b : ℤ) (X : C) :
     IsIso.inv_hom_id_assoc]
   exact t.truncGELTToLTGE_app_pentagon_uniqueness _ (by simp)
 
+/-- The connecting homomorphism
+`(t.truncGELT a b).obj X ⟶ ((t.truncLT a).obj X)⟦1⟧`,
+as a natural transformation. -/
 @[expose, simps!]
 noncomputable def truncGELTδLT (a b : ℤ) :
     t.truncGELT a b ⟶ t.truncLT a ⋙ shiftFunctor C (1 : ℤ) :=
   Functor.whiskerLeft (t.truncLT b) (t.truncGEδLT a) ≫
     Functor.whiskerRight (t.truncLTι b) (t.truncLT a ⋙ shiftFunctor C (1 : ℤ))
 
+/-- The functorial (distinguished) triangle
+`(t.truncLT a).obj X ⟶ (t.truncLT b).obj X ⟶ (t.truncGELT a b).obj X ⟶ ...`
+when `a ≤ b`. -/
 @[expose, simps!]
 noncomputable def triangleLTLTGELT (a b : ℤ) (h : a ≤ b) : C ⥤ Triangle C :=
   Triangle.functorMk (t.natTransTruncLTOfLE a b h)
@@ -829,6 +845,7 @@ instance (a b : ℤ) (X : C) :
   rw [← t.truncLT_map_truncGE_map_truncLTι_app_fac a b X]
   infer_instance
 
+/-- The natural transformation `t.truncGELT a b ≅ t.truncLTGE a b`. -/
 noncomputable def truncGELTIsoLTGE (a b : ℤ) : t.truncGELT a b ≅ t.truncLTGE a b :=
   asIso (t.truncGELTToLTGE a b)
 
