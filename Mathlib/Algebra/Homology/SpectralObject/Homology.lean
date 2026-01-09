@@ -37,14 +37,14 @@ variable (n₀ n₁ n₂ n₃ : ℤ)
 lemma epi_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃')
     (hα₀ : α.app 0 = 𝟙 _) (hα₁ : α.app 1 = 𝟙 _) (hα₂ : α.app 2 = 𝟙 _) :
     Epi (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃' α) := by
-  have := X.πE_EMap  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by aesop_cat)
+  have := X.πE_EMap  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by cat_disch)
   rw [cyclesMap_id, id_comp] at this
   exact epi_of_epi_fac this
 
 lemma mono_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂ f₃)
     (hα₁ : α.app 1 = 𝟙 _) (hα₂ : α.app 2 = 𝟙 _) (hα₃ : α.app 3 = 𝟙 _) :
     Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂ f₃ α) := by
-  have := X.EMap_ιE  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by aesop_cat)
+  have := X.EMap_ιE  n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ α (𝟙 _) (by cat_disch)
   rw [opcyclesMap_id, comp_id] at this
   exact mono_of_mono_fac this
 

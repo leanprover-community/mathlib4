@@ -92,7 +92,7 @@ lemma cyclesMap_Ψ_exact :
     rw [assoc, ← X.Ψ_fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₃ f₁₂ h₁₂ , reassoc_of% hz, zero_comp]
   · dsimp
     rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f₂ f₃), id_comp, assoc,
-      X.cyclesMap_i n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) (𝟙 _) (by aesop_cat),
+      X.cyclesMap_i n₀ n₁ hn₁ _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) (𝟙 _) (by cat_disch),
      Functor.map_id, comp_id, liftCycles_i]
 
 lemma Ψ_opcyclesMap_exact :
@@ -106,7 +106,7 @@ lemma Ψ_opcyclesMap_exact :
       (X.cokernelSequenceOpcycles_exact n₀ n₁ hn₁ f₁ f₂₃).exact_up_to_refinements z₁ (by
     dsimp
     have H := X.p_opcyclesMap n₀ n₁ hn₁ f₁ f₂ f₁ f₂₃
-      (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) (𝟙 _) (by aesop_cat)
+      (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) (𝟙 _) (by cat_disch)
     rw [Functor.map_id, id_comp] at H
     rw [← H, ← reassoc_of% hz₁, hz₀, comp_zero])
   dsimp at z₂ hz₂

@@ -174,7 +174,7 @@ lemma cyclesMap_i (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ g ⟶ mk₁ g')
 lemma cyclesMap_id :
     X.cyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
   rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ f g),
-    X.cyclesMap_i n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
+    X.cyclesMap_i n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by cat_disch),
     Functor.map_id, Category.comp_id, Category.id_comp]
 
 lemma cyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
@@ -188,7 +188,7 @@ lemma cyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk�
     ← Functor.map_comp]
   symm
   apply X.cyclesMap_i
-  aesop_cat
+  cat_disch
 
 /-- The functoriality of `X.opcycles` with respect to morphisms in
 `ComposableArrows ι 2`. -/
@@ -213,7 +213,7 @@ lemma p_opcyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ f ⟶ mk₁ f')
 lemma opcyclesMap_id :
     X.opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) = 𝟙 _ := by
   rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f g),
-    X.p_opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by aesop_cat),
+    X.p_opcyclesMap n₀ n₁ hn₁ f g f g (𝟙 _) (𝟙 _) (by cat_disch),
     Functor.map_id, Category.comp_id, Category.id_comp]
 
 lemma opcyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk₂ f'' g'')
