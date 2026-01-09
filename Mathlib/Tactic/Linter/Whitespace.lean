@@ -654,8 +654,6 @@ elab "#show_corr " cmd:command : command => do
             |>.push (pretty.toRawSubstring.get b.pos)
             |>.push (pretty.toRawSubstring.get (pretty.toRawSubstring.next b.pos))
             |>.push '\'',
-          --b.ok,
-          --b.bracket,
         )
     -- TODO: fix `byTens` and re-enable this logging output
     logInfo <| m!"\n".joinSep (byTens pretty (min pretty.length 100) ::"":: msgs.toList.map (m!"{·}"))
