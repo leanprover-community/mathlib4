@@ -318,7 +318,7 @@ lemma le_dual_inv_aux (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
   rw [dual, dif_neg hI]
   intro x hx y hy
-  rw [mem_one]
+  rw [Submodule.mem_one]
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
   rw [IsIntegralClosure.isIntegral_iff (A := B)]
