@@ -43,7 +43,7 @@ Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
-  {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R] [Archimedean R]
+  {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-! ### Finite residue field -/
 
@@ -421,5 +421,55 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
+
+theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
+    stdPart x = r := by
+  have hx : 0 ≤ mk x := by
+    apply mk_nonneg_of_le_of_le_of_archimedean f (hl (r - 1) _) (hr (r + 1) _) <;> simp
+  by_contra h
+  obtain h | h := lt_or_gt_of_ne h
+  · obtain ⟨s, hs, hs'⟩ := exists_between h
+    apply (mk_sub_pos_iff f hx).not.2 hs.ne <|
+      (mk_sub_stdPart_pos f hx).trans_le (mk_antitoneOn _ _ _)
+    · simpa using hl _ hs'
+    · simpa using hl _ h
+    · rw [sub_le_sub_iff_left]
+      exact f.monotone' hs.le
+  · obtain ⟨s, hs', hs⟩ := exists_between h
+    apply (mk_sub_pos_iff f hx).not.2 hs.ne' <|
+      (mk_sub_stdPart_pos f hx).trans_le (mk_monotoneOn _ _ _)
+    · simpa using hr _ h
+    · simpa using hr _ hs'
+    · rw [sub_le_sub_iff_left]
+      exact f.monotone' hs.le
+
+theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
+  obtain hx | hx := le_or_gt 0 (mk x)
+  · obtain ⟨a, ha⟩ := exists_int_lt_of_mk_nonneg hx
+    obtain ⟨b, hb⟩ := exists_int_gt_of_mk_nonneg hx
+    have hn : {r | x < f r}.Nonempty := ⟨b, by simpa using hb⟩
+    have hb : BddBelow {r | x < f r} := by
+      refine ⟨a, fun r hr ↦ ?_⟩
+      by_contra! hra
+      exact (f.monotone' hra.le).not_gt (by simpa using ha.trans hr)
+    apply stdPart_eq f <;> intro r hr
+    · simpa using notMem_of_lt_csInf hr hb
+    · obtain ⟨s, hs, hs'⟩ := (csInf_lt_iff hb hn).1 hr
+      exact hs.le.trans (f.monotone' hs'.le)
+  · rw [stdPart_of_mk_ne_zero hx.ne]
+    have hr {r} := hx.trans_le (mk_map_nonneg_of_archimedean f r)
+    obtain h | h := le_or_gt 0 x
+    · convert Real.sInf_empty.symm
+      rw [Set.eq_empty_iff_forall_notMem]
+      exact fun r ↦ (lt_of_mk_lt_mk_of_nonneg hr h).not_gt
+    · convert Real.sInf_univ.symm
+      rw [Set.eq_univ_iff_forall]
+      exact fun r ↦ lt_of_mk_lt_mk_of_nonpos hr h.le
+
+theorem stdPart_eq_sSup (f : ℝ →+*o K) (x : K) : stdPart x = sSup {r | f r < x} := by
+  rw [← neg_inj, ← stdPart_neg, stdPart_eq_sInf f, ← Real.sInf_neg]
+  congr 1
+  ext
+  simp [neg_lt]
 
 end ArchimedeanClass

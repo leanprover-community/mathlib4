@@ -44,7 +44,7 @@ theorem max_eq_sup_withBot (s : Finset α) : s.max = sup s (↑) :=
 theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
@@ -73,15 +73,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
   induction s using Finset.induction_on with
   | empty => intro _ H; cases H
-  | insert b s _ ih =>
-    intro a h
-    by_cases p : b = a
-    · induction p
-      exact mem_insert_self b s
-    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
-      · cases h
-        cases p rfl
-      · exact mem_insert_of_mem (ih h)
+  | _ => grind [WithBot.coe_eq_coe]
 
 theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as

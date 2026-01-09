@@ -300,7 +300,7 @@ instance : KleeneAlgebra (Language α) where
     refine iSup_le fun n ↦ ?_
     induction n with
     | zero => simp
-    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=

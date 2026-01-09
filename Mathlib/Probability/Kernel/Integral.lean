@@ -13,7 +13,7 @@ public import Mathlib.Probability.Kernel.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
