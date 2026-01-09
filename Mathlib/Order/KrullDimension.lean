@@ -934,7 +934,7 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  use { length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
   case h => simp [RelSeries.head]
   case step =>
     intro ⟨i, hi⟩

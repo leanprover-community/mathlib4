@@ -619,10 +619,10 @@ instance [SMul K γ] [SMul γ β] [SMul K β] [IsScalarTower K γ β] : IsScalar
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance [SMul γ β] [SMul K β] [SMulCommClass K γ β] : SMulCommClass K γ (α →ₛ β) where
-  smul_comm _ _ _ := ext fun _ ↦  smul_comm ..
+  smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β) where
-  algebraMap :={
+  algebraMap := {
     toFun r := const α <| algebraMap K β r
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
     map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
