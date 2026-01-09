@@ -69,7 +69,7 @@ when applicable:
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pi/Basic.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
@@ -101,12 +101,13 @@ when applicable:
   instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib/Algebra/Pointwise.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
+  See `Mathlib/Algebra/Group/TransferInstance.lean` for more examples. See also the `transport`
+  tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/

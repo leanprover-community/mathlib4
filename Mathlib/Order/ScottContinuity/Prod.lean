@@ -19,7 +19,7 @@ public import Mathlib.Order.Bounds.Lattice
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

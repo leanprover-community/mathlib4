@@ -182,7 +182,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
 
 variable (W) in
 /-- The canonical bijection between objects in a category and its
-localization with respect to a morphism_property `W` -/
+localization with respect to a `MorphismProperty` `W` -/
 @[simps]
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
