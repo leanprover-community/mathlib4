@@ -7,8 +7,11 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Linter.Basic
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
-/-
+/-!
 # Additional utilities and boilerplate for the `Linter` API
 -/
 
