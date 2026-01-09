@@ -130,15 +130,13 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
   | Path.fun depth =>
     let o1 := xs.elemsAndSeps.isEmpty
     let mut arr := Array.emptyWithCapacity ((!o1).toNat + depth + 1)
-    let enterStx ← `(enter| enter [$xs,*])
-    let funStx ← `(«fun»| fun)
-    let skipStx ← `(skip| skip)
-    let add (arr : Array Syntax) (x : Syntax) : Array Syntax :=
-      if arr.isEmpty then arr.push x else (arr.push mkNullNode).push x
-    if !xs.elemsAndSeps.isEmpty then arr := add arr enterStx.raw
-    for _ in [0:depth] do arr := add arr funStx
-    arr := add arr skipStx
-    let seq := Lean.mkNode ``convSeq1Indented #[mkNullNode arr]
+    let enterStx ← `(conv| enter [$xs,*])
+    let funStx ← `(conv| fun)
+    let skipStx ← `(conv| skip)
+    if !xs.elemsAndSeps.isEmpty then arr := arr.push enterStx
+    for _ in [0:depth] do arr := arr.push funStx
+    arr := arr.push skipStx
+    let seq ← `(convSeq1Indented|$arr:conv*)
     match loc with
     | none => `(tactic| conv => $seq:convSeq1Indented)
     | some n => `(tactic| conv at $(← mkIdentFromRef n):ident => $seq:convSeq1Indented)
