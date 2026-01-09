@@ -169,7 +169,7 @@ def MatrixModCat.counitIso :
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 @[simps, stacks 074D]
-noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
+def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι
   inverse := MatrixModCat.toModuleCat R ι
   unitIso := MatrixModCat.unitIso R ι |>.symm
@@ -187,7 +187,7 @@ noncomputable def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix �
 
 open ModuleCat.Algebra in
 @[simps, stacks 074D]
-noncomputable def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
+def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
   eqv := moritaEquivalentToMatrix R ι
   linear.map_smul {X Y} f r := by
