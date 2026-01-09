@@ -43,7 +43,6 @@ theorem _root_.IsLocalization.map_inf {R : Type*} [CommSemiring R] (M : Submonoi
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
   refine le_antisymm (map_inf_le (algebraMap R S)) fun x hx ↦ ?_
   simp only [mem_inf, IsLocalization.mem_map_algebraMap_iff M, Prod.exists] at hx ⊢
-  -- simp only [Prod.exists, Subtype.exists, exists_prop, Submodule.mem_inf]
   obtain ⟨⟨⟨i, hi⟩, mi, hi'⟩, ⟨j, hj⟩, mj, hj'⟩ := hx
   simp only [← IsLocalization.eq_mk'_iff_mul_eq] at hi' hj'
   obtain ⟨m, hm⟩ := IsLocalization.eq.mp (hi'.symm.trans hj')
@@ -286,8 +285,7 @@ lemma IsMinimalPrimaryDecomposition.foo [DecidableEq (Ideal R)]
   rw [← ht.inf_eq, component_finset_inf, ← Finset.insert_erase hqt, Finset.inf_insert, id_eq,
     component_eq_self q q.radical (ht.primary hqt) le_radical, inf_eq_left, Finset.le_inf_iff]
   intro r hr
-  simp only [id_eq]
-  rw [(component_eq_top_iff r q.radical).mpr]
+  rw [id_eq, (component_eq_top_iff r q.radical).mpr]
   · exact le_top
   · obtain ⟨hrq, hrt⟩ := Finset.mem_erase.mp hr
     replace hrq : r.radical ≠ q.radical := ht.distinct hrt hqt hrq
