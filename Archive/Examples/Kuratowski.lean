@@ -81,6 +81,7 @@ theorem isOpen_of_mem_theOpenSix (h : t ∈ theOpenSix s) : IsOpen t := by
 theorem mem_theOpenSix_iff : t ∈ theOpenSix s ↔ tᶜ ∈ theClosedSix s := by
   conv_lhs => rw [theOpenSix, ← compl_compl t, Multiset.mem_map_of_injective compl_injective]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Six inequalities that suffice to deduce the six closed sets obtained from a given set
 contain no duplicates. -/
 def TheSixIneq (s : Set X) : Prop :=
