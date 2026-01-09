@@ -371,17 +371,21 @@ theorem isAcyclic_add_edge_iff_of_not_reachable (x y : V) (hxy : ¬ G.Reachable 
     (G ⊔ fromEdgeSet {s(x, y)}).IsAcyclic ↔ IsAcyclic G :=
   ⟨.anti le_sup_left, .isAcyclic_sup_fromEdgeSet_of_not_reachable hxy⟩
 
-/-- Connecting two unreachable vertices by an edge results in an acyclic graph if and only if
-the original graph was acyclic and the vertices had no path between them. -/
-theorem not_reachable_and_isAcyclic_iff_isAcyclic_sup_fromEdgeSet {u v : V} (hne : u ≠ v)
-    (hnadj : ¬G.Adj u v) :
-    ¬G.Reachable u v ∧ G.IsAcyclic ↔ (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic := by
-  refine ⟨fun ⟨hnreach, hacyc⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable hnreach, ?_⟩
-  refine fun hacyc ↦ ⟨fun hreach ↦ ?_, hacyc.anti le_sup_left⟩
-  have := isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [hne]
+/-- Adding an edge results in an acyclic graph iff the original graph was acyclic and
+the edge connects vertices that previously had no path between them. -/
+theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
+    (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic ↔
+      G.IsAcyclic ∧ (G.Reachable u v → u = v ∨ G.Adj u v) := by
+  by_cases huv : u = v
+  · grind [sup_eq_left, fromEdgeSet_le, Sym2.mem_diagSet_iff_eq]
+  by_cases hadj : G.Adj u v
+  · grind [sup_eq_left, fromEdgeSet_le, mem_edgeSet]
+  refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable <| by grind⟩
+  refine fun hacyc ↦ ⟨hacyc.anti le_sup_left, fun hreach ↦ False.elim ?_⟩
+  have := isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [huv]
   refine isBridge_iff.mp this |>.right <| hreach.mono <| Eq.le <| Eq.symm ?_
   rw [sup_sdiff_right_self]
-  exact deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr hnadj
+  exact deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr hadj
 
 /--
 The reachability relation of a maximal acyclic subgraph agrees with that of the larger graph.
