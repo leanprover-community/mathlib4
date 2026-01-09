@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Analytic.ChangeOrigin
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.RingTheory.Nilpotent.Exp
 
 /-!
 # Exponential in a Banach algebra
@@ -165,6 +166,16 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 variable (𝕂)
 
+theorem exp_eq_finset_sum {x : 𝔸} (ha : IsNilpotent x) :
+    (exp 𝕂 x) = ∑ i ∈ Finset.range (nilpotencyClass x), (i.factorial : 𝕂)⁻¹ • x ^ i := by
+  rw [exp_eq_tsum]
+  dsimp only
+  rw [tsum_eq_sum (s := Finset.range (nilpotencyClass x))]
+  intro b hb
+  rw [Finset.mem_range, not_lt] at hb
+  rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
+  norm_num
+
 @[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
@@ -201,6 +212,17 @@ theorem expSeries_sum_eq_div (x : 𝔸) : (expSeries 𝕂 𝔸).sum x = ∑' n :
 
 theorem exp_eq_tsum_div : exp 𝕂 = fun x : 𝔸 => ∑' n : ℕ, x ^ n / n ! :=
   funext expSeries_sum_eq_div
+
+variable (𝕂)
+
+lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 𝔸} (ha : IsNilpotent x) :
+    (exp 𝕂 x) = IsNilpotent.exp x := by
+  rw [IsNilpotent.exp, exp_eq_finset_sum 𝕂 ha]
+  apply Finset.sum_equiv (Equiv.refl _) (by simp)
+  have h (b : ℕ) : (b.factorial : 𝕂)⁻¹ • (x ^ b) = (b.factorial : ℚ)⁻¹ • (x ^ b) := by
+    rw [← Rat.cast_inv_nat]
+    exact Rat.cast_smul_eq_qsmul 𝕂 _ _
+  simp [h]
 
 end TopologicalDivisionAlgebra
 

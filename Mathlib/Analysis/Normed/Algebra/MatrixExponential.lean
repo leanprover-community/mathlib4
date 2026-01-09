@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.RingTheory.Nilpotent.Exp
 public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -98,17 +97,6 @@ theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 
 theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
     (exp 𝕂 A).IsHermitian :=
   (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
-
-omit [T2Space 𝔸] in
-theorem exp_eq_finset_sum {A : Matrix m m 𝔸} (ha : IsNilpotent A) :
-    (exp 𝕂 A) = ∑ i ∈ Finset.range (nilpotencyClass A), (i.factorial : 𝕂)⁻¹ • A ^ i := by
-  rw [exp_eq_tsum]
-  dsimp only
-  rw [tsum_eq_sum (s := Finset.range (nilpotencyClass A))]
-  intro b hb
-  rw [Finset.mem_range, not_lt] at hb
-  rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
-  norm_num
 
 end Ring
 
