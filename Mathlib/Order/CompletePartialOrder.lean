@@ -45,13 +45,16 @@ class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α where
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
   lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
 
-variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
+variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d d' : Set α} {a b : α}
 
 protected lemma DirectedOn.isLUB_sSup : DirectedOn (· ≤ ·) d → IsLUB d (sSup d) :=
 CompletePartialOrder.lubOfDirected _
 
 protected lemma DirectedOn.le_sSup (hd : DirectedOn (· ≤ ·) d) (ha : a ∈ d) : a ≤ sSup d :=
 hd.isLUB_sSup.1 ha
+
+protected lemma DirectedOn.le_sSup_of_le (hd : DirectedOn (· ≤ ·) d) (hb : b ∈ d) (ha : a ≤ b) :
+    a ≤ sSup d := le_trans ha (hd.le_sSup hb)
 
 protected lemma DirectedOn.sSup_le (hd : DirectedOn (· ≤ ·) d) (ha : ∀ b ∈ d, b ≤ a) : sSup d ≤ a :=
 hd.isLUB_sSup.2 ha
@@ -61,6 +64,15 @@ hf.directedOn_range.le_sSup <| Set.mem_range_self _
 
 protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
 hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
+
+protected lemma DirectedOn.sSup_le_sSup (hd : DirectedOn (· ≤ ·) d) (hd' : DirectedOn (· ≤ ·) d') :
+    d ⊆ d' → sSup d ≤ sSup d' := by
+  intro h
+  apply hd.sSup_le
+  intro a h_a
+  apply hd'.le_sSup
+  exact Set.mem_of_subset_of_mem h h_a
+
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas
 
