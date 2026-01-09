@@ -88,7 +88,7 @@ namespace Closeds
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
-instance instEmetricSpace : EMetricSpace (Closeds α) where
+instance instEMetricSpace : EMetricSpace (Closeds α) where
   __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
   eq_of_edist_eq_zero {s t} h := Closeds.ext <| (s.isClosed.hausdorffEDist_zero_iff t.isClosed).1 h
 
