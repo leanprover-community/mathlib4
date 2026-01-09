@@ -76,7 +76,7 @@ lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s :=
 @[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
-instance (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
+instance (s : ClosedSubmodule R M) : IsClosed s.carrier := s.isClosed'
 
 initialize_simps_projections ClosedSubmodule (carrier → coe, as_prefix coe)
 
@@ -201,7 +201,9 @@ variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 @[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
   ext x
-  simp
+  rw [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, Submodule.mem_closure_iff,
+    IsClosed.submodule_topologicalClosure_eq s.isClosed']
+  exact Iff.of_eq rfl
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
