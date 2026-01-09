@@ -53,7 +53,7 @@ There are two obstructions, though :
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
