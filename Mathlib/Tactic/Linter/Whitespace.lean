@@ -290,8 +290,6 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Stream'.«term_::_», -- of `Stream'` notation, analogous to lists.
     `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
     `Mathlib.Notation3.notation3, -- of `notation3`.
-    ``Parser.Term.structInstField, -- of the `where` fields: the LHS pps with virtually no spaces.
-    ``Parser.Term.structInst, -- of the `where` fields: the LHS pps with virtually no spaces.
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
     -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
