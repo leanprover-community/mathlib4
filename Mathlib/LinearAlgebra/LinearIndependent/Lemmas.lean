@@ -204,7 +204,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     intro f hfsupp g hgsupp hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
     · rw [show f = 0 by simpa using hfsupp, show g = 0 by simpa using hgsupp]
-    haveI : IsRefl X r := ⟨fun _ => Set.Subset.refl _⟩
+    haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by

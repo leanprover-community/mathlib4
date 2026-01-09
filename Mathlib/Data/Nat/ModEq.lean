@@ -52,7 +52,7 @@ protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]

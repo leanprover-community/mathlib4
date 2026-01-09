@@ -43,7 +43,7 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 /-! ### Cofinality of orders -/
 
-attribute [local instance] IsRefl.swap
+attribute [local instance] Std.Refl.swap
 
 namespace Order
 
@@ -53,14 +53,14 @@ def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
 /-- The set in the definition of `Order.cof` is nonempty. -/
-private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
+private theorem cof_nonempty (r : α → α → Prop) [Std.Refl r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
 theorem cof_le (r : α → α → Prop) {S : Set α} (h : ∀ a, ∃ b ∈ S, r a b) : cof r ≤ #S :=
   csInf_le' ⟨S, h, rfl⟩
 
-theorem le_cof [IsRefl α r] (c : Cardinal) :
+theorem le_cof [Std.Refl r] (c : Cardinal) :
     c ≤ cof r ↔ ∀ {S : Set α}, (∀ a, ∃ b ∈ S, r a b) → c ≤ #S := by
   rw [cof, le_csInf_iff'' (cof_nonempty r)]
   use fun H S h => H _ ⟨S, h, rfl⟩
@@ -71,7 +71,7 @@ end Order
 
 namespace RelIso
 
-private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
+private theorem cof_le_lift [Std.Refl s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
@@ -81,12 +81,12 @@ private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
-theorem cof_eq_lift [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq_lift [Std.Refl s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
-  have := f.toRelEmbedding.isRefl
+  have := f.toRelEmbedding.stdRefl
   (f.cof_le_lift).antisymm (f.symm.cof_le_lift)
 
-theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] (f : r ≃r s) :
     Order.cof r = Order.cof s :=
   lift_inj.1 (f.cof_eq_lift)
 

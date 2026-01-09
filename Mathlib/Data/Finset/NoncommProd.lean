@@ -46,7 +46,7 @@ def noncommFoldr (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise fun x y => ∀ b, f x (f y b) = f y (f x b)) (b : β) : β :=
   letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
     ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
-      haveI : IsRefl α fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
+      haveI : Std.Refl fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
       comm.of_refl hx hy⟩
   s.attach.foldr (f ∘ Subtype.val) b
 
