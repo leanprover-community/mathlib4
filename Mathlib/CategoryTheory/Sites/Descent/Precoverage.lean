@@ -189,7 +189,7 @@ lemma compatible_familyOfElements (i : ι) :
   apply mor_unique
 
 include hf' in
-/-- Given two family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
+/-- Given two families of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
 two objects `D₁ D₂ : F.DescentData f`, a morphism `φ` between the images in
 `F.DescentData f'` of `D₁` and `D₂` by a functor `pullFunctor`. When `F`
 is a prestack and `f'` a covering family, this is the morphism `D₁.obj i ⟶ D₂.obj i`
