@@ -19,7 +19,7 @@ In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th 
 number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
 `¬IsSquare q ∧ 0 ≤ q`.
 
-We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+We also provide dot-style constructors like `Irrational.add_ratCast`, `Irrational.ratCast_sub` etc.
 
 With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
 when `n` is a numeric literal or cast;

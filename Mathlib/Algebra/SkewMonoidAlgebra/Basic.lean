@@ -262,9 +262,9 @@ theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
-  toFun        := toFinsupp
-  invFun       := ofFinsupp
-  map_add'     := toFinsupp_add
+  toFun    := toFinsupp
+  invFun   := ofFinsupp
+  map_add' := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=

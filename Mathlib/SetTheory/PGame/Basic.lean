@@ -382,7 +382,7 @@ theorem identical_of_isEmpty (x y : PGame)
 def identicalSetoid : Setoid PGame :=
   ⟨Identical, Identical.refl, Identical.symm, Identical.trans⟩
 
-instance : IsRefl PGame (· ≡ ·) := ⟨Identical.refl⟩
+instance : Std.Refl (· ≡ ·) := ⟨Identical.refl⟩
 instance : Std.Symm (· ≡ ·) := ⟨fun _ _ ↦ Identical.symm⟩
 instance : IsTrans PGame (· ≡ ·) := ⟨fun _ _ _ ↦ Identical.trans⟩
 instance : IsEquiv PGame (· ≡ ·) := { }
