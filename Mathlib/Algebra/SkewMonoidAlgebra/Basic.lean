@@ -54,19 +54,25 @@ variable [AddMonoid k]
 @[simp]
 theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
 
+set_option backward.privateInPublic true in
 @[irreducible]
 private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
 instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
@@ -196,8 +202,6 @@ theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support �
 theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
   simp only [mem_support_iff, ne_eq, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
@@ -546,15 +550,12 @@ section AddGroup
 
 variable [AddGroup k]
 
-private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
-  | ⟨a⟩ => ⟨-a⟩
-
-instance : Neg (SkewMonoidAlgebra k G) :=
-  ⟨neg⟩
+@[no_expose] instance : Neg (SkewMonoidAlgebra k G) :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
 theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+  (rfl)
 
 instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec
@@ -715,7 +716,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • 
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
   map_one' := liftNC_one _ _
-  map_mul' _ _ :=  liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
+  map_mul' _ _ := liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
 
 end Semiring
 
@@ -809,7 +810,7 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 /-- Scalar multiplication acting on the domain.
 
 This is not an instance as it would conflict with the action on the range.
-See the file `test/instance_diamonds.lean` for examples of such conflicts. -/
+See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
 def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
@@ -930,7 +931,7 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
   classical
   have : (f.sum fun a b ↦ ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
-    ((single x r) *  f).coeff y =
+    (single x r * f).coeff y =
         sum f fun a b ↦ ite (x * a = y) (r * x • b) 0 :=
       (coeff_mul _ _ _).trans <| sum_single_index this
     _ = f.sum fun a b ↦ ite (a = z) (r * x • b) 0 := by simp [H]

@@ -86,7 +86,7 @@ lemma sign_eq_of_contra
       sum_pair castSucc_lt_succ.ne, sum_pair castSucc_lt_succ.ne,
       Perm.mul_apply, Perm.mul_apply, ← hi, swap_apply_left, swap_apply_right,
       add_comm, add_sub_add_comm, ← sub_mul, ← sub_mul,
-      val_succ, coe_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
+      val_succ, val_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
       one_mul, neg_one_mul]
     calc
       _ ≤ |x (p i.succ)| + |-x (p i.castSucc)| := abs_add_le ..

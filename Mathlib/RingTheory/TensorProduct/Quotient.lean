@@ -29,6 +29,7 @@ namespace Algebra.TensorProduct
 
 variable {A : Type*} (B : Type*) [CommRing A] [CommRing B] [Algebra A B] (I : Ideal A)
 
+set_option backward.privateInPublic true in
 private noncomputable def quotIdealMapEquivTensorQuotAux :
       (B ⧸ (I.map <| algebraMap A B)) ≃ₗ[B] B ⊗[A] (A ⧸ I) :=
   AddEquiv.toLinearEquiv (TensorProduct.tensorQuotEquivQuotSMul B I ≪≫ₗ
@@ -42,6 +43,8 @@ private lemma quotIdealMapEquivTensorQuotAux_mk (b : B) :
     (quotIdealMapEquivTensorQuotAux B I) b = b ⊗ₜ[A] 1 :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `B ⊗[A] (A ⧸ I)` is isomorphic as an `A`-algebra to `B ⧸ I B`. -/
 noncomputable def quotIdealMapEquivTensorQuot :
     (B ⧸ (I.map <| algebraMap A B)) ≃ₐ[B] B ⊗[A] (A ⧸ I) :=

@@ -94,16 +94,16 @@ sigma-finite. `C` is finite since `ν` is a finite measure. Then there exists a 
 with `μ.restrict t` sigma-finite such that `ν t ≥ C - 1/n`. -/
 lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
     ∃ t, MeasurableSet t ∧ SigmaFinite (μ.restrict t)
-      ∧ (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1/n ≤ ν t := by
-  by_cases! hC_lt : 1/n < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s
+      ∧ (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1 / n ≤ ν t := by
+  by_cases! hC_lt : 1 / n < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s
   · have h_lt_top : ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s < ∞ := by
       refine (?_ : ⨆ (s) (_ : MeasurableSet s)
         (_ : SigmaFinite (μ.restrict s)), ν s ≤ ν Set.univ).trans_lt (measure_lt_top _ _)
       refine iSup_le (fun s ↦ ?_)
       exact iSup_le (fun _ ↦ iSup_le (fun _ ↦ measure_mono (Set.subset_univ s)))
     obtain ⟨t, ht⟩ := exists_lt_of_lt_ciSup
-      (ENNReal.sub_lt_self h_lt_top.ne (ne_zero_of_lt hC_lt) (by simp) :
-          (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1/n
+      (ENNReal.sub_lt_self h_lt_top.ne hC_lt.ne_bot (by simp) :
+          (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1 / n
         < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s)
     have ht_meas : MeasurableSet t := by
       by_contra h_notMem
@@ -118,7 +118,7 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     exact ht.le
   · refine ⟨∅, MeasurableSet.empty, by rw [Measure.restrict_empty]; infer_instance, ?_⟩
     rw [tsub_eq_zero_of_le hC_lt]
-    exact zero_le'
+    exact zero_le _
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and
 for `C` the supremum of `ν s` over all measurable sets `s` with `μ.restrict s` sigma-finite,
@@ -143,7 +143,7 @@ lemma measure_sigmaFiniteSetGE_le (μ ν : Measure α) [IsFiniteMeasure ν] (n :
     (measurableSet_sigmaFiniteSetGE n)
 
 lemma measure_sigmaFiniteSetGE_ge (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
-    (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1/n
+    (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1 / n
       ≤ ν (μ.sigmaFiniteSetGE ν n) :=
   (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.2.2
 

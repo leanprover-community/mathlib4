@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Matrix.CharP
 # Results on characteristic polynomials and traces over finite fields.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

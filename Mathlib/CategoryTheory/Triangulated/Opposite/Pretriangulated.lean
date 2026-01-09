@@ -25,7 +25,7 @@ Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 in `Cᵒᵖ`. In other words, if `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` is a distinguished triangle in `C`,
 then the triangle `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` that is deduced *without introducing signs*
 shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the definition
-in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
+in [Verdier's thesis, p. 96][verdier1996] which would require that the triangle
 `(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
 
 In the file `Mathlib.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
@@ -44,7 +44,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
 
-variable (C : Type*) [Category C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace Pretriangulated
@@ -194,7 +194,7 @@ open Pretriangulated.Opposite Pretriangulated
 
 variable {C}
 
-lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+lemma map_distinguished_op_exact {A : Type*} [Category* A] [Abelian A] (F : Cᵒᵖ ⥤ A)
     [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)

@@ -44,7 +44,7 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 
 -/
 
-@[expose] public section
+public section
 
 open MulAction SubMulAction Subgroup
 
@@ -64,7 +64,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
-  have hGa : IsCoatom (stabilizer G a) :=  by
+  have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
   apply hGa.right
@@ -378,12 +378,14 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
 theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
+  have := Fintype.ofFinite α
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
   · -- trivial case : Nat.card α ≤ 2
     rw [Nat.lt_succ_iff] at hα3
@@ -428,7 +430,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · -- trivial case : Fintype.card α ≤ 3
     rw [Nat.lt_succ_iff] at hα4
     apply alternatingGroup_le_of_index_le_two
-    rw [← Nat.mul_le_mul_right_iff (k:= Nat.card G) (Nat.card_pos),
+    rw [← Nat.mul_le_mul_right_iff (k := Nat.card G) (Nat.card_pos),
       Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
     rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]

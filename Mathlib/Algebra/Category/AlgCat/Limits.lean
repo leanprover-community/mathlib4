@@ -67,7 +67,7 @@ instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
-/-- `limit.π (F ⋙ forget (AlgCat R)) j` as a `AlgHom`. -/
+/-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
 def limitπAlgHom (j) :
     (Types.Small.limitCone (F ⋙ forget (AlgCat R))).pt →ₐ[R]
       (F ⋙ forget (AlgCat.{w} R)).obj j :=

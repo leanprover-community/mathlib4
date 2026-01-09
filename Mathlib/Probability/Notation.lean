@@ -31,7 +31,7 @@ To use these notations, you need to use `open scoped ProbabilityTheory`
 or `open ProbabilityTheory`.
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory

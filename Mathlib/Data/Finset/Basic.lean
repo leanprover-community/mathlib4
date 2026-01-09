@@ -169,9 +169,6 @@ theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (s.erase a
 theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
   rw [subset_insert_iff, erase_eq_of_notMem h]
 
-@[deprecated (since := "2025-05-23")]
-alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
-
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
@@ -256,9 +253,6 @@ theorem sdiff_insert_insert_of_mem_of_notMem {s t : Finset α} {x : α} (hxs : x
     insert x (s \ insert x t) = s \ t := by
   grind
 
-@[deprecated (since := "2025-05-23")]
-alias sdiff_insert_insert_of_mem_of_not_mem := sdiff_insert_insert_of_mem_of_notMem
-
 theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
   grind
 
@@ -324,17 +318,16 @@ theorem disjoint_filter_filter' (s t : Finset α)
   rw [Pi.disjoint_iff] at h
   simpa [hp, hq] using h a
 
-theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
+theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   s.disjoint_filter_filter' t disjoint_compl_right
 
+@[deprecated (since := "2025-12-12")] alias disjoint_filter_filter_neg := disjoint_filter_filter_not
+
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
-
-@[deprecated (since := "2025-06-11")]
-alias filter_disj_union := filter_disjUnion
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).filter p =
@@ -419,9 +412,11 @@ theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
   (filter_or _ _ _).symm.trans <| filter_true_of_mem fun x _ => h.top_le x trivial
 
-theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
+theorem filter_union_filter_not_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
     (s.filter p ∪ s.filter fun a => ¬p a) = s :=
   filter_union_filter_of_codisjoint _ _ _ <| @codisjoint_hnot_right _ _ p
+
+@[deprecated (since := "2025-12-12")] alias filter_union_filter_neg_eq := filter_union_filter_not_eq
 
 end
 

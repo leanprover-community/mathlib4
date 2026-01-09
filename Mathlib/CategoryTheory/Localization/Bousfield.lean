@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ObjectProperty
 
