@@ -359,6 +359,46 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
+variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
+
+/-
+A natural transformation between additive functors `Mat_ C ⥤ D` is determined by its
+components on the objects coming from `embedding C`.
+
+This is the categorical analogue of “a matrix morphism is determined by its entries”:
+we compare components after transporting along the canonical biproduct decomposition
+`additiveObjIsoBiproduct`.
+-/
+@[ext]
+theorem natTrans_ext
+    {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
+    (η θ : F ⟶ G)
+    (h : ∀ X : C, η.app ((embedding C).obj X) = θ.app ((embedding C).obj X)) :
+    η = θ := by
+  ext M
+  refine (cancel_mono (additiveObjIsoBiproduct G M).hom).1 ?_
+  ext i
+  let p : M ⟶ (embedding C).obj (M.X i) :=
+    M.isoBiproductEmbedding.hom ≫ biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
+  simpa [p, Category.assoc, additiveObjIsoBiproduct_hom_π] using
+    (calc
+      η.app M ≫ G.map p = F.map p ≫ η.app ((embedding C).obj (M.X i)) := (η.naturality p).symm
+      _ = F.map p ≫ θ.app ((embedding C).obj (M.X i)) := by simp [h (M.X i)]
+      _ = θ.app M ≫ G.map p := θ.naturality p)
+
+/--
+A natural isomorphism between additive functors `Mat_ C ⥤ D` is determined by its
+components on the objects coming from `embedding C`.
+-/
+@[ext]
+theorem natIso_ext
+    {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
+    (η θ : F ≅ G)
+    (h : ∀ X : C, η.hom.app ((embedding C).obj X) = θ.hom.app ((embedding C).obj X)) :
+    η = θ := by
+  exact Iso.ext (natTrans_ext (η := η.hom) (θ := θ.hom) h)
+
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
@@ -441,7 +481,26 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
       dsimp
       simpa using α.hom.naturality (f j k)
 
--- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
+variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
+variable {D : Type u₁} [Category.{v₁} D] [Preadditive D] [HasFiniteBiproducts D]
+variable (F : C ⥤ D) [Functor.Additive F]
+variable (L : Mat_ C ⥤ D) [Functor.Additive L]
+
+/--
+Uniqueness for the comparison `L ≅ lift F`: if two natural isomorphisms induce the same
+comparison on embedded objects (after composing with `embeddingLiftIso`), they are equal.
+-/
+theorem liftIso_ext_comp_embeddingLiftIso
+    {β γ : L ≅ lift F}
+    (h :
+      ∀ X : C,
+        β.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X =
+          γ.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X) :
+    β = γ := by
+  apply Mat_.natIso_ext (η := β) (θ := γ)
+  intro X
+  exact (cancel_mono ((embeddingLiftIso F).hom.app X)).1 (h X)
+
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
 def ext {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
