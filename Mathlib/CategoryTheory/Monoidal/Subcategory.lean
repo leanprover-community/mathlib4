@@ -83,7 +83,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
+  leftUnitor X := P.isoMk (λ_ X.1)
   rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
