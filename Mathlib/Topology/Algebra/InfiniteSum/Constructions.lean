@@ -17,7 +17,7 @@ types, `MulOpposite`, etc.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
