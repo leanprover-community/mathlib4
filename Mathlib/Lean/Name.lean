@@ -95,7 +95,7 @@ where
           /- names with newlines may not round trip; for convenience, we consider all names
           with newlines to be non-roundtrippable, though technically some might -/
           c == '\n'
-        -- names containing the end escape character `»` do not roundtrip
+          -- names containing the end escape character `»` do not roundtrip
           || isIdEndEscape c)
         && go n
     | .num .. => false -- names with any numeric components do not roundtrip
