@@ -481,7 +481,7 @@ protected def map (f : α → β) : Completion α → Completion β :=
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
