@@ -153,7 +153,7 @@ that are both cofibrant and fibrant.
 `BifibrantObject`. Otherwise, the typeclasses `IsCofibrant` and
 `IsFibrant` are preferred.) -/
 def bifibrantObjects : ObjectProperty C :=
-    cofibrantObjects C ⊓ fibrantObjects C
+  cofibrantObjects C ⊓ fibrantObjects C
 
 variable (C) in
 lemma bifibrantObjects_le_cofibrantObject :

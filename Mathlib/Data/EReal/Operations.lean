@@ -194,15 +194,6 @@ lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
   induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
 
-/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
-the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
-instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
-  le_top := by simp
-  top_add' := by
-    rw [OrderDual.forall]
-    intro x
-    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
-
 /-! ### Negation -/
 
 /-- negation on `EReal` -/

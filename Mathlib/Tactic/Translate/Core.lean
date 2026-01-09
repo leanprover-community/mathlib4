@@ -84,10 +84,26 @@ we can choose to only translate `α` by writing `to_additive (dont_translate := 
 syntax dontTranslateOption := &"dont_translate" " := " (ident <|> num)+
 syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   relevantArgOption <|> dontTranslateOption ")"
-/-- A hint for where to find the translated declaration (`existing` or `self`) -/
-syntax existingNameHint := (ppSpace (&"existing" <|> &"self"))?
+
+/-- A hint about the translated declaration
+
+- `existing` indicates that the translated form of the declaration is a pre-existing declaration.
+  This is useful when the value cannot be translated, either because of a limitation in the
+  translation heuristics, or because the value/proof is genuinely different.
+
+- `self` indicates that the declaration translates to itself, up to some reordering of arguments.
+  If no arguments are reordered then the attribute is redundant, which the `translateRedundant`
+  linter will warn about.
+
+- `none` indicates that the translated declaration should not get a user-facing name,
+  instead being named like an auxiliary declaration. This is particularly useful for `to_dual` when
+  using the `reassoc` attribute, because the dual of a right associated term is left associated,
+  but we only want user-facing lemmas with right associated terms.
+-/
+syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> &"none"))?
+
 syntax attrArgs :=
-  existingNameHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
+  translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
 
 -- We omit a doc-string on these syntaxes to instead show the `to_additive` or `to_dual` doc-string
 attribute [nolint docBlame] attrArgs bracketedOption
@@ -270,6 +286,9 @@ structure Config : Type where
   `attribute [to_additive self] Unit`.
   If `self := true`, we should also have `existing := true`. -/
   self : Bool := false
+  /-- An optional flag for not giving the new declaration a user-facing name.
+  This is achieved by appending e.g. `_to_dual_1` to the name of the original declaration. -/
+  none : Bool := false
   deriving Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
@@ -652,20 +671,9 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     insertTranslation t src tgt { relevantArg }
   -- now transform the source declaration
   let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
-  let value ← match trgDecl with
-    | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
-    | _ => throwError "Expected {tgt} to have a value."
+  let some value := trgDecl.value? (allowOpaque := true)
+    | throwError "Expected {tgt} to have a value."
   trace[translate] "generating\n{tgt} : {trgDecl.type} :=\n  {value}"
-  try
-    -- make sure that the type is correct,
-    -- and emit a more helpful error message if it fails
-    withoutExporting <| MetaM.run' <| check value
-  catch
-    | Exception.error _ msg => throwError "@[{t.attrName}] failed. \
-      The translated value is not type correct. For help, see the docstring \
-      of `to_additive`, section `Troubleshooting`. \
-      Failed to add declaration\n{tgt}:\n{msg}"
-    | _ => panic! "unreachable"
   -- "Refold" all the aux lemmas that we unfolded.
   let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
   /- If `src` is explicitly marked as `noncomputable`, then add the new decl as a declaration but
@@ -680,11 +688,24 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
   (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
-  if isNoncomputable env src then
-    addDecl trgDecl.toDeclaration!
-    setEnv <| addNoncomputable (← getEnv) tgt
-  else
-    addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
+  try
+    -- set `Elab.async` to `false` in order to be able to catch kernel errors
+    withOptions (Elab.async.set · false) do
+    if isNoncomputable env src then
+      addDecl trgDecl.toDeclaration!
+      setEnv <| addNoncomputable (← getEnv) tgt
+    else
+      addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
+  catch ex =>
+    -- Try to emit a better error message if the kernel throws an error.
+    try
+      withoutExporting <| MetaM.run' <| check value
+      throwError "@[{t.attrName}] failed.\n{ex.toMessageData}"
+    catch ex =>
+      throwError "@[{t.attrName}] failed. \
+        The translated value is not type correct. For help, see the docstring \
+        of `to_additive`, section `Troubleshooting`. \
+        Failed to add declaration\n{tgt}:\n{ex.toMessageData}"
   if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
@@ -757,6 +778,11 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     if cfg.tgt != .anonymous then
       logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
     return src
+  if cfg.none then
+    if cfg.tgt != .anonymous then
+      logWarning m!"`{t.attrName} private` ignores the provided name {cfg.tgt}"
+    return ← withDeclNameForAuxNaming src do
+      mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s
@@ -947,7 +973,7 @@ In the future we would like that the presence of `MonoidAlgebra k G` will automa
 flag `k` as a type to not be translated. -/
 def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
   match stx[2] with
-  | `(attrArgs| $existing? $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) =>
+  | `(attrArgs| $hint $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) =>
     MetaM.run' <| forallTelescope (← getConstInfo declName).type fun xs _ => do
     let argNames ← xs.mapM (·.fvarId!.getUserName)
     let mut attrs := #[]
@@ -981,10 +1007,12 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (dont_translate := $[$types]*)) =>
         dontTranslate := dontTranslate ++ (← types.toList.mapM (elabArgStx declName argNames xs))
       | _ => throwUnsupportedSyntax
-    let (existing, self) := match existing? with
-      | `(existingNameHint| existing) => (true, false)
-      | `(existingNameHint| self) => (true, true)
-      | _ => (false, false)
+    let mut existing := false; let mut self := false; let mut none := false
+    match hint with
+    | `(translationHint| existing) => existing := true
+    | `(translationHint| self) => existing := true; self := true
+    | `(translationHint| none) => none := true
+    | _ => pure ()
     if self && !attrs.isEmpty then
       throwError "invalid `(attr := ...)` after `self`, \
         as there is only one declaration for the attributes.\n\
@@ -1022,9 +1050,9 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | _ => throwUnsupportedSyntax
     return {
       trace := !stx[1].isNone
-      tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self
-      ref := match tgt with | some tgt => tgt.raw | none => stx[0] }
+      tgt := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
+      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self, none
+      ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
 mutual
