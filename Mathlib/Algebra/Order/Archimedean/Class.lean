@@ -380,6 +380,18 @@ theorem mk_right_le_mk_div (hba : mk b ≤ mk a) : mk b ≤ mk (a / b) := by
   simpa [div_eq_mul_inv, hba] using mk_right_le_mk_mul (a := a) (b := b⁻¹)
 
 @[to_additive]
+theorem mk_le_mk_of_mul_left (h : mk a ≤ mk (a * b)) : mk a ≤ mk b := by
+  simpa using mk_left_le_mk_div h
+
+@[to_additive]
+theorem mk_le_mk_of_mul_right (h : mk b ≤ mk (a * b)) : mk b ≤ mk a := by
+  simpa using mk_right_le_mk_div h
+
+@[to_additive]
+theorem mk_le_mk_of_div (h : mk a ≤ mk (a / b)) : mk a ≤ mk b := by
+  simpa using mk_left_le_mk_div h
+
+@[to_additive]
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
   refine le_antisymm (mk_le_mk.mpr ⟨2, ?_⟩) (mk_left_le_mk_mul h.le)
   rw [mk_lt_mk] at h
