@@ -213,6 +213,8 @@ namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
 
+instance [Etale R A] : Smooth R A where
+
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
   formallyEtale := FormallyEtale.of_equiv e
