@@ -280,7 +280,7 @@ variable {A K L B}
 
 lemma mem_dual (hI : I ≠ 0) {x} :
     x ∈ dual A K I ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range := by
-  rw [dual, dif_neg hI]; exact forall₂_congr fun _ _ ↦ mem_one
+  rw [dual, dif_neg hI]; exact forall₂_congr fun _ _ ↦ Submodule.mem_one
 
 variable (A K)
 
