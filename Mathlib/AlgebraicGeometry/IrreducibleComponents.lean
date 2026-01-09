@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.Lasker
 
@@ -112,13 +113,50 @@ def tada' (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
   cocycle := sorry
   f_open := sorry
 
+#check Scheme.IdealSheafData.vanishingIdeal
+#check Scheme.IdealSheafData.mkOfMemSupportIff
+
+-- extract API (and hopefully the if/then cases on `(C ∩ U).Nonempty` can alse be extracted)
+
 def tada (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
-    (hC : C ∈ irreducibleComponents X) : Scheme where
-  carrier := TopCat.of C
-  presheaf := sorry
-  IsSheaf := sorry
-  isLocalRing := sorry
-  local_affine := by
-    sorry
+    (hC : C ∈ irreducibleComponents X) : X.IdealSheafData :=
+  Scheme.IdealSheafData.mkOfMemSupportIff
+    (by
+      intro U
+      have hi : (C ∩ U).Nonempty := sorry -- if not, then ⊤ ?
+      have hU : IsOpen (U : Set X) := U.1.2
+      let V : Set U := Subtype.val ⁻¹' C
+      have hv : Topology.IsOpenEmbedding (Subtype.val : U.1 → X) :=
+        hU.isOpenEmbedding_subtypeVal
+      have key : V ∈ irreducibleComponents U := by
+        apply preimage_mem_irreducibleComponents hC hv
+        simp only [Subtype.range_coe_subtype]
+        exact hi
+      let φ : U ≃ₜ Spec Γ(X, U) := Scheme.homeoOfIso U.2.isoSpec
+      have key' := (AlgebraicGeometry.Scheme.eq_zeroLocus_of_isClosed_of_isAffine U V).mp
+        (isClosed_of_mem_irreducibleComponents V key)
+      let Z : Set (Spec Γ(X, U)) := φ '' V
+      have hZ : Z ∈ irreducibleComponents (Spec Γ(X, U)) := by
+        rwa [φ.image_mem_irreducibleComponents_iff]
+      let p := PrimeSpectrum.vanishingIdeal Z
+      have hp : p ∈ minimalPrimes _ := by
+        rw [← PrimeSpectrum.vanishingIdeal_irreducibleComponents]
+        exact Set.mem_image_of_mem PrimeSpectrum.vanishingIdeal hZ
+      exact component' hp)
+    (by
+      intro i f
+      set F := X.presheaf.map (CategoryTheory.homOfLE (X.basicOpen_le f)).op
+      set G := F.hom
+      -- (basically just a lemma about mapping components)
+      )
+    C
+    (by
+
+      sorry)
+
+/-- The scheme structure on an irreducible component (preserving any non-reducedness). -/
+noncomputable def tada'' (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
+    (hC : C ∈ irreducibleComponents X) : Scheme :=
+  (tada X C hC).subscheme
 
 end AlgebraicGeometry
