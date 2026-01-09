@@ -5,8 +5,9 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 module
 
-public meta import Mathlib.Data.Option.Defs
-public meta import Mathlib.Tactic.CC.MkProof
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.CC.Lemmas
+public import Mathlib.Tactic.CC.MkProof
 
 /-!
 # Process when a new equation is added to a congruence closure
@@ -607,7 +608,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let state ← get
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
-    if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
+    if state.hoFns.isSome && fn.isConst && !((state.hoFns.getD default).contains fn.constName) then
       for h : i in [:apps.size] do
         let arg := apps[i].appArg!
         addOccurrence e arg false

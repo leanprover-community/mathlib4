@@ -6,10 +6,11 @@ Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carnei
 module
 
 public meta import Qq
-public meta import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Util.AtomM
-public meta import Mathlib.Data.List.TFAE
-public meta import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Util.AtomM
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -19,6 +20,9 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 -/
 
 public meta section
+
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
 
 namespace Mathlib.Tactic.TFAE
 

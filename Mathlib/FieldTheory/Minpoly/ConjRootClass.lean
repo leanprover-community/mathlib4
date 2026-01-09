@@ -87,7 +87,7 @@ instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
 @[simp]
-theorem carrier_neg (c : ConjRootClass K L) : carrier (- c) = - carrier c := by
+theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 

@@ -23,7 +23,7 @@ The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
 
 The strategy is the following:
-* The so called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
+* The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
@@ -305,7 +305,7 @@ lemma Solution.two_le_multiplicity : 2 ≤ S.multiplicity :=
 end IsCyclotomicExtension
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 /-- Given `S' : Solution'`, the key factorization of `S'.a ^ 3 + S'.b ^ 3`. -/
 lemma a_cube_add_b_cube_eq_mul :
     S'.a ^ 3 + S'.b ^ 3 = (S'.a + S'.b) * (S'.a + η * S'.b) * (S'.a + η ^ 2 * S'.b) := by
@@ -584,6 +584,7 @@ private lemma exists_cube_associated :
     exists_associated_pow_of_associated_pow_mul S.isCoprime_x_y.symm (mul_comm _ S.x ▸ h₃),
     exists_associated_pow_of_associated_pow_mul h₁.symm (mul_comm _ S.z ▸ h₂)⟩
 
+set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.X ^ 3 * S.u₁ = S.x` -/
 private noncomputable def X := (exists_cube_associated S).1.choose
@@ -591,6 +592,7 @@ private noncomputable def u₁ := (exists_cube_associated S).1.choose_spec.choos
 private lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
   (exists_cube_associated S).1.choose_spec.choose_spec
 
+set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
 `S.Y ^ 3 * S.u₂ = S.y` -/
 private noncomputable def Y := (exists_cube_associated S).2.1.choose
@@ -598,6 +600,7 @@ private noncomputable def u₂ := (exists_cube_associated S).2.1.choose_spec.cho
 private lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
   (exists_cube_associated S).2.1.choose_spec.choose_spec
 
+set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
 `S.Z ^ 3 * S.u₃ = S.z` -/
 private noncomputable def Z := (exists_cube_associated S).2.2.choose
@@ -605,18 +608,22 @@ private noncomputable def u₃ := (exists_cube_associated S).2.2.choose_spec.cho
 private lemma Z_u₃_spec : S.Z ^ 3 * S.u₃ = S.z :=
   (exists_cube_associated S).2.2.choose_spec.choose_spec
 
+set_option backward.privateInPublic true in
 private lemma X_ne_zero : S.X ≠ 0 :=
   fun h ↦ lambda_not_dvd_x S <| by simp [← X_u₁_spec, h]
 
 private lemma lambda_not_dvd_X : ¬ λ ∣ S.X :=
   fun h ↦ lambda_not_dvd_x S <| X_u₁_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
+set_option backward.privateInPublic true in
 private lemma lambda_not_dvd_Y : ¬ λ ∣ S.Y :=
   fun h ↦ lambda_not_dvd_y S <| Y_u₂_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
+set_option backward.privateInPublic true in
 private lemma lambda_not_dvd_Z : ¬ λ ∣ S.Z :=
   fun h ↦ lambda_not_dvd_z S <| Z_u₃_spec S ▸ dvd_mul_of_dvd_left (dvd_pow h (by decide)) _
 
+set_option backward.privateInPublic true in
 private lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
   rw [← IsCoprime.pow_iff (m := 3) (n := 3) (by decide) (by decide),
     ← isCoprime_mul_unit_right_left S.u₂.isUnit, ← isCoprime_mul_unit_right_right S.u₃.isUnit,
@@ -624,16 +631,18 @@ private lemma isCoprime_Y_Z : IsCoprime S.Y S.Z := by
   exact isCoprime_y_z S
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η+S.Z^3*S.u₃*λ*η^2 = 0 := by
   rw [X_u₁_spec, Y_u₂_spec, Z_u₃_spec, mul_comm S.x, ← x_spec, mul_comm S.y, ← y_spec, mul_comm S.z,
     ← z_spec, eta_sq]
   calc _ = S.a+S.b+η^2*S.b-S.a+η^2*S.b+2*η*S.b+S.b := by ring
   _ = 0 := by rw [eta_sq]; ring
 
+set_option backward.privateInPublic true in
 /-- Let `u₄ := η * S.u₃ * S.u₂⁻¹` -/
 private noncomputable def u₄ := η * S.u₃ * S.u₂⁻¹
 private lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
+set_option backward.privateInPublic true in
 /-- Let `u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹` -/
 private noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 private lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
@@ -642,7 +651,7 @@ example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
   exact mul_ne_zero ha hb
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma formula2 :
     S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   rw [u₅_def, neg_mul, neg_mul, Units.val_neg, neg_mul, eq_neg_iff_add_eq_zero, add_assoc,
@@ -652,7 +661,7 @@ private lemma formula2 :
   simp only [zero_mul, add_mul]
   rw [← formula1 S]
   congrm ?_ + ?_ + ?_
-  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; omega
+  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; lia
     calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ) := by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
@@ -661,10 +670,10 @@ private lemma formula2 :
     ring
 
 -- This is just a computation and the formulas are too long.
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   use λ^(3*S.multiplicity-5)*S.u₅*(S.X^3)
-  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; omega
+  have : 3*(S.multiplicity-1) = 2+(3*S.multiplicity-5) := by have := S.two_le_multiplicity; lia
   calc _ = λ^(3*(S.multiplicity-1))*S.u₅*S.X^3 := by ring
   _ = λ^2*λ^(3*S.multiplicity-5)*S.u₅*S.X^3 := by rw [this, pow_add]
   _ = λ^2*(λ^(3*S.multiplicity-5)*S.u₅*S.X^3) := by ring
@@ -698,6 +707,7 @@ private lemma u₄_eq_one_or_neg_one : S.u₄ = 1 ∨ S.u₄ = -1 := by
 private lemma u₄_sq : S.u₄ ^ 2 = 1 := by
   rcases S.u₄_eq_one_or_neg_one with h | h <;> simp [h]
 
+set_option backward.privateInPublic true in
 /-- Given `S : Solution`, we have that
 `S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3`. -/
 private lemma formula3 :
@@ -706,6 +716,8 @@ private lemma formula3 :
   _ = S.Y ^ 3 + S.u₄ * S.Z ^ 3 := by simp [← Units.val_pow_eq_pow_val, S.u₄_sq]
   _ = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := S.formula2
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given `S : Solution`, we construct `S₁ : Solution'`, with smaller multiplicity of `λ` in
   `c` (see `Solution'_descent_multiplicity_lt` below.). -/
 noncomputable def Solution'_descent : Solution' hζ where

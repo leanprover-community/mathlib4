@@ -45,7 +45,7 @@ namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
   /-- The function satisfies the functional relation. -/
-  rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
+  rel : ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
   hf₃ : 0 < f 3
   f_9999 : f 9999 = 3333

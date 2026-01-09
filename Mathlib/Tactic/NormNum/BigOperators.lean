@@ -5,9 +5,8 @@ Authors: Anne Baanen, Floris van Doorn
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.List.FinRange
-public meta import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugin for big operators

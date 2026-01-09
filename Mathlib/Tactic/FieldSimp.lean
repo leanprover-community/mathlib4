@@ -6,12 +6,13 @@ Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, 
 module
 
 public meta import Mathlib.Data.Ineq
-public meta import Mathlib.Tactic.FieldSimp.Attr
-public meta import Mathlib.Tactic.FieldSimp.Discharger
-public meta import Mathlib.Tactic.FieldSimp.Lemmas
 public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # `field_simp` tactic
@@ -792,3 +793,4 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
  We register `field_simp` with the `hint` tactic.
  -/
 register_hint 1000 field_simp
+register_try?_tactic (priority := 1000) field_simp

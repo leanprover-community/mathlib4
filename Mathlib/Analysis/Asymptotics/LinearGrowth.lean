@@ -77,7 +77,7 @@ variable {u v : ℕ → EReal} {a b : EReal}
 
 lemma linearGrowthInf_eventually_monotone (h : u ≤ᶠ[atTop] v) :
     linearGrowthInf u ≤ linearGrowthInf v :=
-  liminf_le_liminf  (h.mono fun n u_v ↦ EReal.monotone_div_right_of_nonneg n.cast_nonneg' u_v)
+  liminf_le_liminf (h.mono fun n u_v ↦ EReal.monotone_div_right_of_nonneg n.cast_nonneg' u_v)
 
 lemma linearGrowthInf_monotone (h : u ≤ v) : linearGrowthInf u ≤ linearGrowthInf v :=
   linearGrowthInf_eventually_monotone (Eventually.of_forall h)
@@ -146,7 +146,7 @@ lemma _root_.Eventually.le_linearGrowthInf (h : ∀ᶠ n : ℕ in atTop, a * n �
   le_linearGrowthInf_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' <| by gcongr
 
 lemma _root_.Eventually.linearGrowthSup_le (h : ∀ᶠ n : ℕ in atTop, u n ≤ a * n) :
-    linearGrowthSup u ≤ a:=
+    linearGrowthSup u ≤ a :=
   linearGrowthSup_le_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans <| by gcongr
 
 lemma _root_.Frequently.le_linearGrowthSup (h : ∃ᶠ n : ℕ in atTop, a * n ≤ u n) :
@@ -249,12 +249,12 @@ lemma linearGrowthSup_add_le (h : linearGrowthSup u ≠ ⊥ ∨ linearGrowthSup 
   refine (limsup_add_le h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.add_apply, add_div_of_nonneg_right n.cast_nonneg']
 
-lemma linearGrowthInf_neg : linearGrowthInf (- u) = - linearGrowthSup u := by
+lemma linearGrowthInf_neg : linearGrowthInf (-u) = - linearGrowthSup u := by
   rw [linearGrowthSup, ← liminf_neg]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]
 
-lemma linearGrowthSup_inv : linearGrowthSup (- u) = - linearGrowthInf u := by
+lemma linearGrowthSup_inv : linearGrowthSup (-u) = - linearGrowthInf u := by
   rw [linearGrowthInf, ← limsup_neg]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.neg_apply, div_eq_mul_inv, div_eq_mul_inv, ← neg_mul]
@@ -337,7 +337,7 @@ variable {u : ℕ → EReal} {v : ℕ → ℕ}
 
 lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
-  refine (eventually_ge_atTop (b-a)⁻¹).mono fun x ab_x ↦ ?_
+  refine (eventually_ge_atTop (b - a)⁻¹).mono fun x ab_x ↦ ?_
   rw [inv_le_iff_one_le_mul₀ (sub_pos_of_lt h), mul_comm, sub_mul, le_sub_iff_add_le'] at ab_x
   obtain ⟨n, n_bx, hn⟩ := (b * x).exists_floor
   refine ⟨n, ?_, n_bx⟩

@@ -6,7 +6,6 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -16,7 +15,7 @@ This file defines isomorphisms between objects of a category.
 ## Main definitions
 
 - `structure Iso` : a bundled isomorphism between two objects of a category;
-- `class IsIso` : an unbundled version of `iso`;
+- `class IsIso` : an unbundled version of `Iso`;
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`
@@ -71,7 +70,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-set_option linter.style.commandStart false in -- false positive, calc blocks
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -519,7 +518,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category* D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :

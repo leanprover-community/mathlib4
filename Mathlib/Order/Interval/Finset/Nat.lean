@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -36,10 +35,14 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
-  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
+  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+
+instance : Unique (Iic 0) := by
+  rw [← Nat.bot_eq_zero]
+  infer_instance
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -71,6 +74,10 @@ theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
 theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
   rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
 
+theorem range_succ_eq_Iic (n : ℕ) : range (n + 1) = Iic n := by
+  rw [range_succ_eq_Icc_zero]
+  rfl
+
 @[simp] lemma card_Icc : #(Icc a b) = b + 1 - a := List.length_range' ..
 @[simp] lemma card_Ico : #(Ico a b) = b - a := List.length_range' ..
 @[simp] lemma card_Ioc : #(Ioc a b) = b - a := List.length_range' ..
@@ -86,40 +93,16 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[deprecated Finset.Icc_succ_left_eq_Ioc (since := "2025-04-24")]
-theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
-  ext x
-  rw [mem_Icc, mem_Ioc, succ_le_iff]
-
-@[deprecated Finset.Ico_succ_right_eq_Icc (since := "2025-04-24")]
-theorem Ico_succ_right : Ico a b.succ = Icc a b := by
-  ext x
-  rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
-
-@[deprecated Finset.Ico_succ_left_eq_Ioo (since := "2025-04-24")]
-theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
-  ext x
-  rw [mem_Ico, mem_Ioo, succ_le_iff]
-
-@[deprecated Finset.Icc_pred_right_eq_Ico (since := "2025-04-24")]
-theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
-  ext x
-  rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
-
-@[deprecated Finset.Ico_succ_succ_eq_Ioc (since := "2025-04-24")]
-theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
-  ext x
-  rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
-
 -- TODO: Generalise the following series of lemmas.
 
 @[simp]
 theorem Ico_succ_singleton : Ico a (a + 1) = {a} := by grind
 
-set_option linter.deprecated false in
 @[simp]
 theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
-  rw [← Icc_pred_right _ h, Icc_self]
+  ext x
+  rw [mem_Ico, mem_singleton]
+  lia
 
 @[simp]
 theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by grind
@@ -128,30 +111,8 @@ variable {a b c}
 
 lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
-lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
-
-set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_right_eq_Ico_succ (since := "2025-04-24")]
-theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
-  rw [Ico_succ_right, ← Ico_insert_right h]
-
-set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_succ_left_eq_Ico (since := "2025-04-24")]
-theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
-  rw [Ico_succ_left, ← Ioo_insert_left h]
-
-@[deprecated Finset.insert_Icc_succ_left_eq_Icc (since := "2025-04-24")]
-lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  lia
-
-@[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
-lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  lia
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
@@ -169,11 +130,15 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   rintro ⟨x, hx, rfl⟩
   lia
 
-set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
-  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
-    and_comm (a := a ≠ x), lt_iff_le_and_ne]
+  simp_rw [mem_erase, mem_Ico]
+  lia
+
+theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a b.succ = insert b (Ico a b) := by
+  ext x
+  simp_rw [mem_insert, mem_Ico]
+  lia
 
 set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
@@ -185,7 +150,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   | succ n ih =>
     rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-      Ico_succ_right_eq_insert_Ico (by omega)]
+      Ico_succ_right_eq_insert_Ico (by lia)]
     rintro k hk l hl (hkl : k % a = l % a)
     have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
     simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl

@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.AtTopBot.Tendsto
 # Convergence to ±infinity in ordered commutative monoids
 -/
 
-@[expose] public section
+public section
 
 variable {α M : Type*}
 

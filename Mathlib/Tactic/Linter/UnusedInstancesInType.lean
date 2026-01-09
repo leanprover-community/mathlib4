@@ -9,10 +9,11 @@ public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
-import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Linters for Unused Instances in Types

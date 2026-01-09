@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Norm.Defs
 
 -/
 
-@[expose] public section
+public section
 universe u
 
 variable {K : Type u} [Field K]

@@ -9,10 +9,7 @@ public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
-public import Batteries.Tactic.Trans
 public import Batteries.Util.LibraryNote
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -972,12 +969,6 @@ end ite
 
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 

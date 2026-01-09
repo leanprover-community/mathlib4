@@ -6,9 +6,11 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Instances.Shrink
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Transfer topological algebraic structures across `Equiv`s

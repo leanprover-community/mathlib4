@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Data.Set.Finite.Lemmas
-public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Tactic.Algebraize
@@ -32,7 +31,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 

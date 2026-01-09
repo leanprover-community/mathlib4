@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Attr.Core
+public meta import Aesop
 
 /-!
 # Partial equivalences
@@ -75,7 +76,7 @@ open Lean Meta Elab Tactic
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attributes need a
 new file to become functional.
 -/
 
