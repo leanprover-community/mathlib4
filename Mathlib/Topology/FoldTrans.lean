@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2025 Sebastian Kumar. All rights reserved.
+Copyright (c) 2026 Sebastian Kumar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Kumar
 -/
-import Batteries.Data.Fin.Fold
-import Mathlib.Topology.Subpath
+module
+
+public import Batteries.Data.Fin.Fold
+public import Mathlib.Topology.Subpath
 
 /-!
 # Concatenating sequences of paths
@@ -21,7 +23,7 @@ The implemenatation is based on `Fin.dfoldl` from the Batteries library.
 - `foldTransSubpath`: homotopy between the concatenation of subpaths and a single subpath
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Fin Function unitInterval
 
