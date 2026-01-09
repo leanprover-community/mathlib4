@@ -142,7 +142,8 @@ theorem IsSimplyConnected.nonempty {s : Set X} (hs : IsSimplyConnected s) : s.No
   hs.isPathConnected.nonempty
 
 theorem Topology.IsEmbedding.isSimplyConnected_image {f : X → Y} (hf : Topology.IsEmbedding f)
-    {s : Set X} : IsSimplyConnected (f '' s) ↔ IsSimplyConnected s :=
+    {s : Set X} :
+    IsSimplyConnected (f '' s) ↔ IsSimplyConnected s :=
   hf.homeomorphImage s |>.toHomotopyEquiv |>.simplyConnectedSpace_iff |>.symm
 
 @[simp]
@@ -181,12 +182,13 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
 open scoped Pointwise
 
 @[to_additive (attr := simp)]
-theorem isSimplyConnected_smul_set {G : Type*} [Group G] [MulAction G X] [ContinuousConstSMul G X]
-    {c : G} {s : Set X} : IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
+theorem isSimplyConnected_smul_set_iff {G : Type*} [Group G]
+    [MulAction G X] [ContinuousConstSMul G X] {c : G} {s : Set X} :
+    IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
   Homeomorph.smul c |>.isSimplyConnected_image
 
 @[simp]
-theorem isSimplyConnected_smul_set₀ {G : Type*} [GroupWithZero G] [MulAction G X]
+theorem isSimplyConnected_smul_set₀_iff {G : Type*} [GroupWithZero G] [MulAction G X]
     [ContinuousConstSMul G X] {c : G} {s : Set X} (hc : c ≠ 0) :
     IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
-  isSimplyConnected_smul_set (c := Units.mk0 c hc)
+  isSimplyConnected_smul_set_iff (c := Units.mk0 c hc)
