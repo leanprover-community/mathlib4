@@ -384,7 +384,7 @@ theorem mk_le_mk_of_mul_left (h : mk a ≤ mk (a * b)) : mk a ≤ mk b := by
   simpa using mk_left_le_mk_div h
 
 @[to_additive]
-theorem mk_le_mk_of_mul_right (h : mk b ≤ mk (a * b)) : mk b ≤ mk a :=
+theorem mk_le_mk_of_mul_right (h : mk a ≤ mk (b * a)) : mk a ≤ mk b :=
   mk_le_mk_of_mul_left (mul_comm a b ▸ h)
 
 @[to_additive]
@@ -392,7 +392,7 @@ theorem mk_le_mk_of_div_left (h : mk a ≤ mk (a / b)) : mk a ≤ mk b := by
   simpa using mk_left_le_mk_div h
 
 @[to_additive]
-theorem mk_le_mk_of_div_right (h : mk b ≤ mk (a / b)) : mk b ≤ mk a :=
+theorem mk_le_mk_of_div_right (h : mk a ≤ mk (b / a)) : mk a ≤ mk b :=
   mk_le_mk_of_div_left (mk_div_comm a b ▸ h)
 
 @[to_additive]
