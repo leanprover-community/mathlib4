@@ -106,7 +106,7 @@ theorem mem_thickening_iff_exists_edist_lt {δ : ℝ} (E : Set α) (x : α) :
     x ∈ thickening δ E ↔ ∃ z ∈ E, edist x z < ENNReal.ofReal δ :=
   infEDist_lt_iff
 
-/-- The frontier of the (open) thickening of a set is contained in an `EMetric.infEDist` level
+/-- The frontier of the (open) thickening of a set is contained in an `Metric.infEDist` level
 set. -/
 theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
