@@ -58,12 +58,29 @@ Some casting of real numbers to `Icc tmin tmax` is necessary to make this type c
 
 We need to show that `T` is `C^n` if `f` is `C^n`. It is easier to do this for the integral term
 first. In fact, we will do this more generally by defining
-`I g α := fun t ↦ ∫ τ in t₀..t, g (α τ)`,
+`I g := fun α t ↦ ∫ τ in t₀..t, g (α τ) : F → C(Icc tmin tmax, X)`,
 where `g : E → X` for some type `X`. This equals the integral term of `T` when `g = f`. `I g` has
-the derivative
-`I' g := fun t ↦ ∫ τ in t₀..t, g' (α τ)`,
+the derivative at `α`
+`I' g α := fun dα t ↦ ∫ τ in t₀..t, g' (α τ) (dα τ) : F →L[ℝ] C(Icc tmin tmax, X)`,
 where `g' : E → E →L[ℝ] X` is the derivative of `g`. By induction,
 `I^(n) g = I g^(n)`.
+
+Let's get the types right.
+`g^(0) = f  : E → E`
+`g^(1) = g' : E → E →L[ℝ] E`
+`g^(2)      : E → E →L[ℝ] E →L[ℝ] E`
+
+`I^(0) g = I g  : F → C(Icc tmin tmax, X)`
+`I^(1) g = I' g : F → F →L[ℝ] C(Icc tmin tmax, X)`
+`I^(2) g        : F → F →L[ℝ] F →L[ℝ] C(Icc tmin tmax, X)`
+
+`I^(0) f = I f  : F → F`
+`I^(1) f = I' f : F → F →L[ℝ] F`
+`I^(2) f        : F → F →L[ℝ] F →L[ℝ] F`
+
+`t ↦ I^(0) g^(1) α t (dα t) : C(Icc tmin tmax, E)` and
+`I^(1) g^(0) α dα : C(Icc tmin tmax, E)` are equal. This requires handling multilinear application.
+
 We can also show that `I g` is continuous if `g` is continuous, so `I g` is `C^n` if `g` is `C^n`.
 Then, `T^(n) (x, α)` can be shown to be `C^n` if `f` is `C^n` by relating it to `I^(n) f α`.
 
@@ -77,4 +94,29 @@ show that the uncurried `α_unc : E × ℝ → E` is locally `C^n` around `(x₀
 
 Finally, we will show that `α_unc` is `C^n` over its domain of definition.
 
+Translate this whole time-independent treatment to the time-dependent case.
 -/
+
+namespace SmoothFlow
+
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+/-
+`IsContDiffImplicitAt` requires complete normed spaces, so we can't use `α : ℝ → E` with junk
+values. We'll use `C(Icc tmin tmax, E)` instead, but we need to cast such functions as elements of
+`ℝ → E` in order to use `integral`.
+
+It's not ideal to carry around `t₀` for `funCast`. Unfortunately, `NonemptyInterval` doesn't have a
+topology defined on it yet.
+-/
+
+noncomputable def compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) : ℝ → E :=
+  fun t ↦ α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t)
+
+noncomputable def integral (g : E → F) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) : Icc tmin tmax → F :=
+  fun t ↦ ∫ τ in t₀..t, g (compProj t₀ α τ)
+
+end SmoothFlow
