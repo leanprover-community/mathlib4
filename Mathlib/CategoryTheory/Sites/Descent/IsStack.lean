@@ -11,9 +11,9 @@ public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 # Stacks: effectiveness of descent
 
 Let `C` be a category with a Grothendieck topology `J` and `F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat`.
-In this file, we define the typeclass `F.IsStack J` saying that `F` is a stack
-for `J`. (See the terminological note in the file `Sites.Descent.IsPrestack`: we
-do not require that the categories `F.obj (.mk (op S))` are groupoids.)
+In this file, we define the typeclass `F.IsStack J` saying that `F` is a stack for `J`.
+(See the terminological note in the file `Mathlib/CategoryTheory/Sites/Descent/IsPrestack.lean`:
+we do not require that the categories `F.obj (.mk (op S))` are groupoids.)
 
 The typeclass `IsStack` extends `IsPrestack`. The effectiveness of descent that
 is required for stacks is expressed by saying that the functors `toDescentData`
@@ -43,7 +43,8 @@ variable {C : Type u} [Category.{v} C]
 
 /-- The property that a pseudofunctor `F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat`
 has effective descent for a Grothendieck topology, i.e. is a stack.
-(See the terminological note in the introduction of the file `Sites.Descent.IsPrestack`.) -/
+(See the terminological note in the introduction of the file
+`Mathlib/CategoryTheory/Sites/Descent/IsPrestack.lean`.) -/
 @[stacks 026F]
 class IsStack (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}) (J : GrothendieckTopology C) : Prop
     extends F.IsPrestack J where
@@ -59,7 +60,7 @@ lemma isStackFor' [F.IsStack J] {S : C} (R : Sieve S) (hR : R ∈ J S) :
   have hF := (F.isPrestackFor' _ hR).fullyFaithful
   have := hF.full
   have := hF.faithful
-  have := IsStack.essSurj_of_sieve F  _ hR
+  have := IsStack.essSurj_of_sieve F _ hR
   exact { }
 
 lemma isStackFor [F.IsStack J] {S : C} (R : Presieve S) (hR : Sieve.generate R ∈ J S) :
