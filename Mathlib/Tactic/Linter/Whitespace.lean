@@ -404,8 +404,6 @@ def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array S
 
 structure PPref where
   pos : String.Pos.Raw
-  ok : Bool
-  bracket : Option String.Pos.Raw := none
   kinds : Array SyntaxNodeKind
   deriving Inhabited
 
@@ -434,22 +432,18 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
     Correspondence → Array SyntaxNodeKind → Syntax → Substring.Raw → m (Substring.Raw × Correspondence)
   | corr, k, .ident info rawVal _val _pre, str => do
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `ident rawVal.toString)) rawVal str
-    let (_, tail) := info.getLeadTrail
-    --dbg_trace "(tail: '{tail.norm}', (tail[0], str[{ppEndPos}]) ('{(tail.take 1).norm}' '{(str.get ppEndPos)}'))\n({str.startPos}, {str.stopPos})\n"
-    let cond := tail.take 1 == (str.take 1).toString
     pure (
       {str with startPos := ppEndPos},
       -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
-      corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `ident rawVal.toString)))
+      corr.alter ((info.getTrailing?.getD default).startPos) fun _ =>
+        PPref.mk ppEndPos (k.push (.str `ident rawVal.toString)))
   | corr, k, .atom info val, str => do
     let ppEndPos ← atomOrIdentEndPos verbose? (k.push (.str `atom val)) val.toRawSubstring str
-    let (_, tail) := info.getLeadTrail
-    --dbg_trace "(tail: '{tail.norm}', (tail[0], str[{ppEndPos}]) ('{(tail.take 1).norm}' '{(str.get ppEndPos)}'))\n"
-    let cond := tail.take 1 == "".push (str.get ppEndPos)
     pure (
       {str with startPos := ppEndPos},
       -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
-      corr.alter ((info.getTrailing?.getD default).startPos) fun a => if (a.getD default).bracket.isSome then a else PPref.mk ppEndPos cond none (k.push (.str `atom val)))
+      corr.alter ((info.getTrailing?.getD default).startPos) fun _ =>
+        PPref.mk ppEndPos (k.push (.str `atom val)))
   | corr, k, _stx@(.node _info kind args), str => do
     (getChoiceNode kind args).foldlM (init := (str, corr)) fun (str, corr) arg => do
       generateCorrespondence verbose? corr (k.push kind) arg str
@@ -676,8 +670,8 @@ elab "#show_corr " cmd:command : command => do
             |>.push (pretty.toRawSubstring.get b.pos)
             |>.push (pretty.toRawSubstring.get (pretty.toRawSubstring.next b.pos))
             |>.push '\'',
-          b.ok,
-          b.bracket,
+          --b.ok,
+          --b.bracket,
         )
     -- TODO: fix `byTens` and re-enable this logging output
     --logInfo <| .joinSep (msgs.toList.map (m!"{·}") ++ [m!"{byTens pretty (min pretty.length 100)}"]) "\n"
