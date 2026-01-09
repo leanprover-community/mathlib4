@@ -179,6 +179,7 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open scoped Topology in
 lemma log_sub_logTaylor_isBigO (n : ℕ) :
     (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by
@@ -205,13 +206,13 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3 / 2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
-  have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
+  have hz4 : ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖ / 2 * 2 / 2 := by
     gcongr
     · rw [inv_nonneg]
       linarith

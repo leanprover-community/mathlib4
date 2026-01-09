@@ -23,7 +23,7 @@ bounds for its q-expansion coefficients. The main results are
 * `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
 

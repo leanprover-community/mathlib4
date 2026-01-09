@@ -20,7 +20,7 @@ Given a family of monoidal categories `C i`, we define a monoidal structure on
 
 @[expose] public section
 
-universe w₁ v₁ u₁
+universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
@@ -44,11 +44,11 @@ instance monoidalCategoryStruct : MonoidalCategoryStruct (∀ i, C i) where
 
 @[simp]
 theorem associator_hom_apply {X Y Z : ∀ i, C i} {i : I} :
-  (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
+    (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
 
 @[simp]
 theorem associator_inv_apply {X Y Z : ∀ i, C i} {i : I} :
-    (α_ X Y Z).inv i =  (α_ (X i) (Y i) (Z i)).inv := rfl
+    (α_ X Y Z).inv i = (α_ (X i) (Y i) (Z i)).inv := rfl
 
 @[simp]
 theorem isoApp_associator {X Y Z : ∀ i, C i} {i : I} :
@@ -161,6 +161,99 @@ instance monoidalClosed : MonoidalClosed (∀ i, C i) where
 
 end Closed
 
+@[simps!]
+instance (i : I) : (Pi.eval C i).Monoidal where
+  ε := 𝟙 _
+  μ X Y := 𝟙 _
+  η := 𝟙 _
+  δ X Y := 𝟙 _
+
+instance [∀ i, BraidedCategory (C i)] (i : I) : (Pi.eval C i).Braided where
+
+@[simps]
+instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
+    [∀ i, (F i).LaxMonoidal] :
+    (Functor.pi' F).LaxMonoidal where
+  ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
+  μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) X Y
+
+@[simps]
+instance opLaxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
+    (F : ∀ i : I, D ⥤ C i)
+    [∀ i, (F i).OplaxMonoidal] :
+    (Functor.pi' F).OplaxMonoidal where
+  η := fun i ↦ Functor.OplaxMonoidal.η (F i)
+  δ X Y := fun i ↦ Functor.OplaxMonoidal.δ (F i) X Y
+  oplax_left_unitality X := by ext; simp
+  oplax_right_unitality X := by ext; simp
+
+@[simps!]
+instance monoidalPi' {D : Type*} [Category* D] [MonoidalCategory D]
+    (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Monoidal] :
+    (Functor.pi' F).Monoidal where
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : Type*} [Category* D] [MonoidalCategory D] [BraidedCategory D]
+    (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).LaxBraided] :
+    (Functor.pi' F).LaxBraided where
+  braided := by intros; ext i; exact Functor.LaxBraided.braided _ _
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : Type*} [Category* D] [MonoidalCategory D] [BraidedCategory D]
+    (F : ∀ i : I, D ⥤ C i) [∀ i, (F i).Braided] :
+    (Functor.pi' F).Braided where
+
+@[simps]
+instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
+    [∀ i, (F i).LaxMonoidal] :
+    (Functor.pi F).LaxMonoidal where
+  ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
+  μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) (X i) (Y i)
+
+@[simps]
+instance opLaxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
+    [∀ i, (F i).OplaxMonoidal] :
+    (Functor.pi F).OplaxMonoidal where
+  η := fun i ↦ Functor.OplaxMonoidal.η (F i)
+  δ X Y := fun i ↦ Functor.OplaxMonoidal.δ (F i) (X i) (Y i)
+  oplax_left_unitality X := by ext; simp
+  oplax_right_unitality X := by ext; simp
+
+@[simps!]
+instance monoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
+    [∀ i, (F i).Monoidal] :
+    (Functor.pi F).Monoidal where
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] [∀ i, BraidedCategory (D i)]
+    (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).LaxBraided] :
+    (Functor.pi F).LaxBraided where
+  braided := by intros; ext i; exact Functor.LaxBraided.braided _ _
+
+instance [∀ i, BraidedCategory (C i)]
+    {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)] [∀ i, BraidedCategory (D i)]
+    (F : ∀ i : I, D i ⥤ C i) [∀ i, (F i).Braided] :
+    (Functor.pi F).Braided where
+
+instance {D : Type*} [Category* D] [MonoidalCategory D]
+    {F G : D ⥤ (∀ i, C i)} [F.LaxMonoidal] [G.LaxMonoidal]
+    (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i)
+    [∀ i, (τ i).IsMonoidal] :
+    (NatTrans.pi' τ).IsMonoidal where
+  unit := by ext i; simpa using NatTrans.IsMonoidal.unit (τ := τ i)
+  tensor X Y := by ext i; simpa using NatTrans.IsMonoidal.tensor _ _ (τ := τ i)
+
+instance {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
+    [∀ i, MonoidalCategory (D i)]
+    {F G : ∀ i : I, (D i ⥤ C i)} [∀ i, (F i).LaxMonoidal]
+    [∀ i, (G i).LaxMonoidal] (τ : ∀ i : I, (F i) ⟶ (G i))
+    [∀ i, (τ i).IsMonoidal] :
+    (NatTrans.pi τ).IsMonoidal where
 
 end Pi
 

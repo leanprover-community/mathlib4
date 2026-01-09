@@ -94,12 +94,14 @@ def const : 𝟭 _ ⟶ I R G where
 
 namespace MultiInd
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
 def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
   | 0     => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The differential map in `MultiInd.complex`. -/
 def d : ∀ n : ℕ, functor R G n ⟶ functor R G (n + 1)
   | 0     => const R G

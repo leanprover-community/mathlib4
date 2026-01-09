@@ -81,6 +81,7 @@ theorem isOpen_of_mem_theOpenSix (h : t ∈ theOpenSix s) : IsOpen t := by
 theorem mem_theOpenSix_iff : t ∈ theOpenSix s ↔ tᶜ ∈ theClosedSix s := by
   conv_lhs => rw [theOpenSix, ← compl_compl t, Multiset.mem_map_of_injective compl_injective]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Six inequalities that suffice to deduce the six closed sets obtained from a given set
 contain no duplicates. -/
 def TheSixIneq (s : Set X) : Prop :=
@@ -232,12 +233,12 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [Ne, eq_univ_iff_forall]
   push_neg
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
-  · use 1/2; norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
-  · use 6;   norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
+  · use 1 / 2; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
+  · use 6; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
 
 /-- The fourteen different operations applied to the `fourteenSet` generate no duplicates. -/
 theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=
