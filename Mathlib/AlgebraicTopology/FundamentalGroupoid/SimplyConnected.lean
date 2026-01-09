@@ -127,7 +127,7 @@ theorem simply_connected_iff_loops_nullhomotopic :
 ### Simply connected sets
 -/
 
-/-- We say that a set is simply connected, if it's a simply connected topological space
+/-- We say that a set is simply connected if it's a simply connected topological space
 in the induced topology. -/
 def IsSimplyConnected (s : Set X) : Prop := SimplyConnectedSpace s
 
