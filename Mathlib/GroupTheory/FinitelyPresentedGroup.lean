@@ -30,6 +30,31 @@ finitely presented group, normal closure finitely generated,
 
 universe u
 
+-- Start of suggested additions to #FreeGroup
+-- TODO review this
+def FreeGroup.freeGroupUnitMulEquivInt :
+    FreeGroup Unit ≃* Multiplicative ℤ := by
+  refine
+    { toFun := fun x => Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
+      invFun := fun z => FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
+      left_inv := by
+        intro x
+        simp
+      right_inv := by
+        intro z
+        simp
+      map_mul' := by
+        intro x y
+        ext
+        simp [FreeGroup.freeGroupUnitEquivInt] }
+
+-- TODO review this
+def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
+{ toEquiv := FreeGroup.freeGroupEmptyEquivUnit
+  map_mul' := by intro x y; rfl }
+
+-- end of addition to #FreeGroup
+
 -- Start of suggested additions to #Group.FG
 theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype_ARISTOTLE1 {G : Type*} [Group G] :
     Group.FG G ↔ ∃ (α : Type) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ := by
@@ -132,6 +157,14 @@ end IsPresented
 
 -- Start of NormalClosureFG statements
 open Subgroup
+
+/- The normal closure of an empty set is the trivial subgroup. -/
+lemma normalClosure_empty {G : Type*} [Group G] :
+    Subgroup.normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  apply le_antisymm
+  · exact Subgroup.normalClosure_le_normal (N := (⊥ : Subgroup G)) (by simp)
+  · exact bot_le
+
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = H
@@ -146,13 +179,6 @@ lemma IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · exact hSfinite.image _
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
-lemma Subgroup.normalClosure_empty {G : Type*} [Group G] :
-    Subgroup.normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
-  apply le_antisymm
-  · exact Subgroup.normalClosure_le_normal (N := (⊥ : Subgroup G)) (by simp)
-  · exact bot_le
-
-
 -- End of NormalClosureFG statements
 
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
@@ -165,6 +191,7 @@ Group (FinitelyPresentedGroup rels h) :=
   QuotientGroup.Quotient.group _
 
 end FinitelyPresentedGroup
+
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
   Nonempty (G ≃* (FinitelyPresentedGroup rels h))
@@ -199,35 +226,31 @@ lemma FPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Fini
   refine ⟨α, inferInstance, rels, h, ?_⟩
   exact ⟨MulEquiv.refl _⟩
 
+-- TODO I think this needs to work for any presented group.
+/- If you FreeGroup α by an empty set, you get the original group -/
+def quotient_normalClosure_empty_mulEquiv (α : Type*) :
+    FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
+  have hbot :
+      Subgroup.normalClosure (∅ : Set (FreeGroup α)) = (⊥ : Subgroup (FreeGroup α)) := by
+    simpa using (normalClosure_empty (G := FreeGroup α))
+  exact (QuotientGroup.quotientMulEquivOfEq hbot).trans
+    (QuotientGroup.quotientBot (G := FreeGroup α))
+
 /- Every FP group is FP -/
 instance instTrivial : IsFinitelyPresented (Unit) := by
-/-   let α := Empty
+  let α := Empty
   let rels := (∅ : Set (FreeGroup Empty))
   have hrels : rels.Finite := by
     simp [rels]
   use α, inferInstance, rels, hrels
-  let iso := FreeGroup.freeGroupEmptyEquivUnit
-  refine ⟨?_⟩
+  let iso := FreeGroup.freeGroupEmptyMulEquivUnit
   unfold FinitelyPresentedGroup
-  unfold PresentedGroup -/
-  sorry
-
--- TODO move this
-def FreeGroup.freeGroupUnitMulEquivInt :
-    FreeGroup Unit ≃* Multiplicative ℤ := by
-  refine
-    { toFun := fun x => Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-      invFun := fun z => FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
-      left_inv := by
-        intro x
-        simp
-      right_inv := by
-        intro z
-        simp
-      map_mul' := by
-        intro x y
-        ext
-        simp [FreeGroup.freeGroupUnitEquivInt] }
+  unfold PresentedGroup
+  refine ⟨?_⟩
+  have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
+    simpa [rels] using quotient_normalClosure_empty_mulEquiv (α := α)
+  unfold α at qiso
+  exact iso.symm.trans qiso.symm
 
 /- ℤ is finitely presented -/
 instance Int.instFinitelyPresented : IsFinitelyPresented (Multiplicative ℤ) := by
@@ -239,11 +262,8 @@ instance Int.instFinitelyPresented : IsFinitelyPresented (Multiplicative ℤ) :=
   unfold FinitelyPresentedGroup
   unfold PresentedGroup
   refine ⟨?_⟩
-  have hbot : Subgroup.normalClosure rels = (⊥ : Subgroup (FreeGroup α)) := by
-    simpa [rels] using (Subgroup.normalClosure_empty (G := FreeGroup α))
   have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
-    refine (QuotientGroup.quotientMulEquivOfEq hbot).trans ?_
-    exact QuotientGroup.quotientBot (G := FreeGroup α)
+    simpa [rels] using quotient_normalClosure_empty_mulEquiv (α := α)
   let iso := FreeGroup.freeGroupUnitMulEquivInt
   unfold α at qiso
   exact iso.symm.trans qiso.symm
