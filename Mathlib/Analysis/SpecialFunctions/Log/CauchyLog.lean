@@ -3,13 +3,10 @@ Copyright (c) 2026 Jonathan Reich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jonathan Reich
 -/
-module
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.MetricSpace.Basic
-
-@[expose] public section
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Cauchy Functional Equation Characterization of Logarithm
@@ -60,33 +57,33 @@ theorem map_one (hf : IsMultiplicativeAdditive f) : f 1 = 0 := by
 theorem map_pow (hf : IsMultiplicativeAdditive f) {x : ℝ} (hx : 0 < x) (n : ℕ) :
     f (x ^ n) = n * f x := by
   induction n with
-  | zero => simp [hf.map_one]
+  | zero => simp [map_one hf]
   | succ n ih =>
     rw [pow_succ, hf (x ^ n) x (pow_pos hx n) hx, ih]
     push_cast; ring
 
 theorem map_inv (hf : IsMultiplicativeAdditive f) {x : ℝ} (hx : 0 < x) : f x⁻¹ = -f x := by
   have h1 : f (x * x⁻¹) = f x + f x⁻¹ := hf x x⁻¹ hx (inv_pos.mpr hx)
-  simp only [mul_inv_cancel₀ (ne_of_gt hx), hf.map_one] at h1
+  simp only [mul_inv_cancel₀ (ne_of_gt hx), map_one hf] at h1
   linarith
 
 theorem map_zpow (hf : IsMultiplicativeAdditive f) {x : ℝ} (hx : 0 < x) (z : ℤ) :
     f (x ^ z) = z * f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · simpa using hf.map_pow hx n
+  · simpa using map_pow hf hx n
   · simp only [zpow_neg, zpow_natCast, Int.cast_neg, Int.cast_natCast]
-    rw [hf.map_inv (pow_pos hx n), hf.map_pow hx n]
+    rw [map_inv hf (pow_pos hx n), map_pow hf hx n]
     ring
 
 theorem map_exp_nat (hf : IsMultiplicativeAdditive f) (n : ℕ) : f (exp n) = n * f (exp 1) := by
   have : exp (n : ℝ) = (exp 1) ^ n := by rw [← exp_nat_mul, mul_comm, one_mul]
-  rw [this, hf.map_pow (exp_pos 1) n]
+  rw [this, map_pow hf (exp_pos 1) n]
 
 theorem map_exp_int (hf : IsMultiplicativeAdditive f) (z : ℤ) : f (exp z) = z * f (exp 1) := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · simpa using hf.map_exp_nat n
+  · simpa using map_exp_nat hf n
   · simp only [Int.cast_neg, Int.cast_natCast, exp_neg]
-    rw [hf.map_inv (exp_pos n), hf.map_exp_nat n]
+    rw [map_inv hf (exp_pos n), map_exp_nat hf n]
     ring
 
 /-- A continuous multiplicative-additive function equals `c * log` for `c = f(exp 1)`. -/
@@ -105,8 +102,8 @@ theorem eq_const_mul_log (hf : IsMultiplicativeAdditive f) (hf_cont : Continuous
     have key : (q.den : ℕ) * f (exp (q : ℝ)) = q.num * f (exp 1) := by
       have h1 : exp (q.den * (q : ℝ)) = exp q.num := by rw [hq_cast]; field_simp
       have h2 : f (exp (q.den * (q : ℝ))) = q.den * f (exp (q : ℝ)) := by
-        rw [exp_nat_mul]; exact hf.map_pow (exp_pos _) q.den
-      rw [h1, hf.map_exp_int q.num] at h2; linarith
+        rw [exp_nat_mul]; exact map_pow hf (exp_pos _) q.den
+      rw [h1, map_exp_int hf q.num] at h2; linarith
     calc f (exp (q : ℝ))
         = (q.num / q.den) * f (exp 1) := by field_simp; linarith [key]
       _ = c * q := by rw [hq_cast]; ring
