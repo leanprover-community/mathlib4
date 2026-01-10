@@ -558,7 +558,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le_one := bot_le
+  zero_le _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -572,6 +572,8 @@ instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
     rw [ValueGroupWithZero.inv_mk x y h, ← ValueGroupWithZero.mk_one_one,
       ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_eq_mk]
     simp [mul_comm]
+  mul_lt_mul_of_pos_left := ValueGroupWithZero.ind fun a x ha ↦ ValueGroupWithZero.ind fun b y ↦
+    ValueGroupWithZero.ind fun c z hbc ↦ by simp_all [mul_mul_mul_comm _ _ (x : R)]
 
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/

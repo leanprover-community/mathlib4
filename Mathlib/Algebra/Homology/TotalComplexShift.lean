@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Behaviour of the total complex with respect to shifts
