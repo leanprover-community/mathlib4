@@ -172,20 +172,7 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
     (xs.erase x).orderedInsert r x = xs := by
-  induction xs generalizing x with
-  | nil => cases hx
-  | cons y ys ih =>
-    rw [pairwise_cons] at hxs
-    obtain rfl | hxy := Decidable.eq_or_ne x y
-    · rw [erase_cons_head]
-      cases ys with
-      | nil => rfl
-      | cons z zs => grind
-    · rw [mem_cons] at hx
-      replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert_cons, ih _ hx hxs.2, if_neg]
-      refine mt (fun hrxy => ?_) hxy
-      exact antisymm hrxy (hxs.1 _ hx)
+  induction xs with grind +splitIndPred
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   induction xs <;> grind
