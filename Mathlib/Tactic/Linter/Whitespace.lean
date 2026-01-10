@@ -6,6 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Mathlib.Util.Superscript
 import Lean.Parser.Syntax
 import Init.Data.String.TakeDrop
 
@@ -139,43 +140,23 @@ def onlineComment (s : Substring.Raw) : Bool :=
   (s.take 1).toString == " " &&
     #[ "/-", "--"].contains ((s.dropWhile (· == ' ')).take 2).toString
 
+open Mathlib.Tactic.Superscript
+
 /--
 Convert a single-character subscript string into the corresponding normal single-character string.
 -/
-def unSubscript : String → String
-  | "₀" => "0"
-  | "₁" => "1"
-  | "₂" => "2"
-  | "₃" => "3"
-  | "₄" => "4"
-  | "₅" => "5"
-  | "₆" => "6"
-  | "₇" => "7"
-  | "₈" => "8"
-  | "₉" => "9"
-  | "₊" => "+"
-  | "ₙ" => "n"
-  | "ₘ" => "m"
-  | s => s
+def unSubscript : String → String := fun s ↦
+  if s.length == 1 then
+    (unSubscript' s.front).toString
+  else s
 
 /--
 Convert a single-character superscript string into the corresponding normal single-character string.
 -/
-def unSuperscript : String → String
-  | "⁰" => "0"
-  | "¹" => "1"
-  | "²" => "2"
-  | "³" => "3"
-  | "⁴" => "4"
-  | "⁵" => "5"
-  | "⁶" => "6"
-  | "⁷" => "7"
-  | "⁸" => "8"
-  | "⁹" => "9"
-  | "⁺" => "+"
-  | "ⁿ" => "n"
-  | "ᵐ" => "m"
-  | s => s
+def unSuperscript : String → String := fun s ↦
+  if s.length == 1 then
+    (unSuperscript' s.front).toString
+  else s
 
 /--
 Compares the two substrings `s` and `t`, with the expectation that `t` starts with `s`,
