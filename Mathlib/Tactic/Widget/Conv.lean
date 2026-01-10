@@ -85,11 +85,11 @@ where
       throwError m!"conv mode does not yet support entering projections{indentExpr expr}"
     | .mdata _ e => go e i.castSucc
     | .letE n t _ b _ =>
-      if pos[i] = 0 then
+      if pos[i] = 0 then -- let binder type
         throwError m!"conv mode does not yet support entering let types{indentExpr expr}"
-      else if pos[i] = 1 then
+      else if pos[i] = 1 then -- let binder value
         throwError m!"conv mode does not yet support entering let values{indentExpr expr}"
-      else if pos[i] = 2 then
+      else if pos[i] = 2 then -- let body
         withLocalDeclNoLocalInstanceUpdate n .default t fun fvar => do
           let e := b.instantiate1 fvar
           unless (← isTypeCorrect e) do
@@ -99,21 +99,21 @@ where
           Path.body n <$> go e i.succ
       else err
     | .forallE n t b bi =>
-      if pos[i] = 0 then do
+      if pos[i] = 0 then do -- forall binder type
         unless (← isProp t) || expr.isArrow do
           throwError m!"conv mode only supports rewriting forall binder types \
             when the binder type is a proposition or when the body of the forall \
             does not depend on the value of the bound variable{indentExpr expr}"
         Path.type <$> go t i.succ
-      else if pos[i] = 1 then
+      else if pos[i] = 1 then -- forall body
         withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else err
     | .lam n t b bi =>
-      if pos[i] = 0 then
+      if pos[i] = 0 then -- lambda binder type
         throwError m!"conv mode does not support rewriting \
           the binder type of a lambda{indentExpr expr}"
-      else if pos[i] = 1 then
+      else if pos[i] = 1 then -- lambda body
         withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else err
@@ -125,8 +125,10 @@ where
       if let some n := n then appT f i (a :: acc) (some n.succ)
       else if h : i = Fin.last pos.size then pure (Path.fun acc.length)
       else let i := i.castLT (Fin.val_lt_last h)
-      if pos[i] = 0 then appT f i.succ (a :: acc) none
-      else if pos[i] = 1 then appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
+      if pos[i] = 0 then -- app fun
+        appT f i.succ (a :: acc) none
+      else if pos[i] = 1 then -- app arg
+        appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
       else throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
     | _ =>
       if let some n := n then do
