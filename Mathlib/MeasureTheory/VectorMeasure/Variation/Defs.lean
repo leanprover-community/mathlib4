@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.MeasureTheory.VectorMeasure.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 /-!
 # Total variation for vector-valued measures
@@ -42,6 +44,8 @@ of `s ↦ ‖μ s‖ₑ`.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
