@@ -223,7 +223,7 @@ theorem exp_eq_finset_sum_div_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
 
 lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = IsNilpotent.exp x := by
-  rw [IsNilpotent.exp, exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
+  rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
   apply Finset.sum_congr <| by rfl
   intros
   rw [← Rat.cast_inv_nat]
