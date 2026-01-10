@@ -153,12 +153,9 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
 
 theorem finrank_sl (R : Type*) [Fintype n] [Nonempty n] [Field R] :
     Module.finrank R (sl n R) = Fintype.card n ^ 2 - 1 := by
-  have hdim : Module.finrank R (Matrix n n R) = Fintype.card n ^ 2 := by
-    rw [Module.finrank_matrix, Module.finrank_self, mul_one, sq]
-  have hrank := (Matrix.traceLinearMap n R R).finrank_range_add_finrank_ker
-  have hrange : Module.finrank R (Matrix.traceLinearMap n R R).range = 1 := by
-    rw [LinearMap.range_eq_top.mpr Matrix.trace_surjective, finrank_top, Module.finrank_self]
-  grind
+  have := (Matrix.traceLinearMap n R R).range_eq_top_of_surjective Matrix.trace_surjective ▸
+    LinearMap.finrank_range_add_finrank_ker _
+  grind [Module.finrank_matrix, Module.finrank_self, finrank_top]
 
 end SpecialLinear
 
