@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public meta import Mathlib.Tactic.Continuity.Init
+public import Mathlib.Tactic.Continuity.Init
 
 /-!
 # Continuity

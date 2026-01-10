@@ -44,11 +44,11 @@ instance monoidalCategoryStruct : MonoidalCategoryStruct (∀ i, C i) where
 
 @[simp]
 theorem associator_hom_apply {X Y Z : ∀ i, C i} {i : I} :
-  (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
+    (α_ X Y Z).hom i = (α_ (X i) (Y i) (Z i)).hom := rfl
 
 @[simp]
 theorem associator_inv_apply {X Y Z : ∀ i, C i} {i : I} :
-    (α_ X Y Z).inv i =  (α_ (X i) (Y i) (Z i)).inv := rfl
+    (α_ X Y Z).inv i = (α_ (X i) (Y i) (Z i)).inv := rfl
 
 @[simp]
 theorem isoApp_associator {X Y Z : ∀ i, C i} {i : I} :

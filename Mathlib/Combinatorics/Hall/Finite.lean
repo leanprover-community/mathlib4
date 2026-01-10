@@ -35,7 +35,7 @@ A description of this formalization is in [Gusakov2021].
 Hall's Marriage Theorem, indexed families
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

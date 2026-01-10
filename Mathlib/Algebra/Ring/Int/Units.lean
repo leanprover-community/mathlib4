@@ -21,7 +21,7 @@ This file contains lemmas on the units of `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
