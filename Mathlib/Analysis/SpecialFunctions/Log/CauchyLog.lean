@@ -70,8 +70,7 @@ theorem map_inv (hf : IsMultiplicativeAdditive f) {x : ℝ} (hx : 0 < x) : f x�
 theorem map_zpow (hf : IsMultiplicativeAdditive f) {x : ℝ} (hx : 0 < x) (z : ℤ) :
     f (x ^ z) = z * f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · simp only [zpow_natCast, Int.cast_natCast]
-    exact hf.map_pow hx n
+  · simpa using hf.map_pow hx n
   · simp only [zpow_neg, zpow_natCast, Int.cast_neg, Int.cast_natCast]
     rw [hf.map_inv (pow_pos hx n), hf.map_pow hx n]
     ring
