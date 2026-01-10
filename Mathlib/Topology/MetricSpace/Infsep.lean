@@ -142,8 +142,7 @@ theorem einfsep_eq_iInf : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α
   simp_rw [le_einfsep_iff, le_iInf_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
 
-theorem einfsep_of_fintype [DecidableEq α] [Fintype s] :
-    s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
+theorem einfsep_of_fintype [Fintype s] : s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
   refine eq_of_forall_le_iff fun _ => ?_
   simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, mem_toFinset, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
@@ -387,7 +386,7 @@ theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
     s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
   classical rw [Set.infsep_eq_iInf, if_pos hs]
 
-theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] : s.infsep =
+theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
     if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
   split_ifs with hs
   · refine eq_of_forall_le_iff fun _ => ?_
@@ -396,7 +395,7 @@ theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] 
   · rw [not_nontrivial_iff] at hs
     exact hs.infsep_zero
 
-theorem Nontrivial.infsep_of_fintype [DecidableEq α] [Fintype s] (hs : s.Nontrivial) :
+theorem Nontrivial.infsep_of_fintype [Fintype s] (hs : s.Nontrivial) :
     s.infsep = s.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
   classical rw [Set.infsep_of_fintype, dif_pos hs]
 
