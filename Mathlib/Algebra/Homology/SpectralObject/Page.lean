@@ -24,21 +24,6 @@ spectral sequence attached to spectral objects can be defined
 in terms of this homology `X.E`: the objects in all pages, including
 the page at infinity.
 
-In order to study this homology, we introduce objects `X.cycles`
-for the kernel of `δ` and `X.opcycles` for its cokernel. We record
-the obvious exact sequences that are part of this definition
-as the lemmas `kernelSequenceCycles_exact`
-and `cokernelSequenceOpcycles_exact`, and constructor for morphisms
-`X.liftCycles` to cycles and `X.descOpcycles` from opcycles.
-The definitions `cyclesMap` and `opcyclesMap` give the functoriality
-with respect to `ComposableArrows ι 2`.
-
-The fact that the morphisms `δ` are part of a long exact sequence allow
-to show that `X.cycles` also identify to a cokernel (`cokernelIsoCycles`)
-and `X.opcycles` to a kernel (`opcyclesIsoKernel`). In particular, we also
-get constructors `descCycles` and `liftOpcycles` for morphisms from cycles
-and to opcycles.
-
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
@@ -194,6 +179,8 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
   {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
+/-- `E^n₁(f₁, f₂, f₃)` identifies to the cokernel
+of `δToCycles : H^{n₀}(f₃) ⟶ Z^{n₁}(f₁, f₂)`. -/
 @[simps]
 noncomputable def leftHomologyDataShortComplexE :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).LeftHomologyData where
@@ -236,7 +223,6 @@ noncomputable def πE : X.cycles n₁ n₂ hn₂ f₁ f₂ ⟶ X.E n₀ n₁ n�
 lemma δToCycles_cyclesIso_inv :
     X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).toCycles := by
-  -- this could be a general lemma for LeftHomologyData
   rw [← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles, Category.assoc,
     cyclesIso_inv_i, δToCycles_iCycles, ShortComplex.toCycles_i, shortComplexE_f]
 
@@ -265,6 +251,8 @@ lemma cokernelSequenceE'_exact :
 instance : Epi (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g := by
   dsimp; infer_instance
 
+/-- `E^n₁(f₁, f₂, f₃)` identifies to the kernel
+of `δFromOpcycles : opZ^{n₁}(f₂, f₃) ⟶ H^{n₂}(f₁)`. -/
 @[simps]
 noncomputable def rightHomologyDataShortComplexE :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).RightHomologyData where
@@ -309,7 +297,6 @@ noncomputable def ιE : X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.opcy
 lemma opcyclesIso_hom_δFromOpcycles :
     (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).fromOpcycles := by
-  -- this could be a general lemma for RightHomologyData
   rw [← cancel_epi (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).pOpcycles,
     p_opcyclesIso_hom_assoc, ShortComplex.p_fromOpcycles, shortComplexE_g,
     pOpcycles_δFromOpcycles]
