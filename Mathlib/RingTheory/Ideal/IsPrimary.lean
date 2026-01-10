@@ -61,10 +61,10 @@ theorem isPrimary_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)
     by_cases h : I + span {y} = ⊤
     · rw [← span_singleton_le_iff_mem, ← mul_top (span {x}), ← h, mul_add,
         span_singleton_mul_span_singleton, add_le_iff, span_singleton_le_iff_mem]
-      exact ⟨mul_le_left, hxy⟩
+      exact Or.inl ⟨mul_le_left, hxy⟩
     · obtain ⟨m, hm, hy⟩ := exists_le_maximal (I + span {y}) h
       rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
-      exact hi.eq_of_le hm.ne_top hy.1 ▸ hy.2
+      exact Or.inr (hi.eq_of_le hm.ne_top hy.1 ▸ hy.2)
 
 theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     (hij : radical I = radical J) : (I ⊓ J).IsPrimary :=
