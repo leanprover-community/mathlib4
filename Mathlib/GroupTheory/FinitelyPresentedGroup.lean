@@ -32,6 +32,11 @@ universe u
 
 -- Start of suggested additions to #FreeGroup
 -- TODO review this
+def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
+{ toEquiv := FreeGroup.freeGroupEmptyEquivUnit
+  map_mul' := by intro x y; rfl }
+
+-- TODO review this
 def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ := by
   refine
@@ -47,12 +52,6 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         intro x y
         ext
         simp [FreeGroup.freeGroupUnitEquivInt] }
-
--- TODO review this
-def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
-{ toEquiv := FreeGroup.freeGroupEmptyEquivUnit
-  map_mul' := by intro x y; rfl }
-
 -- end of addition to #FreeGroup
 
 -- Start of suggested additions to #Group.FG
@@ -143,8 +142,14 @@ class IsPresented (G : Type*) [Group G] : Prop where
 
 namespace IsPresented
 
-lemma iff_hom_surj {G : Type*} [Group G] : IsPresented G ↔
-  ∃ (α : Type*) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
+/- When a FinitelyPresentedGroup G is defined as a PresentedGroup G, it naturally acquires the type
+\α since `G = FreeGroup α / normalClosure rels` where `rels : Set (FreeGroup α)`.
+On the other hand, when we write IsFinitelyPresented as `∃ α: Type` and a surjective map
+`f: FreeGroup α →* G` such that `f.ker = normalClosure rels,`
+since `MonoidHom` allows `FreeGroup α` and `G` to be different types,
+we have to specify that `α` and `G` live in the same type universe to get the same result. -/
+lemma iff_hom_surj {G : Type u} [Group G] : IsPresented G ↔
+  ∃ (α : Type u) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
   Function.Surjective f ∧ f.ker = Subgroup.normalClosure rels := by
     constructor
     · intro ⟨α, rels, ⟨iso⟩⟩
@@ -195,9 +200,16 @@ end FinitelyPresentedGroup
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
   Nonempty (G ≃* (FinitelyPresentedGroup rels h))
+
+class IsOneRelator (G : Type*) [Group G] : Prop where
+  out : ∃ (α : Type*) (rels : Set (FreeGroup α)) (hrels : rels.Finite),
+      Nonempty (G ≃* PresentedGroup rels) ∧
+      hrels.toFinset.card = 1
+
 -- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
   -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
 
+/- Every FP group is FG -/
 instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
@@ -236,7 +248,11 @@ def quotient_normalClosure_empty_mulEquiv (α : Type*) :
   exact (QuotientGroup.quotientMulEquivOfEq hbot).trans
     (QuotientGroup.quotientBot (G := FreeGroup α))
 
-/- Every FP group is FP -/
+/- FreeGroup on finitely many generators is FP -/
+instance {α : Type} [Finite α] IsFinitelyPresented (FreeGroup α) := by
+  sorry
+
+/- Trivial group is FP -/
 instance instTrivial : IsFinitelyPresented (Unit) := by
   let α := Empty
   let rels := (∅ : Set (FreeGroup Empty))
@@ -270,7 +286,6 @@ instance Int.instFinitelyPresented : IsFinitelyPresented (Multiplicative ℤ) :=
 
 variable {G H : Type*} [Group G] [Group H]
 
-
 /- FP groups are closed under isomorphism -/
 lemma of_mulEquiv {G H : Type*} [Group G] [Group H]
 (iso : G ≃* H) (h : IsFinitelyPresented G) :
@@ -284,7 +299,7 @@ instance instProd [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
   IsFinitelyPresented (G × H) := by
   obtain ⟨α, hα, Grels, hGrels, ⟨Giso⟩⟩ := hG
   obtain ⟨β, hβ, Hrels, hHrels, ⟨Hiso⟩⟩ := hH
-  simp [FinitelyPresentedGroup] at Giso Hiso
+  simp only [FinitelyPresentedGroup] at Giso Hiso
   use α ⊕ β, inferInstance
   let Grels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inl '' Grels
   let Hrels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inr '' Hrels
