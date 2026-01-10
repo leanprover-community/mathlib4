@@ -418,7 +418,7 @@ lemma primesOver_bot [NoZeroSMulDivisors A B] [Nontrivial A] [IsDomain B] :
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl
-  exact ⟨Ideal.bot_prime, Ideal.bot_liesOver_bot A B⟩
+  exact ⟨Ideal.isPrime_bot, Ideal.bot_liesOver_bot A B⟩
 
 end IsIntegral
 
