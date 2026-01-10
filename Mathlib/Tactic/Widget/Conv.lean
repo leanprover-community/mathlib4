@@ -24,10 +24,38 @@ meta section
 
 open Lean Meta Server ProofWidgets
 
+/--
+A path to a subexpression from a root expression.
+The constructors are chosen to be easily translatable into `conv` directions.
+-/
 inductive Path where
+  /--
+  Accesses the `arg`th explicit or implicit argument,
+  depending on whether `all` is `true` or `false`.
+  Corresponds to the `conv` tactic `arg`.
+  For example, `Path.arg 3 true next` is `arg @3` followed by `next`,
+  and `Path.arg 0 false next` is `arg 0` followed by `next`.
+  -/
   | arg (arg : Nat) (all : Bool) (next : Path) : Path
+  /--
+  End a `conv` sequence with `depth`-many repetitions of the `conv` tactic `fun`.
+  For example, `Path.fun 3` corresponds to the `conv` sequence `fun; fun; fun`,
+  and `Path.fun 0` just terminates a `Path` without any extra `conv` tactics.
+  -/
   | fun (depth : Nat) : Path
+  /--
+  Traverses into the binder type of a forall, let, or lambda.
+  Currently out of these three options `conv` only supports going into
+  the binder type of a forall, but in the future if `conv` gets support for
+  going into let or lambda binding types with different `conv` tactics we may add
+  additional arguments to specify whether the binder is a forall, let, or lambda.
+  Corresponds to the `conv` tactics `lhs` or `arg`.
+  -/
   | type (next : Path) : Path
+  /--
+  Traverses into the body of a forall, let, or lambda.
+  Corresponds to the `conv` tactics `intro` or `ext`.
+  -/
   | body (name : Name) (next : Path) : Path
 
 partial def Path.ofSubExprPosArray (expr : Expr) (pos : Array Nat) : MetaM Path :=
