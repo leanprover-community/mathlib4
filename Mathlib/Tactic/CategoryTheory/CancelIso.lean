@@ -8,6 +8,29 @@ module
 public meta import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
 
+/-!
+# Simproc for canceling morphisms with their inverses
+
+This module implements the `cancel_iso` simproc, which triggers on expressions of the form `f ≫ g`.
+
+If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
+by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
+If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
+
+The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
+the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
+`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+
+For instance, the simproc will successfully rewrite expressions such as
+`F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
+because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
+`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
+
+This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
+have already been traversed beforehand.
+
+-/
+
 public meta section
 open Lean Meta CategoryTheory
 
@@ -25,6 +48,23 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
   rw [← h]
   exact IsIso.hom_inv_id_assoc f k
 
+/-- The `cancel_iso` simproc triggers on expressions of the form `f ≫ g`.
+
+If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
+by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
+If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
+
+The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
+the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
+`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+
+For instance, the simproc will successfully rewrite expressions such as
+`F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
+because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
+`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
+
+This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
+have already been traversed beforehand. -/
 def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReducible necessary here?
   let e_whnf ← whnf e
   let_expr CategoryStruct.comp C instCat x y t f g := e_whnf | return .continue
@@ -61,5 +101,22 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
 
 end Mathlib.Tactic.CategoryTheory.CancelIso
 
+/-- The `cancel_iso` simproc triggers on expressions of the form `f ≫ g`.
+
+If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
+by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
+If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
+
+The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
+the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
+`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+
+For instance, the simproc will successfully rewrite expressions such as
+`F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
+because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
+`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
+
+This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
+have already been traversed beforehand. -/
 simproc_decl cancel_iso (CategoryStruct.comp (self := ?x) _ _) :=
   Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
