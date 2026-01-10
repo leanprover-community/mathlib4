@@ -37,7 +37,6 @@ logarithm, functional equation, Cauchy, characterization
 -/
 
 open Set
-open scoped Topology
 
 namespace Real
 
