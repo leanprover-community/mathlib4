@@ -5,10 +5,9 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
-public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 /-!
 # Monoidal structure on the arrow category
@@ -21,7 +20,7 @@ namespace CategoryTheory.Arrow
 
 open Opposite Limits MonoidalCategory Functor PushoutProduct
 
-variable {C : Type u} [Category.{v} C] [HasPushouts C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C] [HasPushouts C] [CartesianMonoidalCategory C]
   (F : C ⥤ C ⥤ C) (G : Cᵒᵖ ⥤ C ⥤ C)
   {A B X Y Z W : C} (f : A ⟶ B) (g : X ⟶ Y) (h : Z ⟶ W)
 
@@ -68,7 +67,7 @@ def PushoutObjObj_whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) 
   · exact (associator_naturality_left f X W).symm
   · exact (associator_naturality_middle A g W).symm
 
-@[simps!?]
+@[simps!]
 noncomputable
 def PushoutProduct.whiskerRight_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight W)] :
     Arrow.mk ((f □ g) ▷ W) ≅ Arrow.mk (f □ (g ▷ W)) := by
@@ -86,6 +85,42 @@ def PushoutProduct.whiskerLeft_iso [PreservesColimit (span (f ▷ X) (A ◁ g)) 
 
 @[simp]
 noncomputable
+def pt_associator_iso_hom_aux [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight W)] :
+    ((PushoutObjObj.ofHasPushout (curriedTensor C) f g).pt) ⊗ W ⟶
+    (PushoutObjObj.ofHasPushout (curriedTensor C) f (g □ h)).pt := by
+  refine (PushoutObjObj_whiskerRight_iso _ _).hom ≫ pushout.desc ?_ ?_ ?_
+  · exact (B ◁ pushout.inr _ _) ≫ pushout.inl _ _
+  · exact pushout.inr _ _
+  · dsimp
+    rw [← whisker_exchange_assoc, pushout.condition,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, IsPushout.inr_desc]
+
+@[reassoc]
+lemma temp_needed : B ◁ g ▷ Z ≫ B ◁ pushout.inl (g ▷ Z) (X ◁ h) =
+    B ◁ X ◁ h ≫ B ◁ pushout.inr (g ▷ Z) (X ◁ h) := by
+  rw [← MonoidalCategory.whiskerLeft_comp, pushout.condition,MonoidalCategory.whiskerLeft_comp]
+
+omit [HasPushouts C] in
+@[reassoc (attr := simp)]
+lemma whisker_inl_desc {Z X Y P Q : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+    (w : f ≫ h = g ≫ k) :
+    inl ▷ Q ≫ hP.desc h k w ▷ Q = h ▷ Q := by cat_disch
+
+omit [HasPushouts C] in
+@[reassoc (attr := simp)]
+lemma whisker_inr_desc {Z X Y P Q : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
+    (w : f ≫ h = g ≫ k) :
+    inr ▷ Q ≫ hP.desc h k w ▷ Q = k ▷ Q := by cat_disch
+
+@[reassoc]
+lemma whisker_pushout_condition {X Y Z Q : C} {f : X ⟶ Y} {g : X ⟶ Z} :
+    Q ◁ f ≫ Q ◁ (pushout.inl f g) = Q ◁ g ≫ Q ◁ pushout.inr _ _ := by
+  simp [← MonoidalCategory.whiskerLeft_comp, pushout.condition]
+
+@[simp]
+noncomputable
 def pt_associator_iso_hom
     [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight Z)]
     [PreservesColimit (span (f ▷ X) (A ◁ g)) (tensorRight W)] :
@@ -93,27 +128,10 @@ def pt_associator_iso_hom
     (PushoutObjObj.ofHasPushout (curriedTensor C) f (g □ h)).pt := by
   refine pushout.desc ?_ ?_ ?_
   · exact (α_ B Y Z).hom ≫ (B ◁ pushout.inl _ _) ≫ pushout.inl _ _
-  · refine (PushoutObjObj_whiskerRight_iso _ _).hom ≫ pushout.desc ?_ ?_ ?_
-    · exact (B ◁ pushout.inr _ _) ≫ pushout.inl _ _
-    · exact pushout.inr _ _
-    · dsimp [Functor.PushoutObjObj.ι]
-      rw [← whisker_exchange_assoc, pushout.condition,
-        ← MonoidalCategory.whiskerLeft_comp_assoc, IsPushout.inr_desc]
-  · dsimp [Functor.PushoutObjObj.ι]
-    apply (IsPushout_ofWhiskerRight _ _).hom_ext
-    · simp only [← MonoidalCategory.comp_whiskerRight_assoc, IsPushout.inl_desc, whisker_assoc,
-        Category.assoc, Iso.inv_hom_id_assoc]
-      rw [← MonoidalCategory.whiskerLeft_comp_assoc, pushout.condition, ← whisker_exchange_assoc]
-      simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, tensor_whiskerLeft,
-        HasColimit.isoOfNatIso_hom_desc, IsPushout.inl_isoPushout_hom_assoc, colimit.ι_desc,
-        Cocones.precompose_obj_pt, PushoutCocone.mk_pt, Cocones.precompose_obj_ι,
-        NatTrans.comp_app, span_left, Functor.const_obj_obj, spanExt_hom_app_left,
-        PushoutCocone.mk_ι_app, Iso.inv_hom_id_assoc]
-    · simp only [← comp_whiskerRight_assoc, IsPushout.inr_desc, Category.assoc,
-        HasColimit.isoOfNatIso_hom_desc, ← whisker_exchange_assoc, tensor_whiskerLeft,
-        IsPushout.inr_isoPushout_hom_assoc, colimit.ι_desc, Cocones.precompose_obj_pt,
-        PushoutCocone.mk_pt, Cocones.precompose_obj_ι, NatTrans.comp_app, span_right,
-        Functor.const_obj_obj, spanExt_hom_app_right, PushoutCocone.mk_ι_app, Iso.inv_hom_id_assoc]
+  · exact pt_associator_iso_hom_aux ..
+  · apply (IsPushout_ofWhiskerRight _ _).hom_ext
+    · simp [whisker_pushout_condition_assoc, ← whisker_exchange_assoc]
+    · simp [← whisker_exchange_assoc]
       rw [associator_naturality_left_assoc, ← whisker_exchange_assoc, pushout.condition,
         ← MonoidalCategory.whiskerLeft_comp_assoc, IsPushout.inl_desc]
 
@@ -166,12 +184,10 @@ def pt_associator_iso
   hom_inv_id := by
     apply pushout.hom_ext
     · simp
-    · apply (IsPushout_ofWhiskerRight _ _).hom_ext
-      all_goals simp
+    · exact (IsPushout_ofWhiskerRight _ _).hom_ext (by simp) (by simp)
   inv_hom_id := by
     apply pushout.hom_ext
-    · apply (IsPushout_ofWhiskerLeft _ _).hom_ext
-      all_goals simp
+    · exact (IsPushout_ofWhiskerLeft _ _).hom_ext (by simp) (by simp)
     · simp
 
 @[simp]
@@ -187,7 +203,7 @@ noncomputable
 def comm_iso [BraidedCategory C] : Arrow.mk (f □ g) ≅ Arrow.mk (g □ f) :=
   Arrow.isoMk (pt_comm_iso f g) (β_ _ _) (by cat_disch)
 
-@[simp]
+@[simps!]
 noncomputable
 def associator
     [PreservesColimit (span (g ▷ Z) (X ◁ h)) (tensorLeft A)]
@@ -203,7 +219,8 @@ def associator
       · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
 noncomputable
-instance [HasPushouts C] [HasInitial C]
+instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C]
+    [MonoidalClosed C] [BraidedCategory C]
     [∀ S : C, PreservesColimitsOfSize (tensorLeft S)]
     [∀ S : C, PreservesColimitsOfSize (tensorRight S)] : MonoidalCategory (Arrow C) where
   tensorObj X Y := ((leftBifunctor (curriedTensor C)).obj X).obj Y
@@ -216,10 +233,12 @@ instance [HasPushouts C] [HasInitial C]
     dsimp only
     apply Arrow.hom_ext
     · apply pushout.hom_ext
-      ·
+      · simp
         sorry
-      · sorry
-    · sorry
+      · apply (IsPushout_ofWhiskerRight _ _).hom_ext
+        · sorry
+        · sorry
+    · simp
   pentagon := by
     intro W X Y Z
     apply Arrow.hom_ext
@@ -227,10 +246,25 @@ instance [HasPushouts C] [HasInitial C]
       ·
         sorry
       · sorry
-    · sorry
+    · simp
   leftUnitor X := by
-
-    sorry
-  rightUnitor X := sorry
-
+    refine Arrow.isoMk ?_ (λ_ X.right) ?_
+    · dsimp
+      refine Iso.mk ?_ ?_ ?_ ?_
+      · refine pushout.desc (λ_ X.left).hom ?_ ?_
+        · exact IsInitial.to (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm) _
+        · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+      · exact (λ_ X.left).inv ≫ pushout.inl _ _
+      · apply pushout.hom_ext
+        · simp
+        · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+      · simp
+    · apply pushout.hom_ext
+      · simp
+      · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+  leftUnitor_naturality := sorry
+  rightUnitor X := by
+    refine Arrow.isoMk ?_ (ρ_ X.right) ?_
+    · sorry
+    · sorry
 end CategoryTheory.Arrow
