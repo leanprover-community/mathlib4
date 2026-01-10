@@ -132,65 +132,61 @@ theorem eventuallyEq_toIocDiv_nhdsGT : toIocDiv hp a =ᶠ[𝓝[>] x] fun _ ↦ t
 
 variable {x}
 
-/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
-then `toIcoDiv` is locally constant near `x`. -/
-theorem eventuallyEq_toIcoDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+/-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is locally constant near `x`. -/
+theorem eventuallyEq_toIcoDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIcoDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIcoDiv hp a x := by
   rw [← nhdsLT_sup_nhdsGE, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨?_, eventuallyEq_toIcoDiv_nhdsGE hp a x⟩
   convert (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
-  rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
+  rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
-/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
-then `toIcoDiv` is continuous at `x`.
+/-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
 
 In fact, it is locally near `x`, see `eventuallyEq_toIcoDiv_nhds`. -/
-theorem continuousAt_toIcoDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+theorem continuousAt_toIcoDiv (hx : ¬x ≡ a [PMOD p]) :
     ContinuousAt (toIcoDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIcoDiv_nhds hp a hx
 
-/-- `toIcoDiv` is continuous on the set of points
-that don't project to the endpoint on the circle `𝕜 / zmultiples p`. -/
-theorem continuousOn_toIcoDiv :
-    ContinuousOn (toIcoDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
+/-- `toIcoDiv` is continuous on the set of points that are not congruent to `a` modulo `p`. -/
+theorem continuousOn_toIcoDiv : ContinuousOn (toIcoDiv hp a) {x | ¬x ≡ a [PMOD p]} := fun _x hx ↦
   (continuousAt_toIcoDiv hp a hx).continuousWithinAt
 
-/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
-then `toIocDiv` is locally constant near `x`. -/
-theorem eventuallyEq_toIocDiv_nhds (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+/-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is locally constant near `x`. -/
+theorem eventuallyEq_toIocDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
     toIocDiv hp a =ᶠ[𝓝 x] fun _ ↦ toIocDiv hp a x := by
   rw [← nhdsLE_sup_nhdsGT, Filter.EventuallyEq, Filter.eventually_sup]
   refine ⟨eventuallyEq_toIocDiv_nhdsLE hp a x, ?_⟩
   convert (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
-  rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, not_modEq_iff_ne_mod_zmultiples, ne_comm]
+  rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
-/-- If `x` is does not project to `a` on the circle `𝕜 / zmultiples p`,
-then `toIocDiv` is continuous at `x`.
+/-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
 
 In fact, it is locally near `x`, see `eventuallyEq_toIocDiv_nhds`. -/
-theorem continuousAt_toIocDiv (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
+theorem continuousAt_toIocDiv (hx : ¬x ≡ a [PMOD p]) :
     ContinuousAt (toIocDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIocDiv_nhds hp a hx
 
 /-- `toIocDiv` is continuous on the set of points
-that don't project to the endpoint on the circle `𝕜 / zmultiples p`. -/
+that aren't congruent to the endpoint modulo the period. -/
 theorem continuousOn_toIocDiv :
-    ContinuousOn (toIocDiv hp a) ((↑) ⁻¹' {(a : 𝕜 ⧸ zmultiples p)}ᶜ) := fun _x hx ↦
+    ContinuousOn (toIocDiv hp a) {x | ¬x ≡ a [PMOD p]} := fun _x hx ↦
   (continuousAt_toIocDiv hp a hx).continuousWithinAt
 
-theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) :
-    toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a :=
-  IsOpen.mem_nhds
-      (by
-        rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
-        exact isOpen_iUnion fun i => isOpen_Ioo) <|
-    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
+theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
+    toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a := by
+  refine IsOpen.mem_nhds ?_ ?_
+  · rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
+    exact isOpen_iUnion fun i => isOpen_Ioo
+  · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
-theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
+def MyModEq {G : Type*} [Add G] [SMul ℕ G] (p : G) (a b : G) : Prop :=
+  ∃ m n : ℕ, m • p + a = n • p + b
+
+theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
     (eventuallyEq_toIcoDiv_nhds hp a hx).fun_comp (· • p)
 
-theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIocMod hp a) x :=
+theorem continuousAt_toIocMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIocMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
     (eventuallyEq_toIocDiv_nhds hp a hx).fun_comp (· • p)
 
@@ -391,12 +387,12 @@ variable [OrderTopology 𝕜] {x : AddCircle p}
 theorem continuousAt_equivIco (hx : x ≠ a) : ContinuousAt (equivIco p a) x := by
   induction x using QuotientAddGroup.induction_on
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
-  exact (continuousAt_toIcoMod hp.out a hx).codRestrict _
+  exact (continuousAt_toIcoMod hp.out a <| not_modEq_iff_ne_mod_zmultiples.mpr hx).codRestrict _
 
 theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := by
   induction x using QuotientAddGroup.induction_on
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
-  exact (continuousAt_toIocMod hp.out a hx).codRestrict _
+  exact (continuousAt_toIocMod hp.out a <| not_modEq_iff_ne_mod_zmultiples.mpr hx).codRestrict _
 
 /-- The quotient map `𝕜 → AddCircle p` as an open partial homeomorphism. -/
 @[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
