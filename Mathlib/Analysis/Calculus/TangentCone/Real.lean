@@ -18,7 +18,7 @@ In this file we prove that
 - `uniqueDiffOn_Ioc` etc: intervals on the real line have the unique differentiability property.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped Topology
