@@ -94,15 +94,9 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
-variable (K) in
 /-- If `K` is a field, then so is `K` viewed as a valuation subring
 of itself. (That is, `⊤ : ValuationSubring K`.) -/
-noncomputable abbrev fieldTop : Field (⊤ : ValuationSubring K) := by
-  refine Field.ofIsUnitOrEqZero fun ⟨a, ha⟩ ↦ ?_
-  rw [Classical.or_iff_not_imp_right, isUnit_iff_exists_inv']
-  intro h
-  use ⟨a⁻¹, ValuationSubring.mem_top _⟩
-  aesop (add norm Subtype.ext_iff)
+instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
 
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
