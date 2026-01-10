@@ -201,7 +201,7 @@ abbrev pseudoEMetricSpaceOfEDist'
   uniformity_edist := by rfl
 
 theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist'
-    {α : Type u} [TopologicalSpace α] (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+    {α : Type u} (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
     ((pseudoEMetricSpaceOfEDist'
@@ -210,7 +210,7 @@ theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist'
     edist edist_self edist_comm edist_triangle)).toTopologicalSpace := by rfl
 
 theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'
-    {α : Type u} [TopologicalSpace α] (s : Set α) (edist : α → α → ℝ≥0∞)
+    {α : Type u} (s : Set α) (edist : α → α → ℝ≥0∞)
     (edist_self : ∀ x : α, edist x x = 0) (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z):
     IsOpen[((pseudoEMetricSpaceOfEDist'
