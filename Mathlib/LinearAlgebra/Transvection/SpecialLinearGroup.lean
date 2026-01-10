@@ -213,92 +213,197 @@ theorem subgroup_closure_transvections_eq_top :
   intro e _
   exact closure_pow_le <| Subgroup.mem_closure_of_mem <| mem_transvections_pow e
 
+theorem _root_.Module.Basis.nonempty_ofFin {n : ℕ} (hn : n = finrank K V) :
+    Nonempty (Basis (Fin n) K V) :=
+  let b := Module.Basis.ofVectorSpace K V
+  ⟨b.reindex (Fintype.equivFinOfCardEq (by rw [hn, Module.finrank_eq_card_basis b]))⟩
+
+-- This was essentially done in `Transvection.Basic`.
 theorem _root_.LinearEquiv.transvection.existsBasis
-    {e : V ≃ₗ[K] V} (he : e ∈ LinearEquiv.transvections K V) (he1 : e ≠ 1)
-    {ι : Type*} (hι : Nat.card ι = finrank K V) (i j : ι) (hij : i ≠ j) :
-    ∃ (b : Basis ι K V),
-      e = LinearEquiv.transvection (f := b.coord i) (v := b j) (by
-      simp_all) := by
+    {n : ℕ} (hV : finrank K V = n + 2) {e : V ≃ₗ[K] V}
+    (he : e ∈ LinearEquiv.transvections K V) (he1 : e ≠ 1) :
+    ∃ (b : Basis (Fin (n + 2)) K V),
+      e = LinearEquiv.transvection (f := b.coord 0) (v := b 1) (by simp) := by
   obtain ⟨f, v, hfv, hg⟩ := he
   have hf : f ≠ 0 := by contrapose he1; aesop
   have hv : v ≠ 0 := by contrapose he1; aesop
-  have hb1 : LinearIndepOn K id {(⟨v, by simpa⟩ : ker f)} :=
-    LinearIndepOn.singleton (by simpa)
-  let θ1 := hb1.extend (Set.subset_univ _)
-  let b1 : Basis θ1 K (ker f) := Basis.extend hb1
-  have hb := b1.linearIndependent.map' _ (Submodule.ker_subtype (ker f))
-  let θ2 := Basis.sumExtendIndex hb
-  let B : Basis (θ1 ⊕ θ2) K V := Module.Basis.sumExtend hb
-  sorry
+  let v' : ker f := ⟨v, by simp [hfv]⟩
+  have hv' : v' ≠ 0 := by simpa [v'] using hv
+  obtain ⟨w, hw⟩ := (surjective_iff_ne_zero.mpr hf) 1
+  obtain ⟨p, hp⟩ := Submodule.exists_isCompl (K ∙ v')
+  -- We start from a basis of `p`
+  have := Module.Basis.nonempty_ofFin (K := K) (V := p) (n := n) (by
+    rw [← Nat.add_right_inj, Submodule.finrank_quotient_add_finrank,
+      ← Nat.add_left_inj, f.finrank_ker_add_one_of_ne_zero hf,
+      hV, Nat.add_right_cancel_iff, add_comm n, Nat.add_right_cancel_iff,
+      ← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank,
+      ← Submodule.finrank_add_eq_of_isCompl hp,
+      Nat.add_right_cancel_iff, finrank_span_singleton hv'])
+  let ⟨b⟩ := this
+  -- Adding `v'`, we get a basis of `ker f`.
+  let b' := b.mkFinCons v' (fun a x hx hax ↦ by
+    suffices x = 0 by simpa [this, hv'] using hax
+    rw [← Submodule.mem_bot K, ← hp.inf_eq_bot, Submodule.mem_inf]
+    refine ⟨?_, hx⟩
+    rw [add_comm, add_eq_zero_iff_eq_neg] at hax
+    rw [hax, neg_mem_iff]
+    exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self v')) (fun x ↦ by
+    have hx : x ∈ p ⊔ K ∙ v' := by simp [hp.symm.sup_eq_top]
+    rw [Submodule.mem_sup] at hx
+    obtain ⟨y, hu, z, hz, rfl⟩ := hx
+    rw [Submodule.mem_span_singleton] at hz
+    obtain ⟨a, rfl⟩ := hz
+    exact ⟨-a, by simpa using hu⟩)
+  -- Adding `w`, we get a basis of `V`.
+  let β := b'.mkFinCons w (fun a x hx hawx ↦ by
+    simp only [mem_ker] at hx
+    simpa [hw, hx] using congr(f $hawx)) (fun x ↦
+    ⟨- f x, by simp [hw, mem_ker]⟩)
+  have β0 : β 0 = w := by simp [β]
+  have β1 : β 1 = v := by simp [β, b', v']
+  use β
+  rw [hg]
+  simp only [← LinearEquiv.toLinearMap_inj, transvection.coe_toLinearMap]
+  refine congr_arg₂ _ ?_ β1.symm
+  apply β.ext (fun i ↦ ?_)
+  by_cases hi : i = 0
+  · rw [hi, β0]
+    rw [Basis.apply_eq_iff] at β0
+    simp [β0, hw]
+  · obtain ⟨j, rfl⟩ := Fin.eq_succ_of_ne_zero hi
+    simp [β, Basis.mkFinCons_repr_apply_zero_ofMem]
 
+/-- Transvections are conjugate in `V ≃ₗ[K] V`. -/
+theorem _root_.LinearEquiv.isConj_of_mem_transvections {g g' : V ≃ₗ[K] V}
+    (hg1 : g ≠ 1) (hg : g ∈ LinearEquiv.transvections K V)
+    (hg'1 : g' ≠ 1) (hg' : g' ∈ LinearEquiv.transvections K V) :
+    IsConj g g' := by
+  by_cases hV : finrank K V ≤ 1
+  · exfalso
+    apply hg1
+    obtain ⟨f, v, hfv, rfl⟩ := hg
+    rw [← LinearEquiv.toLinearMap_inj]
+    exact transvection.eq_id_of_finrank_le_one hfv hV
+  replace hV : 2 ≤ finrank K V := Nat.succ_le_of_lt (not_le.mp hV)
+  have hV' := (Nat.sub_eq_iff_eq_add hV).mp rfl
+  obtain ⟨b, hbg⟩ := transvection.existsBasis hV' hg hg1
+  obtain ⟨b', hbg'⟩ := transvection.existsBasis hV' hg' hg'1
+  let e := b.repr.trans b'.repr.symm
+  have he : b.repr = e.trans b'.repr := by
+    simp [e, symm_trans_cancel_right]
+  simp only [isConj_iff]
+  use e
+  simp only [hbg, hbg', mul_eq_trans]
+  rw [← trans_assoc]
+  convert LinearEquiv.transvection.congr _ e
+  · ext; simp [e]
+  · simp [e]
+
+omit [Module.Finite K V] in
+theorem _root_.LinearMap.transvection.commute
+    {f : Dual K V} (hf0 : f ≠ 0) {v : V} (hv0 : v ≠ 0)
+    (e : V →ₗ[K] V) :
+    e * LinearMap.transvection f v = LinearMap.transvection f v * e ↔
+      ∃ a : K, e v = a • v ∧ ∀ x, f (e x) = f x * a := by
+  refine ⟨fun h ↦ ?_, fun ⟨a, hav, haf⟩ ↦ ?_⟩
+  · simp only [LinearMap.ext_iff, End.mul_apply, LinearMap.transvection.apply, map_add,
+    _root_.map_smul, add_right_inj] at h
+    obtain ⟨w, hw⟩ := (surjective_iff_ne_zero.mpr hf0) 1
+    have hw' := h w
+    simp only [hw, one_smul] at hw'
+    refine ⟨f (e w), hw', ?_⟩
+    intro x
+    apply smul_left_injective K hv0
+    simp [← h, mul_smul, hw]
+  · ext x
+    simp [LinearMap.transvection.apply, hav, haf, mul_smul]
+
+omit [Module.Finite K V] in
+theorem LinearEquiv.transvection.commute
+    {f : Dual K V} (hf0 : f ≠ 0) {v : V} (hv0 : v ≠ 0) (hfv : f v = 0)
+    (e : V ≃ₗ[K] V) :
+    e * LinearEquiv.transvection hfv * e.symm = LinearEquiv.transvection hfv ↔
+      ∃ a : K, e v = a • v ∧ ∀ x, f (e x) = f x * a := by
+  rw [← LinearEquiv.coe_coe, ← LinearMap.transvection.commute hf0 hv0 ↑e]
+  simp only [← LinearEquiv.toLinearMap_inj, coe_toLinearMap_mul, transvection.coe_toLinearMap]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · conv_rhs => rw [← h, mul_assoc]
+    rw [← @coe_toLinearMap_mul, mul_eq_trans, self_trans_symm, refl_toLinearMap]
+    -- missing lemmas!
+    -- * = comp
+    -- LinearMap.id = 1
+    rfl
+  · rw [h]; aesop
+
+lemma three_le_finrank_of_ne_one_of_ne_two
+    {g : SpecialLinearGroup K V} (hg1 : g ≠ 1) (hg : g ∈ transvections K V) (hV : finrank K V ≠ 2) :
+    3 ≤ finrank K V := by
+  contrapose hg1
+  obtain ⟨f, v, hfv, rfl⟩ := hg
+  rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj]
+  refine transvection.eq_id_of_finrank_le_one hfv ?_
+  grind
+
+/-- Unless `finrank K V = 2`, transvections are conjugate in `SpecialLinearGroup K V`.
+
+The result does not hold if `finrank K V = 2`. -/
 theorem isConj_of_mem_transvections {g g' : SpecialLinearGroup K V}
+    (hV2 : finrank K V ≠ 2)
     (hg1 : g ≠ 1) (hg : g ∈ transvections K V)
     (hg'1 : g' ≠ 1) (hg' : g' ∈ transvections K V) :
     IsConj g g' := by
-  --
-  obtain ⟨f, v, hfv, hg⟩ := hg
-  have : ∃ w, f w = 1 := by
-    suffices ∃ w, f w ≠ 0 by
-      obtain ⟨w, this⟩ := this
-      exact ⟨(f w)⁻¹ • w, by aesop⟩
-    contrapose hg1
-    ext x
-    simp only [ne_eq, not_exists, not_not] at hg1
-    simp [hg, LinearMap.transvection.apply, hg1]
-  obtain ⟨w, hfw⟩ := this
-  --
-  obtain ⟨f', v', hfv', hg'⟩ := hg'
-  have : ∃ w, f' w = 1 := by
-    suffices ∃ w, f' w ≠ 0 by
-      obtain ⟨w, this⟩ := this
-      exact ⟨(f' w)⁻¹ • w, by aesop⟩
-    contrapose hg'1
-    ext x
-    simp only [ne_eq, not_exists, not_not] at hg'1
-    simp [hg', LinearMap.transvection.apply, hg'1]
-  obtain ⟨w', hfw'⟩ := this
-  --
-  have : ∃ e : V ≃ₗ[K] V, e v = v' ∧ (ker f).map e.toLinearMap = (ker f') ∧ e w = w' := by
-    sorry
-  obtain ⟨e, hev, hef, hew⟩ := this
-  have hf : f ≠ 0 := by contrapose hg1; aesop
-  have hv : v ≠ 0 := by contrapose hg1; aesop
-  have hb1 : LinearIndepOn K id {(⟨v, by simpa⟩ : LinearMap.ker f)} :=
-    LinearIndepOn.singleton (by simpa)
-  let b := Module.Basis.extend (K := K) hb1
-  have hb := b.linearIndependent.map' _ (Submodule.ker_subtype (ker f))
-  let B := Module.Basis.sumExtend hb
-  --
-  obtain ⟨f', v', hfv', hg'⟩ := hg'
-  have hf' : f' ≠ 0 := by contrapose hg'1; aesop
-  have hv' : v' ≠ 0 := by contrapose hg'1; aesop
-  have hb'1 : LinearIndepOn K id {(⟨v', by simpa⟩ : LinearMap.ker f')} :=
-    LinearIndepOn.singleton (by simpa)
-  let b' := Module.Basis.extend (K := K) hb'1
-  have hb' := b'.linearIndependent.map' _ (Submodule.ker_subtype (ker f'))
-  let B' := Module.Basis.sumExtend hb'
-  --
-
-  -- for any nonzero `a`,
-  -- there is an automorphism of `V` of determinant 1
-  -- that maps `f` to `f'` and `v` to `a • v'`
-  obtain ⟨l, hlv⟩ := Projective.exists_dual_eq_one K hv
-  obtain ⟨l', hlv'⟩ := Projective.exists_dual_eq_one K hv'
-  let e : K ∙ v ≃ₗ[K] K ∙ v' := {
-    toFun x := ⟨l x • v', Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self v')⟩
-    invFun x := ⟨l' x • v, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self v)⟩
-    map_add' x y := by simp [add_smul]
-    map_smul' a x := by simp [_root_.map_smul, mul_smul]
-    left_inv x := by
-      obtain ⟨a, hx⟩ := Submodule.mem_span_singleton.mp x.prop
-      simp [← Subtype.coe_inj, ← hx, hlv, hlv']
-    right_inv x := by
-      obtain ⟨a, hx⟩ := Submodule.mem_span_singleton.mp x.prop
-      simp [← Subtype.coe_inj, ← hx, hlv, hlv'] }
-
-
-
-  sorry
+  have hV3 : 3 ≤ finrank K V := three_le_finrank_of_ne_one_of_ne_two hg1 hg hV2
+  rw [mem_transvections_iff_coe] at hg hg'
+  rw [ne_eq, ← Subtype.coe_inj] at hg1 hg'1
+  rw [isConj_iff]
+  obtain ⟨e, he⟩ := isConj_iff.mp (LinearEquiv.isConj_of_mem_transvections hg1 hg hg'1 hg')
+  suffices ∃ e' : V ≃ₗ[K] V, e' ≪≫ₗg' ≪≫ₗe'.symm = g' ∧ e'.det = e.det by
+    obtain ⟨e', he'g', he'⟩ := this
+    use ⟨e'⁻¹ * e, by simp [he']⟩
+    rw [← Subtype.coe_inj]
+    simp only [← LinearEquiv.mul_eq_trans] at he'g'
+    simp only [coe_mul, coe_inv, mul_inv_rev, inv_inv]
+    rw [← he'g', ← he]
+    simp only [← mul_assoc]
+    congr
+  obtain ⟨f, v, hfv, hg'⟩ := hg'
+  have hf0 : f ≠ 0 := by contrapose hg'1; aesop
+  have hv0 : v ≠ 0 := by contrapose hg'1; aesop
+  obtain ⟨s, b, i, j, hij, hv, hf⟩ :=
+    LinearMap.transvection.exists_basis_of_pairing_eq_zero hfv hf0 hv0
+  have : ∃ k, k ≠ i ∧ k ≠ j := by
+    contrapose hV3
+    have : Fintype s := by exact FiniteDimensional.fintypeBasisIndex b
+    suffices s ⊆ {i.val, j.val} by
+      rw [Module.finrank_eq_card_basis b, ← Nat.card_eq_fintype_card, not_le]
+      apply lt_of_le_of_lt (Nat.card_mono ?_ this) <;> aesop
+    intro x hx
+    simp only [ne_eq, Subtype.exists, not_exists, not_and_or, not_not] at hV3
+    simpa [← Subtype.coe_inj] using hV3 x hx
+  obtain ⟨k, hki, hkj⟩ := this
+  set e' := dilatransvection (f := b.coord k) (v := (e.det.val - 1) • b k) (by
+    apply Ne.isUnit
+    suffices LinearMap.det e.toLinearMap ≠ 0 by simpa
+    simp [← LinearEquiv.coe_det]) with he'
+  refine ⟨e', ?_, by
+    simp [← Units.val_inj, e', LinearMap.transvection.det]⟩
+  simp only [← LinearEquiv.mul_eq_trans, ← mul_assoc]
+  nth_rewrite 2 [← e'.symm_symm]
+  rw [hg', LinearEquiv.transvection.commute hf0 hv0 hfv]
+  use 1
+  constructor
+  · rw [symm_apply_eq, he', ← LinearEquiv.coe_coe]
+    simp [hv, LinearMap.transvection.apply, Finsupp.single_eq_of_ne hki]
+  · suffices f ∘ₗ ↑e' = f by
+      intro x
+      nth_rewrite 1 [← this]
+      simp
+    apply b.ext
+    intro x
+    by_cases hx : x = k
+    · simp [he', hf, LinearMap.transvection.apply,
+        hx, Finsupp.single_eq_of_ne (Ne.symm hkj)]
+    · simp [he', hf, LinearMap.transvection.apply, Finsupp.single_eq_of_ne (Ne.symm hx)]
 
 theorem IsConj.div_memCommutatorSet
     {G : Type*} [Group G] {x y : G} (h : IsConj x y) :
@@ -327,13 +432,13 @@ theorem transvection.eq_one_iff {f : Dual K V} {v : V} {hfv : f v = 0} :
   rw [← Subtype.coe_inj, transvection.coe_toLinearEquiv,
     coe_one, LinearEquiv.transvection.eq_one_iff]
 
-/-- Unless `finrank K V = 2` and `K` is the field with two elements,
+/-- Unless `finrank K V = 2` or `K` has at least 4 elements,
 any transvection is a commutator of two elements in the special linear group. -/
-theorem transvections_subset_commutatorSet
-    (hV : finrank K V ≠ 2 ∨ Nat.card K ≠ 2) :
+theorem transvections_subset_commutatorSet (hV : finrank K V ≠ 2) :
     transvections K V ⊆ commutatorSet (SpecialLinearGroup K V) := fun g hg ↦ by
   by_cases hg1 : g = 1
   · simp [hg1, one_mem_commutatorSet _]
+  have hV3 : 3 ≤ finrank K V := three_le_finrank_of_ne_one_of_ne_two hg1 hg hV
   obtain ⟨f, v, hfv, hg⟩ := hg
   rw [hg, transvection.eq_one_iff, not_or] at hg1
   suffices ∃ w ∈ LinearMap.ker f, w ≠ 0 ∧ v + w ≠ 0 by
@@ -343,8 +448,9 @@ theorem transvections_subset_commutatorSet
     suffices g = transvection hfv1 * (transvection hfv2)⁻¹ by
       rw [this]
       apply IsConj.div_memCommutatorSet
-      apply isConj_of_mem_transvections ?_ (mem_transvections hfv1) ?_ (mem_transvections hfv2) <;>
-        simp_all [ne_eq, transvection.eq_one_iff]
+      apply isConj_of_mem_transvections hV ?_ (mem_transvections hfv1)
+        ?_ (mem_transvections hfv2) <;>
+      simp_all [ne_eq, transvection.eq_one_iff]
     simp only [← Subtype.coe_inj, hg, transvection.coe_toLinearEquiv, coe_mul,
       transvection.coe_toLinearEquiv, eq_mul_inv_iff_mul_eq]
     rw [LinearEquiv.mul_eq_trans, transvection.trans_of_left_eq _ _ _]
@@ -365,12 +471,31 @@ theorem transvections_subset_commutatorSet
   · contrapose hV'
     exact FiniteDimensional.finiteDimensional_submodule (ker f)
 
-/-- Unless `finrank K V = 2` and `K` is the field with two elements,
+/-- Unless `finrank K V = 2` and `K` has at most 3 elements,
 the subgroup of commutators of `SpecialLinearGroup K V` is `⊤`. -/
-theorem commutator_eq_top (hV : finrank K V ≠ 2 ∨ Nat.card K ≠ 2) :
+theorem commutator_eq_top (hV : finrank K V ≠ 2 ∨ Nat.card K ≠ 2 ∧ Nat.card K ≠ 3) :
     commutator (SpecialLinearGroup K V) = ⊤ := by
-  rw [eq_top_iff, ← subgroup_closure_transvections_eq_top,
-    Subgroup.closure_le, commutator_eq_closure]
+  rw [eq_top_iff, ← subgroup_closure_transvections_eq_top, Subgroup.closure_le, commutator_eq_closure]
+  by_cases hV : finrank K V = 2
+  · suffices ∃ t : SpecialLinearGroup K V, t ∈ commutatorSet _ ∧ t ∈ transvections K V ∧ t ≠ 1 by
+      obtain ⟨t, htcomm, httrans, ht1⟩ := this
+      intro s hs
+      by_cases hs1 : s = 1
+      · simp [hs1]
+      simp only [SetLike.mem_coe]
+      simp only [ne_eq, ← Subtype.coe_inj] at ht1 hs1
+      simp only [mem_transvections_iff_coe] at httrans hs
+      obtain ⟨e, he⟩ := isConj_iff.mp (LinearEquiv.isConj_of_mem_transvections ht1 httrans hs1 hs)
+      sorry
+    sorry
+    have : ∃ a : K, a ≠ 0 ∧ a ^ 2 ≠ 1 := sorry
+    obtain ⟨a, ha0, ha1⟩ := this
+    have hf0 : f ≠ 0 := by contrapose hg1; aesop
+    obtain ⟨w, hw⟩ := (surjective_iff_ne_zero.mpr hf0) 1
+    have : ∃ b : Basis (Fin 2) K V, b 0 = v ∧ b 1 = w := sorry
+    obtain ⟨b, hb0, hb1⟩ := this
+    have : ∃ e : SpecialLinearGroup K V, e v = a • v ∧ e w = a⁻¹ • w := sorry
+    obtain ⟨e, hev, hew⟩ := this
   exact subset_trans (transvections_subset_commutatorSet hV) Subgroup.subset_closure
 
 end Field

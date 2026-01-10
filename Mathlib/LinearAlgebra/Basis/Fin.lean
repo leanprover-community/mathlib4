@@ -63,6 +63,21 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
+theorem mkFinCons_repr_apply_zero_ofMem {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
+    (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N)
+    {x : M} (hx : x ∈ N) :
+    (mkFinCons y b hli hsp).repr x 0 = 0 := by
+  suffices ((mkFinCons y b hli hsp).coord 0) ∘ₗ N.subtype = 0 by
+    rw [LinearMap.ext_iff] at this
+    simpa using this ⟨x, hx⟩
+  rw [← LinearMap.ker_eq_top, eq_top_iff, ← b.span_eq, Submodule.span_le]
+  rintro _ ⟨i, rfl⟩
+  have := coe_mkFinCons y b hli hsp
+  rw [funext_iff] at this
+  specialize this i.succ
+  rw [Module.Basis.apply_eq_iff, Fin.cons_succ, Function.comp_apply] at this
+  simp [this]
+
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/
@@ -80,6 +95,14 @@ theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
       Fin.cons ⟨y, yO⟩ (Submodule.inclusion hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
+
+theorem mkFinConsOfLE_repr_apply_zero_ofMem
+    {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
+    (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
+    (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N)
+    {x : O} (hx : ↑x ∈ N) :
+    (mkFinConsOfLE y yO b hNO hli hsp).repr x 0 = 0 :=
+  mkFinCons_repr_apply_zero_ofMem _ _ _ _ (by simpa)
 
 /-- The basis of `R × R` given by the two vectors `(1, 0)` and `(0, 1)`. -/
 protected def finTwoProd (R : Type*) [Semiring R] : Basis (Fin 2) R (R × R) :=

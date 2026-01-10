@@ -323,6 +323,13 @@ theorem symm_apply {f : Dual R V} {v : V}
     (transvection hv).symm x = x - f x • v := by
   rw [symm_eq, LinearEquiv.transvection.apply, smul_neg, ← sub_eq_add_neg]
 
+theorem congr {W : Type*} [AddCommGroup W] [Module R W]
+    {f : Dual R V} {v : V} (hfv : f v = 0) (e : V ≃ₗ[R] W) :
+    e.symm ≪≫ₗ (transvection hfv) ≪≫ₗ e =
+      transvection (f := f ∘ₗ e.symm) (v := e v) (by simp [hfv]) := by
+  rw [← LinearEquiv.toLinearMap_inj]
+  simp only [← LinearMap.transvection.congr, ← comp_coe, coe_toLinearMap]
+
 end transvection
 
 theorem mem_fixedSubmodule_transvection_iff {f : Dual R V} {v : V} {hfv : f v = 0} {x : V} :
@@ -749,8 +756,7 @@ variable {f : Module.Dual K V} {v : V}
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
 such that `v = b i` and `f = (f v) • b.coord i`. -/
-theorem exists_basis_of_pairing_ne_zero
-    (hfv : f v ≠ 0) :
+theorem exists_basis_of_pairing_ne_zero (hfv : f v ≠ 0) :
     ∃ (n : Set V) (b : Module.Basis n K V) (i : n),
       v = b i ∧ f = (f v) • b.coord i := by
   set b₁ := Module.Basis.ofVectorSpace K (LinearMap.ker f)
@@ -787,7 +793,6 @@ theorem exists_basis_of_pairing_ne_zero
     apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
     simp [← hi, b, Subtype.coe_inj, Ne.symm h]
 
-
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v = 0`,
 there exists a basis `b` with two distinct indices `i`, `j`
@@ -799,11 +804,7 @@ theorem exists_basis_of_pairing_eq_zero
   lift v to LinearMap.ker f using hfv
   have : LinearIndepOn K _root_.id {v} := by simpa using hv
   set b₁ : Module.Basis _ K (LinearMap.ker f) := .extend this
-  obtain ⟨w, hw⟩ : ∃ w, f w = 1 := by
-    simp only [ne_eq, DFunLike.ext_iff, not_forall] at hf
-    rcases hf with ⟨w, hw⟩
-    use (f w)⁻¹ • w
-    simp_all
+  obtain ⟨w, hw⟩ := (surjective_iff_ne_zero.mpr hf) 1
   set s : Set V := (LinearMap.ker f).subtype '' Set.range b₁
   have hs : Submodule.span K s = LinearMap.ker f := by
     simp only [s, Submodule.span_image]
