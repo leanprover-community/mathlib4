@@ -84,7 +84,7 @@ def reduceWhitespace (s : String) : String :=
   " ".intercalate <| (s.splitToList (·.isWhitespace)).filter (!·.isEmpty)
 
 /-- Converts the input syntax into a string using the pretty-printer and then collapsing
-consecuting whitespace into a single space. -/
+consecutive whitespace into a single space. -/
 def pretty (stx : Syntax) : CommandElabM (Option String) := do
   let fmt : Option Format := ←
       try
@@ -393,7 +393,7 @@ depth, as required by `exc.depth`.
 def ExcludedSyntaxNodeKind.contains (exc : ExcludedSyntaxNodeKind) (ks : Array SyntaxNodeKind) :
     Bool :=
   let lastNodes := if let some n := exc.depth then ks.drop (ks.size - n) else ks
-  !(lastNodes.filter exc.kinds.contains).isEmpty
+  lastNodes.any exc.kinds.contains
 
 structure PPref where
   pos : String.Pos.Raw
@@ -437,7 +437,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
       -- Is `getD default` a good idea?  It resolves some panics, but there may be a better default
       corr.alter ((info.getTrailing?.getD default).startPos) fun _ =>
         PPref.mk ppEndPos (k.push (.str `atom val)))
-  | corr, k, _stx@(.node _info kind args), str => do
+  | corr, k, .node _info kind args, str => do
     (getChoiceNode kind args).foldlM (init := (str, corr)) fun (str, corr) arg => do
       generateCorrespondence verbose? corr (k.push kind) arg str
   | corr, _, _stx, str => do
