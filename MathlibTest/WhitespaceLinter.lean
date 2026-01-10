@@ -11,6 +11,7 @@ public import Mathlib.Util.ParseCommand
 import Batteries.Util.LibraryNote
 public import Batteries.Linter.UnreachableTactic
 public import Qq
+import Qq.Typ
 import Mathlib.Tactic.FindSyntax
 public import Mathlib.Util.Superscript
 
