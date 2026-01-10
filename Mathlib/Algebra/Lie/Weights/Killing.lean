@@ -706,6 +706,9 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     use c₁, c₂, c₃
     simp [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα, -LieSubmodule.incl_coe]
 
+/-- The collection of roots as a `Finset`. -/
+noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
+
 lemma restrict_killingForm_eq_sum :
     (killingForm K L).restrict H = ∑ α ∈ H.root, (α : H →ₗ[K] K).smulRight (α : H →ₗ[K] K) := by
   rw [restrict_killingForm, traceForm_eq_sum_finrank_nsmul' K H L]
