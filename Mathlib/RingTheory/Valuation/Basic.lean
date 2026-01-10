@@ -618,7 +618,7 @@ section LinearOrderedCommMonoidWithZero
 
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 
-theorem isEquiv_of_map_strictMono [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
+theorem isEquiv_map_self_of_strictMono [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
@@ -633,7 +633,7 @@ theorem isNontrivial_of_isEquiv (h : v.IsEquiv v') (hv : v.IsNontrivial) : v'.Is
   use x
   simpa [← Valuation.IsEquiv.eq_one_iff_eq_one h, ← Valuation.IsEquiv.eq_zero h]
 
-theorem isNontrivial_iff_isEquiv_isNontrivial (h : v.IsEquiv v') :
+theorem IsEquiv.isNontrivial_iff (h : v.IsEquiv v') :
     v.IsNontrivial ↔ v'.IsNontrivial :=
   ⟨fun hv ↦ isNontrivial_of_isEquiv h hv, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
 
