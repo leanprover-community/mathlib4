@@ -73,7 +73,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
   -- Right_associated expressions needs their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
     -- Can’t expect a cancelation if the objects don’t match
-    unless z == x do return .continue
+    unless ← isDefEq z x do return .continue
     -- Can’t expect a cancellation if `f` is not an iso.
     let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
     -- Run `push`
@@ -90,7 +90,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     return .done (.mk h (.some P) false)
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
   | _ =>
-    unless t == x do return .continue
+    unless ← isDefEq t x do return .continue
     let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
