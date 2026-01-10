@@ -76,9 +76,11 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     unless z == x do return .continue
     -- Can’t expect a cancellation if `f` is not an iso.
     let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
+    -- Run `push`
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
-    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
+    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
+    -- Check if the "inv"-normal forms match
     unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
     -- Builds the proof inv f = g first:
     let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
@@ -92,7 +94,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
-    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
+    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
     unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
     let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
       (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
