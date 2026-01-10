@@ -14,7 +14,7 @@ open Lean Meta Elab Tactic SubExpr
 syntax "test" str ("at" ident)? : tactic
 
 elab_rules : tactic
-  | `(tactic| test $t:str $[at $h?:ident]?) =>
+  | `(tactic| test%$stx $t:str $[at $h?:ident]?) =>
   withMainContext do
     let goal ← getMainGoal
     let goalType ← goal.getType
@@ -31,6 +31,16 @@ elab_rules : tactic
         some <$> `(Lean.Parser.Tactic.Conv.convTrace_state| trace_state)
       | _ => pure none
     evalTactic insert
+    let some range := (← getFileMap).lspRangeOfStx? stx | failure
+    let interactive ← Lean.Widget.goalToInteractive goal
+    let params : SelectInsertParams := {
+      pos := range.start
+      goals := #[interactive]
+      selectedLocations := locs
+      replaceRange := range
+    }
+    let (_, text, _) ← insertEnter locs goalType params
+    logInfo m!"`conv?` would output:\n{text}"
 
 elab "mdata% " e:term : term => do
   let e ← Term.elabTerm e none
@@ -39,6 +49,11 @@ elab "mdata% " e:term : term => do
 set_option linter.unusedVariables false
 
 /--
+info: `conv?` would output:
+conv at h =>
+    enter [1, 1]
+    skip
+---
 trace: h : 1 + 2 = 5
 | 1
 -/
@@ -48,7 +63,14 @@ example (h : 1 + 2 = 5) : id 3 = 4 := by
   test "/0/1/0/1" at h
   exact test_sorry
 
-/-- trace: | 3 -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [1, 1, 2]
+    skip
+---
+trace: | 3
+-/
 #guard_msgs in
 example : (∀ (h : 7 < 3), [0, 1, 2][7] = 7) = True := by
   -- go to `3`
@@ -56,6 +78,11 @@ example : (∀ (h : 7 < 3), [0, 1, 2][7] = 7) = True := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, x, 5]
+    skip
+---
 trace: case h
 x : False
 | true
@@ -67,6 +94,11 @@ example : (fun _ : False => id id id id id true) = (fun _ : False => false) := b
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, 0]
+    skip
+---
 trace: s t : False → Bool
 x : False
 | s
@@ -78,6 +110,11 @@ example (s t : False → Bool) (x : False) : s x = t x := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, 0, x, 1]
+    skip
+---
 trace: case h
 x : Unit
 | false
@@ -89,6 +126,11 @@ example : (fun _ : Unit => !false) () = true := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [a]
+    skip
+---
 trace: a : False
 | True
 -/
@@ -98,7 +140,14 @@ example : False → True := by
   test "/1"
   exact test_sorry
 
-/-- trace: | 4 -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [1, 2, 1]
+    skip
+---
+trace: | 4
+-/
 #guard_msgs in
 example : 1 = Nat.log2 4 → False := by
   -- go to `4`
@@ -107,6 +156,11 @@ example : 1 = Nat.log2 4 → False := by
 
 set_option pp.mvars false in
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, 1, 2]
+    skip
+---
 trace: | False
 
 ⊢ Decidable (True ≠ ?_)
@@ -118,6 +172,11 @@ example : decide (True ≠ False) = decide True := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, @2, @4]
+    skip
+---
 trace: inst : Decidable (True ∧ False)
 | instDecidableFalse
 -/
@@ -129,7 +188,14 @@ example (inst : Decidable (True ∧ False)) :
   exact test_sorry
 
 set_option pp.natLit true in
-/-- trace: | instOfNatNat (nat_lit 0) -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [1, 4, @3]
+    skip
+---
+trace: | instOfNatNat (nat_lit 0)
+-/
 #guard_msgs in
 example : #[].foldl Nat.gcd 17 = 17 := by
   -- go to `instOfNatNat (nat_lit 0)`
@@ -137,6 +203,11 @@ example : #[].foldl Nat.gcd 17 = 17 := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv at c =>
+    enter [1]
+    skip
+---
 trace: a : Nat := 2
 c : Fin a := 1
 d : Fin ↑c := 0
@@ -151,6 +222,11 @@ example : let a := 2; let c : Fin a := 1; let d : Fin c := (0 : Fin 1); ∀ b, b
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [a, b, c, 2]
+    skip
+---
 trace: a : Nat
 b c : Fin a
 | c
@@ -163,6 +239,11 @@ example : let a := 1; ∀ (b c : Fin a), b = c := by
 
 set_option pp.proofs true in
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, 2, 1, 2, 0]
+    skip
+---
 trace: k : Nat
 l : List Nat
 h : ∃ h, k < l.length → l[k] = 0
@@ -175,21 +256,58 @@ example (k : Nat) (l : List Nat) (h : ∃ (h : k < l.length), k < l.length → l
   test "/0/1/1/0/1/1/0"
   exact test_sorry
 
-/-- trace: | id id (id id id) -/
+/--
+info: `conv?` would output:
+conv =>
+    fun
+    fun
+    fun
+    skip
+---
+trace: | id id (id id id)
+-/
 #guard_msgs in
 example : id id (id id id) (id id (id id) id id (id (id id))) id (id (id (id id)) True) := by
   -- go to `id id (id id id)`
   test "/0/0/0"
   exact test_sorry
 
-/-- trace: | 0 -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [2, 1, 1]
+    skip
+---
+trace: | 0
+-/
+#guard_msgs in
+example : mdata% 1 = id 0 + 1 := by
+  -- go to `0`
+  test "/1/0/1/1"
+  exact test_sorry
+
+/--
+info: `conv?` would output:
+conv =>
+    enter [2, 1, 1]
+    skip
+---
+trace: | 0
+-/
 #guard_msgs in
 example : (mdata% Eq) 1 (id 0 + 1) := by
   -- go to `0`
   test "/1/0/1/1"
   exact test_sorry
 
-/-- trace: | @Eq -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [0, 0]
+    skip
+---
+trace: | @Eq
+-/
 #guard_msgs in
 example : (mdata% Eq 1) (id 0 + 1) := by
   -- go to `@Eq`
@@ -197,6 +315,11 @@ example : (mdata% Eq 1) (id 0 + 1) := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [k, 1, 1]
+    skip
+---
 trace: k : Nat
 | k
 -/
@@ -207,6 +330,11 @@ example : have k : Nat := 1; Subsingleton (Fin k) := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv at h =>
+    enter [n, 2, 1]
+    skip
+---
 trace: f : Nat → Nat
 h : ∀ (n : Nat), n ≠ f n - 1
 n : Nat
@@ -219,6 +347,11 @@ example (f : Nat → Nat) (h : ∀ n, n ≠ f n - 1) : 1 < f 0 := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv =>
+    enter [1, 0, x0, x1, x2, 2]
+    skip
+---
 trace: case h.h.h
 x0 x1 x2 : Bool → Nat
 | x2 true
@@ -230,7 +363,14 @@ example : (fun x0 x1 x2 : Bool → Nat => x0 true + x1 false + x2 true)
   test "/0/1/0/0/0/1/1/1/1"
   exact test_sorry
 
-/-- trace: | instAddNat -/
+/--
+info: `conv?` would output:
+conv =>
+    enter [1, 1, @4, @2]
+    skip
+---
+trace: | instAddNat
+-/
 #guard_msgs in
 example : (3 + 3 = 6) = True := by
   -- go to `instAddNat`
@@ -238,6 +378,11 @@ example : (3 + 3 = 6) = True := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv at f =>
+    enter [1, 1]
+    skip
+---
 trace: m n : Nat
 f : ∀ (a : Fin (m + n)), m = n
 k : Fin (n + m)
@@ -250,6 +395,11 @@ example {m n : Nat} (f : Fin (m + n) → m = n) (k : Fin (n + m)) : m = n := by
   exact test_sorry
 
 /--
+info: `conv?` would output:
+conv at c =>
+    enter [1]
+    skip
+---
 trace: b : Nat := 1
 c : Fin b := ⟨0, Nat.zero_lt_one⟩
 | b
