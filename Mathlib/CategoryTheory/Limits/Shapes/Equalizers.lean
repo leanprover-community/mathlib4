@@ -38,7 +38,7 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
@@ -652,7 +652,7 @@ def Fork.mkHom {s t : Fork f g} (k : s.pt ⟶ t.pt) (w : k ≫ t.ι = s.ι) : s 
   w := by
     rintro ⟨_ | _⟩
     · exact w
-    · simp only [Fork.app_one_eq_ι_comp_left,← Category.assoc]
+    · simp only [Fork.app_one_eq_ι_comp_left, ← Category.assoc]
       congr
 
 /-- To construct an isomorphism between forks,

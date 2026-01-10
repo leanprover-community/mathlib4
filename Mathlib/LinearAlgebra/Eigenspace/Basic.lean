@@ -226,6 +226,7 @@ lemma hasUnifEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {
 
 alias ⟨_, HasUnifEigenvalue.of_mem_spectrum⟩ := hasUnifEigenvalue_iff_mem_spectrum
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma genEigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     genEigenspace f (a / b) 1 = LinearMap.ker (b • f - a • 1) :=
   calc
@@ -821,7 +822,7 @@ lemma genEigenspace_inf_le_add
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
-  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by lia
+  obtain hi | hj : l₁ ≤ i ∨ l₂ ≤ j := by lia
   · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁, map_zero]
   · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
 

@@ -370,11 +370,10 @@ instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
 
 variable [FaithfulSMul R A] [Free A (A ⊗[R] M)]
 
-set_option backward.proofsInPublic true in
 /-- An invertible `R`-module embeds into an `R`-algebra that `R` injects into,
 provided `A ⊗[R] M` is a free `A`-module. -/
 noncomputable def embAlgebra : M →ₗ[R] A :=
-  (free_iff_linearEquiv.mp ‹_›).some.restrictScalars R ∘ₗ
+  (free_iff_linearEquiv (R := A) (M := A ⊗[R] M).mp ‹_›).some.restrictScalars R ∘ₗ
     (Algebra.ofId R A).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
 
 theorem embAlgebra_injective : Function.Injective (embAlgebra R M A) := by
@@ -439,6 +438,7 @@ noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
   Module.addCommMonoidToAddCommGroup R
 
+set_option backward.privateInPublic true in
 private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
   have {M N : Skeleton (SemimoduleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
@@ -451,6 +451,8 @@ protected noncomputable def mk : Pic R := equivShrink _ <|
     rw [← toSkeleton, ← toSkeleton, mul_comm, ← Skeleton.toSkeleton_tensorObj]
     exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIsoₛ⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `mk R M` is indeed the class of `M`. -/
 noncomputable def mk.linearEquiv : Pic.mk R M ≃ₗ[R] M :=
   equivShrinkLinearEquiv R _ ≪≫ₗ (Quotient.mk_out (s := isIsomorphicSetoid _)

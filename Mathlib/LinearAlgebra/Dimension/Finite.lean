@@ -68,7 +68,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
         hx _ H ((Finsupp.linearCombination_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
-    rw [← le_zero_iff, Module.rank_def]
+    rw [← nonpos_iff_eq_zero, Module.rank_def]
     apply ciSup_le'
     intro ⟨s, hs⟩
     rw [nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, ← not_nonempty_iff]
