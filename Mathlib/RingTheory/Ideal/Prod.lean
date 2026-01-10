@@ -149,28 +149,28 @@ theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Idea
   · contrapose! h
     rw [h, prod_top_top, isPrime_iff]
     simp
-  · intro x y hxy
-    have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
-      rw [Prod.mk_mul_mk, mul_one, mem_prod]
-      exact ⟨hxy, trivial⟩
-    simpa using h.mem_or_mem this
+  · intro x y
+    simpa using h.mem_or_mem_of_forall (x := ⟨x, 1⟩) (y := ⟨y, 1⟩)
 
 theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal R) I).IsPrime) :
     I.IsPrime := by
   apply isPrime_of_isPrime_prod_top (S := R)
   rw [← map_prodComm_prod]
-  -- Note: couldn't synthesize the right instances without the `R` and `S` hints
-  exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
+  exact map_isPrime_of_equiv RingEquiv.prodComm
 
 theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime where
+  ne_top' := by simpa using h.ne_top
+  mem_or_mem_of_forall' {x y} := by simpa using h.mem_or_mem_of_forall
+
+theorem isCompletelyPrime_ideal_prod_top {I : Ideal R} [h : I.IsCompletelyPrime] :
+    (prod I (⊤ : Ideal S)).IsCompletelyPrime where
   ne_top' := by simpa using h.ne_top
   mem_or_mem' {x y} := by simpa using h.mem_or_mem
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
   rw [← map_prodComm_prod]
-  -- Note: couldn't synthesize the right instances without the `R` and `S` hints
-  exact map_isPrime_of_equiv (RingEquiv.prodComm (R := S) (S := R))
+  exact map_isPrime_of_equiv RingEquiv.prodComm
 
 theorem ideal_prod_prime_aux {I : Ideal R} {J : Ideal S} :
     (Ideal.prod I J).IsPrime → I = ⊤ ∨ J = ⊤ := by
@@ -197,6 +197,56 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
   · rintro (⟨p, ⟨h, rfl⟩⟩ | ⟨p, ⟨h, rfl⟩⟩)
     · exact isPrime_ideal_prod_top
     · exact isPrime_ideal_prod_top'
+
+theorem isCompletelyPrime_of_isCompletelyPrime_prod_top {I : Ideal R}
+    (h : (Ideal.prod I (⊤ : Ideal S)).IsCompletelyPrime) :
+    I.IsCompletelyPrime := by
+  constructor
+  · contrapose! h
+    rw [h, prod_top_top, isCompletelyPrime_iff]
+    simp
+  · intro x y
+    simpa using h.mem_or_mem (x := ⟨x, 1⟩) (y := ⟨y, 1⟩)
+
+theorem isCompletelyPrime_of_isCompletelyPrime_prod_top' {I : Ideal S}
+    (h : (Ideal.prod (⊤ : Ideal R) I).IsCompletelyPrime) :
+    I.IsCompletelyPrime := by
+  apply isCompletelyPrime_of_isCompletelyPrime_prod_top (S := R)
+  rw [← map_prodComm_prod]
+  exact map_isCompletelyPrime_of_equiv RingEquiv.prodComm
+
+theorem isCompletelyPrime_ideal_prod_top' {I : Ideal S} [h : I.IsCompletelyPrime] :
+    (prod (⊤ : Ideal R) I).IsCompletelyPrime := by
+  letI : IsCompletelyPrime (prod I (⊤ : Ideal R)) := isCompletelyPrime_ideal_prod_top
+  rw [← map_prodComm_prod]
+  exact map_isCompletelyPrime_of_equiv RingEquiv.prodComm
+
+theorem ideal_prod_isCompletelyPrime_aux {I : Ideal R} {J : Ideal S} :
+    (Ideal.prod I J).IsCompletelyPrime → I = ⊤ ∨ J = ⊤ := by
+  contrapose!
+  simp only [ne_top_iff_one, isCompletelyPrime_iff, not_and, not_forall, not_or]
+  exact fun ⟨hI, hJ⟩ _ => ⟨⟨0, 1⟩, ⟨1, 0⟩, by simp, by simp [hJ], by simp [hI]⟩
+
+/-- Classification of completely prime ideals in product rings: the completely prime ideals of
+    `R × S` are precisely the ideals of the form `p × S` or `R × p`, where `p` is a completely prime
+    ideal of `R` or `S`. -/
+theorem ideal_prod_isCompletelyPrime (I : Ideal (R × S)) :
+    I.IsCompletelyPrime ↔
+      (∃ p : Ideal R, p.IsCompletelyPrime ∧ I = Ideal.prod p ⊤) ∨
+        ∃ p : Ideal S, p.IsCompletelyPrime ∧ I = Ideal.prod ⊤ p := by
+  constructor
+  · rw [ideal_prod_eq I]
+    intro hI
+    rcases ideal_prod_isCompletelyPrime_aux hI with (h | h)
+    · right
+      rw [h] at hI ⊢
+      exact ⟨_, ⟨isCompletelyPrime_of_isCompletelyPrime_prod_top' hI, rfl⟩⟩
+    · left
+      rw [h] at hI ⊢
+      exact ⟨_, ⟨isCompletelyPrime_of_isCompletelyPrime_prod_top hI, rfl⟩⟩
+  · rintro (⟨p, ⟨h, rfl⟩⟩ | ⟨p, ⟨h, rfl⟩⟩)
+    · exact isCompletelyPrime_ideal_prod_top
+    · exact isCompletelyPrime_ideal_prod_top'
 
 end Ideal
 

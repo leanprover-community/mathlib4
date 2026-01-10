@@ -87,7 +87,7 @@ theorem comap_ne_top [RingHomClass F R S] (hK : K ≠ ⊤) : comap f K ≠ ⊤ :
   (ne_top_iff_one _).2 <| by rw [mem_comap, map_one]; exact (ne_top_iff_one _).1 hK
 
 lemma exists_ideal_comap_le_prime {S} [CommSemiring S] [FunLike F R S] [RingHomClass F R S]
-    {f : F} (P : Ideal R) [P.IsPrime] (I : Ideal S) (le : I.comap f ≤ P) :
+    {f : F} (P : Ideal R) [P.IsCompletelyPrime] (I : Ideal S) (le : I.comap f ≤ P) :
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap f ≤ P :=
   have ⟨Q, hQ, hIQ, disj⟩ := I.exists_le_prime_disjoint (P.primeCompl.map f) <|
     Set.disjoint_left.mpr fun _ ↦ by rintro hI ⟨r, hp, rfl⟩; exact hp (le hI)
@@ -124,8 +124,20 @@ theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse 
     I.comap f ≤ I.map g :=
   comap_le_map_of_inv_on _ _ _ <| h.leftInvOn _
 
-instance IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime :=
+instance IsCompletelyPrime.comap [hK : K.IsCompletelyPrime] : (comap f K).IsCompletelyPrime :=
   ⟨comap_ne_top _ hK.1, fun {x y} => by simp only [mem_comap, map_mul]; apply hK.2⟩
+
+theorem IsPrime.comap_of_equiv {F : Type*} [EquivLike F R S] (f : F) [RingHomClass F R S]
+    [hK : K.IsPrime] : (comap f K).IsPrime :=
+  ⟨comap_ne_top _ hK.1, fun {x y} => by
+    simp only [mem_comap, map_mul]
+    refine fun h ↦ hK.2 fun a ↦ ?_
+    simpa using h (EquivLike.inv f a)⟩
+
+theorem IsPrime.comap {R S F : Type*}
+    [CommSemiring R] [CommSemiring S] [FunLike F R S] (f : F) {K : Ideal S} [RingHomClass F R S]
+    [hK : K.IsPrime] : (comap f K).IsPrime :=
+  inferInstance
 
 variable (I J K L)
 
@@ -241,9 +253,15 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
-/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit. -/
-theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
+/-- Variant of `Ideal.IsCompletelyPrime.comap` where ideal is explicit rather than implicit. -/
+theorem comap_isCompletelyPrime [H : IsCompletelyPrime K] : IsCompletelyPrime (comap f K) :=
   H.comap f
+
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit. -/
+theorem comap_isPrime {R S : Type*}
+    [Semiring R] [CommSemiring S] [FunLike F R S] (f : F) (K : Ideal S) [RingHomClass F R S]
+    [H : IsPrime K] : IsPrime (comap f K) :=
+  inferInstance
 
 variable {I J K L}
 
@@ -790,12 +808,19 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 
 end RingRing
 
+/-- The kernel of a homomorphism to a domain is a completely prime ideal. -/
+theorem ker_isCompletelyPrime {F : Type*} [Semiring R] [Semiring S]
+    [NoZeroDivisors S] [Nontrivial S]
+    [FunLike F R S] [RingHomClass F R S] (f : F) :
+    (ker f).IsCompletelyPrime :=
+  have := Ideal.bot_isCompletelyPrime (α := S)
+  inferInstanceAs (Ideal.comap f ⊥).IsCompletelyPrime
+
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
-theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
+theorem ker_isPrime {F : Type*} [Semiring R] [CommSemiring S] [NoZeroDivisors S] [Nontrivial S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
-  have := Ideal.bot_prime (α := S)
-  inferInstanceAs (Ideal.comap f ⊥).IsPrime
+  (ker_isCompletelyPrime f).isPrime
 
 /-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
@@ -993,12 +1018,19 @@ theorem map_eq_bot_iff_le_ker {I : Ideal R} (f : F) : I.map f = ⊥ ↔ I ≤ Ri
 theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun _ hx =>
   mem_comap.2 (RingHom.mem_ker.1 hx ▸ K.zero_mem)
 
+/-- A ring isomorphism sends a completely prime ideal to a completely prime ideal. -/
+instance map_isCompletelyPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
+    (f : F') {I : Ideal R} [IsCompletelyPrime I] : IsCompletelyPrime (map f I) := by
+  have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
+  rw [h, map_comap_of_equiv (f : R ≃+* S)]
+  exact Ideal.IsCompletelyPrime.comap (RingEquiv.symm (f : R ≃+* S))
+
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
   have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
   rw [h, map_comap_of_equiv (f : R ≃+* S)]
-  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
+  exact Ideal.IsPrime.comap_of_equiv (RingEquiv.symm (f : R ≃+* S))
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
@@ -1041,9 +1073,10 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
       rw [RingHom.mem_ker, map_sub, hx, sub_self]
     simpa only [sub_add_cancel] using J.add_mem this hx'
 
-theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
-    (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
-  refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
+theorem map_isCompletelyPrime_of_surjective {f : F} (hf : Function.Surjective f)
+    {I : Ideal R} [H : IsCompletelyPrime I]
+    (hk : RingHom.ker f ≤ I) : IsCompletelyPrime (map f I) := by
+  refine ⟨fun h => H.ne_top' (eq_top_iff.2 ?_), fun {x y} => ?_⟩
   · replace h := congr_arg (comap f) h
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
@@ -1056,6 +1089,12 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
       abel
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
+
+theorem map_isPrime_of_surjective {R S F : Type*} [CommRing R] [CommRing S] [FunLike F R S]
+    [rc : RingHomClass F R S] {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
+    (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
+  rw [← isCompletelyPrime_iff_isPrime]
+  exact map_isCompletelyPrime_of_surjective hf hk
 
 lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by

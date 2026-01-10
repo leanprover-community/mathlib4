@@ -924,8 +924,8 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
         by_contradiction fun hrmx => hxm <| by
           rw [hm.eq_of_le hrmx le_sup_left]
           exact Submodule.mem_sup_right <| mem_span_singleton_self x
-      have : IsPrime m :=
-        ⟨by rintro rfl; rw [radical_top] at hrm; exact hrm trivial, fun {x y} hxym =>
+      have : IsPrime m := .of_comm
+        (by rintro rfl; rw [radical_top] at hrm; exact hrm trivial) fun {x y} hxym =>
           or_iff_not_imp_left.2 fun hxm =>
             by_contradiction fun hym =>
               let ⟨n, hrn⟩ := this _ hxm
@@ -940,7 +940,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                       mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc]
                   refine
                     m.add_mem (m.mul_mem_right _ hpm)
-                    (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
+                    (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 

@@ -755,16 +755,16 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
   Iff.rfl
 
 /-- The support of a valuation is a prime ideal. -/
-instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
-  ⟨fun h =>
+instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) := .of_comm
+  (fun h =>
     one_ne_zero (α := Γ₀) <|
       calc
         1 = v 1 := v.map_one.symm
-        _ = 0 := by rw [← mem_supp_iff, h]; exact Submodule.mem_top,
+        _ = 0 := by rw [← mem_supp_iff, h]; exact Submodule.mem_top)
    fun {x y} hxy => by
     simp only [mem_supp_iff] at hxy ⊢
     rw [v.map_mul x y] at hxy
-    exact eq_zero_or_eq_zero_of_mul_eq_zero hxy⟩
+    exact eq_zero_or_eq_zero_of_mul_eq_zero hxy
 
 theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
   have aux : ∀ a s, v s = 0 → v (a + s) ≤ v a := by

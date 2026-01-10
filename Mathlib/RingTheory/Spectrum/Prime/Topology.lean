@@ -229,7 +229,7 @@ local notation "Z(" a ")" => zeroLocus (a : Set R)
 
 theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) :
     IsIrreducible (zeroLocus (I : Set R)) ↔ I.IsPrime := by
-  rw [Ideal.isPrime_iff, IsIrreducible]
+  rw [Ideal.isPrime_iff_of_comm, IsIrreducible]
   apply and_congr
   · rw [Set.nonempty_iff_ne_empty, Ne, zeroLocus_empty_iff_eq_top]
   · trans ∀ x y : Ideal R, Z(I) ⊆ Z(x) ∪ Z(y) → Z(I) ⊆ Z(x) ∨ Z(I) ⊆ Z(y)
