@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.Preorder.Finite
 

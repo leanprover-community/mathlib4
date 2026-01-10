@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 

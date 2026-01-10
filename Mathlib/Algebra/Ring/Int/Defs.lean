@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # The integers are a ring
