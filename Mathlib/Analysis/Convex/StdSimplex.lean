@@ -238,11 +238,13 @@ theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
   rw [Real.dist_eq, abs_sub_le_iff]
   constructor <;> linarith [hx.1, hx.2, hy.1, hy.2]
 
-/-- The diameter of the standard 0-simplex is 0. -/
+/-- The diameter of the standard simplex over a subsingleton index type is 0. -/
 @[simp]
-theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] [Nonempty ι] :
+theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] :
     Metric.diam (stdSimplex ℝ ι) = 0 := by
-  rw [stdSimplex_unique, Metric.diam_singleton]
+  cases isEmpty_or_nonempty ι with
+  | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
+  | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
 
 /-- The (sup metric) distance between distinct vertices (Pi.single) of a standard simplex is 1. -/
 theorem dist_single_single [DecidableEq ι] (i j : ι) (h : i ≠ j) :
