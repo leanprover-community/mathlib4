@@ -474,13 +474,13 @@ theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.P
   rw [padicValNat.pow _ <| Nat.Prime.ne_zero hq.elim, padicValNat_primes neq, mul_zero]
 
 theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
-    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
-  rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
+    (n m : ℕ) (neq : p ≠ q) : padicValNat p (p ^ n * q ^ m) = n := by
+  rw [padicValNat.mul (NeZero.ne' (p ^ n)).symm (NeZero.ne' (q ^ m)).symm,
     padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
 
 theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
-    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
-  rw [mul_comm (p^n) (q^m)]
+    (n m : ℕ) (neq : q ≠ p) : padicValNat q (p ^ n * q ^ m) = m := by
+  rw [mul_comm (p ^ n) (q ^ m)]
   exact padicValNat_mul_pow_left m n neq
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
@@ -491,6 +491,20 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   · simp
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
+
+lemma padicValNat_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
+    padicValNat p a + p ≤ a := by
+  by_cases dvd : p ∣ a
+  · rcases dvd with ⟨k, hk⟩
+    have : padicValNat p k < k := by calc
+      _ ≤ log p k := padicValNat_le_nat_log k
+      _ < _ := log_lt_self p (by lia)
+    rw [hk, padicValNat.mul (by lia) (by lia), padicValNat_self]
+    calc
+      _ ≤ p + k := by lia
+      _ ≤ _ := Nat.add_le_mul hp.out.two_le (by lia)
+  · rw [padicValNat.eq_zero_of_not_dvd dvd]
+    lia
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
@@ -541,7 +555,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
-    padicValNat p (p * n) ! = padicValNat p n ! + n := by
+    padicValNat p (p * n)! = padicValNat p n ! + n := by
   apply Nat.cast_injective (R := ℕ∞)
   rw [padicValNat_eq_emultiplicity <| factorial_ne_zero (p * n), Nat.cast_add,
       padicValNat_eq_emultiplicity <| factorial_ne_zero n]
@@ -554,7 +568,7 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
   padicValNat.eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
-    padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
+    padicValNat p (p * m + n)! = padicValNat p (p * m)! := by
   induction n with
   | zero => rw [add_zero]
   | succ n hn =>

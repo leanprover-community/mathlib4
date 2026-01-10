@@ -184,7 +184,8 @@ lemma MDifferentiableWithinAt.inner_bundle
   have : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ))
       (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x := by
     apply MDifferentiableWithinAt.clm_bundle_apply₂ (F₁ := F) (F₂ := F)
-    · exact MDifferentiableAt.comp_mdifferentiableWithinAt x (g_smooth.mdifferentiableAt le_rfl) hb
+    · exact MDifferentiableAt.comp_mdifferentiableWithinAt x
+        (g_smooth.mdifferentiableAt one_ne_zero) hb
     · exact hv
     · exact hw
   simp only [mdifferentiableWithinAt_totalSpace] at this

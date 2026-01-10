@@ -181,14 +181,6 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -402,13 +394,6 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
-  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive
 

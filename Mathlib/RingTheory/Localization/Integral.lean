@@ -55,9 +55,6 @@ theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff 
   simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
-@[deprecated (since := "2025-05-23")]
-alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
-
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h

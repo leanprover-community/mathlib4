@@ -185,7 +185,7 @@ protected theorem smul_assoc {B} [Semiring B] [Module R B] [Module A B] [Module 
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
 theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
-    I • (⨆ i, t i)= ⨆ i, I • t i :=
+    I • (⨆ i, t i) = ⨆ i, I • t i :=
   toAddSubmonoid_injective <| by
     simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 
@@ -366,7 +366,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) := by
   rw [one_eq_span, LinearMap.span_singleton_eq_range,
-    LinearMap.toSpanSingleton_eq_algebra_linearMap]
+    LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
   simp [one_eq_range]

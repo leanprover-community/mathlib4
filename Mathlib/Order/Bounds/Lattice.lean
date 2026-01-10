@@ -18,7 +18,7 @@ In a separate file as we need to import `Mathlib/Data/Set/Lattice.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [Preorder α] {ι : Sort*} {s : ι → Set α}
 

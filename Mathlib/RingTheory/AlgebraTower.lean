@@ -123,7 +123,7 @@ def smulTower : Basis (ι × ι') R A :=
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
-        ((finsuppProdLEquiv R).symm ≪≫ₗ
+        ((curryLinearEquiv R).symm ≪≫ₗ
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
