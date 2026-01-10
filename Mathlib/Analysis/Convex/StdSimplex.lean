@@ -231,12 +231,11 @@ variable {ι}
 
 /-- The (sup metric) diameter of a standard simplex is less than or equal to 1. -/
 theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
-    Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
-      (dist_pi_le_iff zero_le_one).2 fun i ↦ by
-  have hx := mem_Icc_of_mem_stdSimplex hx i
-  have hy := mem_Icc_of_mem_stdSimplex hy i
-  rw [Real.dist_eq, abs_sub_le_iff]
-  constructor <;> linarith [hx.1, hx.2, hy.1, hy.2]
+  Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
+    (dist_pi_le_iff zero_le_one).2 fun i ↦ by
+      have hx := mem_Icc_of_mem_stdSimplex hx i
+      have hy := mem_Icc_of_mem_stdSimplex hy i
+      grind [Real.dist_eq]
 
 /-- The diameter of the standard simplex over a subsingleton index type is 0. -/
 @[simp]
