@@ -89,8 +89,6 @@ lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
 lemma dist_le_coveringRadius (D : DeloneSet X) (x : X) :
   ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius := by
   obtain ⟨y, hy, hxy_mem⟩ := D.isCover_coveringRadius (x := x) trivial
-  -- exact ⟨y, hy, (ENNReal.toReal_le_toReal ...).mpr hxy⟩
-
   have hxy_le : edist x y ≤ D.coveringRadius.toNNReal := Set.mem_setOf.mp hxy_mem
   rw [edist_dist, ENNReal.ofReal_le_coe] at hxy_le
   have hR : (D.coveringRadius.toNNReal : ℝ) = D.coveringRadius := by
@@ -178,7 +176,8 @@ noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :
   cases D; cases E; congr
 
 lemma mapIsometry_id (D : DeloneSet X) : D.mapIsometry (IsometryEquiv.refl X) = D := by
-  ext <;> simp [mapIsometry, mapBilipschitz]
+  ext <;> simp only [mapIsometry, mapBilipschitz, IsometryEquiv.coe_toEquiv, coe_one, div_one,
+    one_mul, Set.mem_image]
   exact exists_eq_right
 
 lemma mapIsometry_comp {Z : Type*} [MetricSpace Z]
