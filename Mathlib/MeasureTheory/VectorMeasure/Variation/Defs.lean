@@ -11,21 +11,23 @@ public import Mathlib.MeasureTheory.VectorMeasure.Basic
 /-!
 # Total variation for vector-valued measures
 
-This file contains the definition of variation for any `VectorMeasure`.
+This file contains the definition of variation for any `VectorMeasure` in an `ENormedAddCommMonoid`,
+in particular, any `NormedAddCommGroup`.
 
-Given a vector-valued measure μ we consider the problem of finding a function f such that, for any
-set E, ‖μ(E)‖ ≤ f(E). This suggests defining f(E) as the supremum over partitions {Eᵢ} of E, of the
-quantity ∑ᵢ, ‖μ(Eᵢ)‖. Indeed any solution of the problem must be not less than this function. It
-turns out that this function actually is a measure.
+Given a vector-valued measure `μ` we consider the problem of finding a function `f` such that, for
+any set `E`, `‖μ(E)‖ ≤ f(E)`. This suggests defining `f(E)` as the supremum over partitions `{Eᵢ}`
+of `E`, of the quantity `∑ᵢ, ‖μ(Eᵢ)‖`. Indeed any solution of the problem must be not less than this
+function. It turns out that this function actually is a measure.
 
-## Main definitions & statements
+## Main definition
 
 * `VectorMeasure.variation` is the definition of the total variation measure.
 
 ## Implementation notes
 
 Variation is defined as an `ℝ≥0∞`-valued `VectorMeasure` rather than as a `Measure`, this is
-somewhat natural since we start with `VectorMeasure`.
+somewhat natural since we start with `VectorMeasure`. The corresponding `Measure` is given by
+`VectorMeasure.ennrealToMeasure`.
 
 Variation is defined for signed measures in `MeasureTheory.SignedMeasure.totalVariation`. This
 definition uses the Hahn–Jordan decomposition of a signed measure. However this construction doesn't
@@ -33,7 +35,7 @@ generalize to other vector-valued measures, in particular doesn't apply to the c
 measures.
 
 The notion of defining a set function as the supremum over all choices of partition of the sum gives
-a measure for any subadditive set function which assigns zero measure to the emptyset. Consequently
+a measure for any subadditive set function which assigns zero measure to the empty set. Consequently
 the construction is first developed for any subadditive set function before specializing to the case
 of `s ↦ ‖μ s‖ₑ`.
 
@@ -52,7 +54,7 @@ namespace MeasureTheory.VectorMeasure
 /-!
 ## Inner partitions
 
-Instead of working with partitions of a set `s`, we work with finite sets of disjoints sets
+Instead of working with partitions of a set `s`, we work with finite sets of disjoint sets
 contained within `s` since the same value will be achieved in the supremum. The empty set is
 forbidden so that partitions of disjoint sets are disjoint sets of sets.
 -/
@@ -61,24 +63,21 @@ section IsInnerPart
 
 variable {X : Type*} [MeasurableSpace X]
 
-/-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
-within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
-the entire set and the the number of partition elements is required to be finite. -/
+/-- An inner partition is a finite collection of pairwise disjoint measurable sets which are all
+contained within a given set. Different to `Setoid.IsPartition` there is no requirement for the
+union to be the entire set and the the number of partition elements is required to be finite. -/
 def IsInnerPart (s : Set X) (P : Finset (Set X)) : Prop :=
     (∀ t ∈ P, t ⊆ s) ∧ (∀ t ∈ P, MeasurableSet t) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
-    (∀ p ∈ P, p ≠ ∅)
+    (∀ p ∈ P, p.Nonempty)
 
-lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = ∅ := by
+lemma IsInnerPart.eq_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = ∅ := by
   obtain ⟨h, _, _, h'⟩ := hP
   refine Finset.eq_empty_of_forall_notMem ?_
   by_contra! hc
   obtain ⟨p, hp⟩ := hc
-  exact h' p hp <| Set.subset_eq_empty (h p hp) rfl
+  simp_all [Set.subset_eq_empty (h p hp) rfl]
 
-lemma isInnerPart_self {s : Set X} (hs : MeasurableSet s) (hs' : s ≠ ∅) : IsInnerPart s {s} := by
-  simpa [IsInnerPart] using ⟨hs, hs'⟩
-
-lemma isInnerPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
+lemma isInnerPart_mono {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
     (hP : IsInnerPart s₁ P) : IsInnerPart s₂ P := by
   obtain ⟨h1, h2, h3, _⟩ := hP
   exact ⟨fun p hp ↦ subset_trans (h1 p hp) h, h2, h3, by simp_all⟩
@@ -86,14 +85,14 @@ lemma isInnerPart_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (
 open Classical in
 /-- If the `s i` are pairwise disjoint sets and each `P i` is a partition of `s i` then the union of
 the `P i` is a partition of `⋃ i, s i`. -/
-lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
+lemma IsInnerPart.iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
   suffices (∀ t, ∀ x < n, t ∈ P x → t ⊆ ⋃ i, s i) ∧ (∀ t, ∀ x < n, t ∈ P x → MeasurableSet t) ∧
-      (⋃ x, ⋃ (_ : x < n), (P x : Set (Set X))).PairwiseDisjoint id ∧
-      ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
+      (⋃ x, ⋃ (_ : x < n), ((P x) : Set (Set X))).PairwiseDisjoint id ∧
+      ∀ p, ∀ x < n, p ∈ P x → p.Nonempty by
     simpa [IsInnerPart]
-  refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun _ i _ h' ↦ ?_⟩
+  refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun s i hn h ↦ ?_⟩
   · exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
   · exact (hP i).2.1 p hp
   · obtain ⟨i, hi, hp⟩ : ∃ i < n, p ∈ P i := by simp_all
@@ -104,28 +103,28 @@ lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     · have hp' := (hP i).1 p hp
       have hq' := (hP j).1 q hq
       simpa using Set.subset_eq_empty (hs hc (subset_trans hrp hp') (subset_trans hrq hq')) rfl
-  · exact ne_of_mem_of_not_mem h' <| fun a ↦ ((hP i).2.2.2 ∅) a rfl
+  · exact ((hP i).2.2.2 s) h
 
-/-- If P, Q are partitions of two disjoint sets then P and Q are disjoint. -/
-lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
+/-- If `P`, `Q` are partitions of two disjoint sets then `P` and `Q` are disjoint. -/
+lemma IsInnerPart.disjoint_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (Set X)}
     (hP : IsInnerPart s P) (hQ : IsInnerPart t Q) : Disjoint P Q := by
   intro R hRP hRQ
   simp only [Finset.bot_eq_empty, Finset.le_eq_subset, Finset.subset_empty]
   by_contra! hc
-  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr
-    (Finset.nonempty_iff_ne_empty.mp hc)
+  obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc.ne_empty
   have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
-  exact hP.2.2.2 r (hRP hr) <| Set.subset_eq_empty this rfl
+  have hc := Set.subset_eq_empty this rfl
+  have := hP.2.2.2 r (hRP hr)
+  simp_all
 
 open Classical in
 /-- The restriction of a partition `P` to the set `t`. -/
 noncomputable def restriction (t : Set X) (P : Finset (Set X)) : Finset (Set X) :=
-  (P.image (fun p ↦ p ∩ t)).filter (· ≠ ∅)
-
-open Classical in
-/-- If `P` is a partition then the restriction of `P` to a set `s` is a partition of `s`. -/
+  (P.image (fun p ↦ p ∩ t)).filter Set.Nonempty
+/-- If `P` is a partition then the restriction of `P` to a set `t` is a partition of `t`. -/
 lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPart s P)
     (ht : MeasurableSet t) : IsInnerPart t (restriction t P) := by
+  classical
   refine ⟨fun _ h ↦ ?_, fun r hr ↦ ?_, fun _ hr _ hr' ↦ ?_, fun _ hp ↦ ?_⟩
   · obtain ⟨_, _, hp⟩ := Finset.mem_image.mp (Finset.mem_filter.mp h).1
     simp [← hp]
@@ -137,7 +136,9 @@ lemma restriction_isInnerPart {s t : Set X} {P : Finset (Set X)} (hs : IsInnerPa
     intro hpqt _ h h'
     have hpq : p ≠ q := fun h ↦ hpqt (congrFun (congrArg Inter.inter h) t)
     exact hs.2.2.1 hp hq hpq (Set.subset_inter_iff.mp h).1 (Set.subset_inter_iff.mp h').1
-  · exact (Finset.mem_filter.mp hp).2
+  · refine Set.nonempty_coe_sort.mp ?_
+    have := (Finset.mem_filter.mp hp).2
+    exact Set.Nonempty.to_subtype this
 
 end IsInnerPart
 
@@ -154,35 +155,31 @@ section var_aux
 variable {X : Type*} [MeasurableSpace X] (f : Set X → ℝ≥0∞)
 
 open Classical in
-/-- If `s` is measurable then `var_aux s f` is the supremum over partitions `P` of `s` of the
-quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is set to `0`. -/
+/-- If `s` is measurable then `var_aux s f` is the supremum over inner partitions (`IsInnerPart`)
+`P` of `s` of the quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is set to `0`. -/
 noncomputable def var_aux (s : Set X) :=
   if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
 
 /-- `var_aux` of the empty set is equal to zero. -/
-lemma var_aux_empty' : var_aux f ∅ = 0 := by
+lemma var_aux_empty : var_aux f ∅ = 0 := by
   suffices ∀ s, IsInnerPart ∅ s → ∑ p ∈ s, f p = 0 by
     simpa [var_aux]
   intro _ hP
-  simp_all [isInnerPart_of_empty hP]
+  simp_all [IsInnerPart.eq_empty hP]
 
-lemma var_aux_zero (s : Set X) : var_aux (fun _ ↦ 0) s = 0 := by simp [var_aux]
-
-/-- `var_aux` is monotone in terms of the set. -/
-lemma var_aux_monotone {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :
+/-- `var_aux` is monotone in terms of the (measurable) set. -/
+lemma varAux_mono {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :
     var_aux f s₁ ≤ var_aux f s₂ := by
   by_cases hs₁ : MeasurableSet s₁
   · simp only [var_aux, hs₁, reduceIte, hs₂]
-    exact iSup_le_iSup_of_subset (isInnerPart_monotone h)
+    exact iSup_le_iSup_of_subset (isInnerPart_mono h)
   · simp [var_aux, hs₁]
 
-lemma var_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < var_aux f s) :
-    ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
-  obtain ⟨P, hP, hP'⟩ : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
-    simp_all [var_aux, lt_iSup_iff]
-  exact ⟨P, hP, by gcongr⟩
+lemma exists_isInnerPart_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞}
+    (ha : a < var_aux f s) : ∃ P, IsInnerPart s P ∧ a < ∑ p ∈ P, f p := by
+  simp_all [var_aux, lt_iSup_iff]
 
-lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
+lemma exists_isInnerPart_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
     (h : var_aux f s ≠ ⊤) : ∃ P, IsInnerPart s P ∧ var_aux f s ≤ ∑ p ∈ P, f p + ε := by
   let ε' := min ε (var_aux f s).toNNReal
   have hε1 : ε' ≤ var_aux f s := by simp_all [ε']
@@ -193,7 +190,7 @@ lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
       exact ⟨hε, toNNReal_pos hw h⟩
     let a := var_aux f s - ε'
     have ha : a < var_aux f s := by exact ENNReal.sub_lt_self h hw (by positivity)
-    obtain ⟨P, hP, hP'⟩ := var_aux_lt f hs ha
+    obtain ⟨P, hP, hP'⟩ := exists_isInnerPart_sum_gt f hs ha
     refine ⟨P, hP, ?_⟩
     calc var_aux f s
       _ = a + ε' := (tsub_add_cancel_of_le hε1).symm
@@ -203,7 +200,7 @@ lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
   · simp_rw [hw, zero_le, and_true]
     exact ⟨{ }, by simp, by simp, by simp, by simp⟩
 
-lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+lemma IsInnerPart.sum_le_varAux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
   simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
@@ -212,12 +209,12 @@ above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
   Pairwise (Disjoint on s) → f (⋃ (i : ℕ), s i) ≤ ∑' (i : ℕ), f (s i)
 
-open Classical in
-/-- Given a partition `Q`, `varOfPart μ Q` is bounded by the sum of the `varOfPart μ (P i)` where
+/-- Given a partition `Q`, `∑ q ∈ Q, f q` is bounded by the sum of the `∑ q ∈ (P i), f q` where
 the `P i` are the partitions formed by restricting to a disjoint set of sets `s i`. -/
 lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : ℕ → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) {Q : Finset (Set X)}
     (hQ : IsInnerPart (⋃ i, s i) Q) : ∑ q ∈ Q, f q ≤ ∑' i, ∑ p ∈ (restriction (s i) Q), f p := by
+  classical
   let P (i : ℕ) := restriction (s i) Q
   calc ∑ q ∈ Q, f q
     _ = ∑ q ∈ Q, f (⋃ i, q ∩ s i) := ?_
@@ -257,25 +254,25 @@ lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : �
         · simp [hc, hf'] at hp'
         · simp only [P, restriction, Finset.mem_filter, Finset.mem_image]
           obtain ⟨q, hq, hq'⟩ := Finset.mem_image.mp hp
-          exact ⟨⟨q, hq, hq'⟩, hc⟩
+          refine ⟨⟨q, hq, hq'⟩, ?_⟩
+          exact Set.nonempty_iff_ne_empty.mpr hc
 
-open Classical in
-lemma le_var_aux_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
+lemma IsInnerPart.sum_le_varAux_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) (P : ℕ → Finset (Set X))
     (hP : ∀ (i : ℕ), IsInnerPart (s i) (P i)) (n : ℕ) :
     ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p ≤ var_aux f (⋃ i, s i) := by
+  classical
   let Q := Finset.biUnion (Finset.range n) P
-  have hQ : IsInnerPart (⋃ i, s i) Q := by exact isInnerPart_iUnion hs' hP n
+  have hQ : IsInnerPart (⋃ i, s i) Q := by exact IsInnerPart.iUnion hs' hP n
   calc
     _ = ∑ i ∈ Finset.range n, ∑ p ∈ P i, f p := by simp
     _ = ∑ q ∈ Q, f q := by
       refine Eq.symm (Finset.sum_biUnion fun l _ m _ hlm ↦ ?_)
-      exact isInnerPart_of_disjoint (hs' hlm) (hP l) (hP m)
+      exact IsInnerPart.disjoint_of_disjoint (hs' hlm) (hP l) (hP m)
     _ ≤ var_aux f (⋃ i, s i) := by
-      simpa using le_var_aux f (MeasurableSet.iUnion hs) hQ
+      simpa using IsInnerPart.sum_le_varAux f (MeasurableSet.iUnion hs) hQ
 
-open Classical in
-lemma le_var_aux_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
+lemma IsInnerPart.sum_le_varAux_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     ∑' i, var_aux f (s i) ≤ var_aux f (⋃ i, s i) := by
   refine ENNReal.tsum_le_of_sum_range_le fun n ↦ ?_
@@ -286,10 +283,10 @@ lemma le_var_aux_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
   have hε : 0 < ε := by positivity
   have hs'' i : var_aux f (s i) ≠ ⊤ := by
     refine lt_top_iff_ne_top.mp <| lt_of_le_of_lt ?_ hsnetop
-    exact var_aux_monotone f (MeasurableSet.iUnion hs) (Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a)
+    exact varAux_mono f (MeasurableSet.iUnion hs) (Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a)
   -- For each set `s i` we choose a partition `P i` such that, for each `i`,
   -- `var_aux f (s i) ≤ ∑ p ∈ (P i), f p + ε`.
-  choose P hP using fun i ↦ var_aux_le f (hs i) (hε) (hs'' i)
+  choose P hP using fun i ↦ exists_isInnerPart_sum_ge f (hs i) (hε) (hs'' i)
   calc ∑ i ∈ Finset.range n, var_aux f (s i)
     _ ≤ ∑ i ∈ Finset.range n, (∑ p ∈ (P i), f p + ε) := by
       gcongr with i _
@@ -299,7 +296,7 @@ lemma le_var_aux_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
       norm_cast
       simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
     _ ≤ var_aux f (⋃ i, s i) + ε' := by
-      have := le_var_aux_iUnion' f hs hs' P (fun i ↦ (hP i).1) n
+      have := IsInnerPart.sum_le_varAux_iUnion' f hs hs' P (fun i ↦ (hP i).1) n
       gcongr
 
 lemma sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
@@ -328,14 +325,14 @@ lemma var_aux_iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     b < ∑ i ∈ Finset.range n, ∑ p ∈ (P i), f p := hn
     _ ≤ ∑ i ∈ Finset.range n, var_aux f (s i) := by
       gcongr with i hi
-      exact le_var_aux f (hs i) (hP i)
+      exact IsInnerPart.sum_le_varAux f (hs i) (hP i)
 
 /-- Additivity of `variation_aux` for disjoint measurable sets. -/
 lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
   refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_ge ?_ ?_)
-  · exact le_var_aux_iUnion f hs hs'
+  · exact IsInnerPart.sum_le_varAux_iUnion f hs hs'
   · exact var_aux_iUnion_le f hs hs' hf hf'
 
 end var_aux
@@ -355,10 +352,10 @@ lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) : IsSubadditive
 
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
 noncomputable def variation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ where
-  measureOf'          := var_aux (‖μ ·‖ₑ)
-  empty'              := var_aux_empty' (‖μ ·‖ₑ)
+  measureOf' := var_aux (‖μ ·‖ₑ)
+  empty' := var_aux_empty (‖μ ·‖ₑ)
   not_measurable' _ h := if_neg h
-  m_iUnion'           := var_aux_iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
+  m_iUnion' := var_aux_iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
 
 end variation
 
