@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Push.Attr

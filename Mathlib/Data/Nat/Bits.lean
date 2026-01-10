@@ -5,7 +5,6 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Convert

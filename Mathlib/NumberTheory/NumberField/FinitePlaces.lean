@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Finite places of number fields

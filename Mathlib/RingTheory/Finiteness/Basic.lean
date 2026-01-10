@@ -23,7 +23,6 @@ further imports.
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
