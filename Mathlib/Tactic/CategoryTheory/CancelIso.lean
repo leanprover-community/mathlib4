@@ -36,13 +36,13 @@ open Lean Meta CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory.CancelIso
 
-/-- Version of `IsIso.hom_inv_id` for internal use of the `cancelIso` simproc. Do not use. -/
+/-- Version of `IsIso.hom_inv_id` for internal use of the `cancel_iso` simproc. Do not use. -/
 lemma hom_inv_id_of_eq {C : Type*} [Category* C] {x y : C}
     (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) : f ≫ g = 𝟙 _ := by
   rw [← h]
   exact IsIso.hom_inv_id f
 
-/-- Version of `IsIso.hom_inv_id_assoc` for internal use of the `cancelIso` simproc. Do not use. -/
+/-- Version of `IsIso.hom_inv_id_assoc` for internal use of the `cancel_iso` simproc. Do not use. -/
 lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
     (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) {z : C} (k : x ⟶ z) : f ≫ g ≫ k = k := by
   rw [← h]
@@ -50,13 +50,14 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
 
 /-- The `cancel_iso` simproc triggers on expressions of the form `f ≫ g`.
 
-If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
-by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
+If `g` is not a composition itself, it checks whether `f` is inverse to `g`
+by checking if `f` has an `IsIso` instance and then by running `push inv` on `inv f` and on `g`.
 If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
 
 The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
-the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
-`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+the procedure checks if `f` and `h` are inverses to each other, and the procedure rewrites
+`f ≫ g ≫ h` to `h` if that is the case.
+This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
 `F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
@@ -78,8 +79,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
     let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
-    unless ← isDefEq pushed_inv.expr pushed_g.expr do
-      return .continue
+    unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
     -- Builds the proof inv f = g first:
     let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
       (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
@@ -103,13 +103,14 @@ end Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-- The `cancel_iso` simproc triggers on expressions of the form `f ≫ g`.
 
-If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
-by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
+If `g` is not a composition itself, it checks whether `f` is inverse to `g`
+by checking if `f` has an `IsIso` instance and then by running `push inv` on `inv f` and on `g`.
 If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
 
 The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
-the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
-`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+the procedure checks if `f` and `h` are inverses to each other, and the procedure rewrites
+`f ≫ g ≫ h` to `h` if that is the case.
+This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
 `F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
