@@ -118,12 +118,6 @@ lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n
   · exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩
 
 @[to_additive]
-lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
-    a = 1 := by
-  obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
-  grind [pow_eq_one_iff]
-
-@[to_additive]
 lemma not_isOfFinOrder_of_isMulTorsionFree [IsMulTorsionFree G] (ha : a ≠ 1) :
     ¬ IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one]
@@ -776,6 +770,12 @@ lemma isMulTorsionFree_iff_not_isOfFinOrder :
     rw [← div_eq_one] at hab ⊢
     simp only [← div_pow, isOfFinOrder_iff_pow_eq_one] at hab hG
     exact of_not_not fun hab' ↦ hG hab' ⟨n, hn.bot_lt, hab⟩
+
+@[to_additive]
+lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
+    a = 1 := by
+  contrapose ha
+  exact isMulTorsionFree_iff_not_isOfFinOrder.mp ‹_› ha
 
 @[to_additive]
 alias ⟨_, IsMulTorsionFree.of_not_isOfFinOrder⟩ := isMulTorsionFree_iff_not_isOfFinOrder
