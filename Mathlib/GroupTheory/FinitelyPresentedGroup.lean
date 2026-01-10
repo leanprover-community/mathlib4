@@ -130,17 +130,7 @@ lemma iff_hom_surj {G : Type*} [Group G] : IsPresented G ↔
 end IsPresented
 -- End of suggested additions to #PresentedGroup
 
-def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
-(_h : rels.Finite) := PresentedGroup (rels)
-
-namespace FinitelyPresentedGroup
-
-instance (α : Type) [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
-Group (FinitelyPresentedGroup rels h) :=
-  QuotientGroup.Quotient.group _
-
-end FinitelyPresentedGroup
-
+-- Start of NormalClosureFG statements
 open Subgroup
 /-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
@@ -156,6 +146,25 @@ lemma IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · exact hSfinite.image _
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+lemma Subgroup.normalClosure_empty {G : Type*} [Group G] :
+    Subgroup.normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  apply le_antisymm
+  · exact Subgroup.normalClosure_le_normal (N := (⊥ : Subgroup G)) (by simp)
+  · exact bot_le
+
+
+-- End of NormalClosureFG statements
+
+def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
+(_h : rels.Finite) := PresentedGroup (rels)
+
+namespace FinitelyPresentedGroup
+
+instance (α : Type) [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+Group (FinitelyPresentedGroup rels h) :=
+  QuotientGroup.Quotient.group _
+
+end FinitelyPresentedGroup
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
   Nonempty (G ≃* (FinitelyPresentedGroup rels h))
@@ -203,7 +212,41 @@ instance instTrivial : IsFinitelyPresented (Unit) := by
   unfold PresentedGroup -/
   sorry
 
+-- TODO move this
+def FreeGroup.freeGroupUnitMulEquivInt :
+    FreeGroup Unit ≃* Multiplicative ℤ := by
+  refine
+    { toFun := fun x => Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
+      invFun := fun z => FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
+      left_inv := by
+        intro x
+        simp
+      right_inv := by
+        intro z
+        simp
+      map_mul' := by
+        intro x y
+        ext
+        simp [FreeGroup.freeGroupUnitEquivInt] }
 
+/- ℤ is finitely presented -/
+instance Int.instFinitelyPresented : IsFinitelyPresented (Multiplicative ℤ) := by
+  let α := Unit
+  let rels := (∅ : Set (FreeGroup α))
+  have hrels : rels.Finite := by
+    simp [rels]
+  use α, inferInstance, rels, hrels
+  unfold FinitelyPresentedGroup
+  unfold PresentedGroup
+  refine ⟨?_⟩
+  have hbot : Subgroup.normalClosure rels = (⊥ : Subgroup (FreeGroup α)) := by
+    simpa [rels] using (Subgroup.normalClosure_empty (G := FreeGroup α))
+  have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
+    refine (QuotientGroup.quotientMulEquivOfEq hbot).trans ?_
+    exact QuotientGroup.quotientBot (G := FreeGroup α)
+  let iso := FreeGroup.freeGroupUnitMulEquivInt
+  unfold α at qiso
+  exact iso.symm.trans qiso.symm
 
 variable {G H : Type*} [Group G] [Group H]
 
