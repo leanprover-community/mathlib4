@@ -179,6 +179,10 @@ def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   map_one' := coe_one
   map_mul' := coe_mul
 
+@[simp] theorem coe_toLinearEquiv :
+    (⇑toLinearEquiv : SpecialLinearGroup R V → V ≃ₗ[R] V) = Subtype.val :=
+  rfl
+
 @[simp] lemma toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv v = A v :=
   rfl
@@ -215,7 +219,7 @@ lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
 
 lemma toGeneralLinearGroup_injective :
     Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
-  simp [toGeneralLinearGroup, toLinearEquiv_injective]
+  simp [toGeneralLinearGroup]
 
 lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
     u ∈ Set.range ⇑(toGeneralLinearGroup (R := R) (V := V)) ↔
