@@ -144,10 +144,11 @@ lemma dCokernelSequence_exact :
   simp only [assoc, zero_comp] at hx₂'
   rw [X.EMap_ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
     (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) (by cat_disch)] at hx₂'
-  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄ _ rfl
-    f₃₄ h₃₄).exact 1).exact_up_to_refinements (x₂ ≫ X.ιE _ _ _ _ _ _ _ _) (by
-      dsimp [sequenceΨ, Precomp.map]
-      rw [assoc, hx₂'])
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
+    ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄ _ rfl
+      f₃₄ h₃₄).exact 1).exact_up_to_refinements (x₂ ≫ X.ιE _ _ _ _ _ _ _ _) (by
+        dsimp [sequenceΨ, Precomp.map]
+        rw [assoc, hx₂'])
   dsimp [sequenceΨ, Precomp.map] at x₁ hx₁
   refine ⟨A₁, π₁, inferInstance, x₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅, ?_⟩
   rw [← cancel_mono (X.ιE _ _ _ _ _ _ _ _), assoc, assoc, assoc, hx₁, πE_d_ιE]
@@ -169,8 +170,9 @@ lemma dKernelSequence_exact :
     surjective_up_to_refinements_of_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅) x₂
   have hy₂' := hy₂ =≫ (X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫ X.ιE _ _ _ _ _ _ _ _)
   simp only [assoc, reassoc_of% hx₂, zero_comp, comp_zero, πE_d_ιE] at hy₂'
-  obtain ⟨A₂, π₂, _, y₁, hy₁⟩ := ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄
-    f₂₃ h₂₃ _ rfl).exact 0).exact_up_to_refinements y₂ hy₂'.symm
+  obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
+    ((X.sequenceΨ_exact n₁ n₂ hn₂ f₂ f₃ f₄
+      f₂₃ h₂₃ _ rfl).exact 0).exact_up_to_refinements y₂ hy₂'.symm
   dsimp [sequenceΨ] at y₁ hy₁
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, y₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅, ?_⟩
   rw [assoc, assoc, hy₂, reassoc_of% hy₁,
