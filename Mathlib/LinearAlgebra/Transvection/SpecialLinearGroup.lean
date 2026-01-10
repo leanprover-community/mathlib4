@@ -514,8 +514,28 @@ theorem commutator_eq_top (hV : finrank K V ≠ 2 ∨ Nat.card K ≠ 2 ∧ Nat.c
         aesop
     obtain ⟨a, ha0, ha1⟩ := this
     let b : Basis (Fin 2) K V := Module.finBasisOfFinrankEq K V hV'
-    have : ∃ e : SpecialLinearGroup K V, e (b 0) = a⁻¹ • (b 0) ∧ e (b 1) = a • (b 1) := sorry
-    obtain ⟨e, he0, he1⟩ := this
+    let α : Kˣ := by
+      apply IsUnit.unit
+      exact ha0.isUnit
+    let w : Fin 2 → Kˣ := ![ha0.isUnit.unit⁻¹, ha0.isUnit.unit]
+    set g := b.repr.trans (b.unitsSMul w).repr.symm with hg
+    have : g.det = 1 := by
+      rw [← Units.val_inj, LinearEquiv.coe_det, ← LinearMap.det_toMatrix b]
+      suffices toMatrix b b g.toLinearMap = Matrix.diagonal (Units.val ∘ w) by
+        rw [this]
+        suffices a⁻¹ * a = 1 by simpa [w]
+        exact inv_mul_cancel₀ ha0
+      ext i j
+      rw [LinearMap.toMatrix_apply]
+      simp [hg, b.unitsSMul_apply, Units.smul_def]
+      by_cases h : i = j
+      · simp [h]
+      · simp [Finsupp.single_eq_of_ne h, Matrix.diagonal_apply_ne _ h]
+    let e : SpecialLinearGroup K V := ⟨g, this⟩
+    have he0 : e (b 0) = a⁻¹ • b 0 := by
+      simp [e, g, b.unitsSMul_apply, w, Units.smul_def]
+    have he1 : e (b 1) = a • b 1 := by
+      simp [e, g, b.unitsSMul_apply, w, Units.smul_def]
     let f := transvection (f := b.coord 0) (v := b 1) (by simp)
     set t := ⁅e, f⁆ with ht
 --    rw [commutatorElement_def] at ht
@@ -541,7 +561,8 @@ theorem commutator_eq_top (hV : finrank K V ≠ 2 ∨ Nat.card K ≠ 2 ∧ Nat.c
     rw [transvection.comp_of_left_eq (by simp)]
     have : b.coord 0 ∘ₗ e.toLinearEquiv.symm = a • b.coord 0 := by
       suffices b.coord 0 = a • b.coord 0 ∘ₗ e.toLinearEquiv by
-        sorry
+        nth_rewrite 1 [this]
+        ext; simp
       apply b.ext
       suffices 1 = a * a⁻¹ by simpa [he0, he1]
       rw [CommGroupWithZero.mul_inv_cancel a ha0]
