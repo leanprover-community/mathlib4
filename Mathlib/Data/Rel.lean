@@ -361,7 +361,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
