@@ -429,7 +429,7 @@ theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ₘ g) :=
   (asIso f ⊗ᵢ asIso g).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ₘ g) = inv f ⊗ₘ inv g := by
   simp [tensorHom_def, whisker_exchange]
