@@ -9,7 +9,6 @@ public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Order.Fin.Basic
 import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
@@ -249,6 +248,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -274,6 +274,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
