@@ -118,35 +118,44 @@ def tada' (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
 
 -- extract API (and hopefully the if/then cases on `(C ∩ U).Nonempty` can alse be extracted)
 
-def tada (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
+noncomputable def def0
+    (X : Scheme) (C : Set X) (hC : IsPreirreducible C) (U : X.affineOpens) :
+    Ideal Γ(X, U) :=
+  dite (U.2.fromSpec.base.hom ⁻¹' C).Nonempty (h := Classical.dec _)
+    (have := PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime.mp
+      ⟨·, hC.preimage U.2.fromSpec.isOpenEmbedding⟩;
+      Ideal.component ⊥ (PrimeSpectrum.vanishingIdeal (U.2.fromSpec.base.hom ⁻¹' C))) (fun _ ↦ ⊤)
+
+  -- change IsOpenImmersion e at he
+  -- let D : Set U := Subtype.val ⁻¹' C
+  -- let hD : D.IsPreirreducible := IsPreirreducible.preimage
+
+/-- temp for minimal prime -/
+noncomputable def def1
+    (X : Scheme) (C : Set X) (hC : C ∈ irreducibleComponents X) (U : X.affineOpens) :
+    Ideal Γ(X, U) :=
+  dite (C ∩ U).Nonempty (h := Classical.dec _) (fun hi ↦
+    let ψ := U.2.fromSpec.base.hom
+    have he : Topology.IsOpenEmbedding ψ :=
+      AlgebraicGeometry.Scheme.Hom.isOpenEmbedding U.2.fromSpec
+    let p := PrimeSpectrum.vanishingIdeal (ψ ⁻¹' C)
+    have hp : p ∈ minimalPrimes Γ(X, U) := by
+      rw [← PrimeSpectrum.vanishingIdeal_irreducibleComponents]
+      apply Set.mem_image_of_mem PrimeSpectrum.vanishingIdeal
+      exact preimage_mem_irreducibleComponents hC he (U.2.range_fromSpec ▸ hi)
+    have : p.IsPrime := hp.1.1
+    Ideal.component ⊥ p
+  ) (fun _ ↦ ⊤)
+
+noncomputable def tada (X : Scheme) [IsLocallyNoetherian X] (C : Set X)
     (hC : C ∈ irreducibleComponents X) : X.IdealSheafData :=
   Scheme.IdealSheafData.mkOfMemSupportIff
-    (by
-      intro U
-      have hi : (C ∩ U).Nonempty := sorry -- if not, then ⊤ ?
-      have hU : IsOpen (U : Set X) := U.1.2
-      let V : Set U := Subtype.val ⁻¹' C
-      have hv : Topology.IsOpenEmbedding (Subtype.val : U.1 → X) :=
-        hU.isOpenEmbedding_subtypeVal
-      have key : V ∈ irreducibleComponents U := by
-        apply preimage_mem_irreducibleComponents hC hv
-        simp only [Subtype.range_coe_subtype]
-        exact hi
-      let φ : U ≃ₜ Spec Γ(X, U) := Scheme.homeoOfIso U.2.isoSpec
-      have key' := (AlgebraicGeometry.Scheme.eq_zeroLocus_of_isClosed_of_isAffine U V).mp
-        (isClosed_of_mem_irreducibleComponents V key)
-      let Z : Set (Spec Γ(X, U)) := φ '' V
-      have hZ : Z ∈ irreducibleComponents (Spec Γ(X, U)) := by
-        rwa [φ.image_mem_irreducibleComponents_iff]
-      let p := PrimeSpectrum.vanishingIdeal Z
-      have hp : p ∈ minimalPrimes _ := by
-        rw [← PrimeSpectrum.vanishingIdeal_irreducibleComponents]
-        exact Set.mem_image_of_mem PrimeSpectrum.vanishingIdeal hZ
-      exact component' hp)
+    (fun U ↦ def1 X C hC U)
     (by
       intro i f
       set F := X.presheaf.map (CategoryTheory.homOfLE (X.basicOpen_le f)).op
       set G := F.hom
+      simp only
       -- (basically just a lemma about mapping components)
       )
     C
