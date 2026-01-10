@@ -30,6 +30,19 @@ finitely presented group, normal closure finitely generated,
 
 universe u
 
+-- Start of suggested additions to #Monoid.ker
+
+-- TODO not sure if this is the right abstraction / right name for this.
+/-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
+the homomorphism mapped by the inverse isomorphism. -/
+@[simp]
+lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
+  (f : H →* K) (iso : G ≃* H) : (f.comp iso).ker = (Subgroup.map (iso.symm.toMonoidHom) f.ker) := by
+  rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm]
+  rfl
+
+-- End of suggested additions to #Monoid.ker
+
 -- Start of suggested additions to #FreeGroup
 -- TODO review this
 def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
@@ -228,7 +241,7 @@ instance isFP_isPresented {G : Type*} [Group G] [h : IsFinitelyPresented G] : Is
   let e : ULift α ≃ α := Equiv.ulift
   refine ⟨iso.trans (PresentedGroup.equivPresentedGroup rels e.symm)⟩
 
--- TODO? every group is isomorphic to a `PresentedGroup`!
+-- TODO? every group is isomorphic to a `PresentedGroup`
 
 namespace IsFinitelyPresented
 
@@ -237,6 +250,58 @@ lemma FPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Fini
   IsFinitelyPresented (FinitelyPresentedGroup rels h) := by
   refine ⟨α, inferInstance, rels, h, ?_⟩
   exact ⟨MulEquiv.refl _⟩
+
+theorem iff_hom_surj_finite {G : Type*} [Group G] :
+IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) →* G),
+  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+  constructor
+  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+    unfold FinitelyPresentedGroup at iso
+    unfold PresentedGroup at iso
+    let f : FreeGroup α →* G :=
+      iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
+    have hfsurj : Function.Surjective f := by
+      simpa [f] using
+      (iso.symm.surjective.comp (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
+    have hfker : IsNormalClosureFG f.ker := by
+      use rels, hrels
+      ext x
+      simp [f]
+    exact ⟨α, hα, f, hfsurj, hfker⟩
+  · intro ⟨α, hα, f, hfsurj, hfker⟩
+    obtain ⟨S, hSfinite, hSnormalClosure⟩ := hfker
+    use α, hα, S, hSfinite
+    refine ⟨?_⟩
+    unfold FinitelyPresentedGroup
+    unfold PresentedGroup
+    let iso1 : FreeGroup α ⧸ f.ker ≃* G :=
+      QuotientGroup.quotientKerEquivOfSurjective (φ := f) hfsurj
+    have iso2 : FreeGroup α ⧸ normalClosure S ≃* FreeGroup α ⧸ f.ker :=
+      QuotientGroup.quotientMulEquivOfEq hSnormalClosure
+    exact iso1.symm.trans iso2.symm
+
+theorem iff_hom_surj_fin_n {G : Type*} [Group G] :
+IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
+  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+  rw [iff_hom_surj_finite]
+  constructor
+  · intro ⟨α, hα, f, hfsurj, hfker⟩
+    let n := Nat.card α
+    let iso : FreeGroup (Fin n) ≃* FreeGroup α :=
+    FreeGroup.freeGroupCongr (Finite.equivFin α).symm
+    let f' : FreeGroup (Fin n) →* G := f.comp iso
+    let hf'surj := hfsurj.comp iso.surjective
+    have hf'ker : IsNormalClosureFG f'.ker := by
+      unfold f'
+      simp only [MonoidHom.ker_comp_mulEquiv]
+      exact
+      IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+    exact ⟨n, f', hf'surj, hf'ker⟩
+  · intro ⟨n, f, hfsurj, hfker⟩
+    let α := Fin n
+    use α, inferInstance, f
+
+
 
 -- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
@@ -249,8 +314,8 @@ def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     (QuotientGroup.quotientBot (G := FreeGroup α))
 
 /- FreeGroup on finitely many generators is FP -/
-instance {α : Type} [Finite α] IsFinitelyPresented (FreeGroup α) := by
-  sorry
+/- instance {α : Type} [Finite α] IsFinitelyPresented (FreeGroup α) := by
+  sorry -/
 
 /- Trivial group is FP -/
 instance instTrivial : IsFinitelyPresented (Unit) := by
