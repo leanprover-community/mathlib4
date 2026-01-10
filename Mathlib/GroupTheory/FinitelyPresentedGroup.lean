@@ -169,6 +169,15 @@ lemma FPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Fini
   refine ⟨α, inferInstance, rels, h, ?_⟩
   exact ⟨MulEquiv.refl _⟩
 
+lemma of_mulEquiv {G H : Type*} [Group G] [Group H]
+(iso : G ≃* H) (h : IsFinitelyPresented G) :
+    IsFinitelyPresented H := by
+    obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
+    exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
+
+
+
+
 end IsFinitelyPresented
 
 /- namespace IsFinitelyPresented
