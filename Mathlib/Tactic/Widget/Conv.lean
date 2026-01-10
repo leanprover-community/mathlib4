@@ -73,14 +73,15 @@ where
     let i := i.castLT (Fin.val_lt_last h)
     if pos[i] = SubExpr.Pos.typeCoord then
       throwError m!"conv mode does not support entering types of expressions{indentExpr expr}" else
-    let err := throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
+    let err := m!"{.ofConstName ``SubExpr.Pos (fullNames := true)} position {pos[i]} \
+      is invalid for{indentExpr expr}"
     match expr with
     | .bvar i => throwError m!"unexpected bound variable #{i}"
     | .fvar _
     | .mvar _
     | .lit _
     | .const _ _
-    | .sort _ => err
+    | .sort _ => throwError err
     | .proj _ _ e =>
       throwError m!"conv mode does not yet support entering projections{indentExpr expr}"
     | .mdata _ e => go e i.castSucc
@@ -97,7 +98,7 @@ where
               for which the type-correctness of the body depends on the let value \n\
               failed to abstract let-expression, result is not type correct{indentExpr expr}"
           Path.body n <$> go e i.succ
-      else err
+      else throwError err
     | .forallE n t b bi =>
       if pos[i] = 0 then do -- forall binder type
         unless (← isProp t) || expr.isArrow do
@@ -108,7 +109,7 @@ where
       else if pos[i] = 1 then -- forall body
         withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
-      else err
+      else throwError err
     | .lam n t b bi =>
       if pos[i] = 0 then -- lambda binder type
         throwError m!"conv mode does not support rewriting \
@@ -116,7 +117,7 @@ where
       else if pos[i] = 1 then -- lambda body
         withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
-      else err
+      else throwError err
     | .app .. => appT expr i.castSucc [] none
   appT (expr : Expr) (i : Fin (pos.size + 1))
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
@@ -129,7 +130,9 @@ where
         appT f i.succ (a :: acc) none
       else if pos[i] = 1 then -- app arg
         appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
-      else throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
+      else
+        throwError m!"{.ofConstName ``SubExpr.Pos (fullNames := true)} position {pos[i]} \
+          is invalid for{indentExpr expr}"
     | _ =>
       if let some n := n then do
         let c ← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray
