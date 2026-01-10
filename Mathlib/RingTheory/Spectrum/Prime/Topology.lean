@@ -1232,27 +1232,25 @@ lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
   infer_instance
 
-#synth Nontrivial (PrimeSpectrum R)
+section Order.krullDimLE_one
 
-instance : IsTrivialOrder (PrimeSpectrum R) where
-  eq_bot_or_eq_top (a : α) := by
+instance [IsDomain R] [hd : Ring.KrullDimLE 1 R] [Nontrivial (PrimeSpectrum R)] :
+    IsSimpleOrder (PrimeSpectrum R) where
+  eq_bot_or_eq_top I := by
     rw [or_iff_not_imp_left]
     intro hne
     have := Ideal.bot_prime (α := R)
     rw [Ring.krullDimLE_one_iff_of_isPrime_bot] at hd
     simp [PrimeSpectrum.ext_iff, IsLocalRing.eq_maximalIdeal
-      (hd _ (by simpa [PrimeSpectrum.ext_iff] using hne) x.isPrime)]
+      (hd I.asIdeal (by simpa [PrimeSpectrum.ext_iff] using hne) I.isPrime)]
 
-theorem primeSpectrum_eq_of_KrullDimLEOne [IsDomain R] [hd : Ring.KrullDimLE 1 R]
+theorem primeSpectrum_eq_of_KrullDimLE_one [IsDomain R] [hd : Ring.KrullDimLE 1 R]
     (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ := by
-  rw [or_iff_not_imp_left]
-  intro hne
-  have := Ideal.bot_prime (α := R)
-  rw [Ring.krullDimLE_one_iff_of_isPrime_bot] at hd
-  simp [PrimeSpectrum.ext_iff, IsLocalRing.eq_maximalIdeal
-    (hd _ (by simpa [PrimeSpectrum.ext_iff] using hne) x.isPrime)]
+  by_cases hnt : Nontrivial (PrimeSpectrum R)
+  · exact eq_bot_or_eq_top x
+  · simp_all [nontrivial_iff_exists_ne x]
 
-end Ring.KrullDimLE
+end Order.krullDimLE_one
 
 end IsLocalRing
 
