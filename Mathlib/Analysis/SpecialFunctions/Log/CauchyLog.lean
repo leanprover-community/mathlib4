@@ -9,8 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.MetricSpace.Basic
 
-public section
-
 /-!
 # Cauchy Functional Equation Characterization of Logarithm
 
@@ -38,6 +36,8 @@ of the natural logarithm.
 
 logarithm, functional equation, Cauchy, characterization
 -/
+
+public section
 
 open Set
 
