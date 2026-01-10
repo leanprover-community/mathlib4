@@ -179,9 +179,8 @@ theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
   ext x
   simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
-  refine ⟨?_, by grind⟩
-  exact fun ⟨h1, h2, h3⟩ i ↦ ⟨
-    fun a ↦ by simpa using h1 (update x i a) i,
+  refine ⟨fun ⟨h1, h2, h3⟩ i ↦ ?_, by grind⟩
+  exact ⟨fun a ↦ by simpa using h1 (update x i a) i,
     fun b c ↦ by simpa using h2 (update x i b) (update x i c) i,
     fun a b ↦ by simpa using h3 (update x i a) (update x i b) i⟩
 
