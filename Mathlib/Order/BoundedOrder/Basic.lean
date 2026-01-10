@@ -245,6 +245,8 @@ end OrderBot
   denoted `⊤` and `⊥` respectively. -/
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 
+instance (α : Type u) [LE α] [OrderTop α] [OrderBot α] : BoundedOrder α where
+
 attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
 attribute [to_dual existing] BoundedOrder.toOrderTop
 
