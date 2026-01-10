@@ -58,6 +58,10 @@ inductive Path where
   -/
   | body (name : Name) (next : Path) : Path
 
+/--
+Given an `e : Expr` and `pos : SubExpr.Pos`, `Path.ofSubExprPosArray expr pos.toArray` generates
+the `Path` corresponding to traversing `pos` starting at the reference expression `e`.
+-/
 partial def Path.ofSubExprPosArray (expr : Expr) (pos : Array Nat) : MetaM Path :=
   go expr 0
 where
@@ -170,7 +174,7 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
     if !xs.elemsAndSeps.isEmpty then arr := arr.push enterStx
     for _ in [0:depth] do arr := arr.push funStx
     arr := arr.push skipStx
-    let seq ← `(convSeq1Indented|$arr:conv*)
+    let seq ← `(convSeq1Indented| $arr:conv*)
     match loc with
     | none => `(tactic| conv => $seq:convSeq1Indented)
     | some n => `(tactic| conv at $(← mkIdentFromRef n):ident => $seq:convSeq1Indented)
