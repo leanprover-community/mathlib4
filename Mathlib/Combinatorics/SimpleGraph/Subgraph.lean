@@ -170,6 +170,12 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless v hv := G.loopless v (G'.adj_sub hv)
 
+@[simp]
+lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
+  ext
+  simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
+  grind [spanningCoe_adj, coe_adj, edge_vert, adj_symm]
+
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
   G'.adj_sub h
@@ -823,7 +829,6 @@ alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
 
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
-  apply not_subsingleton_iff_nontrivial.mp
   by_contra
   simp_all [G'.degree_eq_zero_of_subsingleton v]
 
@@ -864,8 +869,12 @@ section MkProperties
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
 
+@[deprecated "Use the `Unique` instance instead." (since := "2025-10-21")]
 instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
   ⟨⟨v, Set.mem_singleton v⟩⟩
+
+instance (v : V) : Unique (G.singletonSubgraph v).verts :=
+  Set.uniqueSingleton _
 
 @[simp]
 theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
@@ -932,9 +941,8 @@ theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
 @[simp]
 theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
     Subgraph.map f (G.subgraphOfAdj hvw) = G'.subgraphOfAdj (f.map_adj hvw) := by
-  ext
-  · grind [Subgraph.map_verts, subgraphOfAdj_verts]
-  · grind [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
+  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Relation.Map, Subgraph.map_adj,
+    subgraphOfAdj_adj]
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u ⊆ {v, w} :=
@@ -1152,6 +1160,10 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
   ext
   simp
 
+lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
+    ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
+  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+
 section Induce
 
 variable {G' G'' : G.Subgraph} {s s' : Set V}
@@ -1196,8 +1208,8 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 
 lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
-  calc G' = G'.induce G'.verts               := Subgraph.induce_self_verts.symm
-       _  ≤ (⊤ : G.Subgraph).induce G'.verts := Subgraph.induce_mono_left le_top
+  calc G' = G'.induce G'.verts := Subgraph.induce_self_verts.symm
+       _ ≤ (⊤ : G.Subgraph).induce G'.verts := Subgraph.induce_mono_left le_top
 
 lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') := by
   constructor
@@ -1225,11 +1237,18 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h <;> simp [hvw, hvw.symm]
     · intro h
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
-      obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
+      obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first | exact (ha.ne rfl).elim | simp
 
 instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [DecidableRel G'.Adj] :
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
+
+/-- Equivalence between an induced subgraph and its corresponding simple graph. -/
+def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
+    (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, h hv⟩, by simp at hv; aesop⟩
+  invFun := fun ⟨v, hv⟩ ↦ ⟨v, hv⟩
+  map_rel_iff' := by simp
 
 end Induce
 
@@ -1290,10 +1309,17 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
   fun x y =>
     if h : G.Adj x y
     then
-      .isTrue <|  SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
+      .isTrue <| SimpleGraph.Subgraph.Adj.coe <| Subgraph.deleteVerts_adj.mpr
         ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
+
+/-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
+def coeDeleteVertsIso (s : Set V) :
+    (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
+  invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
+  map_rel_iff' := by simp
 
 end DeleteVerts
 

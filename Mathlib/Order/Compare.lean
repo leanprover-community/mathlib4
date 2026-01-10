@@ -126,6 +126,8 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
     cmp a b = o :=
   (cmp_compares a b).inj h
 
+-- TODO: is there a nice way to avoid the non-terminal simp?
+set_option linter.flexible false in
 @[simp]
 theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing

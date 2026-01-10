@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -19,7 +19,7 @@ Known limitations:
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
-  are dual to eachother. Currently, this requires writing
+  are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
 
@@ -31,10 +31,10 @@ open Lean Meta Elab Command Std Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
@@ -66,14 +66,14 @@ theorem max_comm' {α} [LinearOrder α] (x y : α) : max x y = max y x := max_co
 ```
 
 Use the `(reorder := ...)` syntax to reorder the arguments compared to the dual declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
-the fifth argument before the third argument. For example, this is used to tag `LE.le`
-with `(reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. For example, this is used when tagging `LE.le`
+with `to_dual self (reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
 
-Use the `to_dual self` syntax to use the lemma as its own dual. This is often
-combined with the `(reorder := ...)` syntax, because a lemma is usually dual to itself only
-up to some reordering of its arguments.
+Use the `to_dual self` syntax to mark the lemma as its own dual. This is needed if the lemma is
+its own dual, up to a reordering of its arguments. `to_dual self` (and `to_dual existing`) tries to
+autogenerate the `(reorder := ...)` argument, so it is usually not necessary to give it explicitly.
 
 Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
@@ -82,6 +82,9 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
+
+When troubleshooting, you can see what `to_dual` is doing by replacing it with `to_dual?` and/or
+by using `set_option trace.translate_detail true`.
  -/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
@@ -103,15 +106,20 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
-@[inherit_doc to_dual_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+
+initialize
+  registerBuiltinAttribute {
+    name := `to_dual_do_translate
+    descr := "Auxiliary attribute for `to_dual` stating \
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_dual_dont_translate
     descr := "Auxiliary attribute for `to_dual` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_dual_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps names to their dual counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -126,9 +134,18 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
   ("unbot", ["Untop"]),
+  ("minimal", ["Maximal"]),
+  ("maximal", ["Minimal"]),
+  ("lower", ["Upper"]),
+  ("upper", ["Lower"]),
+  ("succ", ["Pred"]),
+  ("pred", ["Succ"]),
+  ("disjoint", ["Codisjoint"]),
+  ("codisjoint", ["Disjoint"]),
 
   ("epi", ["Mono"]),
-  ("mono", ["Epi"]),
+  /- `mono` can also refer to monotone, so we don't translate it. -/
+  -- ("mono", ["Epi"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -155,8 +172,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cospan", ["Span"]),
   ("kernel", ["Cokernel"]),
   ("cokernel", ["Kernel"]),
-  ("kernels", ["Cokernel"]),
-  ("cokernels", ["Kernel"]),
+  ("kernels", ["Cokernels"]),
+  ("cokernels", ["Kernels"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),
@@ -165,11 +182,16 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
-def abbreviationDict : Std.HashMap String String := .ofList []
+def abbreviationDict : Std.HashMap String String := .ofList [
+  ("wellFoundedLT", "WellFoundedGT"),
+  ("wellFoundedGT", "WellFoundedLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit")
+]
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true

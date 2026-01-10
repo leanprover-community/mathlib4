@@ -77,7 +77,7 @@ theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p]
 instance : IsTrans α (ModEq p) where
   trans _ _ _ := ModEq.trans
 
-instance : IsRefl _ (ModEq p) :=
+instance : Std.Refl (ModEq p) :=
   ⟨modEq_refl⟩
 
 @[simp]
@@ -274,7 +274,7 @@ theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
     rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ (mod_cast hn))]
     refine ⟨?_, k / n, ?_⟩
     · refine Int.emod_lt_of_pos _ ?_
-      cutsat
+      lia
     · rw [hk, Int.ediv_mul_add_emod]
   · rintro ⟨k, _, j, hj⟩
     rw [hj]

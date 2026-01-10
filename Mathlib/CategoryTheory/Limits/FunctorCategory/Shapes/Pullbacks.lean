@@ -25,6 +25,35 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 section Pullback
 
+/-- Given functors `F G H` and natural transformations `f : F ⟶ H` and `g : g : G ⟶ H`, together
+with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stich
+them together to give a pullback cone for the cospan formed by `f` and `g`.
+`combinePullbackConesIsLimit` shows that this pullback cone is limiting. -/
+@[simps!]
+def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f.app X) (g.app X))
+    (hc : ∀ X, IsLimit (c X)) : PullbackCone f g :=
+  PullbackCone.mk (W := {
+    obj X := (c X).pt
+    map {X Y} h := (hc Y).lift ⟨_, (c X).π ≫ cospanHomMk (H.map h) (F.map h) (G.map h)⟩
+    map_id _ := (hc _).hom_ext <| by rintro (_ | _ | _); all_goals simp
+    map_comp _ _ := (hc _).hom_ext <| by rintro (_ | _ | _); all_goals simp })
+    { app X := (c X).fst }
+    { app X := (c X).snd }
+    (by ext; simp [(c _).condition])
+
+/--
+The pullback cone `combinePullbackCones` is limiting.
+-/
+def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
+    (c : ∀ X, PullbackCone (f.app X) (g.app X)) (hc : ∀ X, IsLimit (c X)) :
+    IsLimit (combine f g c hc) :=
+  evaluationJointlyReflectsLimits _ fun k ↦ by
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
+    · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    · refine Cones.ext (Iso.refl _) ?_
+      rintro (_ | _ | _)
+      all_goals cat_disch
+
 variable [HasPullbacks C]
 
 /-- Evaluating a pullback amounts to taking the pullback of the evaluations. -/

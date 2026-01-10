@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
+public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -17,16 +18,17 @@ independent. By specifying that one directory does not import from another, we c
 modularity of Mathlib.
 -/
 
-public meta section
+meta section
 
--- XXX: is there a better long-time place for this
+-- XXX: is there a better long-time place for this?
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
 Omit `Init` (which is part of the prelude). -/
-def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
+public def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
   return (← Lean.parseImports' (← IO.FS.readFile path) path.toString).imports
     |>.map (fun imp ↦ imp.module) |>.erase `Init
 
+-- XXX: is there a better location for these?
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
 def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α := do
   f n <|> match n with
@@ -61,6 +63,7 @@ current module.
 
 The path only contains the intermediate steps: it excludes `imported` and the current module.
 -/
+public
 def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Name := Id.run do
   let mut result := #[]
   let modData := env.header.moduleData
@@ -81,7 +84,7 @@ open Lean Elab Command Linter
 The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. If this is the case, it emits a warning.
 -/
-register_option linter.directoryDependency : Bool := {
+public register_option linter.directoryDependency : Bool := {
   defValue := true
   descr := "enable the directoryDependency linter"
 }
@@ -96,7 +99,7 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
-@[expose] def NamePrefixRel := NameMap NameSet
+def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
@@ -240,6 +243,9 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr.Basic),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
 
   (`Mathlib.Logic, `Batteries),
   -- TODO: should the next import direction be flipped?
@@ -328,7 +334,6 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.AlgebraicTopology, `Mathlib.NumberTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Probability),
   (`Mathlib.AlgebraicTopology, `Mathlib.RepresentationTheory),
-  (`Mathlib.AlgebraicTopology, `Mathlib.SetTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Testing),
   (`Mathlib.Analysis, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Analysis, `Mathlib.AlgebraicTopology),
@@ -639,7 +644,7 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
   | none => none
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
+public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv

@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Field.Equiv
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsSimpleRing
 

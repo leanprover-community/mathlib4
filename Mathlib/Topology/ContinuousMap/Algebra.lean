@@ -692,7 +692,7 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
   map_zero' := ext fun _ ↦ rfl
-  map_add'  _ _ := ext fun _ ↦ rfl
+  map_add' _ _ := ext fun _ ↦ rfl
   map_one' := ext fun _ ↦ rfl
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
@@ -782,7 +782,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
-        simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
+        simp only [mul_one, smul_eq_mul, algebraMap_apply]
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]

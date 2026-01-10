@@ -147,7 +147,7 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h:= by
+  coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
@@ -192,7 +192,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
-  · cutsat
+  · lia
   · rw [map_pow]
 
 end MulRingNorm

@@ -89,15 +89,13 @@ lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
   · replace hj : (1 : ℤ) • P.root j = (n : ℤ) • P.root j := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero j).eq_iff, eq_comm] at hj
     have : 2 ≤ n := Nat.AtLeastTwo.prop
-    cutsat
+    lia
   · rw [← one_smul ℤ (P.root i), ← neg_smul, hj] at this
     replace this : (n : ℤ) • P.root i = -1 • P.root i := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero i).eq_iff] at this
-    cutsat
+    lia
 
 @[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
-@[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
-
 lemma linearIndependent_of_add_mem_range_root
     [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
@@ -163,7 +161,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMul
     · exact False.elim <| h₂ <| (smul_eq_zero_iff_left <| P.ne_zero i).mp <| by simpa using h₁
     · assumption
   replace h₁ : s • P.root i = -t • P.root j := by rwa [← eq_neg_iff_add_eq_zero, ← neg_smul] at h₁
-  have h₄ : s * 2 = - (t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
+  have h₄ : s * 2 = -(t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
   replace h₁ : (2 : R) • (s • P.root i) = (2 : R) • (-t • P.root j) := by rw [h₁]
   rw [smul_smul, mul_comm, h₄, smul_comm, ← neg_mul, ← smul_smul] at h₁
   exact smul_right_injective M (neg_ne_zero.mpr h₃) h₁

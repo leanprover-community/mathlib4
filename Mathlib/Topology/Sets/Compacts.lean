@@ -146,7 +146,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
 
 @[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
@@ -201,6 +201,15 @@ theorem map_injective_iff {f : α → β} (hf : Continuous f) :
   refine ⟨fun h => .of_comp (f := ({·} : β → Compacts β)) ?_, map_injective hf⟩
   simp_rw [Function.comp_def, ← map_singleton hf]
   exact h.comp singleton_injective
+
+theorem range_map {f : α → β} (hf : Topology.IsInducing f) :
+    range (Compacts.map f hf.continuous) = {K : Compacts β | ↑K ⊆ range f} :=
+  subset_antisymm
+    (range_subset_iff.mpr fun _ => image_subset_range _ _)
+    (fun L hL => ⟨
+      { carrier := f ⁻¹' L
+        isCompact' := hf.isCompact_preimage' L.isCompact hL },
+      Compacts.ext (image_preimage_eq_of_subset hL)⟩)
 
 /-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simps]
@@ -352,7 +361,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :
   Iff.rfl
 
 @[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts α) :=
@@ -434,6 +443,16 @@ theorem map_injective_iff {f : α → β} (hf : Continuous f) :
     Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f :=
   ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦
     singleton_injective (h (by simp_all)), map_injective hf⟩
+
+theorem range_map {f : α → β} (hf : Topology.IsInducing f) :
+    range (NonemptyCompacts.map f hf.continuous) = {K : NonemptyCompacts β | ↑K ⊆ range f} :=
+  subset_antisymm
+    (range_subset_iff.mpr fun _ => image_subset_range _ _)
+    (fun L hL => ⟨
+      { carrier := f ⁻¹' L
+        isCompact' := hf.isCompact_preimage' L.isCompact hL
+        nonempty' := L.nonempty.preimage' hL },
+      NonemptyCompacts.ext (image_preimage_eq_of_subset hL)⟩)
 
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact

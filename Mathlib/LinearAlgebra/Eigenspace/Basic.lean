@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.Nilpotent.Lemmas
@@ -226,6 +226,7 @@ lemma hasUnifEigenvalue_iff_mem_spectrum [FiniteDimensional K V] {f : End K V} {
 
 alias ⟨_, HasUnifEigenvalue.of_mem_spectrum⟩ := hasUnifEigenvalue_iff_mem_spectrum
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma genEigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     genEigenspace f (a / b) 1 = LinearMap.ker (b • f - a • 1) :=
   calc
@@ -249,7 +250,7 @@ lemma genEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
   · intro h
     exact h _ le_rfl
   · rintro ⟨x, rfl⟩ i hi
-    have : k = i + (k - i) := by omega
+    have : k = i + (k - i) := by lia
     rw [this, pow_add]
     exact ⟨_, rfl⟩
 
@@ -759,7 +760,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
       _ = f.genEigenspace μ (finrank K V + finrank K V : ℕ) := by
               simp_rw [← pow_add, genEigenspace_nat]; rfl
       _ = f.genEigenspace μ (finrank K V) := by
-              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; cutsat
+              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; lia
   rw [disjoint_iff_inf_le, genEigenrange_nat, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h, genEigenspace_nat]
   apply Submodule.map_comap_le
@@ -814,17 +815,16 @@ lemma genEigenspace_inf_le_add
   replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
     (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
       (Algebra.commute_algebraMap_left μ₁ _)
-  rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
+  rw [this, h.add_pow', LinearMap.coe_sum, Finset.sum_apply]
   constructor
   · simpa only [Nat.cast_add] using add_le_add hlk₁ hlk₂
   refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
-  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by cutsat
-  · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁,
-      LinearMap.map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]
+  obtain hi | hj : l₁ ≤ i ∨ l₂ ≤ j := by lia
+  · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁, map_zero]
+  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
 
 lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
