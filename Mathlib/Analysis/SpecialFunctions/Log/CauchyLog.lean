@@ -3,14 +3,10 @@ Copyright (c) 2026 Jonathan Reich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jonathan Reich
 -/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.MetricSpace.Basic
-
-public section
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Cauchy Functional Equation Characterization of Logarithm
