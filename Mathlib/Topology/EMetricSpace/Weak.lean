@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.Compactification.OnePoint.Basic
-public import Mathlib.Topology.Order.WithTop
 
 /-!
 # One point compactifications of Weak (pseudo) extended metric spaces
@@ -91,7 +90,7 @@ theorem infty_not_mem_ball (r : ENNReal) (hx : x ≠ ∞) : ∞ ∉ EMetric.ball
 
 private lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : OnePoint α, edist x x = 0
-  | (_ : α) => by simp [m.edist_self]
+  | (_ : α) => by simp
   | ∞ => rfl
 
 private lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
@@ -203,7 +202,6 @@ instance toWeakPseudoEMetricSpace
       rw [ball_infty_of_pos ENNReal.zero_lt_top]
       exact Subsingleton.discreteTopology
 
---improve this + naming
 instance toWeakEMetricSpace {α : Type u} [TopologicalSpace α] [m : WeakEMetricSpace α] :
     WeakEMetricSpace (OnePoint α) where
   edist := edist
@@ -218,22 +216,4 @@ end
 
 end OnePoint
 
-abbrev PseudoWithTop
-    {J : Type u} [LinearOrder J] [TopologicalSpace J] [OrderTopology J] [m : WeakPseudoEMetricSpace J] :
-    WeakPseudoEMetricSpace (WithTop J) where
-  edist := fun
-    | (a : J), (b : J) => m.edist a b
-    | (_ : J), ⊤ => ⊤
-    | ⊤, (_ : J) => ⊤
-    | ⊤, ⊤ => 0
-  edist_self := fun
-    | (a : J) => by simp [m.edist_self]
-    | ⊤ => rfl
-  edist_comm := ?edist_comm
-  edist_triangle := ?edist_triangle
-  topology_le := ?topology_le
-  topology_eq_on_restrict := ?topology_eq_on_restrict
-
 end WeakEMetric
-
---edist self muss zu simp
