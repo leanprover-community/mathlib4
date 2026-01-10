@@ -33,7 +33,6 @@ variable (n : ℤ) {i₀ i₁ i₂ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶
 
 -- this identifies to the image of `(X.H n).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂)` because
 -- of the epi mono factorization that is obtained below
--- TODO: This seems to be redundant with `kernelSequenceOpcycles`
 noncomputable def image : C := kernel ((X.H n).map (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂))
 
 noncomputable def imageι : X.image n f₁ f₂ f₁₂ h₁₂ ⟶ (X.H n).obj (mk₁ f₁₂) :=
