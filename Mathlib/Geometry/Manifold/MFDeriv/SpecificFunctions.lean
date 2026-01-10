@@ -986,6 +986,13 @@ theorem MDifferentiable.mul (hp : MDifferentiable I 𝓘(𝕜, F') p)
     (hq : MDifferentiable I 𝓘(𝕜, F') q) : MDifferentiable I 𝓘(𝕜, F') (p * q) := fun x =>
   (hp x).mul (hq x)
 
+@[fun_prop]
+theorem MDifferentiable.pow (hp : MDifferentiable I 𝓘(𝕜, F') p) (n : ℕ) :
+    MDifferentiable I 𝓘(𝕜, F') (p ^ n) := by
+  induction n with
+  | zero => simpa [pow_zero] using mdifferentiable_const
+  | succ n hn => simpa [pow_succ] using hn.mul hp
+
 end AlgebraOverRing
 
 section AlgebraOverCommRing
