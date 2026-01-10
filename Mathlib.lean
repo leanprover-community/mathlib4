@@ -3689,6 +3689,7 @@ public import Mathlib.Data.List.NatAntidiagonal
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.OffDiag
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Palindrome
 public import Mathlib.Data.List.PeriodicityLemma

@@ -153,9 +153,9 @@ theorem Finite.einfsep (hs : s.Finite) : s.einfsep = hs.offDiag.toFinset.inf (un
   simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, Finite.mem_toFinset, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
 
-theorem Finset.coe_einfsep [DecidableEq α] {s : Finset α} :
+theorem Finset.coe_einfsep {s : Finset α} :
     (s : Set α).einfsep = s.offDiag.inf (uncurry edist) := by
-  simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  classical simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
@@ -414,20 +414,20 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     s.infsep = hsf.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
   classical simp_rw [hsf.infsep, dif_pos hs]
 
-theorem _root_.Finset.coe_infsep [DecidableEq α] (s : Finset α) : (s : Set α).infsep =
+theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
     rw [← Set.offDiag_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
   split_ifs with hs
-  · simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  · classical simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
   · exact (not_nontrivial_iff.mp (H.mp.mt hs)).infsep_zero
 
-theorem _root_.Finset.coe_infsep_of_offDiag_nonempty [DecidableEq α] {s : Finset α}
+theorem _root_.Finset.coe_infsep_of_offDiag_nonempty {s : Finset α}
     (hs : s.offDiag.Nonempty) : (s : Set α).infsep = s.offDiag.inf' hs (uncurry dist) := by
   rw [Finset.coe_infsep, dif_pos hs]
 
 theorem _root_.Finset.coe_infsep_of_offDiag_empty
-    [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
+    {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
   rw [Finset.coe_infsep, dif_neg hs]
 

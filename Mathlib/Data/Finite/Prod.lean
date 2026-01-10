@@ -199,7 +199,7 @@ theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.F
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 
-theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
+theorem Finite.toFinset_offDiag {s : Set α} (hs : s.Finite) :
     hs.offDiag.toFinset = hs.toFinset.offDiag :=
   Finset.ext <| by simp
 
