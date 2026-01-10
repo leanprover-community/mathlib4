@@ -62,7 +62,7 @@ open Finset Finsupp
 
 variable (σ R) in
 /-- The ideal spanned by all of the variables. -/
-def idealOfVars : Ideal (MvPolynomial σ R) := .span (Set.range (MvPolynomial.X))
+def idealOfVars : Ideal (MvPolynomial σ R) := .span (Set.range X)
 
 /-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
