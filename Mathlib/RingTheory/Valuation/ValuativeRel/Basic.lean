@@ -794,13 +794,13 @@ lemma vlt.trans (hab : a <ᵥ b) (hbc : b <ᵥ c) : a <ᵥ c :=
 
 @[deprecated (since := "2025-12-20")] alias srel_mul_right_iff := mul_vlt_mul_iff_left
 
-@[deprecated (since := "2025-12-20")] alias srel_mul_right := vlt_mul_right
+@[deprecated (since := "2025-12-20")] alias srel_mul_right := mul_vlt_mul_right
 
 @[deprecated (since := "2026-01-06")] alias vlt_mul_left_iff := mul_vlt_mul_iff_right
 
 @[deprecated (since := "2025-12-20")] alias srel_mul_left_iff := mul_vlt_mul_iff_right
 
-@[deprecated (since := "2025-12-20")] alias srel_mul_left := vlt_mul_left
+@[deprecated (since := "2025-12-20")] alias srel_mul_left := mul_vlt_mul_right
 
 lemma mul_vlt_mul_of_vlt_of_vle (hab : a <ᵥ b) (hcd : c ≤ᵥ d) (hd : 0 <ᵥ d) :
     a * c <ᵥ b * d :=
