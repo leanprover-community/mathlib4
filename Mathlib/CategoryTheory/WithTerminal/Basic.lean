@@ -438,8 +438,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     cast (by
         have eq : x = y := PLift.down (ULift.down (down f))
         rw [eq]
-        rfl
-    ) (Hom.id (some y))
+        rfl) (Hom.id (some y))
   | none, some y => by cases f
   | some x, none => .term x
   | none, none => .id none
