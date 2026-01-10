@@ -123,24 +123,27 @@ where
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
     match expr with
     | .app f a =>
-      if let some n := n then appT f i (a :: acc) (some n.succ)
-      else if h : i = Fin.last pos.size then pure (Path.fun acc.length)
-      else let i := i.castLT (Fin.val_lt_last h)
-      if pos[i] = 0 then -- app fun
-        appT f i.succ (a :: acc) none
-      else if pos[i] = 1 then -- app arg
-        appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
+      if let some n := n then -- found the argument (it is `acc[n]`)
+        appT f i (a :: acc) (some n.succ)
+      else if h : i = Fin.last pos.size then pure (Path.fun acc.length) -- ran out of `pos`
       else
-        throwError m!"{.ofConstName ``SubExpr.Pos (fullNames := true)} position {pos[i]} \
-          is invalid for{indentExpr expr}"
+        let i := i.castLT (Fin.val_lt_last h)
+        if pos[i] = 0 then -- app fun
+          appT f i.succ (a :: acc) none
+        else if pos[i] = 1 then -- app arg
+          appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
+        else
+          throwError m!"{.ofConstName ``SubExpr.Pos (fullNames := true)} position {pos[i]} \
+            is invalid for{indentExpr expr}"
     | _ =>
-      if let some n := n then do
+      if let some n := n then do -- found the argument (it is `acc[n]`)
         let c ← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray
-        if let some {bInfo := .default, ..} := c[n]? then
+        if let some {bInfo := .default, ..} := c[n]? then -- explicit argument
           arg (((c.map (·.bInfo)).take n).count .default + 1)
             false <$> go acc[n] i
-        else arg (n + 1) true <$> go acc[n] i
-      else arg 0 false <$> go expr i
+        else arg (n + 1) true <$> go acc[n] i -- implicit argument
+      else -- ran out of `Expr.app` nodes
+        arg 0 false <$> go expr i
 
 open Lean.Parser.Tactic.Conv in
 /--
