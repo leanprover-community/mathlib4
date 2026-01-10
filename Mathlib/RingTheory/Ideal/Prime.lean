@@ -87,6 +87,9 @@ instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPr
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
+@[deprecated isPrime_bot (since := "2026-01-10")]
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
+
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
