@@ -81,8 +81,7 @@ theorem map_exp_nat (hf : IsMultiplicativeAdditive f) (n : ℕ) : f (exp n) = n 
 
 theorem map_exp_int (hf : IsMultiplicativeAdditive f) (z : ℤ) : f (exp z) = z * f (exp 1) := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · simp only [Int.cast_natCast]
-    exact hf.map_exp_nat n
+  · simpa using hf.map_exp_nat n
   · simp only [Int.cast_neg, Int.cast_natCast, exp_neg]
     rw [hf.map_inv (exp_pos n), hf.map_exp_nat n]
     ring
