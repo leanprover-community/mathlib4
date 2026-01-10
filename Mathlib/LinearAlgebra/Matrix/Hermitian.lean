@@ -170,6 +170,19 @@ section AddGroup
 
 variable [AddGroup α] [StarAddMonoid α]
 
+/-! ### Skew-Hermitian matrices -/
+
+/-- A matrix is skew-Hermitian if it is equal to the negation of its conjugate transpose. -/
+def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
+
+theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
+
+
+
+@[simp]
+theorem IsSkewHermitian.neg {A : Matrix n n α} (h : A.IsSkewHermitian) : (-A).IsSkewHermitian := by
+  rw [IsSkewHermitian, conjTranspose_neg, h.eq, neg_neg]
+
 @[simp]
 theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermitian :=
   IsSelfAdjoint.neg h
