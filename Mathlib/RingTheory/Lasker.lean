@@ -100,7 +100,7 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [Decidab
 /-- A `Finset` of ideals is a maximal primary decomposition of `I` if the ideals intersect to `I`,
 are primary, have pairwise distinct radical, and removing any ideal changes the intersection. -/
 structure IsMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
-    (I : Ideal R) (t : Finset (Ideal R)) where
+    (I : Ideal R) (t : Finset (Ideal R)) : Prop where
   inf_eq : t.inf id = I
   primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
   distinct : (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)
