@@ -38,21 +38,22 @@ lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
   rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm]
   rfl
 
-def FinitelyPresentedGroup (n : ℕ) (rels : Set (FreeGroup (Fin n))) (_h : rels.Finite) :=
-  FreeGroup (Fin n) ⧸ Subgroup.normalClosure rels
+def FinitelyPresentedGroup {n : ℕ} (rels : Set (FreeGroup (Fin n)))
+(_h : rels.Finite) := PresentedGroup (rels)
+  -- FreeGroup (Fin n) ⧸ Subgroup.normalClosure rels
 
-def FinitelyPresentedGroup' (α : Type*) (_ : Finite α) (rels : Set (FreeGroup α))
-(_h : rels.Finite) := FreeGroup α ⧸ Subgroup.normalClosure rels
+def FinitelyPresentedGroup' {α : Type} [Finite α] (rels : Set (FreeGroup α))
+(_h : rels.Finite) := PresentedGroup (rels)
 
 namespace FinitelyPresentedGroup
 
 instance (n : ℕ) (rels : Set (FreeGroup (Fin n))) (h : rels.Finite) :
-Group (FinitelyPresentedGroup n rels h) :=
+Group (FinitelyPresentedGroup rels h) :=
   QuotientGroup.Quotient.group _
 
-/- instance (α : Type*) (_ : Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite) :
-Group (FinitelyPresentedGroup' α rels h) :=
-  QuotientGroup.Quotient.group _ -/
+instance (α : Type) [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+Group (FinitelyPresentedGroup' rels h) :=
+  QuotientGroup.Quotient.group _
 
 open Subgroup
 
@@ -78,12 +79,11 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
 
 class IsFinitelyPresented' (G : Type*) [Group G] : Prop where
   out: ∃ (n : ℕ) (rels : Set (FreeGroup (Fin n))) (h : rels.Finite),
-  Nonempty (G ≃* (FinitelyPresentedGroup n rels h))
+  Nonempty (G ≃* FinitelyPresentedGroup rels h)
 
-/- class IsFinitelyPresented'' (G : Type*) [Group G] : Prop where
-  out: ∃ (α : Type*) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
-  Nonempty (G ≃* (FinitelyPresentedGroup' α rels h)) -/
-
+class IsFinitelyPresented'' (G : Type*) [Group G] : Prop where
+  out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
+  Nonempty (G ≃* (FinitelyPresentedGroup' rels h))
 -- TODO calls to IsNormalClosureFG.map could be simplified? Like maybe using the iso functions.
   -- seems like we apply a lot of `MonoidHom.ker_comp_mulEquiv + IsNormalClosureFG.map`.
 lemma isFinitelyPresented_iff_fintype {G : Type u} [Group G] :
@@ -124,6 +124,20 @@ lemma isFinitelyPresented_iff_finite {G : Type u} [Group G] :
       simp only [MonoidHom.ker_comp_mulEquiv]
       exact IsNormalClosureFG.invariant_surj_hom
         iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+
+lemma isFP_iff_finite' {G : Type*} [Group G] :
+  IsFinitelyPresented' G ↔ ∃ (α : Type) (_ : Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
+  Nonempty (G ≃* PresentedGroup rels) := by
+  constructor
+  · intro ⟨n, rels, hrels, ⟨iso⟩⟩
+    unfold FinitelyPresentedGroup at iso
+    exact ⟨Fin n, inferInstance, rels, hrels, ⟨iso⟩⟩
+  · intro ⟨α, _, rels, hrels, ⟨iso⟩⟩
+    let n := Nat.card α
+    let e : FreeGroup (Fin (Nat.card α)) ≃* FreeGroup α :=
+        FreeGroup.freeGroupCongr (Finite.equivFin α).symm
+    -- let rels' := e '' rels
+    sorry
 
 theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype_ARISTOTLE1 {G : Type*} [Group G] :
     Group.FG G ↔ ∃ (α : Type) (_ : Fintype α) (φ : FreeGroup α →* G), Function.Surjective φ := by
@@ -195,15 +209,49 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_fintype_ARISTOTLE2 {G : Typ
             induction x using FreeGroup.induction_on <;> aesop;
           obtain ⟨ S, hS_finite, hS_gen ⟩ := h_gen; exact ⟨ hS_finite.toFinset, by simpa [ Subgroup.closure ] using hS_gen ⟩ ;
 
-theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type u} [Group G] :
-    Group.FG G ↔ ∃ (α : Type u) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+      constructor
+      · rw [Group.fg_iff_exists_freeGroup_hom_surjective]
+        intro ⟨S, hS, φ⟩
+        sorry
       · sorry
 
-instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
+/- instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   rw [isFinitelyPresented_iff_finite] at h
   obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
-  use S, hSfinite, f, hfsurj
+  use S, hSfinite, f, hfsurj -/
+
+instance {G : Type*} [Group G] [h : IsFinitelyPresented' G] : Group.FG G := by
+  rw [Group.fg_iff_exists_freeGroup_hom_surjective]
+  rw [isFP_iff_finite'] at h
+  obtain ⟨S, hSfinite, f, hfsurj, hkernel⟩ := h
+  sorry
+
+instance {G : Type*} [Group G] [h : IsFinitelyPresented'' G] : Group.FG G := by
+  rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
+  obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
+  unfold FinitelyPresentedGroup' at iso
+  unfold PresentedGroup at iso
+  use α, hα
+  -- TODO probably a nicer way to do this.
+  let iso' := iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
+  use iso'
+  simpa [iso'] using
+    (Function.Surjective.comp iso.symm.surjective (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
+
+/-   -- # Proof 2
+  obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
+  unfold FinitelyPresentedGroup' at iso
+  unfold PresentedGroup at iso
+  rw [Group.fg_iff]
+  let _ : Fintype α := Fintype.ofFinite α
+  have S : Set α := (Finset.univ : Finset α)
+  let f : α → G := fun a => iso.symm (PresentedGroup.of (rels := rels) a)
+  have sG : Set G := S.image f
+  use sG
+  sorry -/
 
 /-  `u` is chosen as the universe as otw creates problems with other FP group def.
  `PresentedGroup` is defined as having the same type as its generators in #PresentedGroup. -/
@@ -211,8 +259,8 @@ def IsPresented (G : Type u) [Group G] : Prop :=
   ∃ (α : Type u) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
   Function.Surjective f ∧ (normalClosure rels = f.ker)
 
-def IsPresented' (G : Type u) [Group G] : Prop :=
-  ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+def IsPresented' (G : Type*) [Group G] : Prop :=
+ ∃ (α : Type*) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
 
 /- If we use `α : Type for isFinitelyPresented_iff_finite` then creates type incompatibility
 with def of `IsPresentedGroup`. -/
@@ -222,24 +270,32 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresented G := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hfker
   exact ⟨α, S, f, hfsurj, hSclosure⟩
 
--- TODO PresentedGroup with finite assumptions is FP. (Valerio had a proof)
+instance {G : Type*} [Group G] [h : IsFinitelyPresented' G] : IsPresented' G := by
+  rw [isFP_iff_finite'] at h
+  obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
+  use ULift α, Set.image (FreeGroup.map ULift.up) rels
+  let e : ULift α ≃ α := Equiv.ulift
+  refine ⟨iso.trans (PresentedGroup.equivPresentedGroup rels e.symm)⟩
 
-lemma isFP_isP {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresented' G := by
-  obtain ⟨n, rels, hrels, ⟨ iso ⟩ ⟩ := h
-  unfold IsPresented'
-  sorry
+instance {G : Type*} [Group G] [h : IsFinitelyPresented'' G] : IsPresented' G := by
+  obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
+  use ULift α, Set.image (FreeGroup.map ULift.up) rels
+  let e : ULift α ≃ α := Equiv.ulift
+  refine ⟨iso.trans (PresentedGroup.equivPresentedGroup rels e.symm)⟩
 
 
--- TODO? every group is isomorphic to a `PresentedGroup`.
+-- TODO? every group is isomorphic to a `PresentedGroup`!
 
 
+lemma isFinitelyPresented''_of_finitelyPresentedGroup'
+  {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+  IsFinitelyPresented'' (FinitelyPresentedGroup' rels h) := by
+  refine ⟨α, inferInstance, rels, h, ?_⟩
+  exact ⟨MulEquiv.refl _⟩
 
-/-  lemma isFinitelyPresented_stupid (α : Type) [Finite α] (s : Finset (FreeGroup α)) :
-    IsFinitelyPresented ((FreeGroup α) ⧸ normalClosure s) := by
-    rw [isFinitelyPresented_iff_finite]
-    constructor
-    sorry  -/
 
+lemma FinitelyPresentedGroup.is_FP {α : Type} [Finite α] (rels : Set (FreeGroup α)),
+(IsFinitelyPresented''(FinitelyPresentedGroup(rels)))
 /- namespace IsFinitelyPresented
 
 variable {G H : Type*} [Group G] [Group H]
