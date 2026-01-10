@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   chain condition on principal ideals.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
