@@ -31,7 +31,7 @@ Finsets give a basic foundation for defining finite sums and products over types
   2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean`.
+More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
@@ -159,6 +159,7 @@ theorem ext {s₁ s₂ : Finset α} (h : ∀ a, a ∈ s₁ ↔ a ∈ s₂) : s�
 theorem coe_inj {s₁ s₂ : Finset α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂ :=
   SetLike.coe_set_eq
 
+@[grind inj]
 theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s _t => coe_inj.1
 
 /-! ### type coercion -/
@@ -204,23 +205,23 @@ instance partialOrder : PartialOrder (Finset α) := inferInstance
 
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
-instance : IsRefl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsRefl (Finset α) (· ≤ ·)
+instance : @Std.Refl (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Refl (· ≤ ·)
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <|  IsTrans (Finset α) (· ≤ ·)
+  inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
 
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)
+instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Antisymm (· ≤ ·)
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
+instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· < ·)
 
-instance : IsAsymm (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsAsymm (Finset α) (· < ·)
+instance : Std.Asymm (α := Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Asymm (· < ·)
 
 instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -253,9 +254,7 @@ theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈
 theorem notMem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
   mt <| @h _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
-
-alias not_mem_subset := not_mem_mono
+alias not_mem_subset := notMem_mono
 
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
   ext fun a => ⟨@H₁ a, @H₂ a⟩

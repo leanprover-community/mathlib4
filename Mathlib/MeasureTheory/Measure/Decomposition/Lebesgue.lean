@@ -96,7 +96,7 @@ lemma singularPart_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecompos
     μ.singularPart ν = 0 := by
   rw [singularPart, dif_neg h]
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
   by_cases h : HaveLebesgueDecomposition μ ν
   · exact (haveLebesgueDecomposition_spec μ ν).1

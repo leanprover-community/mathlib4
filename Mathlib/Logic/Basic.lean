@@ -9,10 +9,7 @@ public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
-public import Batteries.Tactic.Trans
 public import Batteries.Util.LibraryNote
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -143,6 +140,7 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 alias dec_em := Decidable.em
 
+set_option linter.unusedDecidableInType false in
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -971,12 +969,6 @@ end ite
 
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 

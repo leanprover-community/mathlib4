@@ -16,11 +16,11 @@ surjectivity of morphisms of presheaves, and that precomposition with a cover-pr
 cover-dense functor reflects the same properties.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Functor
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
   (H : C ⥤ D) {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 

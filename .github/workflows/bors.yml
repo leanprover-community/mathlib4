@@ -88,7 +88,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -98,7 +98,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
@@ -375,7 +375,7 @@ jobs:
 
       - name: upload artifact containing contents of pr-branch
         # temporary measure for debugging no-build failures
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: mathlib4_artifact
           include-hidden-files: true
@@ -405,7 +405,7 @@ jobs:
           # do not try to upload files just downloaded
 
           echo "Uploading cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -461,8 +461,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -511,7 +511,25 @@ jobs:
         id: lint
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
+          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # We use .lake/ for the output file because landrun restricts /tmp access
+          if ! env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee .lake/lint_output.txt; then
+            if grep -q "cannot parse arguments" .lake/lint_output.txt; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
+              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
+              echo "updated linter, then push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+            fi
+            exit 1
+          fi
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -562,7 +580,7 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.sha }}"
 
@@ -610,7 +628,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: import-graph
           path: import_graph.dot
@@ -698,15 +716,6 @@ jobs:
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
-      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
-        name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
-        with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          issue-number: ${{ steps.PR.outputs.number }}
-          body: |
-            !bench
-
       - id: remove_labels
         name: Remove "awaiting-CI"
         # we use curl rather than octokit/request-action so that the job won't fail
@@ -723,7 +732,7 @@ jobs:
         # unfortunately we cannot query only for 'auto-merge-after-CI' events
         # so we have to process this with jq in the next step
         id: get-timeline
-        uses: octokit/graphql-action@8ad880e4d437783ea2ab17010324de1075228110 # v2.3.2
+        uses: octokit/graphql-action@ddde8ebb2493e79f390e6449c725c21663a67505 # v3.0.2
         with:
           query: |
             query($owner: String!, $name: String!, $number: Int!) {

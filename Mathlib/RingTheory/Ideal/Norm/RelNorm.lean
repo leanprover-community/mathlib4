@@ -437,7 +437,7 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal
     exists_maximal_ideal_liesOver_of_isIntegral P
   have : Q.LiesOver p := LiesOver.trans Q P p
   have h := relNorm_eq_pow_of_isPrime_isGalois Q p
-  have :  IsGalois (FractionRing S) (FractionRing T) :=
+  have : IsGalois (FractionRing S) (FractionRing T) :=
     IsGalois.tower_top_of_isGalois (FractionRing R) (FractionRing S) (FractionRing T)
   rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
     inertiaDeg_algebra_tower p P Q, pow_mul, pow_left_inj] at h

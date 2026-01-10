@@ -345,7 +345,7 @@ theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i
   s.finite_toSet.isLindelof_biUnion hf
 
 theorem isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
-    IsLindelof (Accumulate K n) :=
+    IsLindelof (accumulate K n) :=
   (finite_le_nat n).isLindelof_biUnion fun k _ => hK k
 
 theorem Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
@@ -357,7 +357,7 @@ theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
 theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
-    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
+    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion <| forall_mem_range.2 h
 
 theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
@@ -526,11 +526,11 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+  { isLindelof_univ := isCompact_univ.isLindelof }
 
 /-- A sigma-compact space `X` is Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof }
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -648,6 +648,9 @@ lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_Linde
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
+
+theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
+    s.Countable := hs.countable hs'.to_subtype
 
 protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=

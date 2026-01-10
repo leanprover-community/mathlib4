@@ -44,7 +44,7 @@ using duality, but this would require lengthy API developments for `ComposableAr
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory
@@ -53,7 +53,7 @@ open Category Limits Preadditive
 
 namespace Abelian
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 open ComposableArrows
 
@@ -228,7 +228,7 @@ end Abelian
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] ComposableArrows.Precomp.map

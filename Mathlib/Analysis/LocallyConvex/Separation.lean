@@ -76,7 +76,7 @@ theorem separate_convex_open_set (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
   rintro ⟨x, hx⟩
   obtain ⟨y, rfl⟩ := Submodule.mem_span_singleton.1 hx
   rw [LinearPMap.mkSpanSingleton'_apply]
-  simp only [mul_one, Algebra.id.smul_eq_mul]
+  simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
   · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]

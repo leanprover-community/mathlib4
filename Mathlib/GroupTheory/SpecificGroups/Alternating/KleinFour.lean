@@ -122,7 +122,7 @@ theorem coe_two_sylow_of_card_eq_four
     simp
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
-    refine (card_two_sylow_of_card_eq_four hα4 S).symm.trans_ge ?_
+    refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
     rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]

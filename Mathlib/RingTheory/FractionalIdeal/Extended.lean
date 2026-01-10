@@ -163,7 +163,7 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨f a, Set.mem_image_of_mem f ha, by rw [Algebra.linearMap_apply, IsLocalization.map_eq hf a]⟩
-  · rintro _ ⟨_ , ⟨a, ha, rfl⟩, rfl⟩
+  · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨algebraMap A K a, mem_coeIdeal_of_mem M ha, IsLocalization.map_eq hf a⟩
 

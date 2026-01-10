@@ -21,7 +21,7 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
   convergence.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Real Filter
@@ -54,10 +54,10 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
   have hxs : ∀ x ∈ s, x ≠ 0 := by grind
   have sSup_nonneg : 0 ≤ sSup ((fun x => ‖log x‖ ^ 2) '' s) := by
     refine Real.sSup_nonneg ?_
-    grind [norm_nonneg, ← sq_nonneg]
+    grind [← sq_nonneg]
   have sSup_nonneg' : 0 ≤ sSup ((fun x => ‖log x‖) '' s) := by
     refine Real.sSup_nonneg ?_
-    grind [norm_nonneg, ← sq_nonneg]
+    grind [← sq_nonneg]
   have pbound_pos : 0 < pbound := by positivity
   have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p ∧ p < pbound := nhdsGT_basis 0 |>.mem_of_mem pbound_pos
   have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=

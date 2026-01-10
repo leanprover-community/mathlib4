@@ -97,7 +97,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
-    ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+    ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.toLinear, h_plus_ne_bot⟩
@@ -106,7 +106,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index α hα₀
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -119,7 +119,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index (-α) (Weight.IsNonZero.neg hα₀)
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -130,7 +130,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
   have h_pairing_zero : S.pairing i j = 0 := by
-    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S
     · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
     · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
     · intro ⟨idx, hidx⟩
@@ -420,8 +420,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
-    eq_top_of_invtSubmodule_ne_bot
+  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| eq_top_of_invtSubmodule_ne_bot
 
 end IsSimple
 

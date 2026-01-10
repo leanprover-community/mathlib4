@@ -5,7 +5,8 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.GCongr.Core
+public import Lean
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 
@@ -122,12 +123,14 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         Possible solutions: use grewrite's 'occs' configuration option to limit which occurrences \
         are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
-    -- construct the implication proof using `gcongr`
+    -- Construct the implication proof using `gcongr`.
+    -- Although `e` and `e'` are defEq, they may not be defEq in the `reducible` transparency.
+    -- So, it is important to use `e'` in the `gcongr` goal.
+    let e' := eAbst.instantiate1 (GCongr.mkHoleAnnotation lhs)
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let eNew' := eAbst.instantiate1 (GCongr.mkHoleAnnotation rhs)
-    let imp := if forwardImp then mkImp e eNew' else mkImp eNew' e
+    let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
     let gcongrGoal ← mkFreshExprMVar imp
-    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr (!forwardImp) []
+    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp []
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
