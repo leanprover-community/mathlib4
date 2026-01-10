@@ -96,14 +96,14 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
     let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
     try
       let _instβSemiring ← synthInstanceQ q(Semiring $β)
-      let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+      let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
       let _instβIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
       assertInstancesCommute
       return .positive q(algebraMap_pos $β $pa)
     catch _ =>
       let _instβSemiring ← synthInstanceQ q(Semiring $β)
-      let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+      let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
       let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
       assertInstancesCommute
@@ -112,7 +112,7 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
     let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
     let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
     let _instβSemiring ← synthInstanceQ q(Semiring $β)
-    let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+    let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
     let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
     let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
     assertInstancesCommute
