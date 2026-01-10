@@ -411,7 +411,7 @@ scoped notation "αᵣ " => MonoidalRightActionStruct.actionAssocIso
 scoped notation "ρᵣ " => MonoidalRightActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ρᵣ[" J "]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 
