@@ -38,7 +38,7 @@ example {W X Y Z : C} (a : W ⟶ X) (f : X ⟶ Y) [IsIso f] (b : X ⟶ Z) :
 
 example {W X Y Z : C} (a : W ⟶ X) (f : X ⟶ Y) [IsIso f] (b : X ⟶ Z) :
     (a ≫ f) ≫ inv f ≫ b = a ≫ b := by
-  simp only [Category.assoc,cancel_iso]
+  simp only [Category.assoc, cancelIso]
 
 -- Cancellation for Iso.hom/inv
 example {X Y : C} (e : X ≅ Y) : e.hom ≫ e.inv = 𝟙 _ := by simp only [cancelIso]
