@@ -90,10 +90,10 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.multiGoal
   linter.style.nativeDecide
   linter.style.openClassical
+  linter.style.maxHeartbeats
   linter.style.missingEnd
   linter.style.setOption
   linter.style.show
-  linter.style.maxHeartbeats
   linter.style.whitespace
   linter.unusedDecidableInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
