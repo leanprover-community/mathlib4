@@ -36,9 +36,11 @@ open ComposableArrows
 consists of a functor `H : ComposableArrows ι 1 ⥤ C`, and a
 functorial long exact sequence
 `⋯ ⟶ (H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ (f ≫ g)) ⟶ (H n₀).obj (mk₁ g) ⟶ (H n₁).obj (mk₁ f) ⟶ ⋯`
-when `n₀ + 1 = n₁` and `f` and `g` are composable morphisms in `ι`. -/
+when `n₀ + 1 = n₁` and `f` and `g` are composable morphisms in `ι`. (This will be
+shortened as `H^n₀(f) ⟶ H^n₀(f ≫ g) ⟶ H^n₀(g) ⟶ H^n₁(f)` in the documentation.) -/
 structure SpectralObject where
-  /-- A sequence of functors from `ComposableArrows ι 1` to the abelian category. -/
+  /-- A sequence of functors from `ComposableArrows ι 1` to the abelian category.
+  The image of `mk₁ f` will be referred to as `H^n(f)` in the documentation. -/
   H (n : ℤ) : ComposableArrows ι 1 ⥤ C
   /-- The connecting homomorphism of the spectral object. (Use `δ` instead.) -/
   δ' (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
@@ -98,22 +100,19 @@ lemma zero₃ :
   subst h
   exact (X.exact₃' n₀ n₁ hn₁ (mk₂ f g)).zero 0
 
-/-- The (exact) short complex
-`(E.H n₀).obj (mk₁ g) ⟶ (E.H n₁).obj (mk₁ f) ⟶ (H n₁).obj (mk₁ fg)`
-of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
+/-- The (exact) short complex `H^n₀(g) ⟶ H^n₁(f) ⟶ H^n₁(fg)` of a
+spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
 @[simps]
 def sc₁ : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₁ n₀ n₁ hn₁ f g fg h)
 
-/-- The (exact) short complex
-`(E.H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ fg) ⟶ (E.H n₀).obj (mk₁ g)`
-of a spectral object, when `f ≫ g = fg`. -/
+/-- The (exact) short complex `H^n₀(f) ⟶ H^n₀(fg) ⟶ H^n₀(g)` of a
+spectral object, when `f ≫ g = fg`. -/
 @[simps]
 def sc₂ : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₂ n₀ f g fg h)
 
-/-- The (exact) short complex
-`(H n₀).obj (mk₁ fg) ⟶ (E.H n₀).obj (mk₁ g) ⟶ (E.H n₁).obj (mk₁ f)`
+/-- The (exact) short complex `H^n₀(fg) ⟶ H^n₀(g) ⟶ H^n₁(f)`
 of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
 @[simps]
 def sc₃ : ShortComplex C :=
@@ -132,8 +131,7 @@ lemma exact₃ : (X.sc₃ n₀ n₁ hn₁ f g fg h).Exact := by
   exact ((X.exact₃' n₀ n₁ hn₁ (mk₂ f g))).exact 0
 
 /-- The (exact) sequence
-`(E.H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ fg) ⟶ (E.H n₀).obj (mk₁ g) ⟶
- (E.H n₁).obj (mk₁ f) ⟶ (H n₁).obj (mk₁ fg) ⟶ (E.H n₁).obj (mk₁ g)`
+`H^n₀(f) ⟶ H^n₀(fg) ⟶ H^n₀(g) ⟶ H^n₁(f) ⟶ H^n₁(fg) ⟶ H^n₁(g)`
 of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
 abbrev composableArrows₅ : ComposableArrows C 5 :=
   mk₅ ((X.H n₀).map (twoδ₂Toδ₁ f g fg h)) ((X.H n₀).map (twoδ₁Toδ₀ f g fg h))
