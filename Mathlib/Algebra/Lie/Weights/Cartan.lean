@@ -292,9 +292,6 @@ variable {K : Type*} [Field K] [LieAlgebra K L]
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [LieModule.IsTriangularizable K H L]
 
-/-- The collection of roots as a `Finset`. -/
-noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
-
 lemma cartan_sup_iSup_rootSpace_eq_top :
     H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
   rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
