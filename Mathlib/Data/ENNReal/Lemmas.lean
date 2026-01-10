@@ -16,7 +16,7 @@ These are some lemmas split off from `ENNReal.Basic` because they need a lot mor
 They are probably good targets for further cleanup or moves.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Set NNReal

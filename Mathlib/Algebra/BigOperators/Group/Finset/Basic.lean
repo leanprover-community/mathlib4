@@ -15,7 +15,7 @@ public import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid

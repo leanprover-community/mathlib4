@@ -405,7 +405,7 @@ jobs:
           # do not try to upload files just downloaded
 
           echo "Uploading cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -461,8 +461,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -511,7 +511,25 @@ jobs:
         id: lint
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
+          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # We use .lake/ for the output file because landrun restricts /tmp access
+          if ! env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee .lake/lint_output.txt; then
+            if grep -q "cannot parse arguments" .lake/lint_output.txt; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
+              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
+              echo "updated linter, then push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+            fi
+            exit 1
+          fi
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

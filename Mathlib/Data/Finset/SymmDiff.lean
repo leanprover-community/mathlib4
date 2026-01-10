@@ -19,7 +19,7 @@ finite sets, finset
 
 -/
 
-@[expose] public section
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.

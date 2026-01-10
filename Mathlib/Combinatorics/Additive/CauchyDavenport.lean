@@ -51,7 +51,7 @@ Version for `circle`.
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise

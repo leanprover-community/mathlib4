@@ -399,7 +399,6 @@ theorem mul_mem_nthRootsFinset
 
 theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η ∈ nthRootsFinset n a) :
     η ≠ 0 := by
-  nontriviality R
   rintro rfl
   cases n with
   | zero =>
