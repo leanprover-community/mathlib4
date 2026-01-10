@@ -147,7 +147,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def sinPoly : ℕ → ℤ[X]
   | 0 => C 2
   | 1 => C 4
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -158,7 +158,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def cosPoly : ℕ → ℤ[X]
   | 0 => 0
   | 1 => monomial 1 (-4)
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.

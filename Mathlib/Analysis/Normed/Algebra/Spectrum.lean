@@ -211,6 +211,7 @@ open NNReal
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] [NormOneClass A]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
   r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
@@ -368,10 +369,11 @@ section ExpMapping
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
-/-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp 𝕜` maps the spectrum of `a` into the spectrum of `exp 𝕜 a`. -/
-theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A)
-    {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp 𝕜 z ∈ spectrum 𝕜 (exp 𝕜 a) := by
-  have hexpmul : exp 𝕜 a = exp 𝕜 (a - ↑ₐ z) * ↑ₐ (exp 𝕜 z) := by
+/-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp` maps the spectrum of `a` into the spectrum of `exp a`. -/
+theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+    (a : A) {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp z ∈ spectrum 𝕜 (exp a) := by
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ 𝕜 A
+  have hexpmul : exp a = exp (a - ↑ₐ z) * ↑ₐ (exp z) := by
     rw [algebraMap_exp_comm z, ← exp_add_of_commute (Algebra.commutes z (a - ↑ₐ z)).symm,
       sub_add_cancel]
   let b := ∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n
@@ -386,13 +388,13 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
-  have h₃ : exp 𝕜 (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
-    rw [exp_eq_tsum]
+  have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
+    rw [exp_eq_tsum 𝕜]
     convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
-  rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp 𝕜 z)), hexpmul, ← _root_.sub_mul,
-    Commute.isUnit_mul_iff (Algebra.commutes (exp 𝕜 z) (exp 𝕜 (a - ↑ₐ z) - 1)).symm,
+  rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
+    Commute.isUnit_mul_iff (Algebra.commutes (exp z) (exp (a - ↑ₐ z) - 1)).symm,
     sub_eq_iff_eq_add'.mpr h₃, Commute.isUnit_mul_iff (h₀ ▸ h₁ : (a - ↑ₐ z) * b = b * (a - ↑ₐ z))]
   exact not_and_of_not_left _ (not_and_of_not_left _ ((not_iff_not.mpr IsUnit.sub_iff).mp hz))
 
@@ -690,13 +692,15 @@ lemma compactSpace {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
 
 end QuasispectrumRestricts
 
+section UpperHemicontinuous
+
 open Filter Set Topology
 
-variable [NormedField 𝕜] [ProperSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [HasSummableGeomSeries A]
+variable (𝕜 A)
 
-variable (𝕜 A) in
-lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
+lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
+    [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    UpperHemicontinuous (spectrum 𝕜 : A → Set 𝕜) := by
   /- It suffices to use the sequential characterization of upper hemicontinuity.
   Suppose that `a : ℕ → A` converges to `a₀`, `x : ℕ → 𝕜` converges to `x₀`, and for all `n`,
   `x n ∈ spectrum 𝕜 (a n)`. -/
@@ -705,8 +709,8 @@ lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → 
     (isCompact_closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)).isSeqCompact ?_ <|
     fun a ha x hx_mem x₀ hx↦ ?_
   /- We must show that `spectrum 𝕜 (a n)` is eventually contained in some fixed compact set
-  (we've chosen `closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)`). This follows since the spectrum of `b` is
-  bounded `‖b‖ * ‖1‖` and `a` converges to `a₀`.  -/
+  (we've chosen `closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)`). This follows since the spectrum of any
+  `b` is bounded `‖b‖ * ‖1‖` and `a` converges to `a₀`.  -/
   · filter_upwards [Metric.closedBall_mem_nhds a₀ zero_lt_one] with a ha
     apply spectrum.subset_closedBall_norm_mul a |>.trans <| Metric.closedBall_subset_closedBall ?_
     gcongr
@@ -719,15 +723,14 @@ lemma upperHemicontinuous_spectrum : UpperHemicontinuous (spectrum 𝕜 : A → 
       (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
 
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_spectrum_nnreal (A : Type*)
-    [NormedRing A] [NormedAlgebra ℝ A] [HasSummableGeomSeries A] :
+theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
+theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
@@ -739,9 +742,11 @@ theorem upperHemicontinuous_quasispectrum (𝕜 A : Type*) [NontriviallyNormedFi
   congr
 
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum_nnreal (A : Type*) [NonUnitalNormedRing A]
+theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.isClosedEmbedding
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
+
+end UpperHemicontinuous
