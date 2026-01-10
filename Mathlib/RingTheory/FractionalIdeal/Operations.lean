@@ -834,8 +834,6 @@ theorem num_le (I : FractionalIdeal S P) :
 theorem isPrincipal_of_num_isPrincipal [IsDomain R]
     (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
-  -- Put the principal structure on `I.num` so we can use its generator.
-  letI : I.num.IsPrincipal := hI
   let g : R := Submodule.IsPrincipal.generator I.num
   have hnum : (I.num : FractionalIdeal R⁰ (FractionRing R)) =
       FractionalIdeal.spanSingleton (R⁰) (algebraMap R (FractionRing R) g) := by

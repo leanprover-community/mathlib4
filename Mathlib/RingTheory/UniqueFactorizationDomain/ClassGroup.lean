@@ -33,6 +33,7 @@ variable (R : Type*) [CommRing R]
 
 private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R}
     {J : Ideal R}
+    [IsDomain R]
     (hJspan : J = Ideal.span (Set.range c))
     (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (K : FractionalIdeal R⁰ (FractionRing R)),
@@ -41,15 +42,13 @@ private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {
           (∀ i, ℓ i ∈ K) ∧
             (Finset.univ : Finset (Fin n)).sum
                 (fun i => algebraMap R (FractionRing R) (c i) * ℓ i) = 1 := by
-  rcases hJunit with ⟨u, hu⟩
-  let K : FractionalIdeal R⁰ (FractionRing R) := (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R))
+  set K : FractionalIdeal R⁰ (FractionRing R) :=
+    (J : FractionalIdeal R⁰ (FractionRing R))⁻¹
   have hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1 := by
-    calc
-      (J : FractionalIdeal R⁰ (FractionRing R)) * K =
-          (↑u : FractionalIdeal R⁰ (FractionRing R)) *
-            (↑(u⁻¹) : FractionalIdeal R⁰ (FractionRing R)) := by
-            simp [K, hu]
-      _ = 1 := by simp
+    simpa [K] using
+      (FractionalIdeal.mul_inv_cancel_iff_isUnit (K := FractionRing R)
+            (I := (J : FractionalIdeal R⁰ (FractionRing R)))).2
+        hJunit
   refine ⟨K, hJK, ?_⟩
   -- Induct on the proof that `1 ∈ J * K` in the `R`-submodule `FractionRing R`.
   let C : FractionRing R → Prop :=
@@ -319,16 +318,10 @@ private lemma exists_relations_of_isUnit_fractionalIdeal_of_span
 private def CommonDivisorsAreUnits {n : ℕ} (c : Fin n → R) : Prop :=
   ∀ d : R, (∀ i : Fin n, d ∣ c i) → IsUnit d
 
-private lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R}
-    (hJspan : J = Ideal.span (Set.range c))
-    (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)))
-    (hc : CommonDivisorsAreUnits (R := R) c) {x : R} (hx0 : x ≠ 0) {b : Fin n → R}
-    (hdiv : ∀ i j : Fin n, x ∣ c i * b j)
-    (hxmem : x ∈ J * Ideal.span (Set.range b))
+private lemma ideal_eq_top_of_relations {n : ℕ} {J : Ideal R}
+    {x : R} (hx0 : x ≠ 0) {b : Fin n → R} (hxmem : x ∈ J * Ideal.span (Set.range b))
     (hb : ∀ j : Fin n, x ∣ b j) :
     J = ⊤ := by
-  have _ := hJunit
-  have _ := hc
   let B : Ideal R := Ideal.span (Set.range b)
   have hxmem' : x ∈ J * B := by simpa [B] using hxmem
   -- `B ≤ (x)` since all generators are divisible by `x`.
@@ -339,27 +332,12 @@ private lemma ideal_eq_top_of_relations {n : ℕ} {c : Fin n → R} {J : Ideal R
     refine (Ideal.mem_span_singleton').2 ?_
     refine ⟨t, ?_⟩
     simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
-  -- `J * B = (x)`: inclusion `≤` from `hdiv`, and inclusion `≥` from `hxmem`.
+  -- `J * B = (x)`: inclusion `≤` from monotonicity, and inclusion `≥` from `hxmem`.
   have hJB_le : J * B ≤ Ideal.span ({x} : Set R) := by
-    -- Rewrite `J * B` as the span of pairwise products of generators.
-    have hmul :
-        J * B = Ideal.span ((Set.range c) * (Set.range b)) := by
-      calc
-        J * B = Ideal.span (Set.range c) * Ideal.span (Set.range b) := by
-          simp [hJspan, B]
-        _ = Ideal.span ((Set.range c) * (Set.range b)) := by
-          simpa using (Ideal.span_mul_span' (S := (Set.range c)) (T := (Set.range b)) (R := R))
-    rw [hmul]
-    refine (Ideal.span_le).2 ?_
-    rintro z hz
-    rcases hz with ⟨z₁, hz₁, z₂, hz₂, rfl⟩
-    rcases hz₁ with ⟨i, rfl⟩
-    rcases hz₂ with ⟨j, rfl⟩
-    rcases hdiv i j with ⟨t, ht⟩
-    refine (Ideal.mem_span_singleton').2 ?_
-    refine ⟨t, ?_⟩
-    -- `t * x = c i * b j`, using commutativity.
-    simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
+    calc
+      J * B ≤ (⊤ : Ideal R) * B := Ideal.mul_mono_left (le_top : J ≤ (⊤ : Ideal R))
+      _ = B := by simp
+      _ ≤ Ideal.span ({x} : Set R) := hB_le
   have hspan_le : Ideal.span ({x} : Set R) ≤ J * B :=
     (Ideal.span_singleton_le_iff_mem (I := J * B) (x := x)).2 hxmem'
   have hJB : J * B = Ideal.span ({x} : Set R) := le_antisymm hJB_le hspan_le
@@ -476,18 +454,6 @@ private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
           (Ideal.span_mul_span' (R := R) (S := ({y} : Set R)) (T := Set.range c)).symm
       _ = Ideal.span ({y} : Set R) * J := by simp [J]
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := by
-    -- `span({y})` is a unit fractional ideal since `y ≠ 0` in the fraction field.
-    have hy0' : algebraMap R (FractionRing R) y ≠ 0 := by
-      intro h
-      apply hy0
-      exact (IsFractionRing.injective R (FractionRing R)) (by simpa using h)
-    let u : (FractionRing R)ˣ := Units.mk0 (algebraMap R (FractionRing R) y) hy0'
-    have hyUnit :
-        IsUnit
-          ((Ideal.span ({y} : Set R) : Ideal R) :
-            FractionalIdeal R⁰ (FractionRing R)) := by
-      refine ⟨toPrincipalIdeal R (FractionRing R) u, ?_⟩
-      simp [u]
     have hprod :
         IsUnit
           (((Ideal.span ({y} : Set R) : Ideal R) : FractionalIdeal R⁰ (FractionRing R)) *
@@ -495,19 +461,7 @@ private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
       -- Transport `hI` along `hIJ`, and rewrite the ideal product as
       -- a product of fractional ideals.
       simpa [hIJ, FractionalIdeal.coeIdeal_mul] using hI
-    rcases hyUnit with ⟨uy, huy⟩
-    have hprod' :
-        IsUnit
-          ((↑uy : FractionalIdeal R⁰ (FractionRing R)) *
-            (J : FractionalIdeal R⁰ (FractionRing R))) := by
-      simpa [huy] using hprod
-    have :
-        IsUnit
-          ((↑(uy⁻¹) : FractionalIdeal R⁰ (FractionRing R)) *
-            ((↑uy : FractionalIdeal R⁰ (FractionRing R)) *
-              (J : FractionalIdeal R⁰ (FractionRing R)))) :=
-      IsUnit.mul (⟨uy⁻¹, rfl⟩ : IsUnit (↑(uy⁻¹) : FractionalIdeal R⁰ (FractionRing R))) hprod'
-    simpa [mul_assoc] using this
+    exact isUnit_of_mul_isUnit_right hprod
   have hc : CommonDivisorsAreUnits (R := R) c := by
     intro d hd
     have hd' : ∀ i ∈ (Finset.univ : Finset (Fin n)), d ∣ c i := by
@@ -577,8 +531,7 @@ private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     intro i
     simpa [mul_assoc, mul_left_comm, mul_comm] using hdiv i j
   have hJtop : J = ⊤ :=
-    ideal_eq_top_of_relations (R := R) (c := c) (J := J) hJspan hJunit hc (x := x) hx0
-      (b := b) hdiv hxmem hb
+    ideal_eq_top_of_relations (R := R) (J := J) (x := x) hx0 (b := b) hxmem hb
   refine ⟨y, ?_⟩
   simpa [hJtop] using hIJ
 
