@@ -158,9 +158,7 @@ theorem finrank_sl (R : Type*) [Fintype n] [Nonempty n] [Field R] :
   have hrank := (Matrix.traceLinearMap n R R).finrank_range_add_finrank_ker
   have hrange : Module.finrank R (LinearMap.range (Matrix.traceLinearMap n R R)) = 1 := by
     rw [LinearMap.range_eq_top.mpr Matrix.trace_surjective, finrank_top, Module.finrank_self]
-  have hsl : Module.finrank R (sl n R) =
-      Module.finrank R (LinearMap.ker (Matrix.traceLinearMap n R R)) := rfl
-  omega
+  grind
 
 end SpecialLinear
 
