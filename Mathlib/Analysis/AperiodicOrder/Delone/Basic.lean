@@ -5,42 +5,41 @@ Authors: Newell Jensen
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Thickening
-public import Mathlib.Topology.MetricSpace.MetricSeparated
+public import Mathlib.Topology.MetricSpace.Cover
 
 /-!
 # Delone sets
 
 A **Delone set** `D ⊆ X` in a metric space is a set which is both:
 
-* **uniformly discrete**: there exists `r > 0` such that distinct points of `D`
-  have distance **strictly greater** than `r`;
-* **relatively dense**: there exists `R > 0` such that every point of `X`
-  lies **strictly within distance `R`** of some point of `D`.
+* **uniformly discrete**: there exists `packingRadius > 0` such that distinct points of `D`
+  are separated by a distance strictly greater than `packingRadius`;
+* **relatively dense**: there exists `coveringRadius > 0` such that every point of `X`
+  lies within distance `coveringRadius` of some point of `D`.
 
-These notions are phrased in terms of metric entourages so that the theory
-fits naturally into the uniformity framework.
+The `DeloneSet` structure stores the set together with explicit radii witnessing
+these properties. The definitions use metric entourages so that the theory fits
+naturally into the uniformity framework.
 
-Delone sets arise throughout discrete geometry, crystallography,
-aperiodic order, and tiling theory.
+Delone sets appear in discrete geometry, crystallography, aperiodic order, and tiling theory.
 
 ## Main definitions
 
-* `Metric.IsUniformlyDiscrete D`
-* `Metric.IsRelativelyDense D`
-* `Delone.DeloneSet X`
+* `Delone.DeloneSet X`: The main structure representing a Delone set in a metric space `X`.
+* `DeloneSet.mapBilipschitz`: Transports a Delone set along a bilipschitz equivalence,
+  scaling the radii.
+* `DeloneSet.mapIsometry` Preserves the packing and covering radii exactly; see
+  `mapIsometry_packingRadius` and `mapIsometry_coveringRadius`.
+
 
 ## Basic properties
 
-* Canonical radii: `DeloneSet.packingRadius`, `DeloneSet.coveringRadius`.
-* Bounds: `packingRadius_lt_dist_of_mem_ne`, `dist_lt_coveringRadius`.
-* `subset_ball_singleton`: small balls contain at most one point of a Delone set.
-* `map`: Delone sets are preserved by isometries.
-
-## TODO
-
-`distLT` is a temporary entourage. When mathlib includes canonical quantitative
-entourages for metric spaces, replace all `distLT` with that construction.
+* `packingRadius_lt_dist_of_mem_ne` : Distinct points in a Delone set are further apart than
+  the packing radius.
+* `dist_le_coveringRadius` : Every point of the space lies within the covering radius of the set.
+* `subset_ball_singleton` : Any ball of sufficiently small radius contains at most one point of
+  the set.
+* `eq_of_mem_ball` : A ball of radius `packingRadius / 2` contains at most one point of the set.
 -/
 
 @[expose] public section
@@ -48,55 +47,6 @@ entourages for metric spaces, replace all `distLT` with that construction.
 open scoped Uniformity ENNReal
 
 variable {X Y : Type*} [MetricSpace X] [MetricSpace Y]
-
-namespace Metric
-
-/-- The metric `ε`-entourage as a relation (a set of pairs). -/
-def distLT (ε : ℝ) : SetRel X X := {p : X × X | dist p.1 p.2 < ε}
-
-/-- If `ε > 0`, then the metric entourage `distLT ε` belongs to the uniformity. -/
-lemma distLT_mem_uniformity {ε : ℝ} (hε : 0 < ε) : distLT ε ∈ 𝓤 X :=
-  (mem_uniformity_dist).2 ⟨ε, hε, fun _ _ a₁ ↦ a₁⟩
-
-/-- `D` is uniformly discrete with radius `r > 0` if every two distinct
-points of `D` have distance strictly greater than `r`. -/
-def IsUniformlyDiscrete (D : Set X) : Prop :=
-  ∃ r : ℝ, 0 < r ∧ IsSeparated (ENNReal.ofReal r) D
-
-/-- `D` is relatively dense with radius `R > 0` if every point of the space
-lies strictly within distance `R` of some point of `D`. -/
-def IsRelativelyDense (D : Set X) : Prop :=
-  ∃ R : ℝ, 0 < R ∧ ∀ x : X, ∃ y ∈ D, (x, y) ∈ distLT R
-
-/-- Monotonicity of uniform discreteness. -/
-lemma IsUniformlyDiscrete.mono {D E : Set X} (hDE : D ⊆ E) :
-    IsUniformlyDiscrete E → IsUniformlyDiscrete D := by
-  rintro ⟨r, hr_pos, hsep⟩
-  exact ⟨r, hr_pos, IsSeparated.subset hDE hsep⟩
-
-/-- Monotonicity of relative denseness. -/
-lemma IsRelativelyDense.mono {D E : Set X} (hDE : D ⊆ E) :
-    IsRelativelyDense D → IsRelativelyDense E := by
-  rintro ⟨R, hR_pos, hcov⟩
-  refine ⟨R, hR_pos, fun x ↦ ?_⟩
-  obtain ⟨y, hyD, hxy⟩ := hcov x
-  exact ⟨y, hDE hyD, hxy⟩
-
-/-- Relative denseness implies the thickening covers the whole space. -/
-lemma IsRelativelyDense.cthickening_eq_univ
-    {X : Type*} [MetricSpace X] {D : Set X}
-    (h : IsRelativelyDense D) :
-    ∃ R, cthickening R D = Set.univ := by
-  obtain ⟨R, hRpos, hcov⟩ := h
-  refine ⟨R, ?_⟩
-  ext x; constructor
-  · intro _; trivial
-  · intro _; obtain ⟨y, hyD, hxy⟩ := hcov x
-    have : dist x y ≤ R := by
-      simpa [distLT] using (le_of_lt hxy)
-    exact mem_cthickening_of_dist_le x y R D hyD this
-
-end Metric
 
 namespace Delone
 
@@ -108,120 +58,137 @@ structure DeloneSet (X : Type*) [MetricSpace X] where
   /-- The underlying set. -/
   carrier : Set X
   /-- Radius such that distinct points of `carrier` are separated by more than `r`. -/
-  r : ℝ
-  r_pos : 0 < r
-  r_sep : IsSeparated (ENNReal.ofReal r) carrier
+  packingRadius : ℝ
+  packingRadius_pos : 0 < packingRadius
+  isSeparated_packingRadius : IsSeparated (.ofReal packingRadius) carrier
   /-- Radius such that every point of the space is within `R` of `carrier`. -/
-  R : ℝ
-  R_pos : 0 < R
-  R_cov : ∀ x, ∃ y ∈ carrier, (x, y) ∈ distLT R
+  coveringRadius : ℝ
+  coveringRadius_pos : 0 < coveringRadius
+  isCover_coveringRadius : IsCover coveringRadius.toNNReal .univ carrier
 
 attribute [simp] DeloneSet.carrier
 
 namespace DeloneSet
 
-/-- The packing radius. -/
-def packingRadius (D : DeloneSet X) : ℝ := D.r
-
-lemma packingRadius_pos (D : DeloneSet X) : 0 < D.packingRadius := D.r_pos
-
-/-- The covering radius. -/
-def coveringRadius (D : DeloneSet X) : ℝ := D.R
-
-lemma coveringRadius_pos (D : DeloneSet X) : 0 < D.coveringRadius := D.R_pos
-
 /-- A Delone set is nonempty when the space is nonempty. -/
-lemma nonempty [Nonempty X] (D : DeloneSet X) : Nonempty D.carrier := by
+lemma nonempty [Nonempty X] (D : DeloneSet X) : D.carrier.Nonempty := by
   obtain ⟨x⟩ := (inferInstance : Nonempty X)
-  obtain ⟨y, hyD, _⟩ := D.R_cov x
-  exact ⟨y, hyD⟩
+  have hx : x ∈ (.univ : Set X) := trivial
+  obtain ⟨y, hy, _⟩ := D.isCover_coveringRadius hx
+  exact ⟨y, hy⟩
 
 /-- Distinct points of `D` are separated by more than the `packingRadius`. -/
 lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
     D.packingRadius < dist x y := by
-  have hsep : ENNReal.ofReal D.r < ENNReal.ofReal (dist x y) := by
-    simpa [edist_dist] using D.r_sep hx hy hne
+  have hsep : ENNReal.ofReal D.packingRadius < ENNReal.ofReal (dist x y) := by
+    simpa [edist_dist] using D.isSeparated_packingRadius hx hy hne
   exact (ENNReal.ofReal_lt_ofReal_iff (h := dist_pos.mpr hne)).1 hsep
 
 /-- Every point of the space lies strictly within the `coveringRadius` of `D`. -/
-lemma dist_lt_coveringRadius (D : DeloneSet X) (x : X) :
-    ∃ y ∈ D.carrier, dist x y < D.coveringRadius := by
-  obtain ⟨y, hy, hxy⟩ := D.R_cov x
-  exact Filter.frequently_principal.mp fun a ↦ a hy hxy
+lemma dist_le_coveringRadius (D : DeloneSet X) (x : X) :
+  ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius := by
+  obtain ⟨y, hy, hxy_mem⟩ := D.isCover_coveringRadius (x := x) trivial
+  -- exact ⟨y, hy, (ENNReal.toReal_le_toReal ...).mpr hxy⟩
+
+  have hxy_le : edist x y ≤ D.coveringRadius.toNNReal := Set.mem_setOf.mp hxy_mem
+  rw [edist_dist, ENNReal.ofReal_le_coe] at hxy_le
+  have hR : (D.coveringRadius.toNNReal : ℝ) = D.coveringRadius := by
+      unfold NNReal.toReal; simp [D.coveringRadius_pos.le]
+  rw [hR] at hxy_le
+  exact ⟨y, hy, hxy_le⟩
+
+/-- A ball of radius `packingRadius / 2` contains at most one point of the Delone set. -/
+lemma eq_of_mem_ball (D : DeloneSet X) {x y z : X} (hx : x ∈ D.carrier) (hy : y ∈ D.carrier)
+    (hxz : x ∈ ball z (D.packingRadius / 2)) (hyz : y ∈ ball z (D.packingRadius / 2)) :
+    x = y := by
+  by_contra hne
+  have htri := (dist_triangle x z y).trans_lt
+    (add_lt_add (mem_ball.mp hxz) (by rwa [dist_comm, ← mem_ball]))
+  rw [add_halves] at htri
+  exact (D.packingRadius_lt_dist_of_mem_ne hx hy hne).not_gt htri
 
 /-- There exists a radius `r > 0` such that any ball of radius `r`
 centered at a point of `D` contains at most one point of `D`. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
-    ∃ r > 0, ∀ {x y z}, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
-      x ∈ ball z r → y ∈ ball z r → x = y := by
-  refine ⟨D.packingRadius / 2, half_pos D.packingRadius_pos, ?_⟩
-  intro x y z hx hy hz hxz hyz
-  by_contra hne
-  have hsum : dist x z + dist z y < D.packingRadius :=
-    by simpa [add_halves, dist_comm] using
-      add_lt_add (mem_ball.mp hxz) (mem_ball.mp hyz)
-  have hxy_lt : dist x y < D.packingRadius :=
-    lt_of_le_of_lt (dist_triangle x z y) hsum
-  have hsep := D.packingRadius_lt_dist_of_mem_ne hx hy hne
-  grind
+    ∃ r > 0, ∀ {x y z}, x ∈ D.carrier → y ∈ D.carrier → x ∈ ball z r → y ∈ ball z r → x = y :=
+  ⟨D.packingRadius / 2, half_pos D.packingRadius_pos, fun hx hy => D.eq_of_mem_ball hx hy⟩
 
-/-- Isometries preserve Delone sets. -/
-def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
+open NNReal
+
+/-- Bilipschitz maps send Delone sets to Delone sets. -/
+noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 < (K₁ : ℝ)) (hK₂ : 0 < (K₂ : ℝ))
+    (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f) (D : DeloneSet X) : DeloneSet Y := {
   carrier := f '' D.carrier
-  r := D.r
-  r_pos := D.r_pos
-  r_sep := by
-    rintro y ⟨x, hx, rfl⟩ y' ⟨x', hx', rfl⟩ hne
-    have hsep : ENNReal.ofReal D.r < edist x x' := by
-      simpa [edist_dist] using D.r_sep hx hx' (by grind)
-    simpa [f.edist_eq] using hsep
-  R := D.R
-  R_pos := D.R_pos
-  R_cov := by
-    intro y
-    obtain ⟨x, hx, hxR⟩ := D.R_cov (f.symm y)
-    refine ⟨f x, ⟨x, hx, rfl⟩, ?_⟩
-    have hxR' : dist (f.symm y) x < D.R := by
-      simpa [distLT] using hxR
-    have hdist : dist y (f x) = dist (f.symm y) x := by
-      simpa using f.dist_eq (f.symm y) x
-    simpa [distLT, hdist] using hxR'
+  packingRadius := D.packingRadius / K₁
+  packingRadius_pos := div_pos D.packingRadius_pos hK₁
+  isSeparated_packingRadius := by
+    rintro _ ⟨x1, hx1, rfl⟩ _ ⟨x2, hx2, rfl⟩ hne
+    have h_sep := D.isSeparated_packingRadius hx1 hx2 (by grind)
+    have h_anti := hf₁.le_mul_dist x1 x2
+    simp [edist_dist] at h_sep
+    rw [edist_dist]
+    simp_all only [coe_pos, ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true,
+      dist_pos, ENNReal.ofReal_lt_ofReal_iff, gt_iff_lt]
+    have h_combined := h_sep.trans_le h_anti
+    field_simp [hK₁.ne']
+    exact h_combined
+  coveringRadius := K₂ * D.coveringRadius
+  coveringRadius_pos := mul_pos hK₂ D.coveringRadius_pos
+  isCover_coveringRadius := by
+    intro y _
+    obtain ⟨x, rfl⟩ := f.surjective y
+    obtain ⟨s, hs, h_dist_edist⟩ := D.isCover_coveringRadius (x := x) (Set.mem_univ x)
+    use f s, Set.mem_image_of_mem f hs
+    simp only [Set.mem_setOf_eq, edist_dist]
+    apply (ENNReal.ofReal_le_ofReal_iff (mul_nonneg K₂.prop D.coveringRadius_pos.le)).mpr
+    apply (hf₂.dist_le_mul x s).trans
+    simp only [Set.mem_setOf_eq, edist_dist] at h_dist_edist
+    have h_rad_finite : (D.coveringRadius.toNNReal : ℝ≥0∞) ≠ ∞ := ENNReal.coe_ne_top
+    have h_dist_real :=
+      (ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top h_rad_finite).mpr h_dist_edist
+    rw [ENNReal.toReal_ofReal dist_nonneg, ENNReal.coe_toReal] at h_dist_real
+    have : D.coveringRadius.toNNReal = D.coveringRadius := by
+      simp only [Real.coe_toNNReal', sup_eq_left]
+      exact D.coveringRadius_pos.le
+    rw [this] at h_dist_real
+    exact mul_le_mul_of_nonneg_left h_dist_real K₂.prop
 }
 
+/-- The image of a Delone set under an isometry. This is a specialization of
+DeloneSet.mapBilipschitz where the packing and covering radii are preserved
+because the Lipschitz constants are both 1. -/
+noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
+  D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
+    f.isometry.antilipschitz f.isometry.lipschitz
+
+@[simp] lemma mapIsometry_packingRadius (D : DeloneSet X) (f : X ≃ᵢ Y) :
+  (D.mapIsometry f).packingRadius = D.packingRadius := by
+  simp only [mapIsometry, mapBilipschitz, coe_one, div_one]
+
+@[simp] lemma mapIsometry_coveringRadius (D : DeloneSet X) (f : X ≃ᵢ Y) :
+  (D.mapIsometry f).coveringRadius = D.coveringRadius := by
+  simp only [mapIsometry, mapBilipschitz, IsometryEquiv.coe_toEquiv, coe_one, div_one, one_mul]
+
 /-- Extensionality for Delone sets. -/
-@[ext] lemma ext {D E : DeloneSet X} (h_carrier : D.carrier = E.carrier)
-    (h_r : D.r = E.r) (h_R : D.R = E.R) : D = E := by
-  cases D; cases E; cases h_carrier; cases h_r; cases h_R; rfl
+@[ext] lemma ext {D E : DeloneSet X}
+    (h_carrier : D.carrier = E.carrier)
+    (h_packing : D.packingRadius = E.packingRadius)
+    (h_covering : D.coveringRadius = E.coveringRadius) : D = E := by
+  cases D; cases E; congr
 
-lemma map_id (D : DeloneSet X) : D.map (IsometryEquiv.refl X) = D := by
-  apply ext
-  · ext x; constructor
-    · rintro ⟨y, hyD, rfl⟩; simpa using hyD
-    · intro hx; exact ⟨x, hx, rfl⟩
-  · rfl
-  · rfl
+lemma mapIsometry_id (D : DeloneSet X) : D.mapIsometry (IsometryEquiv.refl X) = D := by
+  ext <;> simp [mapIsometry, mapBilipschitz]
+  exact exists_eq_right
 
-lemma map_comp {Z : Type*} [MetricSpace Z]
+lemma mapIsometry_comp {Z : Type*} [MetricSpace Z]
     (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
-    D.map (f.trans g) = (D.map f).map g := by
-  apply ext
-  · ext z; constructor
-    · rintro ⟨x, hxD, rfl⟩
-      exact ⟨f x, ⟨x, hxD, rfl⟩, rfl⟩
-    · rintro ⟨y, ⟨x, hxD, rfl⟩, rfl⟩
-      exact ⟨x, hxD, rfl⟩
-  · rfl
-  · rfl
+    D.mapIsometry (f.trans g) = (D.mapIsometry f).mapIsometry g := by
+  ext <;> simp [mapIsometry, mapBilipschitz]
 
-lemma map_symm (D : DeloneSet X) (f : X ≃ᵢ Y) :
-    (D.map f).map f.symm = D := by
-  apply ext
-  · ext x; constructor
-    · rintro ⟨y, ⟨x₀, hx₀D, rfl⟩, rfl⟩; simpa
-    · intro hx; exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
-  · rfl
-  · rfl
+lemma mapIsometry_symm (D : DeloneSet X) (f : X ≃ᵢ Y) :
+    (D.mapIsometry f).mapIsometry f.symm = D := by
+  ext <;> simp [mapIsometry, mapBilipschitz]
 
 end DeloneSet
 
