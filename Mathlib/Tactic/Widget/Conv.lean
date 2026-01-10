@@ -30,10 +30,10 @@ inductive Path where
   | type (next : Path) : Path
   | body (name : Name) (next : Path) : Path
 
-partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
-  go expr pos.toArray 0
+partial def Path.ofSubExprPosArray (expr : Expr) (pos : Array Nat) : MetaM Path :=
+  go expr 0
 where
-  go (expr : Expr) (pos : Array Nat) (i : Fin (pos.size + 1)) : MetaM Path :=
+  go (expr : Expr) (i : Fin (pos.size + 1)) : MetaM Path :=
     if h : i = Fin.last pos.size then pure (Path.fun 0) else
     let i := i.castLT (Fin.val_lt_last h)
     if pos[i] = SubExpr.Pos.typeCoord then
@@ -48,7 +48,7 @@ where
     | .sort _ => err
     | .proj _ _ e =>
       throwError m!"conv mode does not yet support entering projections{indentExpr expr}"
-    | .mdata _ e => go e pos i.castSucc
+    | .mdata _ e => go e i.castSucc
     | .letE n t _ b _ =>
       if pos[i] = 0 then
         throwError m!"conv mode does not yet support entering let types{indentExpr expr}"
@@ -64,7 +64,7 @@ where
             throwError m!"conv mode does not support entering let expressions \
               for which the type-correctness of the body depends on the let value \n\
               failed to abstract let-expression, result is not type correct{indentExpr expr}"
-          Path.body n <$> go e pos i.succ
+          Path.body n <$> go e i.succ
       else err
     | .forallE n t b bi =>
       if pos[i] = 0 then do
@@ -72,13 +72,13 @@ where
           throwError m!"conv mode only supports rewriting forall binder types \
             when the binder type is a proposition or when the body of the forall \
             does not depend on the value of the bound variable{indentExpr expr}"
-        Path.type <$> go t pos i.succ
+        Path.type <$> go t i.succ
       else if pos[i] = 1 then do
         let lctx ← getLCtx
         let fvarId ← mkFreshFVarId
         let lctx := lctx.mkLocalDecl fvarId n t bi
         withReader (fun ctx => {ctx with lctx})
-          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) pos i.succ)
+          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) i.succ)
       else err
     | .lam n t b bi =>
       if pos[i] = 0 then
@@ -89,27 +89,27 @@ where
         let fvarId ← mkFreshFVarId
         let lctx := lctx.mkLocalDecl fvarId n t bi
         withReader (fun ctx => {ctx with lctx})
-          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) pos i.succ)
+          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) i.succ)
       else err
-    | .app .. => appT expr pos i.castSucc [] none
-  appT (e : Expr) (p : Array Nat) (i : Fin (p.size + 1))
+    | .app .. => appT expr i.castSucc [] none
+  appT (e : Expr) (i : Fin (pos.size + 1))
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
     match e with
     | .app f a =>
-      if let some u := n then appT f p i (a :: acc) (some u.succ)
-      else if h : i = Fin.last p.size then pure (Path.fun acc.length)
+      if let some u := n then appT f i (a :: acc) (some u.succ)
+      else if h : i = Fin.last pos.size then pure (Path.fun acc.length)
       else let i := i.castLT (Fin.val_lt_last h)
-      if p[i] = 0 then appT f p i.succ (a :: acc) none
-      else if p[i] = 1 then appT f p i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
-      else throwError m!"cannot access position {p[i]} of{indentExpr e}"
+      if pos[i] = 0 then appT f i.succ (a :: acc) none
+      else if pos[i] = 1 then appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
+      else throwError m!"cannot access position {pos[i]} of{indentExpr e}"
     | _ =>
       if let some u := n then do
         let c ← PrettyPrinter.Delaborator.getParamKinds e acc.toArray
         if let some {bInfo := .default, ..} := c[u]? then
           arg (((c.map (·.bInfo)).take u).count .default + 1)
-            false <$> go acc[u] p i
-        else arg (u + 1) true <$> go acc[u] p i
-      else arg 0 false <$> go e p i
+            false <$> go acc[u] i
+        else arg (u + 1) true <$> go acc[u] i
+      else arg 0 false <$> go e i
 
 open Lean.Parser.Tactic.Conv in
 def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
@@ -162,7 +162,7 @@ public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goa
   | _ => throwError "You must select something in the goal or in the type of a local hypothesis."
   let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
-  let path ← Path.ofSubExprPos expr subexprPos
+  let path ← Path.ofSubExprPosArray expr subexprPos.toArray
   pathToStx path fvarUserName?
 
 open Lean Syntax in
