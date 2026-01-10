@@ -86,12 +86,9 @@ where
         throwError m!"conv mode does not yet support entering let types{indentExpr expr}"
       else if pos[i] = 1 then
         throwError m!"conv mode does not yet support entering let values{indentExpr expr}"
-      else if pos[i] = 2 then do
-        let lctx ← getLCtx
-        let fvarId ← mkFreshFVarId
-        let lctx := lctx.mkLocalDecl fvarId n t
-        withReader (fun ctx => {ctx with lctx}) do
-          let e := b.instantiate1 (.fvar fvarId)
+      else if pos[i] = 2 then
+        withLocalDeclNoLocalInstanceUpdate n .default t fun fvar => do
+          let e := b.instantiate1 fvar
           unless (← isTypeCorrect e) do
             throwError m!"conv mode does not support entering let expressions \
               for which the type-correctness of the body depends on the let value \n\
@@ -105,23 +102,17 @@ where
             when the binder type is a proposition or when the body of the forall \
             does not depend on the value of the bound variable{indentExpr expr}"
         Path.type <$> go t i.succ
-      else if pos[i] = 1 then do
-        let lctx ← getLCtx
-        let fvarId ← mkFreshFVarId
-        let lctx := lctx.mkLocalDecl fvarId n t bi
-        withReader (fun ctx => {ctx with lctx})
-          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) i.succ)
+      else if pos[i] = 1 then
+        withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
+          (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else err
     | .lam n t b bi =>
       if pos[i] = 0 then
         throwError m!"conv mode does not support rewriting \
           the binder type of a lambda{indentExpr expr}"
-      else if pos[i] = 1 then do
-        let lctx ← getLCtx
-        let fvarId ← mkFreshFVarId
-        let lctx := lctx.mkLocalDecl fvarId n t bi
-        withReader (fun ctx => {ctx with lctx})
-          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) i.succ)
+      else if pos[i] = 1 then
+        withLocalDeclNoLocalInstanceUpdate n bi t fun fvar =>
+          (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else err
     | .app .. => appT expr i.castSucc [] none
   appT (e : Expr) (i : Fin (pos.size + 1))
