@@ -137,9 +137,7 @@ lemma subset_centralizer_centralizer : S ⊆ S.centralizer.centralizer :=
 lemma centralizer_centralizer_centralizer (S : Set M) :
     S.centralizer.centralizer.centralizer = S.centralizer := by
   refine Set.Subset.antisymm ?_ Set.subset_centralizer_centralizer
-  intro x hx
-  rw [Set.mem_centralizer_iff] at ⊢ hx
-  exact fun y hy ↦ hx y <| Set.subset_centralizer_centralizer hy
+  exact fun x hx y hy ↦ hx y <| Set.subset_centralizer_centralizer hy
 
 @[to_additive decidableMemAddCentralizer]
 instance decidableMemCentralizer [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
@@ -176,16 +174,16 @@ theorem center_prod {N : Type*} [Mul N] :
 open Function in
 @[to_additive addCenter_pi]
 theorem center_pi {ι : Type*} {A : ι → Type*} [Π i, Mul (A i)] :
-    center (Π i, A i) = univ.pi (fun i => center (A i)) := by
+    center (Π i, A i) = univ.pi fun i ↦ center (A i) := by
   classical
   ext x
   simp only [mem_pi, mem_center_iff, isMulCentral_iff, mem_univ, forall_true_left,
     commute_iff_eq, funext_iff, Pi.mul_def]
   refine ⟨?_, by grind⟩
-  exact fun ⟨h1, h2, h3⟩ i => ⟨
-    fun a => by simpa using h1 (update x i a) i,
-    fun b c => by simpa using h2 (update x i b) (update x i c) i,
-    fun a b => by simpa using h3 (update x i a) (update x i b) i⟩
+  exact fun ⟨h1, h2, h3⟩ i ↦ ⟨
+    fun a ↦ by simpa using h1 (update x i a) i,
+    fun b c ↦ by simpa using h2 (update x i b) (update x i c) i,
+    fun a b ↦ by simpa using h3 (update x i a) (update x i b) i⟩
 
 end Mul
 
