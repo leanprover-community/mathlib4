@@ -217,15 +217,14 @@ variable (𝕂)
 theorem exp_eq_finset_sum_div_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = ∑ i ∈ Finset.range (nilpotencyClass x), x ^ i / i ! := by
   rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
-  apply Finset.sum_congr <| by rfl
-  intros
+  congr! 1
   exact expSeries_apply_eq (𝕂 := 𝕂) x _ ▸ expSeries_apply_eq_div x _
 
 lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = IsNilpotent.exp x := by
   rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
-  apply Finset.sum_congr <| by rfl
-  intros
+  congr
+  ext
   rw [← Rat.cast_inv_nat]
   apply Rat.cast_smul_eq_qsmul
 

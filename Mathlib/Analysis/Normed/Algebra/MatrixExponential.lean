@@ -104,8 +104,7 @@ lemma exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [DivisionR
     [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] [IsScalarTower ℚ 𝕂 𝔸]
     {A : Matrix m m 𝔸} (ha : IsNilpotent A) : exp 𝕂 A = IsNilpotent.exp A := by
   rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
-  apply Finset.sum_congr <| by rfl
-  intros
+  congrm ∑ _ ∈ _, ?_
   rw [← Rat.cast_inv_nat]
   apply Rat.cast_smul_eq_qsmul
 
