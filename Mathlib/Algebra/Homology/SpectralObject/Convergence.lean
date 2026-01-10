@@ -118,8 +118,8 @@ lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
     (fourδ₂Toδ₁' ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top) (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂) rfl,
     ← assoc]
   congr 1
-  rw [← cancel_mono (X.iCycles _ _ _ _ _), assoc, toCycles_i,
-    X.cyclesMap_i n₁ n₂ hn₂ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂)
+  rw [← cancel_mono (X.iCycles _ _ _), assoc, toCycles_i,
+    X.cyclesMap_i n₁ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂)
       (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂) rfl,
     toCycles_i_assoc, ← Functor.map_comp]
   rfl

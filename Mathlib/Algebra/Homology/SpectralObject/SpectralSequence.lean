@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
-public import Mathlib.Algebra.Homology.SpectralSequence.EInt
-public import Batteries.Data.Fin.Basic
+public import Mathlib.Data.EInt.Basic
 
 /-!
 # The spectral sequence of a spectral object

@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
-public import Mathlib.Algebra.Homology.SpectralSequence.EInt
+public import Mathlib.Data.EInt.Basic
 
 /-!
 # Truncations for a t-structure

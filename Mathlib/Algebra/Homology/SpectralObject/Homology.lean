@@ -64,7 +64,7 @@ lemma d_EMap_fourδ₄Toδ₃ :
     X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
       X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) = 0 := by
   rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅),
-    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄), comp_zero, comp_zero,
+    ← cancel_epi (X.toCycles n₁ f₃ f₄ f₃₄ h₃₄), comp_zero, comp_zero,
     X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ _ rfl f₃₄ h₃₄,
     X.πE_EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄
     (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄) (𝟙 _) (by ext <;> simp; rfl),
@@ -98,7 +98,7 @@ lemma EMap_fourδ₁Toδ₀_d :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
       X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ = 0 := by
   rw [← cancel_mono (X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃),
-    ← cancel_mono (X.fromOpcycles n₁ n₂ hn₂ f₂ f₃ f₂₃ h₂₃), zero_comp, zero_comp, assoc,
+    ← cancel_mono (X.fromOpcycles n₂ f₂ f₃ f₂₃ h₂₃), zero_comp, zero_comp, assoc,
     assoc, X.d_ιE_fromOpcycles n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ _ rfl _ rfl]
   rw [X.EMap_ιE_assoc n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅
     (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) (𝟙 _) (by ext <;> simp <;> rfl),

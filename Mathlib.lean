@@ -701,7 +701,6 @@ public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.SpectralSequence.Convergence
-public import Mathlib.Algebra.Homology.SpectralSequence.EInt
 public import Mathlib.Algebra.Homology.SpectralSequence.EdgeStep
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.Grothendieck
 public import Mathlib.Algebra.Homology.SpectralSequence.Examples.OfTStructure
@@ -3589,6 +3588,7 @@ public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
+public import Mathlib.Data.EInt.Basic
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators

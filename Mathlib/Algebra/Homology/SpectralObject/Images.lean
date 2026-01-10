@@ -33,6 +33,7 @@ variable (n : ℤ) {i₀ i₁ i₂ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶
 
 -- this identifies to the image of `(X.H n).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂)` because
 -- of the epi mono factorization that is obtained below
+-- TODO: remove the dependency on `f₁₂` by replacing this with `opcycles`
 noncomputable def image : C := kernel ((X.H n).map (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂))
 
 noncomputable def imageι : X.image n f₁ f₂ f₁₂ h₁₂ ⟶ (X.H n).obj (mk₁ f₁₂) :=
@@ -138,34 +139,34 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i₀ i₁ i₂ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂)
   (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
 
-noncomputable def opcyclesIsoImage : X.opcycles n₀ n₁ hn₁ f₁ f₂ ≅ X.image n₁ f₁ f₂ f₁₂ h₁₂ := by
+noncomputable def opcyclesIsoImage : X.opcycles n₁ f₁ f₂ ≅ X.image n₁ f₁ f₂ f₁₂ h₁₂ := by
   let h := IsLimit.conePointUniqueUpToIso
-    ((X.kernelSequenceOpcycles_exact n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).fIsKernel)
+    ((X.kernelSequenceOpcycles_exact n₁ f₁ f₂ f₁₂ h₁₂).fIsKernel)
     (kernelIsKernel ((X.H n₁).map (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂)))
   exact h
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoImage_hom_ι :
-    (X.opcyclesIsoImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).hom ≫ X.imageι n₁ f₁ f₂ f₁₂ h₁₂ =
-      X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂ :=
+    (X.opcyclesIsoImage n₁ f₁ f₂ f₁₂ h₁₂).hom ≫ X.imageι n₁ f₁ f₂ f₁₂ h₁₂ =
+      X.fromOpcycles n₁ f₁ f₂ f₁₂ h₁₂ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ (WalkingParallelPair.zero)
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoImage_inv_ι :
-    (X.opcyclesIsoImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).inv ≫ X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂ =
+    (X.opcyclesIsoImage n₁ f₁ f₂ f₁₂ h₁₂).inv ≫ X.fromOpcycles n₁ f₁ f₂ f₁₂ h₁₂ =
       X.imageι n₁ f₁ f₂ f₁₂ h₁₂ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (WalkingParallelPair.zero)
 
 @[reassoc (attr := simp)]
 lemma imageπ_opcyclesIsoImage_inv :
-    X.imageπ n₁ f₁ f₂ f₁₂ h₁₂ ≫ (X.opcyclesIsoImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).inv =
-      X.pOpcycles n₀ n₁ hn₁ f₁ f₂ := by
-  simp only [← cancel_mono (X.fromOpcycles n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂),
+    X.imageπ n₁ f₁ f₂ f₁₂ h₁₂ ≫ (X.opcyclesIsoImage n₁ f₁ f₂ f₁₂ h₁₂).inv =
+      X.pOpcycles n₁ f₁ f₂ := by
+  simp only [← cancel_mono (X.fromOpcycles n₁ f₁ f₂ f₁₂ h₁₂),
     assoc, opcyclesIsoImage_inv_ι, imageπ_ι, p_fromOpcycles]
 
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoImage_hom :
-    X.pOpcycles n₀ n₁ hn₁ f₁ f₂ ≫ (X.opcyclesIsoImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).hom =
+    X.pOpcycles n₁ f₁ f₂ ≫ (X.opcyclesIsoImage n₁ f₁ f₂ f₁₂ h₁₂).hom =
       X.imageπ n₁ f₁ f₂ f₁₂ h₁₂ := by
   simp only [← cancel_mono (X.imageι n₁ f₁ f₂ f₁₂ h₁₂),
     assoc, opcyclesIsoImage_hom_ι, p_fromOpcycles, imageπ_ι]
@@ -187,7 +188,7 @@ lemma cokernelSequenceImage_exact :
     (X.cokernelSequenceImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂).Exact := by
   apply ShortComplex.exact_of_g_is_cokernel
   exact IsColimit.ofIsoColimit (X.cokernelSequenceOpcycles_exact n₀ n₁ hn₁ f₁ f₂).gIsCokernel
-    (Cofork.ext (X.opcyclesIsoImage n₀ n₁ hn₁ f₁ f₂ f₁₂ h₁₂) (by simp))
+    (Cofork.ext (X.opcyclesIsoImage n₁ f₁ f₂ f₁₂ h₁₂) (by simp))
 
 section
 
@@ -216,22 +217,22 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 noncomputable def imageToE :
     X.image n₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂]) ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   X.descImage n₀ n₁ hn₁ f₁₂ f₃ f₁₂₃ _
-    (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
+    (X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
 
 @[reassoc (attr := simp)]
 lemma π_imageToE :
     X.imageπ n₁ f₁₂ f₃ f₁₂₃ _ ≫
       X.imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₁₂₃ h₁₂₃ =
-      X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
+      X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
   simp [imageToE]
 
 @[reassoc (attr := simp)]
 lemma imageToE_ιE :
-    (X.opcyclesIsoImage n₀ n₁ hn₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂])).hom ≫
+    (X.opcyclesIsoImage n₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂])).hom ≫
       X.imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₁₂₃ h₁₂₃ ≫
       X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
-        X.opcyclesMap n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
-  rw [← cancel_epi (X.opcyclesIsoImage n₀ n₁ hn₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂])).inv,
+        X.opcyclesMap n₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
+  rw [← cancel_epi (X.opcyclesIsoImage n₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂₃, ← assoc, h₁₂])).inv,
     Iso.inv_hom_id_assoc, ← cancel_epi (X.imageπ n₁ f₁₂ f₃ f₁₂₃ _), π_imageToE_assoc,
     πE_ιE, toCycles_i_assoc, imageπ_opcyclesIsoImage_inv_assoc]
   symm
@@ -239,7 +240,7 @@ lemma imageToE_ιE :
   rfl
 
 instance : Epi (X.imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₁₂₃ h₁₂₃) := by
-  have : Epi (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) :=
+  have : Epi (X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) :=
     epi_comp _ _
   exact epi_of_epi_fac (X.π_imageToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₁₂₃ h₁₂₃)
 
@@ -276,7 +277,7 @@ noncomputable def shortComplexImageHom :
     X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ⟶
       X.shortComplexImage n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ f₁₂₃ h₁₂₃ where
   τ₁ := X.imageπ n₁ f₁ f₂₃ f₁₂₃ _
-  τ₂ := (X.opcyclesIsoImage n₀ n₁ hn₁ f₁₂ f₃ f₁₂₃ _).hom
+  τ₂ := (X.opcyclesIsoImage n₁ f₁₂ f₃ f₁₂₃ _).hom
   τ₃ := 𝟙 _
   comm₁₂ := by
     dsimp
@@ -286,7 +287,7 @@ noncomputable def shortComplexImageHom :
   comm₂₃ := by
     dsimp
     rw [← cancel_mono (X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃), assoc,
-      ← cancel_epi (X.opcyclesIsoImage n₀ n₁ hn₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂, assoc, h₁₂₃])).inv,
+      ← cancel_epi (X.opcyclesIsoImage n₁ f₁₂ f₃ f₁₂₃ (by rw [← h₁₂, assoc, h₁₂₃])).inv,
       imageToE_ιE, comp_id, opcyclesToE_ιE]
 
 instance :

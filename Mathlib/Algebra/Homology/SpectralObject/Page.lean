@@ -58,7 +58,6 @@ def shortComplexE : ShortComplex C where
   X₃ := (X.H n₂).obj (mk₁ f₁)
   f := X.δ n₀ n₁ hn₁ f₂ f₃
   g := X.δ n₁ n₂ hn₂ f₁ f₂
-  zero := by simp
 
 /-- The homology of the short complex `shortComplexE` consisting of
 two morphisms `X.δ`. In the documentation, we shorten it as `E^n₁(f₁, f₂, f₃)` -/
@@ -183,52 +182,63 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 of `δToCycles : H^{n₀}(f₃) ⟶ Z^{n₁}(f₁, f₂)`. -/
 @[simps]
 noncomputable def leftHomologyDataShortComplexE :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).LeftHomologyData where
-  K := X.cycles n₁ n₂ hn₂ f₁ f₂
-  H := cokernel (X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
-  i := X.iCycles n₁ n₂ hn₂ f₁ f₂
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).LeftHomologyData := by
+  let hi := (X.kernelSequenceCycles_exact _ _ hn₂ f₁ f₂).fIsKernel
+  have : hi.lift (KernelFork.ofι _ (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).zero) =
+      X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃ :=
+    Fork.IsLimit.hom_ext hi (by simpa using hi.fac _ .zero)
+  refine {
+  K := X.cycles n₁ f₁ f₂
+  H := cokernel (X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃)
+  i := X.iCycles n₁ f₁ f₂
   π := cokernel.π _
   wi := by simp
-  hi := kernelIsKernel _
-  wπ := cokernel.condition _
-  hπ := cokernelIsCokernel _
+  hi := hi
+  wπ := by rw [this]; simp
+  hπ := by
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2
+      (cokernelIsCokernel (X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃))
+    · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
+    · exact Cofork.ext (Iso.refl _)}
 
 @[simp]
 lemma leftHomologyDataShortComplexE_f' :
     (X.leftHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f' =
-      X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := rfl
+      X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃ := by
+  let hi := (X.kernelSequenceCycles_exact _ _ hn₂ f₁ f₂).fIsKernel
+  exact Fork.IsLimit.hom_ext hi (by simpa using hi.fac _ .zero)
 
 noncomputable def cyclesIso :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).cycles ≅ X.cycles n₁ n₂ hn₂ f₁ f₂ :=
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).cycles ≅ X.cycles n₁ f₁ f₂ :=
   (X.leftHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).cyclesIso
 
 @[reassoc (attr := simp)]
 lemma cyclesIso_inv_i :
     (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
-      (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles = X.iCycles n₁ n₂ hn₂ f₁ f₂ :=
+      (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles = X.iCycles n₁ f₁ f₂ :=
   ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles _
 
 @[reassoc (attr := simp)]
 lemma cyclesIso_hom_i :
-    (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.iCycles n₁ n₂ hn₂ f₁ f₂ =
+    (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.iCycles n₁ f₁ f₂ =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles :=
   ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i _
 
-noncomputable def πE : X.cycles n₁ n₂ hn₂ f₁ f₂ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
+noncomputable def πE : X.cycles n₁ f₁ f₂ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homologyπ
   deriving Epi
 
 @[reassoc (attr := simp)]
 lemma δToCycles_cyclesIso_inv :
-    X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
+    X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃ ≫ (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).toCycles := by
   rw [← cancel_mono (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles, Category.assoc,
     cyclesIso_inv_i, δToCycles_iCycles, ShortComplex.toCycles_i, shortComplexE_f]
 
 @[reassoc (attr := simp)]
 lemma δToCycles_πE :
-    X.δToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ = 0 := by
+    X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ = 0 := by
   simp only [πE, δToCycles_cyclesIso_inv_assoc, ShortComplex.toCycles_comp_homologyπ]
 
 /-- cokernelSequenceE' -/
@@ -255,47 +265,58 @@ instance : Epi (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).
 of `δFromOpcycles : opZ^{n₁}(f₂, f₃) ⟶ H^{n₂}(f₁)`. -/
 @[simps]
 noncomputable def rightHomologyDataShortComplexE :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).RightHomologyData where
-  Q := X.opcycles n₀ n₁ hn₁ f₂ f₃
-  H := kernel (X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
-  p := X.pOpcycles n₀ n₁ hn₁ f₂ f₃
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).RightHomologyData := by
+  let hp := (X.cokernelSequenceOpcycles_exact _ _ hn₁ f₂ f₃).gIsCokernel
+  have : hp.desc (CokernelCofork.ofπ _ (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).zero) =
+      X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃ :=
+    Cofork.IsColimit.hom_ext hp (by simpa using hp.fac _ .one)
+  refine {
+  Q := X.opcycles n₁ f₂ f₃
+  H := kernel (X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃)
+  p := X.pOpcycles n₁ f₂ f₃
   ι := kernel.ι _
   wp := by simp
-  hp := cokernelIsCokernel _
-  wι := kernel.condition _
-  hι := kernelIsKernel _
+  hp := hp
+  wι := by rw [this]; simp
+  hι := by
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2
+      (kernelIsKernel (X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃))
+    · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
+    · exact Fork.ext (Iso.refl _) }
 
 /-- rightHomologyDataShortComplexE_g' -/
 @[simp]
 lemma rightHomologyDataShortComplexE_g' :
     (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g' =
-      X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := rfl
+      X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃ := by
+  let hp := (X.cokernelSequenceOpcycles_exact _ _ hn₁ f₂ f₃).gIsCokernel
+  exact Cofork.IsColimit.hom_ext hp (by simpa using hp.fac _ .one)
 
 noncomputable def opcyclesIso :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).opcycles ≅ X.opcycles n₀ n₁ hn₁ f₂ f₃ :=
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).opcycles ≅ X.opcycles n₁ f₂ f₃ :=
   (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).opcyclesIso
 
 @[reassoc (attr := simp)]
 lemma p_opcyclesIso_hom :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).pOpcycles ≫
       (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom =
-      X.pOpcycles n₀ n₁ hn₁ f₂ f₃ :=
+      X.pOpcycles n₁ f₂ f₃ :=
   ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom _
 
 @[reassoc (attr := simp)]
 lemma p_opcyclesIso_inv :
-    X.pOpcycles n₀ n₁ hn₁ f₂ f₃ ≫ (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
+    X.pOpcycles n₁ f₂ f₃ ≫ (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).pOpcycles :=
   (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).p_comp_opcyclesIso_inv
 
-noncomputable def ιE : X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.opcycles n₀ n₁ hn₁ f₂ f₃ :=
+noncomputable def ιE : X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.opcycles n₁ f₂ f₃ :=
   (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homologyι ≫
     (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom
   deriving Mono
 
 @[reassoc (attr := simp)]
 lemma opcyclesIso_hom_δFromOpcycles :
-    (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
+    (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃ =
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).fromOpcycles := by
   rw [← cancel_epi (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).pOpcycles,
     p_opcyclesIso_hom_assoc, ShortComplex.p_fromOpcycles, shortComplexE_g,
@@ -303,14 +324,14 @@ lemma opcyclesIso_hom_δFromOpcycles :
 
 @[reassoc (attr := simp)]
 lemma ιE_δFromOpcycles :
-    X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ = 0 := by
+    X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.δFromOpcycles n₁ n₂ hn₂ f₁ f₂ f₃ = 0 := by
   simp only [ιE, Category.assoc, opcyclesIso_hom_δFromOpcycles,
     ShortComplex.homologyι_comp_fromOpcycles]
 
 @[reassoc (attr := simp)]
 lemma πE_ιE :
     X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
-      X.iCycles n₁ n₂ hn₂ f₁ f₂ ≫ X.pOpcycles n₀ n₁ hn₁ f₂ f₃ := by
+      X.iCycles n₁ f₁ f₂ ≫ X.pOpcycles n₁ f₂ f₃ := by
   simp [πE, ιE]
 
 /-- kernelSequenceE' -/
@@ -340,7 +361,7 @@ noncomputable def cokernelSequenceE : ShortComplex C where
   X₂ := (X.H n₁).obj (mk₁ f₁₂)
   X₃ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
   f := biprod.desc ((X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂)) (X.δ n₀ n₁ hn₁ f₁₂ f₃)
-  g := X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
+  g := X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
   zero := by ext <;> simp
 
 instance : Epi (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
@@ -354,12 +375,12 @@ lemma cokernelSequenceE_exact :
   dsimp at x₂ hx₂
   obtain ⟨A₁, π₁, _, y₁, hy₁⟩ :=
     (X.cokernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
-      (x₂ ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂) (by simpa using hx₂)
+      (x₂ ≫ X.toCycles n₁ f₁ f₂ f₁₂ h₁₂) (by simpa using hx₂)
   dsimp at y₁ hy₁
   let z := π₁ ≫ x₂ - y₁ ≫ X.δ n₀ n₁ hn₁ f₁₂ f₃
   obtain ⟨A₂, π₂, _, x₁, hx₁⟩ := (X.exact₂ n₁ f₁ f₂ f₁₂ h₁₂).exact_up_to_refinements z (by
-      have : z ≫ X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ = 0 := by simp [z, hy₁]
-      simpa only [zero_comp, Category.assoc, toCycles_i] using this =≫ X.iCycles n₁ n₂ hn₂ f₁ f₂)
+      have : z ≫ X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ = 0 := by simp [z, hy₁]
+      simpa only [zero_comp, Category.assoc, toCycles_i] using this =≫ X.iCycles n₁ f₁ f₂)
   dsimp at x₁ hx₁
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, biprod.lift x₁ (π₂ ≫ y₁), by simp [z, ← hx₁]⟩
 
@@ -375,7 +396,7 @@ noncomputable def descE :
 
 @[reassoc (attr := simp)]
 lemma toCycles_πE_descE :
-    X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫
+    X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫
       X.descE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ x h h' = x := by
   dsimp only [descE]
   rw [← Category.assoc]
@@ -388,7 +409,7 @@ noncomputable def kernelSequenceE : ShortComplex C where
   X₁ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
   X₂ := (X.H n₁).obj (mk₁ f₂₃)
   X₃ := (X.H n₁).obj (mk₁ f₃) ⊞ (X.H n₂).obj (mk₁ f₁)
-  f := X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.fromOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃
+  f := X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.fromOpcycles n₁ f₂ f₃ f₂₃ h₂₃
   g := biprod.lift ((X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃)) (X.δ n₁ n₂ hn₂ f₁ f₂₃)
   zero := by ext <;> simp
 
@@ -403,9 +424,9 @@ lemma kernelSequenceE_exact :
   dsimp at x₂ hx₂
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
     (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
-      (X.liftOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
+      (X.liftOpcycles n₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
-        rw [← X.fromOpcyles_δ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
+        rw [← X.fromOpcyles_δ n₁ n₂ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
           X.liftOpcycles_fromOpcycles_assoc ]
         simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁
@@ -426,7 +447,7 @@ noncomputable def liftE :
 @[reassoc (attr := simp)]
 lemma liftE_ιE_fromOpcycles :
     X.liftE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃ x h h' ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫
-      X.fromOpcycles n₀ n₁ hn₁ f₂ f₃ f₂₃ h₂₃ = x := by
+      X.fromOpcycles n₁ f₂ f₃ f₂₃ h₂₃ = x := by
   apply (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift_f
 
 end
@@ -450,7 +471,7 @@ lemma cyclesIso_inv_cyclesMap
       (naturality' α 1 2 (by lia) (by lia))) :
     (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
       ShortComplex.cyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) =
-      X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫
+      X.cyclesMap n₁ f₁ f₂ f₁' f₂' β ≫
         (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').inv := by
   subst hβ
   rw [← cancel_mono (ShortComplex.iCycles _), Category.assoc, Category.assoc,
@@ -464,7 +485,7 @@ lemma opcyclesMap_opcyclesIso_hom
     (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3)) :
     ShortComplex.opcyclesMap (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α) ≫
       (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃').hom =
-    (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
+    (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom ≫ X.opcyclesMap n₁ f₂ f₃ f₂' f₃' γ := by
   subst hγ
   rw [← cancel_epi (ShortComplex.pOpcycles _), ShortComplex.p_opcyclesMap_assoc,
     p_opcyclesIso_hom, p_opcyclesIso_hom_assoc, shortComplexEMap_τ₂, p_opcyclesMap]
@@ -475,7 +496,7 @@ lemma πE_EMap (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
     (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1 (by lia) (by lia))
     (naturality' α 1 2 (by lia) (by lia))) :
     X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α =
-      X.cyclesMap n₁ n₂ hn₂ f₁ f₂ f₁' f₂' β ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' := by
+      X.cyclesMap n₁ f₁ f₂ f₁' f₂' β ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' := by
   dsimp [πE, EMap]
   simp only [Category.assoc, ShortComplex.homologyπ_naturality,
     X.cyclesIso_inv_cyclesMap_assoc n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α β hβ]
@@ -485,7 +506,7 @@ lemma EMap_ιE
     (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
     (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2) (naturality' α 2 3)) :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' =
-      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.opcyclesMap n₀ n₁ hn₁ f₂ f₃ f₂' f₃' γ := by
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.opcyclesMap n₁ f₂ f₃ f₂' f₃' γ := by
   dsimp [ιE, EMap]
   simp only [ShortComplex.homologyι_naturality_assoc, Category.assoc,
     X.opcyclesMap_opcyclesIso_hom n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α γ hγ]
@@ -500,21 +521,21 @@ variable (n₀ n₁ n₂ : ℤ)
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
 
-noncomputable def opcyclesToE : X.opcycles n₀ n₁ hn₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
-  X.descOpcycles _ _ _ _ _
-    (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
+noncomputable def opcyclesToE : X.opcycles n₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
+  refine X.descOpcycles n₀ _ hn₁ _ _
+    (X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
 
 @[reassoc (attr := simp)]
 lemma p_opcyclesToE :
-    X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃ ≫ X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ =
-      X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
+    X.pOpcycles n₁ f₁₂ f₃ ≫ X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ =
+      X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
   simp [opcyclesToE]
 
 @[reassoc (attr := simp)]
 lemma opcyclesToE_ιE :
     X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
-      X.opcyclesMap n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
-  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃), p_opcyclesToE_assoc,
+      X.opcyclesMap n₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
+  rw [← cancel_epi (X.pOpcycles n₁ f₁₂ f₃), p_opcyclesToE_assoc,
     πE_ιE, toCycles_i_assoc]
   symm
   apply X.p_opcyclesMap
@@ -527,11 +548,10 @@ instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ 
 @[simps!]
 noncomputable def cokernelSequenceE'' : ShortComplex C where
   X₁ := (X.H n₁).obj (mk₁ f₁)
-  X₂ := X.opcycles n₀ n₁ hn₁ f₁₂ f₃
+  X₂ := X.opcycles n₁ f₁₂ f₃
   X₃ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
-  f := (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃
+  f := (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.pOpcycles n₁ f₁₂ f₃
   g := X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
-  zero := by simp
 
 instance : Epi (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
   dsimp
@@ -543,7 +563,7 @@ lemma cokernelSequenceE''_exact :
   intro A x₂ hx₂
   dsimp at x₂ hx₂
   obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
-    surjective_up_to_refinements_of_epi (X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃) x₂
+    surjective_up_to_refinements_of_epi (X.pOpcycles n₁ f₁₂ f₃) x₂
   obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
     (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).exact_up_to_refinements y₂
       (by simpa only [Category.assoc, p_opcyclesToE, hx₂, comp_zero]
@@ -603,14 +623,14 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
 
 noncomputable def cyclesIsoH :
-    X.cycles n₀ n₁ hn₁ (𝟙 i₀) f ≅ (X.H n₀).obj (mk₁ f) :=
+    X.cycles n₀ (𝟙 i₀) f ≅ (X.H n₀).obj (mk₁ f) :=
   (X.cyclesIso (n₀ - 1) n₀ n₁ (by lia) hn₁ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
     (X.homologyDataEIdId ..).left.cyclesIso
 
 @[simp]
 lemma cyclesIsoH_inv :
-    (X.cyclesIsoH n₀ n₁ hn₁ f).inv = X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) := by
-  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ (𝟙 _) f ), toCycles_i]
+    (X.cyclesIsoH n₀ n₁ hn₁ f).inv = X.toCycles n₀ (𝟙 _) f f (by simp) := by
+  rw [← cancel_mono (X.iCycles n₀ (𝟙 _) f ), toCycles_i]
   dsimp [cyclesIsoH]
   rw [Category.assoc, cyclesIso_hom_i,
     ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles,
@@ -621,41 +641,40 @@ lemma cyclesIsoH_inv :
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_hom_inv_id :
     (X.cyclesIsoH n₀ n₁ hn₁ f).hom ≫
-      X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) = 𝟙 _ := by
+      X.toCycles n₀ (𝟙 _) f f (by simp) = 𝟙 _ := by
   simpa using (X.cyclesIsoH n₀ n₁ hn₁ f).hom_inv_id
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_inv_hom_id :
-    X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) ≫
+    X.toCycles n₀ (𝟙 _) f f (by simp) ≫
       (X.cyclesIsoH n₀ n₁ hn₁ f).hom = 𝟙 _ := by
   simpa using (X.cyclesIsoH n₀ n₁ hn₁ f).inv_hom_id
 
 noncomputable def opcyclesIsoH :
-    X.opcycles n₀ n₁ hn₁ f (𝟙 i₁) ≅ (X.H n₁).obj (mk₁ f) :=
+    X.opcycles n₁ f (𝟙 i₁) ≅ (X.H n₁).obj (mk₁ f) :=
   (X.opcyclesIso n₀ n₁ (n₁ + 1) hn₁ (by lia) (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
     (X.homologyDataEIdId ..).right.opcyclesIso
 
 @[simp]
 lemma opcyclesIsoH_hom :
-    (X.opcyclesIsoH n₀ n₁ hn₁ f).hom = X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) := by
-  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f (𝟙 _)), p_fromOpcycles]
+    (X.opcyclesIsoH n₀ n₁ hn₁ f).hom = X.fromOpcycles n₁ f (𝟙 _) f (by simp) := by
+  rw [← cancel_epi (X.pOpcycles n₁ f (𝟙 _)), p_fromOpcycles]
   dsimp [opcyclesIsoH]
-  rw [p_opcyclesIso_inv_assoc]
-  rw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom,
+  rw [p_opcyclesIso_inv_assoc, ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom,
     homologyDataEIdId_right_p, ← Functor.map_id]
   congr 1
   cat_disch
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoH_hom_inv_id :
-      X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) ≫
+      X.fromOpcycles n₁ f (𝟙 _) f (by simp) ≫
         (X.opcyclesIsoH n₀ n₁ hn₁ f).inv = 𝟙 _ := by
   simpa using (X.opcyclesIsoH n₀ n₁ hn₁ f).hom_inv_id
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoH_inv_hom_id :
     (X.opcyclesIsoH n₀ n₁ hn₁ f).inv ≫
-      X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) = 𝟙 _ := by
+      X.fromOpcycles n₁ f (𝟙 _) f (by simp) = 𝟙 _ := by
   simpa using (X.opcyclesIsoH n₀ n₁ hn₁ f).inv_hom_id
 
 end
@@ -670,7 +689,7 @@ lemma cyclesIsoH_hom_EIsoH_inv :
       X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) := by
   let h := (X.homologyDataEIdId n₀ n₁ n₂ hn₁ hn₂ f).left
   have : h.cyclesIso.inv =
-      X.toCycles n₁ n₂ hn₂ (𝟙 i) f f (by simp) ≫
+      X.toCycles n₁ (𝟙 i) f f (by simp) ≫
         (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).inv := by
     rw [← cancel_mono (X.cyclesIso ..).hom,
       Category.assoc, Iso.inv_hom_id, Category.comp_id,
@@ -694,7 +713,7 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
   let h := (X.homologyDataEIdId n₀ n₁ n₂ hn₁ hn₂ f)
   have : h.right.opcyclesIso.hom =
       (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).hom ≫
-        X.fromOpcycles n₀ n₁ hn₁ f (𝟙 j) f (by simp) := by
+        X.fromOpcycles n₁ f (𝟙 j) f (by simp) := by
     rw [← cancel_epi (X.opcyclesIso ..).inv, Iso.inv_hom_id_assoc,
       ← cancel_epi (X.pOpcycles ..), p_opcyclesIso_inv_assoc,
       h.right.pOpcycles_comp_opcyclesIso_hom, p_fromOpcycles]
