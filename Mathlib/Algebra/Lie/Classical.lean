@@ -5,13 +5,13 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Algebra.Lie.Abelian
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.Algebra.Lie.SkewAdjoint
-public import Mathlib.LinearAlgebra.SymplecticGroup
+public import Mathlib.Data.Matrix.Basis
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.SymplecticGroup
 
 /-!
 # Classical Lie algebras
