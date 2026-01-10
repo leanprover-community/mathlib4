@@ -33,24 +33,25 @@ lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
   norm_num
   exact four_mul_le_sq_add ..
 
-open Function
+open Function Filter Topology
 
 /-- `agmSequences x y` returns the pair of sequences converging to the arithmetic-geometric mean
 starting from `x` and `y`, with the sequence of geometric means first. -/
 noncomputable def agmSequences (x y : ℝ≥0) : (ℕ → ℝ≥0) × (ℕ → ℝ≥0) :=
   Equiv.arrowProdEquivProdArrow _ _ _ ((fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[·] (x, y))
 
-/-- One step of the iteration defining the arithmetic-geometric mean. -/
-noncomputable def agmStep (ga : ℝ≥0 × ℝ≥0) : ℝ≥0 × ℝ≥0 :=
-  (sqrt (ga.1 * ga.2), (ga.1 + ga.2) / 2)
+variable {x y : ℝ≥0} {m n : ℕ}
 
-variable {g a x y : ℝ≥0} (h : g ≤ a) {m n : ℕ}
+lemma agmSequences_fst_comm : (agmSequences x y).1 (n + 1) = (agmSequences y x).1 (n + 1) := by
+  simp [agmSequences, mul_comm, add_comm]
+
+lemma agmSequences_snd_comm : (agmSequences x y).2 (n + 1) = (agmSequences y x).2 (n + 1) := by
+  simp [agmSequences, mul_comm, add_comm]
 
 lemma agmSequences_fst_le_snd : (agmSequences x y).1 (n + 1) ≤ (agmSequences x y).2 (n + 1) := by
   simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
   exact sqrt_mul_le_half_add ..
 
-/-- The geometric means form a monotone sequence. -/
 lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y).1 (n + 1) := by
   refine monotone_nat_of_le_succ fun n ↦ ?_
   nth_rw 2 [agmSequences]
@@ -60,7 +61,6 @@ lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y).1 (n + 1
   nth_rw 1 [sqrt_mul, ← mul_self_sqrt ((agmSequences x y).1 (n + 1))]
   exact mul_le_mul_right (sqrt_le_sqrt.mpr agmSequences_fst_le_snd) _
 
-/-- The arithmetic means form an antitone sequence. -/
 lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences x y).2 (n + 1) := by
   refine antitone_nat_of_succ_le fun n ↦ ?_
   nth_rw 1 [agmSequences]
@@ -71,209 +71,137 @@ lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences x y).2 (n + 1
   nth_rw 2 [← add_halves ((agmSequences x y).2 (n + 1))]
   exact add_le_add_left (div_le_div_of_nonneg_right agmSequences_fst_le_snd zero_le_two) _
 
-/-- All geometric means are less than or equal to all arithmetic means. -/
+/-- All geometric means are upper-bounded by all arithmetic means. -/
 lemma agmSequences_fst_le_agmSequences_snd :
     (agmSequences x y).1 (m + 1) ≤ (agmSequences x y).2 (n + 1) := by
   rcases le_or_gt m n with h | h
   · exact (agmSequences_fst_monotone h).trans agmSequences_fst_le_snd
   · exact agmSequences_fst_le_snd.trans (agmSequences_snd_antitone h.le)
 
-lemma agmStep_iterate_comm (hn : n ≠ 0) : agmStep^[n] (g, a) = agmStep^[n] (a, g) := by
-  rw [← Nat.sub_one_add_one hn, iterate_add, iterate_one, comp_apply]
-  congr 1
-  simp only [agmStep, add_comm, mul_comm]
-
-section
-
-include h
-
-lemma agmStep_bounds :
-    g ≤ (agmStep (g, a)).1 ∧ (agmStep (g, a)).1 ≤ (agmStep (g, a)).2 ∧ (agmStep (g, a)).2 ≤ a := by
-  simp only [agmStep]
-  refine ⟨?_, sqrt_mul_le_half_add .., ?_⟩
-  · nth_rw 1 [sqrt_mul, ← mul_self_sqrt g]
-    gcongr
-  · rw [add_div]
-    nth_rw 2 [← add_halves a]
-    gcongr
-
-lemma agmStep_iterate_bounds (n : ℕ) :
-    g ≤ (agmStep^[n] (g, a)).1 ∧ (agmStep^[n] (g, a)).1 ≤ (agmStep^[n] (g, a)).2 ∧
-    (agmStep^[n] (g, a)).2 ≤ a := by
+lemma dist_agmSequences_le_two_inv_pow_mul :
+    dist ((agmSequences x y).1 n) ((agmSequences x y).2 n) ≤ 2⁻¹ ^ n * dist x y := by
   induction n with
-  | zero => simpa
+  | zero => simp [agmSequences]
   | succ n ih =>
-    rw [iterate_succ', comp_apply]
-    obtain ⟨i₁, i₂, i₃⟩ := agmStep_bounds ih.2.1
-    exact ⟨ih.1.trans i₁, i₂, i₃.trans ih.2.2⟩
+    set p := (agmSequences x y).1 n
+    set q := (agmSequences x y).2 n
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
+    change dist (sqrt (p * q)) ((p + q) / 2) ≤ _
+    rw [dist_comm, dist_eq, ← NNReal.coe_sub (sqrt_mul_le_half_add ..), abs_eq]
+    calc
+      _ ≤ ((p + q) / 2 - min p q).toReal := by
+        gcongr
+        rw [← mul_self_sqrt (min p q), sqrt_mul]
+        gcongr
+        · exact min_le_left ..
+        · exact min_le_right ..
+      _ = 2⁻¹ * dist p q := by
+        rw [← add_halves (min p q), ← add_div, ← tsub_div, NNReal.coe_div, NNReal.coe_two,
+          div_eq_inv_mul]
+        congr
+        rcases le_or_gt p q with h | h
+        · rw [min_eq_left h, add_tsub_add_eq_tsub_left, dist_comm, dist_eq,
+            abs_of_nonneg (by simpa), NNReal.coe_sub h]
+        · rw [min_eq_right h.le, add_tsub_add_eq_tsub_right, dist_eq,
+            abs_of_nonneg (by simpa using h.le), NNReal.coe_sub h.le]
+      _ ≤ _ := by
+        rw [pow_succ', mul_assoc]
+        gcongr
 
-lemma agmStep_iterate_fst_monotone : Monotone fun n ↦ (agmStep^[n] (g, a)).1 := by
-  refine monotone_nat_of_le_succ fun n ↦ ?_
-  rw [iterate_succ', comp_apply]
-  exact (agmStep_bounds (agmStep_iterate_bounds h n).2.1).1
+/-- The arithmetic and geometric means tend to each other. -/
+lemma tendsto_dist_agmSequences_atTop_zero :
+    Tendsto (fun n ↦ dist ((agmSequences x y).1 n) ((agmSequences x y).2 n)) atTop (𝓝 0) := by
+  refine squeeze_zero (fun _ ↦ dist_nonneg) (fun _ ↦ dist_agmSequences_le_two_inv_pow_mul) ?_
+  rw [← zero_mul (dist x y)]
+  exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)).mul_const _
 
-lemma agmStep_iterate_snd_antitone : Antitone fun n ↦ (agmStep^[n] (g, a)).2 := by
-  refine antitone_nat_of_succ_le fun n ↦ ?_
-  rw [iterate_succ', comp_apply]
-  exact (agmStep_bounds (agmStep_iterate_bounds h n).2.1).2.2
-
-lemma agmStep_iterate_fst_le (n : ℕ) : (agmStep^[n] (g, a)).1 ≤ a := by
-  obtain ⟨-, i₂, i₃⟩ := agmStep_iterate_bounds h n
-  exact i₂.trans i₃
-
-lemma le_agmStep_iterate_snd (n : ℕ) : g ≤ (agmStep^[n] (g, a)).2 := by
-  obtain ⟨i₁, i₂, -⟩ := agmStep_iterate_bounds h n
-  exact i₁.trans i₂
-
-lemma bddAbove_range_agmStep_iterate_fst : BddAbove (Set.range fun n ↦ (agmStep^[n] (g, a)).1) := by
-  rw [bddAbove_def]
-  exact ⟨a, by simpa using agmStep_iterate_fst_le h⟩
-
-lemma bddBelow_range_agmStep_iterate_snd : BddBelow (Set.range fun n ↦ (agmStep^[n] (g, a)).2) := by
-  rw [bddBelow_def]
-  exact ⟨g, by simpa using le_agmStep_iterate_snd h⟩
-
-end
-
-lemma agmStep_iterate_zero {n : ℕ} : agmStep^[n] (0, a) = (0, a * 2⁻¹ ^ n) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    simp_rw [iterate_succ', comp_apply, agmStep, ih, zero_mul, sqrt_zero, zero_add]
-    congr
-    ring
-
-lemma agmStep_iterate_mul {k : ℝ≥0} {n : ℕ} :
-    agmStep^[n] (k * g, k * a) = k • agmStep^[n] (g, a) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    simp_rw [iterate_succ', comp_apply, ih, agmStep, Prod.smul_fst, Prod.smul_snd]
-    rw [smul_mul_smul, smul_eq_mul, sqrt_mul, sqrt_mul_self, ← smul_eq_mul,
-      ← smul_add, smul_div_assoc, Prod.smul_mk]
-
-open Filter Topology
-
-lemma tendsto_agmStep_iterate_zero :
-    Tendsto (fun n ↦ (agmStep^[n] (0, a)).1) atTop (𝓝 0) ∧
-    Tendsto (fun n ↦ (agmStep^[n] (0, a)).2) atTop (𝓝 0) := by
-  simp_rw [agmStep_iterate_zero, tendsto_const_nhds_iff]
-  rw [true_and, ← mul_zero a]
-  exact (tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num)).const_mul a
-
-/-- Iterating `agmStep` drives both components towards a common value. -/
-lemma exists_tendsto_agmStep_iterate :
-    ∃ M, Tendsto (fun n ↦ (agmStep^[n] (g, a)).1) atTop (𝓝 M) ∧
-      Tendsto (fun n ↦ (agmStep^[n] (g, a)).2) atTop (𝓝 M) := by
-  wlog h : g ≤ a
-  · rw [not_le] at h
-    obtain ⟨M, hM₁, hM₂⟩ := this h.le
-    refine ⟨M, hM₁.congr' ?_, hM₂.congr' ?_⟩
-    all_goals
-      rw [EventuallyEq, eventually_atTop]
-      refine ⟨1, fun n hn ↦ ?_⟩
-      rw [agmStep_iterate_comm (Nat.ne_zero_of_lt hn)]
-  rcases (zero_le g).eq_or_lt with gzero | gpos
-  · subst gzero
-    exact ⟨0, tendsto_agmStep_iterate_zero⟩
-  have bdd_g := bddAbove_range_agmStep_iterate_fst h
-  have tendsto_g := tendsto_atTop_ciSup (agmStep_iterate_fst_monotone h) bdd_g
-  set M := ⨆ n, (agmStep^[n] (g, a)).1
-  refine ⟨M, tendsto_g, ?_⟩
-  have a_rearrangement (n : ℕ) :
-      (agmStep^[n] (g, a)).2 = (agmStep^[n + 1] (g, a)).1 ^ 2 / (agmStep^[n] (g, a)).1 := by
-    simp_rw [iterate_succ', comp_apply, agmStep, sq_sqrt]
-    rw [mul_div_cancel_left₀ _ (gpos.trans_le (agmStep_iterate_bounds h n).1).ne']
-  simp_rw [a_rearrangement]
-  rw [← mul_self_div_self M, ← sq]
-  refine (Tendsto.pow ?_ 2).div tendsto_g (gpos.trans_le (le_ciSup bdd_g 0)).ne'
-  exact (tendsto_add_atTop_iff_nat 1).mpr tendsto_g
-
-/-- The arithmetic-geometric mean of two `NNReal`s. -/
+/-- The arithmetic-geometric mean of two `NNReal`s, defined as the infimum of arithmetic means. -/
 noncomputable def agm (x y : ℝ≥0) : ℝ≥0 :=
-  (@exists_tendsto_agmStep_iterate x y).choose
-
-variable {x y : ℝ≥0}
+  ⨅ n, (agmSequences x y).2 (n + 1)
 
 lemma agm_comm : agm x y = agm y x := by
-  have tM := (@exists_tendsto_agmStep_iterate x y).choose_spec.1
-  have tM' := (@exists_tendsto_agmStep_iterate y x).choose_spec.1
-  have eeq : (fun n ↦ (agmStep^[n] (x, y)).1) =ᶠ[atTop] fun n ↦ (agmStep^[n] (y, x)).1 := by
-    rw [EventuallyEq, eventually_atTop]
-    refine ⟨1, fun n hn ↦ ?_⟩
-    rw [agmStep_iterate_comm (Nat.ne_zero_of_lt hn)]
-  exact tendsto_nhds_unique (tM.congr' eeq) tM'
-
-lemma agm_mem_Icc_of_le (h : x ≤ y) : agm x y ∈ Set.Icc x y := by
   unfold agm
-  set M := (@exists_tendsto_agmStep_iterate x y).choose
-  obtain ⟨lM, uM⟩ := (@exists_tendsto_agmStep_iterate x y).choose_spec
-  change Tendsto _ _ (𝓝 M) at lM uM
-  have bddAbove_fst := bddAbove_range_agmStep_iterate_fst h
-  have eM₁ := tendsto_nhds_unique lM <|
-    tendsto_atTop_ciSup (agmStep_iterate_fst_monotone h) bddAbove_fst
-  have bddBelow_snd := bddBelow_range_agmStep_iterate_snd h
-  have eM₂ := tendsto_nhds_unique uM <|
-    tendsto_atTop_ciInf (agmStep_iterate_snd_antitone h) bddBelow_snd
-  exact ⟨eM₁ ▸ le_ciSup bddAbove_fst 0, eM₂ ▸ ciInf_le bddBelow_snd 0⟩
+  conv_rhs =>
+    enter [1, n]
+    rw [agmSequences_snd_comm]
 
-lemma agm_mem_uIcc : agm x y ∈ Set.uIcc x y := by
-  wlog h : x ≤ y
-  · rw [not_le] at h
-    specialize this h.le
-    rwa [Set.uIcc_comm, agm_comm]
-  rw [Set.uIcc_of_le h]
-  exact agm_mem_Icc_of_le h
+lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y).2 (n + 1) := rfl
+
+lemma agm_le_agmSequences_snd : agm x y ≤ (agmSequences x y).2 (n + 1) := ciInf_le' _ n
+
+lemma agm_le_max : agm x y ≤ max x y := by
+  rcases le_or_gt x y with h | h
+  · rw [max_eq_right h]
+    apply (agm_le_agmSequences_snd (n := 0)).trans
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, add_div]
+    nth_rw 2 [← add_halves y]
+    gcongr
+  · rw [max_eq_left h.le]
+    apply (agm_le_agmSequences_snd (n := 0)).trans
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, add_div]
+    nth_rw 2 [← add_halves x]
+    gcongr
+
+/-- The AGM is also the supremum of the geometric means. -/
+lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y).1 (n + 1) := by
+  sorry
+
+lemma agmSequences_fst_le_agm : (agmSequences x y).1 (n + 1) ≤ agm x y := by
+  rw [agm_eq_ciSup]
+  refine le_ciSup (f := fun n ↦ (agmSequences x y).1 (n + 1)) ?_ n
+  rw [bddAbove_def]
+  use (x.agmSequences y).2 (0 + 1)
+  simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  exact fun _ ↦ agmSequences_fst_le_agmSequences_snd
+
+lemma min_le_agm : min x y ≤ agm x y := by
+  rcases le_or_gt x y with h | h
+  · rw [min_eq_left h]
+    refine le_trans ?_ (agmSequences_fst_le_agm (n := 0))
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, sqrt_mul]
+    nth_rw 1 [← mul_self_sqrt x]
+    gcongr
+  · rw [min_eq_right h.le]
+    refine le_trans ?_ (agmSequences_fst_le_agm (n := 0))
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, sqrt_mul]
+    nth_rw 1 [← mul_self_sqrt y]
+    gcongr
 
 lemma agm_self : agm x x = x := by
-  simpa using agm_mem_Icc_of_le le_rfl
+  apply le_antisymm
+  · nth_rw 3 [← max_self x]
+    exact agm_le_max
+  · nth_rw 1 [← min_self x]
+    exact min_le_agm
 
 lemma agm_zero_left : agm 0 x = 0 :=
-  tendsto_nhds_unique (@exists_tendsto_agmStep_iterate 0 x).choose_spec.1
-    (@tendsto_agmStep_iterate_zero x).1
+  sorry
 
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
 
 /-- The AGM is unchanged if `x` and `y` are replaced by their geometric and arithmetic means. -/
 lemma agm_eq_agm_geometric_arithmetic_means : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
-  let M := (@exists_tendsto_agmStep_iterate x y).choose
-  let M' := (@exists_tendsto_agmStep_iterate (agmStep (x, y)).1 (agmStep (x, y)).2).choose
-  change M = M'
-  have tM : Tendsto _ _ (𝓝 M) := (@exists_tendsto_agmStep_iterate x y).choose_spec.1
-  have tM' : Tendsto _ _ (𝓝 M') :=
-    (@exists_tendsto_agmStep_iterate (agmStep (x, y)).1 (agmStep (x, y)).2).choose_spec.1
-  simp_rw [Prod.mk.eta, ← iterate_succ_apply, Nat.succ_eq_add_one,
-    tendsto_add_atTop_iff_nat (f := fun n ↦ (agmStep^[n] (x, y)).1)] at tM'
-  exact tendsto_nhds_unique tM tM'
-
-lemma agm_mem_Ioo_of_pos_of_lt (hx : 0 < x) (h : x < y) : agm x y ∈ Set.Ioo x y := by
-  rw [agm_eq_agm_geometric_arithmetic_means]
-  refine (Set.Icc_subset_Ioo ?_ ?_) <| agm_mem_Icc_of_le (sqrt_mul_le_half_add ..)
-  · nth_rw 1 [sqrt_mul, ← mul_self_sqrt x]
-    gcongr
-  · rw [add_div]
-    nth_rw 2 [← add_halves y]
-    gcongr
+  sorry
 
 lemma agm_mem_uIoo_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (h : x ≠ y) : agm x y ∈ Set.uIoo x y := by
-  rcases h.lt_or_gt with h | h
-  · rw [Set.uIoo_of_lt h]
-    exact agm_mem_Ioo_of_pos_of_lt hx h
-  · rw [Set.uIoo_of_gt h, agm_comm]
-    exact agm_mem_Ioo_of_pos_of_lt hy h
+  sorry
 
 /-- The AGM distributes over multiplication. -/
 lemma agm_mul_distrib {k : ℝ≥0} : agm (k * x) (k * y) = k * agm x y := by
-  let M := (@exists_tendsto_agmStep_iterate x y).choose
-  let M' := (@exists_tendsto_agmStep_iterate (k * x) (k * y)).choose
-  change M' = k * M
-  have tM : Tendsto _ _ (𝓝 (k • M)) :=
-    ((@exists_tendsto_agmStep_iterate x y).choose_spec.1).const_smul k
-  have tM' : Tendsto _ _ (𝓝 M') :=
-    (@exists_tendsto_agmStep_iterate (k * x) (k * y)).choose_spec.1
-  rw [smul_eq_mul] at tM
-  simp_rw [agmStep_iterate_mul, Prod.smul_fst] at tM'
-  exact tendsto_nhds_unique tM' tM
+  unfold agm agmSequences
+  simp_rw [mul_iInf, Equiv.arrowProdEquivProdArrow_apply]
+  congr! with n
+  suffices (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (k * x, k * y) =
+      k • (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (x, y) by
+    simpa using congr_arg Prod.snd this
+  set m := n + 1
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    simp_rw [iterate_succ', comp_apply, ih, Prod.smul_mk, Prod.smul_fst, Prod.smul_snd, smul_eq_mul]
+    congr
+    · rw [mul_mul_mul_comm, sqrt_mul, sqrt_mul_self]
+    · rw [← mul_add, mul_div_assoc]
 
 end NNReal
