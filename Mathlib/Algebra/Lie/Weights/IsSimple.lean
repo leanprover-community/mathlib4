@@ -284,7 +284,7 @@ open LieSubmodule in
   have h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤ := by
     rw [← LieSubmodule.toSubmodule_inj] at h
     have := coe_invtSubmoduleToLieIdeal_eq_iSup q hq
-    simpa only [← LieSubieSubmodule.iSup_toSubmodule] using h
+    exact (LieSubmodule.toSubmodule_eq_top (⨆ α, sl2SubmoduleOfRoot α.property.right)).mp h
   by_contra hq_ne_top
   have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
     contrapose! hq_ne_top
