@@ -179,9 +179,6 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : ¬x ≡ a [PMOD p]) :
     exact isOpen_iUnion fun i => isOpen_Ioo
   · rwa [mem_setOf_eq, ← not_modEq_iff_toIcoMod_eq_toIocMod hp, AddCommGroup.modEq_comm]
 
-def MyModEq {G : Type*} [Add G] [SMul ℕ G] (p : G) (a b : G) : Prop :=
-  ∃ m n : ℕ, m • p + a = n • p + b
-
 theorem continuousAt_toIcoMod (hx : ¬x ≡ a [PMOD p]) : ContinuousAt (toIcoMod hp a) x :=
   continuousAt_id.sub <| tendsto_nhds_of_eventually_eq <|
     (eventuallyEq_toIcoDiv_nhds hp a hx).fun_comp (· • p)
