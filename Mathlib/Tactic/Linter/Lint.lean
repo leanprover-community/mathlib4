@@ -5,7 +5,9 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Batteries.Tactic.Lint.Basic
+-- This module imports all of `Batteries.Tactic.Lint`, not just `Batteries.Tactic.Lint.Basic`.
+-- It is responsible for making `#lint` available through `Mathlib.Init`.
+public import Batteries.Tactic.Lint -- shake: keep
 public import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 
