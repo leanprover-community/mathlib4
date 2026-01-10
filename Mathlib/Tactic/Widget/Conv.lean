@@ -65,6 +65,9 @@ the `Path` corresponding to traversing `pos` starting at the reference expressio
 partial def Path.ofSubExprPosArray (expr : Expr) (pos : Array Nat) : MetaM Path :=
   go expr 0
 where
+  /--
+  `Path.ofSubExprPosArray.go pos expr i` is the same as `Path.ofSubExprPosArray expr (pos.drop i)`
+  -/
   go (expr : Expr) (i : Fin (pos.size + 1)) : MetaM Path :=
     if h : i = Fin.last pos.size then pure (Path.fun 0) else
     let i := i.castLT (Fin.val_lt_last h)
@@ -115,24 +118,24 @@ where
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else err
     | .app .. => appT expr i.castSucc [] none
-  appT (e : Expr) (i : Fin (pos.size + 1))
+  appT (expr : Expr) (i : Fin (pos.size + 1))
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
-    match e with
+    match expr with
     | .app f a =>
-      if let some u := n then appT f i (a :: acc) (some u.succ)
+      if let some n := n then appT f i (a :: acc) (some n.succ)
       else if h : i = Fin.last pos.size then pure (Path.fun acc.length)
       else let i := i.castLT (Fin.val_lt_last h)
       if pos[i] = 0 then appT f i.succ (a :: acc) none
       else if pos[i] = 1 then appT f i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
-      else throwError m!"cannot access position {pos[i]} of{indentExpr e}"
+      else throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
     | _ =>
-      if let some u := n then do
-        let c ← PrettyPrinter.Delaborator.getParamKinds e acc.toArray
-        if let some {bInfo := .default, ..} := c[u]? then
-          arg (((c.map (·.bInfo)).take u).count .default + 1)
-            false <$> go acc[u] i
-        else arg (u + 1) true <$> go acc[u] i
-      else arg 0 false <$> go e i
+      if let some n := n then do
+        let c ← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray
+        if let some {bInfo := .default, ..} := c[n]? then
+          arg (((c.map (·.bInfo)).take n).count .default + 1)
+            false <$> go acc[n] i
+        else arg (n + 1) true <$> go acc[n] i
+      else arg 0 false <$> go expr i
 
 open Lean.Parser.Tactic.Conv in
 /--
