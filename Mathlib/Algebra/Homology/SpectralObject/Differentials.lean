@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.ComposableArrows.Three
 /-!
 # Differentials of a spectral object
 
+## References
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
+
 -/
 
 @[expose] public section
