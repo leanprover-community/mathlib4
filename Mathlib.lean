@@ -4889,7 +4889,6 @@ public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 public import Mathlib.MeasureTheory.Covering.OneDim
 public import Mathlib.MeasureTheory.Covering.Vitali
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-public import Mathlib.MeasureTheory.Group.FoelnerFilter
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
@@ -4958,6 +4957,7 @@ public import Mathlib.MeasureTheory.Group.AddCircle
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Group.FoelnerFilter
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 public import Mathlib.MeasureTheory.Group.Integral
