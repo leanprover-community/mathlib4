@@ -222,7 +222,8 @@ variable (n₀ n₁ n₂ n₃ : ℤ)
 @[reassoc (attr := simp)]
 lemma πE_EIsoH_hom :
     X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f₁ (𝟙 i₁) ≫ (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom =
-      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f₁).hom := by
+      (X.cyclesIsoH n₁ n₂ hn₂ f₁).hom := by
+  obtain rfl : n₀ = n₁ - 1 := by lia
   simp [πE, cyclesIsoH, EIsoH]
 
 @[reassoc]

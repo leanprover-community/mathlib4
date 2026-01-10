@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.ComposableArrows.Three
+public import Batteries.Tactic.Lint
 
 /-!
 # Spectral objects in abelian categories
@@ -383,11 +384,7 @@ variable {A : C} (x : (X.H n₁).obj (mk₁ f₁₂) ⟶ A)
 
 noncomputable def descE :
     X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ A :=
-  (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).desc x (by
-    dsimp
-    ext
-    · simp [h]
-    · simp [h'])
+  (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).desc x (by cat_disch)
 
 @[reassoc (attr := simp)]
 lemma toCycles_πE_descE :
@@ -437,11 +434,7 @@ variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ f₂₃))
 
 noncomputable def liftE :
     A ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
-  (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift x (by
-    dsimp
-    ext
-    · simp [h]
-    · simp [h'])
+  (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift x (by cat_disch)
 
 @[reassoc (attr := simp)]
 lemma liftE_ιE_fromOpcycles :
@@ -540,10 +533,8 @@ lemma opcyclesToE_ιE :
   apply X.p_opcyclesMap
   rfl
 
-instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂) := by
-  have : Epi (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) :=
-    epi_comp _ _
-  exact epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
+instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂) :=
+  epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
 
 /-- cokernelSequenceE'' -/
 @[simps!]
@@ -574,7 +565,7 @@ lemma cokernelSequenceE''_exact :
   obtain ⟨a, b, rfl⟩ : ∃ a b, y₁ = a ≫ biprod.inl + b ≫ biprod.inr :=
     ⟨y₁ ≫ biprod.fst, y₁ ≫ biprod.snd, by ext <;> simp⟩
   simp only [Preadditive.add_comp, Category.assoc, biprod.inl_desc, biprod.inr_desc] at hy₁
-  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _, a, ?_⟩
+  refine ⟨A₂, π₂ ≫ π₁, inferInstance, a, ?_⟩
   dsimp
   simp only [Category.assoc, hy₂, reassoc_of% hy₁, Preadditive.add_comp, δ_pOpcycles,
     comp_zero, add_zero]
@@ -621,20 +612,18 @@ end
 
 section
 
-variable (n₀ n₁ n₂ : ℤ)
-  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
 
--- TODO: remove the dependency on `n₀`
 noncomputable def cyclesIsoH :
-    X.cycles n₁ n₂ hn₂ (𝟙 i₀) f ≅ (X.H n₁).obj (mk₁ f) :=
-  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
+    X.cycles n₀ n₁ hn₁ (𝟙 i₀) f ≅ (X.H n₀).obj (mk₁ f) :=
+  (X.cyclesIso (n₀ - 1) n₀ n₁ (by lia) hn₁ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
     (X.homologyDataEIdId ..).left.cyclesIso
 
 @[simp]
 lemma cyclesIsoH_inv :
-    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv = X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) := by
-  rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ (𝟙 _) f ), toCycles_i]
+    (X.cyclesIsoH n₀ n₁ hn₁ f).inv = X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) := by
+  rw [← cancel_mono (X.iCycles n₀ n₁ hn₁ (𝟙 _) f ), toCycles_i]
   dsimp [cyclesIsoH]
   rw [Category.assoc, cyclesIso_hom_i,
     ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles,
@@ -644,15 +633,96 @@ lemma cyclesIsoH_inv :
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_hom_inv_id :
-    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫
-      X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) = 𝟙 _ := by
-  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom_inv_id
+    (X.cyclesIsoH n₀ n₁ hn₁ f).hom ≫
+      X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ hn₁ f).hom_inv_id
 
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_inv_hom_id :
-    X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) ≫
-      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom = 𝟙 _ := by
-  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv_hom_id
+    X.toCycles n₀ n₁ hn₁ (𝟙 _) f f (by simp) ≫
+      (X.cyclesIsoH n₀ n₁ hn₁ f).hom = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ hn₁ f).inv_hom_id
+
+noncomputable def opcyclesIsoH :
+    X.opcycles n₀ n₁ hn₁ f (𝟙 i₁) ≅ (X.H n₁).obj (mk₁ f) :=
+  (X.opcyclesIso n₀ n₁ (n₁ + 1) hn₁ (by lia) (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
+    (X.homologyDataEIdId ..).right.opcyclesIso
+
+@[simp]
+lemma opcyclesIsoH_hom :
+    (X.opcyclesIsoH n₀ n₁ hn₁ f).hom = X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f (𝟙 _)), p_fromOpcycles]
+  dsimp [opcyclesIsoH]
+  rw [p_opcyclesIso_inv_assoc]
+  rw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom,
+    homologyDataEIdId_right_p, ← Functor.map_id]
+  congr 1
+  cat_disch
+
+@[reassoc (attr := simp)]
+lemma opcyclesIsoH_hom_inv_id :
+      X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) ≫
+        (X.opcyclesIsoH n₀ n₁ hn₁ f).inv = 𝟙 _ := by
+  simpa using (X.opcyclesIsoH n₀ n₁ hn₁ f).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma opcyclesIsoH_inv_hom_id :
+    (X.opcyclesIsoH n₀ n₁ hn₁ f).inv ≫
+      X.fromOpcycles n₀ n₁ hn₁ f (𝟙 _) f (by simp) = 𝟙 _ := by
+  simpa using (X.opcyclesIsoH n₀ n₁ hn₁ f).inv_hom_id
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) {i j : ι} (f : i ⟶ j)
+
+@[reassoc (attr := simp)]
+lemma cyclesIsoH_hom_EIsoH_inv :
+    (X.cyclesIsoH n₁ n₂ hn₂ f).hom ≫ (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv =
+      X.πE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) := by
+  let h := (X.homologyDataEIdId n₀ n₁ n₂ hn₁ hn₂ f).left
+  have : h.cyclesIso.inv =
+      X.toCycles n₁ n₂ hn₂ (𝟙 i) f f (by simp) ≫
+        (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).inv := by
+    rw [← cancel_mono (X.cyclesIso ..).hom,
+      Category.assoc, Iso.inv_hom_id, Category.comp_id,
+      ← cancel_mono (X.iCycles ..), Category.assoc, cyclesIso_hom_i,
+      h.cyclesIso_inv_comp_iCycles, toCycles_i]
+    dsimp [h]
+    rw [← Functor.map_id]
+    congr 1
+    cat_disch
+  obtain rfl : n₀ = n₁ - 1 := by lia
+  rw [← cancel_epi (X.cyclesIsoH n₁ n₂ hn₂ f).inv,
+    cyclesIsoH_inv, cyclesIsoH_inv_hom_id_assoc]
+  dsimp [EIsoH]
+  rw [← cancel_epi h.π, h.π_comp_homologyIso_inv]
+  simp [πE, h, this]
+
+@[reassoc (attr := simp)]
+lemma EIsoH_hom_opcyclesIsoH_inv :
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.opcyclesIsoH n₀ n₁ hn₁ f).inv =
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) := by
+  let h := (X.homologyDataEIdId n₀ n₁ n₂ hn₁ hn₂ f)
+  have : h.right.opcyclesIso.hom =
+      (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).hom ≫
+        X.fromOpcycles n₀ n₁ hn₁ f (𝟙 j) f (by simp) := by
+    rw [← cancel_epi (X.opcyclesIso ..).inv, Iso.inv_hom_id_assoc,
+      ← cancel_epi (X.pOpcycles ..), p_opcyclesIso_inv_assoc,
+      h.right.pOpcycles_comp_opcyclesIso_hom, p_fromOpcycles]
+    dsimp [h]
+    rw [← Functor.map_id]
+    congr 1
+    cat_disch
+  obtain rfl : n₂ = n₁ + 1 := by lia
+  rw [← cancel_mono (X.opcyclesIsoH n₀ n₁ hn₁ f).hom, Category.assoc,
+    opcyclesIsoH_hom, opcyclesIsoH_inv_hom_id]
+  dsimp [EIsoH, ιE]
+  rw [Category.assoc, ← this,
+    h.left_homologyIso_eq_right_homologyIso_trans_iso_symm,
+    ← ShortComplex.RightHomologyData.homologyIso_hom_comp_ι]
+  simp [h]
 
 end
 
