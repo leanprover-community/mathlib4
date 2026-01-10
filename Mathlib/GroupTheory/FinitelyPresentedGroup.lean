@@ -28,8 +28,6 @@ OR: look at Group.FG and how that package works.
 finitely presented group, normal closure finitely generated,
 -/
 
-universe u v
-
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
 (_h : rels.Finite) := PresentedGroup (rels)
 
@@ -163,11 +161,15 @@ instance {G : Type*} [Group G] [h : IsFinitelyPresented G] : IsPresented G := by
 
 -- TODO? every group is isomorphic to a `PresentedGroup`!
 
-lemma isFinitelyPresented_of_finitelyPresentedGroup
-  {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+namespace IsFinitelyPresented
+
+/- Every FP group is FP -/
+lemma FPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
   IsFinitelyPresented (FinitelyPresentedGroup rels h) := by
   refine ⟨α, inferInstance, rels, h, ?_⟩
   exact ⟨MulEquiv.refl _⟩
+
+end IsFinitelyPresented
 
 /- namespace IsFinitelyPresented
 
