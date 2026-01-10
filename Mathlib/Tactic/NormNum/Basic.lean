@@ -5,13 +5,13 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public meta import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Algebra.Ring.Int.Defs
-public meta import Mathlib.Data.Nat.Cast.Basic
-public meta import Mathlib.Data.Nat.Cast.Commute
-public meta import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Tactic.HaveI
-public meta import Mathlib.Tactic.ClearExclamation
+public meta import Mathlib.Algebra.Group.Invertible.Defs
+public meta import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` basic plugins
