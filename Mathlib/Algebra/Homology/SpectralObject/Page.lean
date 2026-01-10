@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
 public import Mathlib.CategoryTheory.Abelian.Refinements
+public import Mathlib.CategoryTheory.ComposableArrows.Three
 
 /-!
 # Spectral objects in abelian categories
@@ -961,6 +962,77 @@ lemma EMap_ιE
   dsimp [ιE, EMap]
   simp only [ShortComplex.homologyι_naturality_assoc, Category.assoc,
     X.opcyclesMap_opcyclesIso_hom n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁' f₂' f₃' α γ hγ]
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i₀ i₁ i₂ i₃ : ι}
+  (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+
+noncomputable def opcyclesToE : X.opcycles n₀ n₁ hn₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
+  X.descOpcycles _ _ _ _ _
+    (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
+
+@[reassoc (attr := simp)]
+lemma p_opcyclesToE :
+    X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃ ≫ X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ =
+      X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
+  simp [opcyclesToE]
+
+@[reassoc (attr := simp)]
+lemma opcyclesToE_ιE :
+    X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ≫ X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ =
+      X.opcyclesMap n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
+  rw [← cancel_epi (X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃), p_opcyclesToE_assoc,
+    πE_ιE, toCycles_i_assoc]
+  symm
+  apply X.p_opcyclesMap
+  rfl
+
+instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂) := by
+  have : Epi (X.toCycles n₁ n₂ hn₂ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) :=
+    epi_comp _ _
+  exact epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
+
+/-- cokernelSequenceE'' -/
+@[simps!]
+noncomputable def cokernelSequenceE'' : ShortComplex C where
+  X₁ := (X.H n₁).obj (mk₁ f₁)
+  X₂ := X.opcycles n₀ n₁ hn₁ f₁₂ f₃
+  X₃ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
+  f := (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃
+  g := X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
+  zero := by simp
+
+instance : Epi (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
+  dsimp
+  infer_instance
+
+lemma cokernelSequenceE''_exact :
+    (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂
+  obtain ⟨A₁, π₁, _, y₂, hy₂⟩ :=
+    surjective_up_to_refinements_of_epi (X.pOpcycles n₀ n₁ hn₁ f₁₂ f₃) x₂
+  obtain ⟨A₂, π₂, _, y₁, hy₁⟩ :=
+    (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).exact_up_to_refinements y₂
+      (by simpa only [Category.assoc, p_opcyclesToE, hx₂, comp_zero]
+        using hy₂.symm =≫ X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
+  dsimp at y₁ hy₁
+  obtain ⟨a, b, rfl⟩ : ∃ a b, y₁ = a ≫ biprod.inl + b ≫ biprod.inr :=
+    ⟨y₁ ≫ biprod.fst, y₁ ≫ biprod.snd, by ext <;> simp⟩
+  simp only [Preadditive.add_comp, Category.assoc, biprod.inl_desc, biprod.inr_desc] at hy₁
+  refine ⟨A₂, π₂ ≫ π₁, epi_comp _ _, a, ?_⟩
+  dsimp
+  simp only [Category.assoc, hy₂, reassoc_of% hy₁, Preadditive.add_comp, δ_pOpcycles,
+    comp_zero, add_zero]
+
+-- TODO: dual statement?
 
 end
 
