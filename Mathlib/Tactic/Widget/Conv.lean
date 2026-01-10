@@ -144,6 +144,11 @@ where
       else arg 0 false <$> go e i
 
 open Lean.Parser.Tactic.Conv in
+/--
+Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
+corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
+start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`
+-/
 def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
     (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
     m (TSyntax `tactic) := do
