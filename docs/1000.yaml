@@ -557,8 +557,9 @@ Q570779:
 
 Q574902:
   title: Tarski's indefinability theorem
-  url: https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability
+  url: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Tarski.lean#L18
   authors: Shogo Saito, Mashu Noguchi
+  comment: "See details for https://formalizedformallogic.github.io/Catalogue/Arithmetic/Tarski___s-Undefinability-Theorem/#tarski-undefinability"
 
 Q576478:
   title: Liouville's theorem (complex analysis)
