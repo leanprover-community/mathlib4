@@ -73,6 +73,11 @@ lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : 
     (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by cat_disch
 
 @[reassoc (attr := simp)]
+lemma hom_inv_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
+    (X₁ : C) (X₂ : D) (X₃ : E) :
+    ((e.hom.app X₁).app X₂).app X₃ ≫ ((e.inv.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
+
+@[reassoc (attr := simp)]
 lemma inv_hom_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
     (X₁ : C) (X₂ : D) (X₃ : E) :
     ((e.inv.app X₁).app X₂).app X₃ ≫ ((e.hom.app X₁).app X₂).app X₃ = 𝟙 _ := by cat_disch
@@ -180,8 +185,7 @@ theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.a
 
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
-    inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by
-  cat_disch
+    inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
