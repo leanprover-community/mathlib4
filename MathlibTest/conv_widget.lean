@@ -317,6 +317,38 @@ example : (mdata% Eq 1) (id 0 + 1) := by
 /--
 info: `conv?` would output:
 conv =>
+    enter [2, @2]
+    skip
+---
+trace: h : False → {x : True} → False → Bool
+k : False
+| trivial
+-/
+#guard_msgs in
+example (h : False → mdata% ∀ {_ : True}, False → Bool) (k : False) : k.elim = @h k trivial k := by
+  -- go to `trivial`
+  test "/1/0/1"
+  exact test_sorry
+
+/--
+info: `conv?` would output:
+conv =>
+    enter [1, 2, 2]
+    skip
+---
+trace: f : ∀ {a : Nat} ⦃b : Nat⦄, optParam (0 < 1) Nat.zero_lt_one → ∀ (c : Nat), 1 < 0
+| 17
+-/
+#guard_msgs in
+example (f : ∀ {a : Nat} ⦃b : Nat⦄ (_ : 0 < 1 := Nat.zero_lt_one) (c : Nat), 1 < 0) :
+    Fin.elim0.{1} ⟨1, @f 0 1 Nat.zero_lt_one 17⟩ := by
+  -- go to `17`
+  test "/1/1/1"
+  exact test_sorry
+
+/--
+info: `conv?` would output:
+conv =>
     enter [k, 1, 1]
     skip
 ---
