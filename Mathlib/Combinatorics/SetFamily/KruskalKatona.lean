@@ -324,7 +324,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
         rw [← Ah.2, ← card_sdiff_i, add_comm, card_sdiff_add_card_eq_card hBA]
-    _ ≤ #(∂ ^[i] 𝒜) := by
+    _ ≤ #(∂^[i] 𝒜) := by
       refine iterated_kk h₁ ?_ ⟨‹_›, ?_⟩
       · rwa [card_powersetCard, card_attachFin, card_range]
       simp_rw [𝒞, mem_powersetCard]
