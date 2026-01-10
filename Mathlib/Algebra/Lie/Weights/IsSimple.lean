@@ -331,7 +331,8 @@ open LieSubmodule in
     rw [not_not] at hi
     have hα₀ : i.val.IsNonZero := (Finset.mem_filter.mp i.property).2
     have h_sl2_le : (sl2SubmoduleOfRoot hα₀ : Submodule K L) ≤ invtSubmoduleToLieIdeal q hq := by
-      rw [coe_invtSubmoduleToLieIdeal_eq_iSup, LieSubmodule.iSup_toSubmodule]
+      rw [LieIdeal.toLieSubalgebra_toSubmodule, coe_invtSubmoduleToLieIdeal_eq_iSup,
+        LieSubmodule.iSup_toSubmodule]
       exact le_iSup_of_le ⟨i.val, hi, hα₀⟩ le_rfl
     rw [h] at h_sl2_le
     simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule, le_bot_iff,
