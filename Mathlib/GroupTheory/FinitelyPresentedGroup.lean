@@ -161,8 +161,8 @@ On the other hand, when we write IsFinitelyPresented as `∃ α: Type` and a sur
 `f: FreeGroup α →* G` such that `f.ker = normalClosure rels,`
 since `MonoidHom` allows `FreeGroup α` and `G` to be different types,
 we have to specify that `α` and `G` live in the same type universe to get the same result. -/
-lemma iff_hom_surj {G : Type u} [Group G] : IsPresented G ↔
-  ∃ (α : Type u) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
+lemma iff_hom_surj {G : Type*} [Group G] : IsPresented G ↔
+  ∃ (α : Type*) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
   Function.Surjective f ∧ f.ker = Subgroup.normalClosure rels := by
     constructor
     · intro ⟨α, rels, ⟨iso⟩⟩
@@ -301,7 +301,29 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     let α := Fin n
     use α, inferInstance, f
 
+theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
+IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
+  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+  sorry
 
+theorem implied_by_hom_surj_finite {G : Type*} [Group G] :
+(∃ (α : Type*) (_ : Finite α) (f : (FreeGroup α) →* G),
+  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)) → IsFinitelyPresented G := by
+  rintro ⟨α, hα, f, hfsurj, hfker⟩
+  rw [iff_hom_surj_fin_n]
+  let n := Nat.card α
+  let iso : FreeGroup (Fin n) ≃* FreeGroup α :=
+    FreeGroup.freeGroupCongr (Finite.equivFin α).symm
+  let f' : FreeGroup (Fin n) →* G := f.comp iso
+  let hf'surj := hfsurj.comp iso.surjective
+  have hf'ker : IsNormalClosureFG f'.ker := by
+    unfold f'
+    simp only [MonoidHom.ker_comp_mulEquiv]
+    exact
+    IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+  exact ⟨n, f', hf'surj, hf'ker⟩
+
+  -- use Fin n, inferInstance
 
 -- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
