@@ -36,8 +36,10 @@ theorem offDiag_nil : offDiag ([] : List α) = [] := rfl
 theorem offDiag_cons_perm (a : α) (l : List α) :
     offDiag (a :: l) ~ map (a, ·) l ++ map (·, a) l ++ l.offDiag := by
   simp only [offDiag, zipIdx_cons']
+  have : map (fun x ↦ (x.fst, a)) l.zipIdx = map (·, a) l := by
+    conv_rhs => rw [← zipIdx_map_fst 0 l, map_map, Function.comp_def]
   simp [append_assoc, perm_append_left_iff, flatMap_map,
-    ← (map_append_flatMap_perm _ _ _).congr_left, map_fun_fst_zipIdx _ (·, a)]
+    ← (map_append_flatMap_perm _ _ _).congr_left, this]
 
 @[simp]
 theorem offDiag_singleton (a : α) : offDiag [a] = [] := rfl
