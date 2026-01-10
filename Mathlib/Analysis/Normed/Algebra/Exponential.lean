@@ -169,8 +169,7 @@ variable (𝕂)
 theorem exp_eq_finset_sum_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = ∑ i ∈ Finset.range (nilpotencyClass x), (i ! : 𝕂)⁻¹ • x ^ i := by
   rw [exp_eq_tsum]
-  dsimp only
-  rw [tsum_eq_sum (s := Finset.range (nilpotencyClass x))]
+  apply tsum_eq_sum
   intro _ hb
   rw [Finset.mem_range, not_lt] at hb
   rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
@@ -217,13 +216,10 @@ variable (𝕂)
 
 theorem exp_eq_finset_sum_div_of_isNilpotent {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = ∑ i ∈ Finset.range (nilpotencyClass x), x ^ i / i ! := by
-  rw [exp_eq_tsum_div]
-  dsimp only
-  rw [tsum_eq_sum (s := Finset.range (nilpotencyClass x))]
-  intro _ hb
-  rw [Finset.mem_range, not_lt] at hb
-  rw [← Nat.sub_add_cancel hb, pow_add, pow_nilpotencyClass ha]
-  norm_num
+  rw [exp_eq_finset_sum_of_isNilpotent 𝕂 ha]
+  apply Finset.sum_congr <| by rfl
+  intros
+  exact expSeries_apply_eq (𝕂 := 𝕂) x _ ▸ expSeries_apply_eq_div x _
 
 lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 𝔸} (ha : IsNilpotent x) :
     exp 𝕂 x = IsNilpotent.exp x := by
@@ -231,7 +227,7 @@ lemma exp_eq_isNilpotent_exp [CharZero 𝔸] [IsScalarTower ℚ 𝕂 𝔸] {x : 
   apply Finset.sum_congr <| by rfl
   intros
   rw [← Rat.cast_inv_nat]
-  exact Rat.cast_smul_eq_qsmul 𝕂 _ _
+  apply Rat.cast_smul_eq_qsmul
 
 end TopologicalDivisionAlgebra
 

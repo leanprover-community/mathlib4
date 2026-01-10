@@ -107,7 +107,7 @@ lemma exp_eq_isNilpotent_exp [Fintype m] [DecidableEq m] [Field 𝕂] [DivisionR
   apply Finset.sum_congr <| by rfl
   intros
   rw [← Rat.cast_inv_nat]
-  exact Rat.cast_smul_eq_qsmul 𝕂 _ _
+  apply Rat.cast_smul_eq_qsmul
 
 section CommRing
 
