@@ -1242,7 +1242,6 @@ instance [IsDomain R] [hd : Ring.KrullDimLE 1 R] [Nontrivial (PrimeSpectrum R)] 
   eq_bot_or_eq_top I := by
     rw [or_iff_not_imp_left]
     intro hne
-    have := Ideal.bot_prime (α := R)
     rw [Ring.krullDimLE_one_iff_of_isPrime_bot] at hd
     simp [PrimeSpectrum.ext_iff, IsLocalRing.eq_maximalIdeal
       (hd I.asIdeal (by simpa [PrimeSpectrum.ext_iff] using hne) I.isPrime)]
