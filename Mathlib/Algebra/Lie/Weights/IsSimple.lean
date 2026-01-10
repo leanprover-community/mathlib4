@@ -337,8 +337,7 @@ open LieSubmodule in
     simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule, le_bot_iff,
       LieSubmodule.toSubmodule_eq_bot] at h_sl2_le
     exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
-  · simp [h, invtSubmoduleToLieIdeal]module.toSubmodule_inj, invtSubmoduleToLieIdeal,
-      L
+  · simp [h, invtSubmoduleToLieIdeal]
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
