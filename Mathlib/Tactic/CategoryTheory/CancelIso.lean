@@ -27,17 +27,14 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
 
 def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReducible necessary here?
   let e_whnf ← whnf e
-  let_expr CategoryStruct.comp C instCat x y t f g := e_whnf |
-    return .continue
+  let_expr CategoryStruct.comp C instCat x y t f g := e_whnf | return .continue
   match_expr g with
   -- Right_associated expressions needs their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
     -- Can’t expect a cancelation if the objects don’t match
-    unless z == x do
-      return .continue
+    unless z == x do return .continue
     -- Can’t expect a cancellation if `f` is not an iso.
-    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] |
-      return .continue
+    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
     let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
@@ -51,15 +48,12 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     return .done (.mk h (.some P) false)
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
   | _ =>
-    unless t == x do
-      return .continue
-    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] |
-      return .continue
+    unless t == x do return .continue
+    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
     let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
     let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
-    unless ← isDefEq pushed_inv.expr pushed_g.expr do
-      return .continue
+    unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
     let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
       (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
     let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, inst, g, p₀]
