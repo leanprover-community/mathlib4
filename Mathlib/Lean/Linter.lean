@@ -67,7 +67,7 @@ option which has been registered in the same module.
 def whenLinterActivated (opt : Lean.Option Bool) (x : CommandElab) (breakOnError := true) :
     CommandElab :=
   withSetOptionIn fun stx => whenLinterOption opt do
-    unless (← get).messages.hasErrors && breakOnError do
+    unless ← pure breakOnError <&&> MonadLog.hasErrors do
       x stx
 
 end Lean.Linter
