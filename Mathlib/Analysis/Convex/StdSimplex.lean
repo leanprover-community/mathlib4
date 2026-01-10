@@ -246,7 +246,9 @@ theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] :
   | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
   | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
 
-/-- The (sup metric) distance between distinct vertices (Pi.single) of a standard simplex is 1. -/
+/-- The (product metric) distance between distinct vertices (Pi.single) of a standard simplex is 1.
+
+Note: This is a special case of a more general fact about product metrics. -/
 theorem dist_single_single [DecidableEq ι] (i j : ι) (h : i ≠ j) :
     dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) = 1 := by
   refine le_antisymm ((dist_pi_le_iff zero_le_one).2 fun k ↦ ?_) ?_
