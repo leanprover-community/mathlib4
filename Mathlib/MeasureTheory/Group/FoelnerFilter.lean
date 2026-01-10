@@ -135,7 +135,7 @@ theorem IsFoelner.mean_smul_le_mean_smul [SMulInvariantMeasure G X μ]
   rw [← add_zero <| mean μ u F (h • s)]
   refine le_of_tendsto_of_tendsto
     (hfoel.tendsto_nhds_mean (g • s))
-    (hfoel.tendsto_nhds_mean (h • s) |>.add <| hfoel.tendsto_meas_symmDiff g⁻¹ h⁻¹) ?_
+    (hfoel.tendsto_nhds_mean (h • s) |>.add <| hfoel.tendsto_meas_smul_symmDiff_smul g⁻¹ h⁻¹) ?_
   filter_upwards [hfoel.eventually_meas_ne_zero] with i hi
   rw [← tsub_le_iff_left, ← ENNReal.sub_div <| fun _ _ ↦ hi]
   refine ENNReal.div_le_div_right (le_trans ?_ (measure_mono <| @inter_subset_right _ s _)) _
