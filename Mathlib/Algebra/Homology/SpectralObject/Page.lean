@@ -527,42 +527,6 @@ lemma isZero_H_obj_of_isIso (n : ℤ) {i j : ι} (f : i ⟶ j) (hf : IsIso f) :
 section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-  {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
-
-/-- An homology data for `X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)`,
-expressing `H^n₁(f)` as the homology of this short complex,
-see `EIsoH`. -/
-@[simps!]
-noncomputable def homologyDataEIdId :
-    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).HomologyData :=
-  (ShortComplex.HomologyData.ofZeros (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j))
-    (X.δ_eq_zero_of_isIso₂ n₀ n₁ hn₁ f (𝟙 j) inferInstance)
-    (X.δ_eq_zero_of_isIso₁ n₁ n₂ hn₂ (𝟙 i) f inferInstance))
-
-/-- For any morphism `f : i ⟶ j`, this is the isomorphism from
-`E^n₁(𝟙 i, f, 𝟙 j)` to `H^n₁(f)`. -/
-noncomputable def EIsoH :
-    X.E n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) ≅ (X.H n₁).obj (mk₁ f) :=
-  (X.homologyDataEIdId ..).left.homologyIso
-
-lemma EIsoH_hom_naturality
-    (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
-    (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
-      (by simp) (naturality' α 0 1) (by simp [Precomp.obj, Precomp.map])) :
-    X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
-      (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
-    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
-  obtain rfl : α = homMk₁ (β.app 1) (β.app 2) (naturality' β 1 2) := by
-    subst hβ
-    exact hom_ext₁ rfl rfl
-  exact (ShortComplex.LeftHomologyMapData.ofZeros
-    (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ β) _ _ _ _).homologyMap_comm
-
-end
-
-section
-
-variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
@@ -873,43 +837,6 @@ section
 
 variable (n₀ n₁ n₂ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-  {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
-
--- TODO: remove the dependency on `n₀`
-noncomputable def cyclesIsoH :
-    X.cycles n₁ n₂ hn₂ (𝟙 i₀) f ≅ (X.H n₁).obj (mk₁ f) :=
-  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
-    (X.homologyDataEIdId ..).left.cyclesIso
-
-@[simp]
-lemma cyclesIsoH_inv :
-    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv = X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) := by
-  rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ (𝟙 _) f ), toCycles_i]
-  dsimp [cyclesIsoH]
-  rw [Category.assoc, cyclesIso_hom_i,
-    ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles,
-    homologyDataEIdId_left_i, ← Functor.map_id]
-  congr 1
-  cat_disch
-
-@[reassoc (attr := simp)]
-lemma cyclesIsoH_hom_inv_id :
-    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫
-      X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) = 𝟙 _ := by
-  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom_inv_id
-
-@[reassoc (attr := simp)]
-lemma cyclesIsoH_inv_hom_id :
-    X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) ≫
-      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom = 𝟙 _ := by
-  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv_hom_id
-
-end
-
-section
-
-variable (n₀ n₁ n₂ : ℤ)
-  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i₀ i₁ i₂ i₃ : ι}
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   {i₀' i₁' i₂' i₃' : ι}
@@ -1033,6 +960,79 @@ lemma cokernelSequenceE''_exact :
     comp_zero, add_zero]
 
 -- TODO: dual statement?
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i j : ι} (f : i ⟶ j) {i' j' : ι} (f' : i' ⟶ j')
+
+/-- An homology data for `X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)`,
+expressing `H^n₁(f)` as the homology of this short complex,
+see `EIsoH`. -/
+@[simps!]
+noncomputable def homologyDataEIdId :
+    (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j)).HomologyData :=
+  (ShortComplex.HomologyData.ofZeros (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j))
+    (X.δ_eq_zero_of_isIso₂ n₀ n₁ hn₁ f (𝟙 j) inferInstance)
+    (X.δ_eq_zero_of_isIso₁ n₁ n₂ hn₂ (𝟙 i) f inferInstance))
+
+/-- For any morphism `f : i ⟶ j`, this is the isomorphism from
+`E^n₁(𝟙 i, f, 𝟙 j)` to `H^n₁(f)`. -/
+noncomputable def EIsoH :
+    X.E n₀ n₁ n₂ hn₁ hn₂ (𝟙 i) f (𝟙 j) ≅ (X.H n₁).obj (mk₁ f) :=
+  (X.homologyDataEIdId ..).left.homologyIso
+
+lemma EIsoH_hom_naturality
+    (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
+    (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
+      (by simp) (naturality' α 0 1) (by simp [Precomp.obj, Precomp.map])) :
+    X.EMap n₀ n₁ n₂ hn₁ hn₂ (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β ≫
+      (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f').hom =
+    (X.EIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫ (X.H n₁).map α := by
+  obtain rfl : α = homMk₁ (β.app 1) (β.app 2) (naturality' β 1 2) := by
+    subst hβ
+    exact hom_ext₁ rfl rfl
+  exact (ShortComplex.LeftHomologyMapData.ofZeros
+    (X.shortComplexEMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ β) _ _ _ _).homologyMap_comm
+
+end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+  {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
+
+-- TODO: remove the dependency on `n₀`
+noncomputable def cyclesIsoH :
+    X.cycles n₁ n₂ hn₂ (𝟙 i₀) f ≅ (X.H n₁).obj (mk₁ f) :=
+  (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
+    (X.homologyDataEIdId ..).left.cyclesIso
+
+@[simp]
+lemma cyclesIsoH_inv :
+    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv = X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) := by
+  rw [← cancel_mono (X.iCycles n₁ n₂ hn₂ (𝟙 _) f ), toCycles_i]
+  dsimp [cyclesIsoH]
+  rw [Category.assoc, cyclesIso_hom_i,
+    ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles,
+    homologyDataEIdId_left_i, ← Functor.map_id]
+  congr 1
+  cat_disch
+
+@[reassoc (attr := simp)]
+lemma cyclesIsoH_hom_inv_id :
+    (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom ≫
+      X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma cyclesIsoH_inv_hom_id :
+    X.toCycles n₁ n₂ hn₂ (𝟙 _) f f (by simp) ≫
+      (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).hom = 𝟙 _ := by
+  simpa using (X.cyclesIsoH n₀ n₁ n₂ hn₁ hn₂ f).inv_hom_id
 
 end
 

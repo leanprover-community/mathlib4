@@ -29,6 +29,69 @@ variable (X : SpectralObject C ι)
 
 section
 
+variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
+  {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+  (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
+  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
+  (f₄₅ : i₃ ⟶ i₅) (h₄₅ : f₄ ≫ f₅ = f₄₅)
+
+noncomputable def d : X.E n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ⟶ X.E n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ :=
+  X.descE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ _ rfl (X.δ n₁ n₂ hn₂ (f₁ ≫ f₂) (f₃ ≫ f₄) ≫
+    X.toCycles n₂ n₃ hn₃ f₁ f₂ _ rfl ≫ X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃) (by
+      rw [X.δ_naturality_assoc n₁ n₂ hn₂ (f₁ ≫ f₂) f₃ (f₁ ≫ f₂) (f₃ ≫ f₄)
+        (𝟙 _) (twoδ₂Toδ₁ f₃ f₄  _ rfl) rfl, Functor.map_id, id_comp,
+        δ_toCycles_assoc, δToCycles_πE]) (by rw [δ_δ_assoc, zero_comp])
+
+@[reassoc]
+lemma toCycles_πE_d :
+    X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ≫
+      X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ =
+        X.δ n₁ n₂ hn₂ f₁₂ f₃₄ ≫ X.toCycles n₂ n₃ hn₃ f₁ f₂ f₁₂ h₁₂ ≫
+          X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ := by
+  subst h₁₂ h₃₄
+  simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
+
+include h₃₄ in
+@[reassoc]
+lemma d_ιE_fromOpcycles :
+    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫ X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
+      X.fromOpcycles n₁ n₂ hn₂ f₂ f₃ f₂₃ h₂₃ =
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ≫ X.fromOpcycles n₀ n₁ hn₁ f₄ f₅ f₄₅ h₄₅ ≫
+        X.δ n₁ n₂ hn₂ f₂₃ f₄₅ := by
+  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅),
+    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄),
+    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ _ rfl]
+  rw [πE_ιE_assoc, p_fromOpcycles, toCycles_i_assoc, fromOpcyles_δ,
+    πE_ιE_assoc, pOpcycles_δFromOpcycles, toCycles_i_assoc, ← Functor.map_comp]
+  symm
+  apply δ_naturality
+  simp
+
+end
+
+section
+
+variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
+  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) (hn₄ : n₃ + 1 = n₄)
+  {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (f₆ : i₅ ⟶ i₆) (f₇ : i₆ ⟶ i₇)
+
+@[reassoc (attr := simp)]
+lemma d_d :
+    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ ≫
+      X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ = 0 := by
+  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₅ f₆ f₇),
+    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₅ f₆ _ rfl),
+    comp_zero, comp_zero,
+    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ _ rfl _ rfl,
+    X.toCycles_πE_d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ _ rfl _ rfl,
+    δ_δ_assoc, zero_comp]
+
+end
+
+section
+
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
@@ -128,48 +191,6 @@ lemma sequenceΨ_exact :
 
 end
 
-section
-
-variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
-  {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
-  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
-  (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
-  (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
-  (f₄₅ : i₃ ⟶ i₅) (h₄₅ : f₄ ≫ f₅ = f₄₅)
-
-noncomputable def d : X.E n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ⟶ X.E n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ :=
-  X.descE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ _ rfl (X.δ n₁ n₂ hn₂ (f₁ ≫ f₂) (f₃ ≫ f₄) ≫
-    X.toCycles n₂ n₃ hn₃ f₁ f₂ _ rfl ≫ X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃) (by
-      rw [X.δ_naturality_assoc n₁ n₂ hn₂ (f₁ ≫ f₂) f₃ (f₁ ≫ f₂) (f₃ ≫ f₄)
-        (𝟙 _) (twoδ₂Toδ₁ f₃ f₄  _ rfl) rfl, Functor.map_id, id_comp,
-        δ_toCycles_assoc, δToCycles_πE]) (by rw [δ_δ_assoc, zero_comp])
-
-@[reassoc]
-lemma toCycles_πE_d :
-    X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ≫
-      X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ =
-        X.δ n₁ n₂ hn₂ f₁₂ f₃₄ ≫ X.toCycles n₂ n₃ hn₃ f₁ f₂ f₁₂ h₁₂ ≫
-          X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ := by
-  subst h₁₂ h₃₄
-  simp only [d, δ_toCycles_assoc, toCycles_πE_descE]
-
-include h₃₄ in
-@[reassoc]
-lemma d_ιE_fromOpcycles :
-    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫ X.ιE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ ≫
-      X.fromOpcycles n₁ n₂ hn₂ f₂ f₃ f₂₃ h₂₃ =
-      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ≫ X.fromOpcycles n₀ n₁ hn₁ f₄ f₅ f₄₅ h₄₅ ≫
-        X.δ n₁ n₂ hn₂ f₂₃ f₄₅ := by
-  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅),
-    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₃ f₄ f₃₄ h₃₄),
-    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ _ rfl]
-  rw [πE_ιE_assoc, p_fromOpcycles, toCycles_i_assoc, fromOpcyles_δ,
-    πE_ιE_assoc, pOpcycles_δFromOpcycles, toCycles_i_assoc, ← Functor.map_comp]
-  symm
-  apply δ_naturality
-  simp
-
-end
 
 section
 
@@ -187,27 +208,6 @@ lemma πE_d_ιE :
       (twoδ₁Toδ₀ f₁ f₂ _ rfl) (𝟙 _) rfl, Functor.map_id, id_comp]
 
 end
-
-section
-
-variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
-  (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) (hn₄ : n₃ + 1 = n₄)
-  {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
-  (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (f₆ : i₅ ⟶ i₆) (f₇ : i₆ ⟶ i₇)
-
-@[reassoc (attr := simp)]
-lemma d_d :
-    X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ ≫
-      X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ = 0 := by
-  rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₅ f₆ f₇),
-    ← cancel_epi (X.toCycles n₁ n₂ hn₂ f₅ f₆ _ rfl),
-    comp_zero, comp_zero,
-    X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ _ rfl _ rfl,
-    X.toCycles_πE_d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ _ rfl _ rfl,
-    δ_δ_assoc, zero_comp]
-
-end
-
 
 section
 
