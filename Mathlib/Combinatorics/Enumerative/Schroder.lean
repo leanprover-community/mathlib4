@@ -83,7 +83,7 @@ def smallSchroder : ℕ → ℕ
 @[simp] lemma smallSchroder_one : smallSchroder 1 = 1 := by
   simp only [smallSchroder, largeSchroder_one, ofNat_pos, Nat.div_self]
 
-lemma smallSchroder_eq_largeSchroder_div_two (h : 0 < n) :
+lemma smallSchroder_eq_largeSchroder_div_two (hn : 0 < n) :
     smallSchroder n = largeSchroder n / 2 := by
   rw [smallSchroder]
   intro x
