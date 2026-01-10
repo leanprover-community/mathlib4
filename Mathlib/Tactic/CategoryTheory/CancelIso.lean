@@ -11,35 +11,61 @@ public import Mathlib.CategoryTheory.Iso
 public meta section
 open Lean Meta CategoryTheory
 
-def cancelIso : Simp.Simproc := fun e => do
+namespace Mathlib.Tactic.CategoryTheory.CancelIso
+
+/-- Version of `IsIso.hom_inv_id` for internal use of the `cancelIso` simproc. Do not use. -/
+lemma hom_inv_id_of_eq {C : Type*} [Category* C] {x y : C}
+    (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) : f ≫ g = 𝟙 _ := by
+  rw [← h]
+  exact IsIso.hom_inv_id f
+
+/-- Version of `IsIso.hom_inv_id_assoc` for internal use of the `cancelIso` simproc. Do not use. -/
+lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
+    (f : x ⟶ y) [IsIso f] (g : y ⟶ x) (h : inv f = g) {z : C} (k : x ⟶ z) : f ≫ g ≫ k = k := by
+  rw [← h]
+  exact IsIso.hom_inv_id_assoc f k
+
+def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReducible necessary here?
   let e_whnf ← whnf e
-  logInfo "hello!"
-  let_expr CategoryStruct.comp _ _ x₀ y₀ z₀ f gh := e_whnf |
-    return .continue -- fails silently, but should’t happen.
-  logInfo m!"first is {f}"
-  logInfo m!"second  or second ≫ third gh is {gh}"
-  let_expr CategoryStruct.comp _ _ y₁ z₁ t₁ g h := gh |
-    logInfo "Binary comp was reached, continue"
-    -- Now, we should check : is z₀ = x₀?
-    if (← whnf z₀) == (← whnf x₀) then
-      logInfo "loop!"
-      -- Then, we might be lucky and we can try checking if f is an iso
-      let some inst := ← (synthInstance? <| ← mkAppM ``IsIso #[f]) | 
-        logInfo "not an iso, continuing"
-        return .continue
-      logInfo "it’s an iso!"
+  let_expr CategoryStruct.comp C instCat x y t f g := e_whnf |
+    return .continue
+  match_expr g with
+  -- Right_associated expressions needs their own logic.
+  | CategoryStruct.comp _ _ _ z _ g h =>
+    -- Can’t expect a cancelation if the objects don’t match
+    unless z == x do
       return .continue
-    else
+    -- Can’t expect a cancellation if `f` is not an iso.
+    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] |
       return .continue
-  logInfo m!"it was second ≫ third and sec g is {g}"
-  logInfo m!"third h is {h}"
-  return .continue
-  -- return .done { expr := e_whnf }
+    let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
+    let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
+    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
+    unless ← isDefEq pushed_inv.expr pushed_g.expr do
+      return .continue
+    -- Builds the proof inv f = g first:
+    let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
+      (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
+    -- Builds the proof that `f ≫ g ≫ h = h.
+    let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, inst, g, p₀, none, h]
+    return .done (.mk h (.some P) false)
+  -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
+  | _ =>
+    unless t == x do
+      return .continue
+    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] |
+      return .continue
+    let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
+    let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
+    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none <| g
+    unless ← isDefEq pushed_inv.expr pushed_g.expr do
+      return .continue
+    let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
+      (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
+    let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, inst, g, p₀]
+    return .done (.mk (← mkAppOptM ``CategoryStruct.id #[C, instCat, x]) (.some P) false)
 
-simproc_decl cancel_iso (CategoryStruct.comp (self := ?x) _ _) := cancelIso
+end Mathlib.Tactic.CategoryTheory.CancelIso
 
-example {C : Type*} [Category* C] {x y z t : C} (f : x ⟶ y) [IsIso g] (g : y ⟶ x) : f ≫ g  = 𝟙 _ := by
-  simp [cancel_iso]
-
-end
-
+simproc_decl cancel_iso (CategoryStruct.comp (self := ?x) _ _) :=
+  Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
