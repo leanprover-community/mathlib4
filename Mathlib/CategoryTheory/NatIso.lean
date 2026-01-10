@@ -146,6 +146,10 @@ attribute [grind ←=] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
   cat_disch
 
+@[push]
+theorem inv_hom_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.hom.app X) = e.inv.app X := by
+  cat_disch
+
 end
 
 variable {X Y : C}
@@ -171,11 +175,8 @@ theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
 instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
   ⟨⟨(inv α).app X, ⟨by grind, by grind⟩⟩⟩
 
-@[simp]
+@[simp, push ←]
 theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by cat_disch
-
-@[push]
-theorem isIso_inv_app' (α : F ⟶ G) [IsIso α] (X) : inv (α.app X) = (inv α).app X := by cat_disch
 
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :

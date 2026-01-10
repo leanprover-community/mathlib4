@@ -562,15 +562,10 @@ theorem mapIso_refl (F : C ⥤ D) (X : C) : F.mapIso (Iso.refl X) = Iso.refl (F.
 instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
   (F.mapIso (asIso f)).isIso_hom
 
-@[simp]
+@[simp, push ←]
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
   simp [← F.map_comp]
-
---have to put it in the other direction to tag @[push]
-@[push]
-theorem map_inv' (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : inv (F.map f) = F.map (inv f) :=
-  Eq.symm <| map_inv ..
 
 @[reassoc]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
