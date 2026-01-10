@@ -22,24 +22,14 @@ variable {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
 
 variable {A : Type*} [Ring A] (v : Valuation A Γ₀)
 
-section IsOfFinOrder
-
-@[grind =>]
-lemma eq_one_of_isOfFinOrder (a : A) (h : IsOfFinOrder a) : v a = 1 := by
-  rw [isOfFinOrder_iff_pow_eq_one] at h
-  obtain ⟨n, h0, ha⟩ := h
-  have hpow : (v a) ^ n = 1 := by simp_all [← map_pow]
-  grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
-
-end IsOfFinOrder
-
 namespace FiniteField
 
 variable {Fq : Type*} [Field Fq] [Finite Fq] [Algebra Fq A]
 
 @[grind =>]
 lemma algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a) = 1 :=
-  eq_one_of_isOfFinOrder _ _ (MonoidHom.isOfFinOrder _ (isOfFinOrder_iff_isUnit.mpr (Ne.isUnit ha)))
+  IsOfFinOrder.eq_one' <| MonoidHom.isOfFinOrder (v.toMonoidHom)
+    <| MonoidHom.isOfFinOrder _ ha.isUnit.isOfFinOrder
 
 lemma algebraMap_le_one (a : Fq) : v (algebraMap Fq A a) ≤ 1 := by
   by_cases a = 0 <;> grind [zero_le']
