@@ -50,34 +50,25 @@ theorem _root_.IsLocalization.map_inf {R : Type*} [CommSemiring R] (M : Submonoi
   refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
   rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
 
-/-- `Ideal.radical` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
-def _root_.IsLocalization.mapInfTopHom
+/-- `IsLocalization.map_inf` as an `FrameHom`. -/
+def IsLocalization.mapFrameHom
     {R : Type*} [CommSemiring R] (M : Submonoid R)
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] :
-    InfTopHom (Ideal R) (Ideal S) where
-  toFun := map (algebraMap R S)
+    FrameHom (Ideal R) (Ideal S) where
+  toFun := Ideal.map (algebraMap R S)
   map_inf' := IsLocalization.map_inf M S
-  map_top' := map_top (algebraMap R S)
+  map_top' := Ideal.map_top (algebraMap R S)
+  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
 
 @[simp]
-lemma _root_.IsLocalization.mapInfTopHom_apply
-    {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S]
-    (I : Ideal R) :
-    IsLocalization.mapInfTopHom M S I = I.map (algebraMap R S) := rfl
+lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submonoid R)
+    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] (I : Ideal R) :
+    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
+  rfl
 
 theorem _root_.Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
     {ι : Type*} (s : Finset ι) (g : ι → Ideal S) : (s.inf g).comap f = s.inf (comap f ∘ g) := by
   exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
-
-
-lemma IsPrimary.comap
-  {R S : Type*} [CommSemiring R] [CommSemiring S] {I : Ideal S} (hI : I.IsPrimary)
-    (φ : R →+* S) : (I.comap φ).IsPrimary := by
-  rw [isPrimary_iff] at hI ⊢
-  refine hI.imp (comap_ne_top φ) fun h ↦ ?_
-  simp only [mem_comap, map_mul, ← comap_radical]
-  exact h
 
 theorem _root_.IsLocalization.comap_map_of_isPrimary_disjoint
     {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
@@ -230,7 +221,7 @@ lemma component_def (I p : Ideal R) [hp : p.IsPrime]
 
 lemma component_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Ideal R) (p : Ideal R) [p.IsPrime] :
     (s.inf f).component p = s.inf (fun i ↦ (f i).component p) := by
-  rw [component, ← IsLocalization.mapInfTopHom_apply p.primeCompl, map_finset_inf,
+  rw [component, ← IsLocalization.mapFrameHom_apply p.primeCompl, map_finset_inf,
     Ideal.comap_finset_inf]
   rfl
 
@@ -264,7 +255,7 @@ lemma IsLocalization.foo_of_mem_minimalPrimes
 
 lemma isPrimary_component (I p : Ideal R) [hp : p.IsPrime] (hpI : p ∈ I.minimalPrimes) :
     (I.component p).IsPrimary := by
-  refine IsPrimary.comap (isPrimary_of_isMaximal_radical ?_) _
+  refine (isPrimary_of_isMaximal_radical ?_).comap _
   rw [← Ideal.sInf_minimalPrimes, IsLocalization.foo_of_mem_minimalPrimes I p hpI, sInf_singleton]
   exact IsLocalization.AtPrime.isMaximal_map p (Localization.AtPrime p)
 

@@ -5,7 +5,6 @@ Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.RingTheory.Jacobson.Radical
@@ -374,21 +373,6 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x
 
 end IsLocal
-
-theorem isPrimary_of_isMaximal_radical [CommSemiring R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    I.IsPrimary := by
-  rw [isPrimary_iff]
-  constructor
-  · rintro rfl
-    exact (radical_top R ▸ hi).ne_top rfl
-  · intro x y hxy
-    refine (em (I + span {y} = ⊤)).imp (fun h ↦ ?_) (fun h ↦ ?_)
-    · rw [← span_singleton_le_iff_mem, ← mul_top (span {x}), ← h, mul_add,
-        span_singleton_mul_span_singleton, add_le_iff, span_singleton_le_iff_mem]
-      exact ⟨mul_le_left, hxy⟩
-    · obtain ⟨m, hm, hy⟩ := exists_le_maximal (I + span {y}) h
-      rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
-      exact hi.eq_of_le hm.ne_top hy.1 ▸ hy.2
 
 end Ideal
 

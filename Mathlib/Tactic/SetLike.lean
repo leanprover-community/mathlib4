@@ -5,8 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public meta import Mathlib.Tactic.Basic
-public meta import Aesop
+public import Aesop
+public import Aesop.Frontend.Basic
+public meta import Batteries.Util.LibraryNote
+public import Mathlib.Tactic.Basic
 
 /-!
 # SetLike Rule Set

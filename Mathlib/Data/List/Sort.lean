@@ -9,7 +9,6 @@ public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Order.Fin.Basic
 import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
@@ -159,15 +158,15 @@ theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort
 alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
-theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
+theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind [Std.Refl]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
@@ -249,6 +248,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -274,6 +274,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
