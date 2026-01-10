@@ -91,4 +91,3 @@ open Bicategory in
 example {B : Type*} [Bicategory B] {a b c d e : B} (f : a ⟶ b) {g k : b ⟶ c} (η : g ≅ k) (h : c ⟶ d) (i : d ⟶ e) :
     f ◁ (η.inv ▷ h) ▷ i ≫ inv (f ◁ (η.inv ▷ h) ▷ i) = 𝟙 _ := by
   simp only [cancel_iso]
-
