@@ -119,6 +119,72 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
+/--
+Utility for sections in a fibre bundle: if an expression `e` is a section
+`s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
+space. This handles the cases of
+- sections of a trivial bundle
+- vector fields on a manifold (i.e., sections of the tangent bundle)
+- sections of an explicit fibre bundle
+- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+
+This searches the local context for suitable hypotheses for the above cases by matching
+on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
+This process can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
+
+All applications of `e` in the resulting expression are beta-reduced.
+If none of the handled cases apply, we simply return `e` (after beta-reducing).
+
+This function is used for implementing the `T%` elaborator.
+-/
+-- TODO: document how this elaborator works, any gotchas, etc.
+def totalSpaceMk (e : Expr) : MetaM Expr := do
+  let etype ← whnf <| ← instantiateMVars <| ← inferType e
+  match etype with
+  | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
+    let tgtHasLooseBVars := tgt.hasLooseBVars
+    let tgt := tgt.instantiate1 x
+    -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
+    match_expr tgt with
+    | Bundle.Trivial E E' _ =>
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
+      -- Note: we allow `isDefEq` here because any mvar assignments should persist.
+      if ← withReducible (isDefEq E base) then
+        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
+        mkLambdaFVars #[x] body
+      else return e
+    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
+      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
+      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
+      mkLambdaFVars #[x] body
+    | _ => match (← instantiateMVars tgt).cleanupAnnotations with
+      | .app V _ =>
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
+        let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
+          /- Note: we do not use `match_expr` here since that would require importing
+          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
+          match declType with
+          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
+            if ← withReducible (pureIsDefEq E V) then
+              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
+              some <$> mkLambdaFVars #[x] body
+            else return none
+          | _ => return none
+        return f?.getD e.headBeta
+      | tgt =>
+        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
+        -- TODO: can `tgt` depend on `x` in a way that is not a function application?
+        -- Check that `x` is not a bound variable in `tgt`!
+        if tgtHasLooseBVars then
+          throwError "Attempted to fall back to creating a section of the trivial bundle out of \
+            (`{e}` : `{etype}`) as a non-dependent function, but return type `{tgt}` depends on the
+            bound variable (`{x}` : `{base}`).\n\
+            Hint: applying the `T%` elaborator twice makes no sense."
+        let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
+        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, (e.app x).headBeta]
+        mkLambdaFVars #[x] body
+  | _ => return e.headBeta
+
 end Elab
 
 open Elab in
@@ -131,58 +197,11 @@ function to a non-dependent function into the total space. This handles the case
 - turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
-on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
-run.
+on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
+The search can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 -/
--- TODO: document how this elaborator works, any gotchas, etc.
--- TODO: factor out `MetaM` component for reuse
 scoped elab:max "T% " t:term:arg : term => do
-  let e ← Term.elabTerm t none
-  let etype ← whnf <| ← instantiateMVars <| ← inferType e
-  match etype with
-  | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
-    let tgtHasLooseBVars := tgt.hasLooseBVars
-    let tgt := tgt.instantiate1 x
-    -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
-    match_expr tgt with
-    | Bundle.Trivial E E' _ =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
-      -- Note: we allow `isDefEq` here because any mvar assignments should persist.
-      if ← withReducible (isDefEq E base) then
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, e.app x]
-        mkLambdaFVars #[x] body
-      else return e
-    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
-      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, e.app x]
-      mkLambdaFVars #[x] body
-    | _ => match (← instantiateMVars tgt).cleanupAnnotations with
-      | .app V _ =>
-        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-        let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
-          /- Note: we do not use `match_expr` here since that would require importing
-          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
-          match declType with
-          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
-            if ← withReducible (pureIsDefEq E V) then
-              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, e.app x]
-              some <$> mkLambdaFVars #[x] body
-            else return none
-          | _ => return none
-        return f?.getD e
-      | tgt =>
-        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
-        -- TODO: can `tgt` depend on `x` in a way that is not a function application?
-        -- Check that `x` is not a bound variable in `tgt`!
-        if tgtHasLooseBVars then
-          throwError "Attempted to fall back to creating a section of the trivial bundle out of \
-            (`{e}` : `{etype}`) as a non-dependent function, but return type `{tgt}` depends on the
-            bound variable (`{x}` : `{base}`).\n\
-            Hint: applying the `T%` elaborator twice makes no sense."
-        let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
-        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
-        mkLambdaFVars #[x] body
-  | _ => return e
+  totalSpaceMk (← Term.elabTerm t none)
 
 namespace Elab
 

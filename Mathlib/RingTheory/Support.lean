@@ -54,15 +54,10 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-@[deprecated (since := "2025-05-23")] alias Module.not_mem_support_iff := Module.notMem_support_iff
-
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
-
-@[deprecated (since := "2025-05-23")]
-alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
@@ -254,8 +249,7 @@ theorem Module.support_quotient (I : Ideal R) :
       Submodule.quotEquivOfEq _ _ (by rw [Submodule.localized,
         Submodule.localized'_smul, Ideal.localized'_eq_map, Submodule.localized'_top])
     have : Nontrivial Mₚ'' := by
-      apply Submodule.Quotient.nontrivial_of_lt_top
-      rw [lt_top_iff_ne_top, ne_comm]
+      rw [Submodule.Quotient.nontrivial_iff, ne_comm]
       apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       refine trans ?_ (IsLocalRing.maximalIdeal_le_jacobson _)
       rw [← Localization.AtPrime.map_eq_maximalIdeal]

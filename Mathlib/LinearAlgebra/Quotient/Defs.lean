@@ -71,6 +71,10 @@ theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = m
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
   rfl
 
+theorem quotientAddGroupMk_eq_mk {p : Submodule R M} (x : M) :
+    (QuotientAddGroup.mk x : M ⧸ p) = mk x :=
+  rfl
+
 protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
@@ -114,10 +118,6 @@ theorem mk_out (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
   Quotient.out_eq m
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
-
-theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
-  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
-  simp_rw [Submodule.Quotient.mk_eq_zero]
 
 section SMul
 

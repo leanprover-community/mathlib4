@@ -35,7 +35,7 @@ In this file we prove the following lemmas.
 Polynomial, continuity
 -/
 
-@[expose] public section
+public section
 
 
 open IsAbsoluteValue Filter
@@ -150,7 +150,7 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
     (h2 : Splits (p.map f)) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) : p = 1 :=
   h1.natDegree_eq_zero.mp (by
     contrapose! hB
-    rw [← h1.natDegree_map f, natDegree_eq_card_roots' h2] at hB
+    rw [← h1.natDegree_map f, Splits.natDegree_eq_card_roots h2] at hB
     obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
     exact le_trans (norm_nonneg _) (h3 z hz))
 
@@ -165,10 +165,10 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   obtain hi | hi := lt_or_ge (map f p).natDegree i
   · rw [coeff_eq_zero_of_natDegree_lt hi, norm_zero]
     positivity
-  rw [coeff_eq_esymm_roots_of_splits ((splits_id_iff_splits f).2 h2) hi, (h1.map _).leadingCoeff,
+  rw [coeff_eq_esymm_roots_of_splits h2 hi, (h1.map _).leadingCoeff,
     one_mul, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul]
   apply ((norm_multiset_sum_le _).trans <| sum_le_card_nsmul _ _ fun r hr => _).trans
-  · rw [Multiset.map_map, card_map, card_powersetCard, ← natDegree_eq_card_roots' h2,
+  · rw [Multiset.map_map, card_map, card_powersetCard, ← Splits.natDegree_eq_card_roots h2,
       Nat.choose_symm hi, mul_comm, nsmul_eq_mul]
   intro r hr
   simp_rw [Multiset.mem_map] at hr

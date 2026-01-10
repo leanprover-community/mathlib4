@@ -57,7 +57,7 @@ variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
-In lemma names, this operations is called `uzpow` to match `zpow`.
+In lemma names, this operation is called `uzpow` to match `zpow`.
 
 Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where

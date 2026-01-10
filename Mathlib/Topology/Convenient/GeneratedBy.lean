@@ -15,7 +15,7 @@ Let `Y` be a topological space. We introduce a type synonym
 `WithGeneratedByTopology X Y` for `Y`. This type is endowed
 with the `X`-generated topology, which is coinduced by
 all continuous maps `X i → Y`. When the bijection
-`WithGeneratedByTopology X Y ≃ Y` is an homeomorphism,
+`WithGeneratedByTopology X Y ≃ Y` is a homeomorphism,
 we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
 
 ## TODO (@joelriou)
@@ -114,7 +114,7 @@ namespace Topology
 variable (X Y) in
 /-- Given a family of topological spaces `X i`, we say that a topological space is
 `X`-generated (`IsGeneratedBy X Y`) when the topology on `Y` is the `X`-generated
-topology, i.e. when the identity is an homeomorphism
+topology, i.e. when the identity is a homeomorphism
 `WithGeneratedByTopology X Y ≃ₜ Y` (see `IsGeneratedBy.homeomorph`). -/
 @[mk_iff]
 class IsGeneratedBy : Prop where

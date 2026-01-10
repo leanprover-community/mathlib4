@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Finite-dimensional vector spaces
@@ -20,7 +21,7 @@ of linear maps on such spaces.
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - quotients (for the dimension of a quotient, see `Submodule.finrank_quotient_add_finrank` in
-  `Mathlib/LinearAlgebra/FiniteDimensional.lean`)
+  `Mathlib/LinearAlgebra/Dimension/RankNullity.lean`)
 - linear equivs, in `LinearEquiv.finiteDimensional`
 
 Basic properties of linear maps of a finite-dimensional vector space are given. Notably, the
@@ -32,8 +33,9 @@ and `LinearMap.comp_eq_id_comm`.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
-`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
+Plenty of the results hold for general finitely generated modules (see
+`Mathlib/RingTheory/Finiteness/Basic.lean`) or Noetherian modules (see
+`Mathlib/RingTheory/Noetherian/Basic.lean`).
 -/
 
 @[expose] public section
@@ -62,13 +64,8 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
       (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
-  letI i1 : Fintype (this.extend _) :=
-    (LinearIndependent.set_finite_of_isNoetherian (by simpa [b] using b.linearIndependent)).fintype
   letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
     (LinearIndependent.set_finite_of_isNoetherian this).fintype
-  letI i3 : Fintype (Basis.ofVectorSpaceIndex K S) :=
-    (LinearIndependent.set_finite_of_isNoetherian
-      (by simpa [bS] using bS.linearIndependent)).fintype
   have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
       (by
@@ -115,12 +112,12 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 
@@ -313,25 +310,49 @@ theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} 
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
 
-/-- In a finite-dimensional space, if linear maps are inverse to each other on one side then they
-are also inverse to each other on the other side. -/
-theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
-    g * f = 1 := by
+/-- Any division ring is stably finite. -/
+instance (priority := low) : IsStablyFiniteRing K := by
+  refine isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd.mpr fun n ↦ ⟨fun {f g} hfg ↦ ?_⟩
   have ginj : Injective g :=
-    HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
+    HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : End K (Fin n → K)) x by rw [hfg]⟩
   let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
     (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
-/-- In a finite-dimensional space, linear maps are inverse to each other on one side if and only if
-they are inverse to each other on the other side. -/
-theorem mul_eq_one_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f * g = 1 ↔ g * f = 1 :=
-  ⟨mul_eq_one_of_mul_eq_one, mul_eq_one_of_mul_eq_one⟩
+section Semiring
+
+variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Free R M] [Module.Finite R M]
+variable [IsStablyFiniteRing R]
+
+instance : IsStablyFiniteRing (Module.End R M) := by
+  let e := (Module.Free.chooseBasis R M).repr ≪≫ₗ Finsupp.linearEquivFunOnFinite ..
+  rw [RingEquiv.isStablyFiniteRing_iff e.conjRingEquiv]
+  infer_instance
+
+-- TODO: move the whole section to `Module.End` namespace.
+theorem _root_.Module.End.injective_of_surjective {f : Module.End R M} (hf : Surjective f) :
+    Injective f :=
+  have ⟨_, eq⟩ := projective_lifting_property _ .id hf
+  injective_of_comp_eq_id _ _ (mul_eq_one_symm eq)
+
+/-- In a finite-rank free module over a stably finite semiring, linear maps are inverse to
+each other on one side if and only if they are inverse to each other on the other side. -/
+theorem comp_eq_id_comm {f g : M →ₗ[R] M} : f ∘ₗ g = id ↔ g ∘ₗ f = id :=
+  mul_eq_one_comm
+
+end Semiring
+
+/-- In a finite-dimensional space, if linear maps are inverse to each other on one side then they
+are also inverse to each other on the other side. -/
+@[deprecated mul_eq_one_symm (since := "2025-11-30")]
+theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (hfg : f * g = 1) :
+    g * f = 1 := mul_eq_one_symm hfg
 
 /-- In a finite-dimensional space, linear maps are inverse to each other on one side if and only if
 they are inverse to each other on the other side. -/
-theorem comp_eq_id_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f.comp g = id ↔ g.comp f = id :=
+@[deprecated mul_eq_one_comm (since := "2025-11-30")] protected
+theorem mul_eq_one_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f * g = 1 ↔ g * f = 1 :=
   mul_eq_one_comm
 
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}

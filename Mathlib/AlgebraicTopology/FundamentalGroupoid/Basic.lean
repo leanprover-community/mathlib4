@@ -304,12 +304,21 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   map_id _ := rfl
   map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
 
+@[simp]
+protected theorem map_id : map (.id X) = 𝟭 _ := by
+  simp only [map]; congr; ext x y ⟨p⟩; rfl
+
+@[simp]
+protected theorem map_comp {Z : Type*} [TopologicalSpace Z] (g : C(Y, Z)) (f : C(X, Y)) :
+    map (g.comp f) = map f ⋙ map g := by
+  simp only [map]; congr; ext x y ⟨p⟩; rfl
+
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f := map f.hom
-  map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
-  map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
+  map_id _ := FundamentalGroupoid.map_id
+  map_comp _ _ := FundamentalGroupoid.map_comp _ _
 
 @[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
 
@@ -346,7 +355,7 @@ lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
 
 @[reassoc]
 lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
-    eqToHom (congr_arg mk hx) ≫ ⟦p⟧ ≫ eqToHom (congr_arg mk hy.symm) = ⟦p.cast hx hy⟧ := by
+    eqToHom (congr_arg mk hx) ≫ .mk p ≫ eqToHom (congr_arg mk hy.symm) = .mk (p.cast hx hy) := by
   subst hx hy; simp
 
 end FundamentalGroupoid

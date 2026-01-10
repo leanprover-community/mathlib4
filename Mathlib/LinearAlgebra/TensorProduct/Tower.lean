@@ -633,6 +633,15 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
+open AlgebraTensorModule in
+lemma baseChange_baseChange {A B : Type*} [CommSemiring A] [Algebra R A]
+    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (f : M →ₗ[R] N) :
+    ((f.baseChange A).baseChange B) =
+    (cancelBaseChange R A B B N).symm ∘ₗ
+      (f.baseChange B) ∘ₗ (cancelBaseChange R A B B M) := by
+  ext; simp
+
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
@@ -666,8 +675,12 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
   AlgebraTensorModule.congr (.refl _ _) e
 
 @[simp]
-theorem _root_.LinearEquiv.coe_baseChange (e : M ≃ₗ[R] N) :
-    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = e.toLinearMap.baseChange A :=
+theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
+    (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
+   rfl
+
+theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
   rfl
 
 @[simp]
@@ -677,7 +690,7 @@ theorem _root_.LinearEquiv.baseChange_one :
   simp [← LinearEquiv.coe_toLinearMap]
 
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
-    (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans  (f.baseChange R A N P) := by
+    (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
     LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
@@ -715,7 +728,7 @@ lemma _root_.LinearEquiv.baseChange_zpow (f : M ≃ₗ[R] M) (n : ℤ) :
 
 variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
-    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+    (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
   simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
 

@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 # Vector measure defined by an integral
 
 Given a measure `μ` and an integrable function `f : α → E`, we can define a vector measure `v` such
-that for all measurable set `s`, `v i = ∫ x in s, f x ∂μ`. This definition is useful for
+that for all measurable sets `s`, `v s = ∫ x in s, f x ∂μ`. This definition is useful for
 the Radon-Nikodym theorem for signed measures.
 
 ## Main definitions

@@ -23,7 +23,6 @@ further imports.
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -242,8 +241,7 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N]
-    [Module.Finite R M] (f : F) : Module.Finite R (LinearMap.range f) :=
+instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range :=
   of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
@@ -397,6 +395,9 @@ theorem id : Finite (RingHom.id A) :=
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
+
+lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
+  .of_surjective _ e.surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]
