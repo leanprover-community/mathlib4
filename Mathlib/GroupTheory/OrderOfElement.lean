@@ -118,7 +118,7 @@ lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n
   · exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩
 
 @[to_additive]
-lemma IsOfFinOrder.eq_one' [LinearOrder G] [MulLeftMono G] {a : G} (ha : IsOfFinOrder a) :
+lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
     a = 1 := by
   obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
   grind [pow_eq_one_iff]
