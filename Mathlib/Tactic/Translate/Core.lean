@@ -790,6 +790,11 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
       logWarning m!"`{t.attrName} private` ignores the provided name {cfg.tgt}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
+  -- When re-tagging an existing translation, simply guess that existing translation.
+  if cfg.existing then
+    if cfg.tgt == .anonymous then
+      if let some tgt := findTranslation? (← getEnv) t src then
+        return tgt
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
   let tgt_auto := GuessName.guessName t.guessNameData s

@@ -10,7 +10,7 @@ class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 
 attribute [to_dual] SemilatticeInf
-attribute [to_dual existing le_inf] SemilatticeSup.sup_le
+attribute [to_dual existing] SemilatticeSup.sup_le
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
