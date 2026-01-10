@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Heyting algebras
@@ -22,7 +24,7 @@ Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order-theoretic equivalent of Cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian closed categories.
 
 ## Main declarations
 
@@ -40,6 +42,8 @@ Heyting algebras are the order-theoretic equivalent of Cartesian-closed categori
 
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

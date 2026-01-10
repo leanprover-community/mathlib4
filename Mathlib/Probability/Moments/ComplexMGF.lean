@@ -3,11 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Moments.IntegrableExpMul
+module
+
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.IntegrableExpMul
 
 /-!
 # The complex-valued moment-generating function
@@ -53,6 +55,8 @@ properties of the mgf from those of the characteristic function).
 * Prove that if two random variables have the same `mgf`, then the have the same `complexMGF`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset Real Complex
@@ -129,7 +133,8 @@ lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet 
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (bound := fun ω ↦ |X ω| ^ (n + 1) * rexp (z.re * X ω + t / 2 * |X ω|))
     (F := fun z ω ↦ X ω ^ n * cexp (z * X ω))
-    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (half_pos ht) ?_ ?_ ?_ ?_ ?_ ?_).2
+    (F' := fun z ω ↦ X ω ^ (n + 1) * cexp (z * X ω)) (Metric.ball_mem_nhds _ (half_pos ht))
+    ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop
   · exact integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet hz n
   · fun_prop
@@ -316,14 +321,14 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
     (h : complexMGF X μ = complexMGF Y μ') :
     μ.map X = μ'.map Y := by
-  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : innerₗ ℝ x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
   apply MeasureTheory.ext_of_integral_char_eq continuous_probChar probChar_ne_one inner_ne_zero
     continuous_inner (fun w ↦ ?_)
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
-  simp only [BoundedContinuousFunction.char_apply, bilinFormOfRealInner_apply_apply,
+  simp only [BoundedContinuousFunction.char_apply, innerₗ_apply_apply,
     RCLike.inner_apply, conj_trivial, probChar_apply, ofReal_mul]
   rwa [integral_map hX (by fun_prop), integral_map hY (by fun_prop)]
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Sesquilinear maps
@@ -33,6 +35,8 @@ basic lemmas about construction and elementary calculations are found there.
 
 Sesquilinear form, Sesquilinear map
 -/
+
+@[expose] public section
 
 open Module
 
@@ -369,7 +373,7 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
     rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
   smul_mem' c x hx n hn := by
-    rw [LinearMap.IsOrtho, LinearMap.map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+    rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
 
 variable {N L : Submodule R₁ M₁}
 
@@ -938,7 +942,8 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
     (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   have hle : ∀ z, 0 ≤ B z z := by
     intro z
-    by_cases hz : z = 0; simp [hz]
+    by_cases hz : z = 0
+    · simp [hz]
     exact le_of_lt (hp z hz)
   constructor
   · contrapose!
@@ -989,8 +994,8 @@ lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
 positive definiteness. -/
 lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
     B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
-  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
-  push_neg
+  rw [B.nondegenerate_iff hs hB]
+  contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)

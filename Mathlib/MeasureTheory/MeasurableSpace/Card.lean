@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.SetTheory.Cardinal.Ordinal
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinal of sigma-algebras
@@ -24,6 +26,8 @@ construction is parameterized by an ordinal `< ω₁`, and the cardinality bound
 each step of the construction. We show in `MeasurableSpace.generateMeasurable_eq_rec` that this
 indeed generates this sigma-algebra.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -101,7 +105,7 @@ theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Se
     obtain ⟨j, hj, hj'⟩ := mem_iUnion₂.1 (f n).2
     use IH j hj _ hj', j, hj.trans_le hk
 
-theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
+theorem generateMeasurableRec_omega_one (s : Set (Set α)) :
     generateMeasurableRec s (ω₁ : Ordinal.{v}) =
       ⋃ i < (ω₁ : Ordinal.{v}), generateMeasurableRec s i := by
   apply (iUnion₂_subset fun i h => generateMeasurableRec_mono s h.le).antisymm'
@@ -122,6 +126,9 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 
+@[deprecated (since := "2025-12-22")]
+alias generateMeasurableRec_omega1 := generateMeasurableRec_omega_one
+
 theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
   apply WellFoundedLT.induction i
@@ -137,20 +144,23 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
   | basic u hu => exact self_subset_generateMeasurableRec s _ hu
   | empty => exact empty_mem_generateMeasurableRec s _
   | compl u _ IH =>
-    rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
+    rw [generateMeasurableRec_omega_one, mem_iUnion₂] at IH
     obtain ⟨i, hi, hi'⟩ := IH
     exact generateMeasurableRec_mono _ ((isSuccLimit_omega 1).succ_lt hi).le
       (compl_mem_generateMeasurableRec (Order.lt_succ i) hi')
   | iUnion f _ IH =>
-    simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
+    simp_rw [generateMeasurableRec_omega_one, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
 
 /-- `generateMeasurableRec` is constant for ordinals `≥ ω₁`. -/
-theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} (hi : ω₁ ≤ i) :
+theorem generateMeasurableRec_of_omega_one_le (s : Set (Set α)) {i : Ordinal.{v}} (hi : ω₁ ≤ i) :
     generateMeasurableRec s i = generateMeasurableRec s (ω₁ : Ordinal.{v}) := by
   apply (generateMeasurableRec_mono s hi).antisymm'
   rw [← generateMeasurable_eq_rec]
   exact generateMeasurableRec_subset s i
+
+@[deprecated (since := "2025-12-22")]
+alias generateMeasurableRec_of_omega1_le := generateMeasurableRec_of_omega_one_le
 
 /-- At each step of the inductive construction, the cardinality bound `≤ #s ^ ℵ₀` holds. -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
@@ -158,7 +168,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
   suffices ∀ i ≤ ω₁, #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ by
     obtain hi | hi := le_or_gt i ω₁
     · exact this i hi
-    · rw [generateMeasurableRec_of_omega1_le s hi.le]
+    · rw [generateMeasurableRec_of_omega_one_le s hi.le]
       exact this _ le_rfl
   intro i
   apply WellFoundedLT.induction i

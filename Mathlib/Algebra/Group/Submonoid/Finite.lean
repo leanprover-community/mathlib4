@@ -3,14 +3,18 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Submonoids
 
 This file provides some results on multiplicative and additive submonoids in the finite context.
 -/
+
+public section
 
 namespace Submonoid
 

@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.Common
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Divisibility
@@ -27,6 +30,8 @@ The divisibility relation is defined for all monoids, and as such, depends on th
 
 divisibility, divides
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -123,7 +128,7 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 @[to_additive] theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-@[to_additive] instance : IsRefl α (· ∣ ·) :=
+@[to_additive] instance : @Std.Refl α (· ∣ ·) :=
   ⟨dvd_refl⟩
 
 @[to_additive] theorem one_dvd (a : α) : 1 ∣ a :=

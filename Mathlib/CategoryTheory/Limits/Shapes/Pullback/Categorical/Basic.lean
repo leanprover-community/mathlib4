@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 
 /-! # Categorical pullbacks
 
@@ -54,6 +56,8 @@ equivalent to `CatCommSqOver F G X`.
 * Stability of (co)fibered categories under categorical pullbacks.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃
 universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u₁₃
@@ -341,6 +345,8 @@ variable {J K : X ⥤ F ⊡ G}
         (associator _ _ _).inv ≫
         whiskerRight e₂.hom G := by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
     (toCatCommSqOver F G X).mapIso (mkNatIso e₁ e₂ coh) =
@@ -348,6 +354,8 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
   cat_disch
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
 lemma mkNatIso_eq :

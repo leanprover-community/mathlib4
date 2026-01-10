@@ -3,9 +3,11 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Locally uniform limits of holomorphic functions
@@ -20,6 +22,8 @@ subset of the complex plane.
 * `TendstoLocallyUniformlyOn.deriv`: Locally uniform convergence implies locally uniform
   convergence of the derivatives to the derivative of the limit.
 -/
+
+@[expose] public section
 
 
 open Set Metric MeasureTheory Filter Complex intervalIntegral
@@ -88,7 +92,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
     TendstoUniformlyOn (cderiv δ ∘ F) (cderiv δ f) φ K := by
   rcases φ.eq_or_neBot with rfl | hne
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
-  have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn
+  have e1 : ContinuousOn f (cthickening δ K) := TendstoUniformlyOn.continuousOn hF hFn.frequently
   rw [tendstoUniformlyOn_iff] at hF ⊢
   rintro ε hε
   filter_upwards [hF (ε * δ) (mul_pos hε hδ), hFn] with n h h' z hz

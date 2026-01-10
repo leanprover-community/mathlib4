@@ -3,12 +3,7 @@ Copyright (c) 2024 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Discrete uniformities and discrete topology
@@ -83,10 +78,9 @@ open Set Function Filter Metric
 
 /- We remove the "usual" instances of (discrete) topological space and of (discrete) uniform space
 from `ℕ`. -/
-attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
+attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat Nat.instDist
 
 section Metric
-
 
 noncomputable local instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
@@ -107,7 +101,7 @@ lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
       neg_add_cancel_left, ← abs_neg, neg_sub,
       abs_of_nonneg (a := (d : ℝ) ^ (-n)) (le_of_lt <| zpow_pos _ _), ← zpow_neg_one,
       ← zpow_add₀ <| Nat.cast_ne_zero.mpr (ne_of_gt hd0), ← sub_eq_add_neg]
-    exact h
+    · exact h
     all_goals exact Nat.cast_pos'.mpr hd0
   by_cases H : (m : ℤ) ≤ n
   · obtain ⟨a, ha⟩ := Int.eq_ofNat_of_zero_le (sub_nonneg.mpr H)
@@ -149,7 +143,7 @@ theorem TopIsDiscrete : DiscreteTopology ℕ := by
 lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
   refine fun ε ↦ Metric.cauchySeq_iff.mp
-    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) fun n ↦ le_of_eq ?_) ε
+    (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^ (-n : ℤ)) fun n ↦ le_of_eq ?_) ε
   simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
   rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
   calc
@@ -172,11 +166,11 @@ discrete. -/
 each `n`, the set `fundamentalEntourage n : Set (ℕ × ℕ)` consists of the `n+1` points
 `{(0,0),(1,1)...(n,n)}` on the diagonal; together with the half plane `{(x,y) | n ≤ x ∧ n ≤ y}`. -/
 def fundamentalEntourage (n : ℕ) : Set (ℕ × ℕ) :=
-  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n , n)
+  (⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (n, n)
 
 @[simp]
 lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEntourage t = T ↔
-    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t , t) := by
+    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t, t) := by
   simpa only [fundamentalEntourage] using eq_comm
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
@@ -241,7 +235,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn
     simp only [hn, mem_union, mem_range, Prod.mk.injEq, and_self, Subtype.exists, mem_Icc, zero_le,
       true_and, exists_prop', nonempty_prop, exists_eq_right, mem_Ici, Prod.mk_le_mk]
-    omega
+    lia
   · refine ⟨S, hS, ?_⟩
     obtain ⟨n, hn⟩ := hS
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn

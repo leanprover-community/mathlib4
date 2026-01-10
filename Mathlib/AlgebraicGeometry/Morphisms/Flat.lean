@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
 # Flat morphisms
@@ -17,6 +19,8 @@ asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkM
 We show that this property is local, and are stable under compositions and base change.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -128,11 +132,25 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
   intro x
   apply ConcreteCategory.mono_of_injective
   algebraize [(f.stalkMap x).hom]
-  have : Module.FaithfullyFlat (Y.presheaf.stalk (f.base.hom x)) (X.presheaf.stalk x) :=
+  have : Module.FaithfullyFlat (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) :=
     @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
 
+lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
+    Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
+  rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective,
+    MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f),
+    MorphismProperty.arrow_mk_iso_iff @Flat (arrowIsoSpecΓOfIsAffine f),
+    ← HasRingHomProperty.Spec_iff (P := @Flat), surjective_iff]
+  rfl
+
 end Flat
+
+lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    Flat (Spec.map f) ∧ Surjective (Spec.map f) ↔ f.hom.FaithfullyFlat := by
+  rw [HasRingHomProperty.Spec_iff (P := @Flat),
+    RingHom.FaithfullyFlat.iff_flat_and_comap_surjective, surjective_iff]
+  rfl
 
 end AlgebraicGeometry

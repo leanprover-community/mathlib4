@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Spectrum.Prime.Defs
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
@@ -17,6 +19,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 namespace IsLocalization
@@ -49,7 +53,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R),
       I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
     use ⟨Z, a'.2 * b'.2⟩
-    simp only [Z, RingHom.map_add, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, map_add, Submonoid.coe_mul, map_mul]
     rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
       mul_assoc b, hb]
     ring
@@ -58,7 +62,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     obtain ⟨c', hc⟩ := IsLocalization.surj M c
     let Z : { x // x ∈ I } := ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
     use ⟨Z, c'.2 * x'.2⟩
-    simp only [Z, ← hx, ← hc, smul_eq_mul, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, ← hx, ← hc, smul_eq_mul, Submonoid.coe_mul, map_mul]
     ring
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
@@ -97,7 +101,7 @@ include M in
 theorem map_comap (J : Ideal S) :
     Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
-    obtain ⟨r, s, hx⟩ := mk'_surjective M x
+    obtain ⟨r, s, hx⟩ := exists_mk'_eq M x
     rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
@@ -146,13 +150,13 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
       rw [eq_top_iff, ← (orderEmbedding M S).le_iff_le]
       exact le_of_eq hJ.symm
     · intro x y hxy
-      rw [Ideal.mem_comap, RingHom.map_mul] at hxy
+      rw [Ideal.mem_comap, map_mul] at hxy
       exact h.mem_or_mem hxy
   · refine fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
     · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
-      obtain ⟨a, s, ha⟩ := mk'_surjective M x
-      obtain ⟨b, t, hb⟩ := mk'_surjective M y
+      obtain ⟨a, s, ha⟩ := exists_mk'_eq M x
+      obtain ⟨b, t, hb⟩ := exists_mk'_eq M y
       have : mk' S (a * b) (s * t) ∈ J := by rwa [mk'_mul, ha, hb]
       rw [mk'_mem_iff, ← Ideal.mem_comap] at this
       have this₂ := (h.1).mul_mem_iff_mem_or_mem.1 this
@@ -183,8 +187,8 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.eq (map_comap M S J)
-  right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
+  left_inv J := Subtype.ext (map_comap M S J)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
   map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
@@ -204,7 +208,7 @@ lemma map_radical (I : Ideal R) :
     I.radical.map (algebraMap R S) = (I.map (algebraMap R S)).radical := by
   refine (I.map_radical_le (algebraMap R S)).antisymm ?_
   rintro x ⟨n, hn⟩
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
   refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
@@ -244,7 +248,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     Function.Surjective (Ideal.quotientMap I (algebraMap R S) H) := by
   intro s
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective s
-  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M s
+  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := exists_mk'_eq M s
   by_cases hM : (Ideal.Quotient.mk (I.comap (algebraMap R S))) m = 0
   · have : I = ⊤ := by
       rw [Ideal.eq_top_iff_one]
@@ -258,10 +262,10 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
-    rw [RingHom.map_one, RingHom.map_mul] at hn
-    rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
-      Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
-    simp only [mul_eq_mul_left_iff, RingHom.map_mul]
+    rw [map_one, map_mul] at hn
+    rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
+      Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
+    simp only [mul_eq_mul_left_iff, map_mul]
     refine
       Or.inl
         (mul_left_cancel₀ (M₀ := S ⧸ I)
@@ -270,7 +274,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
               (Ideal.Quotient.eq_zero_iff_mem.2
                 (Ideal.mem_comap.2 (Ideal.Quotient.eq_zero_iff_mem.1 hn))))
           (_root_.trans hn ?_))
-    rw [← map_mul, ← mk'_eq_mul_mk'_one, mk'_self, RingHom.map_one]
+    rw [← map_mul, ← mk'_eq_mul_mk'_one, mk'_self, map_one]
 
 open nonZeroDivisors
 
@@ -299,7 +303,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
   rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx

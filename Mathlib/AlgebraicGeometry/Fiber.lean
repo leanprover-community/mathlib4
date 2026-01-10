@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.AlgebraicGeometry.Morphisms.Finite
-import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+module
+
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Scheme-theoretic fiber
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
 
 -/
+
+@[expose] public section
 
 universe u
 

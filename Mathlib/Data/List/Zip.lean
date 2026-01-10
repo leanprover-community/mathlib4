@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip
@@ -19,6 +21,8 @@ applies, until one of the lists is exhausted. For example,
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
 
+@[expose] public section
+
 -- Make sure we don't import algebra
 assert_not_exists Monoid
 
@@ -29,6 +33,11 @@ open Nat
 namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
+
+open Function in
+theorem rightInverse_unzip_zip :
+    RightInverse (unzip : List (α × β) → List α × List β) (uncurry zip) := by
+  grind [zip_unzip]
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁

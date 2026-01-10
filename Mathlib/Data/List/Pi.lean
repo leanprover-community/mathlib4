@@ -3,7 +3,9 @@ Copyright (c) 2023 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Data.Multiset.Pi
+module
+
+public import Mathlib.Data.Multiset.Pi
 
 /-!
 # The Cartesian product of lists
@@ -12,6 +14,8 @@ import Mathlib.Data.Multiset.Pi
 
 * `List.pi`: Cartesian product of lists indexed by a list.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -71,7 +75,7 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
-  |     [],  _ => [List.Pi.nil α]
+  | [], _ => [List.Pi.nil α]
   | i :: l, fs => (fs i).flatMap (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :

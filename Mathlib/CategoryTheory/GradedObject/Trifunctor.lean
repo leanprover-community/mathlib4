@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
-import Mathlib.CategoryTheory.Functor.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
+public import Mathlib.CategoryTheory.Functor.Trifunctor
 /-!
 # The action of trifunctors on graded objects
 
@@ -23,12 +25,14 @@ an additive monoid structure on `I` (TODO @joelriou).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
 variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
 
 namespace GradedObject
 

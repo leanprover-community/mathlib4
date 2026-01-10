@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

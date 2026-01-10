@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-!
 # Measures having no atoms
@@ -14,6 +16,8 @@ A measure `μ` has no atoms if the measure of each singleton is zero.
 
 Should `NoAtoms` be redefined as `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s`?
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -58,8 +62,8 @@ theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAt
     ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Set.Countable.ae_not_mem := _root_.Set.Countable.ae_notMem
+lemma Measure.ae_ne (μ : Measure α) [NoAtoms μ] (a : α) : ∀ᵐ x ∂μ, x ≠ a :=
+  (countable_singleton a).ae_notMem μ
 
 lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ.restrict sᶜ = μ :=

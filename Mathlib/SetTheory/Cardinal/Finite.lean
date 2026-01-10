@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ULift
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions
@@ -16,9 +18,11 @@ import Mathlib.SetTheory.Cardinal.ENat
 
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
-* `ENat.card α` is the cardinality of `α` as an  extended natural number.
+* `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -285,7 +289,9 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 
 @[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
 
-@[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+@[simp high] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
+
+@[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
 
 @[simp]
 theorem card_sum (α β : Type*) :

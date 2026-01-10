@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Center
-import Mathlib.GroupTheory.ClassEquation
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Center
+public import Mathlib.GroupTheory.ClassEquation
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
@@ -33,6 +35,8 @@ not clear, but assuming that such a theory could be found where every module con
 below proof is free, then the proof works nearly verbatim.
 
 -/
+
+@[expose] public section
 
 open scoped Polynomial
 open Fintype

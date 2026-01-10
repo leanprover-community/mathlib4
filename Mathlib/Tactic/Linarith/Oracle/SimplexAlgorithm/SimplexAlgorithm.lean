@@ -3,7 +3,10 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Simplex Algorithm
@@ -11,6 +14,8 @@ import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we run the Simplex
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 

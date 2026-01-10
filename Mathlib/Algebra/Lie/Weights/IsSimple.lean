@@ -3,8 +3,10 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Simple Lie algebras
@@ -18,6 +20,8 @@ We show the irreducibility of root systems of simple Lie algebras.
 ## Main results
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
+
+@[expose] public section
 
 namespace LieAlgebra.IsKilling
 
@@ -93,7 +97,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
-    ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+    ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.toLinear, h_plus_ne_bot⟩
@@ -102,7 +106,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index α hα₀
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -115,7 +119,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index (-α) (Weight.IsNonZero.neg hα₀)
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -126,7 +130,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
   have h_pairing_zero : S.pairing i j = 0 := by
-    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S
     · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
     · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
     · intro ⟨idx, hidx⟩
@@ -211,7 +215,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
       convert hx_χ; ext h; simp only [Pi.zero_apply]
-      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
+      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩
     rw [← (by rfl : ⁅(⟨x_χ, hx_χ_in_H⟩ : H), m_α⁆ = ⁅x_χ, m_α⁆)]
@@ -374,15 +378,15 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
             refine Finset.mem_filter.mpr ?_
             exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
-        have h₁ : ⁅x, x₁⁆ ∈ g := by
-          have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
-          rw [h, coe_zero, zero_add] at h₂
-          exact Set.mem_biUnion hi h₂
-        exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
+        · have h₁ : ⁅x, x₁⁆ ∈ g := by
+            have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
+            rw [h, coe_zero, zero_add] at h₂
+            exact Set.mem_biUnion hi h₂
+          exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
         rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
-        exact I.lie_mem
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
+        · exact I.lie_mem
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have : ⁅x, x₁⁆ = 0 := by
           rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
         rw [this]
@@ -416,8 +420,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
-    eq_top_of_invtSubmodule_ne_bot
+  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| eq_top_of_invtSubmodule_ne_bot
 
 end IsSimple
 

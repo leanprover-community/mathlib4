@@ -3,7 +3,9 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Univariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Univariate.Basic
 
 /-!
 # M-types
@@ -11,6 +13,8 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
 -/
+
+@[expose] public section
 
 
 universe u uA uB v w
@@ -391,8 +395,7 @@ def isubtree [DecidableEq F.A] [Inhabited (M F)] : Path F → M F → M F
       if h : a = a' then
         isubtree ps (f <| cast (by rw [h]) i)
       else
-        default (α := M F)
-    )
+        default (α := M F))
 
 /-- similar to `isubtree` but returns the data at the end of the path instead
 of the whole subtree -/
@@ -543,7 +546,7 @@ theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
     apply bisim.tail h₀
   | cons i ps ps_ih => ?_
   obtain ⟨a', i⟩ := i
-  obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
+  obtain rfl : a = a' := by rcases hh with hh | hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction h : f i using PFunctor.M.casesOn' with | _ a₀ f₀

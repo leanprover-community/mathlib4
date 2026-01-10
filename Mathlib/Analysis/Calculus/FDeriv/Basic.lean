@@ -3,10 +3,12 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.Normed.Operator.Asymptotics
+module
+
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Calculus.FDeriv.Defs
+public import Mathlib.Analysis.Normed.Operator.Asymptotics
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 /-!
 # The Fréchet derivative: basic properties
@@ -93,9 +95,6 @@ by taking `f` or `g` to be the identity. Instead, for every reasonable function 
 we add a lemma that if `f` is differentiable then so is `(fun x ↦ exp (f x))`. This means adding
 some boilerplate lemmas, but these can also be useful in their own right.
 
-Tests for this ability of the simplifier (with more examples) are provided in
-`Tests/Differentiable.lean`.
-
 ## TODO
 
 Generalize more results to topological vector spaces.
@@ -105,6 +104,8 @@ Generalize more results to topological vector spaces.
 derivative, differentiable, Fréchet, calculus
 
 -/
+
+public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
@@ -393,37 +394,16 @@ theorem HasFDerivWithinAt.of_not_accPt (h : ¬AccPt x (𝓟 s)) : HasFDerivWithi
     hasFDerivAtFilter_iff_isLittleOTVS]
   exact .bot
 
-/-- If `x` is isolated in `s`, then `f` has any derivative at `x` within `s`,
-as this statement is empty. -/
-@[deprecated HasFDerivWithinAt.of_not_accPt (since := "2025-04-20")]
-theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s \ {x}] x = ⊥) :
-    HasFDerivWithinAt f f' s x :=
-  .of_not_accPt <| by rwa [accPt_principal_iff_nhdsWithin, not_neBot]
-
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 theorem HasFDerivWithinAt.of_notMem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
   .of_not_accPt (h ·.clusterPt.mem_closure)
 
-@[deprecated (since := "2025-05-23")]
-alias HasFDerivWithinAt.of_not_mem_closure := HasFDerivWithinAt.of_notMem_closure
-
-@[deprecated (since := "2025-04-20")]
-alias hasFDerivWithinAt_of_nmem_closure := HasFDerivWithinAt.of_not_mem_closure
-
 theorem fderivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : fderivWithin 𝕜 f s x = 0 := by
   rw [fderivWithin, if_pos (.of_not_accPt h)]
 
-set_option linter.deprecated false in
-@[deprecated fderivWithin_zero_of_not_accPt (since := "2025-04-20")]
-theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
-
 theorem fderivWithin_zero_of_notMem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 :=
   fderivWithin_zero_of_not_accPt (h ·.clusterPt.mem_closure)
-
-@[deprecated (since := "2025-05-24")]
-alias fderivWithin_zero_of_nmem_closure := fderivWithin_zero_of_notMem_closure
 
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
@@ -736,8 +716,6 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
 theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
 
-@[deprecated (since := "2025-06-25")] alias differentiableAt_id' := differentiableAt_fun_id
-
 @[fun_prop]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
@@ -753,8 +731,6 @@ theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => diffe
 /-- Variant with `fun x => x` rather than `id` -/
 @[simp, fun_prop]
 theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
-
-@[deprecated (since := "2025-06-25")] alias differentiable_id' := differentiable_fun_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=

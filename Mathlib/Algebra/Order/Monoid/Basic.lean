@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Ordered monoids
 
 This file develops some additional material on ordered monoids.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -53,32 +57,6 @@ lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β
     IsOrderedCancelMonoid β where
   __ := hf.isOrderedMonoid f mul
   le_of_mul_le_mul_left a b c h := by simpa [← hf.le_iff_le, mul] using h
-
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCancelAddCommMonoid := Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommMonoid := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommMonoid := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelCommMonoid := Function.Injective.isOrderedCancelMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCancelAddCommMonoid :=
-  Function.Injective.isOrderedCancelAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.orderedAddCommGroup := Function.Injective.isOrderedAddMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedCommGroup := Function.Injective.isOrderedMonoid
-@[deprecated (since := "2025-04-10")]
-alias Function.Injective.linearOrderedAddCommGroup := Function.Injective.isOrderedAddMonoid
 
 -- TODO find a better home for the next two constructions.
 /-- The order embedding sending `b` to `a * b`, for some fixed `a`.

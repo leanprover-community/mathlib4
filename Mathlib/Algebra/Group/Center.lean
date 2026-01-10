@@ -3,11 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Util.Delaborators
 
 /-!
 # Centers of magmas and semigroups
@@ -37,6 +38,8 @@ as a subsemigroup:
 We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`, and
 `AddSubgroup.centralizer` in other files.
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra RelIso Finset MonoidWithZero Subsemigroup
 
@@ -125,7 +128,7 @@ theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : 
   right_assoc (a b : M) := calc
     a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
     _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
-    _ =  a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
+    _ = a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
     _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]
 
 @[to_additive addCenter_subset_addCentralizer]

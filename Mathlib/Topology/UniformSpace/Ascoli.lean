@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.CompactConvergence
-import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.UniformSpace.Equiv
+module
+
+public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Topology.UniformSpace.Equicontinuity
+public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Ascoli Theorem
@@ -68,6 +70,8 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 equicontinuity, uniform convergence, ascoli
 -/
 
+public section
+
 open Set Filter Uniformity Topology Function UniformConvergence
 
 variable {ι X α : Type*} [TopologicalSpace X] [UniformSpace α] {F : ι → X → α}
@@ -117,8 +121,8 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
-      (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
+    exact hVU <| SetRel.prodMk_mem_comp (SetRel.prodMk_mem_comp (SetRel.symm V <| hax i) (hij a ha))
+      (hax j)
   -- This completes the proof.
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this

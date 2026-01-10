@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sigma.Order
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Data.Sigma.Order
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Finite intervals in a sigma type
@@ -16,6 +18,8 @@ calculates the cardinality of its finite intervals.
 
 Do the same for the lexicographical order
 -/
+
+@[expose] public section
 
 
 open Finset Function

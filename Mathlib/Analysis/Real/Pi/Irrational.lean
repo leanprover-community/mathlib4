@@ -3,9 +3,11 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.NumberTheory.Real.Irrational
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational
@@ -31,6 +33,8 @@ The proof idea is as follows.
   `n → ∞`.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -143,7 +147,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def sinPoly : ℕ → ℤ[X]
   | 0 => C 2
   | 1 => C 4
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -154,7 +158,7 @@ While not given in the informal proof, these are easy to deduce from the recursi
 private def cosPoly : ℕ → ℤ[X]
   | 0 => 0
   | 1 => monomial 1 (-4)
-  | (n+2) => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
+  | n + 2 => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
 
 /--
 Auxiliary for the proof that `π` is irrational.
@@ -291,7 +295,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos
   obtain ⟨z, hz⟩ : ∃ z : ℤ, (sinPoly n).eval₂ (Int.castRingHom ℝ) (a / b) * b ^ (2 * n + 1) = z :=
-    is_integer a b ((sinPoly_natDegree_le _).trans (by cutsat))
+    is_integer a b ((sinPoly_natDegree_le _).trans (by lia))
   have e := sinPoly_add_cosPoly_eval (π / 2) n
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =
@@ -301,6 +305,6 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
   norm_cast at this
-  cutsat
+  lia
 
 end

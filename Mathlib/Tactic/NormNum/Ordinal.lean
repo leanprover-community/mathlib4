@@ -3,9 +3,11 @@ Copyright (c) 2025 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.SetTheory.Ordinal.Exponential
-import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` extensions for Ordinals
@@ -15,6 +17,8 @@ which without a right distributive law, ordinals do not have.
 
 We must therefore define new extensions for them.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 open Lean Lean.Meta Qq Ordinal

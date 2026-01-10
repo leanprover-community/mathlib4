@@ -3,12 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Order.Preorder.Finsupp
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division
@@ -49,6 +51,8 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 * Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
+@[expose] public section
+
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
@@ -79,8 +83,8 @@ class CeilDiv where
   /-- Do not use this. Use `zero_ceilDiv` instead. -/
   protected zero_ceilDiv (a) : ceilDiv 0 a = 0
 
-@[inherit_doc] infixl:70 " ⌊/⌋ "   => FloorDiv.floorDiv
-@[inherit_doc] infixl:70 " ⌈/⌉ "   => CeilDiv.ceilDiv
+@[inherit_doc] infixl:70 " ⌊/⌋ " => FloorDiv.floorDiv
+@[inherit_doc] infixl:70 " ⌈/⌉ " => CeilDiv.ceilDiv
 
 variable {α β}
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Ideals over/under ideals in integral extensions
@@ -20,6 +22,8 @@ coefficients of a minimal polynomial.
 Once mathlib has more material on the localization at a prime ideal, the results
 can be proven using more general going-up/going-down theory.
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -91,9 +95,8 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
       (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
-  repeat' rw [RingHom.coe_comp, Function.comp_apply]
-  rw [quotientMap_mk, coe_mapRingHom, map_C]
+  ext
+  simp
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
@@ -284,7 +287,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
-    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]
+    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩)]
   rfl
 
 end
@@ -333,6 +336,13 @@ theorem exists_ideal_over_maximal_of_isIntegral [Algebra.IsIntegral R S]
   obtain ⟨Q, -, Q_prime, hQ⟩ := exists_ideal_over_prime_of_isIntegral P ⊥ hP
   exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_comap _ (hQ.symm ▸ P_max), hQ⟩
 
+theorem exists_maximal_ideal_liesOver_of_isIntegral [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    (P : Ideal R) [P.IsMaximal] :
+    ∃ (Q : Ideal S), Q.IsMaximal ∧ Q.LiesOver P := by
+  simp_rw [liesOver_iff, eq_comm (a := P)]
+  exact exists_ideal_over_maximal_of_isIntegral P (by
+    simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective R S)])
+
 lemma map_eq_top_iff_of_ker_le {R S} [CommRing R] [CommRing S]
     (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
     I.map f = ⊤ ↔ I = ⊤ := by
@@ -373,32 +383,38 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
+variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
   eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
 
-/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
+variable (A) {P} in
+theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
+  fun h ↦ hP <| eq_bot_of_comap_eq_bot h
+
+/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is an integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
-theorem exists_ideal_liesOver_maximal_of_isIntegral [p.IsMaximal] (B : Type*) [CommRing B]
-    [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] :
-    ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p := by
-  obtain ⟨P, hm, hP⟩ := exists_ideal_over_maximal_of_isIntegral (S := B) p <| by simp
-  exact ⟨P, hm, ⟨hP.symm⟩⟩
+@[deprecated (since := "2025-11-06")] alias exists_ideal_liesOver_maximal_of_isIntegral :=
+  exists_maximal_ideal_liesOver_of_isIntegral
 
 end IsIntegral
 
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+  [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
 
+theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
+  primesOver.isMaximal ⟨P, hP⟩
+
 variable (A B) in
-lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
+lemma primesOver_bot [NoZeroSMulDivisors A B] [Nontrivial A] [IsDomain B] :
+    primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl

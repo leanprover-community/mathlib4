@@ -3,9 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -29,6 +31,8 @@ results for the Lie algebra of square matrices.
 
 lie algebra, skew-adjoint, bilinear form
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -135,7 +139,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
   LieEquiv.ofSubalgebras _ _ e.toLieEquiv <| by
     ext A
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
-      simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
+      simpa [-LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
     simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 

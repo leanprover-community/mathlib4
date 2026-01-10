@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 # Collapsing covers
 
 We define the endofunctor on `Scheme.Cover P` that collapses a cover to a single object cover.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -31,7 +35,7 @@ noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precover
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun s ↦ ?_, fun _ ↦ IsZariskiLocalAtSource.sigmaDesc 𝒰.map_prop⟩
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
-    refine ⟨default, (Sigma.ι 𝒰.X i).base y, by simp [← Scheme.Hom.comp_apply]⟩
+    refine ⟨default, Sigma.ι 𝒰.X i y, by simp [← Scheme.Hom.comp_apply]⟩
 
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 

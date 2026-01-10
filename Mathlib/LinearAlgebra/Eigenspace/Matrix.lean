@@ -3,8 +3,9 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 
@@ -17,6 +18,8 @@ over a nontrivial commutative ring, nontrivial commutative ring without zero div
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
+
+public section
 
 section SpectrumDiagonal
 
@@ -35,7 +38,7 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
 
 /-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
-    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
+    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
@@ -97,7 +100,7 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
   have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
     rcases hk j with hj | hj
     · simp [hj]
-    · rw [← hj.1, mul_comm, MulAction.mul_smul]
+    · rw [← hj.1, mul_comm, SemigroupAction.mul_smul]
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]

@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Finiteness.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Basic results on finitely generated (sub)modules
@@ -16,10 +18,11 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
+@[expose] public section
+
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -238,8 +241,7 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N]
-    [Module.Finite R M] (f : F) : Module.Finite R (LinearMap.range f) :=
+instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range :=
   of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
@@ -264,8 +266,10 @@ theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCom
 
 variable (R)
 
-instance self : Module.Finite R R :=
-  ⟨⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩⟩
+theorem _root_.Ideal.fg_top : (⊤ : Ideal R).FG :=
+  ⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩
+
+instance self : Module.Finite R R := ⟨Ideal.fg_top R⟩
 
 variable (M)
 
@@ -391,6 +395,9 @@ theorem id : Finite (RingHom.id A) :=
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
+
+lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
+  .of_surjective _ e.surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]

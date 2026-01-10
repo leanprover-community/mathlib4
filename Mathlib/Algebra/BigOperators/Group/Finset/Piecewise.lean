@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Piecewise
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Piecewise
 
 /-!
 # Interaction of big operators with piecewise functions
 
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
+
+public section
 
 variable {ι κ M β γ : Type*} {s : Finset ι}
 
@@ -219,11 +223,6 @@ theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i �
     rintro rfl
     exact h hj
   simp [this]
-
-@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_update_of_not_mem := prod_update_of_notMem
 
 @[to_additive]
 theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s) (f : ι → M) (b : M) :

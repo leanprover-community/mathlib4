@@ -3,16 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Gluing
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 
 # Basic properties of the scheme `Proj A`
 
-The scheme `Proj 𝒜` for a graded algebra `𝒜` is constructed in
-`AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`.
+The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
+`Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`.
 In this file we provide basic properties of the scheme.
 
 ## Main results
@@ -31,16 +33,18 @@ In this file we provide basic properties of the scheme.
 
 -/
 
+@[expose] public section
+
 namespace AlgebraicGeometry.Proj
 
 open HomogeneousLocalization CategoryTheory
 
 universe u
 
-variable {R : Type*} {A : Type u}
-variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A)
-variable [GradedAlgebra 𝒜]
+variable {σ : Type*} {A : Type u}
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ℕ → σ)
+variable [GradedRing 𝒜]
 
 section basicOpen
 
@@ -69,7 +73,7 @@ theorem basicOpen_mono (hfg : f ∣ g) : basicOpen 𝒜 g ≤ basicOpen 𝒜 f :
   (hfg.choose_spec ▸ basicOpen_mul 𝒜 f _).trans_le inf_le_left
 
 theorem basicOpen_eq_iSup_proj (f : A) :
-    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
+    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedRing.proj 𝒜 i f) :=
   ProjectiveSpectrum.basicOpen_eq_union_of_projection ..
 
 theorem isBasis_basicOpen :
@@ -300,7 +304,7 @@ lemma awayι_preimage_basicOpen :
     awayι 𝒜 f f_deg hm ⁻¹ᵁ basicOpen 𝒜 g =
       PrimeSpectrum.basicOpen (Away.isLocalizationElem f_deg g_deg) := by
   ext1
-  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl))).base
+  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl)))
   · rw [← pullbackAwayιIso_inv_fst 𝒜 f_deg hm g_deg hm' rfl]
     simp only [TopologicalSpace.Opens.map_coe, Scheme.Hom.comp_base,
       TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]

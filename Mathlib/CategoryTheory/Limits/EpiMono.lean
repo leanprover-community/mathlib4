@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Relation between mono/epi and pullback/pushout squares
@@ -25,11 +27,13 @@ is a pullback square.
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y : C} {f : X ⟶ Y}
+variable {C : Type*} [Category* C] {X Y : C} {f : X ⟶ Y}
 
 section Mono
 

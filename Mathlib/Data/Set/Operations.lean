@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Data.SProd
-import Mathlib.Data.Subtype
-import Mathlib.Order.Notation
+module
+
+public import Aesop
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Data.SProd
+public import Mathlib.Data.Subtype
+public import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about sets
@@ -57,6 +60,8 @@ More advanced theorems about these definitions are located in other files in `Ma
 set, image, preimage
 -/
 
+@[expose] public section
+
 attribute [ext] Set.ext
 
 universe u v w
@@ -85,8 +90,6 @@ argument to `simp`. -/
 alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
 
 theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
-
-@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
@@ -156,6 +159,24 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
 def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
 
+@[simp] lemma rangeFactorization_injective :
+    (Set.rangeFactorization f).Injective ↔ f.Injective := by
+  simp [Function.Injective, rangeFactorization]
+
+@[simp] lemma rangeFactorization_surjective : (rangeFactorization f).Surjective :=
+  fun ⟨_, i, rfl⟩ ↦ ⟨i, rfl⟩
+
+@[simp] lemma rangeFactorization_bijective :
+    (Set.rangeFactorization f).Bijective ↔ f.Injective := by simp [Function.Bijective]
+
+@[simp] lemma rangeFactorization_eq_rangeFactorization_iff {ι : Sort*} {α : Type*} {f : ι → α}
+    (a b : ι) : Set.rangeFactorization f a = Set.rangeFactorization f b ↔ f a = f b := by
+  simp [Set.rangeFactorization]
+
+lemma rangeFactorization_eq_iff {ι : Sort*} {α : Type*} {f : ι → α} (a : ι) (b : Set.range f) :
+    Set.rangeFactorization f a = b ↔ f a = b := by
+  rw [Set.rangeFactorization, ← b.coe_eta b.2, Subtype.ext_iff]
+
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
@@ -198,6 +219,14 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
   rfl
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
+
+theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
+    (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
+  aesop
+
+theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
+    t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
+  aesop
 
 end Prod
 

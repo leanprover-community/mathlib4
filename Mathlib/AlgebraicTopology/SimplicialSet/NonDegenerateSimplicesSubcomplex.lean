@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 /-!
 # The type of nondegenerate simplices not in a subcomplex
@@ -13,6 +15,8 @@ we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -53,6 +57,11 @@ lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
   grind [cases SSet.Subcomplex.N]
 
+instance : PartialOrder A.N :=
+  PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
+
+lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
+  Iff.rfl
 section
 
 variable (s : A.N) {d : ℕ} (hd : s.dim = d)

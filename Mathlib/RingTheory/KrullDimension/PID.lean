@@ -3,15 +3,19 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.RingTheory.Ideal.Height
-import Mathlib.RingTheory.KrullDimension.Zero
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.Ideal.Height
+public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # The Krull dimension of a principal ideal domain
 
 In this file, we proved some results about the dimension of a principal ideal domain.
 -/
+
+@[expose] public section
 
 instance IsPrincipalIdealRing.krullDimLE_one (R : Type*) [CommRing R]
     [IsPrincipalIdealRing R] : Ring.KrullDimLE 1 R := by

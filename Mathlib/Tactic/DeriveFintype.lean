@@ -3,10 +3,12 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.ProxyType
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
+module
+
+public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.ProxyType
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `Fintype` derive handler
@@ -67,6 +69,8 @@ A difference is that the Mathlib 3 version does not explicitly construct the tot
 and instead it opts to construct the underlying `Finset` as a disjoint union of the `Finset.univ`
 for each individual constructor's proxy type.
 -/
+
+public meta section
 
 namespace Mathlib.Deriving.Fintype
 open Lean Elab Lean.Parser.Term

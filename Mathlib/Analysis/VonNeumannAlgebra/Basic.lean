@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Von Neumann algebras
@@ -21,6 +23,8 @@ is a *-closed subalgebra of bounded operators on `H` which is equal to its doubl
 We'll also need to prove the von Neumann double commutant theorem,
 that the concrete definition is equivalent to a *-closed subalgebra which is weakly closed.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -139,8 +143,7 @@ its range and kernel are invariant under the commutant. -/
 theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
     (S : VonNeumannAlgebra H) :
     e ∈ S ↔ ∀ y ∈ S.commutant,
-    LinearMap.range e ∈ Module.End.invtSubmodule y
-      ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
+      e.range ∈ Module.End.invtSubmodule y ∧ e.ker ∈ Module.End.invtSubmodule y := by
   conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
 
 open VonNeumannAlgebra ContinuousLinearMap in
@@ -148,7 +151,7 @@ open VonNeumannAlgebra ContinuousLinearMap in
 its range is invariant under the commutant. -/
 theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
     (S : VonNeumannAlgebra H) :
-    e ∈ S ↔ ∀ y ∈ S.commutant, LinearMap.range e ∈ Module.End.invtSubmodule y := by
+    e ∈ S ↔ ∀ y ∈ S.commutant, e.range ∈ Module.End.invtSubmodule y := by
   simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
     he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
   intro h x hx

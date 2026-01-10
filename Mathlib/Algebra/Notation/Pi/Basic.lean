@@ -3,14 +3,18 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Very basic algebraic operations on pi types
 
 This file provides very basic algebraic operations on functions.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Preorder
 
@@ -85,7 +89,8 @@ lemma mulSingle_inj (i : ι) {x y : M i} : mulSingle i x = mulSingle i y ↔ x =
 variable {M : Type*} [One M]
 
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
-@[to_additive /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
+@[to_additive (attr := grind =)
+  /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
 lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
     (mulSingle i x : ι → M) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : ι → M) i x i'

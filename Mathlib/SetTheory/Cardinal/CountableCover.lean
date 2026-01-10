@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -16,6 +18,8 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
+
+public section
 
 open Set Order Filter
 open scoped Cardinal
@@ -32,7 +36,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]
     {t : Set α} (ht : ∀ x ∈ t, ∀ᶠ i in l, x ∈ f i)
     (h'f : ∀ i, #(f i) ≤ a) : #t ≤ a := by
-  rcases lt_or_ge a ℵ₀ with ha|ha
+  rcases lt_or_ge a ℵ₀ with ha | ha
   /- case `a` finite. In this case, it suffices to show that any finite subset `s` of `t` has
   cardinality at most `a`. For this, we pick `i` such that `f i` contains all the points in `s`,
   and apply the assumption that the cardinality of `f i` is at most `a`.   -/
@@ -55,11 +59,11 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
       obtain ⟨i, hi⟩ : ∃ i, x ∈ f i := (ht x hx).exists
       exact mem_iUnion_of_mem i hi
     calc #t ≤ #(⋃ i, f i) := mk_le_mk_of_subset this
-      _     ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
-      _     ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
-      _     = #ι * a := by simp
-      _     ≤ ℵ₀ * a := by grw [mk_le_aleph0]
-      _     = a := aleph0_mul_eq ha
+      _ ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
+      _ ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
+      _ = #ι * a := by simp
+      _ ≤ ℵ₀ * a := by grw [mk_le_aleph0]
+      _ = a := aleph0_mul_eq ha
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`. -/

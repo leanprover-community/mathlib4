@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.PFun
-import Mathlib.Data.Vector3
-import Mathlib.NumberTheory.PellMatiyasevic
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector3
+public import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -48,6 +50,8 @@ Matiyasevic's theorem, Hilbert's tenth problem
 * Finish the solution of Hilbert's tenth problem.
 * Connect `Poly` to `MvPolynomial`
 -/
+
+@[expose] public section
 
 
 open Fin2 Function Nat Sum
@@ -188,7 +192,7 @@ instance : CommRing (Poly α) where
   mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
   mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
   left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
-  right_distrib _ _ _ :=  by ext; simp only [add_apply, mul_apply]; apply add_mul
+  right_distrib _ _ _ := by ext; simp only [add_apply, mul_apply]; apply add_mul
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
@@ -567,7 +571,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              cutsat⟩
+              lia⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph
@@ -605,7 +609,7 @@ theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v =>
   df D% dh D= dg D% dh
 
 @[inherit_doc]
-scoped notation " D≡ " => Dioph.modEq_dioph
+scoped notation "D≡ " => Dioph.modEq_dioph
 
 /-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=

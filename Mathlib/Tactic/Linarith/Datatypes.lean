@@ -3,9 +3,11 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Util.SynthesizeUsing
+module
+
+public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # Datatypes for `linarith`
@@ -15,6 +17,8 @@ We split them into their own file.
 
 This file also contains a few convenient auxiliary functions.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta Qq
 
@@ -207,7 +211,7 @@ splits. The first component, an `MVarId`, is the goal corresponding to this bran
 given as a metavariable. The `List Expr` component is the list of hypotheses for `linarith`
 in this branch.
 -/
-def Branch : Type := MVarId × List Expr
+@[expose] def Branch : Type := MVarId × List Expr
 
 /--
 Some preprocessors perform branching case splits.

@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Charted spaces
@@ -69,7 +71,7 @@ Additional useful definitions:
   maximal atlas associated to the groupoid `G`, the composition of `e.symm` and `e'` belongs to the
   `G` if `M` admits `G` as a structure groupoid.
 * `ChartedSpaceCore.toChartedSpace`: consider a space without a topology, but endowed with a set
-  of charts (which are partial equivs) for which the change of coordinates are partial homeos.
+  of charts (which are partial equivs) for which the changes of coordinates are partial homeos.
   Then one can construct a topology on the space for which the charts become partial homeos,
   defining a genuine charted space structure.
 
@@ -88,7 +90,7 @@ that these properties only depend on the maximal atlas, for instance). In practi
 create any real difficulty.
 
 We use the letter `H` for the model space thinking of the case of manifolds with boundary, where the
-model space is a half space.
+model space is a half-space.
 
 Manifolds are sometimes defined as topological spaces with an atlas of local diffeomorphisms, and
 sometimes as spaces with an atlas from which a topology is deduced. We use the former approach:
@@ -107,6 +109,8 @@ can be several model spaces for a given topological space. For instance, a compl
 In the scope `Manifold`, we denote the composition of open partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -528,8 +532,8 @@ end Groupoid
 /-! ### Charted spaces -/
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
-homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
-cover the whole space. We express the covering property by choosing for each `x` a member
+homeomorphisms taking values in a model space `H`, called charts, such that the domains of the
+charts cover the whole space. We express the covering property by choosing for each `x` a member
 `chartAt x` of the atlas containing `x` in its source: in the smooth case, this is convenient to
 construct the tangent bundle in an efficient way.
 The model space is written as an explicit parameter as there can be several model spaces for a
@@ -916,9 +920,9 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
 open scoped Classical in
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
-  if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
-  push_neg at h
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
+  by_cases! h : Nonempty H
+  · exact ChartedSpace.sum_of_nonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -1307,6 +1311,8 @@ protected instance instChartedSpace : ChartedSpace H s where
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
+
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
@@ -1491,7 +1497,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
     Structomorph G s t := by
   intro s t
-  by_cases h : Nonempty e.source
+  by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
       mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
@@ -1500,8 +1506,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
-  · push_neg at h
-    have : IsEmpty t := isEmpty_coe_sort.mpr
+  · have : IsEmpty t := isEmpty_coe_sort.mpr
       (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.

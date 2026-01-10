@@ -3,13 +3,17 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Basic lemmas on prime factorizations
 -/
+
+public section
 
 open Finset List Finsupp
 
@@ -107,7 +111,7 @@ theorem ordCompl_pos {n : ℕ} (p : ℕ) (hn : n ≠ 0) : 0 < ordCompl[p] n := b
   if pp : p.Prime then
     exact Nat.div_pos (ordProj_le p hn) (ordProj_pos n p)
   else
-    simpa [Nat.factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
+    simpa [Nat.factorization_eq_zero_of_not_prime n pp] using hn.bot_lt
 
 theorem ordCompl_le (n p : ℕ) : ordCompl[p] n ≤ n :=
   Nat.div_le_self _ _
@@ -132,7 +136,7 @@ theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p 
   by_cases pp : p.Prime
   · exact (Nat.pow_lt_pow_iff_right pp.one_lt).1 <| (ordProj_le p hn).trans_lt <|
       Nat.lt_pow_self pp.one_lt
-  · simpa only [factorization_eq_zero_of_non_prime n pp] using hn.bot_lt
+  · simpa only [factorization_eq_zero_of_not_prime n pp] using hn.bot_lt
 
 /-- An upper bound on `n.factorization p` -/
 theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factorization p ≤ b := by
@@ -140,13 +144,13 @@ theorem factorization_le_of_le_pow {n p b : ℕ} (hb : n ≤ p ^ b) : n.factoriz
   if pp : p.Prime then
     exact (Nat.pow_le_pow_iff_right pp.one_lt).1 ((ordProj_le p hn).trans hb)
   else
-    simp [factorization_eq_zero_of_non_prime n pp]
+    simp [factorization_eq_zero_of_not_prime n pp]
 
 theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
   refine ⟨fun h p => (em p.Prime).elim (h p) fun hp => ?_, fun h p _ => h p⟩
-  simp_rw [factorization_eq_zero_of_non_prime _ hp]
+  simp_rw [factorization_eq_zero_of_not_prime _ hp]
   rfl
 
 theorem factorization_le_factorization_mul_left {a b : ℕ} (hb : b ≠ 0) :
@@ -213,6 +217,35 @@ theorem factorization_ordCompl (n p : ℕ) :
     simp
   · rw [Finsupp.erase_ne hqp, factorization_div (ordProj_dvd n p)]
     simp [pp.factorization, hqp.symm]
+
+theorem ordProj_self_pow {p k : ℕ} (hp : Prime p) : ordProj[p] (p ^ k) = p ^ k := by
+  apply Nat.eq_of_factorization_eq
+  · exact pos_iff_ne_zero.mp (ordProj_pos (p ^ k) p)
+  · exact pow_ne_zero k hp.ne_zero
+  · simp [Prime.factorization_pow hp]
+
+theorem ordCompl_self_pow {p k : ℕ} (hp : Prime p) : ordCompl[p] (p ^ k) = 1 := by
+  apply Nat.eq_of_factorization_eq
+  · exact pos_iff_ne_zero.mp (ordCompl_pos p (pow_ne_zero k hp.ne_zero))
+  · exact one_ne_zero
+  · simp [Prime.factorization_pow hp]
+
+theorem ordCompl_self_pow_mul (n k : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] (p ^ k * n) = ordCompl[p] n := by
+  rw [ordCompl_mul, ordCompl_self_pow hp, one_mul]
+
+theorem ordCompl_eq_self_iff_zero_or_not_dvd (n : ℕ) {p : ℕ} (hp : Prime p) :
+    ordCompl[p] n = n ↔ n = 0 ∨ ¬p ∣ n := by
+  constructor
+  · intro h
+    by_cases n_zero : n = 0
+    · simp [n_zero]
+    · right
+      rw [← h]
+      exact not_dvd_ordCompl hp n_zero
+  · rintro (n_eq_zero | not_dvd)
+    · simp [n_eq_zero]
+    · simp [Nat.factorization_eq_zero_of_not_dvd not_dvd]
 
 -- `ordCompl[p] n` is the largest divisor of `n` not divisible by `p`.
 theorem dvd_ordCompl_of_dvd_not_dvd {p d n : ℕ} (hdn : d ∣ n) (hpd : ¬p ∣ d) :
@@ -386,7 +419,7 @@ theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb
   simp only [Finset.mem_filter, mem_Ico, and_congr_left_iff, and_congr_right_iff]
   refine fun h1 h2 ↦ ⟨fun h ↦ ?_, fun h ↦ lt_of_pow_dvd_right hn (Prime.one_lt pp) h1⟩
   rcases p with - | p
-  · rw [zero_pow (by cutsat), zero_dvd_iff] at h1
+  · rw [zero_pow (by lia), zero_dvd_iff] at h1
     exact (hn h1).elim
   · rw [← Nat.pow_lt_pow_iff_right (Prime.one_lt pp)]
     apply lt_of_le_of_lt (le_of_dvd (Nat.zero_lt_of_ne_zero hn) h1) hb
@@ -396,7 +429,7 @@ divides `n`. Note `m` is prime. This set is expressed by filtering `Ico 1 b` whe
 greater than `log m n`. -/
 theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n < m ^ b) :
     n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
-  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by cutsat)]
+  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by lia)]
 
 /-! ### Factorization and coprimes -/
 
@@ -426,7 +459,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     refine eq_of_factorization_eq ha hb fun p => ?_
     by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
-    · simp [factorization_eq_zero_of_non_prime, pp]
+    · simp [factorization_eq_zero_of_not_prime, pp]
 
 theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
     ∏ p ∈ range m with p.Prime, p ^ padicValNat p n = n := by
@@ -441,6 +474,20 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
     simp [Finsupp.notMem_support_iff.mp hp2]
   · intro p hp
     simp [factorization_def n (prime_of_mem_primeFactors hp)]
+
+lemma prod_pow_primeFactors_factorization (hn : n ≠ 0) :
+    n = ∏ (p : n.primeFactors), (p : ℕ) ^ (n.factorization p) := by
+  nth_rw 1 [← factorization_prod_pow_eq_self hn]
+  rw [prod_factorization_eq_prod_primeFactors _]
+  exact prod_subtype n.primeFactors (fun _ ↦ Iff.rfl) fun a ↦ a ^ n.factorization a
+
+lemma pairwise_coprime_pow_primeFactors_factorization :
+    Pairwise (Function.onFun Nat.Coprime fun (p : n.primeFactors) ↦ p ^ n.factorization p) := by
+  intro p1 p2 hp
+  refine Nat.Coprime.pow (n.factorization p1) (n.factorization p2) ?_
+  refine (Nat.coprime_primes ?_ ?_).mpr <| Subtype.coe_ne_coe.mpr hp
+  · exact Nat.prime_of_mem_primeFactors p1.2
+  · exact Nat.prime_of_mem_primeFactors p2.2
 
 /-! ### Lemmas about factorizations of particular functions -/
 
@@ -468,5 +515,55 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
     by_cases h : n ∣ N.succ
     · simp [h, succ_div_of_dvd, ih]
     · simp [h, succ_div_of_not_dvd, ih]
+
+theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
+    {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
+    ∃ c, a = c ^ n ∧ b = c ^ m := by
+  by_cases ha0 : a = 0
+  · symm at h
+    by_cases hm0 : m = 0
+    · simp_all
+    · use 0
+      simp_all
+  by_cases hn0 : n = 0
+  · use b
+    simp_all
+  let factors := a.factorization.mapRange (· / n) (Nat.zero_div n)
+  set c := factors.prod (· ^ ·) with hc
+  use c
+  suffices ha : a = c ^ n by
+    refine ⟨ha, ?_⟩
+    apply Nat.pow_left_injective hn0
+    simp [← h, ha, Nat.pow_right_comm]
+  apply eq_of_factorization_eq ha0 (by simp [c, factors])
+  intro p
+  have foo (p) (hp : p ∈ factors.support) : Prime p :=
+    prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
+  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  suffices n ∣ a.factorization p by
+    simp [factors, Nat.mul_div_cancel' this]
+  refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩
+  simpa using congr(factorization $h p)
+
+theorem exists_eq_pow_of_pow_eq_pow
+    {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
+    letI g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
+  set g := gcd m n
+  let m' := m / gcd m n
+  let n' := n / gcd m n
+  have coprime : m'.Coprime n' := by
+    rcases hmn with hm | hn
+    · exact gcd_div_gcd_div_gcd_of_pos_left (zero_lt_of_ne_zero hm)
+    · exact gcd_div_gcd_div_gcd_of_pos_right (zero_lt_of_ne_zero hn)
+  have pow_eq : a ^ m' = b ^ n' := by
+    conv_lhs at h => rw [show m = m' * g from (Nat.div_mul_cancel (gcd_dvd_left m n)).symm]
+    conv_rhs at h => rw [show n = n' * g from (Nat.div_mul_cancel (gcd_dvd_right m n)).symm]
+    rw [pow_mul, pow_mul] at h
+    have : g ≠ 0 := by
+      rcases hmn with hm | hn
+      · exact gcd_ne_zero_left hm
+      · exact gcd_ne_zero_right hn
+    exact Nat.pow_left_injective this h
+  exact exists_eq_pow_of_exponent_coprime_of_pow_eq_pow coprime pow_eq
 
 end Nat

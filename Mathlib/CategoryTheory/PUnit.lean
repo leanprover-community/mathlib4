@@ -3,8 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -13,6 +16,8 @@ We define `star : C ⥤ Discrete PUnit` sending everything to `PUnit.star`,
 show that any two functors to `Discrete PUnit` are naturally isomorphic,
 and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -70,7 +75,6 @@ theorem equiv_punit_iff_unique :
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
-      intro z
       simp
     apply Subsingleton.intro
     intro a b

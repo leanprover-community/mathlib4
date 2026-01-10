@@ -3,8 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Compactification.StoneCech
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Extremally disconnected spaces
@@ -27,6 +29,8 @@ compact Hausdorff spaces.
 
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -187,15 +191,15 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
     intro N N_open hN
     -- get $x \in A$ from nonempty open $G \cap \rho^{-1}(N)$
     rcases (G.mem_image ρ a).mp ha with ⟨e, he, rfl⟩
-    have nonempty : (G ∩ ρ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
-    have is_open : IsOpen <| G ∩ ρ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
-    have ne_univ : ρ '' (G ∩ ρ⁻¹' N)ᶜ ≠ univ :=
+    have nonempty : (G ∩ ρ ⁻¹' N).Nonempty := ⟨e, mem_inter he <| mem_preimage.mpr hN⟩
+    have is_open : IsOpen <| G ∩ ρ ⁻¹' N := hG.inter <| N_open.preimage ρ_cont
+    have ne_univ : ρ '' (G ∩ ρ ⁻¹' N)ᶜ ≠ univ :=
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
     have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_mono (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
-    have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
+    have hy : y ∈ G ∩ ρ ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
 
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
@@ -206,6 +210,7 @@ lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisc
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
 
+set_option backward.privateInPublic true in
 private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisconnected A]
     [T2Space A] [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) :
@@ -234,6 +239,8 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
     mem_image_of_mem ρ hx₂
   exact disj''.ne_of_mem hx₁' hx₂' hρx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
 satisfying the "Zorn subset condition" is a homeomorphism. -/

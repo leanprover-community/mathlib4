@@ -3,10 +3,12 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -19,6 +21,8 @@ We introduce the bundled categories:
 
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -63,6 +67,7 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
@@ -72,12 +77,16 @@ structure GrpCat.Hom (A B : GrpCat.{u}) where
 
 namespace GrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
@@ -272,6 +281,7 @@ structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
@@ -281,12 +291,16 @@ structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
 
 namespace CommGrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
@@ -582,7 +596,7 @@ instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomo
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
--- this variant is then renamed with a `Aux` suffix
+-- this variant is then renamed with an `Aux` suffix
 
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux
@@ -599,31 +613,3 @@ abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
-
-/-!
-Deprecated lemmas for `MonoidHom.comp` and categorical identities.
--/
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [GrpCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_grp {G : GrpCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (GrpCat.Hom.hom (𝟙 G)) = f := by simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [GrpCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_grp_comp {G : Type u} [Monoid G] {H : GrpCat.{u}} (f : G →* H) :
-    MonoidHom.comp (GrpCat.Hom.hom (𝟙 H)) f = f := by simp
-
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommGrpCat.hom_id, comp_id]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.comp_id_commGrp {G : CommGrpCat.{u}} {H : Type u} [Monoid H] (f : G →* H) :
-    f.comp (CommGrpCat.Hom.hom (𝟙 G)) = f := by
-  simp
-@[to_additive (attr := deprecated
-  "Proven by `simp only [CommGrpCat.hom_id, id_comp]`"
-  (since := "2025-01-28"))]
-theorem MonoidHom.id_commGrp_comp {G : Type u} [Monoid G] {H : CommGrpCat.{u}} (f : G →* H) :
-    MonoidHom.comp (CommGrpCat.Hom.hom (𝟙 H)) f = f := by
-  simp

@@ -3,11 +3,13 @@ Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.NumberTheory.Primorial
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Data.Nat.Choose.Factorization
+public import Mathlib.NumberTheory.Primorial
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Bertrand's Postulate
@@ -36,6 +38,8 @@ binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 Bertrand, prime, binomial coefficients
 -/
+
+public section
 
 
 section Real
@@ -144,7 +148,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   obtain h | h : ¬ x.Prime ∨ x ≤ n := by simpa [imp_iff_not_or, hx.not_gt] using no_prime x
-  · rw [factorization_eq_zero_of_non_prime n.centralBinom h, Nat.pow_zero]
+  · rw [factorization_eq_zero_of_not_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
@@ -165,7 +169,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
   have : ∏ x ∈ S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
     refine Finset.prod_filter_of_ne fun p _ h => ?_
     contrapose! h; dsimp only [f]
-    rw [factorization_eq_zero_of_non_prime n.centralBinom h, _root_.pow_zero]
+    rw [factorization_eq_zero_of_not_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
   apply mul_le_mul'

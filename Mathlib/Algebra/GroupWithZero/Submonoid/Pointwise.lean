@@ -3,12 +3,16 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 
 /-!
 # Submonoids in a group with zero
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -58,10 +62,9 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
+    (congr_arg (fun f : AddMonoid.End A => S.map f) (map_one _)).trans S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_mul _ _ _)).trans
-      (S.map_map _ _).symm
+    (congr_arg (fun f : AddMonoid.End A => S.map f) (map_mul _ _ _)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] AddSubmonoid.pointwiseMulAction
 

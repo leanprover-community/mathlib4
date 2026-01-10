@@ -3,8 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Category.Grp.Basic
 * `FiniteGrp` is the category of finite groups.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -41,7 +45,8 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
   coe G := G.toGrp
 
 @[to_additive]
-instance : Category FiniteGrp := InducedCategory.category FiniteGrp.toGrp
+instance : Category FiniteGrp :=
+  inferInstanceAs (Category (InducedCategory _ FiniteGrp.toGrp))
 
 @[to_additive]
 instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
@@ -63,7 +68,7 @@ def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
 @[to_additive
 /-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrpCat` -/]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
-  GrpCat.ofHom f
+  InducedCategory.homMk (GrpCat.ofHom f)
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :

@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 
 /-! # The exponential map from selfadjoint to unitary
 In this file, we establish various properties related to the map
@@ -18,6 +20,8 @@ In this file, we establish various properties related to the map
   unitaries.
 -/
 
+@[expose] public section
+
 open NormedSpace -- For `NormedSpace.exp`.
 
 section Star
@@ -31,8 +35,9 @@ open Complex
 over ℂ. -/
 @[simps]
 noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
-  ⟨exp ℂ ((I • a.val) : A),
-      exp_mem_unitary_of_mem_skewAdjoint _ (a.prop.smul_mem_skewAdjoint conj_I)⟩
+  ⟨exp ((I • a.val) : A),
+      let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+      exp_mem_unitary_of_mem_skewAdjoint (a.prop.smul_mem_skewAdjoint conj_I)⟩
 
 open selfAdjoint
 
@@ -44,10 +49,12 @@ lemma selfAdjoint.expUnitary_zero : expUnitary (0 : selfAdjoint A) = 1 := by
 @[fun_prop]
 lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A → unitary A) := by
   simp only [continuous_induced_rng, Function.comp_def, selfAdjoint.expUnitary_coe]
+  let +nondep : NormedAlgebra ℚ A := NormedAlgebra.restrictScalars ℚ ℂ A
   fun_prop
 
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
   ext
   have hcomm : Commute (I • (a : A)) (I • (b : A)) := by
     unfold Commute SemiconjBy

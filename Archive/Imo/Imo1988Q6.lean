@@ -233,14 +233,14 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos
-      replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.ofNat_zero_le k)
+      replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.natCast_nonneg k)
       replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
       apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
-        z * y > x * x := by apply mul_lt_mul' <;> omega
-        _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
+        z * y > x * x := by apply mul_lt_mul' <;> lia
+        _ ≥ x * x - k := sub_le_self _ (Int.natCast_nonneg k)
   · -- There is no base case in this application of Vieta jumping.
     simp
 
@@ -276,16 +276,16 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     constructor
     · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
-      omega
+      lia
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       push_neg at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> omega
-        _ ≥ x * (x + 1) := by apply mul_le_mul <;> omega
+        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> lia
+        _ ≥ x * (x + 1) := by apply mul_le_mul <;> lia
         _ > x * x + 1 := by
           rw [mul_add]
-          omega
+          lia
   · -- Show the base case.
     intro x y h h_base
     obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base

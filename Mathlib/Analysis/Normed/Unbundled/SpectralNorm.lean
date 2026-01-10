@@ -3,14 +3,16 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # The spectral norm and the norm extension theorem
@@ -74,6 +76,8 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 
 spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -203,24 +207,18 @@ section NormedDivisionRing
 variable [NormedDivisionRing R]
 
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
-  if all of its coefficients have norm less than or equal to 1. -/
+if all of its coefficients have norm less than or equal to 1. -/
 theorem spectralValue_le_one_iff {P : R[X]} (hP : Monic P) :
     spectralValue P ≤ 1 ↔ ∀ n : ℕ, ‖P.coeff n‖ ≤ 1 := by
   rw [spectralValue]
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · by_contra! hn
-    have hsupr : 1 < iSup (spectralValueTerms P) := by
-      refine lt_of_lt_of_le ?_ (le_ciSup (spectralValueTerms_bddAbove P) n)
-      simp only [spectralValueTerms]
-      split_ifs with hPn
-      · exact Real.one_lt_rpow hn (by simp [hPn])
-      · rw [not_lt, le_iff_lt_or_eq] at hPn
-        rcases hPn with hlt | heq
-        · simpa [coeff_eq_zero_of_natDegree_lt hlt, norm_zero] using hn
-        · rw [Monic, leadingCoeff, heq] at hP
-          rw [hP, norm_one] at hn
-          exact hn.false.elim
-    exact (hsupr.trans_le h).false
+  · obtain hPn | hPn | hPn := lt_trichotomy P.natDegree n
+    · simp [coeff_eq_zero_of_natDegree_lt hPn]
+    · rw [← hPn, hP.coeff_natDegree, norm_one]
+    · have : spectralValueTerms P n ≤ 1 := le_ciSup (spectralValueTerms_bddAbove P) n |>.trans h
+      contrapose! this
+      simp only [spectralValueTerms_of_lt_natDegree _ hPn]
+      exact Real.one_lt_rpow this (by simp [hPn])
   · apply ciSup_le (fun n ↦ ?_)
     rw [spectralValueTerms]
     split_ifs with hn
@@ -251,8 +249,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
   by_cases hx0 : f x = 0
   · rw [hx0]; exact spectralValue_nonneg p
   · by_contra h_ge
-    have hn_lt : ∀ (n : ℕ) (_ : n < p.natDegree), ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
-      intro n hn
+    have hn_lt (n : ℕ) (hn : n < p.natDegree) : ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
       have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) =
           ‖p.coeff n‖ := by
         rw [← rpow_natCast, ← rpow_mul (norm_nonneg _), mul_comm, rpow_mul (norm_nonneg _),
@@ -269,8 +266,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_deg : 0 < p.natDegree := natDegree_pos_of_monic_of_aeval_eq_zero hp hx
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
-      have hn' : ∀ (n : ℕ) (_ : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
-        intro n hn
+      have hn' (n : ℕ) (hn : n < p.natDegree) : f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
         by_cases hn0 : n = 0
         · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (succ_le_iff.mpr h_deg),
             ← Nat.sub_zero p.natDegree, ← hn0]
@@ -397,7 +393,7 @@ variable {K L}
 theorem spectralNorm.eq_of_tower {E : Type*} [Field E] [Algebra K E] [Algebra E L]
     [IsScalarTower K E L] (x : E) :
     spectralNorm K E x = spectralNorm K L (algebraMap E L x) := by
-  have hx :  minpoly K (algebraMap E L x) = minpoly K x :=
+  have hx : minpoly K (algebraMap E L x) = minpoly K x :=
     minpoly.algebraMap_eq (algebraMap E L).injective x
   simp only [spectralNorm, hx]
 
@@ -487,11 +483,11 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
-    have hp_sp : Splits (algebraMap K L) (minpoly K x) := hn.splits x
-    obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
+    have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
+    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
     have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
       rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [h_lc, map_one, one_mul] at hs
+    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
     simp only [spectralNorm]
     rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
     apply ciSup_le
@@ -500,10 +496,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
-      convert le_ciSup (Finite.bddAbove_range _) σ
-      · rfl
-      · exact instNonemptyOfInhabited
-      · exact SemilatticeSup.to_isDirected_le
+      apply le_ciSup (Finite.bddAbove_range _) σ
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
@@ -606,7 +599,7 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
   rw [← spectralNorm.eq_of_normalClosure g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy,
-    ← spectralNorm.eq_of_normalClosure (-g) hy, RingHom.map_neg,
+    ← spectralNorm.eq_of_normalClosure (-g) hy, map_neg,
     ← spectralAlgNorm_of_finiteDimensional_normal_def]
   exact map_neg_eq_map _ _
 
@@ -736,7 +729,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   letI N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e  := by simp
+      smul_zero e := by simp
       smul_add k e_1 e_ := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
       zero_smul e := by simp [zero_smul]
@@ -920,7 +913,7 @@ lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra 
       eval_map]
   rw [← minpoly.eq_of_root (Algebra.IsAlgebraic.isAlgebraic ((algebraMap L E) x)) this]
 
-omit [Algebra.IsAlgebraic K L]  in
+omit [Algebra.IsAlgebraic K L] in
 /-- Given an algebraic tower of fields `E/L/K` and an element `x : L` whose minimal polynomial `f`
   over `K` splits into linear factors over `E`, the `degree(f)`th power of the spectral norm of `x`,
   considered as an element of `E`, is equal to the spectral norm of the product of the `E`-valued
@@ -957,7 +950,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
+  have hspl : Splits (mapAlg K E (minpoly K x)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
@@ -967,7 +960,7 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     ← @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
     @spectralNorm.eq_of_tower K _ E _ _ L, ← spectralMulAlgNorm_def,
     ← spectralMulAlgNorm_def, Polynomial.coeff_zero_of_isScalarTower,
-    Polynomial.coeff_zero_eq_prod_roots_of_monic_of_splits _ hspl, map_mul, map_pow,
+    hspl.coeff_zero_eq_prod_roots_of_monic _, map_mul, map_pow,
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]
   · simp [monic_mapAlg_iff, minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral]
   · exact_mod_cast (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x)).ne'

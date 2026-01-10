@@ -3,9 +3,11 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
-import Mathlib.Order.Filter.Curry
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Order.Filter.Curry
 
 /-!
 # Swapping limits and derivatives via uniform convergence
@@ -91,6 +93,8 @@ continuous, then you can avoid the mean value theorem and much of the work aroun
 
 uniform convergence, limits of derivatives
 -/
+
+public section
 
 
 open Filter

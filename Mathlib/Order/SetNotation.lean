@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum
@@ -31,6 +33,8 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 
 -/
 
+@[expose] public section
+
 open Set
 
 universe u v
@@ -41,30 +45,24 @@ class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
 
-
 /-- Class for the `sInf` operator -/
+@[to_dual existing]
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
-
 
 export SupSet (sSup)
 
 export InfSet (sInf)
 
 /-- Indexed supremum -/
+@[to_dual /-- Indexed infimum -/]
 def iSup [SupSet α] (s : ι → α) : α :=
   sSup (range s)
 
-/-- Indexed infimum -/
-def iInf [InfSet α] (s : ι → α) : α :=
-  sInf (range s)
-
+@[to_dual]
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
-
-instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
-  ⟨sSup ∅⟩
 
 /-- Indexed supremum. -/
 notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
@@ -78,7 +76,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed supremum. -/
 @[app_delab iSup]
-def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+meta def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -106,7 +104,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
 
 /-- Delaborator for indexed infimum. -/
 @[app_delab iInf]
-def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -134,6 +132,18 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
 end delaborators
 
 namespace Set
+
+/-
+We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
+This is because for example the following theorems should be dual
+```
+theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
+theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
+```
+Additionally, dualizing the order on sets would mean that a set is dual to its complement.
+But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
+-/
+attribute [to_dual_dont_translate] Set
 
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
@@ -183,7 +193,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed unions. -/
 @[app_delab Set.iUnion]
-def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
+meta def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -211,7 +221,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
 
 /-- Delaborator for indexed intersections. -/
 @[app_delab Set.iInter]
-def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
+meta def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι

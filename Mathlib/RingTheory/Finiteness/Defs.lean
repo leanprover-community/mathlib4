@@ -3,12 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.RingTheory.Ideal.Span
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -25,10 +26,11 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
+@[expose] public section
+
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 

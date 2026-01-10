@@ -3,9 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
-import Mathlib.Topology.Algebra.WithZeroTopology
+module
+
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 
@@ -18,11 +20,13 @@ to facilitate a refactor.
 
 -/
 
+@[expose] public section
+
 namespace IsValuativeTopology
 
 section
 
-/-! # Alternate constructors -/
+/-! ### Alternate constructors -/
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
@@ -52,7 +56,6 @@ lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
-  ext z
   simp [neg_add_eq_sub]
 
 @[deprecated (since := "2025-08-01")]
@@ -121,7 +124,7 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
 instance (priority := low) : IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := IsTopologicalAddGroup.rightUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   inferInstance
 
@@ -224,9 +227,9 @@ namespace ValuativeRel
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
 
 @[inherit_doc]
-scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal ↥𝒪[K]
 
 @[inherit_doc]
-scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField ↥𝒪[K]
 
 end ValuativeRel

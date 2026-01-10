@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
-import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
-import Mathlib.CategoryTheory.MorphismProperty.Descent
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
+public import Mathlib.CategoryTheory.MorphismProperty.Descent
 
 /-!
 # Descent of morphism properties
@@ -28,6 +30,8 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
 
 -/
 
+public section
+
 universe u v
 
 open TensorProduct CategoryTheory Limits
@@ -47,7 +51,7 @@ lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [Com
   let p : ∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.f i)
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
-    use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.X i) i).base x
+    use Sigma.ι X.affineCover.finiteSubcover.X i x
     rw [← Scheme.Hom.comp_apply, Sigma.ι_desc]
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsZariskiLocalAtSource.of_isOpenImmersion _
@@ -108,7 +112,7 @@ lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]
   refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ (H₁ h) ?_
   rwa [← pullbackSpecIso_hom_fst R T S, P.cancel_left_of_respectsIso, H₂] at hf
 
-/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P', to
+/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P'`, to
 show a property descends along a morphism `f : X ⟶ Z` satisfying `P'`, `X` may assumed to
 be affine. -/
 lemma IsStableUnderBaseChange.of_pullback_fst_of_isAffine [P'.RespectsIso]

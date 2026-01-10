@@ -3,7 +3,9 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Partitions based on membership of a sequence of sets
@@ -29,6 +31,8 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 * `finite_memPartition`: `memPartition f n` is finite
 
 -/
+
+@[expose] public section
 
 open Set
 

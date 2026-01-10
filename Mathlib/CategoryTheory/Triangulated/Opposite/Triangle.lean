@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Basic
-import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Basic
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
 /-!
 # Triangles in the opposite category of a (pre)triangulated category
@@ -23,11 +25,13 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Pretriangulated
 
 open Category Limits Preadditive ZeroObject Opposite
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace TriangleOpEquivalence
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Data.Nat.Log
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Data.Nat.Log
 
 /-!
 # Integer logarithms in a field with respect to a natural base
@@ -46,6 +48,8 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
   * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

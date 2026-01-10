@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Monad.Coequalizer
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Monad.Coequalizer
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Monadicity theorems
@@ -35,6 +37,8 @@ Please try to keep them in sync.
 Beck, monadicity, descent
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -304,7 +308,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       letI _ :
@@ -399,7 +403,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       apply reflectsColimit_of_reflectsIsomorphisms

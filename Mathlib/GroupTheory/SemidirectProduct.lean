@@ -3,7 +3,9 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.GroupTheory.Complement
+module
+
+public import Mathlib.GroupTheory.Complement
 
 /-!
 # Semidirect product
@@ -28,6 +30,8 @@ This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N 
 group, semidirect product
 -/
 
+@[expose] public section
+
 open Subgroup
 
 variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
@@ -36,7 +40,7 @@ variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
-  group of `N`. It the product of sets with the group operation
+  group of `N`. It is the product of sets with the group operation
   `⟨n₁, g₁⟩ * ⟨n₂, g₂⟩ = ⟨n₁ * φ g₁ n₂, g₁ * g₂⟩` -/
 @[ext]
 structure SemidirectProduct (φ : G →* MulAut N) where
@@ -135,7 +139,7 @@ theorem inl_aut (g : G) (n : N) : (inl (φ g n) : N ⋊[φ] G) = inr g * inl n *
   ext <;> simp
 
 theorem inl_aut_inv (g : G) (n : N) : (inl ((φ g)⁻¹ n) : N ⋊[φ] G) = inr g⁻¹ * inl n * inr g := by
-  rw [← MonoidHom.map_inv, inl_aut, inv_inv]
+  rw [← map_inv, inl_aut, inv_inv]
 
 @[simp]
 theorem mk_eq_inl_mul_inr (g : G) (n : N) : (⟨n, g⟩ : N ⋊[φ] G) = inl n * inr g := by ext <;> simp
@@ -295,7 +299,7 @@ def congr : N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[φ₂] G₂ where
     replace h := DFunLike.ext_iff.1 (h x.right) y.left
     ext <;> simp_all
 
-/-- Define a isomorphism from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` without specifying `φ₂`. -/
+/-- Define an isomorphism from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` without specifying `φ₂`. -/
 @[simps!]
 def congr' :
     N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[MonoidHom.comp (MulAut.congr fn) (φ₁.comp fg.symm)] G₂ :=

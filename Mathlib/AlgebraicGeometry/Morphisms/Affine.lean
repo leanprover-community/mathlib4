@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 
 /-!
 
@@ -27,6 +29,8 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -78,7 +82,11 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   refine Set.image_preimage_eq_inter_range.trans ?_
   simp
 
-lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
+lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
+  IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap
+
+/-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
+private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
   rw [quasiSeparatedSpace_iff_forall_affineOpens]
@@ -96,10 +104,11 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (V.2.basicOpen _).isCompact
 
+@[stacks 01QF]
 lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffine X := by
-  have : QuasiSeparatedSpace X := isAffineOpen_of_isAffineOpen_basicOpen_aux s hs hs₂
+  have : QuasiSeparatedSpace X := isAffine_of_isAffineOpen_basicOpen_aux s hs hs₂
   have : CompactSpace X := by
     obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
     rw [← isCompact_univ_iff, ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e]
@@ -150,7 +159,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
-      have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
+      have : ∀ i : S, IsAffineOpen (f ⁻¹ᵁ Y.basicOpen i.1) := hS'
       simpa [Scheme.preimage_basicOpen] using this
   eq_targetAffineLocally' := by
     ext X Y f
@@ -190,24 +199,43 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
+    IsAffineHom (coprod.desc f g) := by
+  refine ⟨fun W hW ↦ ?_⟩
+  have : IsAffine (f ⁻¹ᵁ W).toScheme := hW.preimage f
+  have : IsAffine (g ⁻¹ᵁ W).toScheme := hW.preimage g
+  let i : (f ⁻¹ᵁ W).toScheme ⨿ (g ⁻¹ᵁ W).toScheme ⟶ U ⨿ V := coprod.map (f ⁻¹ᵁ W).ι (g ⁻¹ᵁ W).ι
+  convert isAffineOpen_opensRange i
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨(x | x), rfl⟩ := (coprodMk U V).surjective x
+    · replace hx : f x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inl ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+    · replace hx : g x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inr ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+  · rintro _ ⟨x, rfl⟩
+    obtain ⟨(⟨x, hx⟩ | ⟨x, hx⟩), rfl⟩ := (coprodMk _ _).surjective x
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]
 lemma isAffineHom_of_isInducing
-    (hf₁ : Topology.IsInducing f.base)
-    (hf₂ : IsClosed (Set.range f.base)) :
+    (hf₁ : Topology.IsInducing f)
+    (hf₂ : IsClosed (Set.range f)) :
     IsAffineHom f := by
   apply isAffineHom_of_forall_exists_isAffineOpen
   intro y
-  by_cases hy : y ∈ Set.range f.base
+  by_cases hy : y ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hy
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
       obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
-    obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f.base x, hxV⟩ hxU
+    obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f x, hxV⟩ hxU
     refine ⟨_, hxr, hU.basicOpen r, ?_⟩
     convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r)) using 1
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]

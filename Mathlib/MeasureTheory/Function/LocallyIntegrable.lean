@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Locally integrable functions
@@ -22,6 +24,8 @@ on compact sets.
   integrable on `s`.
 -/
 
+@[expose] public section
+
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
 open scoped Topology Interval ENNReal
@@ -37,8 +41,12 @@ namespace MeasureTheory
 section LocallyIntegrableOn
 
 /-- A function `f : X → E` is *locally integrable on s*, for `s ⊆ X`, if for every `x ∈ s` there is
-a neighbourhood of `x` within `s` on which `f` is integrable. (Note this is, in general, strictly
-weaker than local integrability with respect to `μ.restrict s`.) -/
+a neighbourhood of `x` within `s` on which `f` is integrable.
+
+Note that this is, in general, strictly weaker than local integrability with respect to
+`μ.restrict s`. For example, `fun (x : ℝ) ↦ 1/x` is locally integrable on `Set.Ioo 0 1` with
+respect to the Lebesgue measure, but it is *not* locally integrable with respect to the
+Lebesgue measure restricted to `Set.Ioo 0 1`. -/
 def LocallyIntegrableOn (f : X → ε) (s : Set X) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 
@@ -120,7 +128,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   refine ⟨u, ?_, ?_, ?_⟩
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · rw [h]
       exact isOpen_empty
     · exact T_open _ h
@@ -131,7 +139,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
     exact mem_iUnion_of_mem _ h'v
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
-    rcases mem_insert_iff.1 this with h|h
+    rcases mem_insert_iff.1 this with h | h
     · simp only [h, empty_inter, integrableOn_empty]
     · exact hT _ h
 
@@ -159,7 +167,7 @@ protected theorem LocallyIntegrableOn.add [ContinuousAdd ε''] {f g : X → ε''
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
 
--- TODO: once mathlib has a ENormedAddCommSubMonoid, generalise this lemma also
+-- TODO: once mathlib has an ENormedAddCommSubMonoid, generalise this lemma also
 protected theorem LocallyIntegrableOn.sub
     {f g : X → E} (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)
@@ -474,19 +482,26 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 
+/-- If `f` is continuous on a compact set `K`, then it is integrable on any measurable subset
+`s ⊆ K` of finite measure. -/
+theorem ContinuousOn.integrableOn_of_subset_isCompact (hf : ContinuousOn f K)
+    (hK : IsCompact K) (hs : MeasurableSet s) (h's : s ⊆ K) (mus : μ s ≠ ∞) :
+    IntegrableOn f s μ := by
+  refine ⟨hf.aestronglyMeasurable_of_subset_isCompact hK hs h's, ?_⟩
+  have : Fact (μ s < ∞) := ⟨mus.lt_top⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
+    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
+  apply HasFiniteIntegral.of_bounded (C := C)
+  filter_upwards [ae_restrict_mem hs] with a ha using hC _ (mem_image_of_mem f (h's ha))
+
 variable [IsFiniteMeasureOnCompacts μ]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
 theorem ContinuousOn.integrableOn_compact'
     (hK : IsCompact K) (h'K : MeasurableSet K) (hf : ContinuousOn f K) :
-    IntegrableOn f K μ := by
-  refine ⟨ContinuousOn.aestronglyMeasurable_of_isCompact hf hK h'K, ?_⟩
-  have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
-    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-  apply HasFiniteIntegral.of_bounded (C := C)
-  filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
+    IntegrableOn f K μ :=
+  hf.integrableOn_of_subset_isCompact hK h'K Subset.rfl hK.measure_ne_top
 
 theorem ContinuousOn.integrableOn_compact [T2Space X]
     (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=

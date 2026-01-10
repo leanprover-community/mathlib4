@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.BoolIndicator
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Set.BoolIndicator
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
 
 A clopen set is a set that is both closed and open.
 -/
+
+public section
 
 open Set Filter Topology TopologicalSpace
 
