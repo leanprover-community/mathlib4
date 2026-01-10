@@ -109,15 +109,16 @@ protected theorem map_inf (I J : Ideal R) :
   refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
   rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
 
-/-- `IsLocalization.map_inf` as an `InfTopHom`, bundling in that it distributes over `inf`. -/
-def mapInfTopHom : InfTopHom (Ideal R) (Ideal S) where
+/-- `IsLocalization.map_inf` as an `FrameHom`. -/
+def mapFrameHom : FrameHom (Ideal R) (Ideal S) where
   toFun := Ideal.map (algebraMap R S)
   map_inf' := IsLocalization.map_inf M S
   map_top' := Ideal.map_top (algebraMap R S)
+  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
 
 @[simp]
-lemma mapInfTopHom_apply (I : Ideal R) :
-    IsLocalization.mapInfTopHom M S I = I.map (algebraMap R S) :=
+lemma mapFrameHom_apply (I : Ideal R) :
+    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
   rfl
 
 include M in
