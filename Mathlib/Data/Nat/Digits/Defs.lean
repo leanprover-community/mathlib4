@@ -191,7 +191,7 @@ theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
   simp
 
 theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
-    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b ^ l.length * d := by
   simp only [List.reverse_cons]
   rw [ofDigits_append]
   simp

@@ -261,37 +261,21 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       exact add_mem ih₁ ih₂
 
 @[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
-    (invtSubmoduleToLieIdeal q (by exact hq) : Submodule K L) =
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    (invtSubmoduleToLieIdeal q hq).toSubmodule =
       ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
   rfl
 
+open LieSubmodule in
 @[simp] lemma invtSubmoduleToLieIdeal_top :
-    invtSubmoduleToLieIdeal (⊤ : Submodule K (Dual K H)) (by simp) = ⊤ := by
-  rw [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal, LieSubmodule.iSup_toSubmodule,
-    LieSubmodule.top_toSubmodule]
-      -- For any non-zero root α, the sl2 submodule of α contains the root space L_α.
-  have h_sl2_submodule_contains_root_space : ∀ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.rootSpace H α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    intro α hα
-    have h_sl2_submodule_contains_root_space : LieModule.genWeightSpace L α ≤ LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-      rw [ LieAlgebra.IsKilling.sl2SubmoduleOfRoot_eq_sup ];
-      exact le_sup_of_le_left ( le_sup_left );
-    exact?;
-  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α`.
-  have h_sup_le_sup : ⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    refine' iSup_le fun α => _;
-    by_cases hα : α.IsNonZero;
-    · exact le_iSup₂_of_le α hα ( h_sl2_submodule_contains_root_space α hα );
-    · simp_all +decide [ LieModule.Weight.IsNonZero ];
-      sorry
-  -- Since `⨆ α, genWeightSpace L α = ⊤` (by `LieModule.iSup_genWeightSpace_eq_top'`), we have `⨆ α, genWeightSpace L α ≤ ⨆ α, sl2SubmoduleOfRoot α` implies `⊤ ≤ ⨆ α, sl2SubmoduleOfRoot α`.
-  have h_top_le_sup : (⊤ : Submodule K L) ≤ ⨆ (α : LieModule.Weight K H L) (hα : α.IsNonZero), LieAlgebra.IsKilling.sl2SubmoduleOfRoot hα := by
-    have h_top_le_sup : (⨆ (α : LieModule.Weight K H L), LieAlgebra.rootSpace H α) = ⊤ := by
-      exact?;
-    aesop;
-  simp_all +decide [ Submodule.eq_top_iff' ];
-  convert h_top_le_sup using 1;
-  simp +decide [ Submodule.mem_iSup ]
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
+  simp_rw [← toSubmodule_inj, coe_invtSubmoduleToLieIdeal_eq_iSup, iSup_toSubmodule,
+    top_toSubmodule, iSup_toSubmodule_eq_top, eq_top_iff, ← cartan_sup_iSup_rootSpace_eq_top H,
+    iSup_subtype, Submodule.mem_top, true_and, sup_le_iff, iSup_le_iff, sl2SubmoduleOfRoot_eq_sup]
+  refine ⟨?_, fun α hα ↦ le_iSup₂_of_le α hα <| le_sup_of_le_left <| le_sup_of_le_left <| le_refl _⟩
+  suffices H.toLieSubmodule ≤ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α from
+    this.trans <| iSup₂_mono fun α hα ↦ le_sup_right
+  simp
 
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_top_iff (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
@@ -300,8 +284,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
   have h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤ := by
     rw [← LieSubmodule.toSubmodule_inj] at h
     have := coe_invtSubmoduleToLieIdeal_eq_iSup q hq
-    simpa only [← LieSubmodule.toSubmodule_inj, invtSubmoduleToLieIdeal,
-      LieSubmodule.iSup_toSubmodule] using h
+    simpa only [← LieSubieSubmodule.iSup_toSubmodule] using h
   by_contra hq_ne_top
   have h_ne_bot : q.dualCoannihilator ≠ ⊥ := by
     contrapose! hq_ne_top
@@ -354,7 +337,8 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     simp only [LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule, le_bot_iff,
       LieSubmodule.toSubmodule_eq_bot] at h_sl2_le
     exact sl2SubmoduleOfRoot_ne_bot i.1 hα₀ h_sl2_le
-  · simp [h, invtSubmoduleToLieIdeal]
+  · simp [h, invtSubmoduleToLieIdeal]module.toSubmodule_inj, invtSubmoduleToLieIdeal,
+      L
 
 instance [IsSimple K L] : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L

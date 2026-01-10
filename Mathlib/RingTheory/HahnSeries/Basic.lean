@@ -384,9 +384,15 @@ theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
 
 @[deprecated (since := "2025-08-19")] alias order_eq_orderTop_of_ne := order_eq_orderTop_of_ne_zero
 
-theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
+@[simp]
+theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := by
+  refine ⟨not_imp_not.1 fun hx ↦ ?_, by simp +contextual⟩
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
+
+@[deprecated coeff_order_eq_zero (since := "2025-12-09")]
+theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
+  coeff_order_eq_zero.not.2 hx
 
 theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : R⟦Γ⟧}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
@@ -450,7 +456,7 @@ def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
-        contrapose! hb
+        contrapose hb
         rw [Function.mem_support, dif_neg hb, Classical.not_not] }
 
 @[simp]
@@ -479,7 +485,7 @@ theorem embDomain_notin_image_support {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'
 theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
     support (embDomain f x) ⊆ f '' x.support := by
   intro g hg
-  contrapose! hg
+  contrapose hg
   rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 
 theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :

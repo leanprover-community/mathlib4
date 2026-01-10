@@ -264,8 +264,8 @@ noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
   toLinearMap := lTensor.toFun Q hfg
-  invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
-  left_inv  := fun y ↦ by
+  invFun   := lTensor.inverse_of_rightInverse Q hfg hgh
+  left_inv := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
@@ -402,11 +402,10 @@ open Submodule LinearEquiv in
 lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
-  rw [← comap_coe_toLinearMap, ← ker_comp]
+  rw [← ker_comp]
   convert rTensor_mkQ Q I
   · ext; simp
-  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
-    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
+  rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']

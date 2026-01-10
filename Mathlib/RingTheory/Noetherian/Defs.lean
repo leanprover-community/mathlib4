@@ -84,7 +84,7 @@ theorem isNoetherian_submodule {N : Submodule R M} :
     fun h => ⟨fun s => ?_⟩⟩
   have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
   have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
-  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
+  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f.toLinearMap = ⊤ := by simp
   have h₃ := ((Submodule.fg_top _).2 h₁).map (↑f : _ →ₗ[R] s)
   exact (Submodule.fg_top _).1 (h₂ ▸ h₃)
 
@@ -205,3 +205,9 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
+
+lemma Ideal.fg_of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG :=
+  IsNoetherian.noetherian _
+
+alias Ideal.FG.of_isNoetherianRing := Ideal.fg_of_isNoetherianRing

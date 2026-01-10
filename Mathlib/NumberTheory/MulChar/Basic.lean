@@ -116,11 +116,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'

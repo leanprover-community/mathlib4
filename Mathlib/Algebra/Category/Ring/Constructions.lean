@@ -187,8 +187,8 @@ variable (A B : CommRingCat.{u})
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
   BinaryCofan.mk
-    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶ of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶ of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl :
@@ -214,9 +214,9 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
     constructor
     · ext a
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+      simp [map_one, mul_one, ← hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ← hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=

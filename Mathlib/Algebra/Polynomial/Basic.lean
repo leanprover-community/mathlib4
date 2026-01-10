@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Theory of univariate polynomials
@@ -174,6 +175,7 @@ theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
     (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   change _ = npowRec n _
@@ -468,11 +470,11 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 
-@[simp]
+@[simp, grind =]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, zero_add]
 
-@[simp]
+@[simp, grind =]
 theorem monomial_mul_C : monomial n a * C b = monomial n (a * b) := by
   simp only [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
@@ -576,6 +578,9 @@ theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
 
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f; rfl
 
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
+
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
 
@@ -617,14 +622,12 @@ theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
 theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
   rw [coeff_X, if_neg hn.symm]
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by

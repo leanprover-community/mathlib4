@@ -131,7 +131,7 @@ def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂)
     (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
     (fun f₁ f₂ m hm₁ hm₂ => by
       apply Cofan.IsColimit.hom_ext hc
-      rintro (i₁|i₂) <;> cat_disch)
+      rintro (i₁ | i₂) <;> cat_disch)
 
 lemma mono_binaryCofanSum_inl [MonoCoprod C] :
     Mono (binaryCofanSum c c₁ c₂ hc₁ hc₂).inl :=
@@ -235,7 +235,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
     refine Cocones.ext (φ := eqToIso rfl) ?_
-    rintro ⟨(j₁|j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
+    rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 
 end Preservation

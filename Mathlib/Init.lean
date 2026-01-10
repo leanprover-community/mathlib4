@@ -1,8 +1,8 @@
-module
+module  -- shake: keep-all, shake: keep-downstream
 
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
-public import Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
+public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -52,7 +53,7 @@ as early as possible.
 
 All linters imported here have no bulk imports;
 **Not** imported in this file are
-- the text-based linters in `Linters/TextBased.lean`, as they can be imported later
+- the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
 - the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
@@ -61,7 +62,7 @@ All linters imported here have no bulk imports;
 
 -/
 
-@[expose] public section
+public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
@@ -78,7 +79,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cases
   linter.style.induction
   linter.style.refine
-  linter.style.commandStart
+  linter.style.whitespace
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
