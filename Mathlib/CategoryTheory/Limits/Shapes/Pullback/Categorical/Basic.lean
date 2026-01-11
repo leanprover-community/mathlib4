@@ -209,11 +209,11 @@ so `CatCommSqOver F G X` is in equivalent to
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)`,
 though it is defined separately for performance reasons. -/
 structure CatCommSqOver where
-  /- The first projection functor. -/
+  /-- The first projection functor. -/
   fst : X ⥤ A
-  /- The second projection functor. -/
+  /-- The second projection functor. -/
   snd : X ⥤ C
-  /- The structural natural isomorphism. -/
+  /-- The structural natural isomorphism. -/
   iso : fst ⋙ F ≅ snd ⋙ G
 
 namespace CatCommSqOver
