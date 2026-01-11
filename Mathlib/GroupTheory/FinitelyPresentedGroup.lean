@@ -301,14 +301,27 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     let α := Fin n
     use α, inferInstance, f
 
-theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
+theorem iff_hom_surj_set_G {G : Type*} [Group G] :
   IsFinitelyPresented G ↔
-    ∃ (S : Finset G) (f : FreeGroup S →* G),
+    ∃ (S : Set G) (f : FreeGroup S →* G),
       (∀ s, f (FreeGroup.of s) = (s : G)) ∧
       Function.Surjective f ∧ IsNormalClosureFG f.ker := by
   constructor
+  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+    let _ : Fintype α := Fintype.ofFinite α
+    let f : FreeGroup α →* G :=
+      iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
+    let S : Set G := Set.range (fun a : α => f (FreeGroup.of a))
+    use S
+    sorry
   · sorry
-  · sorry
+
+theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
+  IsFinitelyPresented G ↔
+    ∃ (S : Set G) (f : FreeGroup S →* G),
+      (∀ s, f (FreeGroup.of s) = (s : G)) ∧
+      Function.Surjective f ∧ IsNormalClosureFG f.ker := by
+    sorry
 
 theorem implied_by_hom_surj_finite {G : Type*} [Group G] :
 (∃ (α : Type*) (_ : Finite α) (f : (FreeGroup α) →* G),
