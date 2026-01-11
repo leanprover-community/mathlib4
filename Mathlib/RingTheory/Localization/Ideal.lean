@@ -111,7 +111,7 @@ theorem map_comap (J : Ideal S) :
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
 theorem comap_map_of_isPrimary_disjoint
-    (I : Ideal R) (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
+    {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
   have key : Disjoint (M : Set R) I.radical := by
     contrapose! hM
@@ -129,9 +129,9 @@ theorem comap_map_of_isPrimary_disjoint
     exact I.mul_mem_left c b.2
   exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
 
-theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
+theorem comap_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I :=
-  comap_map_of_isPrimary_disjoint M S I hI.isPrimary hM
+  comap_map_of_isPrimary_disjoint M S hI.isPrimary hM
 
 /-- If `S` is the localization of `R` at a submonoid, the ordering of ideals of `S` is
 embedded in the ordering of ideals of `R`. -/
@@ -180,7 +180,7 @@ This lemma gives the particular case for an ideal and its map,
 see `le_rel_iso_of_prime` for the more general relation isomorphism, and the reverse implication -/
 theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoint (M : Set R) ↑I) :
     (Ideal.map (algebraMap R S) I).IsPrime := by
-  rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
+  rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
 
 theorem disjoint_comap_iff (J : Ideal S) :
@@ -199,7 +199,7 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.ext (map_comap M S J)
-  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.2.1 I.2.2)
   map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
