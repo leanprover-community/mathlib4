@@ -104,6 +104,18 @@ def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
 
 theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
 
+theorem IsSkewHermitian.ext {A : Matrix n n α} (h : ∀ i j, star (A j i) = -A i j) :
+    A.IsSkewHermitian := by
+  ext i j; exact h i j
+
+theorem IsSkewHermitian.apply {A : Matrix n n α} (h : A.IsSkewHermitian) (i j : n) :
+    star (A j i) = -A i j :=
+  congr_fun (congr_fun h.eq _) _
+
+theorem IsSkewHermitian.ext_iff {A : Matrix n n α} :
+    A.IsSkewHermitian ↔ ∀ i j, star (A j i) = -A i j :=
+  ⟨IsSkewHermitian.apply, IsSkewHermitian.ext⟩
+
 end SkewHermitian
 
 section InvolutiveStar
