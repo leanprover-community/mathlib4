@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 /-!
 # Eisenstein series q-expansions
@@ -32,7 +32,7 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 
 -/
 
-@[expose] public section
+public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries

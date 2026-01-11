@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Regular.SMul
 # Results about `IsRegular` and `Prod`
 -/
 
-@[expose] public section
+public section
 
 variable {α R S : Type*}
 

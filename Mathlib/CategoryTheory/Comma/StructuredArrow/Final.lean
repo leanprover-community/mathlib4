@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8(i)
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

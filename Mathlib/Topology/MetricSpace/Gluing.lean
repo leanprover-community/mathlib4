@@ -227,7 +227,7 @@ protected def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
 theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
     Sum.dist p q =
       glueDist (fun _ : Unit => Nonempty.some ⟨x⟩) (fun _ : Unit => Nonempty.some ⟨y⟩) 1 p q := by
-  cases p <;> cases q <;> first |rfl|simp [Sum.dist, glueDist, dist_comm, add_comm,
+  cases p <;> cases q <;> first | rfl | simp [Sum.dist, glueDist, dist_comm, add_comm,
     add_left_comm, add_assoc]
 
 set_option backward.privateInPublic true in

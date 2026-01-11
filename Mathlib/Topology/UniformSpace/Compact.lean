@@ -16,7 +16,7 @@ public import Mathlib.Topology.Compactness.Compact
 
 -/
 
-@[expose] public section
+public section
 
 universe u v ua ub uc ud
 

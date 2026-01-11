@@ -907,7 +907,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _  φ => fromOpcycles_naturality φ
+  naturality := fun _ _ φ => fromOpcycles_naturality φ
 
 end
 

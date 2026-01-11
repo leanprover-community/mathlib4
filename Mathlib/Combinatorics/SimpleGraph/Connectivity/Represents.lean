@@ -59,8 +59,6 @@ lemma disjoint_supp_of_notMem (hrep : Represents s C) (h : c ∉ C) : Disjoint s
   subst hc
   exact h (hrep.1 ha)
 
-@[deprecated (since := "2025-05-23")] alias disjoint_supp_of_not_mem := disjoint_supp_of_notMem
-
 lemma ncard_inter (hrep : Represents s C) (h : c ∈ C) : (s ∩ c.supp).ncard = 1 := by
   rw [Set.ncard_eq_one]
   exact exists_inter_eq_singleton hrep h
@@ -77,8 +75,6 @@ lemma ncard_sdiff_of_mem (hrep : Represents s C) (h : c ∈ C) :
 lemma ncard_sdiff_of_notMem (hrep : Represents s C) (h : c ∉ C) :
     (c.supp \ s).ncard = c.supp.ncard := by
   rw [(disjoint_supp_of_notMem hrep h).sdiff_eq_right]
-
-@[deprecated (since := "2025-05-23")] alias ncard_sdiff_of_not_mem := ncard_sdiff_of_notMem
 
 end ConnectedComponent.Represents
 
