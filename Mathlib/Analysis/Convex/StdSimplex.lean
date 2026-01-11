@@ -366,6 +366,7 @@ theorem barycenter_apply (x : X) :
   classical
   simp [barycenter, Finset.centerMass]
 
+/-- The sum of the coordinates of the barycenter is 1. -/
 theorem sum_barycenter : ∑ x : X, (barycenter (𝕜 := 𝕜) (X := X)).val x = 1 :=
   sum_eq_one barycenter
 
