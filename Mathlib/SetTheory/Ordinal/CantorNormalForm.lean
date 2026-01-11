@@ -274,7 +274,7 @@ theorem eval_single_add' (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordin
     rw [← notMem_support_iff]
     exact fun he ↦ (h e he).false
   rw [eval, support_single_add (by simpa) hx, Finset.sort_cons]
-  · simp only [add_apply, foldr_cons, single_eq_same, hf, add_zero, add_right_inj, eval]
+  · simp only [add_apply, foldr_cons, single_eq_same, hf, add_zero, add_right_inj]
     apply foldr_ext
     intro e' he' _
     congr
