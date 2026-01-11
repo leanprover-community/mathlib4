@@ -3,9 +3,11 @@ Copyright (c) 2025 Zhipeng Chen, Haolun Tang, Jing Yi Zhan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 -/
-import Mathlib.NumberTheory.UnitaryDivisor
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Factorization.Induction
+module
+
+public import Mathlib.NumberTheory.UnitaryDivisor
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Induction
 
 /-!
 # Unitary Perfect Numbers
@@ -41,6 +43,8 @@ divisible by exactly 2.
 
 unitary perfect number, perfect number, number theory
 -/
+
+@[expose] public section
 
 namespace Nat
 
