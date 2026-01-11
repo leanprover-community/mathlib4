@@ -115,7 +115,7 @@ lemma mem_centralizer_iff {c : M} : c ∈ centralizer S ↔ ∀ m ∈ S, m * c =
 @[to_additive (attr := simp) add_mem_addCenter]
 theorem mul_mem_center {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
     z₁ * z₂ ∈ Set.center M := by
-  simp [commute_iff_eq, mem_center_iff, isMulCentral_iff] at *
+  simp only [commute_iff_eq, mem_center_iff, isMulCentral_iff] at *
   grind
 
 @[to_additive addCenter_subset_addCentralizer]
@@ -149,8 +149,7 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
 @[to_additive addCentralizer_empty]
-theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
-  grind [centralizer]
+theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by simp [centralizer]
 
 /-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
 @[to_additive addCentralizer_prod]
@@ -164,7 +163,7 @@ theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
 @[to_additive prod_addCentralizer_subset_addCentralizer_prod]
 theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
     S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
-  aesop (add simp [subset_def, mem_centralizer_iff])
+  simp_all [subset_def, mem_centralizer_iff]
 
 @[to_additive addCenter_prod]
 theorem center_prod {N : Type*} [Mul N] :
