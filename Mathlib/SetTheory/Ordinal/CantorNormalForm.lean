@@ -5,9 +5,12 @@ Authors: Mario Carneiro, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Finsupp.AList
+public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
+
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Finsupp.AList
 
 /-!
 # Cantor Normal Form
@@ -30,10 +33,7 @@ normal form:
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
 
-@[expose] public section
-
-
-noncomputable section
+public noncomputable section
 
 universe u
 
@@ -143,15 +143,18 @@ theorem fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o 
 alias _root_.Ordinal.CNF_fst_le_log := fst_le_log
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
+theorem snd_pos {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
   refine CNF.rec b (by simp) (fun o ho IH ↦ ?_) o
   rw [CNF.ne_zero ho]
   rintro (h | ⟨_, h⟩)
   · exact div_opow_log_pos b ho
   · exact IH h
 
+@[deprecated (since := "2026-01-11")]
+alias lt_snd := snd_pos
+
 @[deprecated (since := "2025-08-18")]
-alias _root_.Ordinal.CNF_lt_snd := lt_snd
+alias _root_.Ordinal.CNF_lt_snd := snd_pos
 
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
 theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
@@ -168,7 +171,7 @@ theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
 alias _root_.Ordinal.CNF_snd_lt := snd_lt
 
 /-- The exponents of the Cantor normal form are decreasing. -/
-protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := by
+protected theorem sortedGT (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := by
   simp_rw [sortedGT_iff_pairwise]
   refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
   · rw [zero_right]
@@ -185,25 +188,33 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := 
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
         exact (fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
 
-@[deprecated (since := "2025-08-18")]
-alias _root_.Ordinal.CNF_sorted := CNF.sorted
+@[deprecated (since := "2026-01-11")]
+alias sorted := CNF.sortedGT
 
-set_option backward.privateInPublic true in
+@[deprecated (since := "2025-08-18")]
+alias _root_.Ordinal.CNF_sorted := CNF.sortedGT
+
 private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKeys := by
   rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
-  exact (CNF.sorted ..).nodup
+  exact (CNF.sortedGT ..).nodup
 
 /-! ### Cantor normal form as a finsupp -/
 
 open AList Finsupp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `CNF.coeff b o` is the finitely supported function returning the coefficient of `b ^ e` in the
 Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 @[pp_nodot]
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
+
+theorem support_coeff (b o : Ordinal) :
+    (coeff b o).support = ((CNF b o).map Prod.fst).toFinset := by
+  rw [coeff, lookupFinsupp_support, filter_eq_self.2]
+  · simp [List.keys]
+  · simp_rw [mem_map]
+    rintro _ ⟨a, ⟨ha, rfl⟩⟩
+    simpa using (snd_pos ha).ne'
 
 theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
     coeff b o e = c := by
@@ -212,8 +223,7 @@ theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
 
 theorem coeff_of_not_mem_CNF {b o e : Ordinal} (h : e ∉ (CNF b o).map Prod.fst) :
     coeff b o e = 0 := by
-  rw [coeff, lookupFinsupp_apply, lookup_eq_none.2, Option.getD_none]
-  simp_all [List.keys]
+  rwa [← notMem_support_iff, support_coeff, mem_toFinset]
 
 theorem coeff_zero_apply (b e : Ordinal) : coeff b 0 e = 0 := by
   apply coeff_of_not_mem_CNF
@@ -244,5 +254,52 @@ theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
 @[simp]
 theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
   coeff_of_le_one le_rfl o
+
+/-! ### Evaluate a Cantor normal form -/
+
+/-- `CNF.eval f` evaluates a Finsupp `f : Ordinal →₀ Ordinal`, interpreted as a
+base `b` expansion on ordinals. -/
+def eval (b : Ordinal) (f : Ordinal →₀ Ordinal) : Ordinal :=
+  (f.support.sort (· ≥ ·)).foldr (fun p r ↦ b ^ p * f p + r) 0
+
+@[simp]
+theorem eval_zero (b : Ordinal) : eval b 0 = 0 := by
+  simp [eval]
+
+theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordinal}
+    (h : ∀ e' ∈ f.support, e' < e) : eval b (.single e x + f) = b ^ e * x + eval b f := by
+  obtain rfl | hx := eq_or_ne x 0; · simp
+  have hf : f e = 0 := by
+    rw [← notMem_support_iff]
+    exact fun he ↦ (h e he).false
+  rw [eval, support_single_add (by simpa) hx, Finset.sort_cons]
+  · simp only [add_apply, foldr_cons, single_eq_same, hf, add_zero, add_right_inj, eval]
+    apply foldr_ext
+    intro e' he' _
+    congr
+    rw [single_eq_of_ne, zero_add]
+    aesop
+  · exact fun e' he' ↦ (h e' he').le
+
+@[simp]
+theorem eval_single (b e x : Ordinal) : eval b (.single e x) = b ^ e * x := by
+  simpa using eval_single_add b (f := 0)
+
+@[simp]
+theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
+  conv_rhs => rw [← CNF.foldr b o]
+  rw [eval, support_coeff, (toFinset_sort _ _).2, foldr_map]
+  · apply foldr_ext
+    intro a ha x
+    rw [coeff_of_mem_CNF ha]
+  · exact (CNF.sortedGT b o).sortedGE.pairwise
+  · exact (CNF.sortedGT b o).nodup
+
+theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
+  Function.LeftInverse.injective fun _ ↦ eval_coeff ..
+
+@[simp]
+theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
+  (coeff_injective b).eq_iff
 
 end Ordinal.CNF
