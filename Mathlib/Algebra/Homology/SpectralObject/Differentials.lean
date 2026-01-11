@@ -11,6 +11,12 @@ public import Mathlib.CategoryTheory.ComposableArrows.Three
 /-!
 # Differentials of a spectral object
 
+Let `X` be a spectral object in an abelian category `C` indexed by a category `ι`.
+In this file, we construct the differentials `d : E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)`
+that are attached to families of five composable morphisms `f₁`, `f₂`, `f₃`, `f₄`, `f₅`
+in `ι`. We show that `d ≫ d = 0`. The homology of these differentials is computed in the
+file `Mathlib/Algebra/Homology/SpectralObject/Homology.lean`.
+
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
@@ -39,6 +45,8 @@ variable (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)
   (f₄₅ : i₃ ⟶ i₅) (h₄₅ : f₄ ≫ f₅ = f₄₅)
 
+/-- The differential `E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` that is
+attached to a family of five composable morphisms `f₁`, `f₂`, `f₃`, `f₄`, `f₅`. -/
 noncomputable def d : X.E n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ ⟶ X.E n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ :=
   X.descE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅ _ rfl (X.δ n₁ n₂ hn₂ (f₁ ≫ f₂) (f₃ ≫ f₄) ≫
     X.toCycles n₂ f₁ f₂ _ rfl ≫ X.πE n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃) (by
@@ -85,8 +93,7 @@ lemma d_d :
     X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ ≫
       X.d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ = 0 := by
   rw [← cancel_epi (X.πE n₀ n₁ n₂ hn₁ hn₂ f₅ f₆ f₇),
-    ← cancel_epi (X.toCycles n₁ f₅ f₆ _ rfl),
-    comp_zero, comp_zero,
+    ← cancel_epi (X.toCycles n₁ f₅ f₆ _ rfl), comp_zero, comp_zero,
     X.toCycles_πE_d_assoc n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ _ rfl _ rfl,
     X.toCycles_πE_d n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ _ rfl _ rfl,
     δ_δ_assoc, zero_comp]
@@ -102,7 +109,9 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
 /-- When `f₁`, `f₂` and `f₃` are composable morphisms, this is the canonical
 morphism `Z^n(f₂, f₃) ⟶ opZ^{n+1}(f₁, f₂)` that is induced both
 by `δ : H^n(f₂ ≫ f₃) ⟶ H^{n+1}(f₁)` (see `toCycles_Ψ`) and
-by `δ : H^n(f₃) ⟶ H^{n+1}(f₁ ≫ f₂)` (see `Ψ_fromOpcycles`). -/
+by `δ : H^n(f₃) ⟶ H^{n+1}(f₁ ≫ f₂)` (see `Ψ_fromOpcycles`).
+See the lemma `πE_d_ιE` for the relation between this definition
+and the differentials `d`. -/
 noncomputable def Ψ : X.cycles n₀ f₂ f₃ ⟶ X.opcycles n₁ f₁ f₂ :=
   X.descCycles n₀ f₂ f₃ _ rfl
     (X.δ n₀ n₁ hn₁ f₁ (f₂ ≫ f₃) ≫ X.pOpcycles n₁ f₁ f₂) (by

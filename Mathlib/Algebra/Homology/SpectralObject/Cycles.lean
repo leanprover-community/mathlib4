@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
+public import Batteries.Tactic.Lint
 
 /-!
 # Kernel and cokernel of the differentiel of a spectral object
@@ -451,6 +452,8 @@ variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i j k l : ι} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (h₁₂ : f₁ ≫ f₂ = f₁₂) (f₂₃ : j ⟶ l) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
+/-- The morphism `H^{n₀}(f₃) ⟶ Z^{n₁}(f₁, f₂)` induced by `δ`
+when `f₁`, `f₂`, `f₃` are composable morphisms and `n₀ + 1 = n₁`. -/
 noncomputable def δToCycles : (X.H n₀).obj (mk₁ f₃) ⟶ X.cycles n₁ f₁ f₂ :=
   X.liftCycles n₁ _ rfl f₁ f₂ (X.δ n₀ n₁ hn₁ f₂ f₃) (by simp)
 
@@ -469,6 +472,8 @@ lemma δ_toCycles :
     ← X.δ_naturality n₀ n₁ hn₁ f₁₂ f₃ f₂ f₃ (twoδ₁Toδ₀ f₁ f₂ f₁₂ h₁₂) (𝟙 _) rfl,
     Functor.map_id, Category.id_comp]
 
+/-- The morphism `opZ^{n₀}(f₂, f₃) ⟶ H^{n₁}(f₁)` induced by `δ`
+when `f₁`, `f₂`, `f₃` are composable morphisms and `n₀ + 1 = n₁`. -/
 noncomputable def δFromOpcycles : X.opcycles n₀ f₂ f₃ ⟶ (X.H n₁).obj (mk₁ f₁) :=
   X.descOpcycles (n₀ - 1) n₀ (by lia) f₂ f₃ (X.δ n₀ n₁ hn₁ f₁ f₂) (by simp)
 

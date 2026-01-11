@@ -696,6 +696,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
+public import Mathlib.Algebra.Homology.SpectralObject.Shapes
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
@@ -3277,6 +3278,7 @@ public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact

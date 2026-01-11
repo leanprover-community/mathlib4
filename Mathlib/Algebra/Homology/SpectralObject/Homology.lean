@@ -192,7 +192,7 @@ variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
 noncomputable def dShortComplex : ShortComplex C :=
   ShortComplex.mk _ _ (X.d_d n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇)
 
-lemma EMap_fac :
+lemma EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ :
     X.EMap n₁ n₂ n₃ hn₂ hn₃ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
       X.EMap n₁ n₂ n₃ hn₂ hn₃ f₃ f₄ f₅ f₃ f₄ f₅₆ (fourδ₄Toδ₃ f₃ f₄ f₅ f₆ f₅₆ h₅₆) =
     X.EMap n₁ n₂ n₃ hn₂ hn₃ f₂₃ f₄ f₅ f₂₃ f₄ f₅₆ (fourδ₄Toδ₃ f₂₃ f₄ f₅ f₆ f₅₆ h₅₆) ≫
@@ -207,7 +207,7 @@ noncomputable def dHomologyData :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇)
     (X.dKernelSequence_exact n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃).fIsKernel
     (X.dCokernelSequence_exact n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ f₅₆ h₅₆).gIsCokernel
-    (X.EMap_fac n₁ n₂ n₃ hn₂ hn₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆)
+    (X.EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ n₁ n₂ n₃ hn₂ hn₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆)
 
 noncomputable def dHomologyIso :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇).homology ≅

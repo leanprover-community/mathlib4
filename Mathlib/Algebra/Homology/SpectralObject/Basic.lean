@@ -175,6 +175,59 @@ instance : Category (SpectralObject C ι) where
 attribute [simp] id_hom
 attribute [reassoc, simp] comp_hom
 
+lemma isZero_H_map_mk₁_of_isIso (n : ℤ) {i₀ i₁ : ι} (f : i₀ ⟶ i₁) [IsIso f] :
+    IsZero ((X.H n).obj (mk₁ f)) := by
+  let φ := twoδ₂Toδ₁ f (inv f) (𝟙 i₀) (by simp) ≫ twoδ₁Toδ₀ f (inv f) (𝟙 i₀)
+  have : IsIso φ := by
+    rw [isIso_iff₁]
+    constructor <;> dsimp <;> infer_instance
+  rw [IsZero.iff_id_eq_zero]
+  rw [← cancel_mono ((X.H n).map φ), Category.id_comp, zero_comp,
+    ← X.zero₂ n f (inv f) (𝟙 _) (by simp), ← Functor.map_comp]
+
+section
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) {i₀ i₁ i₂ : ι}
+  (f : i₀ ⟶ i₁) (g : i₁ ⟶ i₂) (fg : i₀ ⟶ i₂) (hfg : f ≫ g = fg)
+  (h₁ : IsZero ((X.H n₀).obj (mk₁ f))) (h₂ : IsZero ((X.H n₁).obj (mk₁ f)))
+
+include h₁ in
+lemma mono_H_map_twoδ₁Toδ₀ : Mono ((X.H n₀).map (twoδ₁Toδ₀ f g fg hfg)) :=
+  (X.exact₂ n₀ f g fg hfg).mono_g (h₁.eq_of_src _ _)
+
+include h₂ hn₁ in
+lemma epi_H_map_twoδ₁Toδ₀ : Epi ((X.H n₀).map (twoδ₁Toδ₀ f g fg hfg)) :=
+  (X.exact₃ n₀ n₁ hn₁ f g fg hfg).epi_f (h₂.eq_of_tgt _ _)
+
+include h₁ h₂ hn₁ in
+lemma isIso_H_map_twoδ₁Toδ₀ : IsIso ((X.H n₀).map (twoδ₁Toδ₀ f g fg hfg)) := by
+  have := X.mono_H_map_twoδ₁Toδ₀ n₀ f g fg hfg h₁
+  have := X.epi_H_map_twoδ₁Toδ₀ n₀ n₁ hn₁ f g fg hfg h₂
+  apply isIso_of_mono_of_epi
+
+end
+
+section
+
+variable {ι' : Type*} [Preorder ι'] (X' : SpectralObject C ι')
+  (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (i₀ i₁ i₂ : ι') (h₀₁ : i₀ ≤ i₁) (h₁₂ : i₁ ≤ i₂)
+  (h₁ : IsZero ((X'.H n₀).obj (mk₁ (homOfLE h₀₁))))
+  (h₂ : IsZero ((X'.H n₁).obj (mk₁ (homOfLE h₀₁))))
+
+include h₁ in
+lemma mono_H_map_twoδ₁Toδ₀' : Mono ((X'.H n₀).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) :=
+  X'.mono_H_map_twoδ₁Toδ₀ _ _ _ _ _ h₁
+
+include h₂ hn₁ in
+lemma epi_H_map_twoδ₁Toδ₀' : Epi ((X'.H n₀).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) :=
+  X'.epi_H_map_twoδ₁Toδ₀ _ _ hn₁ _ _ _ _ h₂
+
+include h₁ h₂ hn₁ in
+lemma isIso_H_map_twoδ₁Toδ₀' : IsIso ((X'.H n₀).map (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂)) :=
+  X'.isIso_H_map_twoδ₁Toδ₀ _ _ hn₁ _ _ _ _ h₁ h₂
+
+end
+
 end SpectralObject
 
 end Abelian

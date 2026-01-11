@@ -71,11 +71,6 @@ noncomputable def tStructure : TStructure P.FullSubcategory where
           (P.ι.commShiftIso (1 : ℤ)).inv.app ⟨X', hX'⟩),
       isomorphic_distinguished _ hT _ (Triangle.isoMk _ _ e.symm (Iso.refl _) e'.symm)⟩
 
-@[simp]
-lemma mem_tStructure_heart_iff (X : P.FullSubcategory) :
-    (P.tStructure t).heart X ↔ t.heart X.1 := by
-  rfl
-
 lemma tStructure_isLE_iff (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsLE X n ↔ t.IsLE X.obj n :=
   ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩

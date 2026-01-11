@@ -67,9 +67,9 @@ open Abelian.SpectralObject
 section
 
 variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
-  [H.ShiftSequence ℤ] [H.VanishesOnGEOne t]
+  [H.ShiftSequence ℤ]
 
-instance [t.IsGE X 0] :
+instance [t.IsGE X 0] [H.VanishesOnGEOne t] :
     ((t.spectralObject X).mapHomologicalFunctor H).IsFirstQuadrant where
   isZero₁ i j hij hj n := by
     refine IsZero.of_iso ?_
@@ -96,7 +96,7 @@ noncomputable def spectralSequenceE₂Iso (pq : ℤ × ℤ) :
     (H.shiftIso _ _ _ (add_comm pq.2 pq.1)).symm.app _ ≪≫
     (H.shift pq.1).mapIso (t.shiftSpectralObjectω₁IsoHomologyιHeart X pq.2 _ rfl)
 
-noncomputable def spectralSequenceStronglyConvergesTo [t.IsGE X 0] (n : ℤ) :
+noncomputable def spectralSequenceStronglyConvergesTo [H.VanishesOnGEOne t] [t.IsGE X 0] (n : ℤ) :
     (t.spectralSequence X H).StronglyConvergesToInDegree
       SpectralSequence.cohomologicalStripes n ((H.shift n).obj X) :=
   ((t.spectralObject X).mapHomologicalFunctor H).convergesAt

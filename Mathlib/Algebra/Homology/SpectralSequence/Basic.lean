@@ -29,7 +29,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable (C : Type*) [Category C] [Abelian C]
-  {ι : Type*} (c : ℤ → ComplexShape ι) (r₀ : ℤ)
+  {κ : Type*} (c : ℤ → ComplexShape κ) (r₀ : ℤ)
 
 /-- Given an abelian category `C`, a sequence of complex shapes `c : ℤ → ComplexShape ι`
 and a starting page `r₀ : ℤ`, a spectral sequence involves pages which are homological
@@ -39,7 +39,7 @@ structure SpectralSequence where
   page (r : ℤ) (hr : r₀ ≤ r := by lia) : HomologicalComplex C (c r)
   /-- the isomorphism between the homology of the `r`-th page at an object `pq : ι`
   and the corresponding object on the next page -/
-  iso (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+  iso (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     (page r).homology pq ≅ (page r').X pq
 
 namespace SpectralSequence
@@ -52,13 +52,13 @@ pages which commutes with the isomorphisms in homology. -/
 structure Hom (E E' : SpectralSequence C c r₀) where
   /-- the morphism of homological complexes between the `r`th pages -/
   hom (r : ℤ) (hr : r₀ ≤ r := by lia) : E.page r ⟶ E'.page r
-  comm (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+  comm (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     HomologicalComplex.homologyMap (hom r) pq ≫ (E'.iso r r' pq).hom =
       (E.iso r r' pq).hom ≫ (hom r').f pq := by cat_disch
 
 /-- If `E` is a spectral sequence, and `r = r'`, this is the
 isomorphism `(E.page r).X pq ≅ (E.page r').X pq`. -/
-def pageXIsoOfEq (E : SpectralSequence C c r₀) (pq : ι) (r r' : ℤ) (h : r = r' := by lia)
+def pageXIsoOfEq (E : SpectralSequence C c r₀) (pq : κ) (r r' : ℤ) (h : r = r' := by lia)
     (hr : r₀ ≤ r := by lia) :
     (E.page r).X pq ≅ (E.page r').X pq :=
   eqToIso (by subst h; rfl)
@@ -98,7 +98,7 @@ def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
 object `pq : ι` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]
 noncomputable def pageHomologyNatIso
-    (r r' : ℤ) (pq : ι) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
+    (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     pageFunctor C c r₀ r ⋙ HomologicalComplex.homologyFunctor _ _ pq ≅
       pageFunctor C c r₀ r' ⋙ HomologicalComplex.eval _ _ pq :=
   NatIso.ofComponents (fun E ↦ E.iso r r' pq)
