@@ -490,6 +490,12 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
+theorem mem_tail {α k} (L : List α) (h : 0 < k) (hk : k < L.length) :
+    L[k]'hk ∈ L.tail := by
+  cases L
+  · simp
+  · grind
+
 /-! ### sublists -/
 
 attribute [refl] List.Sublist.refl

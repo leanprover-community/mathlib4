@@ -166,6 +166,13 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 
+theorem append_isTrail_iff_edges_disjoint {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hp : p.IsTrail) (hq : q.IsTrail) :
+    (p.append q).IsTrail ↔ p.edges.Disjoint q.edges:= by
+  rw [Walk.isTrail_def, Walk.edges_append, List.nodup_append]
+  exact ⟨fun h _ x y ↦ h.2.2 _ x _ y rfl,
+    fun h ↦ ⟨hp.edges_nodup, hq.edges_nodup, fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩⟩
+
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
   List.nodup_iff_count_le_one.mp h.edges_nodup e

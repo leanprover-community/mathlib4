@@ -122,6 +122,23 @@ theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
   Set.ext fun _ ↦ ⟨by grind [Set.range_list_get, getVert_mem_support],
     fun ⟨n, _⟩ ↦ ⟨n, by grind [getVert_eq_support_getElem, length_support]⟩⟩
 
+theorem getVert_of_edge {u v a b} (p : G.Walk u v) (h : s(a, b) ∈ p.edges) :
+    ∃ k < p.length, a = p.getVert k ∧ b = p.getVert (k + 1) ∨
+      b = p.getVert k ∧ a = p.getVert (k + 1) := by
+  induction p with
+  | nil => simp at h
+  | cons _ _ ih =>
+    rw [edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+      Prod.swap_prod_mk] at h
+    cases h
+    · use 0
+      simp only [length_cons, Nat.zero_lt_succ, getVert_zero, zero_add, getVert_cons_succ, true_and]
+      grind
+    · obtain ⟨k, _, _⟩ := ih ‹_›
+      use k + 1
+      simp only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
+      grind
+
 theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
     p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
   rw [p.length_darts] at h
