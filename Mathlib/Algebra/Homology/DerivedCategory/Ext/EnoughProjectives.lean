@@ -23,7 +23,7 @@ So we must be very selective regarding `HasExt` instances.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
