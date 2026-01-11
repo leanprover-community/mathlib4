@@ -394,6 +394,24 @@ theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
 
+/-- All vertices are in the support of the complete graph if there is more than one vertex. -/
+@[simp]
+theorem support_top_ofNontrivial [Nontrivial V] :
+    (⊤ : SimpleGraph V).support = Set.univ := by
+  ext v
+  have := exists_ne v
+  tauto
+
+/-- The support of the complete graph is empty if there at most one vertex. -/
+@[simp]
+theorem support_top_ofSubsingleton [Subsingleton V] : (⊤ : SimpleGraph V).support = ∅ :=
+  Set.ext fun v => ⟨fun ⟨w, hw⟩ => hw (Subsingleton.elim v w), (·.elim)⟩
+
+/-- The support of the empty graph is empty. -/
+@[simp]
+theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
+  by grind only [mem_support, Set.mem_empty_iff_false, bot_adj]
+
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
 
