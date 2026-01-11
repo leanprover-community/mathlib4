@@ -83,12 +83,10 @@ theorem sumZeroes_smul (n : ℕ) (c : ℝ) (P : ℝ[X]) :
   simp_rw [eval_smul, ← smul_sum, smul_eq_mul]
   ring
 
-@[simp]
 theorem sumZeroes_T_zero {n : ℕ} (hn : n ≠ 0) :
     sumZeroes n (T ℝ 0) = π := by
   simp [sumZeroes, show π / n * n = π by field]
 
-@[simp]
 theorem sumZeroes_T_of_ne_zero {n : ℕ} {k : ℤ} (hk₀ : k ≠ 0) (hk₁ : k.natAbs < 2 * n) :
     sumZeroes n (T ℝ k) = 0 := by
   wlog! hn : n ≠ 0
