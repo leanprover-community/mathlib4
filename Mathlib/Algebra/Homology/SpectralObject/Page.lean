@@ -555,8 +555,7 @@ noncomputable def cokernelSequenceE'' : ShortComplex C where
   g := X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
 
 instance : Epi (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
-  dsimp
-  infer_instance
+  dsimp; infer_instance
 
 lemma cokernelSequenceE''_exact :
     (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by

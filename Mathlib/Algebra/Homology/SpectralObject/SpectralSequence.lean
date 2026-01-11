@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
-public import Mathlib.Algebra.Homology.SpectralObject.Shapes
+public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Data.EInt.Basic
+public import Batteries.Tactic.Lint
 
 /-!
 # The spectral sequence of a spectral object
@@ -36,7 +37,7 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
 /-- EMapFourδ₁Toδ₀' -/
-noncomputable def EMapFourδ₁Toδ₀' :=
+noncomputable abbrev EMapFourδ₁Toδ₀' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₁Toδ₀' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
 /-- mono_EMapFourδ₁Toδ₀' -/
@@ -46,7 +47,7 @@ instance mono_EMapFourδ₁Toδ₀' :
   infer_instance
 
 /-- EMapFourδ₄Toδ₃' -/
-noncomputable def EMapFourδ₄Toδ₃' :=
+noncomputable abbrev EMapFourδ₄Toδ₃' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
 /-- epi_EMapFourδ₄Toδ₃' -/
@@ -60,7 +61,6 @@ lemma EMapFourδ₁Toδ₀'_comp :
   X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₃ i₄ i₅ hi₀₁ (hi₁₂.trans hi₂₃) hi₃₄ hi₄₅ ≫
     X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ i₃ i₄ i₅ hi₁₂ hi₂₃ hi₃₄ hi₄₅ =
     X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ i₃ i₄ i₅ (hi₀₁.trans hi₁₂) hi₂₃ hi₃₄ hi₄₅ := by
-  dsimp [EMapFourδ₁Toδ₀']
   rw [← EMap_comp]
   rfl
 
@@ -155,7 +155,7 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
     (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (hi₃₄ : i₃ ≤ i₄) (hi₄₅ : i₄ ≤ i₅)
 
 /-- EMapFourδ₂Toδ₁' -/
-noncomputable def EMapFourδ₂Toδ₁' :=
+noncomputable abbrev EMapFourδ₂Toδ₁' :=
   X.EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _ (fourδ₂Toδ₁' i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄)
 
 /-- isIso_EMapFourδ₂Toδ₁' -/
@@ -176,100 +176,7 @@ end
 
 variable (data : SpectralSequenceMkData ι c r₀)
 
-class HasSpectralSequence : Prop where
-  isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1) :
-      IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' hrr' hr pq))))
-  isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
-    (n : ℤ) (hn : n = data.deg pq - 1) :
-      IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₃_le r r' hrr' hr pq))))
-
-variable [X.HasSpectralSequence data]
-
-lemma isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1) :
-    IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' hrr' hr pq)))) :=
-  HasSpectralSequence.isZero_H_obj_mk₁_i₀_le r r' hrr' hr pq hpq n hn
-
-/-- isZero_H_obj_mk₁_i₀_le' -/
-lemma isZero_H_obj_mk₁_i₀_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1) (i₀' i₀ : ι)
-    (hi₀' : i₀' = data.i₀ r' (by lia) pq)
-    (hi₀ : i₀ = data.i₀ r hr pq) :
-    IsZero ((X.H n).obj (mk₁ (homOfLE (show i₀' ≤ i₀ by
-      simpa only [hi₀', hi₀] using data.i₀_le r r' hrr' hr pq)))) := by
-  subst hi₀' hi₀
-  exact HasSpectralSequence.isZero_H_obj_mk₁_i₀_le r r' hrr' hr pq hpq n hn
-
-lemma isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
-    (n : ℤ) (hn : n = data.deg pq - 1) :
-    IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₃_le r r' hrr' hr pq)))) :=
-  HasSpectralSequence.isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq n hn
-
-/-- isZero_H_obj_mk₁_i₃_le' -/
-lemma isZero_H_obj_mk₁_i₃_le' (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
-    (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
-    (n : ℤ) (hn : n = data.deg pq - 1) (i₃ i₃' : ι)
-    (hi₃ : i₃ = data.i₃ r hr pq)
-    (hi₃' : i₃' = data.i₃ r' (by lia) pq) :
-    IsZero ((X.H n).obj (mk₁ (homOfLE (show i₃ ≤ i₃' by
-      simpa only [hi₃, hi₃'] using data.i₃_le r r' hrr' hr pq)))) := by
-  subst hi₃ hi₃'
-  exact HasSpectralSequence.isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq n hn
-
 namespace SpectralSequence
-
-instance (E : SpectralObject C EInt) : E.HasSpectralSequence mkDataE₂Cohomological where
-  isZero_H_obj_mk₁_i₀_le r r' hrr' hr pq hpq := by
-    exfalso
-    exact hpq _ rfl
-  isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq := by
-    exfalso
-    exact hpq (pq - (r, 1-r)) (by simp)
-
-lemma _root_.Fin.clamp_eq_last (n m : ℕ) (hnm : m ≤ n) :
-    Fin.clamp n m = Fin.last _ := by
-  ext
-  simpa
-
-instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
-    E.HasSpectralSequence (mkDataE₂CohomologicalFin l) where
-  isZero_H_obj_mk₁_i₀_le r r' hrr' hr pq hpq n hn := by
-    have : (mkDataE₂CohomologicalFin l).i₀ r' (by lia) pq =
-        (mkDataE₂CohomologicalFin l).i₀ r hr pq := by
-      subst hrr'
-      obtain ⟨k, rfl⟩ := Int.le.dest hr
-      obtain ⟨p, q, hq⟩ := pq
-      ext
-      have h : q ≤ k := by
-        by_contra!
-        simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
-        obtain ⟨t, rfl⟩ := Nat.le.dest (Nat.add_one_le_of_lt this)
-        exact hpq _ ⟨t, by lia⟩ rfl (by simp; lia)
-      simp_all
-      lia
-    have := isIso_homOfLE this
-    apply E.isZero_H_map_mk₁_of_isIso
-  isZero_H_obj_mk₁_i₃_le r r' hrr' hr pq hpq n hn := by
-    have : (mkDataE₂CohomologicalFin l).i₃ r hr pq =
-      (mkDataE₂CohomologicalFin l).i₃ r' (by lia) pq := by
-      subst hrr'
-      obtain ⟨p, q, hq⟩ := pq
-      have h : l < q + r := by
-        by_contra!
-        obtain ⟨t, ht⟩ := Int.le.dest this
-        simp only [ComplexShape.spectralSequenceFin_rel_iff, not_and, Prod.forall] at hpq
-        exact hpq (p - r) ⟨l - 1 - t, by lia⟩ (by lia) (by lia)
-      dsimp
-      rw [add_sub_cancel_right, Fin.clamp_eq_last _ _ (by lia),
-        Fin.clamp_eq_last _ _ (by lia)]
-    have := isIso_homOfLE this
-    apply E.isZero_H_map_mk₁_of_isIso
 
 noncomputable def pageX (r : ℤ) (hr : r₀ ≤ r) (pq : κ) : C :=
   X.E (data.deg pq - 1) (data.deg pq) (data.deg pq + 1) (by simp) rfl
@@ -301,16 +208,14 @@ noncomputable def paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) :
         (data.hc₀₂ r hr pq pq' hpq) (data.hc₁₃ r hr pq pq' hpq)).inv
     else 0
 
-omit [X.HasSpectralSequence data] in
 lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq')
     (n₀ n₁ n₂ n₃ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃)
     {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
     (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅) (hn₁' : n₁ = data.deg pq)
     (h₀ : i₀ = data.i₀ r hr pq') (h₁ : i₁ = data.i₁ pq') (h₂ : i₂ = data.i₀ r hr pq)
     (h₃ : i₃ = data.i₁ pq) (h₄ : i₄ = data.i₂ pq) (h₅ : i₅ = data.i₃ r hr pq) :
-    paged X data r hr pq pq' = by
-      refine
-        (pageXIso _ _ _ _ _ _ _ _ _ _ hn₁' _ _ _ _ h₂ h₃ h₄ h₅).hom ≫
+    paged X data r hr pq pq' =
+      (pageXIso _ _ _ _ _ _ _ _ _ _ hn₁' _ _ _ _ h₂ h₃ h₄ h₅).hom ≫
         X.d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ ≫
         (pageXIso _ _ _ _ _ _ _ _ _ _
           (by simpa only [← hn₂, hn₁'] using data.hc r hr pq pq' hpq) _ _ _ _ h₀ h₁
@@ -324,7 +229,6 @@ lemma paged_eq (r : ℤ) (hr : r₀ ≤ r) (pq pq' : κ) (hpq : (c r).Rel pq pq'
   rw [dif_pos hpq, id_comp]
   rfl
 
-omit [X.HasSpectralSequence data] in
 @[reassoc (attr := simp)]
 lemma paged_paged (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
     paged X data r hr pq pq' ≫ paged X data r hr pq' pq'' = 0 := by
@@ -446,7 +350,6 @@ lemma mk₃fac :
       fourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃' (le₀'₀ data hrr' hr pq' hi₀' hi₀) _ _ _ := by
   rfl
 
-omit [X.HasSpectralSequence data] in
 lemma kf_w :
     (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂ i₀' i₀ i₁ i₂ i₃ (le₀'₀ data hrr' hr pq' hi₀' hi₀)
       (le₀₁ data hr pq' hi₀ hi₁) (le₁₂ data pq' hi₁ hi₂) (le₂₃ data hr pq' hi₂ hi₃) ≫
@@ -478,19 +381,20 @@ instance : Mono (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn
   dsimp
   infer_instance
 
+variable [X.HasSpectralSequence data] in
 include hpq' hn₁' in
 lemma isIso_EMapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'') :
     IsIso (X.EMapFourδ₁Toδ₀' n₀ n₁ n₂ hn₁ hn₂
       i₀' i₀ i₁ i₂ i₃ (le₀'₀ data hrr' hr pq' hi₀' hi₀) (le₀₁ data hr pq' hi₀ hi₁)
         (le₁₂ data pq' hi₁ hi₂) (le₂₃ data hr pq' hi₂ hi₃)) := by
   apply X.isIso_EMap_fourδ₁Toδ₀_of_isZero
-  refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq' ?_ _
-    (by lia) _ _ hi₀' hi₀
-  intro k hk
+  refine X.isZero_H_obj_mk₁_i₀_le' data r r' hrr' hr pq'
+    (fun k hk ↦ ?_) _ (by lia) _ _ hi₀' hi₀
   obtain rfl := (c r).next_eq' hk
   subst hpq'
   exact h hk
 
+variable [X.HasSpectralSequence data] in
 include hpq' in
 lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).Exact := by
@@ -524,13 +428,13 @@ lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂
       hn₁' i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃ h
     apply epi_comp
 
+variable [X.HasSpectralSequence data] in
 noncomputable def hkf :
     IsLimit (kf X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃) :=
   (ksSc_exact X data r r' hrr' hr pq' pq'' hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).fIsKernel
 
-omit [X.HasSpectralSequence data] in
 lemma cc_w :
     (page X data r hr).d pq pq' ≫
       (pageXIso  X data _ _ _ _ _ _ _ _ hn₁' _ _ _ _ hi₀ hi₁ hi₂ hi₃).hom ≫
@@ -566,6 +470,7 @@ instance : Epi (ccSc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁
   apply epi_EMap
   all_goals rfl
 
+variable [X.HasSpectralSequence data] in
 include hpq hn₁' in
 lemma isIso_EMapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq') :
     IsIso (X.EMapFourδ₄Toδ₃' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₃'
@@ -578,6 +483,7 @@ lemma isIso_EMapFourδ₄Toδ₃' (h : ¬ (c r).Rel pq pq') :
   subst hpq
   exact h hk
 
+variable [X.HasSpectralSequence data] in
 include hpq in
 lemma ccSc_exact :
     (ccSc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
@@ -612,13 +518,13 @@ lemma ccSc_exact :
     dsimp
     infer_instance
 
+variable [X.HasSpectralSequence data] in
 noncomputable def hcc :
     IsColimit (cc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃') :=
   (ccSc_exact X data r r' hrr' hr pq pq' hpq n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').gIsCokernel
 
-omit [X.HasSpectralSequence data] in
 lemma fac :
   (kf X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).ι ≫
       (cc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
@@ -632,6 +538,8 @@ lemma fac :
       (mk₃fac data r r' hrr' hr pq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃')
 
 end HomologyData
+
+variable [X.HasSpectralSequence data]
 
 open HomologyData in
 @[simps!]
@@ -667,6 +575,7 @@ end SpectralSequence
 
 section
 
+variable [X.HasSpectralSequence data] in
 noncomputable def spectralSequence : SpectralSequence C c r₀ where
   page := SpectralSequence.page X data
   iso r r' pq hrr' hr := SpectralSequence.homologyIso X data r r' hrr' hr pq
@@ -681,7 +590,6 @@ abbrev i₃ (_ : SpectralObject C ι) (data : SpectralSequenceMkData ι c r₀)
     (r : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) : ι :=
   data.i₃ r hr pq
 
-omit [X.HasSpectralSequence data] in
 lemma antitone_i₀ (r r' : ℤ) (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq : κ)
     {i₀ i₀' : ι}
     (hi₀ : i₀ = X.i₀ data r pq) (hi₀' : i₀' = X.i₀ data r' pq) :
@@ -690,7 +598,6 @@ lemma antitone_i₀ (r r' : ℤ) (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq : κ)
   apply data.antitone_i₀
   exact hrr'
 
-omit [X.HasSpectralSequence data] in
 lemma monotone_i₃ (r r' : ℤ) (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq : κ)
     {i₃ i₃' : ι}
     (hi₃ : i₃ = X.i₃ data r pq) (hi₃' : i₃' = X.i₃ data r' pq) :
@@ -699,7 +606,6 @@ lemma monotone_i₃ (r r' : ℤ) (hrr' : r ≤ r') (hr : r₀ ≤ r) (pq : κ)
   apply data.monotone_i₃
   exact hrr'
 
-omit [X.HasSpectralSequence data] in
 lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     {i₀' i₀ : ι}
     (hi₀' : i₀' = X.i₀ data r' pq')
@@ -709,7 +615,6 @@ lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
   apply data.antitone_i₀
   lia
 
-omit [X.HasSpectralSequence data] in
 lemma le₀₁ (r : ℤ) (hr : r₀ ≤ r) (pq' : κ)
     {i₀ i₁ : ι}
     (hi₀ : i₀ = X.i₀ data r pq')
@@ -724,7 +629,6 @@ lemma le₁₂ (_ : SpectralObject C ι)
     i₁ ≤ i₂ := by
   simpa only [hi₁, hi₂] using data.le₁₂ pq'
 
-omit [X.HasSpectralSequence data] in
 lemma le₂₃ (r : ℤ) (hr : r₀ ≤ r) (pq' : κ)
     {i₂ i₃ : ι}
     (hi₂ : i₂ = data.i₂ pq')
@@ -732,7 +636,6 @@ lemma le₂₃ (r : ℤ) (hr : r₀ ≤ r) (pq' : κ)
     i₂ ≤ i₃ := by
   simpa only [hi₂, hi₃] using data.le₂₃ r _ pq'
 
-omit [X.HasSpectralSequence data] in
 /-- le₃₃' -/
 lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     {i₃ i₃' : ι}
@@ -742,6 +645,8 @@ lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
   rw [hi₃, hi₃']
   apply data.monotone_i₃
   lia
+
+variable [X.HasSpectralSequence data]
 
 noncomputable def spectralSequencePageXIso (r : ℤ) (hr : r₀ ≤ r)
     (pq : κ) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (h : n₁ = data.deg pq)
@@ -859,24 +764,12 @@ section
 
 variable (Y : SpectralObject C EInt)
 
-class IsFirstQuadrant : Prop where
-  isZero₁ (i j : EInt) (hij : i ≤ j) (hj : j ≤ EInt.mk 0) (n : ℤ) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : EInt.mk n < i) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-
-variable [Y.IsFirstQuadrant]
-
-lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ EInt.mk 0) (n : ℤ) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsFirstQuadrant.isZero₁ i j hij  hj n
-
-lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : EInt.mk n < i) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsFirstQuadrant.isZero₂ i j hij n hi
-
 noncomputable abbrev E₂SpectralSequence : E₂CohomologicalSpectralSequence C :=
   Y.spectralSequence mkDataE₂Cohomological
+
+section
+
+variable [Y.IsFirstQuadrant]
 
 example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hq : q < 0) :
     IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by
@@ -892,77 +785,32 @@ example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hp : p < 0) :
   simp
   lia
 
-instance : Y.HasSpectralSequence mkDataE₂CohomologicalNat where
-  isZero_H_obj_mk₁_i₀_le := by
-    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
-    apply isZero₁_of_isFirstQuadrant
-    dsimp
-    simp only [EInt.coe_le_coe_iff]
-    by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
-    exact hpq ⟨p', q'⟩ (by
-      simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> lia)
-  isZero_H_obj_mk₁_i₃_le := by
-    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
-    apply isZero₂_of_isFirstQuadrant
-    dsimp
-    simp only [EInt.coe_lt_coe_iff, sub_lt_sub_iff_right]
-    by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by lia)
-    exact hpq ⟨p', q'⟩ (by
-      simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> lia)
-
 noncomputable abbrev E₂SpectralSequenceNat := Y.spectralSequence mkDataE₂CohomologicalNat
 
 end
 
 section
 
-variable (Y : SpectralObject C EInt)
-
-class IsThirdQuadrant where
-  isZero₁ (i j : EInt) (hij : i ≤ j) (hi : EInt.mk 0 < i) (n : ℤ) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ EInt.mk n) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-
 variable [Y.IsThirdQuadrant]
 
-lemma isZero₁_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (hi : EInt.mk 0 < i) (n : ℤ) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsThirdQuadrant.isZero₁ i j hij hi n
+example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hq : 0 < q) :
+    IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by
+  apply isZero_spectralSequence_page_X_of_isZero_H' _ _ _ hr
+  apply Y.isZero₁_of_isThirdQuadrant
+  simp
+  lia
 
-lemma isZero₂_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ EInt.mk n) :
-    IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsThirdQuadrant.isZero₂ i j hij n hj
+example (r : ℤ) (hr : 2 ≤ r) (p q : ℤ) (hp : 0 < p) :
+    IsZero ((Y.E₂SpectralSequence.page r).X ⟨p, q⟩) := by
+  apply isZero_spectralSequence_page_X_of_isZero_H' _ _ _ hr
+  apply Y.isZero₂_of_isThirdQuadrant
+  simp
+  lia
 
-instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
-  isZero_H_obj_mk₁_i₀_le := by
-    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
-    apply isZero₂_of_isThirdQuadrant
-    dsimp
-    simp only [EInt.coe_le_coe_iff]
-    by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by lia)
-    exact hpq ⟨p', q'⟩ (by
-      simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> lia)
-  isZero_H_obj_mk₁_i₃_le := by
-    rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
-    apply isZero₁_of_isThirdQuadrant
-    dsimp
-    simp only [EInt.coe_lt_coe_iff, Int.sub_pos, lt_neg_add_iff_add_lt]
-    by_contra!
-    obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
-    obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
-    exact hpq ⟨p', q'⟩ (by
-      simp only [ComplexShape.spectralSequenceNat_rel_iff]
-      constructor <;> lia)
+noncomputable abbrev E₂HomologicalSpectralSequenceNat := Y.spectralSequence mkDataE₂HomologicalNat
+
+end
+
 
 end
 

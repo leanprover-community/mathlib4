@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.CategoryTheory.ComposableArrows.Four
+public import Batteries.Tactic.Lint
 
 /-!
 # Homology of differentials

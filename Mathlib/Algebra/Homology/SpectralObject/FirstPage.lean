@@ -33,6 +33,8 @@ class HasFirstPageComputation : Prop where
   hi₀₁ (pq : κ) : data.i₀ r₀ (by rfl) pq = data.i₁ pq
   hi₂₃ (pq : κ) : data.i₂ pq = data.i₃ r₀ (by rfl) pq
 
+export HasFirstPageComputation (hi₀₁ hi₂₃)
+
 instance : mkDataE₂Cohomological.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; lia
   hi₂₃ pq := by dsimp; congr 1; lia
@@ -41,19 +43,9 @@ instance : mkDataE₂CohomologicalNat.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; lia
   hi₂₃ pq := by dsimp; congr 1; lia
 
-section
-
-variable [data.HasFirstPageComputation]
-
-lemma hi₀₁ (pq : κ) :
-    data.i₀ r₀ (by rfl) pq = data.i₁ pq := by
-  apply HasFirstPageComputation.hi₀₁
-
-lemma hi₂₃ (pq : κ) :
-    data.i₂ pq = data.i₃ r₀ (by rfl) pq := by
-  apply HasFirstPageComputation.hi₂₃
-
-end
+instance : mkDataE₂HomologicalNat.HasFirstPageComputation where
+  hi₀₁ pq := by dsimp; congr 1; lia
+  hi₂₃ pq := by dsimp; congr 1; lia
 
 end SpectralSequenceMkData
 
