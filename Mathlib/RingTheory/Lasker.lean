@@ -143,7 +143,7 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
       rcases eq_or_ne n 0 with rfl | hn'
       · calc
           I = Submodule.colon I Set.univ := by
-            simp only [Submodule.colon_top]
+            simp only [Submodule.colon_univ]
           _ = Submodule.colon I (↑(Submodule.span R {b}) : Set R) := by
             simpa [f] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))

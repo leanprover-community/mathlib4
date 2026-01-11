@@ -53,9 +53,12 @@ instance (priority := low) (P : Submodule R M) : (N.colon (P : Set M)).IsTwoSide
     exact hr ⟨_, P.smul_mem _ hp, (mul_smul ..).symm⟩
 
 @[simp]
-theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := by
+theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
+
+@[deprecated colon_univ (since := "2026-01-11")]
+theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := colon_univ
 
 @[simp]
 theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
@@ -66,7 +69,7 @@ theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ �
   fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
 
 theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon (J : Set R) := calc
-  I = I.colon (Set.univ : Set R) := colon_top.symm
+  I = I.colon (Set.univ : Set R) := colon_univ.symm
   _ ≤ I.colon (J : Set R) := colon_mono (le_refl I) (Set.subset_univ (J : Set R))
 
 theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
@@ -177,7 +180,7 @@ theorem annihilator_quotient : Module.annihilator R (M ⧸ N) = N.colon (Set.uni
 
 theorem _root_.Ideal.annihilator_quotient {I : Ideal R} [I.IsTwoSided] :
     Module.annihilator R (R ⧸ I) = I := by
-  rw [Submodule.annihilator_quotient, colon_top]
+  rw [Submodule.annihilator_quotient, colon_univ]
 
 end Ring
 
