@@ -75,13 +75,9 @@ variable (G k) in
 def IsVertexConnected : Prop :=
   ∀ u v : V, G.IsVertexReachable k u v
 
-/-- 0-vertex-connectivity is always true. -/
 @[simp]
-lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ True :=
-  iff_true_intro fun _ _ ↦ IsVertexReachable.zero
-
 lemma IsVertexConnected.zero : G.IsVertexConnected 0 :=
-  isVertexConnected_zero.mpr True.intro
+  fun _ _ ↦ .zero
 
 /-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
 @[simp]
@@ -95,28 +91,24 @@ lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ G.Preconnected := by
   simp [IsVertexConnected, isVertexReachable_one_iff, Preconnected]
 
 /-- A preconnected graph is 1-vertex-connected. -/
-lemma Preconnected.isVertexConnected_one (h : G.Preconnected) :
-    G.IsVertexConnected 1 :=
+lemma Preconnected.isVertexConnected_one (h : G.Preconnected) : G.IsVertexConnected 1 :=
   SimpleGraph.isVertexConnected_one.mpr h
 
 /-- Vertex connectivity is antitonic in `k`. -/
 @[gcongr]
-lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
-    G.IsVertexConnected l :=
+lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) : G.IsVertexConnected l :=
   fun u v ↦ (hc u v).anti hkl
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
-lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
-    H.IsVertexConnected k :=
+lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) : H.IsVertexConnected k :=
   fun u v ↦ (hc u v).mono hGH
 
 /-- The complete graph on `n` vertices is `(n-1)`-vertex-connected. -/
 lemma isVertexConnected_top [Fintype V] :
-    (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) :=
-  fun u v ↦ by
-    by_cases h : u = v
-    · subst h; exact .refl _
-    · exact IsVertexReachable.of_adj _ h
+    (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) := by
+  intro u v
+  by_cases h : u = v
+  exacts [h ▸ .refl _, .of_adj _ h]
 
 end SimpleGraph
