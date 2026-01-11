@@ -89,8 +89,7 @@ because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
 def cancelIsoSimproc : Simp.Simproc := fun e => do -- is withReducible necessary here?
-  let e_whnf ← whnf e
-  let_expr CategoryStruct.comp C instCat x y t f g := e_whnf | return .continue
+  let_expr CategoryStruct.comp C instCat x y t f g := e | return .continue
   match_expr g with
   -- Right_associated expressions needs their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
