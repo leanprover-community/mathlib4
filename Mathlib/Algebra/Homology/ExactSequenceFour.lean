@@ -10,6 +10,11 @@ public import Mathlib.Algebra.Homology.ExactSequence
 /-!
 # Exact sequences with four terms
 
+The main definition in this file is `ComposableArrows.Exact.cokerIsoKer`:
+given an exact sequence `S` (involving at least four objects),
+this is the isomorphism from the cokernel of `S.map' k (k + 1)`
+to the kernel of `S.map' (k + 2) (k + 3)`.
+
 -/
 
 @[expose] public section
@@ -29,9 +34,10 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] {n : ℕ} {S : Composable
 
 section
 
-/-- Generalization of `cokerToKer`. -/
+/-- If `S` is a complex, this is the morphism from a cokernel of `S.map' k (k + 1)`
+to a kernel of `S.map' (k + 2) (k + 3)`. -/
 def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
-  (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :
+    (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :
     cc.pt ⟶ kf.pt :=
   IsColimit.desc hcc (CokernelCofork.ofπ _
     (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = _ from
@@ -39,7 +45,7 @@ def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
 
 @[reassoc (attr := simp)]
 lemma cokerToKer'_fac (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
-  (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :
+    (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :
     cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι =
       S.map' (k + 1) (k + 2) := by
   simp [cokerToKer']
@@ -48,6 +54,8 @@ end
 
 section
 
+/-- If `S` is a complex, this is the morphism from the cokernel of `S.map' k (k + 1)`
+to the kernel of `S.map' (k + 2) (k + 3)`. -/
 noncomputable def cokerToKer (hk : k ≤ n := by lia)
     [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
     cokernel (S.map' k (k + 1)) ⟶ kernel (S.map' (k + 2) (k + 3)) :=
@@ -64,6 +72,8 @@ end
 
 section
 
+/-- If `S` is a complex, this is the morphism from the opcycles of `S` in
+degree `k + 1` to the cycles of `S` in degree `k + 2`. -/
 noncomputable def opcyclesToCycles (hk : k ≤ n := by lia)
     [(S.sc hS k).HasRightHomology] [(S.sc hS (k + 1)).HasLeftHomology] :
     (S.sc hS k _).opcycles ⟶ (S.sc hS (k + 1) _).cycles :=
@@ -94,7 +104,6 @@ variable (hS : S.IsComplex) (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
-/-- `cokerToKer'` is an epi. -/
 lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
     Epi (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -107,7 +116,6 @@ lemma epi_cokerToKer' (hS' : (S.sc hS (k + 1)).Exact) :
       assoc, IsComplex.cokerToKer'_fac]
   exact epi_of_epi_fac fac
 
-/-- `cokerToKer'` is a mono. -/
 lemma mono_cokerToKer' (hS' : (S.sc hS k).Exact) :
     Mono (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have := hS'.hasZeroObject
@@ -137,17 +145,11 @@ variable (k : ℕ) (hk : k ≤ n)
   (cc : CokernelCofork (S.map' k (k + 1))) (kf : KernelFork (S.map' (k + 2) (k + 3)))
   (hcc : IsColimit cc) (hkf : IsLimit kf)
 
-/-- Auxiliary definition for `cokerIsoKer'`. -/
-def cokerToKer' : cc.pt ⟶ kf.pt :=
+/-- If `S` is an exact sequence, this is the morphism from a cokernel
+of `S.map' k (k + 1)` to a kernel of `S.map' (k + 2) (k + 3)`. -/
+abbrev cokerToKer' : cc.pt ⟶ kf.pt :=
   hS.toIsComplex.cokerToKer' k hk cc kf hcc hkf
 
-omit [Balanced C] in
-@[reassoc (attr := simp)]
-lemma cokerToKer'_fac : cc.π ≫ hS.cokerToKer' k hk cc kf hcc hkf ≫ kf.ι =
-    S.map' (k + 1) (k + 2) := by
-  simp [cokerToKer']
-
-/-- `cokerToKer'` is an isomorphism. -/
 instance isIso_cokerToKer' : IsIso (hS.cokerToKer' k hk cc kf hcc hkf) := by
   have : Mono (hS.cokerToKer' k hk cc kf hcc hkf) :=
       hS.toIsComplex.mono_cokerToKer' k hk cc kf hcc hkf
@@ -156,7 +158,8 @@ instance isIso_cokerToKer' : IsIso (hS.cokerToKer' k hk cc kf hcc hkf) := by
     hS.epi_cokerToKer' k hk cc kf hcc hkf (hS.exact (k + 1))
   apply isIso_of_mono_of_epi
 
-/-- Auxiliary definition for `cokerIsoKer`. -/
+/-- If `S` is an exact sequence, this is the isomorphism from a cokernel
+of `S.map' k (k + 1)` to a kernel of `S.map' (k + 2) (k + 3)`. -/
 @[simps! hom]
 noncomputable def cokerIsoKer' : cc.pt ≅ kf.pt :=
   asIso (hS.cokerToKer' k hk cc kf hcc hkf)
@@ -175,34 +178,30 @@ end
 
 section
 
+/-- If `S` is an exact sequence, this is the isomorphism from the cokernel
+of `S.map' k (k + 1)` to the kernel of `S.map' (k + 2) (k + 3)`. -/
 noncomputable def cokerIsoKer (k : ℕ) (hk : k ≤ n := by lia)
   [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
     cokernel (S.map' k (k + 1) _ _) ≅ kernel (S.map' (k + 2) (k + 3) _ _) :=
   hS.cokerIsoKer' k hk (CokernelCofork.ofπ _ (cokernel.condition _))
     (KernelFork.ofι _ (kernel.condition _)) (cokernelIsCokernel _) (kernelIsKernel _)
 
-lemma cokerIsoKer_hom (k : ℕ) (hk : k ≤ n := by lia)
-  [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
-    (hS.cokerIsoKer k).hom = hS.toIsComplex.cokerToKer k := rfl
-
 @[reassoc (attr := simp)]
 lemma cokerIsoKer_hom_fac (k : ℕ) (hk : k ≤ n := by lia)
     [HasCokernel (S.map' k (k + 1))] [HasKernel (S.map' (k + 2) (k + 3))] :
-    cokernel.π _ ≫ (hS.cokerIsoKer k).hom ≫ kernel.ι _ = S.map' (k + 1) (k + 2) := by
-  rw [hS.cokerIsoKer_hom k, hS.toIsComplex.cokerToKer_fac k]
+    cokernel.π _ ≫ (hS.cokerIsoKer k).hom ≫ kernel.ι _ = S.map' (k + 1) (k + 2) :=
+  hS.toIsComplex.cokerToKer_fac k
 
 end
 
 section
 
+/-- If `S` is an exact sequence, this is the isomorphism from the opcycles of `S` in
+degree `k + 1` to the cycles of `S` in degree `k + 2`. -/
 noncomputable def opcyclesIsoCycles (k : ℕ) (hk : k ≤ n := by lia)
-  [h₁ : (hS.sc k).HasRightHomology] [h₂ : (hS.sc (k + 1)).HasLeftHomology] :
+    [h₁ : (hS.sc k).HasRightHomology] [h₂ : (hS.sc (k + 1)).HasLeftHomology] :
     (hS.sc k _).opcycles ≅ (hS.sc (k + 1) _).cycles :=
   hS.cokerIsoKer' k hk _ _ (hS.sc k _).opcyclesIsCokernel (hS.sc (k + 1) _).cyclesIsKernel
-
-lemma opcyclesIsoCycles_hom (k : ℕ) (hk : k ≤ n := by lia)
-  [h₁ : (hS.sc k).HasRightHomology] [h₂ : (hS.sc (k + 1)).HasLeftHomology] :
-    (hS.opcyclesIsoCycles k).hom = hS.toIsComplex.opcyclesToCycles k hk := rfl
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoCycles_hom_fac (k : ℕ) (hk : k ≤ n := by lia)
