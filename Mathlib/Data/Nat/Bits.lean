@@ -5,11 +5,9 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.Says
 public import Mathlib.Util.AssertExists
 
 /-!
@@ -228,7 +226,7 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
   | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> dsimp [bit] <;> omega
+  cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
@@ -256,8 +254,8 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | false, _, _, h => by dsimp [bit]; lia
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
-        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> lia
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]

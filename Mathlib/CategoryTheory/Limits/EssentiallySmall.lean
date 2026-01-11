@@ -17,7 +17,7 @@ See also the file `FinallySmall.lean` for more general results.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂

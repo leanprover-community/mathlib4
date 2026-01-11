@@ -77,7 +77,7 @@ lemma preReflection_apply :
 variable {x f}
 
 lemma preReflection_apply_self (h : f x = 2) :
-    preReflection x f x = - x := by
+    preReflection x f x = -x := by
   rw [preReflection_apply, h, two_smul]; abel
 
 lemma involutive_preReflection (h : f x = 2) :
@@ -106,7 +106,7 @@ lemma reflection_apply (h : f x = 2) :
 
 @[simp]
 lemma reflection_apply_self (h : f x = 2) :
-    reflection h x = - x :=
+    reflection h x = -x :=
   preReflection_apply_self h
 
 lemma involutive_reflection (h : f x = 2) :
@@ -210,7 +210,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
       add_mul_ediv_left _ k (by simp : (2 : ℤ) ≠ 0)]
-    have he : e = 0 ∨ e = 1 := by omega
+    have he : e = 0 ∨ e = 1 := by lia
     clear_value e
     /- Now, equate the coefficients on both sides. These linear combinations were
     found using `polyrith`. -/
@@ -254,7 +254,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
       reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
-    have aux (a b : ℤ) (hab : a + b = -3 := by omega) : a / 2 = -(b / 2) - 2 := by omega
+    have aux (a b : ℤ) (hab : a + b = -3 := by lia) : a / 2 = -(b / 2) - 2 := by lia
     rw [aux (-m - 3) m, aux (-m - 2) (m - 1), aux (-m - 1) (m - 2), aux (-m) (m - 3)]
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf

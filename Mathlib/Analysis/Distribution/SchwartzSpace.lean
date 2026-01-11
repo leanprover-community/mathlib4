@@ -21,8 +21,8 @@ public import Mathlib.MeasureTheory.Function.L2Space
 # Schwartz space
 
 This file defines the Schwartz space. Usually, the Schwartz space is defined as the set of smooth
-functions `f : ℝ^n → ℂ` such that there exists `C_{αβ} > 0` with `|x^α ∂^β f(x)| < C_{αβ}` for
-all `x ∈ ℝ^n` and for all multiindices `α`, `β`.
+functions $f : ℝ^n → ℂ$ such that there exists $C_{αβ} > 0$ with $$|x^α ∂^β f(x)| < C_{αβ}$$ for
+all $x ∈ ℝ^n$ and for all multiindices $α, β$.
 In mathlib, we use a slightly different approach and define the Schwartz space as all
 smooth functions `f : E → F`, where `E` and `F` are real normed vector spaces such that for all
 natural numbers `k` and `n` we have uniform bounds `‖x‖^k * ‖iteratedFDeriv ℝ n f x‖ < C`.
@@ -104,11 +104,17 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
 /-- Every Schwartz function is smooth. -/
+@[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
   f.smooth'.of_le (mod_cast le_top)
 
+/-- Every Schwartz function is smooth at any point. -/
+@[fun_prop]
+theorem contDiffAt (f : 𝓢(E, F)) (n : ℕ∞) {x : E} : ContDiffAt ℝ n f x :=
+  (f.smooth n).contDiffAt
+
 /-- Every Schwartz function is continuous. -/
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 
@@ -116,10 +122,12 @@ instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
   map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
+@[fun_prop]
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
-  (f.smooth 1).differentiable rfl.le
+  (f.smooth 1).differentiable one_ne_zero
 
 /-- Every Schwartz function is differentiable at any point. -/
+@[fun_prop]
 protected theorem differentiableAt (f : 𝓢(E, F)) {x : E} : DifferentiableAt ℝ f x :=
   f.differentiable.differentiableAt
 
@@ -135,31 +143,30 @@ variable (f : 𝓢(E, F))
 
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ (-k : ℤ) := by
+    f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
-  refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
-  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
-  exacts [hd' x, zpow_pos (norm_pos_iff.mpr hx) _]
+  refine (Filter.eventually_cofinite_ne 0).mono fun x hx ↦ ?_
+  rw [Real.norm_of_nonneg (by positivity), zpow_neg, ← div_eq_mul_inv, le_div_iff₀' (by positivity)]
+  exact hd' x
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ s := by
+    f =O[cocompact E] (‖·‖ ^ s) := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
-  suffices (fun x : ℝ => x ^ (-k : ℤ)) =O[atTop] fun x : ℝ => x ^ s
+  suffices (fun x : ℝ ↦ x ^ (-k : ℤ)) =O[atTop] fun x : ℝ ↦ x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => ?_⟩
-  rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
-    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_intCast, Int.cast_neg,
-    Int.cast_natCast]
+  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
+  rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
+    ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
-    f =O[cocompact E] fun x => ‖x‖ ^ k := by
+    f =O[cocompact E] (‖·‖ ^ k) := by
   simpa only [Real.rpow_intCast] using isBigO_cocompact_rpow f k
 
 end IsBigO
@@ -641,7 +648,11 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F]
+
+section bilin
+
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -694,6 +705,49 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
 
+end bilin
+
+section smul
+
+variable (F) in
+open Classical in
+/-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on Schwartz space,
+where `g` is a function of temperate growth. -/
+def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  if hg : g.HasTemperateGrowth then
+    SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+  else 0
+
+@[simp]
+theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) (x : E) :
+    smulLeftCLM F g f x = g x • f x := by
+  simp [smulLeftCLM, hg]
+
+@[simp]
+theorem smulLeftCLM_const (c : 𝕜) (f : 𝓢(E, F)) : smulLeftCLM F (fun (_ : E) ↦ c) f = c • f := by
+  ext x
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  simp [this]
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F g₁ (smulLeftCLM F g₂ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext x
+  simp [smul_smul, hg₁, hg₂, hg₁.mul hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F g₁ ∘L smulLeftCLM F g₂ = smulLeftCLM F (g₁ * g₂) := by
+  ext1 f
+  exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
+
+end smul
+
+section pairing
+
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
+
 /-- The bilinear pairing of Schwartz functions.
 
 The continuity in the left argument is provided in `SchwartzMap.pairing_continuous_left`. -/
@@ -711,6 +765,60 @@ theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (
 
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
     Continuous (pairing B · g) := (pairing B.flip g).continuous
+
+end pairing
+
+open ContinuousLinearMap
+
+variable (𝕜 F) in
+/-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
+functions. -/
+def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(E, G →L[ℝ] F) :=
+  mkCLM (fun f x ↦ (L x).smulRight (f x)) (by intros; ext; simp)
+    (by intro c g x; ext v; simpa using smul_comm (L x v) c (g x))
+    (by fun_prop) <| by
+      intro ⟨k, n⟩
+      use {(k + 1, n), (k, n - 1)}, 2 * ‖L‖ * (max 1 n), by positivity
+      intro f x
+      calc
+        _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
+            ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+          gcongr 1
+          exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
+            (by fun_prop) (f.smooth ⊤) x (mod_cast le_top) norm_smulRightL_le
+        _ ≤ ‖x‖ ^ k *
+            (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
+          gcongr 1
+          rw [Finset.sum_range_succ', add_comm]
+          cases n with
+          | zero => simp
+          | succ n =>
+            have : ∑ k ∈ Finset.range n,
+                (((n + 1).choose (k + 1 + 1)) : ℝ) * ‖iteratedFDeriv ℝ (k + 1 + 1) L x‖ *
+                ‖iteratedFDeriv ℝ (n + 1 - (k + 1 + 1)) f x‖ = 0 := by
+              apply Finset.sum_eq_zero
+              simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
+            simp [Finset.sum_range_succ', this]
+        _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
+              ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
+        _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
+              ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
+          grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x, ← le_seminorm 𝕜 k (n - 1) f x]
+          apply le_of_eq
+          ring
+        _ ≤ ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
+            ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) := by
+          gcongr <;> simp
+        _ = _ := by
+          simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
+            Seminorm.coe_sup, Pi.sup_apply]
+          ring
+
+@[simp]
+theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :
+    smulRightCLM 𝕜 F L f x = (L x).smulRight (f x) := rfl
 
 end Multiplication
 
@@ -824,26 +932,9 @@ section Derivatives
 /-! ### Derivatives of Schwartz functions -/
 
 variable (𝕜)
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-open LineDeriv
-
-/-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
-  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
-    (fun a f _ => fderiv_const_smul f.differentiableAt a)
-    (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
-    ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
-      simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
-        one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
-
-@[simp]
-theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
-  rfl
-
-theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
-  f.differentiableAt.hasFDerivAt
-
+variable (F) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
   mkCLM (deriv ·) (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
@@ -855,30 +946,51 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
         f.le_seminorm' 𝕜 k (n + 1) x⟩
 
 @[simp]
-theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
+theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deriv f x :=
   rfl
 
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
+variable [SMulCommClass ℝ 𝕜 F]
+
+open LineDeriv
+
+variable (E F) in
+/-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
+def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
+  mkCLM (fderiv ℝ ·) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
+    (fun a f _ => fderiv_const_smul f.differentiableAt a)
+    (fun f => (contDiff_succ_iff_fderiv.mp (f.smooth ⊤)).2.2) fun ⟨k, n⟩ =>
+    ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
+      simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
+        one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
+
+@[simp]
+theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 E F f x = fderiv ℝ f x :=
+  rfl
+
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+  f.differentiableAt.hasFDerivAt
+
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) f
+  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_add
+  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_smul
+  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).continuous
+  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM
@@ -1033,26 +1145,6 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
   rfl
 
 variable {E}
-
-section DiracDelta
-
-/-- The Dirac delta distribution -/
-def delta (x : E) : 𝓢(E, F) →L[𝕜] F :=
-  (BoundedContinuousFunction.evalCLM 𝕜 x).comp (toBoundedContinuousFunctionCLM 𝕜 E F)
-
-@[simp]
-theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :=
-  rfl
-
-open MeasureTheory MeasureTheory.Measure
-
-variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [CompleteSpace F]
-
-/-- Integrating against the Dirac measure is equal to the delta distribution. -/
-@[simp]
-theorem integralCLM_dirac_eq_delta (x : E) : integralCLM 𝕜 (dirac x) = delta 𝕜 F x := by aesop
-
-end DiracDelta
 
 end BoundedContinuousFunction
 
@@ -1266,9 +1358,8 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (L : E →L[ℝ] F →L[ℝ] V) :
     ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+    f.hasDerivAt g.hasDerivAt (pairing L f (derivCLM ℝ F g)).integrable
+    (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.

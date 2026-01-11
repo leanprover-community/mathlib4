@@ -18,7 +18,7 @@ The main constructions are the following.
 - `HasConicalLimit`: there exists a conical limit for `F : J ⥤ C`.
 - `HasConicalLimitsOfShape J`: All functors `F : J ⥤ C` have conical limits.
 - `HasConicalLimitsOfSize.{v₁, u₁}`: For all small `J` all functors `F : J ⥤ C` have conical limits.
-- `HasConicalLimits `: `C` has all (small) conical limits.
+- `HasConicalLimits`: `C` has all (small) conical limits.
 
 ## References
 

@@ -89,7 +89,7 @@ theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun 
   ht (hu.trans h) (h hi)
 
 lemma SupIndep.mono (hf : s.SupIndep f) (h : ∀ i ∈ s, g i ≤ f i) : s.SupIndep g :=
-  fun _ ht j hj htj ↦  (hf ht hj htj).mono (h j hj) (sup_mono_fun fun b a ↦ h b (ht a))
+  fun _ ht j hj htj ↦ (hf ht hj htj).mono (h j hj) (sup_mono_fun fun b a ↦ h b (ht a))
 
 @[simp, grind ←]
 theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>

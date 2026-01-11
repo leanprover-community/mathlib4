@@ -301,7 +301,7 @@ theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebr
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
-    ((h g monic irred).splits_of_dvd (map_monic_ne_zero monic) dvd).exists_eval_eq_zero <|
+    ((h g monic irred).of_dvd (map_monic_ne_zero monic) dvd).exists_eval_eq_zero <|
       degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
 
 namespace IsAlgClosed
@@ -320,6 +320,7 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
+set_option backward.privateInPublic true in
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
@@ -332,6 +333,8 @@ variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZ
 
 variable {M}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private instance FractionRing.isAlgebraic :
     letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
@@ -345,6 +348,8 @@ private instance FractionRing.isAlgebraic :
   exact (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
       (Algebra.IsAlgebraic.isAlgebraic _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
 @[stacks 09GU]
@@ -531,7 +536,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Fie
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
   (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
     IntermediateField.algHomEquivAlgHomOfSplits A (IsScalarTower.toAlgHom F L A).fieldRange
-    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+    fun x ↦ Splits.of_algHom (hL x) (AlgHom.rangeRestrict _)
 
 theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
@@ -553,7 +558,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   by_cases hdf0 : derivative f = 0
   · rw [eq_C_of_derivative_eq_zero hdf0]
     simp only [derivative_C, zero_mul, dvd_zero, implies_true]
-  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  have hdg : f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
   refine forall_imp fun a => ?_

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -243,8 +244,6 @@ lemma pow_ne_top_iff : a ^ n ≠ ∞ ↔ a ≠ ∞ ∨ n = 0 := WithTop.pow_ne_t
 @[simp] lemma pow_lt_top_iff : a ^ n < ∞ ↔ a < ∞ ∨ n = 0 := WithTop.pow_lt_top_iff
 
 lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_pow n ha
-
-@[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
 
 @[aesop (rule_sets := [finiteness]) safe apply]
 lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha

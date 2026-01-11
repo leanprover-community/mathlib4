@@ -46,7 +46,10 @@ variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 instance : SMul R V⟦Γ⟧ :=
   ⟨fun r x =>
     { coeff := r • x.coeff
-      isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
+      isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset ..) }⟩
+
+theorem support_smul_subset (r : R) (x : HahnSeries Γ V) : (r • x).support ⊆ x.support :=
+  Function.support_const_smul_subset ..
 
 @[simp]
 theorem coeff_smul' (r : R) (x : V⟦Γ⟧) : (r • x).coeff = r • x.coeff :=
@@ -67,8 +70,7 @@ theorem orderTop_smul_not_lt (r : R) (x : V⟦Γ⟧) : ¬ (r • x).orderTop < x
     exact not_top_lt
   · simp only [orderTop_of_ne_zero hrx, orderTop_of_ne_zero <| right_ne_zero_of_smul hrx,
       WithTop.coe_lt_coe]
-    exact Set.IsWF.min_of_subset_not_lt_min
-      (Function.support_smul_subset_right (fun _ => r) x.coeff)
+    exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right ..)
 
 theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : V⟦Γ⟧) :
     x.orderTop ≤ (r • x).orderTop :=
@@ -78,7 +80,7 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : V⟦Γ⟧) (h : r • x ≠ 0) 
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
   simp_all only [order, dite_false]
-  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
+  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right ..)
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : V⟦Γ⟧) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order :=
@@ -100,7 +102,10 @@ variable [AddMonoid R]
 instance : Add R⟦Γ⟧ where
   add x y :=
     { coeff := x.coeff + y.coeff
-      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add _ _) }
+      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add ..) }
+
+theorem support_add_subset (x y : R⟦Γ⟧) : (x + y).support ⊆ x.support ∪ y.support :=
+  Function.support_add ..
 
 @[simp]
 theorem coeff_add' (x y : R⟦Γ⟧) : (x + y).coeff = x.coeff + y.coeff :=
@@ -183,13 +188,6 @@ lemma addOppositeEquiv_symm_leadingCoeff (x : R⟦Γ⟧ᵃᵒᵖ) :
   apply AddOpposite.unop_injective
   rw [← addOppositeEquiv_leadingCoeff, AddEquiv.apply_symm_apply, AddOpposite.unop_op]
 
-theorem support_add_subset {x y : R⟦Γ⟧} : support (x + y) ⊆ support x ∪ support y :=
-  fun a ha => by
-  rw [mem_support, coeff_add] at ha
-  rw [Set.mem_union, mem_support, mem_support]
-  contrapose! ha
-  rw [ha.1, ha.2, add_zero]
-
 protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : R⟦Γ⟧} (hx : x ≠ 0)
     (hy : y ≠ 0) (hxy : x + y ≠ 0) :
     min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
@@ -269,16 +267,12 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
     exact hyne rfl
   refine lt_of_le_of_ne ?_ this
   simp only [order, ne_zero_of_eq_add_single hxy hy, ↓reduceDIte, hy]
-  have : y.support ⊆ x.support := by
-    intro g hg
-    by_cases hgx : g = x.order
-    · refine (mem_support x g).mpr ?_
-      have : x.coeff x.order ≠ 0 := coeff_order_ne_zero <| ne_zero_of_eq_add_single hxy hy
-      rwa [← hgx] at this
-    · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
-      rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
-      simpa [this] using hg
-  exact Set.IsWF.min_le_min_of_subset this
+  refine Set.IsWF.min_le_min_of_subset fun g hg ↦ ?_
+  obtain rfl | hgx := eq_or_ne g x.order
+  · simpa using coeff_order_eq_zero.not.2 <| ne_zero_of_eq_add_single hxy hy
+  · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
+    rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
+    simpa [this] using hg
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
@@ -330,16 +324,15 @@ theorem coeff_sum {s : Finset α} {x : α → R⟦Γ⟧} (g : Γ) :
 
 end AddCommMonoid
 
-section AddGroup
+section NegZeroClass
 
-variable [AddGroup R]
+variable [NegZeroClass R]
 
 instance : Neg R⟦Γ⟧ where
-  neg x :=
-    { coeff := fun a => -x.coeff a
-      isPWO_support' := by
-        rw [Function.support_fun_neg]
-        exact x.isPWO_support }
+  neg x := x.map (-ZeroHom.id _)
+
+theorem support_neg_subset (x : R⟦Γ⟧) : (-x).support ⊆ x.support :=
+  support_map_subset ..
 
 @[simp]
 theorem coeff_neg' (x : R⟦Γ⟧) : (-x).coeff = -x.coeff :=
@@ -348,10 +341,19 @@ theorem coeff_neg' (x : R⟦Γ⟧) : (-x).coeff = -x.coeff :=
 theorem coeff_neg {x : R⟦Γ⟧} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
+end NegZeroClass
+
+section AddGroup
+
+variable [AddGroup R]
+
 instance : Sub R⟦Γ⟧ where
   sub x y :=
     { coeff := x.coeff - y.coeff
-      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_sub _ _) }
+      isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_sub ..) }
+
+theorem support_sub_subset (x y : R⟦Γ⟧) : (x - y).support ⊆ x.support ∪ y.support :=
+  Function.support_sub ..
 
 @[simp]
 theorem coeff_sub' (x y : R⟦Γ⟧) : (x - y).coeff = x.coeff - y.coeff :=
@@ -362,7 +364,7 @@ theorem coeff_sub {x y : R⟦Γ⟧} {a : Γ} : (x - y).coeff a = x.coeff a - y.c
 
 instance : AddGroup R⟦Γ⟧ := fast_instance%
   coeff_injective.addGroup _
-    coeff_zero' coeff_add' (coeff_neg') (coeff_sub')
+    coeff_zero' coeff_add' coeff_neg' coeff_sub'
     (fun _ _ => coeff_smul' _ _) (fun _ _ => coeff_smul' _ _)
 
 @[simp]
@@ -380,7 +382,7 @@ theorem support_neg {x : R⟦Γ⟧} : (-x).support = x.support := by
 
 @[simp]
 protected lemma map_neg [AddGroup S] (f : R →+ S) {x : R⟦Γ⟧} :
-    ((-x).map f : S⟦Γ⟧) = -(x.map f) := by
+    ((-x).map f : S⟦Γ⟧) = -x.map f := by
   ext; simp
 
 @[simp]

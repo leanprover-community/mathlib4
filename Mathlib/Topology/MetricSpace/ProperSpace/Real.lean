@@ -16,8 +16,8 @@ public import Mathlib.Topology.UniformSpace.Real
 /-!
 # Second countability of the reals
 
-We prove that `ℝ`, `EReal`, `ℝ≥0` and `ℝ≥0∞` are second countable.
-In the process, we also provide instances `ProperSpace ℝ` and `ProperSpace ℝ≥0`.
+We prove that `EReal`, `ℝ≥0` and `ℝ≥0∞` are second countable.
+In the process, we also provide the instance `ProperSpace ℝ≥0`.
 -/
 
 @[expose] public section
@@ -27,13 +27,6 @@ assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 noncomputable section
 
 open Set Topology TopologicalSpace
-
-instance : ProperSpace ℝ where
-  isCompact_closedBall x r := by
-    rw [Real.closedBall_eq_Icc]
-    apply isCompact_Icc
-
-instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 namespace EReal
 

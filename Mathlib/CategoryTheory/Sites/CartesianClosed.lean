@@ -23,11 +23,11 @@ noncomputable section
 
 open CategoryTheory Presheaf
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C) (A : Type*) [Category* A]
 
-instance [HasSheafify J A] [CartesianMonoidalCategory A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
-    CartesianClosed (Sheaf J A) :=
+instance [HasSheafify J A] [CartesianMonoidalCategory A] [MonoidalClosed (Cᵒᵖ ⥤ A)] :
+    MonoidalClosed (Sheaf J A) :=
   cartesianClosedOfReflective' (sheafToPresheaf _ _) {
     obj F := ⟨F.obj, (isSheaf_of_iso_iff F.2.choose_spec.some).1 (Sheaf.cond _)⟩
-    map f := ⟨f⟩
+    map f := ⟨f.hom⟩
   } (Iso.refl _)

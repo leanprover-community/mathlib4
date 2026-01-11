@@ -46,13 +46,9 @@ lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
 
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
   refine IsStableUnderBaseChange.mk finite_respectsIso ?_
-  classical
-  introv h
-  replace h : Module.Finite R T := by
-    rw [RingHom.Finite] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
-  suffices Module.Finite S (S ⊗[R] T) by
-    rw [RingHom.Finite]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
-  exact inferInstance
+  simp only [finite_algebraMap]
+  intros
+  infer_instance
 
 end RingHom
 
@@ -80,9 +76,6 @@ lemma Module.Finite.of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R]
   obtain ⟨T, hT⟩ := hRS
   use T.image (algebraMap S Sₚ)
   simpa using span_eq_top_localization_localization Rₚ M Sₚ hT
-
-@[deprecated (since := "2025-05-01")] alias Module.Finite_of_isLocalization :=
-  Module.Finite.of_isLocalization
 
 open Algebra nonZeroDivisors in
 instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
@@ -138,8 +131,8 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   replace hx₁ := congr_arg (Submodule.span R) hx₁
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
-  rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← Submodule.map_span]
-    at hx
+  rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← AlgHom.coe_toLinearMap,
+    ← Submodule.map_span] at hx
   -- Since `x` falls in the span of `s` in `S'`, `y' • x : S` falls in the span of `s'` in `S'`.
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.
