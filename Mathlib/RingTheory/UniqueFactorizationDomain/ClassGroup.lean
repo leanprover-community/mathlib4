@@ -6,6 +6,7 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 module
 
 public import Mathlib.RingTheory.ClassGroup
+import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.RingTheory.Ideal.BigOperators
 
 
@@ -314,10 +315,6 @@ private lemma exists_relations_of_isUnit_fractionalIdeal_of_span
       mem_mul_span_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) (ℓ := ℓ) hJspan
         hsum₁ hb
 
-/-- A family `c : Fin n → R` has “unit gcd” if every common divisor is a unit. -/
-private def CommonDivisorsAreUnits {n : ℕ} (c : Fin n → R) : Prop :=
-  ∀ d : R, (∀ i : Fin n, d ∣ c i) → IsUnit d
-
 private lemma ideal_eq_top_of_relations {n : ℕ} {J : Ideal R}
     {x : R} (hx0 : x ≠ 0) {b : Fin n → R} (hxmem : x ∈ J * Ideal.span (Set.range b))
     (hb : ∀ j : Fin n, x ∣ b j) :
@@ -365,16 +362,16 @@ section UFD
 
 variable [UniqueFactorizationMonoid R]
 
+private noncomputable instance : NormalizedGCDMonoid R :=
+  Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
+
 private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (y : R) (n : ℕ) (_hn : 0 < n) (c : Fin n → R) (J : Ideal R),
       I = Ideal.span ({y} : Set R) * J ∧
       J = Ideal.span (Set.range c) ∧
       IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) ∧
-      CommonDivisorsAreUnits (R := R) c := by
-  -- Choose a `NormalizedGCDMonoid` structure (available noncomputably for any UFM).
-  letI : NormalizedGCDMonoid R :=
-    Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
+      (Finset.univ : Finset (Fin n)).gcd c = 1 := by
   -- Finite generation of `I` and a distinguished nonzero element of `I`.
   have hfg : (I : Submodule R R).FG :=
     (Ideal.fg_of_isUnit (IsFractionRing.injective R (FractionRing R)) I hI)
@@ -462,72 +459,33 @@ private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
       -- a product of fractional ideals.
       simpa [hIJ, FractionalIdeal.coeIdeal_mul] using hI
     exact isUnit_of_mul_isUnit_right hprod
-  have hc : CommonDivisorsAreUnits (R := R) c := by
-    intro d hd
-    have hd' : ∀ i ∈ (Finset.univ : Finset (Fin n)), d ∣ c i := by
-      intro i _
-      exact hd i
-    have : d ∣ (Finset.univ : Finset (Fin n)).gcd c := Finset.dvd_gcd hd'
-    have : d ∣ (1 : R) := by simpa [hgcd] using this
-    exact isUnit_of_dvd_one this
-  refine ⟨y, n, hn, c, J, ?_, rfl, hJunit, hc⟩
+  refine ⟨y, n, hn, c, J, ?_, rfl, hJunit, hgcd⟩
   exact hIJ
 
-private lemma dvd_of_dvd_mul_of_commonDivisorsAreUnits {n : ℕ} {c : Fin n → R}
-    (hc : CommonDivisorsAreUnits (R := R) c) {x b : R} (hx0 : x ≠ 0)
+private lemma dvd_of_dvd_mul_of_gcd_eq_one {n : ℕ} {c : Fin n → R}
+    (hgcd : (Finset.univ : Finset (Fin n)).gcd c = 1) {x b : R}
     (h : ∀ i : Fin n, x ∣ c i * b) : x ∣ b := by
-  -- We prove the stronger statement by induction on the prime factorization of `x`.
-  let P : R → Prop :=
-    fun x' => x' ≠ 0 → ∀ b' : R, (∀ i : Fin n, x' ∣ c i * b') → x' ∣ b'
-  have hP : P x := by
-    -- Induction on `x` using `UniqueFactorizationMonoid.induction_on_prime`.
-    refine UniqueFactorizationMonoid.induction_on_prime (α := R) x ?_ ?_ ?_
-    · intro hx'
-      exact (hx' rfl).elim
-    · intro x' hx' hx'0 b' _
-      -- A unit divides everything.
-      exact hx'.dvd
-    · intro a p ha0 hp ih hp0 b' hb'
-      -- Show `p ∣ b'` by choosing an index where `p ∤ c i`.
-      have hex : ∃ i : Fin n, ¬ p ∣ c i := by
-        by_contra hcontra
-        have hall : ∀ i : Fin n, p ∣ c i := by
-          intro i
-          by_contra hi
-          exact hcontra ⟨i, hi⟩
-        have : IsUnit p := hc p hall
-        exact hp.not_unit this
-      rcases hex with ⟨i0, hi0⟩
-      have hpCb : p ∣ c i0 * b' := by
-        exact dvd_trans (dvd_mul_right p a) (hb' i0)
-      have hpb : p ∣ b' := (hp.dvd_or_dvd hpCb).resolve_left hi0
-      rcases hpb with ⟨b₁, rfl⟩
-      -- Reduce to the induction hypothesis for `a` after cancelling `p`.
-      have ha : a ∣ b₁ := by
-        refine ih ha0 b₁ ?_
-        intro i
-        -- From `p * a ∣ c i * (p * b₁)` we cancel `p` (since `p ≠ 0`).
-        have hpa : p * a ∣ p * (c i * b₁) := by
-          -- reassociate/commute the right-hand side.
-          simpa [mul_assoc, mul_left_comm, mul_comm] using hb' i
-        exact (mul_dvd_mul_iff_left hp.ne_zero).1 hpa
-      -- Conclude `p * a ∣ p * b₁`.
-      exact mul_dvd_mul_left p ha
-  exact hP hx0 b h
+  classical
+  have hxgcd : x ∣ (Finset.univ : Finset (Fin n)).gcd (fun i => c i * b) := by
+    refine Finset.dvd_gcd ?_
+    intro i hi
+    simpa using h i
+  have hxnorm : x ∣ normalize b := by
+    simpa [Finset.gcd_mul_right, hgcd] using hxgcd
+  exact (dvd_normalize_iff).1 hxnorm
 
 
 /-- In a UFD, an integral ideal that is invertible as a fractional ideal is principal. -/
 private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
-  obtain ⟨y, n, hn, c, J, hIJ, hJspan, hJunit, hc⟩ :=
+  obtain ⟨y, n, hn, c, J, hIJ, hJspan, hJunit, hgcd⟩ :=
     exists_gcd_normalization_of_isUnit_fractionalIdeal (R := R) (I := I) hI
   obtain ⟨x, hx0, b, hdiv, hxmem⟩ :=
     exists_relations_of_isUnit_fractionalIdeal_of_span (R := R) (c := c) (J := J) hJspan hJunit
   have hb : ∀ j : Fin n, x ∣ b j := by
     intro j
-    refine dvd_of_dvd_mul_of_commonDivisorsAreUnits (R := R) (c := c) hc (x := x) (b := b j) hx0
-      ?_
+    refine dvd_of_dvd_mul_of_gcd_eq_one (R := R) (c := c) hgcd (x := x) (b := b j) ?_
     intro i
     simpa [mul_assoc, mul_left_comm, mul_comm] using hdiv i j
   have hJtop : J = ⊤ :=
