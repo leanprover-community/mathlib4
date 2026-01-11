@@ -97,8 +97,8 @@ theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : S
   simpa using iInf_colon_iUnion (ι₁ := ι₁) (f := f) (ι₂ := ι₂) (g := g)
 
 /-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
-lemma colon_eq_top_of_le (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
-    N.colon S  = ⊤ := by
+lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
+    N.colon S = ⊤ := by
   refine top_unique ?_
   intro x _
   refine mem_colon.2 ?_
@@ -111,7 +111,7 @@ lemma colon_inf_eq_left_of_le (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon
     simpa [iInf_bool_eq] using
       (iInf_colon_iSup (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
       (g := fun _ => S))
-  _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_le N₂ S h]
+  _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_subset N₂ S h]
   _ = N₁.colon S := inf_top_eq (N₁.colon S)
 
 end Semiring
