@@ -9,6 +9,7 @@ public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Lean.Meta.RefinedDiscrTree
 public import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
 public import ProofWidgets.Component.FilterDetails
+public import ProofWidgets.Component.Panel.Basic
 
 /-!
 # Point & click library search
@@ -518,15 +519,15 @@ private def libraryRewrite (goals : Array InteractiveGoal)
         filtered={filtered}
         initiallyFiltered={true} />
 
+/-- The component that is diplayed when writing `#infoview_search`. -/
 @[server_rpc_method]
-private def infoviewSearchRpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+def infoviewSearchRpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   if let some selectedLoc := props.selectedLocations.back? then
     libraryRewrite props.goals selectedLoc ⟨props.pos, props.pos⟩
   else
     return .pure <| .text "" -- If nothing is selected, return an empty HTML
 
-/-- The component that is diplayed when writing `#infoview_search`. -/
-@[widget_module]
+@[inherit_doc infoviewSearchRpc, widget_module]
 def InfoviewSearchComponent : Component PanelWidgetProps :=
   mk_rpc_widget% infoviewSearchRpc
 
