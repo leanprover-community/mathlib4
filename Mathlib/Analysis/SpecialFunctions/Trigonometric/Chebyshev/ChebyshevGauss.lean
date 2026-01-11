@@ -112,14 +112,59 @@ theorem sumZeroes_T_of_ne_zero {n : ℕ} {k : ℤ} (hk₀ : k ≠ 0) (hk₁ : k.
   have : z ^ 2 ≠ 1 := by grind [exp_sub_one_ne_zero]
   field [show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind]
 
-theorem poly_eq_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n → F[X]}
+-- This probably belongs somewhere else
+theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n → F[X]}
     (hP : P.degree < n) (hQ : ∀ i, (Q i).degree = i) :
     ∃ c : Fin n → F, P = ∑ i, c i • Q i := by
-  sorry
+  cases hd : P.degree
+  case bot =>
+    use fun _ => 0
+    simp [P.degree_eq_bot.mp hd]
+  case coe d =>
+    replace hP : d < n := by rw [hd] at hP; exact WithBot.coe_lt_coe.mp hP
+    induction d using Nat.strong_induction_on generalizing P
+    case h d hind =>
+      let γ := P.coeff d / (Q ⟨d, hP⟩).coeff d
+      let cγ (i : Fin n) := if i = d then γ else 0
+      have hcγ : ∑ i, cγ i • Q i = γ • Q ⟨d, hP⟩ := by
+        rw [sum_eq_single ⟨d, hP⟩ (by aesop) (by simp)]
+        simp [cγ]
+      let P' := P - γ • Q ⟨d, hP⟩
+      have hP' : P'.degree < d := by
+        refine (degree_lt_iff_coeff_zero _ _).mpr (fun m hm => ?_)
+        by_cases! m = d
+        case pos hm' =>
+          have : (Q ⟨d, hP⟩).coeff d ≠ 0 := coeff_ne_zero_of_eq_degree (hQ ⟨d, hP⟩)
+          simp [hm', P', γ]; field
+        case neg hm' =>
+          have : P'.degree < d + 1 := by
+            suffices P'.degree ≤ d by
+              grw [this]
+              rw [← Nat.cast_one, ← Nat.cast_add]
+              norm_cast
+              simp
+            have := degree_sub_le P (γ • Q ⟨d, hP⟩)
+            grw [this, hd, degree_smul_le, hQ]
+            simp; rfl
+          apply (degree_lt_iff_coeff_zero _ _).mp this
+          grind
+      cases hd' : P'.degree
+      case bot =>
+        use cγ
+        suffices P = γ • Q ⟨d, hP⟩ by rw [this, hcγ]
+        have := P'.degree_eq_bot.mp hd'
+        grind
+      case coe d' =>
+        have : d' < d := by rw [hd'] at hP'; exact WithBot.coe_lt_coe.mp hP'
+        obtain ⟨c, hc⟩ := hind d' this hd' (by grind)
+        use fun i => c i + cγ i
+        simp_rw [add_smul]
+        rw [sum_add_distrib, ← hc, hcγ]
+        grind
 
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
     ∫ x in -1..1, P.eval x * (1 / √(1 - x ^ 2)) = sumZeroes n P := by
-  obtain ⟨c, rfl⟩ := poly_eq_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
+  obtain ⟨c, rfl⟩ := poly_eq_sum_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
   simp_rw [eval_finset_sum, eval_smul, sum_mul]
   rw [intervalIntegral.integral_finset_sum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, mul_assoc, intervalIntegral.integral_const_mul]
