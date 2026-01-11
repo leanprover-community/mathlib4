@@ -35,7 +35,7 @@ Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
 
-@[expose] public section
+public section
 
 open Equiv Finset Function MulAction
 

@@ -42,7 +42,7 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
   F := (Functor.const _).obj Φ.X₀
   obj_bot := rfl
   arrowSucc_eq _ h := by simp at h
-  arrowMap_limit  _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
+  arrowMap_limit _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
 
 variable {Φ}
 

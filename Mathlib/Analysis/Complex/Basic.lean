@@ -11,7 +11,6 @@ public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.RealVectorSpace
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -178,18 +177,23 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-theorem restrictScalars_one_smulRight' (x : E) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
+theorem restrictScalars_toSpanSingleton' (x : E) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
   simp [map_add, mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 
-theorem restrictScalars_one_smulRight (x : ℂ) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =
+theorem restrictScalars_toSpanSingleton (x : ℂ) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] ℂ) =
     x • (1 : ℂ →L[ℝ] ℂ) := by
   ext1 z
   dsimp
   apply mul_comm
+
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
+  restrictScalars_toSpanSingleton'
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
+  restrictScalars_toSpanSingleton
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
@@ -605,8 +609,6 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 
 @[simp]
 lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
-
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
 
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by

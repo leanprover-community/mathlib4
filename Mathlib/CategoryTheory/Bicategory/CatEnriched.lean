@@ -20,11 +20,11 @@ We define a type alias `CatEnriched C` for a type `C` with an `EnrichedCategory 
 provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
 
-If `C` is a type with an `EnrichedOrdinaryCategory Cat C` structure, then it has an `Enriched Cat C`
-structure, so the previous construction would again produce a strict bicategory. However, in this
-setting `C` is also given a `Category C` structure, together with an equivalence between this
-category and the underlying category of the `Enriched Cat C`, and in examples the given category
-structure is the preferred one.
+If `C` is a type with an `EnrichedOrdinaryCategory Cat C` structure, then it has an
+`EnrichedCategory Cat C` structure, so the previous construction would again produce a strict
+bicategory. However, in this setting `C` is also given a `Category C` structure, together with an
+equivalence between this category and the underlying category of the `EnrichedCategory Cat C`, and
+in examples the given category structure is the preferred one.
 
 Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
 `EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory

@@ -192,7 +192,7 @@ lemma presieve₀_sum : (E.sum F).presieve₀ = E.presieve₀ ⊔ F.presieve₀ 
     cases i
     · exact Or.inl (.mk _)
     · exact Or.inr (.mk _)
-  · rintro Z g (⟨⟨i⟩⟩|⟨⟨i⟩⟩)
+  · rintro Z g (⟨⟨i⟩⟩ | ⟨⟨i⟩⟩)
     · exact ⟨Sum.inl i⟩
     · exact ⟨Sum.inr i⟩
 

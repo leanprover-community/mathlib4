@@ -6,9 +6,9 @@ Authors: Jovan Gerbscheid, Anand Rao
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
-public meta import ProofWidgets.Component.FilterDetails
-public meta import ProofWidgets.Component.Panel.Basic
+public import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Tactic.InfoviewSearch.InteractiveUnfold
+public import ProofWidgets.Component.FilterDetails
 
 /-!
 # Point & click library search

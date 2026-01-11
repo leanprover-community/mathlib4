@@ -169,10 +169,8 @@ theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
 
 @[simp]
 theorem finSepDegree_self : finSepDegree F F = 1 := by
-  have : Cardinal.mk (Emb F F) = 1 := le_antisymm
-    (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
-    (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
-  rw [finSepDegree, Nat.card, this, Cardinal.one_toNat]
+  rw [finSepDegree, Nat.card_eq_one_iff_unique]
+  constructor <;> infer_instance
 
 end Field
 

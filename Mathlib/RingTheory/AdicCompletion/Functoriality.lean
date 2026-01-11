@@ -39,6 +39,7 @@ variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
 
 namespace LinearMap
 
+set_option backward.privateInPublic true in
 /-- `R`-linear version of `reduceModIdeal`. -/
 private def reduceModIdealAux (f : M →ₗ[R] N) :
     M ⧸ (I • ⊤ : Submodule R M) →ₗ[R] N ⧸ (I • ⊤ : Submodule R N) :=
@@ -54,6 +55,8 @@ private theorem reduceModIdealAux_apply (f : M →ₗ[R] N) (x : M) :
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The induced linear map on the quotients mod `I • ⊤`. -/
 def reduceModIdeal (f : M →ₗ[R] N) :
     M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) where
@@ -117,6 +120,7 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
 
 end AdicCauchySequence
 
+set_option backward.privateInPublic true in
 /-- `R`-linear version of `adicCompletion`. -/
 private def adicCompletionAux (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[R] AdicCompletion I N :=
@@ -129,6 +133,8 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A linear map induces a map on adic completions. -/
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where

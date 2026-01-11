@@ -395,7 +395,7 @@ lemma shift_distinguished (n : ℤ) :
   have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
-  obtain (n|n) := n
+  obtain (n | n) := n
   · induction n with
     | zero => exact H_zero
     | succ n hn => exact H_add hn H_one rfl

@@ -133,6 +133,18 @@ end delaborators
 
 namespace Set
 
+/-
+We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
+This is because for example the following theorems should be dual
+```
+theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
+theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
+```
+Additionally, dualizing the order on sets would mean that a set is dual to its complement.
+But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
+-/
+attribute [to_dual_dont_translate] Set
+
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 

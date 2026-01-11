@@ -20,7 +20,7 @@ asserting the existence of a right Kan extension is satisfied.
 `Functor.leftDerived` which are the left derived functors in
 the context of abelian categories.)
 
-Given `LF : D ⥤ H` and `α : L ⋙ RF ⟶ F`, we also introduce a type class
+Given `LF : D ⥤ H` and `α : L ⋙ LF ⟶ F`, we also introduce a type class
 `F.IsLeftDerivedFunctor α W` saying that `α` is a right Kan extension of `F`
 along the localization functor `L`.
 

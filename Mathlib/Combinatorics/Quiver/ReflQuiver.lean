@@ -39,7 +39,7 @@ scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
     Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX; rfl
 
-instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
+instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v + 1, u} C :=
   { inst with }
 
 @[simp] theorem ReflQuiver.id_eq_id {C : Type*} [Category* C] (X : C) : 𝟙rq X = 𝟙 X := rfl
@@ -159,7 +159,7 @@ open Opposite
 instance opposite {V} [ReflQuiver V] : ReflQuiver Vᵒᵖ where
   id X := op (𝟙rq X.unop)
 
-instance discreteReflQuiver (V : Type u) : ReflQuiver.{u+1} (Discrete V) :=
+instance discreteReflQuiver (V : Type u) : ReflQuiver.{u + 1} (Discrete V) :=
   { discreteCategory V with }
 
 end ReflQuiver

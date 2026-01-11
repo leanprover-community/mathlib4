@@ -214,9 +214,6 @@ lemma IsCompact.separation_of_notMem {X : Type u_1} [TopologicalSpace X] [T2Spac
   simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
     isClosed_singleton <| disjoint_singleton_right.mpr H2
 
-@[deprecated (since := "2025-05-23")]
-alias IsCompact.separation_of_not_mem := IsCompact.separation_of_notMem
-
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
 disjoint. -/
 lemma IsCompact.disjoint_nhdsSet_nhds {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
@@ -412,8 +409,6 @@ def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
 inclusion of T2 spaces into all topological spaces. -/
 def T2Quotient := Quotient (t2Setoid X)
-
-@[deprecated (since := "2025-05-15")] alias t2Quotient := T2Quotient
 
 namespace T2Quotient
 variable {X}
@@ -663,10 +658,6 @@ theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : 
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
-
-@[deprecated (since := "2025-05-22")]
-alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
-  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}
