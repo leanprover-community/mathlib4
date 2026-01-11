@@ -118,3 +118,16 @@ example {B : Type*} [Bicategory B] {a b c d e : B} (f : a ⟶ b) {g k : b ⟶ c}
 example {B : Type*} [CategoryStruct B] {a : B} (f g h k : a ⟶ a) :
     f ≫ g ≫ h ≫ k = 𝟙 _ := by
   simp only [cancelIso]
+
+-- Verify that `simpa` calls with MVars are fine.
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+example {C : Type*} [Category* C] {a b c d : C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    f ≫ g ≫ h = (f ≫ g) ≫ h := by
+  have foo {a b c d : C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : f ≫ g ≫ h = (f ≫ g) ≫ h :=
+    sorry
+  /- `simp only [-Category.assoc, cancelIso]` fails as expected
+  `simpa only using Category.assoc _ _ _ fails` as expected
+  and also fails unless the `isDefeq` calls in `cancelIso`
+  are not wrapped in a `withNewMCtxDepth`. -/
+  simpa [-Category.assoc, cancelIso] using foo _ _ _

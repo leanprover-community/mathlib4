@@ -49,7 +49,7 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
   exact IsIso.hom_inv_id_assoc f k
 
 /-- Given expressions `C x y z f g` assumed to represent
-composable morphisms `f : x ⟶ _` and `g : _ ⟶ z` in a category `C`,
+composable morphisms `f : x ⟶ y` and `g : y ⟶ z` in a category `C`,
 check if `g` is equal to the inverse of `f` by
 1. first checking the objects match (i.e x = z).
 2. Checking that `f` is an isomorphism by synthesizing an `IsIso` instance for it
