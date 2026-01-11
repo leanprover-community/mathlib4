@@ -76,17 +76,6 @@ theorem RCLike.sqrt_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
   rw [← Complex.sqrt_complexRingEquiv h, Complex.sqrt_of_nonneg (by grind)]
   simp
 
-theorem Complex.sqrt_neg_one : sqrt (-1) = I := by
-  rw [sqrt, ← re_add_im ((-1 : ℂ) ^ (2⁻¹ : ℂ)), cpow_inv_two_re, cpow_inv_two_im_eq_sqrt (by simp)]
-  simp
-
-theorem RCLike.sqrt_neg_one : sqrt (-1) = (I : 𝕜) := by
-  rw [sqrt]
-  split_ifs with h
-  · simp [Complex.sqrt_neg_one]
-  rw [Real.sqrt_eq_zero_of_nonpos (by simp)]
-  grind [I_eq_zero_or_im_I_eq_one]
-
 theorem Complex.sqrt_neg_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
     (-a).sqrt = I * a.sqrt := by
   obtain ⟨α, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha
@@ -103,6 +92,13 @@ theorem RCLike.sqrt_neg_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
   rw [← Complex.sqrt_complexRingEquiv h, map_neg, Complex.sqrt_neg_of_nonneg (by grind),
     map_mul, ← Complex.sqrt_complexRingEquiv h]
   simp [h]
+
+theorem Complex.sqrt_neg_one : sqrt (-1) = I := by
+  simp [sqrt_neg_of_nonneg (a := 1) (by simp)]
+
+theorem RCLike.sqrt_neg_one : sqrt (-1) = (I : 𝕜) := by
+  rw [sqrt_neg_of_nonneg (by simp)]
+  simp [sqrt]
 
 theorem Complex.sqrt_I : sqrt (I : ℂ) = √2⁻¹ * (1 + I) := by
   rw [sqrt, ← re_add_im (I ^ 2⁻¹), cpow_inv_two_im_eq_sqrt (by simp), cpow_inv_two_re]
