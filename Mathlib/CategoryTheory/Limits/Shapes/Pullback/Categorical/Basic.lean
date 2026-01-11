@@ -467,7 +467,7 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
 
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
-@[simps]
+@[simps!]
 def transform (X : Type u₇) [Category.{v₇} X] :
     CatCospanTransform F G F₁ G₁ ⥤
       CatCommSqOver F G X ⥤ CatCommSqOver F₁ G₁ X where
@@ -513,10 +513,11 @@ of `CatCospanTransform`s. -/
 def transformObjComp (X : Type u₁₀) [Category.{v₁₀} X]
     (ψ : CatCospanTransform F G F₁ G₁) (ψ' : CatCospanTransform F₁ G₁ F₂ G₂) :
     (transform X).obj (ψ.comp ψ') ≅ (transform X).obj ψ ⋙ (transform X).obj ψ' :=
-  NatIso.ofComponents fun _ =>
+  NatIso.ofComponents (fun _ =>
     CatCommSqOver.mkIso
       (Functor.associator _ _ _).symm
-      (Functor.associator _ _ _).symm
+      (Functor.associator _ _ _).symm)
+    (fun {x y} f ↦ by ext <;> simp)
 
 /-- The construction `CatCommSqOver.transform` respects the identity
 `CatCospanTransform`s. -/
@@ -596,7 +597,7 @@ variable
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/
-@[simps]
+@[simps!]
 def precompose :
     (X ⥤ Y) ⥤ CatCommSqOver F G Y ⥤ CatCommSqOver F G X where
   obj U :=
@@ -697,10 +698,11 @@ instance precomposeObjTransformObjSquare
     CatCommSq
       (precompose F G |>.obj U) (transform Y |>.obj ψ)
       (transform X |>.obj ψ) (precompose F₁ G₁ |>.obj U) where
-  iso := NatIso.ofComponents fun _ =>
+  iso := NatIso.ofComponents (fun _ =>
     CatCommSqOver.mkIso
       (Functor.associator _ _ _)
-      (Functor.associator _ _ _)
+      (Functor.associator _ _ _))
+    (fun {x y} f ↦ by ext <;> simp)
 
 -- Compare the next 3 lemmas with the components of a strong natural transform
 -- of pseudofunctors
@@ -758,10 +760,11 @@ instance transformObjPrecomposeObjSquare
     CatCommSq
       (transform Y |>.obj ψ) (precompose F G |>.obj U)
       (precompose F₁ G₁ |>.obj U) (transform X |>.obj ψ) where
-  iso := NatIso.ofComponents fun _ =>
+  iso := NatIso.ofComponents (fun _ =>
     CatCommSqOver.mkIso
       (Functor.associator _ _ _).symm
-      (Functor.associator _ _ _).symm
+      (Functor.associator _ _ _).symm)
+    (fun {x y} f ↦ by ext <;> simp)
 
 -- Compare the next 3 lemmas with the components of a strong natural transform
 -- of pseudofunctors
