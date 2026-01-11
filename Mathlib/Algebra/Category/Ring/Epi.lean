@@ -22,6 +22,7 @@ open CategoryTheory TensorProduct
 
 universe u
 
+/-- See also `Algebra.isEpi_iff_forall_one_tmul_eq`. -/
 lemma CommRingCat.epi_iff_tmul_eq_tmul {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] :
     Epi (CommRingCat.ofHom (algebraMap R S)) ↔
       ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s := by
