@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.UniqueFactorizationDomain.ClassGroup
 
 /-!
 # The Picard group of a commutative ring
@@ -50,7 +51,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
 - Establish other characterizations of invertible modules, e.g. they are modules that
@@ -852,6 +852,15 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
     ClassGroup R ≃* Pic R :=
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
+
+/-- The Picard group of a normalized GCD domain is trivial. -/
+instance (R) [CommRing R] [IsDomain R] [NormalizedGCDMonoid R] : Subsingleton (Pic R) :=
+   Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
+
+/-- The Picard group of a unique factorization domain is trivial. -/
+@[stacks 0BCH]
+instance (R) [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R] : Subsingleton (Pic R) :=
+  Equiv.subsingleton (ClassGroup.equivPic R).toEquiv.symm
 
 end PicardGroup
 
