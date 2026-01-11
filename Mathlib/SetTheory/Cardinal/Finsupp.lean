@@ -11,7 +11,7 @@ public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
 
-@[expose] public section
+public section
 
 universe u v
 

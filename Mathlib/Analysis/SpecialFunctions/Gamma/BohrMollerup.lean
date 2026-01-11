@@ -330,8 +330,8 @@ theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
-  -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
-  -- log-convexity to avoid unnecessary imports.
+  -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
+  -- self-contained proof using log-convexity to avoid unnecessary imports.
   have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos

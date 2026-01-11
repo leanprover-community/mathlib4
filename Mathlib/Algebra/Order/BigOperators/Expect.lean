@@ -16,7 +16,7 @@ public import Mathlib.Tactic.GCongr
 # Order properties of the average over a finset
 -/
 
-@[expose] public section
+public section
 
 open Function
 open Fintype (card)

@@ -54,7 +54,7 @@ needed.
 
 noncomputable section
 
-open Bornology Function Set Topology
+open Bornology Function Set Topology Metric
 open scoped ENNReal NNReal
 
 section Defs
@@ -382,14 +382,14 @@ theorem toContinuous : Continuous (f : α → β) :=
   (lipschitz f).continuous
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
-theorem ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
+theorem ediam_image (s : Set α) : ediam ((f : α → β) '' s) = ratio f * ediam s := by
   refine ((lipschitz f).ediam_image_le s).antisymm ?_
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
   exacts [(antilipschitz f).le_mul_ediam_image s, ratio_ne_zero f]
 
 /-- A dilation scales the diameter of the range by `ratio f`. -/
-theorem ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.diam (univ : Set α) := by
+theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Set α) := by
   rw [← image_univ]; exact ediam_image f univ
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
@@ -450,10 +450,10 @@ section PseudoMetricDilation
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [DilationClass F α β] (f : F)
 
 /-- A dilation scales the diameter by `ratio f` in pseudometric spaces. -/
-theorem diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f * Metric.diam s := by
-  simp [Metric.diam, ediam_image, ENNReal.toReal_mul]
+theorem diam_image (s : Set α) : diam ((f : α → β) '' s) = ratio f * diam s := by
+  simp [diam, ediam_image, ENNReal.toReal_mul]
 
-theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (univ : Set α) := by
+theorem diam_range : diam (range (f : α → β)) = ratio f * diam (univ : Set α) := by
   rw [← image_univ, diam_image]
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/

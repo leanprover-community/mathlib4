@@ -6,13 +6,11 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Defs
 
-import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # Module structure on monoid algebras
@@ -158,6 +156,7 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 
+@[to_additive (dont_translate := R k) isScalarTower_self]
 instance isScalarTower_self [IsScalarTower R k k] : IsScalarTower R k[G] k[G] where
   smul_assoc t a b := by
     classical ext; simp [mul_apply, sum_smul_index' (b := t), smul_sum, smul_mul_assoc]
@@ -165,6 +164,7 @@ instance isScalarTower_self [IsScalarTower R k k] : IsScalarTower R k[G] k[G] wh
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
+@[to_additive (dont_translate := R k) smulCommClass_self]
 instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] where
   smul_comm t a b := by
     ext
@@ -177,6 +177,7 @@ instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] wh
     simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
       imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]
 
+@[to_additive (dont_translate := R k) smulCommClass_symm_self]
 instance smulCommClass_symm_self [SMulCommClass k R k] : SMulCommClass k[G] R k[G] :=
   have := SMulCommClass.symm k R k; .symm ..
 
@@ -241,25 +242,4 @@ lemma liftNC_smul [AddZeroClass M] (f : S →+* R) (g : Multiplicative M →* R)
     AddMonoidHom.coe_mulLeft, smul_single', liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
 
 end Semiring
-
-section NonUnitalNonAssocAlgebra
-
-variable (k) [Semiring k] [DistribSMul R k] [Add G]
-
-instance isScalarTower_self [IsScalarTower R k k] :
-    IsScalarTower R k[G] k[G] :=
-  @MonoidAlgebra.isScalarTower_self k (Multiplicative G) R _ _ _ _
-
-/-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
-`R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
-also commute with the algebra multiplication. -/
-instance smulCommClass_self [SMulCommClass R k k] :
-    SMulCommClass R k[G] k[G] :=
-  @MonoidAlgebra.smulCommClass_self k (Multiplicative G) R _ _ _ _
-
-instance smulCommClass_symm_self [SMulCommClass k R k] : SMulCommClass k[G] R k[G] :=
-  have := SMulCommClass.symm k R k; .symm ..
-
-end NonUnitalNonAssocAlgebra
-
 end AddMonoidAlgebra

@@ -18,7 +18,7 @@ under suitable conditions on `f`. This can be seen as a logarithmic version of t
 Euler product for `f`.
 -/
 
-@[expose] public section
+public section
 
 open Complex
 

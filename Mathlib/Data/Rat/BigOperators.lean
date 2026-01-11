@@ -11,7 +11,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
 
-@[expose] public section
+public section
 
 variable {ι α : Type*}
 
