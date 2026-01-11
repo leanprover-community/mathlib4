@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Semicontinuity.Defs
 
 /-!
 # Functions of bounded variation
