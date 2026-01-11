@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Cycles
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Batteries.Tactic.Lint
@@ -521,8 +522,8 @@ variable (n₀ n₁ n₂ : ℤ)
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
 
-noncomputable def opcyclesToE : X.opcycles n₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ := by
-  refine X.descOpcycles n₀ _ hn₁ _ _
+noncomputable def opcyclesToE : X.opcycles n₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
+  X.descOpcycles n₀ _ hn₁ _ _
     (X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
 
 @[reassoc (attr := simp)]
@@ -731,6 +732,83 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
   simp [h]
 
 end
+
+section
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+    {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+    (f₁₂ : i₀ ⟶ i₂) (f₂₃ : i₁ ⟶ i₃)
+    (h₁₂ : f₁ ≫ f₂ = f₁₂) (h₂₃ : f₂ ≫ f₃ = f₂₃)
+
+@[reassoc (attr := simp)]
+lemma opcyclesMap_threeδ₂Toδ₁_opcyclesToE :
+    X.opcyclesMap n₁ _ _ _ _ (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) ≫
+      X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ = 0 := by
+  rw [← cancel_epi (X.pOpcycles ..), comp_zero,
+    p_opcyclesMap_assoc _ _ _ _ _ _ _ (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) rfl _,
+    p_opcyclesToE, H_map_twoδ₂Toδ₁_toCycles_assoc, zero_comp]
+
+@[simps]
+noncomputable def shortComplexOpcyclesThreeδ₂Toδ₁ : ShortComplex C :=
+  ShortComplex.mk _ _
+    (X.opcyclesMap_threeδ₂Toδ₁_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃)
+
+instance :
+    Mono (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).f := by
+  dsimp
+  rw [Preadditive.mono_iff_cancel_zero]
+  intro A x hx
+  replace hx := hx =≫ X.fromOpcycles n₁ f₁₂ f₃ _ rfl
+  rw [zero_comp, Category.assoc,
+    X.opcyclesMap_fromOpcycles n₁ f₁ f₂₃ f₁₂ f₃ (f₁₂ ≫ f₃) (by cat_disch) _ rfl _ (𝟙 _)
+      (by simp) (by cat_disch), Functor.map_id, Category.comp_id] at hx
+  rw [← cancel_mono (X.fromOpcycles n₁ f₁ f₂₃ (f₁₂ ≫ f₃) (by cat_disch)), hx, zero_comp]
+
+instance :
+    Epi (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).g := by
+  dsimp; infer_instance
+
+lemma shortComplexOpcyclesThreeδ₂Toδ₁_exact :
+    (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).Exact := by
+  let φ : X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ⟶
+      (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) :=
+    { τ₁ := X.pOpcycles n₁ f₁ f₂₃
+      τ₂ := 𝟙 _
+      τ₃ := 𝟙 _
+      comm₁₂ := by
+        dsimp
+        rw [Category.comp_id, X.p_opcyclesMap _ _ _ _ _ _ (twoδ₂Toδ₁ f₁ f₂ f₁₂) rfl] }
+  rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
+  exact X.cokernelSequenceE''_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
+
+lemma shortComplexOpcyclesThreeδ₂Toδ₁_shortExact :
+    (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).ShortExact where
+  exact := X.shortComplexOpcyclesThreeδ₂Toδ₁_exact ..
+
+end
+
+variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
+    {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+    (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+    {i₀' i₁' i₂' i₃' : ι} (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
+    (f₁₂' : i₀' ⟶ i₂') (h₁₂' : f₁' ≫ f₂' = f₁₂')
+
+@[reassoc]
+lemma opcyclesToE_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁₂ f₃ ⟶ mk₂ f₁₂' f₃')
+    (h₀ : β.app 0 = α.app 0) (h₁ : β.app 1 = α.app 2) :
+    X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ≫ X.EMap _ _ _ _ _ _ _ _ _ _ _ α =
+      X.opcyclesMap _ _ _ _ _ β ≫ X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁' f₂' f₃' f₁₂' h₁₂' := by
+  rw [← cancel_mono (X.ιE ..), Category.assoc, Category.assoc, opcyclesToE_ιE,
+    ← cancel_epi (X.pOpcycles ..), p_opcyclesToE_assoc,
+    X.πE_EMap_assoc _ _ _ _ _ _ _ _ _ _ _ _
+      (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) rfl,
+    πE_ιE, X.cyclesMap_i_assoc _ _ _ _ _ _ _ rfl, toCycles_i_assoc,
+    X.p_opcyclesMap_assoc _ _ _ _ _ _ _ rfl, X.p_opcyclesMap _ _ _ _ _ _ _ rfl,
+    ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
+  congr 2
+  ext
+  · simpa [h₀] using naturality' α 0 1
+  · simp [h₁]
 
 end SpectralObject
 

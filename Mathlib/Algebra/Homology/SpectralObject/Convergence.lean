@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
-public import Mathlib.Algebra.Homology.SpectralObject.Images
+--public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 
 /-!
 # Convergence
@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Homology.SpectralObject.Images
 
 namespace CategoryTheory
 
-open Category ComposableArrows Limits
+open ComposableArrows Limits
 
 lemma Option.by_cases {α : Type*} (x : Option α) :
     x = none ∨ ∃ (a : α), x = some a := by
@@ -35,15 +35,15 @@ noncomputable def abutment (n : ℤ) : C :=
     (X.H n).obj (mk₁ (homOfLE' ⊥ ⊤ bot_le))
 
 noncomputable def abutmentFiltration (n : ℤ) (j : ι) : C :=
-  X.image n (homOfLE' ⊥ j bot_le) (homOfLE' j ⊤ le_top) _ rfl
+  X.opcycles n (homOfLE' ⊥ j bot_le) (homOfLE' j ⊤ le_top)
 
 noncomputable def abutmentFiltrationι (n : ℤ) (j : ι) :
     X.abutmentFiltration n j ⟶ X.abutment n :=
-  X.imageι _ _ _ _ _
+  X.fromOpcycles _ _ _ _ (by simp)
 
 noncomputable def πAbutmentFiltration (n : ℤ) (j : ι) :
     (X.H n).obj (mk₁ (homOfLE' ⊥ j bot_le)) ⟶ X.abutmentFiltration n j :=
-  X.imageπ _ _ _ _ _
+  X.pOpcycles n _ _
 
 instance (n : ℤ) (j : ι) : Epi (X.πAbutmentFiltration n j) := by
   dsimp [πAbutmentFiltration]
@@ -57,8 +57,7 @@ noncomputable def abutmentFiltrationToPageInfinity
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
     (i j : ι) (hij : i ≤ j) :
     X.abutmentFiltration n₁ j ⟶ X.pageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij :=
-  X.imageToE n₀ n₁ n₂ hn₁ hn₂ (homOfLE' ⊥ i bot_le) (homOfLE hij)
-    (homOfLE' j ⊤ le_top) _ rfl _ rfl
+  X.opcyclesToE _ _ _ _ _ _ _ _ _ (by simp)
 
 instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (i j : ι) (hij : i ≤ j) :
     Epi (X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij) := by
@@ -68,7 +67,7 @@ instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationι_π (n : ℤ) (j : ι) :
     X.abutmentFiltrationι n j ≫ X.abutmentπ n j = 0 :=
-  kernel.condition _
+  (X.kernelSequenceOpcycles n _ _ _ rfl).zero
 
 @[reassoc (attr := simp)]
 lemma abutmentπ_map (n : ℤ) (j₁ j₂ : ι)
@@ -82,15 +81,17 @@ instance (n : ℤ) (j : ι) : Mono (X.abutmentFiltrationι n j) := by
 
 noncomputable def abutmentFiltrationMap (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
     X.abutmentFiltration n j₁ ⟶ X.abutmentFiltration n j₂ :=
-  X.imageMap _ _ _ _ _ _ _ _ _ (homMk₂ (𝟙 _) (homOfLE h) (𝟙 _) rfl rfl)
+  X.opcyclesMap _ _ _ _ _ (homMk₂ (𝟙 _) (homOfLE h) (𝟙 _))
 
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationMap_ι (n : ℤ) (j₁ j₂ : ι) (h : j₁ ≤ j₂) :
     X.abutmentFiltrationMap n j₁ j₂ h ≫ X.abutmentFiltrationι n j₂ =
       X.abutmentFiltrationι n j₁ := by
-  simpa using X.imageMap_ι n (homOfLE' ⊥ j₁ bot_le) (homOfLE' j₁ ⊤ le_top) _ rfl
-    (homOfLE' ⊥ j₂ bot_le) (homOfLE' j₂ ⊤ le_top) _ rfl
-    (homMk₂ (𝟙 _) (homOfLE h) (𝟙 _) rfl rfl) (𝟙 _) (by aesop_cat)
+  dsimp [abutmentFiltrationMap, abutmentFiltrationι]
+  rw [← cancel_epi (X.pOpcycles ..), p_fromOpcycles,
+    p_opcyclesMap_assoc _ _ _ _ _ _ _ (by exact homMk₁ (𝟙 _) (homOfLE h)) (by cat_disch) _,
+    p_fromOpcycles, ← Functor.map_comp]
+  rfl
 
 @[simps]
 noncomputable def abutmentFiltrationFunctor (n : ℤ) :
@@ -112,17 +113,9 @@ lemma abutmentFiltrationToPageInfinity_EMapFourδ₂Toδ₁'
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₀ i₂ (h₀₁.trans h₁₂) ≫
       X.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top =
     X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i₁ i₂ h₁₂ := by
-  rw [← cancel_epi (X.πAbutmentFiltration _ _)]
-  dsimp [πAbutmentFiltration, abutmentFiltrationToPageInfinity, EMapFourδ₂Toδ₁']
-  rw [π_imageToE_assoc, π_imageToE, X.πE_EMap n₀ n₁ n₂ hn₁ hn₂ _ _ _ _ _ _
-    (fourδ₂Toδ₁' ⊥ i₀ i₁ i₂ ⊤ bot_le h₀₁ h₁₂ le_top) (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂) rfl,
-    ← assoc]
-  congr 1
-  rw [← cancel_mono (X.iCycles _ _ _), assoc, toCycles_i,
-    X.cyclesMap_i n₁ _ _ _ _ (threeδ₂Toδ₁' ⊥ i₀ i₁ i₂ bot_le h₀₁ h₁₂)
-      (twoδ₁Toδ₀' i₀ i₁ i₂ h₀₁ h₁₂) rfl,
-    toCycles_i_assoc, ← Functor.map_comp]
-  rfl
+  dsimp [abutmentFiltration, abutmentFiltrationToPageInfinity, EMapFourδ₂Toδ₁']
+  rw [X.opcyclesToE_EMap _ _ _ _ _ _ _ _ _ _ _ _ _ _ (by rfl) _ (𝟙 _) rfl rfl,
+    opcyclesMap_id, Category.id_comp]
 
 end
 
@@ -133,9 +126,8 @@ variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
 @[reassoc (attr := simp)]
 lemma abutmentFiltrationMap_abutmentFiltrationToPageInfinity :
     X.abutmentFiltrationMap n₁ i j hij ≫
-      X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij = 0 := by
-  apply X.imageMap_threeδ₂Toδ₁_imageToE
-  rfl
+      X.abutmentFiltrationToPageInfinity n₀ n₁ n₂ hn₁ hn₂ i j hij = 0 :=
+  X.opcyclesMap_threeδ₂Toδ₁_opcyclesToE _ _ _ _ _ _ _ _ _ _ _ rfl
 
 @[simps!]
 noncomputable
@@ -153,9 +145,8 @@ instance : Epi (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j 
   infer_instance
 
 lemma abutmentFiltrationShortComplex_shortExact :
-    (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j hij).ShortExact := by
-  apply X.shortComplexImage_shortExact
-  rfl
+    (X.abutmentFiltrationShortComplex n₀ n₁ n₂ hn₁ hn₂ i j hij).ShortExact :=
+  X.shortComplexOpcyclesThreeδ₂Toδ₁_shortExact _ _ _ _ _ _ _ _ _ _ _ rfl
 
 end
 
@@ -509,8 +500,8 @@ lemma π_pageInfinityIso_hom_iso'_hom :
     π X hdata n j pq hpq ≫ (pageInfinityIso X hdata n j pq hpq).hom ≫
       (iso' X hdata n i j hij pq hpq h).hom =
         X.abutmentFiltrationToPageInfinity _ _ _ _ _ _ _ _ := by
-  rw [← cancel_mono (iso' X hdata n i j hij pq hpq h).inv, assoc, assoc,
-    Iso.hom_inv_id, comp_id, π_pageInfinityIso_hom]
+  rw [← cancel_mono (iso' X hdata n i j hij pq hpq h).inv, Category.assoc, Category.assoc,
+    Iso.hom_inv_id, Category.comp_id, π_pageInfinityIso_hom]
 
 end
 
@@ -560,10 +551,10 @@ noncomputable def convergesAt :
   filtration' := hdata.mapWithBotFunctor n ⋙ X.abutmentFiltrationFunctor (hdata.deg n)
   exists_isZero' := by
     obtain ⟨i, hi⟩ := X.isZero₁_of_convergesInDegree hdata n
-    exact ⟨i, X.isZero_image _ _ _ _ _ hi⟩
+    exact ⟨i, X.isZero_opcycles _ _ _ hi⟩
   exists_isIso' := by
     obtain ⟨i, hi⟩ := X.isZero₂_of_convergesInDegree hdata n
-    exact ⟨i, X.isIso_imageι _ _ _ _ _ hi⟩
+    exact ⟨i, X.isIso_fromOpcycles _ _ _ _ _ hi⟩
   π' i pq hpq := ConvergesAt.π X hdata n i pq hpq
   epi_π' i pq hpq := by infer_instance
   comp_π' i j hij pq hpq :=

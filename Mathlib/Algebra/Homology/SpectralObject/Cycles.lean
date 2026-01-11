@@ -92,6 +92,16 @@ instance : Epi (X.pOpcycles n f g) := by
   dsimp [pOpcycles]
   infer_instance
 
+lemma isZero_opcycles (h : IsZero ((X.H n).obj (mk₁ f))) :
+    IsZero (X.opcycles n f g) := by
+  rw [IsZero.iff_id_eq_zero, ← cancel_epi (X.pOpcycles ..)]
+  apply h.eq_of_src
+
+lemma isZero_cycles (h : IsZero ((X.H n).obj (mk₁ g))) :
+    IsZero (X.cycles n f g) := by
+  rw [IsZero.iff_id_eq_zero, ← cancel_mono (X.iCycles ..)]
+  apply h.eq_of_tgt
+
 end
 
 section
@@ -386,6 +396,18 @@ lemma kernelSequenceOpcycles_exact :
   exact IsLimit.ofIsoLimit (kernelIsKernel _)
     (Iso.symm (Fork.ext (X.opcyclesIsoKernel n f g fg h) (by
       simp [← cancel_epi (X.pOpcycles n f g)])))
+
+lemma isIso_toCycles (hf : IsZero ((X.H n).obj (mk₁ f))) :
+    IsIso (X.toCycles n f g fg h) := by
+  have : Mono (X.toCycles n f g fg h) :=
+    (X.cokernelSequenceCycles_exact n f g fg h).mono_g (hf.eq_of_src _ _)
+  exact Balanced.isIso_of_mono_of_epi _
+
+lemma isIso_fromOpcycles (hg : IsZero ((X.H n).obj (mk₁ g))) :
+    IsIso (X.fromOpcycles n f g fg h) := by
+  have : Epi (X.fromOpcycles n f g fg h) :=
+    (X.kernelSequenceOpcycles_exact n f g fg h).epi_f (hg.eq_of_tgt _ _)
+  exact Balanced.isIso_of_mono_of_epi _
 
 section
 

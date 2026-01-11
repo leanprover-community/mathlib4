@@ -694,7 +694,6 @@ public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
 public import Mathlib.Algebra.Homology.SpectralObject.Homology
-public import Mathlib.Algebra.Homology.SpectralObject.Images
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 public import Mathlib.Algebra.Homology.SpectralObject.PageInfinity
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
