@@ -147,16 +147,16 @@ lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
 protected alias ⟨veq.symm, _⟩ := veq_comm
 
 lemma vle_of_veq {x y : R} (h : x =ᵥ y) : x ≤ᵥ y := h.1
-lemma vle_of_veq' {x y : R} (h : x =ᵥ y) : y ≤ᵥ x := h.2
+lemma vge_of_veq {x y : R} (h : x =ᵥ y) : y ≤ᵥ x := h.2
 
 protected alias veq.vle := vle_of_veq
-protected alias veq.vle' := vle_of_veq'
+protected alias veq.vge := vge_of_veq
 
-lemma not_vlt_of_veq {x y : R} (h : x =ᵥ y) : ¬ x <ᵥ y := h.vle'.not_vlt
-lemma not_vlt_of_veq' {x y : R} (h : x =ᵥ y) : ¬ y <ᵥ x := h.vle.not_vlt
+lemma not_vlt_of_veq {x y : R} (h : x =ᵥ y) : ¬ x <ᵥ y := h.vge.not_vlt
+lemma not_vgt_of_veq {x y : R} (h : x =ᵥ y) : ¬ y <ᵥ x := h.vle.not_vlt
 
 protected alias veq.not_vlt := not_vlt_of_veq
-protected alias veq.not_vlt' := not_vlt_of_veq'
+protected alias veq.not_vgt := not_vgt_of_veq
 
 @[simp, refl] lemma vle_refl (x : R) : x ≤ᵥ x := or_self_iff.1 <| vle_total x x
 lemma vle_rfl {x : R} : x ≤ᵥ x := vle_refl x
