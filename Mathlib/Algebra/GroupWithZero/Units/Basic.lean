@@ -148,7 +148,6 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
-open Classical in
 /-- Class expressing the fact that a type has an inverse which is equal to zero on non-invertible
 elements. -/
 class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
