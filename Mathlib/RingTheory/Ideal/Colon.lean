@@ -141,12 +141,30 @@ theorem colon_bot' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihi
   · intro hr s hs
     simpa [mem_bot] using hr s (mem_span_of_mem hs)
 
+theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
+  ext r
+  constructor
+  · intro h
+    refine mem_colon.mpr ?_
+    intro s hs
+    exact mem_colon.mp h s (Submodule.subset_span hs)
+  · intro h
+    refine mem_colon.mpr ?_
+    intro s hs
+    refine Submodule.span_induction
+      (p := fun (x : M) (hx : x ∈ span R S) ↦ r • x ∈ N) ?_ ?_ ?_ ?_ hs
+    · intro x hx
+      exact mem_colon.mp h x hx
+    · simp [smul_zero]
+    · intro x y hx hy hrx hry
+      simpa [smul_add] using N.add_mem hrx hry
+    · intro a x hx hrx
+      simpa [smul_comm r a x] using N.smul_mem a hrx
+
 @[simp]
-theorem mem_colon_span_singleton {x : M} {r : R} : r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=
-  calc
-    r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
-      simp [Submodule.mem_colon, Submodule.mem_span_singleton]
-    _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
+theorem mem_colon_span_singleton {x : M} {r : R} :
+    r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
+  simp[colon_span (N := N) (S := {x})]
 
 @[deprecated mem_colon_span_singleton "Use `mem_colon_span_singleton` for `Submodule.span R {x}`."
 (since := "2025-12-28")]
