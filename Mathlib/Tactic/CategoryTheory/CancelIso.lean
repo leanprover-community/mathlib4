@@ -122,5 +122,5 @@ because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
-simproc_decl cancelIso (CategoryStruct.comp (self := ?x) _ _) :=
+simproc cancelIso (CategoryStruct.comp (self := ?x) _ _) :=
   Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
