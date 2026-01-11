@@ -486,7 +486,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
 @[deprecated (since := "2025-08-11")] alias Zlattice.FG := ZLattice.FG
 
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
-  Module.Finite.iff_fg.mpr (ZLattice.FG K L)
+  .of_fg (ZLattice.FG K L)
 
 instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :

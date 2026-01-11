@@ -176,7 +176,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
   have : Module.Finite R (LinearMap.ker i) :=
-    Module.Finite.iff_fg.mpr (Module.FinitePresentation.fg_ker i hi)
+    .of_fg (Module.FinitePresentation.fg_ker i hi)
   -- We claim that `i` is actually a bijection,
   -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by

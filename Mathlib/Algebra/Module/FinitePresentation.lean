@@ -154,7 +154,7 @@ lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R 
     FinitePresentation R M :=
   have ⟨_n, _f, _g, surj, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   Module.finitePresentation_of_free_of_surjective _ surj
-    (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
+    (LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ .of_finite)
 
 variable {ι} [Finite ι]
 
@@ -221,8 +221,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs])
-  have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
-    rw [Module.Finite.iff_fg]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
+  have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) :=
+    .of_fg <| Module.FinitePresentation.fg_ker _ (hl.comp H)
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
@@ -322,9 +322,8 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
   · obtain ⟨a, ha⟩ := K.mkQ_surjective (e m)
     exact ⟨a, by simp [f, ha]⟩
   · have : Module.Finite S
-        (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) := by
-      change Module.Finite S (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))
-      simpa [Finite.iff_fg]
+        (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) :=
+      .of_fg <| show (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ)).FG by simpa
     simp only [f, LinearMap.ker_restrictScalars, ← Module.Finite.iff_fg]
     exact Module.Finite.trans S _
 
@@ -341,7 +340,7 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   rw [LinearMap.exact_iff] at this
   rw [this]
   have : Module.Finite R (LinearMap.ker f) :=
-    Module.Finite.iff_fg.mpr (Module.FinitePresentation.fg_ker f hf)
+    .of_fg (Module.FinitePresentation.fg_ker f hf)
   exact Submodule.fg_range _
 
 open TensorProduct in

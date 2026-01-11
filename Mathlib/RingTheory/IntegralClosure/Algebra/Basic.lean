@@ -80,7 +80,7 @@ lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
     (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
-  have : Module.Finite R S := Module.Finite.iff_fg.mpr HS
+  have : Module.Finite R S := .of_fg HS
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 
 theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)

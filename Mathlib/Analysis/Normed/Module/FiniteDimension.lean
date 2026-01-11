@@ -390,7 +390,7 @@ with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
-  haveI : FiniteDimensional 𝕜 F := Module.Finite.iff_fg.2 ⟨s, rfl⟩
+  haveI : FiniteDimensional 𝕜 F := .of_fg ⟨s, rfl⟩
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
@@ -398,7 +398,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
       ext x
       simp [h]
     have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    exact .of_fg_top ((Submodule.fg_top _).1 this.fg_top)
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by
