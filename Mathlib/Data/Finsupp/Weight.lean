@@ -259,4 +259,10 @@ lemma range_single_one :
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
 
+lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R]
+    [CanonicallyOrderedAdd R] :
+    Monotone (Finsupp.degree (σ := σ) (R := R)) :=
+  fun _ _ e ↦
+    (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
+
 end Finsupp
