@@ -298,6 +298,33 @@ variable {α : Type}
   indented with 2 more spaces.
 - Terminal nodes have either "entries", containing the return values,
   or "pending entries", for nodes that have not been evaluated/expanded.
+
+For example:
+```
+Discrimination tree flowchart:
+⟨HMul.hMul, 6⟩ =>
+  ⟨Int, 0⟩ =>
+    ⟨Int, 0⟩ =>
+      * =>
+        * =>
+          *0 =>
+            *0 =>
+              pending entries: #[mul_self]
+            *1 =>
+              entries: #[mul_comm]
+            ⟨Neg.neg, 3⟩ =>
+              ⟨Int, 0⟩ =>
+                * =>
+                  *1 =>
+                    entries: #[mul_neg]
+            1 =>
+              pending entries: #[mul_one]
+          ⟨Neg.neg, 3⟩ =>
+            pending entries: #[neg_mul]
+          1 =>
+            *0 =>
+              entries: #[one_mul]
+```
 -/
 partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>
@@ -305,7 +332,7 @@ partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   if lines.size = 0 then
     f!"<empty discrimination tree>"
   else
-    "Discrimination tree flowchart:" ++ Format.joinSep lines.toList "\n"
+    "Discrimination tree flowchart:\n" ++ Format.joinSep lines.toList "\n"
 where
   /-- Auxiliary function for `RefinedDiscrTree.format`. -/
   go (trie : TrieIndex) : Format := Id.run do
