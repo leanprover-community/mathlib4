@@ -221,7 +221,7 @@ namespace CatCommSqOver
 /-- The Hom types for the categorical commutative squares over X are given by pairs of natural
 transformations compatible with the structural isomorphisms. -/
 @[ext]
-structure Hom (x y : (CatCommSqOver F G X)) where
+structure Hom (x y : CatCommSqOver F G X) where
   /-- the first component of `f : Hom x y` is a morphism `x.fst ⟶ y.fst` -/
   fst : x.fst ⟶ y.fst
   /-- the second component of `f : Hom x y` is a morphism `x.snd ⟶ y.snd` -/
