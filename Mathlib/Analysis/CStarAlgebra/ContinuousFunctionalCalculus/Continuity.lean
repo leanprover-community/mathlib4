@@ -316,7 +316,7 @@ theorem ContinuousOn.cfc' [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact s)
 
 /-- If `f : 𝕜 → 𝕜` is continuous on `s` and `a : X → A` is continuous on `t : Set X`,
 and `a x` satisfies the predicate `p` associated to `𝕜` and `s` is a common neighborhood of the
-spectra of `a x` for a `x`, then `fun x ↦ cfc f (a x)` is continuous on `t`.
+spectra of `a x` for all `x ∈ t`, then `fun x ↦ cfc f (a x)` is continuous on `t`.
 
 This is weaker than `ContinuousOn.cfc` since it requires `f` to be continuous on a *neighborhood* of
 the spectra, but in practice it is often easier to apply because `s` is not required to be compact,
@@ -483,7 +483,7 @@ theorem ContinuousOn.cfc_nnreal' [TopologicalSpace X] {s : Set ℝ≥0} (hs : Is
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on `s` and `a : X → A` is continuous on `t : Set X`,
 and `a x` is nonnegative for all `x ∈ t` and `s` is a common neighborhood of the
-spectra of `a x` for a `x`, then `fun x ↦ cfc f (a x)` is continuous on `t`.
+spectra of `a x` for all `x ∈ t`, then `fun x ↦ cfc f (a x)` is continuous on `t`.
 
 This is weaker than `ContinuousOn.cfc_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the spectra, but in practice it is often easier to apply because `s` is not
@@ -823,7 +823,7 @@ theorem ContinuousOn.cfcₙ' [TopologicalSpace X] {s : Set 𝕜} (hs : IsCompact
 
 /-- If `f : 𝕜 → 𝕜` is continuous on `s` and `f 0 = 0` and `a : X → A` is continuous on `t : Set X`,
 and `a x` satisfies the predicate `p` associated to `𝕜` and `s` is a common neighborhood of the
-quasispectra of `a x` for a `x`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`.
+quasispectra of `a x` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`.
 
 This is weaker than `ContinuousOn.cfcₙ` since it requires `f` to be continuous on a
 *neighborhood* of the quasispectra, but in practice it is often easier to apply because `s` is not
@@ -998,7 +998,7 @@ theorem ContinuousOn.cfcₙ_nnreal' [TopologicalSpace X] {s : Set ℝ≥0} (hs :
 
 /-- If `f : ℝ≥0 → ℝ≥0` is continuous on `s` and `f 0 = 0` and `a : X → A` is continuous on
 `t : Set X`, and `a x` is nonnegative for all `x ∈ t` and `s` is a common neighborhood of the
-quasispectra of `a x` for a `x`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`.
+quasispectra of `a x` for all `x ∈ t`, then `fun x ↦ cfcₙ f (a x)` is continuous on `t`.
 
 This is weaker than `ContinuousOn.cfcₙ_nnreal` since it requires `f` to be continuous on a
 *neighborhood* of the quasispectra, but in practice it is often easier to apply because `s` is not
