@@ -73,10 +73,12 @@ theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] :
   I = I.colon (Set.univ : Set R) := colon_univ.symm
   _ ≤ I.colon S := colon_mono (le_refl I) (Set.subset_univ S)
 
-theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
-    (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
+theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*) (g : ι₂ → Set M) :
+    (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   apply le_antisymm
-  · exact le_iInf fun i => le_iInf fun j => colon_mono (iInf_le _ _) (le_iSup _ _)
+  · exact le_iInf fun i =>
+      le_iInf fun j =>
+        colon_mono (iInf_le _ _) (Set.subset_iUnion (fun j => g j) j)
   · intro x hx
     refine mem_colon.2 ?_
     intro m hm
@@ -88,6 +90,11 @@ theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : S
     have h : x ∈ (f i).colon (g j) := by
       exact (mem_iInf (p := fun j => (f i).colon (g j))).1 hx_i j
     exact mem_colon.1 h m hm'
+
+@[deprecated iInf_colon_iUnion (since := "2026-01-11")]
+theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
+    (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
+  simpa using iInf_colon_iUnion (ι₁ := ι₁) (f := f) (ι₂ := ι₂) (g := g)
 
 /-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
 lemma colon_eq_top_of_le (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
