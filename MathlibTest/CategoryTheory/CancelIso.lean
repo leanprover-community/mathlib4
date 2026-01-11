@@ -43,6 +43,25 @@ example {W X Y Z : C} (a : W ⟶ X) (f : X ⟶ Y) [IsIso f] (b : X ⟶ Z) :
 -- Cancellation for Iso.hom/inv
 example {X Y : C} (e : X ≅ Y) : e.hom ≫ e.inv = 𝟙 _ := by simp only [cancelIso]
 
+-- Checking if typeclass synthesis can be stuck
+/--
+error: `simp` made no progress
+---
+error: unsolved goals
+case refine_2
+C : Type u_1
+inst✝¹ : Category.{v_1, u_1} C
+X Y : C
+inst✝ : ∀ (f : X ⟶ Y), IsIso f
+this : ∀ (f : X ⟶ sorry) (g : sorry ⟶ X), f ≫ g = 𝟙 X
+⊢ False
+-/
+#guard_msgs in
+example {X Y : C} [∀ f : X ⟶ Y, IsIso f] : False := by
+  have (f : X ⟶ ?_) (g) : f ≫ g = 𝟙 _ := by
+    simp only [cancelIso]
+  sorry
+
 end Basic
 
 section Functors
@@ -88,6 +107,15 @@ example {X Y : C} (f : X ⟶ Y) [IsIso f] : f.op.op.unop.op.op ≫ (inv f).op.op
   simp only [cancelIso]
 
 open Bicategory in
-example {B : Type*} [Bicategory B] {a b c d e : B} (f : a ⟶ b) {g k : b ⟶ c} (η : g ≅ k) (h : c ⟶ d) (i : d ⟶ e) :
+example {B : Type*} [Bicategory B] {a b c d e : B} (f : a ⟶ b) {g k : b ⟶ c}
+    (η : g ≅ k) (h : c ⟶ d) (i : d ⟶ e) :
     f ◁ (η.inv ▷ h) ▷ i ≫ inv (f ◁ (η.inv ▷ h) ▷ i) = 𝟙 _ := by
+  simp only [cancelIso]
+
+-- CategoryStruct without a Category instance. Should make no progress but no error.
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {B : Type*} [CategoryStruct B] {a : B} (f : a ⟶ a) (g h k : a ⟶ a)
+    (h : a ⟶ a) :
+    f ≫ g ≫ h ≫ k = 𝟙 _ := by
   simp only [cancelIso]
