@@ -994,5 +994,5 @@ noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S
 end Splitting
 
 end ShortComplex
-#lint
+
 end CategoryTheory
