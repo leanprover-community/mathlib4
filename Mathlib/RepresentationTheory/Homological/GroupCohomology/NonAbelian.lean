@@ -255,13 +255,12 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
 
 noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
-    LinearMap.ker (ModuleCat.Hom.hom (d₂₃ A)) := by
+    groupCohomology.cocycles₂ A := by
   refine ⟨fun st ↦ (Equiv.ofInjective f hf).symm
     ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2), (hfg _).mp (by simp [← hbc, c.prop])⟩, ?_⟩
   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  conv in ((A.ρ x) _) => change x • _
-  rw [sub_add_eq_add_sub]
+  rw [← Rep.smul_eq_ρ_apply, sub_add_eq_add_sub]
   change _ = f 0
   have : (x • b y + x • y • b z + -(x • b (y * z))) ∈ AddSubgroup.center B :=
     (hA ((hfg _).mp (by simp [← hbc, c.prop, ← add_assoc]) : _ ∈ f.range))
@@ -275,10 +274,8 @@ theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x 
   obtain a := fun h ↦ (hfg _).mp (show g (b h - b' h) = 0 by simp [← hbc h, ← hbc' h])
   choose a ha using a
   refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf (sub_eq_zero.mp ?_)⟩
-  simp only [d₁₂_hom_apply, sub_eq_add_neg, map_add, δ₁₂_aux, cocycles₂.val_eq_coe,
-    cocycles₂.coe_mk, Pi.sub_apply, Equiv.apply_ofInjective_symm, neg_add_rev, ← map_neg, neg_neg,
-    ← add_assoc]
-  conv in ((A.ρ _) _) => change h • _
+  simp only [d₁₂_hom_apply, sub_eq_add_neg, map_add, δ₁₂_aux, cocycles₂.coe_mk, Pi.sub_apply,
+    Equiv.apply_ofInjective_symm, neg_add_rev, ← map_neg, neg_neg, ← add_assoc]
   have h1 : f (h • a h') + f (-a (h * h')) + f (a h) + b' h + h • b' h' + -b' (h * h') =
     f (h • a h') + f (a h) + b' h + h • b' h' + -b' (h * h') + f (-a (h * h')) := by
     conv_lhs =>
@@ -288,7 +285,7 @@ theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x 
   have h2 : f (h • a h') + f (a h) + b' h = f (a h) + b' h + f (h • a h') := by
     conv_rhs => rw [AddSubgroup.mem_center_iff.mp (hA (⟨h • a h', rfl⟩ : f _ ∈ f.range))]
     rw [add_assoc]
-  rw [h1, h2]
+  rw [← Rep.smul_eq_ρ_apply, h1, h2]
   simp [ha, sub_eq_add_neg, neg_add_rev, add_assoc]
 
 include hg in
@@ -339,36 +336,58 @@ theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
   rw [congr($(groupCohomology.map_id_comp_H0Iso_hom f) x)]
   rfl
 
-def CocycleToZ1 (f : groupCohomology.cocycles₁ A) : Z1 G A := ⟨f.val, fun x y => Eq.symm (by
-  rw [← sub_eq_zero, add_sub_right_comm, sub_add_comm]
-  exact ((mem_cocycles₁_def f).mp f.2 x y))⟩
+@[simps?!]
+def Z1EquivCocycle₁ : Z1 G A ≃ (groupCohomology.cocycles₁ A) where
+  toFun := fun f ↦ ⟨f.val, by
+    refine funext fun ⟨g, h⟩ ↦ Eq.trans ?_ (sub_eq_zero.mpr (f.2 g h).symm)
+    simp [← Rep.smul_eq_ρ_apply]
+    abel⟩
+  invFun := fun f ↦ ⟨f.val, fun g h ↦ by
+    refine sub_eq_zero.mp (Eq.trans ?_ (congrFun (LinearMap.mem_ker.mp f.2) ⟨g, h⟩)) |> .symm
+    simp [← Rep.smul_eq_ρ_apply]
+    abel⟩
+  left_inv f := Subtype.ext rfl
+  right_inv f := Subtype.ext rfl
+
+noncomputable def H1Iso_aux (A : Rep k G) :
+    H1 G A ≃ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+  Quotient.congr (Z1EquivCocycle₁ A) (fun a b ↦ by
+    simp only [Z1.setoid_r, Submodule.quotientRel_def, LinearMap.mem_range, Subtype.ext_iff,
+      LinearMap.codRestrict_apply, AddSubgroupClass.coe_sub]
+    refine ⟨fun ⟨g, hg⟩ ↦ ⟨-g, ?_⟩, fun ⟨g, hg⟩ ↦ ⟨-g, ?_⟩⟩
+    · sorry
+    · sorry
+    )
 
 open ConcreteCategory MorphismProperty in
 -- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
-noncomputable def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A where
-  toFun := Quotient.mk _ ∘ (CocycleToZ1 A) ∘ Function.surjInv (f := (groupCohomology.H1π A).hom) (by
-    rw [← MorphismProperty.surjective, ConcreteCategory.surjective_eq_epimorphisms,
-        MorphismProperty.epimorphisms]
-    infer_instance)
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
+noncomputable nonrec def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A :=
+  ((H1Iso A).toLinearEquiv.toEquiv).trans (H1Iso_aux A).symm
 
-theorem H1Iso_zero : H1Iso A 0 = 0 := sorry
+theorem H1Iso_zero : H1Iso A 0 = 0 := by
+  sorry
 
 theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
     H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := sorry
 
 variable {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
 
+lemma _root_.CategoryTheory.ShortComplex.ShortExact.f_injective (hX : X.ShortExact) :
+    Function.Injective (X.f : X.X₁ →+[G] X.X₂) := sorry
+
+lemma _root_.CategoryTheory.ShortComplex.ShortExact.g_surjective (hX : X.ShortExact) :
+    Function.Surjective (X.g : X.X₂ →+[G] X.X₃) := sorry
+
+lemma _root_.CategoryTheory.ShortComplex.ShortExact.f_g_exact (hX : X.ShortExact) :
+    Function.Exact (X.f : X.X₁ →+[G] X.X₂) (X.g : X.X₂ →+[G] X.X₃) := sorry
+
 theorem δ₀₁_H0Iso_eq_H1Iso_δ :
-    (δ₀₁ (f := (X.f : X.X₁ →+[G] X.X₂)) (g := X.g) sorry sorry sorry) ∘ (H0Iso X.X₃) =
+    (δ₀₁ hX.f_injective hX.g_surjective hX.f_g_exact) ∘ (H0Iso X.X₃) =
     (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := sorry
 
 theorem δ₁₂_H1Iso_eq_δ :
-    (δ₁₂ (f := (X.f : X.X₁ →+[G] X.X₂)) (g := X.g)
-      sorry sorry sorry (le_of_le_of_eq le_top AddCommGroup.center_eq_top.symm)) ∘ (H1Iso X.X₃) =
-    (groupCohomology.δ hX 1 2 rfl) := sorry
+    (δ₁₂ hX.f_injective hX.g_surjective hX.f_g_exact (by simp [AddCommGroup.center_eq_top])) ∘
+      (H1Iso X.X₃) = (groupCohomology.δ hX 1 2 rfl) := sorry
 
 end compatibility
 

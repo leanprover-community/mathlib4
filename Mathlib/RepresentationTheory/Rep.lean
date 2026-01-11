@@ -77,6 +77,8 @@ def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): was `V.ρ`
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
+lemma smul_eq_ρ_apply {V : Rep k G} (s : G) (v : V) : s • v = (V.ρ s) v := rfl
+
 /-- Lift an unbundled representation to `Rep`. -/
 abbrev of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, (ModuleCat.endRingEquiv _).symm.toMonoidHom.comp ρ⟩
