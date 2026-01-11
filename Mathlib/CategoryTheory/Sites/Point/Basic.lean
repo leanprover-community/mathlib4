@@ -133,11 +133,13 @@ variable {P : Cᵒᵖ ⥤ A} {T : A}
   (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
     P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :
     Φ.presheafFiber.obj P ⟶ T :=
   colimit.desc _ (Cocone.mk _ { app x := φ x.unop.1 x.unop.2 })
 
+set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_presheafFiberDesc (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiberDesc φ hφ = φ X x :=

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TensorProduct.Free
 # Formally smooth local algebras
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct IsLocalRing KaehlerDifferential
 

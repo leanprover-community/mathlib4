@@ -15,7 +15,7 @@ In this file we prove basic properties of `Function.support f = {x | f x ≠ 0}`
 `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists CompleteLattice MonoidWithZero
 

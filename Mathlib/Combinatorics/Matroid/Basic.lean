@@ -319,6 +319,8 @@ end exchange
 
 section aesop
 
+set_option backward.privateInPublic true
+
 /-- The `aesop_mat` tactic attempts to prove a set is contained in the ground set of a matroid.
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
@@ -1042,7 +1044,7 @@ theorem IsBasis.insert_isBasis_insert (hI : M.IsBasis I X) (h : M.Indep (insert 
 theorem IsBase.isBase_of_isBasis_superset (hB : M.IsBase B) (hBX : B ⊆ X) (hIX : M.IsBasis I X) :
     M.IsBase I := by
   by_contra h
-  obtain ⟨e,heBI,he⟩ := hIX.indep.exists_insert_of_not_isBase h hB
+  obtain ⟨e, heBI, he⟩ := hIX.indep.exists_insert_of_not_isBase h hB
   exact heBI.2 (hIX.mem_of_insert_indep (hBX heBI.1) he)
 
 theorem Indep.exists_isBase_subset_union_isBase (hI : M.Indep I) (hB : M.IsBase B) :

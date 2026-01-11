@@ -25,12 +25,12 @@ open scoped ENNReal
 
 namespace DomMulAct
 
-variable {M N α E : Type*} [MeasurableSpace M] [MeasurableSpace N]
-  [MeasurableSpace α] [NormedAddCommGroup E] {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
+variable {M N α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E]
+  {μ : MeasureTheory.Measure α} {p : ℝ≥0∞}
 
 section SMul
 
-variable [SMul M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
+variable [SMul M α] [SMulInvariantMeasure M α μ] [MeasurableConstSMul M α]
 
 @[to_additive]
 instance : SMul Mᵈᵐᵃ (Lp E p μ) where
@@ -62,7 +62,7 @@ theorem mk_smul_indicatorConstLp (c : M)
         (by rwa [SMulInvariantMeasure.measure_preimage_smul c hs]) b :=
   rfl
 
-instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableSMul N α] :
+instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableConstSMul N α] :
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -124,7 +124,7 @@ end SMul
 
 section MulAction
 
-variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
+variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableConstSMul M α]
 
 @[to_additive]
 instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl

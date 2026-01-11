@@ -238,7 +238,7 @@ instance : lightToProfinite.PreservesEpimorphisms where
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
-structure LightDiagram : Type (u+1) where
+structure LightDiagram : Type (u + 1) where
   /-- The indexing diagram. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat
   /-- The limit cone. -/
@@ -331,7 +331,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
       apply lightDiagramToProfinite.map_injective
       apply InducedCategory.hom_ext
       simp only [Functor.map_comp, Functor.map_preimage]
-      simp )
+      simp)
   functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=

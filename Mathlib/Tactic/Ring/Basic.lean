@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Inv
-public meta import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Util.AtomM
+public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `ring` tactic
@@ -903,6 +905,7 @@ theorem mul_pow {ea₁ b c₁ : ℕ} {xa₁ : R}
     (_ : ea₁ * b = c₁) (_ : a₂ ^ b = c₂) : (xa₁ ^ ea₁ * a₂ : R) ^ b = xa₁ ^ c₁ * c₂ := by
   subst_vars; simp [_root_.mul_pow, pow_mul]
 
+set_option backward.privateInPublic true in
 -- needed to lift from `OptionT CoreM` to `OptionT MetaM`
 private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
     MonadLiftT (OptionT m) (OptionT m') where
