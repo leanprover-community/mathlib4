@@ -199,6 +199,25 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
+    IsAffineHom (coprod.desc f g) := by
+  refine ⟨fun W hW ↦ ?_⟩
+  have : IsAffine (f ⁻¹ᵁ W).toScheme := hW.preimage f
+  have : IsAffine (g ⁻¹ᵁ W).toScheme := hW.preimage g
+  let i : (f ⁻¹ᵁ W).toScheme ⨿ (g ⁻¹ᵁ W).toScheme ⟶ U ⨿ V := coprod.map (f ⁻¹ᵁ W).ι (g ⁻¹ᵁ W).ι
+  convert isAffineOpen_opensRange i
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨(x | x), rfl⟩ := (coprodMk U V).surjective x
+    · replace hx : f x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inl ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+    · replace hx : g x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inr ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+  · rintro _ ⟨x, rfl⟩
+    obtain ⟨(⟨x, hx⟩ | ⟨x, hx⟩), rfl⟩ := (coprodMk _ _).surjective x
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]
 lemma isAffineHom_of_isInducing

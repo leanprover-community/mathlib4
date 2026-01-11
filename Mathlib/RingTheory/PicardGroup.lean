@@ -883,7 +883,8 @@ example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
 
 variable {R} in
-/-- In a total ring of fractions, two mutually inv -/
+/-- In a total ring of fractions, if two ideals are inverse to each other in the Picard group,
+the only possibility is that they are both the whole ring. -/
 theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
     [Module.Invertible R I] [Module.Invertible R J] (h : Pic.mk R (I ⊗[R] J) = 1) :
     I = ⊤ ∧ J = ⊤ := by
