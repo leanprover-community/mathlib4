@@ -282,7 +282,7 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
 
 theorem iff_hom_surj_fin_n {G : Type*} [Group G] :
 IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
+  Function.Surjective f ∧ IsNormalClosureFG f.ker  := by
   rw [iff_hom_surj_finite]
   constructor
   · intro ⟨α, hα, f, hfsurj, hfker⟩
@@ -302,15 +302,20 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     use α, inferInstance, f
 
 theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
-IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
-  Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
-  sorry
+  IsFinitelyPresented G ↔
+    ∃ (S : Finset G) (f : FreeGroup S →* G),
+      (∀ s, f (FreeGroup.of s) = (s : G)) ∧
+      Function.Surjective f ∧ IsNormalClosureFG f.ker := by
+  constructor
+  · sorry
+  · sorry
 
 theorem implied_by_hom_surj_finite {G : Type*} [Group G] :
 (∃ (α : Type*) (_ : Finite α) (f : (FreeGroup α) →* G),
   Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)) → IsFinitelyPresented G := by
   rintro ⟨α, hα, f, hfsurj, hfker⟩
   rw [iff_hom_surj_fin_n]
+  -- TODO considering refactoring this since it seems used for the second time.
   let n := Nat.card α
   let iso : FreeGroup (Fin n) ≃* FreeGroup α :=
     FreeGroup.freeGroupCongr (Finite.equivFin α).symm
@@ -322,8 +327,6 @@ theorem implied_by_hom_surj_finite {G : Type*} [Group G] :
     exact
     IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
   exact ⟨n, f', hf'surj, hf'ker⟩
-
-  -- use Fin n, inferInstance
 
 -- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
