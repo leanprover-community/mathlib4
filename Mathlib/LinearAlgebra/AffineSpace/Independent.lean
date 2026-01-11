@@ -680,6 +680,45 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
   · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
 
+/-- Given an affinely independent family of points, an affine combination (with sum of weights 1)
+equals the line map of two affine combination points if and only if its weights are given pointwise
+by the line map of the corresponding weights. -/
+theorem AffineIndependent.affineCombination_eq_lineMap_iff_weight_lineMap {ι : Type*} {p : ι → P}
+    (ha : AffineIndependent k p) {w w₁ w₂ : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1)
+    (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1) (c : k) :
+    s.affineCombination k p w = AffineMap.lineMap (s.affineCombination k p w₁)
+    (s.affineCombination k p w₂) c ↔ ∀ i ∈ s, w i = AffineMap.lineMap (w₁ i) (w₂ i) c := by
+  set w' : ι → k := fun i => AffineMap.lineMap (w₁ i) (w₂ i) c with w'_def
+  have hsub : ∑ i ∈ s, (w₂ - w₁) i = 0 := by simp [Pi.sub_apply, Finset.sum_sub_distrib, hw₂, hw₁]
+  have hsum' : ∑ i ∈ s, w' i = 1 := by
+    simp_rw [w'_def, AffineMap.lineMap_apply, smul_eq_mul, vsub_eq_sub, vadd_eq_add,
+      sum_add_distrib, ← Finset.mul_sum]
+    simp only [Pi.sub_apply] at hsub
+    rw [hsub, hw₁]
+    grind
+  have hw'eq : w' = c • (w₂ - w₁) + w₁ := by
+    funext i
+    simp only [AffineMap.lineMap_apply, vsub_eq_sub, sub_eq_add_neg, smul_eq_mul, vadd_eq_add,
+      add_comm, smul_add, smul_neg, Pi.add_apply, Pi.smul_apply, Pi.neg_apply, add_right_inj, w']
+    grind
+  have hcomb : s.affineCombination k p w' =
+      AffineMap.lineMap (s.affineCombination k p w₁) (s.affineCombination k p w₂) c := by
+    rw [hw'eq, (s.weightedVSub_vadd_affineCombination (c • (w₂ - w₁)) w₁ p).symm]
+    simp [s.weightedVSub_const_smul, AffineMap.lineMap_apply, Finset.affineCombination_vsub]
+  rw [hcomb.symm]
+  constructor
+  · intro _
+    have heq : s.affineCombination k p w = s.affineCombination k p w' := by grind
+    have hind := ha.indicator_eq_of_affineCombination_eq s s w w' hw hsum' heq
+    intro i hi
+    have h1 := congrArg (fun f => f i) hind
+    simp only [Set.indicator, SetLike.mem_coe, hi, ↓reduceIte] at h1
+    grind
+  · simp only [Finset.affineCombination, Finset.weightedVSubOfPoint_apply, AffineMap.coe_mk,
+      vadd_right_cancel_iff]
+    grind [sum_congr]
+
+
 end AffineIndependent
 
 section DivisionRing
