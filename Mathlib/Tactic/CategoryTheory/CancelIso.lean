@@ -55,21 +55,21 @@ check if `g` is equal to the inverse of `f` by
 2. Checking that `f` is an isomorphism by synthesizing an `IsIso` instance for it
 3. running `push inv` on both `f` and `g`, and checking that the results are equal.
 
-If they are inverse, return an expression `e` of the proof of `inv f = g`. If any of
-the tests above fail, return none. -/
+If they are inverse, return a proof of `inv f = g`.
+If any of the tests above fail, return none. -/
 def tryCancelPair (C x y z f g : Expr) : MetaM (Option Expr) := do
   -- Check the objects match
-  unless ← isDefEq z x do return none
+  unless ← withNewMCtxDepth (isDefEq z x) do return none
   -- Run `push` on both sides.
   let inv_f ← try mkAppOptM ``CategoryTheory.inv #[C, none, x, y, f, none] catch _ => return none
-  let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
-  let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
+  let pushed_inv ← Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
+  let pushed_g ← Push.pushCore (.const ``CategoryTheory.inv) {} none g
   -- Check if the "inv"-normal forms match
-  unless ← isDefEq pushed_inv.expr pushed_g.expr do return none
+  unless ← withNewMCtxDepth (isDefEq pushed_inv.expr pushed_g.expr) do return none
   -- builds and return the proof of `inv f = g`.
   return ← mkEqTrans
     (← pushed_inv.proof?.getDM (mkEqRefl inv_f))
-    (← mkEqSymm <| ← pushed_g.proof?.getDM (mkEqRefl g))
+    (← (← pushed_g.proof?.mapM mkEqSymm).getDM (mkEqRefl g))
 
 /-- The `cancelIso` simproc triggers on expressions of the form `f ≫ g`.
 
@@ -88,7 +88,7 @@ because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
-def cancelIsoSimproc : Simp.Simproc := fun e => do -- is withReducible necessary here?
+def cancelIsoSimproc : Simp.Simproc := fun e => do
   let_expr CategoryStruct.comp C instCat x y t f g := e | return .continue
   match_expr g with
   -- Right_associated expressions needs their own logic.
@@ -105,7 +105,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => do -- is withReducible necessary
 
 end Mathlib.Tactic.CategoryTheory.CancelIso
 
-simproc cancelIso (CategoryStruct.comp (self := ?x) _ _) :=
+simproc cancelIso (CategoryStruct.comp (self := _) _ _) :=
   Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
 
 -- We can’t @[inherit_doc] directly on the simproc command.
