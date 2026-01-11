@@ -51,6 +51,7 @@ add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 nonnegative reals (`ℝ≥0∞`). -/
 macro (name := finiteness) "finiteness" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
@@ -59,6 +60,7 @@ macro (name := finiteness) "finiteness" c:Aesop.tactic_clause* : tactic =>
 nonnegative reals (`ℝ≥0∞`). -/
 macro (name := finiteness?) "finiteness?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
+  classical
   aesop? $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
@@ -67,9 +69,10 @@ macro (name := finiteness?) "finiteness?" c:Aesop.tactic_clause* : tactic =>
 nonnegative reals (`ℝ≥0∞`). -/
 macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
+  classical
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
-                 warnOnNonterminal := false  })
+                 warnOnNonterminal := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
 
 /-!
