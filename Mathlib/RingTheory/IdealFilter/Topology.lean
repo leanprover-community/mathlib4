@@ -24,8 +24,8 @@ This file constructs topological structures on a ring from an `IdealFilter`.
 
 ## Main statements
 
-* `isUniform_iff_exists_ringFilterBasis`: An `IdealFilter` on a ring `A` is uniform if and only if its
-ideals form a `RingFilterBasis` for `A`.
+* `isUniform_iff_exists_ringFilterBasis`: An `IdealFilter` on a ring `A` is uniform if and only if
+its ideals form a `RingFilterBasis` for `A`.
 * `IdealFilter.addGroupTopology_mem_nhds_iff`: a neighbourhood characterization for
 `addGroupTopology`.
 * `IdealFilter.ringTopology_mem_nhds_iff`: a neighbourhood characterization for
@@ -98,10 +98,10 @@ def ringFilterBasis (uni_F : F.IsUniform) : RingFilterBasis A where
     exact Ideal.mul_mem_left I x₀ h_a
   mul_right' := by
     rintro x₀ U ⟨I, h_I, rfl⟩
-    refine ⟨comap_mulRight I x₀, ?_, ?_⟩
-    · exact ⟨comap_mulRight I x₀, uni_F.comap_mul_right_closed h_I x₀, rfl⟩
-    · intro x (h_x : x ∈ comap_mulRight I x₀)
-      exact (mem_comap_mulRight I x₀ x).mp h_x
+    refine ⟨I.colon {x₀}, ?_, ?_⟩
+    · exact ⟨I.colon {x₀}, IsUniform.colon_mem uni_F h_I x₀, rfl⟩
+    · intro a ha
+      exact Set.mem_preimage.mpr (Submodule.mem_colon_singleton_set.mp ha)
 
 /-- An `IdealFilter` on a ring `A` is uniform if and only if its ideals form a `RingFilterBasis`
 for `A`. -/
@@ -117,7 +117,7 @@ theorem isUniform_iff_exists_ringFilterBasis :
       exact ⟨I, h_I, rfl⟩
   · rintro ⟨B, h_B⟩
     exact {
-      comap_mul_right_closed := by
+      colon_closed := by
         intro I h_I a
         have h_IB : (I : Set A) ∈ B.sets := by
           rw [h_B]
@@ -126,7 +126,10 @@ theorem isUniform_iff_exists_ringFilterBasis :
         rw[h_B] at h_VB
         rcases h_VB with ⟨J, h_J, rfl⟩
         refine Order.PFilter.mem_of_le ?_ h_J
-        simpa [SetLike.coe_subset_coe] using h_sub
+        intro x hx
+        refine Submodule.mem_colon.mpr ?_
+        intro s hs
+        simpa [Set.mem_singleton_iff.mp hs] using (Submodule.mem_toAddSubgroup I).mp (h_sub hx)
     }
 
 /-- The topology on `A` induced by `addGroupFilterBasis`. -/
