@@ -17,9 +17,9 @@ If `g` is not a composition itself, it checks whether `f` is inverse to `g`,
 by checking if `f` has an `IsIso` instance, and then running `push inv` on `inv f` and on `g`.
 If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
 
-The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
-the procedure checks if `f` and `h` are inverses to each other, and the procedure thus rewrites
-`f ≫ g ≫ h` to `h`. This is useful as simp-normal forms in category theory are right-associated.
+If `g` is of the form `h ≫ k`, the procedure instead checks if `f` and `h` are inverses to each
+other, and the procedure rewrites `f ≫ g ≫ h` to `h` if that is the case.
+This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
 `F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
@@ -48,15 +48,37 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
   rw [← h]
   exact IsIso.hom_inv_id_assoc f k
 
+/-- Given expressions `C x y z f g` assumed to represent
+composable morphisms `f : x ⟶ _` and `g : _ ⟶ z` in a category `C`,
+check if `g` is equal to the inverse of `f` by
+1. first checking the objects match (i.e x = z).
+2. Checking that `f` is an isomorphism by synthesizing an `IsIso` instance for it
+3. running `push inv` on both `f` and `g`, and checking that the results are equal.
+
+If they are inverse, return an expression `e` of the proof of `inv f = g`. If any of
+the tests above fail, return none. -/
+def tryCancelPair (C x y z f g : Expr) : MetaM (Option Expr) := do
+  -- Check the objects match
+  unless ← isDefEq z x do return none
+  -- Run `push` on both sides.
+  let inv_f ← try mkAppOptM ``CategoryTheory.inv #[C, none, x, y, f, none] catch _ => return none
+  let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
+  let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
+  -- Check if the "inv"-normal forms match
+  unless ← isDefEq pushed_inv.expr pushed_g.expr do return none
+  -- builds and return the proof of `inv f = g`.
+  return ← mkEqTrans
+    (← pushed_inv.proof?.getDM (mkEqRefl inv_f))
+    (← mkEqSymm <| ← pushed_g.proof?.getDM (mkEqRefl g))
+
 /-- The `cancelIso` simproc triggers on expressions of the form `f ≫ g`.
 
 If `g` is not a composition itself, it checks whether `f` is inverse to `g`
 by checking if `f` has an `IsIso` instance and then by running `push inv` on `inv f` and on `g`.
 If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
 
-The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
-the procedure checks if `f` and `h` are inverses to each other, and the procedure rewrites
-`f ≫ g ≫ h` to `h` if that is the case.
+If `g` is of the form `h ≫ k`, the procedure instead checks if `f` and `h` are inverses to each
+other, and the procedure rewrites `f ≫ g ≫ h` to `h` if that is the case.
 This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
@@ -66,40 +88,21 @@ because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
-def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReducible necessary here?
+def cancelIsoSimproc : Simp.Simproc := fun e => do -- is withReducible necessary here?
   let e_whnf ← whnf e
   let_expr CategoryStruct.comp C instCat x y t f g := e_whnf | return .continue
   match_expr g with
   -- Right_associated expressions needs their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
-    -- Can’t expect a cancelation if the objects don’t match
-    unless ← isDefEq z x do return .continue
-    -- Can’t expect a cancellation if `f` is not an iso.
-    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
-    -- Run `push`
-    let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
-    let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
-    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
-    -- Check if the "inv"-normal forms match
-    unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
-    -- Builds the proof inv f = g first:
-    let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
-      (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
+    let some p₀ ← tryCancelPair C x y z f g | return .continue
     -- Builds the proof that `f ≫ g ≫ h = h.
     let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, none, g, p₀, none, h]
-    return .done (.mk h (.some P) false)
+    return .done {expr := h, proof? := P}
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
   | _ =>
-    unless ← isDefEq t x do return .continue
-    let some inst ← synthInstance? <| ← mkAppM ``IsIso #[f] | return .continue
-    let inv_f ← mkAppOptM ``CategoryTheory.inv #[none, none, none, none, f, inst]
-    let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
-    let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
-    unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
-    let p₀ ← mkEqTrans (← pushed_inv.proof?.getDM (mkEqRefl inv_f))
-      (← mkEqSymm <| ← pushed_g.proof?.getDM (mkEqRefl g))
-    let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, inst, g, p₀]
-    return .done (.mk (← mkAppOptM ``CategoryStruct.id #[C, instCat, x]) (.some P) false)
+    let some p₀ ← tryCancelPair C x y t f g | return .continue
+    let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, none, g, p₀]
+    return .done {expr := ← mkAppOptM ``CategoryStruct.id #[C, instCat, x], proof? := P}
 
 end Mathlib.Tactic.CategoryTheory.CancelIso
 
@@ -109,9 +112,8 @@ If `g` is not a composition itself, it checks whether `f` is inverse to `g`
 by checking if `f` has an `IsIso` instance and then by running `push inv` on `inv f` and on `g`.
 If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
 
-The procedure handles the case of an expression of the `g = h ≫ k` as a special case, in this case,
-the procedure checks if `f` and `h` are inverses to each other, and the procedure rewrites
-`f ≫ g ≫ h` to `h` if that is the case.
+If `g` is of the form `h ≫ k`, the procedure instead checks if `f` and `h` are inverses to each
+other, and the procedure rewrites `f ≫ g ≫ h` to `h` if that is the case.
 This is useful as simp-normal forms in category theory are right-associated.
 
 For instance, the simproc will successfully rewrite expressions such as
