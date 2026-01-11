@@ -54,15 +54,10 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-@[deprecated (since := "2025-05-23")] alias Module.not_mem_support_iff := Module.notMem_support_iff
-
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
-
-@[deprecated (since := "2025-05-23")]
-alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
@@ -243,7 +238,7 @@ theorem Module.support_quotient (I : Ideal R) :
     · rw [support_eq_zeroLocus]
       apply PrimeSpectrum.zeroLocus_anti_mono_ideal
       rw [Submodule.annihilator_quotient]
-      exact fun x hx ↦ Submodule.mem_colon.mpr fun p ↦ Submodule.smul_mem_smul hx
+      exact fun x hx ↦ Submodule.mem_colon.mpr fun p hp ↦ Submodule.smul_mem_smul hx hp
   · rintro p ⟨hp₁, hp₂⟩
     rw [Module.mem_support_iff] at hp₁ ⊢
     let Rₚ := Localization.AtPrime p.asIdeal

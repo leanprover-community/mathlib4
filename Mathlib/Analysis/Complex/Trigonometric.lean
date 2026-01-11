@@ -416,6 +416,14 @@ theorem tan_mul_cos {x : ℂ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
 
 @[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  inv_div ..
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  inv_div ..
+
+@[simp]
 theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
 
 theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj, ← map_div₀, tan]
@@ -601,6 +609,14 @@ nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
 
 theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
+
+@[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  ofReal_injective <| by simp
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  ofReal_injective <| by simp
 
 @[simp]
 theorem tan_zero : tan 0 = 0 := by simp [tan]

@@ -23,7 +23,7 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 `x ↦ a * x`, `x ↦ x * a` and `x ↦ x⁻¹`.
 -/
 
-@[expose] public section
+public section
 
 
 open Interval Pointwise

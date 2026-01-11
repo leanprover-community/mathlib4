@@ -30,5 +30,6 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top := ()
   le_top _ := le_rfl
   top_add' _ := rfl
+  isAddLeftRegular_of_ne_top := by simp
 
 end PUnit
