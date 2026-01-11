@@ -22,8 +22,6 @@ This file proves that the ideal class group of a Unique Factorization Domain is 
 - [stacks-project]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
 -/
 
-@[expose] public section
-
 open scoped nonZeroDivisors Pointwise BigOperators
 
 open IsLocalization IsFractionRing FractionalIdeal
@@ -32,7 +30,7 @@ section CommRing
 
 variable (R : Type*) [CommRing R]
 
-private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R}
+lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {c : Fin n → R}
     {J : Ideal R}
     [IsDomain R]
     (hJspan : J = Ideal.span (Set.range c))
@@ -120,7 +118,7 @@ private lemma exists_bezout_coeffs_of_isUnit_fractionalIdeal_of_span {n : ℕ} {
   rcases hC1 with ⟨ℓ, hℓ, hsum⟩
   exact ⟨ℓ, hℓ, by simpa using hsum⟩
 
-private lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     {K : FractionalIdeal R⁰ (FractionRing R)}
     (hJK : (J : FractionalIdeal R⁰ (FractionRing R)) * K = 1)
@@ -174,7 +172,7 @@ private lemma dvd_relations_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R
 section Domain
 variable [IsDomain R]
 
-private lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
+lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) :
     ∃ (x : R) (_hx0 : x ≠ 0) (b : Fin n → R),
       ∀ i,
         algebraMap R (FractionRing R) (b i) =
@@ -208,7 +206,7 @@ private lemma exists_clearDenoms_fin {n : ℕ} (ℓ : Fin n → FractionRing R) 
           simp [x₀, x, Submonoid.smul_def, Algebra.smul_def]
 
 
-private lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
+lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     {ℓ : Fin n → FractionRing R}
     (hsum :
@@ -295,7 +293,7 @@ private lemma mem_mul_span_of_bezout_and_clearDenoms {n : ℕ} {c : Fin n → R}
     simpa [hx_eq_sum] using hsum_mem
   simpa [B] using hxmem
 
-private lemma exists_relations_of_isUnit_fractionalIdeal_of_span
+lemma exists_relations_of_isUnit_fractionalIdeal_of_span
     {n : ℕ} {c : Fin n → R} {J : Ideal R}
     (hJspan : J = Ideal.span (Set.range c))
     (hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
@@ -315,7 +313,7 @@ private lemma exists_relations_of_isUnit_fractionalIdeal_of_span
       mem_mul_span_of_bezout_and_clearDenoms (R := R) (c := c) (J := J) (ℓ := ℓ) hJspan
         hsum₁ hb
 
-private lemma ideal_eq_top_of_relations {n : ℕ} {J : Ideal R}
+lemma ideal_eq_top_of_relations {n : ℕ} {J : Ideal R}
     {x : R} (hx0 : x ≠ 0) {b : Fin n → R} (hxmem : x ∈ J * Ideal.span (Set.range b))
     (hb : ∀ j : Fin n, x ∣ b j) :
     J = ⊤ := by
@@ -357,15 +355,8 @@ private lemma ideal_eq_top_of_relations {n : ℕ} {J : Ideal R}
       _ = Ideal.span ({x} : Set R) * ⊤ := (Ideal.mul_top _).symm
   exact (Ideal.span_singleton_mul_right_inj (R := R) hx0).1 this
 
-
-section UFD
-
-variable [UniqueFactorizationMonoid R]
-
-private noncomputable instance : NormalizedGCDMonoid R :=
-  Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
-
-private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
+lemma exists_gcd_normalization_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R]
+    (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (y : R) (n : ℕ) (_hn : 0 < n) (c : Fin n → R) (J : Ideal R),
       I = Ideal.span ({y} : Set R) * J ∧
@@ -462,7 +453,7 @@ private lemma exists_gcd_normalization_of_isUnit_fractionalIdeal (I : Ideal R)
   refine ⟨y, n, hn, c, J, ?_, rfl, hJunit, hgcd⟩
   exact hIJ
 
-private lemma dvd_of_dvd_mul_of_gcd_eq_one {n : ℕ} {c : Fin n → R}
+lemma dvd_of_dvd_mul_of_gcd_eq_one [NormalizedGCDMonoid R] {n : ℕ} {c : Fin n → R}
     (hgcd : (Finset.univ : Finset (Fin n)).gcd c = 1) {x b : R}
     (h : ∀ i : Fin n, x ∣ c i * b) : x ∣ b := by
   classical
@@ -474,9 +465,8 @@ private lemma dvd_of_dvd_mul_of_gcd_eq_one {n : ℕ} {c : Fin n → R}
     simpa [Finset.gcd_mul_right, hgcd] using hxgcd
   exact (dvd_normalize_iff).1 hxnorm
 
-
 /-- In a UFD, an integral ideal that is invertible as a fractional ideal is principal. -/
-private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
+theorem ideal_isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨y, n, hn, c, J, hIJ, hJspan, hJunit, hgcd⟩ :=
@@ -493,11 +483,16 @@ private theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
   refine ⟨y, ?_⟩
   simpa [hJtop] using hIJ
 
+@[expose] public section
+
+variable [UniqueFactorizationMonoid R]
 
 /-- In a UFD, every invertible fractional ideal is principal. -/
 theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
+  haveI : NormalizedGCDMonoid R :=
+    Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := by
     have hIunit : IsUnit (I : FractionalIdeal R⁰ (FractionRing R)) := ⟨I, rfl⟩
@@ -551,7 +546,7 @@ instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (Cl
     x = 1 := classGroup_eq_one (R := R) x
     _ = y := (classGroup_eq_one (R := R) y).symm
 
-end UFD
+end
 
 end Domain
 end CommRing
