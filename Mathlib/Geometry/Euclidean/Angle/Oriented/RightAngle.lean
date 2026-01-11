@@ -602,15 +602,7 @@ lemma oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p�
   refine (Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
     (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃) ?_).1 h
   rw [oangle_rev]
-  suffices |(∡ p₅ p₆ p₄).toReal| < π / 2 by
-    convert this using 1
-    nth_rw 2 [← abs_neg]
-    congr
-    rw [Real.Angle.toReal_neg_eq_neg_toReal_iff]
-    intro hc
-    simp only [hc, Real.Angle.toReal_pi, abs_of_pos Real.pi_pos] at this
-    linarith [Real.pi_pos]
-  exact abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆
+  simp [abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆]
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem cos_oangle_right_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∡ p₁ p₂ p₃ = ↑(π / 2)) :

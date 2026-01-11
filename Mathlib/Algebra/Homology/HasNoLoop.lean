@@ -44,17 +44,11 @@ instance : c.symm.HasNoLoop where
 
 lemma exists_distinct_prev_or :
     (∃ (k : ι), c.Rel j k ∧ j ≠ k) ∨ ∀ (k : ι), ¬ c.Rel j k := by
-  by_cases h : ∃ (k : ι), c.Rel j k
-  · obtain ⟨k, hk⟩ := h
-    exact Or.inl ⟨k, hk, fun hjk ↦ c.not_rel_of_eq hjk hk⟩
-  · exact Or.inr (by simpa using h)
+  grind +splitIndPred
 
 lemma exists_distinct_next_or :
     (∃ (i : ι), c.Rel i j ∧ i ≠ j) ∨ ∀ (i : ι), ¬ c.Rel i j := by
-  by_cases h : ∃ (i : ι), c.Rel i j
-  · obtain ⟨i, hi⟩ := h
-    exact Or.inl ⟨i, hi, fun hij ↦ c.not_rel_of_eq hij hi⟩
-  · exact Or.inr (by simpa using h)
+  grind +splitIndPred
 
 lemma hasNoLoop_up' {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
     (a : α) (ha : a ≠ 0) :
