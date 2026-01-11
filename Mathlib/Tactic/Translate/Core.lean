@@ -783,7 +783,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
       logWarning m!"`{t.attrName} private` ignores the provided name {cfg.tgt}"
     return ← withDeclNameForAuxNaming src do
       mkAuxDeclName <| .mkSimple ("_" ++ t.attrName.toString)
-  -- When re-tagging an existing translation, simply guess that existing translation.
+  -- When re-tagging an existing translation, simply return that existing translation.
   if cfg.existing then
     if cfg.tgt == .anonymous then
       if let some tgt := findTranslation? (← getEnv) t src then
