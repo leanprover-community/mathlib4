@@ -63,10 +63,7 @@ theorem Complex.sqrt_complexRingEquiv {a : 𝕜} (h : RCLike.im (RCLike.I : 𝕜
     (complexRingEquiv h a).sqrt = complexRingEquiv h (RCLike.sqrt a) := by
   aesop (add simp [RCLike.sqrt])
 
-@[grind =] theorem RCLike.complexRingEquiv_nonneg_iff {a : 𝕜} (h : im (I : 𝕜) = 1) :
-    0 ≤ complexRingEquiv h a ↔ 0 ≤ a := by
-  rw [nonneg_iff, nonneg_iff (K := 𝕜)]
-  simp
+attribute [local grind =] RCLike.complexRingEquiv_nonneg_iff
 
 theorem RCLike.sqrt_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
     sqrt a = sqrt (re a) := by
