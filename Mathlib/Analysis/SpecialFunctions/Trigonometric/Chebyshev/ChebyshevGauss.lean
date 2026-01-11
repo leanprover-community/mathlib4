@@ -40,13 +40,9 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk₀ : k ≠ 0) (hk
     Complex.exp (-(k / (2 * n) * π * Complex.I)) * (Complex.exp (k / n * π * Complex.I) - 1) =
     (-1) ^ k - 1 by
     rw [Complex.exp_neg] at this
-    set s := ∑ i ∈ range n, Complex.exp ((k * ((2 * i + 1) / (2 * n) * π)) * Complex.I)
-    set a := Complex.exp (k / (2 * n) * π * Complex.I)
-    set b := Complex.exp (k / n * π * Complex.I) - 1
-    have ha : a ≠ 0 := Complex.exp_ne_zero _
-    have hb : b ≠ 0 := by grind [exp_sub_one_ne_zero]
-    linear_combination (norm := (field_simp; ring))
-      this * a / b
+    have hf {s a b t : ℂ} (h : s * a⁻¹ * b = t) (ha : a ≠ 0) (hb : b ≠ 0) : s = a / b * t := by
+      linear_combination (norm := field) h * a / b
+    apply hf this (Complex.exp_ne_zero _) (by grind [exp_sub_one_ne_zero])
   convert geom_sum_mul (Complex.exp (k / n * π * Complex.I)) n using 1
   · congr 1
     rw [sum_mul]
