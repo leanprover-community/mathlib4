@@ -5,8 +5,9 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Square root of RCLike
