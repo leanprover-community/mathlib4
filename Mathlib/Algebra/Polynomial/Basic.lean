@@ -492,6 +492,7 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 theorem toFinsupp_X : X.toFinsupp = .single 1 (1 : R) :=
   rfl
 
+@[simp]
 theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
   intro he
   simpa using monomial_eq_monomial_iff.1 he
