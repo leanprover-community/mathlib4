@@ -11,10 +11,14 @@ import Mathlib.RingTheory.Ideal.BigOperators
 
 
 /-!
-# The class group of a Unique Factorization Domain is trivial
-This file proves that the ideal class group of a Unique Factorization Domain is trivial.
+# The class group of a Unique Factorization Domain is trivial\
+This file proves that the ideal class group of a Normalized GCD Domain is trivial.
+The main application is to Unique Factorization Domains,
+which are known to be Normalized GCD Domains.
 
 ## Main result
+- `NormalizedGCDMonoid.instSubsingletonClassGroup` : the class group of a
+  Normalized GCD Domain is trivial.
 - `UniqueFactorizationMonoid.instSubsingletonClassGroup` : the class group of a UFD is trivial.
 
 ## References
@@ -485,14 +489,13 @@ theorem ideal_isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I :
 
 @[expose] public section
 
-variable [UniqueFactorizationMonoid R]
+section NormalizedGCDMonoid
+variable [NormalizedGCDMonoid R]
 
-/-- In a UFD, every invertible fractional ideal is principal. -/
-theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal_of_isUnit
+/-- In a normalized GCD Domain, every invertible fractional ideal is principal. -/
+theorem NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
-  haveI : NormalizedGCDMonoid R :=
-    Classical.choice (by infer_instance : Nonempty (NormalizedGCDMonoid R))
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := by
     have hIunit : IsUnit (I : FractionalIdeal R⁰ (FractionRing R)) := ⟨I, rfl⟩
@@ -531,21 +534,34 @@ theorem UniqueFactorizationMonoid.fractionalIdeal_isPrincipal_of_isUnit
     FractionalIdeal.isPrincipal_of_num_isPrincipal (R := R)
       (I := (I : FractionalIdeal R⁰ (FractionRing R))) hJprin
 
-/-- In a UFD, every class in the ideal class group is `1`. -/
-theorem UniqueFactorizationMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 := by
+/-- In a normalized GCD Domain, every class in the ideal class group is `1`. -/
+theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 := by
   refine ClassGroup.induction (R := R) (K := FractionRing R) (P := fun y => y = 1) ?_ x
   intro I
   -- `mk I = 1` iff `I` is principal as a submodule.
   refine (ClassGroup.mk_eq_one_iff (R := R) (K := FractionRing R) (I := I)).2 ?_
   exact fractionalIdeal_isPrincipal_of_isUnit (R := R) I
 
-/-- The ideal class group of a UFD is trivial. -/
-instance UniqueFactorizationMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
+/-- The ideal class group of a normalized GCD Domain is trivial. -/
+instance NormalizedGCDMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
   refine ⟨fun x y => ?_⟩
   calc
     x = 1 := classGroup_eq_one (R := R) x
     _ = y := (classGroup_eq_one (R := R) y).symm
 
+end NormalizedGCDMonoid
+section UFD
+
+variable [UniqueFactorizationMonoid R]
+
+/-- The ideal class group of a UFD is trivial. -/
+noncomputable instance UniqueFactorizationMonoid.instSubsingletonClassGroup :
+    Subsingleton (ClassGroup R) :=
+  letI : NormalizedGCDMonoid R :=
+    Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
+  NormalizedGCDMonoid.instSubsingletonClassGroup R
+
+end UFD
 end
 
 end Domain
