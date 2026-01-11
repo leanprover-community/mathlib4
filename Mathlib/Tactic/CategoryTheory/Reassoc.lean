@@ -6,10 +6,7 @@ Authors: Kim Morrison, Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Tactic.Simps.Basic
-public meta import Mathlib.Util.AddRelatedDecl
-public meta import Aesop
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `reassoc` attribute
@@ -38,6 +35,7 @@ open Mathlib.Tactic
 namespace CategoryTheory
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
+@[to_dual none]
 theorem eq_whisker' {C : Type*} [Category* C]
     {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
@@ -139,10 +137,16 @@ initialize registerBuiltinAttribute {
   | `(attr| reassoc $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "" "_assoc" ref optAttr fun value levels => do
+    let tgt := src.appendAfter "_assoc"
+    addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
         let pf ← reassocExpr' value
         pure (pf, levels)
+    -- If the original declaration is tagged with `to_dual`,
+    -- then tag the generated declaration with `to_dual none`.
+    if (Translate.findTranslation? (← getEnv) ToDual.data src).isSome then
+      liftCommandElabM <| Command.elabCommand <| ←
+        `(command| attribute [to_dual none] $(mkIdent tgt))
   | _ => throwUnsupportedSyntax }
 
 /--
