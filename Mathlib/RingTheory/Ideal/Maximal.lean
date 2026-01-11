@@ -234,7 +234,7 @@ theorem isPrime_iff_of_isPrincipalIdealRing_of_noZeroDivisors [NoZeroDivisors α
     {P : Ideal α} : P.IsPrime ↔ P = ⊥ ∨ ∃ p, Prime p ∧ P = span {p} := by
   rw [or_iff_not_imp_left, ← forall_congr' isPrime_iff_of_isPrincipalIdealRing,
     ← or_iff_not_imp_left, or_iff_right_of_imp]
-  rintro rfl; exact bot_prime
+  rintro rfl; exact isPrime_bot
 
 end IsPrincipalIdealRing
 
