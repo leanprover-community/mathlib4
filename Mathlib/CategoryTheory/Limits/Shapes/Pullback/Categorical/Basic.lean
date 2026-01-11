@@ -333,6 +333,8 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   map {J J'} F :=
     { fst := whiskerRight F (π₁ _ _)
       snd := whiskerRight F (π₂ _ _) }
+  map_id := by intros; ext <;> simp
+  map_comp := by intros; ext <;> simp
 
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
 @[simps!]
@@ -350,6 +352,8 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
     { app x :=
         { fst := φ.fst.app x
           snd := φ.snd.app x } }
+  map_id := by intros; ext <;> simp
+  map_comp := by intros; ext <;> simp
 
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
@@ -366,6 +370,7 @@ def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
     NatIso.ofComponents
       (fun _ ↦ CatCommSqOver.mkIso
         (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
+  functor_unitIso_comp := by intros; ext <;> simp
 
 variable {F G X}
 
@@ -482,7 +487,9 @@ def transform (X : Type u₇) [Category.{v₇} X] :
           snd := whiskerRight f.snd ψ.right
           w := by
             ext x
-            simp [← Functor.map_comp_assoc] } }
+            simp [← Functor.map_comp_assoc] }
+      map_id := by intros; ext <;> simp
+      map_comp := by intros; ext <;> simp }
   map {ψ ψ'} η :=
     { app S :=
       { fst := { app y := η.left.app (S.fst.obj y) }
@@ -493,6 +500,8 @@ def transform (X : Type u₇) [Category.{v₇} X] :
             η.left_coherence_app (S.fst.obj t)
           simp only [Iso.inv_hom_id_app_assoc] at this
           simp [this] } }
+  map_id := by intros; ext <;> simp
+  map_comp := by intros; ext <;> simp
 
 variable {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
   [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
@@ -600,11 +609,15 @@ def precompose :
               (Functor.associator _ _ _).symm }
       map {S S'} φ :=
         { fst := whiskerLeft U φ.fst
-          snd := whiskerLeft U φ.snd } }
+          snd := whiskerLeft U φ.snd }
+      map_id := by intros; ext <;> simp
+      map_comp := by intros; ext <;> simp }
   map {U V} α :=
     { app x :=
       { fst := whiskerRight α x.fst
         snd := whiskerRight α x.snd } }
+  map_id := by intros; ext <;> simp
+  map_comp := by intros; ext <;> simp
 
 variable (X) in
 /-- The construction `precompose` respects functor identities. -/
