@@ -299,6 +299,20 @@ theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordina
       apply (hf a _).not_gt he'
       simpa [he'.ne'] using ha
 
+theorem eval_add (b : Ordinal) {f₁ f₂ : Ordinal →₀ Ordinal}
+    (h : ∀ e₁ ∈ f₁.support, ∀ e₂ ∈ f₂.support, e₂ ≤ e₁) :
+    eval b (f₁ + f₂) = eval b f₁ + eval b f₂ := by
+  induction f₁ using Finsupp.induction_on_max with
+  | zero => simp
+  | single_add e₁ x f₁ hf₁ hx IH =>
+    rw [add_assoc, eval_single_add, eval_single_add' _ hf₁, IH, add_assoc]
+    · simp_all
+    · intro e₂ he₂
+      obtain he₂ | he₂ := Finset.mem_union.1 <| support_add he₂
+      · exact (hf₁ _ he₂).le
+      · apply h _ _ _ he₂
+        simp_all
+
 @[simp]
 theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
   conv_rhs => rw [← CNF.foldr b o]
