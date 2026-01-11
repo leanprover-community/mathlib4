@@ -18,10 +18,7 @@ We opt for an equivalent definition that's both simpler and often more convenien
 is a strictly monotonic function `f` such that at successor limits `a`, `f a` is the least upper
 bound of `f b` with `b < a`.
 
-## TODO
-
-* Prove the equivalence with the standard definition (in some other file).
-* Replace `Ordinal.IsNormal` by this more general notion.
+See `Order.isNormal_iff_strictMono_and_continuous` for a proof that these notions are equivalent.
 -/
 
 @[expose] public section

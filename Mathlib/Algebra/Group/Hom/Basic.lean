@@ -63,11 +63,15 @@ def invMonoidHom : α →* α where
   map_one' := inv_one
   map_mul' := mul_inv
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_invMonoidHom : (invMonoidHom : α → α) = Inv.inv := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem invMonoidHom_comp_invMonoidHom : (invMonoidHom (α := α)).comp invMonoidHom = .id _ := by
+  ext; simp
 
 end DivisionCommMonoid
 

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!

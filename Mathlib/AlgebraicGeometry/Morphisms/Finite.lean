@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.Algebra.Category.Ring.Epi
+public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -139,6 +140,14 @@ lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
 lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
     IsFinite (f ≫ g) ↔ IsFinite f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
+
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite g] :
+    IsFinite (Limits.coprod.desc f g) := by
+  refine HasAffineProperty.coprodDesc_affineAnd inferInstance RingHom.finite_respectsIso
+    ?_ _ _ ‹_› ‹_›
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g]
+  refine RingHom.finite_algebraMap.mpr inferInstance
 
 end IsFinite
 

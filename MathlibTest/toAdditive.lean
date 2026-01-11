@@ -9,8 +9,8 @@ set_option autoImplicit true
 namespace Test
 
 -- [note] use the below options for diagnostics:
--- set_option trace.to_additive true
--- set_option trace.to_additive_detail true
+-- set_option trace.translate true
+-- set_option trace.translate_detail true
 -- set_option pp.universes true
 -- set_option pp.explicit true
 -- set_option pp.notation false
@@ -231,7 +231,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def
+  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def []
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -560,10 +560,14 @@ fun {α} [Add α] a => Add.add a
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
 
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+@[simp, to_additive none]
+theorem test1' : 5 = 5 := rfl
+
 /-! Test that we can't write `to_additive self (attr := ..)`. -/
 
 /--
-error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+error: invalid `(attr := ...)` after `self` or `none`, as there is no other declaration for the attributes.
 Instead, you can write the attributes in the usual way.
 -/
 #guard_msgs in

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Complex roots of unity
@@ -25,7 +26,7 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Complex

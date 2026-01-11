@@ -5,7 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
 
 deprecated_module (since := "2025-09-03")
