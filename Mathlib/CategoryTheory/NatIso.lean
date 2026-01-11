@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Natural isomorphisms
