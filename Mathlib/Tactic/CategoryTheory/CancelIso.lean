@@ -5,7 +5,7 @@ Authors: Robin Carlier
 -/
 module
 
-public meta import Mathlib.Tactic.Push
+public import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
 
 /-!
@@ -86,7 +86,7 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
       (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
     -- Builds the proof that `f ≫ g ≫ h = h.
-    let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, inst, g, p₀, none, h]
+    let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, none, g, p₀, none, h]
     return .done (.mk h (.some P) false)
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
   | _ =>
@@ -96,8 +96,8 @@ def cancelIsoSimproc : Simp.Simproc := fun e => withReducible do -- is withReduc
     let pushed_inv ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
     let pushed_g ← Mathlib.Tactic.Push.pushCore (.const ``CategoryTheory.inv) {} none g
     unless ← isDefEq pushed_inv.expr pushed_g.expr do return .continue
-    let p₀ ← mkEqTrans (pushed_inv.proof?.getD (← mkEqRefl inv_f))
-      (← mkEqSymm <| pushed_g.proof?.getD (← mkEqRefl g))
+    let p₀ ← mkEqTrans (← pushed_inv.proof?.getDM (mkEqRefl inv_f))
+      (← mkEqSymm <| ← pushed_g.proof?.getDM (mkEqRefl g))
     let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, inst, g, p₀]
     return .done (.mk (← mkAppOptM ``CategoryStruct.id #[C, instCat, x]) (.some P) false)
 
