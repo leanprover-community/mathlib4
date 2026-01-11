@@ -115,7 +115,6 @@ example {B : Type*} [Bicategory B] {a b c d e : B} (f : a ⟶ b) {g k : b ⟶ c}
 -- CategoryStruct without a Category instance. Should make no progress but no error.
 /-- error: `simp` made no progress -/
 #guard_msgs in
-example {B : Type*} [CategoryStruct B] {a : B} (f : a ⟶ a) (g h k : a ⟶ a)
-    (h : a ⟶ a) :
+example {B : Type*} [CategoryStruct B] {a : B} (f g h k : a ⟶ a) :
     f ≫ g ≫ h ≫ k = 𝟙 _ := by
   simp only [cancelIso]
