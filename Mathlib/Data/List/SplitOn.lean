@@ -9,7 +9,7 @@ public import Mathlib.Data.List.Basic
 
 /-! ### List.splitOn -/
 
-@[expose] public section
+public section
 
 namespace List
 

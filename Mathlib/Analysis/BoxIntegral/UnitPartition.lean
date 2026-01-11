@@ -78,7 +78,7 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
-  let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
+  let I : Box ι := Box.mk (fun _ ↦ -C) (fun _ ↦ C)
     (fun _ ↦ by simp [C, neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩
@@ -177,7 +177,7 @@ theorem box_injective : Function.Injective (fun ν : ι → ℤ ↦ box n ν) :=
   exact Box.ne_of_disjoint_coe (disjoint.mp h)
 
 lemma box.upper_sub_lower (ν : ι → ℤ) (i : ι) :
-    (box n ν ).upper i - (box n ν).lower i = 1 / n := by
+    (box n ν).upper i - (box n ν).lower i = 1 / n := by
   simp_rw [box, add_div, add_sub_cancel_left]
 
 variable [Fintype ι]
@@ -185,7 +185,7 @@ variable [Fintype ι]
 theorem diam_boxIcc (ν : ι → ℤ) :
     Metric.diam (Box.Icc (box n ν)) ≤ 1 / n := by
   rw [BoxIntegral.Box.Icc_eq_pi]
-  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| EMetric.diam_pi_le_of_le (fun i ↦ ?_)
+  refine ENNReal.toReal_le_of_le_ofReal (by positivity) <| Metric.ediam_pi_le_of_le fun i ↦ ?_
   simp_rw [Real.ediam_Icc, box.upper_sub_lower, le_rfl]
 
 @[simp]
@@ -203,7 +203,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
       (fun _ hν ↦ ?_)
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet
-  · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _ ).aedisjoint
+  · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
       (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
@@ -399,7 +399,7 @@ theorem _root_.tendsto_tsum_div_pow_atTop_integral (hF : Continuous F) (hs₁ : 
     rw [Set.indicator]
     split_ifs with hs
     · exact le_max_of_le_right (h₀ x hx)
-    · exact norm_zero.trans_le <|le_max_left 0 _
+    · exact norm_zero.trans_le <| le_max_left 0 _
   have h₂ : ∀ᵐ x, ContinuousAt (s.indicator F) x := by
     filter_upwards [compl_mem_ae_iff.mpr hs₃] with _ h
       using (hF.continuousOn).continuousAt_indicator h

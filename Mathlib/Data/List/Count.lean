@@ -15,7 +15,7 @@ This file proves basic properties of `List.countP` and `List.count`, which count
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid Set.range
 

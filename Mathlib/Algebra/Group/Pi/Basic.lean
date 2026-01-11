@@ -108,11 +108,11 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 
 @[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
     IsLeftCancelMul (∀ i, f i) where
-  mul_left_cancel  _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
+  mul_left_cancel _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
 
 @[to_additive] instance instIsRightCancelMul [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] :
     IsRightCancelMul (∀ i, f i) where
-  mul_right_cancel  _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
+  mul_right_cancel _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
 
 @[to_additive] instance instIsCancelMul [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] :
     IsCancelMul (∀ i, f i) where

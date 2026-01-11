@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 

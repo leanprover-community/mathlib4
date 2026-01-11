@@ -517,10 +517,10 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [F
     QuasispectrumRestricts a e where
   left_inv := by
     convert hfge ▸ hf.left_inv.comp hg.left_inv
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
   rightInvOn := by
     convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end NonUnital
 
@@ -570,7 +570,7 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
 
 lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
-  rightInvOn :=  by
+  rightInvOn := by
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv

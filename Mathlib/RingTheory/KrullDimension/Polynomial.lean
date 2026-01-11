@@ -20,7 +20,7 @@ This file proves properties of the krull dimension of the polynomial ring over a
   `R` is less than `2 * (ringKrullDim R) + 1`.
 -/
 
-@[expose] public section
+public section
 
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by

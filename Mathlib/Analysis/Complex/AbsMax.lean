@@ -80,7 +80,7 @@ are continuous on its closure. We prove the following theorems.
 maximum modulus principle, complex analysis
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology

@@ -12,7 +12,7 @@ public import Mathlib.Data.Vector.Snoc
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ₁} {s₂ : σ₂}
 

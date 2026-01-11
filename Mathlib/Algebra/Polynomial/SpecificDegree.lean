@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 Facts about polynomials that have a specific integer degree.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

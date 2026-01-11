@@ -311,7 +311,7 @@ theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrdered
   norm_cast
 
 /-- local copy tagged `meta` for evaluation of `round` below -/
-meta local instance : FloorRing ℚ :=
+private meta local instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
 /-- `norm_num` extension for `round` -/

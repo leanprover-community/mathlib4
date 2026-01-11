@@ -23,7 +23,7 @@ a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

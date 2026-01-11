@@ -533,7 +533,7 @@ variable {α : Type*}
 def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (X := fun _ : α ↦ Ω)) where
   seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
   mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
-  le' _  := cylinderEvents_le_pi
+  le' _ := cylinderEvents_le_pi
 
 end Filtration
 
