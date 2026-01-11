@@ -51,10 +51,9 @@ section SimplicialNerve
 
 /-- A type synonym for a linear order `J`, will be equipped with a simplicial category structure. -/
 @[nolint unusedArguments]
-def SimplicialThickening (J : Type*) [LinearOrder J] : Type _ := J
-
-instance (J : Type*) [LinearOrder J] : LinearOrder (SimplicialThickening J) :=
-  inferInstanceAs (LinearOrder J)
+structure SimplicialThickening (J : Type*) [LinearOrder J] : Type _ where
+  /-- The underlying object of the linear order. -/
+  as : J
 
 namespace SimplicialThickening
 
@@ -78,9 +77,9 @@ instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
   inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
 @[simps]
-instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
-  Hom i j := Path i j
-  id i := { I := {i} }
+instance (J : Type u) [LinearOrder J] : CategoryStruct.{u} (SimplicialThickening J) where
+  Hom i j := Path i.as j.as
+  id i := { I := {i.as} }
   comp {i j k} f g := {
     I := f.I ∪ g.I
     left := Or.inl f.left
@@ -93,7 +92,7 @@ instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) w
       exacts [(f.le_right _ h).trans (Path.le g), (g.le_right l h)] }
 
 instance {J : Type*} [LinearOrder J] (i j : SimplicialThickening J) : Category (i ⟶ j) :=
-  inferInstanceAs (Category (Path _ _))
+  inferInstanceAs (Category (Path i.as j.as))
 
 @[ext]
 lemma hom_ext {J : Type*} [LinearOrder J]
@@ -160,13 +159,10 @@ noncomputable instance (J : Type*) [LinearOrder J] :
   homEquiv {i j} :=
     nerveEquiv.symm.trans (SSet.unitHomEquiv (SimplicialCategory.Hom i j)).symm
 
-/-- Auxiliary definition for `SimplicialThickening.functorMap` -/
-def orderHom {J K : Type*} [LinearOrder J] [LinearOrder K] (f : J →o K) :
-    SimplicialThickening J →o SimplicialThickening K := f
-
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
 noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
-    (f : J →o K) (i j : SimplicialThickening J) : (i ⟶ j) ⥤ ((orderHom f i) ⟶ (orderHom f j)) where
+    (f : J →o K) (i j : SimplicialThickening J) :
+      (i ⟶ j) ⥤ ((SimplicialThickening.mk <| f i.as) ⟶ (SimplicialThickening.mk <| f j.as)) where
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
@@ -181,7 +177,7 @@ simplicial categories
 @[simps]
 noncomputable def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
     (f : J →o K) : EnrichedFunctor SSet (SimplicialThickening J) (SimplicialThickening K) where
-  obj := f
+  obj x := .mk (f x.as)
   map i j := nerveMap ((functorMap f i j))
   map_id i := by
     ext
