@@ -52,8 +52,8 @@ theorem of_linearOrderedField [LinearOrder R] [IsStrictOrderedRing R]
     IsRealClosed R where
   isSquare_or_isSquare_neg {x} := by
     rcases le_total x 0 with (neg | pos)
-    · exact Or.inr <| isSquare_of_nonneg (neg_nonneg_of_nonpos neg)
-    · exact Or.inl <| isSquare_of_nonneg pos
+    · exact .inr <| isSquare_of_nonneg (neg_nonneg_of_nonpos neg)
+    · exact .inl <| isSquare_of_nonneg pos
   exists_isRoot_of_odd_natDegree := exists_isRoot_of_odd_natDegree
 
 variable [IsRealClosed R]
