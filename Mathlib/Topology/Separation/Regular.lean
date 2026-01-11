@@ -657,15 +657,15 @@ instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
 A space is a `T5Space` iff all its open subspaces are `T4Space`.
 -/
 theorem t5Space_iff_forall_isOpen_t4Space :
-    T5Space X ↔ ∀ s : Set X, IsOpen s → T4Space s :=
-  ⟨fun _ _ _ => inferInstance, fun h => {
-    toCompletelyNormalSpace :=
-      completelyNormalSpace_iff_forall_isOpen_normalSpace.2 fun s hs => (h s hs).toNormalSpace
-    toT1Space :=
-      have := h univ isOpen_univ
-      t1Space_of_injective_of_continuous
-        (fun _ _ => congrArg Subtype.val) (continuous_id.subtype_mk mem_univ)
-  }⟩
+    T5Space X ↔ ∀ s : Set X, IsOpen s → T4Space s where
+  mp _ _ _ := inferInstance
+  mpr h :=
+    { toCompletelyNormalSpace :=
+        completelyNormalSpace_iff_forall_isOpen_normalSpace.2 fun s hs => (h s hs).toNormalSpace
+      toT1Space :=
+        have := h univ isOpen_univ
+        t1Space_of_injective_of_continuous
+          (fun _ _ => congrArg Subtype.val) (continuous_id.subtype_mk mem_univ)}
 
 /--
 A space is `T5Space` iff it is hereditarily `T4Space`.
