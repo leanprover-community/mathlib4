@@ -293,7 +293,12 @@ namespace RefinedDiscrTree
 
 variable {α : Type}
 
-/-- Format a `RefinedDiscrTree`. -/
+/-- Format a `RefinedDiscrTree` as a flowchart.
+- Non-terminal nodes are of the form `{key} =>`, followed by all of the following nodes,
+  indented with 2 more spaces.
+- Terminal nodes have either "entries", containing the return values,
+  or "pending entries", for nodes that have not been evaluated/expanded.
+-/
 partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>
     lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")
