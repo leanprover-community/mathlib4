@@ -146,6 +146,9 @@ protected alias ⟨_, vlt.not_vle⟩ := not_vle
 lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
 protected alias ⟨veq.symm, _⟩ := veq_comm
 
+instance : @Std.Symm R (· =ᵥ ·) where
+  symm _ _ := veq.symm
+
 lemma vle_of_veq {x y : R} (h : x =ᵥ y) : x ≤ᵥ y := h.1
 lemma vge_of_veq {x y : R} (h : x =ᵥ y) : y ≤ᵥ x := h.2
 
@@ -253,7 +256,7 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 
 @[gcongr]
 lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
-  ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vle' h2.vle'⟩
+  ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vge h2.vge⟩
 
 theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (vle_total y x).imp (fun h => vle_add .rfl h) (fun h => vle_add h .rfl)
