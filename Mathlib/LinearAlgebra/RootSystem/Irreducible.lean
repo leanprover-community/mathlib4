@@ -88,9 +88,8 @@ lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
   contradiction
 
 open Module in
-lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [NeZero (2 : K)]
-    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
-    (q : P.invtRootSubmodule) :
+lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
+    {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
     q = ⊤ ↔ ∀ i, P.root i ∈ (q : Submodule K M) := by
   have : IsReflexive K M := .of_isPerfPair P.toLinearMap
   refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
