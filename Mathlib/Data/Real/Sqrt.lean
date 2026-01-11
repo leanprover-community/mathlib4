@@ -124,15 +124,17 @@ theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by unfold sqrt; fu
 
 @[simp]
 lemma map_sqrt_atTop : map (√·) atTop = atTop := by
-  with_unfolding_all change map (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
+  unfold sqrt
+  change map (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
   simp [← map_map]
 
 @[simp]
 lemma comap_sqrt_atTop : comap (√·) atTop = atTop := by
-  with_unfolding_all change comap (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
+  unfold sqrt
+  change comap (NNReal.toReal ∘ NNReal.sqrt ∘ Real.toNNReal) atTop = atTop
   simp [← comap_comap]
 
-lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := by unfold Tendsto; simp
+lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := map_sqrt_atTop.le
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : √x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
