@@ -266,7 +266,8 @@ def eval (b : Ordinal) (f : Ordinal →₀ Ordinal) : Ordinal :=
 theorem eval_zero (b : Ordinal) : eval b 0 = 0 := by
   simp [eval]
 
-theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordinal}
+/-- For a slightly stronger version, see `eval_single_add`. -/
+theorem eval_single_add' (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordinal}
     (h : ∀ e' ∈ f.support, e' < e) : eval b (.single e x + f) = b ^ e * x + eval b f := by
   obtain rfl | hx := eq_or_ne x 0; · simp
   have hf : f e = 0 := by
@@ -283,7 +284,20 @@ theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordina
 
 @[simp]
 theorem eval_single (b e x : Ordinal) : eval b (.single e x) = b ^ e * x := by
-  simpa using eval_single_add b (f := 0)
+  simpa using eval_single_add' b (f := 0)
+
+theorem eval_single_add (b : Ordinal) {e x : Ordinal} {f : Ordinal →₀ Ordinal}
+    (h : ∀ e' ∈ f.support, e' ≤ e) : eval b (.single e x + f) = b ^ e * x + eval b f := by
+  cases f using Finsupp.induction_on_max with
+  | zero => simp
+  | single_add e' y f hf hy =>
+    obtain rfl | he' := (h e' (by simp [hy])).eq_or_lt
+    · simp only [← add_assoc, ← single_add, eval_single_add' _ hf, mul_add]
+    · rw [eval_single_add']
+      refine fun a ha ↦ (h a ha).lt_of_ne ?_
+      rintro rfl
+      apply (hf a _).not_gt he'
+      simpa [he'.ne'] using ha
 
 @[simp]
 theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by

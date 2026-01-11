@@ -114,6 +114,7 @@ theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ 
 theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := by
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
+@[simp]
 theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
   inductionOn₂ a b fun α r _ β s _ => by
     simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
