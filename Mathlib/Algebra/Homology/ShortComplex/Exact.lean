@@ -833,10 +833,12 @@ section
 
 variable {X Y : C} (f : X ⟶ Y)
 
+/-- The exact short complex `kernel f ⟶ X ⟶ Y` for any morphism `f : X ⟶ Y`. -/
 @[simps]
 noncomputable def kernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (kernel.condition f)
 
+/-- The exact short complex `X ⟶ Y ⟶ cokernel f` for any morphism `f : X ⟶ Y`. -/
 @[simps]
 noncomputable def cokernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (cokernel.condition f)
@@ -992,5 +994,5 @@ noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S
 end Splitting
 
 end ShortComplex
-
+#lint
 end CategoryTheory

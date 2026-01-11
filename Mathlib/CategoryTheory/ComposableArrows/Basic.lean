@@ -961,36 +961,6 @@ def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ 
     (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
   isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
-@[simps]
-def composableArrows₀Equivalence : ComposableArrows C 0 ≌ C where
-  functor :=
-    { obj := fun f => f.obj' 0
-      map := fun f => ComposableArrows.app' f 0 }
-  inverse :=
-    { obj := fun X => ComposableArrows.mk₀ X
-      map := fun f => ComposableArrows.homMk₀ f }
-  unitIso := NatIso.ofComponents (fun X => ComposableArrows.isoMk₀ (Iso.refl _))
-    (by aesop_cat)
-  counitIso := Iso.refl _
-
-set_option maxHeartbeats 600000 in
--- this is a slow proof
-@[simps]
-def composableArrows₁Equivalence : ComposableArrows C 1 ≌ Arrow C where
-  functor :=
-    { obj := fun F => Arrow.mk (F.map' 0 1)
-      map := fun {F G} f =>
-        { left := ComposableArrows.app' f 0
-          right := ComposableArrows.app' f 1
-          w := (f.naturality _).symm } }
-  inverse :=
-    { obj := fun f => ComposableArrows.mk₁ f.hom
-      map := fun {f g} φ => ComposableArrows.homMk₁ φ.left φ.right φ.w.symm }
-  unitIso := NatIso.ofComponents
-    (fun f => ComposableArrows.isoMk₁ (Iso.refl _) (Iso.refl _) (by aesop_cat))
-      (by aesop_cat)
-  counitIso := Iso.refl _
-
 suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`
 commutes with `opEquivalence`. -/
