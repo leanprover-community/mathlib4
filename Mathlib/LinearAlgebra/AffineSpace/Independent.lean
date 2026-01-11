@@ -683,7 +683,7 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
 /-- Given an affinely independent family of points, an affine combination (with sum of weights 1)
 equals the line map of two affine combination points if and only if its weights are given pointwise
 by the line map of the corresponding weights. -/
-theorem AffineIndependent.affineCombination_eq_lineMap_iff_weight_lineMap {ι : Type*} {p : ι → P}
+theorem AffineIndependent.affineCombination_eq_lineMap_iff_weight_lineMap {p : ι → P}
     (ha : AffineIndependent k p) {w w₁ w₂ : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1)
     (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1) (c : k) :
     s.affineCombination k p w = AffineMap.lineMap (s.affineCombination k p w₁)
