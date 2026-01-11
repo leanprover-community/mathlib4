@@ -1083,6 +1083,13 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
 end Multiset
 
 @[to_additive (attr := simp)]
+lemma IsUnit.multisetProd_iff [CommMonoid M] {s : Multiset M} :
+    IsUnit s.prod ↔ ∀ a ∈ s, IsUnit a := by
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simpa using fun _ ↦ ih
+
+@[to_additive (attr := simp)]
 lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
   induction s using Finset.cons_induction with grind

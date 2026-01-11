@@ -726,12 +726,37 @@ end Associates
 
 section CommMonoidWithZero
 
-theorem dvdNotUnit_of_dvdNotUnit_associated [CommMonoidWithZero M] [Nontrivial M] {p q r : M}
+variable [CommMonoidWithZero M] {p q r : M}
+
+theorem dvdNotUnit_of_dvdNotUnit_associated
     (h : DvdNotUnit p q) (h' : Associated q r) : DvdNotUnit p r := by
-  obtain ⟨u, rfl⟩ := Associated.symm h'
+  obtain ⟨u, rfl⟩ := h'
   obtain ⟨hp, x, hx⟩ := h
-  refine ⟨hp, x * ↑u⁻¹, DvdNotUnit.not_unit ⟨u⁻¹.ne_zero, x, hx.left, mul_comm _ _⟩, ?_⟩
-  rw [← mul_assoc, ← hx.right, mul_assoc, Units.mul_inv, mul_one]
+  refine ⟨hp, x * u, mt isUnit_of_mul_isUnit_left hx.1, ?_⟩
+  rw [← mul_assoc, ← hx.right]
+
+alias Associated.dvdNotUnit_right := dvdNotUnit_of_dvdNotUnit_associated
+
+theorem Associated.dvdNotUnit_left (h : DvdNotUnit p r) (h' : Associated p q) :
+    DvdNotUnit q r := by
+  obtain ⟨u, rfl⟩ := h'.symm
+  obtain ⟨hp, x, hx⟩ := h
+  have hq : q ≠ 0 := by simp_all
+  refine ⟨hq, x * u, mt isUnit_of_mul_isUnit_left hx.1, ?_⟩
+  rw [mul_comm x, ← mul_assoc, ← hx.2]
+
+theorem Associated.dvdNotUnit_left_iff (h : Associated p q) : DvdNotUnit p r ↔ DvdNotUnit q r where
+  mp := (h.dvdNotUnit_left ·)
+  mpr := (h.symm.dvdNotUnit_left ·)
+
+theorem Associated.dvdNotUnit_right_iff (h : Associated q r) : DvdNotUnit p q ↔ DvdNotUnit p r where
+  mp := (h.dvdNotUnit_right ·)
+  mpr := (h.symm.dvdNotUnit_right ·)
+
+theorem Associated.acc_dvdNotUnit_iff (h : Associated p q) :
+    Acc DvdNotUnit p ↔ Acc DvdNotUnit q where
+  mp acc := .intro _ fun _r hr ↦ acc.inv (h.dvdNotUnit_right_iff.mpr hr)
+  mpr acc := .intro _ fun _r hr ↦ acc.inv (h.dvdNotUnit_right_iff.mp hr)
 
 end CommMonoidWithZero
 

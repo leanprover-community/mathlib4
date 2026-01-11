@@ -63,13 +63,12 @@ abbrev NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors �
 section IsDomain
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsDomain α] :
+instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsCancelMulZero α] :
     CancelMonoidWithZero α where
 
-variable [CommSemiring α] [IsDomain α]
-
 -- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelCommMonoidWithZero : CancelCommMonoidWithZero α :=
+instance (priority := 100) IsDomain.toCancelCommMonoidWithZero [CommSemiring α]
+    [IsCancelMulZero α] : CancelCommMonoidWithZero α :=
   { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero }
 
 end IsDomain

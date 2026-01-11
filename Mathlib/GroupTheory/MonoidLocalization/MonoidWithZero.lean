@@ -122,6 +122,11 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
   refine fun h ↦ hn ?_
   rwa [h, map_zero, (f.map_units _).mul_left_eq_zero] at eq
 
+/-- Any localization of a cancellative commutative monoid with zero is cancellative. -/
+abbrev cancelCommMonoidWithZero {M N} [CancelCommMonoidWithZero M] {S : Submonoid M}
+    [CommMonoidWithZero N] (f : S.LocalizationMap N) : CancelCommMonoidWithZero N where
+  mul_left_cancel_of_ne_zero := f.isCancelMulZero.mul_left_cancel_of_ne_zero
+
 theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
   simp_rw [← f.map_zero, eq_iff_exists, mul_zero]
 
