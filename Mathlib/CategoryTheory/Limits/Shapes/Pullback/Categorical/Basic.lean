@@ -55,6 +55,9 @@ equivalent to `CatCommSqOver F G X`.
 * Categorical pullback squares attached to Grothendieck constructions of pseudofunctors.
 * Stability of (co)fibered categories under categorical pullbacks.
 
+### Implementations note:
+In this file, a few proofs could be removed in favor of letting autoParams fill them
+in automatically: they are kept intentionally for performance reasons.
 -/
 
 @[expose] public section
@@ -364,12 +367,16 @@ def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
   inverse := CatCommSqOver.toFunctorToCategoricalPullback F G X
   unitIso :=
     NatIso.ofComponents
-      (fun _ ↦ NatIso.ofComponents
-        (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
+      (fun _ ↦ NatIso.ofComponents (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)
+        (by simp))) (by intros; ext <;> simp)
   counitIso :=
     NatIso.ofComponents
       (fun _ ↦ CatCommSqOver.mkIso
-        (NatIso.ofComponents (fun _ ↦ .refl _)) (NatIso.ofComponents (fun _ ↦ .refl _)))
+        (NatIso.ofComponents
+          (fun _ ↦ .refl _) (by intros; simp))
+        (NatIso.ofComponents
+          (fun _ ↦ .refl _) (by intros; simp))
+        (by ext; simp))
   functor_unitIso_comp := by intros; ext <;> simp
 
 variable {F G X}
@@ -473,15 +480,16 @@ def transform (X : Type u₇) [Category.{v₇} X] :
       CatCommSqOver F G X ⥤ CatCommSqOver F₁ G₁ X where
   obj ψ :=
     { obj S :=
-        { fst := S.fst ⋙ ψ.left
-          snd := S.snd ⋙ ψ.right
-          iso :=
-            (Functor.associator _ _ _) ≪≫
-              isoWhiskerLeft S.fst (ψ.squareLeft.iso.symm) ≪≫
-              (Functor.associator _ _ _).symm ≪≫
-              isoWhiskerRight S.iso _ ≪≫
-              isoWhiskerLeft S.snd (ψ.squareRight.iso) ≪≫
-              (Functor.associator _ _ _).symm }
+      { fst := S.fst ⋙ ψ.left
+        snd := S.snd ⋙ ψ.right
+        iso :=
+          (Functor.associator ..) ≪≫
+            isoWhiskerLeft S.fst ψ.squareLeft.iso.symm ≪≫
+            (Functor.associator ..).symm ≪≫
+            isoWhiskerRight S.iso ψ.base ≪≫
+            (Functor.associator ..) ≪≫
+            isoWhiskerLeft S.snd ψ.squareRight.iso ≪≫
+            (Functor.associator ..).symm }
       map {x y} f :=
         { fst := whiskerRight f.fst ψ.left
           snd := whiskerRight f.snd ψ.right
@@ -492,8 +500,10 @@ def transform (X : Type u₇) [Category.{v₇} X] :
       map_comp := by intros; ext <;> simp }
   map {ψ ψ'} η :=
     { app S :=
-      { fst := { app y := η.left.app (S.fst.obj y) }
-        snd := { app y := η.right.app (S.snd.obj y) }
+      { fst.app y := η.left.app (S.fst.obj y)
+        fst.naturality {x y} f := by simp
+        snd.app y := η.right.app (S.snd.obj y)
+        snd.naturality {x y} f := by simp
         w := by
           ext t
           have := ψ.squareLeft.iso.inv.app (S.fst.obj t) ≫=
