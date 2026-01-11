@@ -13,6 +13,7 @@ public import Mathlib.Algebra.AffineMonoid.UniqueSums
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Field
 public import Mathlib.Algebra.Algebra.Hom
@@ -4775,6 +4776,7 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.Span.TensorProduct
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
