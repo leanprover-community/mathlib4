@@ -363,7 +363,7 @@ theorem barycenter_apply (x : X) :
 theorem sum_barycenter : ∑ x : X, (barycenter (𝕜 := 𝕜) (X := X)).val x = 1 :=
   sum_eq_one barycenter
 
-/-- The barycenter equals the center of mass of vertices with equal weights. -/
+/-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
 theorem barycenter_eq_centerMass [DecidableEq X] :
     (barycenter : stdSimplex 𝕜 X).val =
       Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
