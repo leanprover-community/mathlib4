@@ -132,7 +132,7 @@ namespace PullbackObjObj
 noncomputable def ofHasPullback
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     G.PullbackObjObj f₁ f₃ :=
-  { isPullback := IsPullback.of_hasPullback _ _, ..}
+  { isPullback := IsPullback.of_hasPullback _ _, .. }
 
 variable {G f₁ f₃} (sq : G.PullbackObjObj f₁ f₃)
 
