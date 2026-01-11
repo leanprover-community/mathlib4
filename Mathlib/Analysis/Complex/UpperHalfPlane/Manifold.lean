@@ -39,7 +39,7 @@ theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
 
 /-- The inclusion map `ℍ → ℂ` is a differentiable map of manifolds. -/
 theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
-  contMDiff_coe.mdifferentiable le_top
+  contMDiff_coe.mdifferentiable one_ne_zero
 
 lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n ofComplex z := by
@@ -54,7 +54,7 @@ lemma contMDiffAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
 
 lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) ofComplex z :=
-  (contMDiffAt_ofComplex hz).mdifferentiableAt le_top
+  (contMDiffAt_ofComplex hz).mdifferentiableAt one_ne_zero
 
 lemma contMDiffAt_iff {f : ℍ → ℂ} {τ : ℍ} :
     ContMDiffAt 𝓘(ℂ) 𝓘(ℂ) n f τ ↔ ContDiffAt ℂ n (f ∘ ofComplex) τ := by
@@ -100,24 +100,24 @@ lemma contMDiff_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
 
 lemma mdifferentiable_num (g : GL (Fin 2) ℝ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_num g).mdifferentiable le_top
+  (contMDiff_num g).mdifferentiable one_ne_zero
 
 lemma mdifferentiable_denom (g : GL (Fin 2) ℝ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_denom g).mdifferentiable le_top
+  (contMDiff_denom g).mdifferentiable one_ne_zero
 
 lemma mdifferentiable_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (denom g · ^ k : ℍ → ℂ) :=
-  (contMDiff_denom_zpow g k).mdifferentiable le_top
+  (contMDiff_denom_zpow g k).mdifferentiable one_ne_zero
 
 lemma mdifferentiable_inv_denom (g : GL (Fin 2) ℝ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ (denom g τ)⁻¹) :=
-  (contMDiff_inv_denom g).mdifferentiable le_top
+  (contMDiff_inv_denom g).mdifferentiable one_ne_zero
 
 /-- Each element of `GL(2, ℝ)⁺` defines a complex-differentiable map `ℍ → ℍ`. -/
 lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ g • τ) :=
-  (contMDiff_smul hg).mdifferentiable le_top
+  (contMDiff_smul hg).mdifferentiable one_ne_zero
 
 lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) : f = 0 := by

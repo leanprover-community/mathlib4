@@ -9,8 +9,8 @@ set_option autoImplicit true
 namespace Test
 
 -- [note] use the below options for diagnostics:
--- set_option trace.to_additive true
--- set_option trace.to_additive_detail true
+-- set_option trace.translate true
+-- set_option trace.translate_detail true
 -- set_option pp.universes true
 -- set_option pp.explicit true
 -- set_option pp.notation false
@@ -231,7 +231,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def
+  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def []
 
 
 attribute [to_additive some_other_name] some_def.in_namespace

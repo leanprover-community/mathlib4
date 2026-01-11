@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.Tactic.Linarith
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Formal (multivariate) power series
@@ -547,7 +547,34 @@ theorem map_C (a : R) : map (σ := σ) f (C a) = C (f a) :=
 @[simp]
 theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
+@[simp]
+theorem map_map {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
+    (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
+    map g (map f p) = map (g.comp f) p := by
+  ext n
+  simp
+
 end Map
+
+section toSubring
+
+variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a multivariate formal power series `p` and a subring `T` that contains the
+ coefficients of `p`, return the corresponding multivariate formal power series
+ whose coefficients are in `T`. -/
+def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : σ →₀ ℕ} : (p.toSubring T hp).coeff n = p.coeff n := rfl
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff := rfl
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := rfl
+
+end toSubring
 
 @[simp]
 theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
@@ -894,7 +921,7 @@ theorem _root_.MvPowerSeries.monomial_eq' (e : σ →₀ ℕ) (r : R) :
 theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r : R) :
     MvPowerSeries.monomial (p • e) r
       = MvPowerSeries.C r * e.prod fun s e => ((MvPowerSeries.X s) ^ p) ^ e := by
-  rw [MvPowerSeries.monomial_eq',  Finsupp.prod_of_support_subset _ Finsupp.support_smul _
+  rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
     (by simp), Finsupp.prod]
   simp [pow_mul]
 

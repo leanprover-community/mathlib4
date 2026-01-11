@@ -115,10 +115,9 @@ variable (ρ : Representation k G V)
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 an algebra map from `k[G]` into the `k`-linear endomorphisms of `V`.
 -/
-noncomputable def asAlgebraHom : k[G] →ₐ[k] Module.End k V := lift k G _ ρ
+noncomputable def asAlgebraHom : k[G] →ₐ[k] Module.End k V := lift k _ G ρ
 
-theorem asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
-  rfl
+theorem asAlgebraHom_def : asAlgebraHom ρ = lift k _ G ρ := rfl
 
 @[simp]
 theorem asAlgebraHom_single (g : G) (r : k) :
@@ -183,7 +182,7 @@ only on a type synonym of the original module.)
 -/
 noncomputable def ofModule' (M : Type*) [AddCommMonoid M] [Module k M] [Module k[G] M]
     [IsScalarTower k k[G] M] : Representation k G M :=
-  (MonoidAlgebra.lift k G (M →ₗ[k] M)).symm (Algebra.lsmul k k M)
+  (MonoidAlgebra.lift k (M →ₗ[k] M) G).symm (Algebra.lsmul k k M)
 
 section
 
@@ -195,7 +194,7 @@ Note that the representation is built on `restrictScalars k k[G] M`,
 rather than on `M` itself.
 -/
 noncomputable def ofModule : Representation k G (RestrictScalars k k[G] M) :=
-  (MonoidAlgebra.lift k G _).symm (RestrictScalars.lsmul k k[G] M)
+  (MonoidAlgebra.lift k _ G).symm (RestrictScalars.lsmul k k[G] M)
 
 /-!
 ## `ofModule` and `asModule` are inverses.

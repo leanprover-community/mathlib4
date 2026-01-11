@@ -161,11 +161,11 @@ instance : (decomposedTo J).Full where
       rw [← hX, ← hY, Quotient.eq'']
       exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
-    exact ⟨Sigma.SigmaHom.mk f, rfl⟩
+    exact ⟨Sigma.SigmaHom.mk (ObjectProperty.homMk f), rfl⟩
 
 instance : (decomposedTo J).Faithful where
   map_injective := by
-    rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
+    rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨⟨f⟩⟩ ⟨⟨_⟩⟩ rfl
     rfl
 
 instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩

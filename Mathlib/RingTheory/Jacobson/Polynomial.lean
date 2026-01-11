@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Polynomial.Quotient
 
 -/
 
-@[expose] public section
+public section
 
 namespace Ideal
 

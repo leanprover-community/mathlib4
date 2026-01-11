@@ -24,7 +24,7 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w z
 
@@ -71,7 +71,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
@@ -114,7 +114,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 end Cyclotomic

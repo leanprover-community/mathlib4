@@ -6,7 +6,7 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Order.Module.Algebra
+public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
@@ -72,9 +72,8 @@ theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
 
 /-- `SameRay` is reflexive. -/
 @[refl]
-theorem refl (x : M) : SameRay R x x := by
-  nontriviality R
-  exact Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
+theorem refl (x : M) : SameRay R x x :=
+  Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
 
 protected theorem rfl : SameRay R x x :=
   refl _
@@ -364,7 +363,6 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
 theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
-  nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
 

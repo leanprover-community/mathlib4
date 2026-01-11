@@ -116,11 +116,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
@@ -501,7 +497,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H
