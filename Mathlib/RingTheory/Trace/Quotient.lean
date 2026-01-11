@@ -22,7 +22,7 @@ quotients and localizations.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 

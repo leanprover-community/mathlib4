@@ -95,8 +95,8 @@ scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
 
-Many applications of these theorems can be found in the file
-`Mathlib/Analysis/SpecialFunctions/Integrals.lean`.
+Many applications of these theorems can be found in the directory
+`Mathlib/Analysis/SpecialFunctions/Integrals/`.
 
 Note that the assumptions of FTC-2 are formulated in the form that `f'` is integrable. To use it in
 a context with the stronger assumption that `f'` is continuous, one can use

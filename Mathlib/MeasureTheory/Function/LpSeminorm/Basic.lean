@@ -17,7 +17,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
-@[expose] public section
+public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter

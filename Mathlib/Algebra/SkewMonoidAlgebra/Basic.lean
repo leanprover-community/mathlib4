@@ -262,9 +262,9 @@ theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
-  toFun        := toFinsupp
-  invFun       := ofFinsupp
-  map_add'     := toFinsupp_add
+  toFun    := toFinsupp
+  invFun   := ofFinsupp
+  map_add' := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=
@@ -716,7 +716,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • 
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
   map_one' := liftNC_one _ _
-  map_mul' _ _ :=  liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
+  map_mul' _ _ := liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
 
 end Semiring
 
@@ -810,7 +810,7 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 /-- Scalar multiplication acting on the domain.
 
 This is not an instance as it would conflict with the action on the range.
-See the file `test/instance_diamonds.lean` for examples of such conflicts. -/
+See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
 def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul

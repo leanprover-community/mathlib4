@@ -53,9 +53,12 @@ instance (priority := low) (P : Submodule R M) : (N.colon (P : Set M)).IsTwoSide
     exact hr ⟨_, P.smul_mem _ hp, (mul_smul ..).symm⟩
 
 @[simp]
-theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := by
+theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
+
+@[deprecated colon_univ (since := "2026-01-11")]
+theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := colon_univ
 
 @[simp]
 theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
@@ -65,14 +68,17 @@ theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
 
-theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon (J : Set R) := calc
-  I = I.colon (Set.univ : Set R) := colon_top.symm
-  _ ≤ I.colon (J : Set R) := colon_mono (le_refl I) (Set.subset_univ (J : Set R))
+theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] :
+    I ≤ I.colon S := calc
+  I = I.colon (Set.univ : Set R) := colon_univ.symm
+  _ ≤ I.colon S := colon_mono (le_refl I) (Set.subset_univ S)
 
-theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
-    (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
+theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*) (g : ι₂ → Set M) :
+    (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   apply le_antisymm
-  · exact le_iInf fun i => le_iInf fun j => colon_mono (iInf_le _ _) (le_iSup _ _)
+  · exact le_iInf fun i =>
+      le_iInf fun j =>
+        colon_mono (iInf_le _ _) (Set.subset_iUnion (fun j => g j) j)
   · intro x hx
     refine mem_colon.2 ?_
     intro m hm
@@ -85,9 +91,14 @@ theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : S
       exact (mem_iInf (p := fun j => (f i).colon (g j))).1 hx_i j
     exact mem_colon.1 h m hm'
 
-/-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
-lemma colon_eq_top_of_le (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
-    N.colon S  = ⊤ := by
+@[deprecated iInf_colon_iUnion (since := "2026-01-11")]
+theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
+    (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
+  simpa using iInf_colon_iUnion (ι₁ := ι₁) (f := f) (ι₂ := ι₂) (g := g)
+
+/-- If `S ⊆ N`, then the colon ideal `N.colon S` is the whole ring. -/
+lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
+    N.colon S = ⊤ := by
   refine top_unique ?_
   intro x _
   refine mem_colon.2 ?_
@@ -95,12 +106,12 @@ lemma colon_eq_top_of_le (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
   exact smul_mem N x (h h_p)
 
 /-- If `S ⊆ N₂`, then intersecting with `N₁` does not change the colon ideal. -/
-lemma colon_inf_eq_left_of_le (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
+lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
   (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
-    simpa [iInf_bool_eq] using
-      (iInf_colon_iSup (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
+    simpa [iInf_bool_eq, Set.iUnion_const] using
+      (iInf_colon_iUnion (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
       (g := fun _ => S))
-  _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_le N₂ S h]
+  _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_subset N₂ S h]
   _ = N₁.colon S := inf_top_eq (N₁.colon S)
 
 end Semiring
@@ -130,12 +141,30 @@ theorem colon_bot' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihi
   · intro hr s hs
     simpa [mem_bot] using hr s (mem_span_of_mem hs)
 
+theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
+  ext r
+  constructor
+  · intro h
+    refine mem_colon.mpr ?_
+    intro s hs
+    exact mem_colon.mp h s (Submodule.subset_span hs)
+  · intro h
+    refine mem_colon.mpr ?_
+    intro s hs
+    refine Submodule.span_induction
+      (p := fun (x : M) (hx : x ∈ span R S) ↦ r • x ∈ N) ?_ ?_ ?_ ?_ hs
+    · intro x hx
+      exact mem_colon.mp h x hx
+    · simp [smul_zero]
+    · intro x y hx hy hrx hry
+      simpa [smul_add] using N.add_mem hrx hry
+    · intro a x hx hrx
+      simpa [smul_comm r a x] using N.smul_mem a hrx
+
 @[simp]
-theorem mem_colon_span_singleton {x : M} {r : R} : r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=
-  calc
-    r ∈ N.colon (Submodule.span R {x}) ↔ ∀ a : R, r • a • x ∈ N := by
-      simp [Submodule.mem_colon, Submodule.mem_span_singleton]
-    _ ↔ r • x ∈ N := by simp_rw [fun (a : R) ↦ smul_comm r a x]; exact SetLike.forall_smul_mem_iff
+theorem mem_colon_span_singleton {x : M} {r : R} :
+    r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
+  simp[colon_span (N := N) (S := {x})]
 
 @[deprecated mem_colon_span_singleton "Use `mem_colon_span_singleton` for `Submodule.span R {x}`."
 (since := "2025-12-28")]
@@ -177,7 +206,7 @@ theorem annihilator_quotient : Module.annihilator R (M ⧸ N) = N.colon (Set.uni
 
 theorem _root_.Ideal.annihilator_quotient {I : Ideal R} [I.IsTwoSided] :
     Module.annihilator R (R ⧸ I) = I := by
-  rw [Submodule.annihilator_quotient, colon_top]
+  rw [Submodule.annihilator_quotient, colon_univ]
 
 end Ring
 

@@ -23,7 +23,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * subtraction of two functions
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap
@@ -126,8 +126,6 @@ lemma fderivWithin_const_smul_of_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 
     ext x
     simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_const_smul' := fderivWithin_const_smul
-
 theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (fun y => c • f y) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
@@ -152,8 +150,6 @@ lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • fder
   simp_rw [← fderivWithin_univ]
   ext x
   simp [fderivWithin_const_smul_of_field c uniqueDiffWithinAt_univ]
-
-@[deprecated (since := "2025-06-14")] alias fderiv_const_smul' := fderiv_const_smul
 
 end ConstSMul
 
@@ -213,8 +209,6 @@ theorem fderivWithin_fun_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Different
     fderivWithin 𝕜 (fun y => f y + g y) s x = fderivWithin 𝕜 f s x + fderivWithin 𝕜 g s x :=
   fderivWithin_add hxs hf hg
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_add' := fderivWithin_add
-
 -- TODO: `@[to_fun]` gives incorrect lemma name
 theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (f + g) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
@@ -223,8 +217,6 @@ theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
 theorem fderiv_fun_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y + g y) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
   fderiv_add hf hg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_add' := fderiv_add
 
 @[simp]
 theorem hasFDerivAtFilter_add_const_iff (c : F) :
@@ -570,8 +562,6 @@ theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
   fderivWithin_fun_neg hxs
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_neg' := fderivWithin_neg
-
 @[simp]
 theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
   simp only [← fderivWithin_univ, fderivWithin_fun_neg uniqueDiffWithinAt_univ]
@@ -579,8 +569,6 @@ theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
 /-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
 theorem fderiv_neg : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
   fderiv_fun_neg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_neg' := fderiv_neg
 
 end Neg
 
@@ -700,8 +688,6 @@ theorem fderivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiabl
     fderivWithin 𝕜 (f - g) s x = fderivWithin 𝕜 f s x - fderivWithin 𝕜 g s x :=
   fderivWithin_fun_sub hxs hf hg
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_sub' := fderivWithin_sub
-
 theorem fderiv_fun_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y - g y) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   (hf.hasFDerivAt.sub hg.hasFDerivAt).fderiv
@@ -709,8 +695,6 @@ theorem fderiv_fun_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt �
 theorem fderiv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (f - g) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   fderiv_fun_sub hf hg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_sub' := fderiv_sub
 
 @[simp]
 theorem hasFDerivAtFilter_sub_const_iff (c : F) :

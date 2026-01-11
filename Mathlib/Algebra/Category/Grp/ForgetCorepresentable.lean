@@ -40,14 +40,6 @@ def uliftZMultiplesHom (G : Type u) [AddGroup G] : G ≃ (ULift.{u} ℤ →+ G) 
 def uliftZPowersHom (G : Type u) [Group G] : G ≃ (ULift.{u} (Multiplicative ℤ) →* G) :=
   (zpowersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
-namespace MonoidHom
-
-end MonoidHom
-
-namespace AddMonoidHom
-
-end AddMonoidHom
-
 /-- The forget functor `GrpCat.{u} ⥤ Type u` is corepresentable. -/
 def GrpCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GrpCat.{u} :=
