@@ -96,7 +96,7 @@ theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : S
     (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   simpa using iInf_colon_iUnion (ι₁ := ι₁) (f := f) (ι₂ := ι₂) (g := g)
 
-/-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
+/-- If `S ⊆ N`, then the colon ideal `N.colon S` is the whole ring. -/
 lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
     N.colon S = ⊤ := by
   refine top_unique ?_
@@ -106,10 +106,10 @@ lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
   exact smul_mem N x (h h_p)
 
 /-- If `S ⊆ N₂`, then intersecting with `N₁` does not change the colon ideal. -/
-lemma colon_inf_eq_left_of_le (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
+lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
   (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
-    simpa [iInf_bool_eq] using
-      (iInf_colon_iSup (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
+    simpa [iInf_bool_eq, Set.iUnion_const] using
+      (iInf_colon_iUnion (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
       (g := fun _ => S))
   _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_subset N₂ S h]
   _ = N₁.colon S := inf_top_eq (N₁.colon S)
