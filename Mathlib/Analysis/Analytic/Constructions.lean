@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Tactic.ToFun
 
 /-!
 # Various ways to combine analytic functions
@@ -450,7 +449,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
-  rcases le_or_gt ((r' : ℝ)^n) 0 with hr' | hr'
+  rcases le_or_gt ((r' : ℝ) ^ n) 0 with hr' | hr'
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
   · simp only [pi]
     rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,
@@ -588,7 +587,7 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-@[to_fun]
+@[to_fun (attr := fun_prop)]
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
@@ -980,17 +979,11 @@ theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
   simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
-@[fun_prop]
-theorem AnalyticAt.fun_div {f g : E → 𝕝} {x : E}
-    (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ f x / g x) x := by
-  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (f / g) x :=
-  fa.fun_div ga g0
+    AnalyticAt 𝕜 (f / g) x := by
+  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}

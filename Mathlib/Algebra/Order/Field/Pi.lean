@@ -17,7 +17,7 @@ public import Mathlib.Data.Fintype.Basic
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*} [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α]
   [Nontrivial α] [DenselyOrdered α]

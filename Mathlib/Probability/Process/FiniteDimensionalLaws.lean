@@ -31,7 +31,7 @@ finite-dimensional distributions.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

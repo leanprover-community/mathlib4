@@ -182,7 +182,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
   lift s x := lift sx s x
   fac s j := by
     ext x
-    obtain ⟨⟨i, hi⟩, ⟨f :  _ ⟶ _⟩, rfl⟩ := j.mk_surjective
+    obtain ⟨⟨i, hi⟩, ⟨f : _ ⟶ _⟩, rfl⟩ := j.mk_surjective
     obtain ⟨i, rfl⟩ : ∃ j, ⦋j⦌ = i := ⟨_, i.mk_len⟩
     dsimp at hi ⊢
     apply sx.spineInjective

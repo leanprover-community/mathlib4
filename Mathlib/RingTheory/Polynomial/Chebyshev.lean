@@ -182,6 +182,28 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+theorem T_eval_zero (n : ℤ) :
+    (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [T_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem T_eval_zero_of_even {n : ℤ} (hn : Even n) : (T R n).eval 0 = (n / 2).negOnePow := by
+  simp [T_eval_zero, hn]
+
+theorem T_eval_two_mul_zero (n : ℤ) : (T R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem T_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (T R n).eval 0 = 0 := by
+  simp [T_eval_zero, ← Int.not_odd_iff_even, hn]
+
 @[simp]
 theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.natAbs := by
   induction n using Chebyshev.induct' with
@@ -327,6 +349,28 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_num
     ring
 
+theorem U_eval_zero (n : ℤ) :
+    (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : ((n : ℤ) + 2) / 2 = (n : ℤ) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [Int.negOnePow_add]
+  | neg_add_one n ih1 ih2 =>
+    have : (-(n : ℤ) + 1) / 2 = (-(n : ℤ) - 1) / 2 + 1 := by lia
+    by_cases Even n <;> simp_all [U_sub_one, ← Int.not_even_iff_odd, Int.negOnePow_add]
+
+@[simp]
+theorem U_eval_zero_of_even {n : ℤ} (hn : Even n) : (U R n).eval 0 = (n / 2).negOnePow := by
+  simp [U_eval_zero, hn]
+
+theorem U_eval_two_mul_zero (n : ℤ) : (U R (2 * n)).eval 0 = n.negOnePow := by simp
+
+@[simp]
+theorem U_eval_zero_of_odd {n : ℤ} (hn : Odd n) : (U R n).eval 0 = 0 := by
+  simp [U_eval_zero, ← Int.not_odd_iff_even, hn]
+
 @[simp]
 theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
@@ -431,6 +475,12 @@ theorem T_eq_X_mul_T_sub_pol_U (n : ℤ) : T R (n + 2) = X * T R (n + 1) - (1 - 
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   linear_combination T_eq_X_mul_T_sub_pol_U R n
+
+theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := by
+  have h := T_eq_U_sub_X_mul_U (R := R) (-(n + 2))
+  rw [T_neg, U_neg, Int.add_sub_cancel, ← neg_add' _ 1, U_neg,
+    show n + 2 + 1 - 2 = n + 1 by ring] at h
+  linear_combination (norm := ring_nf) h
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
@@ -800,6 +850,33 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   have h₂ := T_eq_U_sub_X_mul_U R (n + 1)
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + (n + 2) * h₂
+
+theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
+    ((n + 1) * n : R[X]) * (T R (n + 1)) =
+    (n : R[X]) * X * derivative (T R (n + 1)) - (n + 1 : R[X]) * derivative (T R n) := by
+  have h := T_eq_X_mul_U_sub_U (R := R) (n - 1)
+  rw [T_derivative_eq_U, T_derivative_eq_U]
+  linear_combination (norm := (push_cast; ring_nf))
+    (n + 1) * n * h
+
+theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
+    (1 - X ^ 2) * derivative^[2] (T R n) = X * derivative (T R n) - (n ^ 2 : R[X]) * T R n := by
+  have h₁ := congr_arg derivative <| one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)
+  simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
+    C_eq_natCast, sub_add_cancel, Int.cast_sub, Int.cast_one, derivative_intCast] at h₁
+  have h₂ := add_one_mul_self_mul_T_eq_poly_in_T (R := R) (n - 1)
+  rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
+  linear_combination (norm := (push_cast; ring_nf))
+    h₁ + h₂
+
+theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
+    (1 - X ^ 2) * derivative^[2] (U R n) =
+      3 * X * derivative (U R n) - ((n + 2) * n : R[X]) * U R n := by
+  have h := congr_arg derivative <| add_one_mul_T_eq_poly_in_U (R := R) n
+  simp only [derivative_add, derivative_sub, derivative_mul, derivative_X, derivative_one,
+    derivative_X_pow, derivative_intCast, C_eq_natCast, T_derivative_eq_U] at h
+  rw [Function.iterate_succ, Function.iterate_one, Function.comp_apply]
+  linear_combination (norm := (push_cast; ring_nf)) h
 
 variable (R)
 
