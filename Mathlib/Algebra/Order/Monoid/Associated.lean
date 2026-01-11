@@ -16,11 +16,11 @@ This file shows that divisibility makes associates into a canonically ordered mo
 
 @[expose] public section
 
-variable {M : Type*} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
 namespace Associates
 
-instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
+instance instIsOrderedMonoid [IsCancelMulZero M] : IsOrderedMonoid (Associates M) where
   mul_le_mul_left := by rintro a _ ⟨d, rfl⟩ c; exact ⟨d, mul_right_comm ..⟩
 
 instance : CanonicallyOrderedMul (Associates M) where
