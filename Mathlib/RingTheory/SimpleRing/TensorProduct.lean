@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Instances
 
 In this file, we show that the tensor product of a simple algebra and a central simple algebra is
 simple, which in particular implies that the tensor product of two central simple algebras is
-another central simple algebra. This is a prerequisite for defining the group law of the Brauer
+another central simple algebra. This is a prerequisite for defining the group law on the Brauer
 group.
 
 ## Main Results
