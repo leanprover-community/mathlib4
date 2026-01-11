@@ -527,7 +527,8 @@ variable (n₀ n₁ n₂ : ℤ)
   (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
   {i₀ i₁ i₂ i₃ : ι}
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
-  (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
+  (f₁₂ : i₀ ⟶ i₂) (f₂₃ : i₁ ⟶ i₃)
+  (h₁₂ : f₁ ≫ f₂ = f₁₂) (h₂₃ : f₂ ≫ f₃ = f₂₃)
 
 /-- The map `opZ^n(f₁ ≫ f₂, f₃) ⟶ E^n(f₁, f₂, f₃)`. -/
 noncomputable def opcyclesToE : X.opcycles n₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
@@ -546,9 +547,7 @@ lemma opcyclesToE_ιE :
       X.opcyclesMap n₁ f₁₂ f₃ f₂ f₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) := by
   rw [← cancel_epi (X.pOpcycles n₁ f₁₂ f₃), p_opcyclesToE_assoc,
     πE_ιE, toCycles_i_assoc]
-  symm
-  apply X.p_opcyclesMap
-  rfl
+  exact (X.p_opcyclesMap _ _ _ _ _ _ _ (by rfl)).symm
 
 instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂) :=
   epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
@@ -586,6 +585,50 @@ lemma cokernelSequenceOpcyclesE_exact :
     comp_zero, add_zero]
 
 -- TODO: dual statement?
+
+/-- The map `E^n(f₁, f₂, f₃) ⟶ Z^n(f₁, f₂ ≫ f₃)`. -/
+noncomputable def EToCycles : X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.cycles n₁ f₁ f₂₃ :=
+  X.liftCycles n₁ n₂ hn₂ _ _
+    (X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.fromOpcycles n₁ f₂ f₃ f₂₃ h₂₃) (by simp)
+
+@[reassoc (attr := simp)]
+lemma EToCycles_i :
+    X.EToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃ ≫ X.iCycles n₁ f₁ f₂₃ =
+      X.ιE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.fromOpcycles n₁ f₂ f₃ f₂₃ h₂₃ := by
+  simp [EToCycles]
+
+@[reassoc (attr := simp)]
+lemma πE_EToCycles :
+    X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≫ X.EToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃ =
+      X.cyclesMap n₁ f₁ f₂ f₁ f₂₃ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) := by
+  rw [← cancel_mono (X.iCycles n₁ f₁ f₂₃), Category.assoc, EToCycles_i,
+    πE_ιE_assoc, p_fromOpcycles]
+  exact (X.cyclesMap_i _ _ _ _ _ _ _ (by rfl)).symm
+
+instance : Mono (X.EToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃) :=
+  mono_of_mono_fac (X.EToCycles_i n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃)
+
+/-- The (exact) sequence `0 ⟶ E^n(f₁, f₂, f₃) ⟶ Z^n(f₁, f₂ ≫ f₃) ⟶ H^n(f₃)`. -/
+@[simps!]
+noncomputable def kernelSequenceCyclesE : ShortComplex C where
+  X₁ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
+  X₂ := X.cycles n₁ f₁ f₂₃
+  X₃ := (X.H n₁).obj (mk₁ f₃)
+  f := X.EToCycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃
+  g := X.iCycles n₁ f₁ f₂₃ ≫ (X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃)
+
+instance : Mono (X.kernelSequenceCyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).f := by
+  dsimp; infer_instance
+
+lemma kernelSequenceCyclesE_exact :
+    (X.kernelSequenceCyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).Exact := by
+  rw [ShortComplex.exact_iff_exact_up_to_refinements]
+  intro A x₂ hx₂
+  dsimp at x₂ hx₂
+  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
+    (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).exact_up_to_refinements
+      (x₂ ≫ X.iCycles n₁ f₁ f₂₃) (by cat_disch)
+  exact ⟨A₁, π₁, inferInstance, x₁, by simpa [← cancel_mono (X.iCycles ..)]⟩
 
 end
 
