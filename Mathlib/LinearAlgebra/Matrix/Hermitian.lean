@@ -93,6 +93,19 @@ theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
 
 end Star
 
+section SkewHermitian
+
+variable [Star α] [Neg α]
+
+/-! ### Skew-Hermitian matrices -/
+
+/-- A matrix is skew-Hermitian if it is equal to the negation of its conjugate transpose. -/
+def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
+
+theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
+
+end SkewHermitian
+
 section InvolutiveStar
 
 variable [InvolutiveStar α]
@@ -169,15 +182,6 @@ end AddCommMonoid
 section AddGroup
 
 variable [AddGroup α] [StarAddMonoid α]
-
-/-! ### Skew-Hermitian matrices -/
-
-/-- A matrix is skew-Hermitian if it is equal to the negation of its conjugate transpose. -/
-def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
-
-theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
-
-
 
 @[simp]
 theorem IsSkewHermitian.neg {A : Matrix n n α} (h : A.IsSkewHermitian) : (-A).IsSkewHermitian := by
