@@ -358,25 +358,20 @@ lemma radius_le_ediam [Nonempty α] : G.radius ≤ G.ediam :=
   iInf_le_iSup
 
 lemma ediam_eq_top_iff_radius_eq_top [Nonempty α] : G.ediam = ⊤ ↔ G.radius = ⊤ := by
-  constructor
-  · contrapose
-    intro hr
-    obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
-    have hw' : G.eccent w ≠ ⊤ := hw ▸ hr
-    have hle : ∀ u v, G.edist u v ≤ 2 * G.eccent w := by
-      intro u v
-      calc
-        G.edist u v
-          ≤ G.edist u w + G.edist w v := G.edist_triangle
-        _ = G.edist w u + G.edist w v := by rw [edist_comm]
-        _ ≤ G.eccent w + G.eccent w := add_le_add edist_le_eccent edist_le_eccent
-        _ = 2 * G.eccent w := Eq.comm.mp (two_mul _)
-    have hdiam : G.ediam ≤ 2 * G.eccent w := ediam_le_of_edist_le hle
-    have ediam' : G.ediam < ⊤ := lt_of_le_of_lt hdiam (WithTop.mul_lt_top (ENat.coe_lt_top 2)
-      (lt_top_iff_ne_top.mpr hw'))
-    exact ediam'.ne_top
-  · intro hr
-    exact eq_top_iff.mpr (hr ▸ radius_le_ediam)
+  refine ⟨?_, fun hr ↦ eq_top_iff.mpr (hr ▸ radius_le_ediam)⟩
+  contrapose
+  intro hr
+  obtain ⟨w, hw⟩ := G.exists_eccent_eq_radius
+  have hdiam : G.ediam ≤ 2 * G.eccent w := by
+    refine ediam_le_of_edist_le fun u v ↦ ?_
+    calc
+      G.edist u v
+        ≤ G.edist u w + G.edist w v := G.edist_triangle
+      _ = G.edist w u + G.edist w v := by rw [edist_comm]
+      _ ≤ G.eccent w + G.eccent w := add_le_add edist_le_eccent edist_le_eccent
+      _ = 2 * G.eccent w := (two_mul _).symm
+  refine ne_top_of_lt <| lt_of_le_of_lt hdiam (WithTop.mul_lt_top (ENat.coe_lt_top 2) ?_)
+  exact lt_top_iff_ne_top.mpr (hw ▸ hr)
 
 lemma ediam_le_two_mul_radius : G.ediam ≤ 2 * G.radius := by
   cases isEmpty_or_nonempty α
