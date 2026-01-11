@@ -359,16 +359,15 @@ noncomputable def barycenter : stdSimplex 𝕜 X :=
     Convex.centerMass_mem (convex_stdSimplex 𝕜 X) (fun _ _ => zero_le_one)
       (by simp [Fintype.card_pos]) (fun i _ => single_mem_stdSimplex _ _)⟩
 
-/-- The barycenter of a standard simplex lies in the set of the standard simplex. -/
-theorem barycenter_mem : (barycenter : stdSimplex 𝕜 X).val ∈ stdSimplex 𝕜 X :=
-  barycenter.property
-
 /-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
 @[simp]
 theorem barycenter_apply (x : X) :
     (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := by
   classical
   simp [barycenter, Finset.centerMass]
+
+theorem sum_barycenter : ∑ x : X, (barycenter (𝕜 := 𝕜) (X := X)).val x = 1 :=
+  sum_eq_one barycenter
 
 end Barycenter
 
