@@ -117,7 +117,7 @@ def restrictSupportIdeal
 
 @[simp]
 lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
-  (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s := rfl
+  (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s := by rfl
 
 variable (σ R) in
 /-- The ideal spanned by all of the variables. -/
