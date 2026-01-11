@@ -68,9 +68,10 @@ theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
 
-theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon (J : Set R) := calc
+theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] :
+    I ≤ I.colon S := calc
   I = I.colon (Set.univ : Set R) := colon_univ.symm
-  _ ≤ I.colon (J : Set R) := colon_mono (le_refl I) (Set.subset_univ (J : Set R))
+  _ ≤ I.colon S := colon_mono (le_refl I) (Set.subset_univ S)
 
 theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
     (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
