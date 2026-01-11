@@ -19,7 +19,7 @@ In the rank-one case, this is equivalent to the value group being isomorphic to 
 
 -/
 
-@[expose] public section
+public section
 
 namespace ValuativeRel
 

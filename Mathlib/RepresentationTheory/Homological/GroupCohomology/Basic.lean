@@ -80,13 +80,6 @@ namespace groupCohomology
 
 variable [Monoid G]
 
-/-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
-`G`-representation. -/
-@[deprecated "We now use `(Rep.barComplex k G).linearYonedaObj k A instead"
-  (since := "2025-06-08")]
-abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  (Rep.standardComplex k G).linearYonedaObj k A
-
 end groupCohomology
 
 namespace inhomogeneousCochains
@@ -200,9 +193,6 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
-
-@[deprecated (since := "2025-06-11")]
-noncomputable alias groupCohomologyπ := groupCohomology.π
 
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}

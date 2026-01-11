@@ -19,7 +19,7 @@ variable (R : Type*) [NonUnitalNonAssocRing R]
 
 instance : SemilatticeSup (TwoSidedIdeal R) where
   sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
-  le_sup_left I J :=  by rw [ringCon_le_iff]; exact le_sup_left
+  le_sup_left I J := by rw [ringCon_le_iff]; exact le_sup_left
   le_sup_right I J := by rw [ringCon_le_iff]; exact le_sup_right
   sup_le I J K h1 h2 := by rw [ringCon_le_iff] at h1 h2 ⊢; exact sup_le h1 h2
 

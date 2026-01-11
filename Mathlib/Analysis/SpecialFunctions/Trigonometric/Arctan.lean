@@ -203,6 +203,20 @@ theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
 
 @[simp]
+theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
+  rw [← tan_pi_div_three, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
+theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
+  rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
 theorem arctan_eq_pi_div_four : arctan x = π / 4 ↔ x = 1 := arctan_injective.eq_iff' arctan_one
 
 @[simp]

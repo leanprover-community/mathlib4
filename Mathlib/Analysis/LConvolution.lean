@@ -52,13 +52,13 @@ noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ`.
 -/
-scoped[MeasureTheory] notation:67 f " ⋆ₘₗ["μ:67"] " g:66 => MeasureTheory.mlconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₘₗ[" μ:67 "] " g:66 => MeasureTheory.mlconvolution f g μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₘₗ " g:66 => MeasureTheory.mlconvolution f g volume
 
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ`. -/
-scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66 => MeasureTheory.lconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₗ[" μ:67 "] " g:66 => MeasureTheory.lconvolution f g μ
 
 /-- Scoped notation for the additive convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume

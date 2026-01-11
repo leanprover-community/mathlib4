@@ -5,8 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.FieldSimp
-public meta import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring.Basic
 
 
 /-! # A tactic for proving algebraic goals in a field

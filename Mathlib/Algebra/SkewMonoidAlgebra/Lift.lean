@@ -41,7 +41,7 @@ variable (k G A)
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
-  invFun f := (f : SkewMonoidAlgebra k G →* A).comp  (of k G)
+  invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
     simp_rw [show ∀ (g : G) (r : k), g • r = r by
@@ -205,9 +205,9 @@ theorem domCongr_refl :
   apply AlgEquiv.ext
   aesop
 
-set_option backward.proofsInPublic true in
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
+    (domCongrAlg k A he).symm =
+      domCongrAlg (e := e.symm) _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl
 
 end domCongr

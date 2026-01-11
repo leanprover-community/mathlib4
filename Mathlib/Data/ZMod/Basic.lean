@@ -511,8 +511,6 @@ theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = �
 theorem natCast_eq_zero_iff (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 
-@[deprecated (since := "2025-06-30")] alias natCast_zmod_eq_zero_iff_dvd := natCast_eq_zero_iff
-
 theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
   · rw [Int.ofNat_zero, Int.emod_zero, Int.cast_id]; rfl
@@ -998,9 +996,9 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
-  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne m)
   by_cases! h : m < n
-  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+  · obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne n)
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
@@ -1020,9 +1018,7 @@ theorem neg_val {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = if a = 0 then 0 e
   by_cases h : a = 0; · rw [if_pos h, h, val_zero, tsub_zero, Nat.mod_self]
   rw [if_neg h]
   apply Nat.mod_eq_of_lt
-  apply Nat.sub_lt (NeZero.pos n)
-  contrapose! h
-  rwa [Nat.le_zero, val_eq_zero] at h
+  exact Nat.sub_lt (NeZero.pos n) (val_pos.mpr h)
 
 theorem val_neg_of_ne_zero {n : ℕ} [nz : NeZero n] (a : ZMod n) [na : NeZero a] :
     (-a).val = n - a.val := by simp_all [neg_val a, na.out]
@@ -1038,13 +1034,9 @@ theorem val_sub {n : ℕ} [NeZero n] {a b : ZMod n} (h : b.val ≤ a.val) :
 
 theorem val_cast_eq_val_of_lt {m n : ℕ} [nzm : NeZero m] {a : ZMod m}
     (h : a.val < n) : (a.cast : ZMod n).val = a.val := by
-  have nzn : NeZero n := by constructor; rintro rfl; simp at h
-  cases m with
-  | zero => cases nzm; simp_all
-  | succ m =>
-    cases n with
-    | zero => cases nzn; simp_all
-    | succ n => exact Fin.val_cast_of_lt h
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (NeZero.ne m)
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero <| by rintro (rfl : n = 0); simp at h
+  exact Fin.val_cast_of_lt h
 
 theorem cast_cast_zmod_of_le {m n : ℕ} [hm : NeZero m] (h : m ≤ n) (a : ZMod m) :
     (cast (cast a : ZMod n) : ZMod m) = a := by

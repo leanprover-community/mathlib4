@@ -13,7 +13,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 # Basic lemmas on prime factorizations
 -/
 
-@[expose] public section
+public section
 
 open Finset List Finsupp
 
