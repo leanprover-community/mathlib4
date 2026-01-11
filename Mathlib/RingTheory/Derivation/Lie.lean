@@ -68,7 +68,7 @@ instance : LieModule R (Derivation R A A) A where
   lie_smul := fun _ _ _ ↦ Derivation.map_smul_of_tower _ _ _
 
 @[simp]
-lemma bracketmul (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
+lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
 
 end LieStructures
 
