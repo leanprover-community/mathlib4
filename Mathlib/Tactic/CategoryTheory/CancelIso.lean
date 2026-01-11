@@ -57,11 +57,11 @@ check if `g` is equal to the inverse of `f` by
 
 If they are inverse, return a proof of `inv f = g`.
 If any of the tests above fail, return none. -/
-def tryCancelPair (C x y z f g : Expr) : MetaM (Option Expr) := do
+def tryCancelPair (C instCat x y z f g : Expr) : MetaM (Option Expr) := do
   -- Check the objects match
   unless ← withNewMCtxDepth (isDefEq z x) do return none
   -- Run `push` on both sides.
-  let inv_f ← try mkAppOptM ``CategoryTheory.inv #[C, none, x, y, f, none] catch _ => return none
+  let inv_f ← try mkAppOptM ``CategoryTheory.inv #[C, instCat, x, y, f, none] catch _ => return none
   let pushed_inv ← Push.pushCore (.const ``CategoryTheory.inv) {} none inv_f
   let pushed_g ← Push.pushCore (.const ``CategoryTheory.inv) {} none g
   -- Check if the "inv"-normal forms match
@@ -89,19 +89,20 @@ because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand. -/
 def cancelIsoSimproc : Simp.Simproc := fun e => do
-  let_expr CategoryStruct.comp C instCat x y t f g := e | return .continue
+  let_expr CategoryStruct.comp _ instCatStr x y t f g := e | return .continue
+  let_expr Category.toCategoryStruct C instCat := instCatStr | return .continue
   match_expr g with
   -- Right_associated expressions needs their own logic.
   | CategoryStruct.comp _ _ _ z _ g h =>
-    let some p₀ ← tryCancelPair C x y z f g | return .continue
+    let some p₀ ← tryCancelPair C instCat x y z f g | return .continue
     -- Builds the proof that `f ≫ g ≫ h = h.
-    let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, none, x, y, f, none, g, p₀, none, h]
-    return .done {expr := h, proof? := P}
+    let P ← mkAppOptM ``hom_inv_id_of_eq_assoc #[C, instCat, x, y, f, none, g, p₀, none, h]
+    return .done { expr := h, proof? := P }
   -- Otherwise, same logic but with hom_inv_id_of_eq instead of hom_inv_id_of_eq_assoc
   | _ =>
-    let some p₀ ← tryCancelPair C x y t f g | return .continue
-    let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, none, g, p₀]
-    return .done {expr := ← mkAppOptM ``CategoryStruct.id #[C, instCat, x], proof? := P}
+    let some p₀ ← tryCancelPair C instCat x y t f g | return .continue
+    let P ← mkAppOptM ``hom_inv_id_of_eq #[C, instCat, x, y, f, none, g, p₀]
+    return .done { expr := ← mkAppOptM ``CategoryStruct.id #[C, instCatStr, x], proof? := P }
 
 end Mathlib.Tactic.CategoryTheory.CancelIso
 
