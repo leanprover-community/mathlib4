@@ -6,7 +6,6 @@ Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 import Mathlib.NumberTheory.UnitaryDivisor
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Tactic
 
 /-!
 # Unitary Perfect Numbers
@@ -72,12 +71,13 @@ theorem unitaryDivisorSum_odd_even {n : ℕ} (hn : 1 < n) (hodd : Odd n) : Even 
     have hp_odd : Odd p := by
       rcases hp_prime.eq_two_or_odd with hp_2 | hp_mod
       · subst hp_2
-        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp at hn
+        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hn
         have heven : Even ((2 : ℕ) ^ k) := Even.pow_of_ne_zero even_two hk_ne
         exact absurd heven (Nat.not_even_iff_odd.symm.mp hodd)
       · exact Nat.odd_iff.mpr hp_mod
     have hk_pos : 0 < k := by
-      by_contra hk0; simp at hk0; subst hk0; simp at hn
+      by_contra hk0; simp only [not_lt, nonpos_iff_eq_zero] at hk0; subst hk0
+      simp only [pow_zero] at hn
     exact unitaryDivisorSum_odd_prime_pow_even hp_prime hp_odd hk_pos
   | h a b ha hb hcoprime iha ihb =>
     have ha_pos : a ≠ 0 := by omega
@@ -128,11 +128,12 @@ theorem no_odd_unitary_perfect {n : ℕ} (hodd : Odd n) (hgt1 : n > 1) : ¬Unita
     have hp_odd : Odd p := by
       rcases hp_prime.eq_two_or_odd with hp_2 | hp_mod
       · subst hp_2
-        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp at hgt1
+        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hgt1
         have heven : Even ((2 : ℕ) ^ k) := Even.pow_of_ne_zero even_two hk_ne
         exact absurd heven (Nat.not_even_iff_odd.symm.mp hodd)
       · exact Nat.odd_iff.mpr hp_mod
-    have hk_pos : 0 < k := by by_contra hk0; simp at hk0; subst hk0; simp at hgt1
+    have hk_pos : 0 < k := by by_contra hk0; simp only [not_lt, nonpos_iff_eq_zero] at hk0
+      subst hk0; simp only [pow_zero] at hgt1
     have hk_ne : k ≠ 0 := Nat.pos_iff_ne_zero.mp hk_pos
     rw [unitaryDivisorSum_prime_pow hp_prime hk_ne] at hup
     have hp_ge_3 : p ≥ 3 := by

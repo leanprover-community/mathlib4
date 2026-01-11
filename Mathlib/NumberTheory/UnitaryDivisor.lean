@@ -6,7 +6,6 @@ Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Tactic
 
 /-!
 # Unitary Divisors and the Unitary Divisor Sum Function
@@ -261,7 +260,7 @@ private lemma not_unitaryDivisor_prime_pow_intermediate {p k i : ℕ} (hp : Nat.
 private lemma divisor_of_prime_pow {p k d : ℕ} (hp : Nat.Prime p) (hdvd : d ∣ p ^ k) :
     ∃ i : ℕ, i ≤ k ∧ d = p ^ i := by
   induction k generalizing d with
-  | zero => simp at hdvd; exact ⟨0, le_refl 0, hdvd⟩
+  | zero => simp only [pow_zero, dvd_one] at hdvd; exact ⟨0, le_refl 0, hdvd⟩
   | succ k ih =>
     by_cases hp_dvd_d : p ∣ d
     · obtain ⟨m, rfl⟩ := hp_dvd_d
@@ -325,7 +324,7 @@ theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0
       calc p ^ k ≥ p ^ 1 := Nat.pow_le_pow_right hp.pos hk_pos
         _ = p := pow_one p
     omega
-  simp only [Finset.sum_insert (Finset.not_mem_singleton.mpr h_ne), Finset.sum_singleton]
+  simp only [Finset.sum_insert (notMem_singleton.mpr h_ne), Finset.sum_singleton]
   ring
 
 /-! ### Additional Properties -/
