@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
+public import Batteries.Tactic.Lint
 
 /-!
 # Abelian categories have homology

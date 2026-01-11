@@ -121,12 +121,6 @@ lemma EMap_id :
   rw [shortComplexEMap_id, ShortComplex.homologyMap_id]
   rfl
 
-/-- Variant of `EMap_id`. -/
-lemma EMap_id' (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃) (hα : α = 𝟙 _) :
-    X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁ f₂ f₃ α = 𝟙 _ := by
-  subst hα
-  simp only [EMap_id]
-
 @[reassoc, simp]
 lemma EMap_comp :
     X.EMap n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) =
@@ -209,6 +203,8 @@ lemma leftHomologyDataShortComplexE_f' :
   let hi := (X.kernelSequenceCycles_exact _ _ hn₂ f₁ f₂).fIsKernel
   exact Fork.IsLimit.hom_ext hi (by simpa using hi.fac _ .zero)
 
+/-- The cycles of the short complex `shortComplexE` at `E^{n₁}(f₁, f₂, f₃)`
+identifies to `Z^{n₁}(f₁, f₂)`. -/
 noncomputable def cyclesIso :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).cycles ≅ X.cycles n₁ f₁ f₂ :=
   (X.leftHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).cyclesIso
@@ -225,6 +221,7 @@ lemma cyclesIso_hom_i :
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).iCycles :=
   ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i _
 
+/-- The epimorphism `Z^{n₁}(f₁, f₂) ⟶ E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def πE : X.cycles n₁ f₁ f₂ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).inv ≫
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homologyπ
@@ -242,24 +239,27 @@ lemma δToCycles_πE :
     X.δToCycles n₀ n₁ hn₁ f₁ f₂ f₃ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ = 0 := by
   simp only [πE, δToCycles_cyclesIso_inv_assoc, ShortComplex.toCycles_comp_homologyπ]
 
-/-- cokernelSequenceE' -/
+/-- The (exact) sequence `H^{n-1}(f₃) ⟶ Z^n(f₁, f₂) ⟶ E^n(f₁, f₂, f₃) ⟶ 0`. -/
 @[simps]
-noncomputable def cokernelSequenceE' : ShortComplex C :=
+noncomputable def cokernelSequenceCyclesE : ShortComplex C :=
     ShortComplex.mk _ _ (X.δToCycles_πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
 
+/-- The short complex `H^{n-1}(f₃) ⟶ Z^n(f₁, f₂) ⟶ E^n(f₁, f₂, f₃)` identifies
+to the cokernel sequence of the definition of the homology of the short
+complex `shortComplexE` as a cokernel of `ShortComplex.toCycles`. -/
 @[simps!]
-noncomputable def cokernelSequenceE'Iso :
-    X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≅ ShortComplex.mk _ _
+noncomputable def cokernelSequenceCyclesEIso :
+    X.cokernelSequenceCyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≅ ShortComplex.mk _ _
         (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).toCycles_comp_homologyπ :=
   ShortComplex.isoMk (Iso.refl _) (X.cyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).symm
     (Iso.refl _) (by simp) (by simp [πE])
 
-lemma cokernelSequenceE'_exact :
-    (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact :=
-  ShortComplex.exact_of_iso (X.cokernelSequenceE'Iso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).symm
+lemma cokernelSequenceCyclesE_exact :
+    (X.cokernelSequenceCyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact :=
+  ShortComplex.exact_of_iso (X.cokernelSequenceCyclesEIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).symm
     (ShortComplex.exact_of_g_is_cokernel _ (ShortComplex.homologyIsCokernel _))
 
-instance : Epi (X.cokernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g := by
+instance : Epi (X.cokernelSequenceCyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g := by
   dsimp; infer_instance
 
 /-- `E^n₁(f₁, f₂, f₃)` identifies to the kernel
@@ -285,7 +285,6 @@ noncomputable def rightHomologyDataShortComplexE :
     · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
     · exact Fork.ext (Iso.refl _) }
 
-/-- rightHomologyDataShortComplexE_g' -/
 @[simp]
 lemma rightHomologyDataShortComplexE_g' :
     (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).g' =
@@ -293,6 +292,8 @@ lemma rightHomologyDataShortComplexE_g' :
   let hp := (X.cokernelSequenceOpcycles_exact _ _ hn₁ f₂ f₃).gIsCokernel
   exact Cofork.IsColimit.hom_ext hp (by simpa using hp.fac _ .one)
 
+/-- The opcycles of the short complex `shortComplexE` at `E^{n₁}(f₁, f₂, f₃)`
+identifies to `opZ^{n₁}(f₂, f₃)`. -/
 noncomputable def opcyclesIso :
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).opcycles ≅ X.opcycles n₁ f₂ f₃ :=
   (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).opcyclesIso
@@ -310,6 +311,7 @@ lemma p_opcyclesIso_inv :
       (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).pOpcycles :=
   (X.rightHomologyDataShortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).p_comp_opcyclesIso_inv
 
+/-- The monomorphism `E^{n₁}(f₁, f₂, f₃) ⟶ opZ^{n₁}(f₂, f₃) ⟶ `. -/
 noncomputable def ιE : X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ X.opcycles n₁ f₂ f₃ :=
   (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homologyι ≫
     (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).hom
@@ -335,27 +337,31 @@ lemma πE_ιE :
       X.iCycles n₁ f₁ f₂ ≫ X.pOpcycles n₁ f₂ f₃ := by
   simp [πE, ιE]
 
-/-- kernelSequenceE' -/
+/-- The (exact) sequence `0 ⟶ E^n(f₁, f₂, f₃) ⟶ opZ^n(f₂, f₃) ⟶ H^{n+1}(f₁)`. -/
 @[simps]
-noncomputable def kernelSequenceE' : ShortComplex C :=
+noncomputable def kernelSequenceOpcyclesE : ShortComplex C :=
     ShortComplex.mk _ _ (X.ιE_δFromOpcycles n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
 
+/-- The short complex `E^n(f₁, f₂, f₃) ⟶ opZ^n(f₂, f₃) ⟶ H^{n+1}(f₁)` identifies
+to the kernel sequence of the definition of the homology of the short
+complex `shortComplexE` as a kernel of `ShortComplex.fromOpcycles`. -/
 @[simps!]
-noncomputable def kernelSequenceE'Iso :
-    X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≅ ShortComplex.mk _ _
+noncomputable def kernelSequenceOpcyclesEIso :
+    X.kernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ≅
+      ShortComplex.mk _ _
         (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).homologyι_comp_fromOpcycles :=
   Iso.symm (ShortComplex.isoMk (Iso.refl _) (X.opcyclesIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃)
     (Iso.refl _) (by simp [ιE]) (by simp))
 
-lemma kernelSequenceE'_exact :
-    (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact :=
-  ShortComplex.exact_of_iso (X.kernelSequenceE'Iso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).symm
+lemma kernelSequenceOpcyclesE_exact :
+    (X.kernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).Exact :=
+  ShortComplex.exact_of_iso (X.kernelSequenceOpcyclesEIso n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).symm
     (ShortComplex.exact_of_f_is_kernel _ (ShortComplex.homologyIsKernel _))
 
-instance : Mono (X.kernelSequenceE' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f := by
-  dsimp
-  infer_instance
+instance : Mono (X.kernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).f := by
+  dsimp; infer_instance
 
+/-- The (exact) sequence `H^n(f₁) ⊞ H^{n-1}(f₃) ⟶ H^n(f₁ ≫ f₂) ⟶ E^n(f₁, f₂, f₃) ⟶ 0`. -/
 @[simps]
 noncomputable def cokernelSequenceE : ShortComplex C where
   X₁ := (X.H n₁).obj (mk₁ f₁) ⊞ (X.H n₀).obj (mk₁ f₃)
@@ -366,8 +372,7 @@ noncomputable def cokernelSequenceE : ShortComplex C where
   zero := by ext <;> simp
 
 instance : Epi (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
-  dsimp
-  apply epi_comp
+  dsimp; infer_instance
 
 lemma cokernelSequenceE_exact :
     (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by
@@ -375,7 +380,7 @@ lemma cokernelSequenceE_exact :
   intro A x₂ hx₂
   dsimp at x₂ hx₂
   obtain ⟨A₁, π₁, _, y₁, hy₁⟩ :=
-    (X.cokernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
+    (X.cokernelSequenceCyclesE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
       (x₂ ≫ X.toCycles n₁ f₁ f₂ f₁₂ h₁₂) (by simpa using hx₂)
   dsimp at y₁ hy₁
   let z := π₁ ≫ x₂ - y₁ ≫ X.δ n₀ n₁ hn₁ f₁₂ f₃
@@ -391,6 +396,7 @@ variable {A : C} (x : (X.H n₁).obj (mk₁ f₁₂) ⟶ A)
   (h : (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ x = 0)
   (h' : X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫ x = 0)
 
+/-- Constructor for morphisms for `E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def descE :
     X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ A :=
   (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).desc x (by cat_disch)
@@ -405,6 +411,7 @@ lemma toCycles_πE_descE :
 
 end
 
+/-- The (exact) sequence `0 ⟶ E^n(f₁, f₂, f₃) ⟶ H^n(f₂ ≫ f₃) ⟶ H^n(f₃) ⊞ H^{n+1}(f₁)`. -/
 @[simps]
 noncomputable def kernelSequenceE : ShortComplex C where
   X₁ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
@@ -415,8 +422,7 @@ noncomputable def kernelSequenceE : ShortComplex C where
   zero := by ext <;> simp
 
 instance : Mono (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).f := by
-  dsimp
-  infer_instance
+  dsimp; infer_instance
 
 lemma kernelSequenceE_exact :
     (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).Exact := by
@@ -424,7 +430,7 @@ lemma kernelSequenceE_exact :
   intro A x₂ hx₂
   dsimp at x₂ hx₂
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
-    (X.kernelSequenceE'_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
+    (X.kernelSequenceOpcyclesE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃).exact_up_to_refinements
       (X.liftOpcycles n₁ f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
         rw [← X.fromOpcyles_δ n₁ n₂ hn₂ f₁ f₂ f₃ f₂₃ h₂₃,
@@ -441,6 +447,7 @@ variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ f₂₃))
   (h : x ≫ (X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃) = 0)
   (h' : x ≫ X.δ n₁ n₂ hn₂ f₁ f₂₃ = 0)
 
+/-- Constructor for morphisms to `E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def liftE :
     A ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift x (by cat_disch)
@@ -522,6 +529,7 @@ variable (n₀ n₁ n₂ : ℤ)
   (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₁₂ : i₀ ⟶ i₂) (h₁₂ : f₁ ≫ f₂ = f₁₂)
 
+/-- The map `opZ^n(f₁ ≫ f₂, f₃) ⟶ E^n(f₁, f₂, f₃)`. -/
 noncomputable def opcyclesToE : X.opcycles n₁ f₁₂ f₃ ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   X.descOpcycles n₀ _ hn₁ _ _
     (X.toCycles n₁ f₁ f₂ f₁₂ h₁₂ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃) (by simp)
@@ -545,20 +553,20 @@ lemma opcyclesToE_ιE :
 instance : Epi (X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂) :=
   epi_of_epi_fac (X.p_opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂)
 
-/-- cokernelSequenceE'' -/
+/-- The (exact) sequence `H^n(f₁) ⟶ opZ^n(f₁ ≫ f₂, f₃) ⟶ E^n(f₁, f₂, f₃) ⟶ 0`. -/
 @[simps!]
-noncomputable def cokernelSequenceE'' : ShortComplex C where
+noncomputable def cokernelSequenceOpcyclesE : ShortComplex C where
   X₁ := (X.H n₁).obj (mk₁ f₁)
   X₂ := X.opcycles n₁ f₁₂ f₃
   X₃ := X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃
   f := (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.pOpcycles n₁ f₁₂ f₃
   g := X.opcyclesToE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
 
-instance : Epi (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
+instance : Epi (X.cokernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).g := by
   dsimp; infer_instance
 
-lemma cokernelSequenceE''_exact :
-    (X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by
+lemma cokernelSequenceOpcyclesE_exact :
+    (X.cokernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
   dsimp at x₂ hx₂
@@ -622,6 +630,7 @@ section
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
 
+/-- The isomorphism `Z^n(𝟙 _, f) ≅ H^n(f)`. -/
 noncomputable def cyclesIsoH :
     X.cycles n₀ (𝟙 i₀) f ≅ (X.H n₀).obj (mk₁ f) :=
   (X.cyclesIso (n₀ - 1) n₀ n₁ (by lia) hn₁ (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
@@ -650,6 +659,7 @@ lemma cyclesIsoH_inv_hom_id :
       (X.cyclesIsoH n₀ n₁ hn₁ f).hom = 𝟙 _ := by
   simpa using (X.cyclesIsoH n₀ n₁ hn₁ f).inv_hom_id
 
+/-- The isomorphism `opZ^n(f, 𝟙 _) ≅ H^n(f)`. -/
 noncomputable def opcyclesIsoH :
     X.opcycles n₁ f (𝟙 i₁) ≅ (X.H n₁).obj (mk₁ f) :=
   (X.opcyclesIso n₀ n₁ (n₁ + 1) hn₁ (by lia) (𝟙 i₀) f (𝟙 i₁)).symm ≪≫
@@ -747,6 +757,8 @@ lemma opcyclesMap_threeδ₂Toδ₁_opcyclesToE :
     p_opcyclesMap_assoc _ _ _ _ _ _ _ (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) rfl _,
     p_opcyclesToE, H_map_twoδ₂Toδ₁_toCycles_assoc, zero_comp]
 
+/-- The short exact sequence
+`0 ⟶ opZ^(f₁, f₂ ≫ f₃) ⟶ opZ^n(f₁ ≫ f₂, f₃) ⟶ H^n(f₁, f₂, f₃) ⟶ 0`. -/
 @[simps]
 noncomputable def shortComplexOpcyclesThreeδ₂Toδ₁ : ShortComplex C :=
   ShortComplex.mk _ _
@@ -769,7 +781,7 @@ instance :
 
 lemma shortComplexOpcyclesThreeδ₂Toδ₁_exact :
     (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).Exact := by
-  let φ : X.cokernelSequenceE'' n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ⟶
+  let φ : X.cokernelSequenceOpcyclesE n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂ ⟶
       (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) :=
     { τ₁ := X.pOpcycles n₁ f₁ f₂₃
       τ₂ := 𝟙 _
@@ -778,7 +790,7 @@ lemma shortComplexOpcyclesThreeδ₂Toδ₁_exact :
         dsimp
         rw [Category.comp_id, X.p_opcyclesMap _ _ _ _ _ _ (twoδ₂Toδ₁ f₁ f₂ f₁₂) rfl] }
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
-  exact X.cokernelSequenceE''_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
+  exact X.cokernelSequenceOpcyclesE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂
 
 lemma shortComplexOpcyclesThreeδ₂Toδ₁_shortExact :
     (X.shortComplexOpcyclesThreeδ₂Toδ₁ n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃).ShortExact where

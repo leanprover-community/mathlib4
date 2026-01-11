@@ -7,10 +7,20 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.CategoryTheory.ComposableArrows.Four
-public import Batteries.Tactic.Lint
 
 /-!
-# Homology of differentials
+# The homology of the differentials of a spectral object
+
+Let `X` be a spectral object indexed by a category `ι` in an abelian
+category `C`. Assume we have seven composable arrows
+`f₁`, `f₂`, `f₃`, `f₄`, `f₅`, `f₆`, `f₇` in `ι`. In this file,
+we compute the homology of the differentials, i.e. the homology of the short complex
+`E^{n - 1}(f₅, f₆, f₇) ⟶ E^n(f₃, f₄, f₅) ⟶ E^{n + 1}(f₁, f₂, f₃)`.
+The main definition for this is `dHomologyData` which is an homology data
+for this short complex where:
+* the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
+* the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
+* the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
 
 -/
 
@@ -72,22 +82,19 @@ lemma d_EMap_fourδ₄Toδ₃ :
     cyclesMap_id, Category.id_comp, δ_toCycles_assoc, δToCycles_πE]
 
 instance :
-    Epi (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
-  apply X.epi_EMap
-  all_goals rfl
+    Epi (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) :=
+  X.epi_EMap _ _ _ _ _ _ _ _ _ _ rfl rfl rfl
 
 lemma isIso_EMap_fourδ₄Toδ₃ (h : ((X.H n₁).map (twoδ₁Toδ₀ f₃ f₄ f₃₄ h₃₄) = 0)) :
     IsIso (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
   · exact (X.exact₂ _ f₃ f₄ f₃₄ h₃₄).epi_f h
   · dsimp
-    have : 𝟙 (mk₁ f₂) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
-    erw [← this]
-    infer_instance
+    convert inferInstanceAs (IsIso ((X.H n₂).map (𝟙 _)))
+    cat_disch
   · dsimp
-    have : 𝟙 (mk₁ f₁) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
-    erw [← this]
-    infer_instance
+    convert inferInstanceAs (Mono ((X.H n₃).map (𝟙 (mk₁ f₁))))
+    cat_disch
 
 lemma isIso_EMap_fourδ₄Toδ₃_of_isZero (h : IsZero ((X.H n₁).obj (mk₁ f₄))) :
     IsIso (X.EMap n₁ n₂ n₃ hn₂ hn₃ f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)) := by
@@ -106,21 +113,18 @@ lemma EMap_fourδ₁Toδ₀_d :
     opcyclesMap_id, fromOpcyles_δ, id_comp, ιE_δFromOpcycles]
 
 instance :
-    Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
-  apply mono_EMap
-  all_goals rfl
+    Mono (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) :=
+  X.mono_EMap _ _ _ _ _ _ _ _ _ _ rfl rfl rfl
 
 lemma isIso_EMap_fourδ₁Toδ₀ (h : ((X.H n₂).map (twoδ₂Toδ₁ f₂ f₃ f₂₃ h₂₃) = 0)) :
     IsIso (X.EMap n₀ n₁ n₂ hn₁ hn₂ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)) := by
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
   · dsimp
-    have : 𝟙 (mk₁ f₅) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
-    erw [← this]
-    infer_instance
+    convert inferInstanceAs (Epi ((X.H n₀).map (𝟙 _)))
+    cat_disch
   · dsimp
-    have : 𝟙 (mk₁ f₄) = homMk₁ (𝟙 _) (𝟙 _) (by simp) := by ext <;> simp
-    erw [← this]
-    infer_instance
+    convert inferInstanceAs (IsIso ((X.H n₁).map (𝟙 _)))
+    cat_disch
   · exact (X.exact₂ n₂ f₂ f₃ f₂₃ h₂₃).mono_g h
 
 lemma isIso_EMap_fourδ₁Toδ₀_of_isZero (h : IsZero ((X.H n₂).obj (mk₁ f₂))) :
@@ -128,6 +132,9 @@ lemma isIso_EMap_fourδ₁Toδ₀_of_isZero (h : IsZero ((X.H n₂).obj (mk₁ f
   apply X.isIso_EMap_fourδ₁Toδ₀
   apply h.eq_of_src
 
+
+/-- The (exact) sequence expressing `E^n(f₁, f₂, f₃ ≫ f₄)` as the cokernel
+of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/
 @[simps!]
 noncomputable def dCokernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (X.d_EMap_fourδ₄Toδ₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄)
@@ -154,6 +161,8 @@ lemma dCokernelSequence_exact :
   refine ⟨A₁, π₁, inferInstance, x₁ ≫ X.πE n₀ n₁ n₂ hn₁ hn₂ f₃ f₄ f₅, ?_⟩
   rw [← cancel_mono (X.ιE _ _ _ _ _ _ _ _), assoc, assoc, assoc, hx₁, πE_d_ιE]
 
+/-- The (exact) sequence expressing `E^n(f₂ ≫ f₃, f₄, f₅)` as the kernel
+of the differential `E^n(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` -/
 @[simps!]
 noncomputable def dKernelSequence : ShortComplex C :=
   ShortComplex.mk _ _ (X.EMap_fourδ₁Toδ₀_d n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
@@ -189,10 +198,13 @@ variable (n₀ n₁ n₂ n₃ n₄ : ℤ)
   (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
   (f₅₆ : i₄ ⟶ i₆) (h₅₆ : f₅ ≫ f₆ = f₅₆)
 
+/-- The short complex `E^{n₁}(f₅, f₆, f₇) ⟶ E^{n₀}(f₃, f₄, f₅) ⟶ E^{n₂}(f₁, f₂, f₃)`
+given by the differentials of a spectral object. -/
 @[simps!]
 noncomputable def dShortComplex : ShortComplex C :=
   ShortComplex.mk _ _ (X.d_d n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇)
 
+@[reassoc]
 lemma EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ :
     X.EMap n₁ n₂ n₃ hn₂ hn₃ f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) ≫
       X.EMap n₁ n₂ n₃ hn₂ hn₃ f₃ f₄ f₅ f₃ f₄ f₅₆ (fourδ₄Toδ₃ f₃ f₄ f₅ f₆ f₅₆ h₅₆) =
@@ -202,6 +214,12 @@ lemma EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ :
   congr 1
   ext <;> simp
 
+/-- The homology data of the short complex
+`E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` for which
+* the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
+* the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
+* the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`. -/
+@[simps!]
 noncomputable def dHomologyData :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇).HomologyData :=
   ShortComplex.HomologyData.ofEpiMonoFactorisation
@@ -210,6 +228,9 @@ noncomputable def dHomologyData :
     (X.dCokernelSequence_exact n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ f₃ f₄ f₅ f₆ f₇ f₅₆ h₅₆).gIsCokernel
     (X.EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ n₁ n₂ n₃ hn₂ hn₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆)
 
+/-- The homology of the short complex
+`E^{n₁}(f₅, f₆, f₇) ⟶ E^{n₀}(f₃, f₄, f₅) ⟶ E^{n₂}(f₁, f₂, f₃)` identifies to
+`E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`. -/
 noncomputable def dHomologyIso :
     (X.dShortComplex n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄ f₁ f₂ f₃ f₄ f₅ f₆ f₇).homology ≅
       X.E n₁ n₂ n₃ hn₂ hn₃ f₂₃ f₄ f₅₆ :=
