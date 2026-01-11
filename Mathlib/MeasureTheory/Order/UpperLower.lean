@@ -47,7 +47,7 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 Generalize so that it also applies to `ℝ × ℝ`, for example.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Metric Set
 open scoped Topology

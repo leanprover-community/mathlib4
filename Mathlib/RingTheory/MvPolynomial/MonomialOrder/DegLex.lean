@@ -11,7 +11,7 @@ public import Mathlib.Algebra.MvPolynomial.Division
 
 /-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

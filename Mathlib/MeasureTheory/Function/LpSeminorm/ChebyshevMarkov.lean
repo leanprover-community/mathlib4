@@ -14,7 +14,7 @@ In this file we formulate several versions of the Chebyshev-Markov inequality
 in terms of the `MeasureTheory.eLpNorm` seminorm.
 -/
 
-@[expose] public section
+public section
 open scoped NNReal ENNReal
 
 namespace MeasureTheory

@@ -16,7 +16,7 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 nonarchimedean functions.
 -/
 
-@[expose] public section
+public section
 
 namespace IsNonarchimedean
 

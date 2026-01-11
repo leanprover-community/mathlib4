@@ -15,7 +15,7 @@ public import Qq
 This file defines `finsetNonempty`, an aesop rule set to prove that a given finset is nonempty.
 -/
 
-@[expose] public section
+public section
 
 -- `finsetNonempty` rules try to prove that a given finset is nonempty,
 -- for use in positivity extensions.

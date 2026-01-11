@@ -603,7 +603,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (← getMainGoal).depRewrite localDecl.type e symm (config := config)
   let r ← (← getMainGoal).replaceLocalDecl fvarId rwResult.eNew rwResult.eqProof
   let mvarId' ← r.mvarId.changeLocalDecl r.fvarId (← withTransparency config.castTransparency
-    (r.mvarId.withContext <| cleanupCasts (← r.fvarId.getType)))
+    (r.mvarId.withContext do cleanupCasts (← r.fvarId.getType)))
   replaceMainGoal (mvarId' :: rwResult.mvarIds)
 
 /-- Elaborate `DepRewrite.Config`. -/

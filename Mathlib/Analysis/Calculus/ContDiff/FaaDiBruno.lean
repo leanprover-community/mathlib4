@@ -121,7 +121,7 @@ namespace OrderedFinpartition
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
   length := n
-  partSize _ :=  1
+  partSize _ := 1
   partSize_pos _ := _root_.zero_lt_one
   emb m _ := m
   emb_strictMono _ := Subsingleton.strictMono _

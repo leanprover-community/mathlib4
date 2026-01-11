@@ -37,7 +37,7 @@ differentiability, norm
 
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap Filter NNReal Real Set
 

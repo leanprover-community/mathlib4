@@ -95,14 +95,14 @@ instance (r : α → α → Prop) [IsRefl α r] (p : α → Prop) : IsRefl _ (Su
 instance (r : α → α → Prop) [Std.Symm r] (p : α → Prop) : Std.Symm (Subrel r p) :=
   ⟨fun x y => @Std.Symm.symm α r _ x y⟩
 
-instance (r : α → α → Prop) [IsAsymm α r] (p : α → Prop) : IsAsymm _ (Subrel r p) :=
-  ⟨fun x y => @IsAsymm.asymm α r _ x y⟩
+instance (r : α → α → Prop) [Std.Asymm r] (p : α → Prop) : Std.Asymm (Subrel r p) :=
+  ⟨fun x y => @Std.Asymm.asymm α r _ x y⟩
 
 instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (Subrel r p) :=
   ⟨fun x y z => @IsTrans.trans α r _ x y z⟩
 
-instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _ (Subrel r p) :=
-  ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
+instance (r : α → α → Prop) [Std.Irrefl r] (p : α → Prop) : Std.Irrefl (Subrel r p) :=
+  ⟨fun x => @Std.Irrefl.irrefl α r _ x⟩
 
 instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
   ⟨fun x y => by rw [Subtype.ext_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩

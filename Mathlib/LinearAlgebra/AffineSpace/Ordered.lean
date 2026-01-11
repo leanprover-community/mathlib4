@@ -28,7 +28,7 @@ for an ordered module interpreted as an affine space.
 affine space, ordered module, slope
 -/
 
-@[expose] public section
+public section
 
 
 open AffineMap
