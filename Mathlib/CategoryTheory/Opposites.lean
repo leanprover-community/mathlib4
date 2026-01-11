@@ -174,12 +174,12 @@ theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f 
 instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
   (isIso_unop_iff _).2 inferInstance
 
-@[simp]
+@[simp, push ←]
 theorem op_inv {X Y : C} (f : X ⟶ Y) [IsIso f] : (inv f).op = inv f.op := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← op_comp, IsIso.inv_hom_id, op_id]
 
-@[simp]
+@[simp, push ←]
 theorem unop_inv {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : (inv f).unop = inv f.unop := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← unop_comp, IsIso.inv_hom_id, unop_id]

@@ -180,12 +180,12 @@ instance [IsIso e] : IsIso e.left :=
 instance [IsIso e] : IsIso e.right :=
   (Comma.snd L R).map_isIso e
 
-@[simp]
+@[simp, push ←]
 lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
 
-@[simp]
+@[simp, push ←]
 lemma inv_right [IsIso e] : (inv e).right = inv e.right := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
