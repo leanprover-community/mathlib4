@@ -105,22 +105,8 @@ def cancelIsoSimproc : Simp.Simproc := fun e => do -- is withReducible necessary
 
 end Mathlib.Tactic.CategoryTheory.CancelIso
 
-/-- The `cancelIso` simproc triggers on expressions of the form `f ≫ g`.
-
-If `g` is not a composition itself, it checks whether `f` is inverse to `g`
-by checking if `f` has an `IsIso` instance and then by running `push inv` on `inv f` and on `g`.
-If the check succeeds, then `f ≫ g` is rewritten to `𝟙 _`.
-
-If `g` is of the form `h ≫ k`, the procedure instead checks if `f` and `h` are inverses to each
-other, and the procedure rewrites `f ≫ g ≫ h` to `h` if that is the case.
-This is useful as simp-normal forms in category theory are right-associated.
-
-For instance, the simproc will successfully rewrite expressions such as
-`F.map (G.map (inv (H.map (e.hom)))) ≫ F.map (G.map (H.map (e.inv)))` to `𝟙 _`
-because `CategoyTheory.Functor.map_inv` is a `@[push ←]` lemma, and
-`CategoyTheory.IsIso.Iso.inv_hom` is a `[push]` lemma.
-
-This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
-have already been traversed beforehand. -/
 simproc cancelIso (CategoryStruct.comp (self := ?x) _ _) :=
   Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
+
+-- We can’t @[inherit_doc] directly on the simproc command.
+attribute [inherit_doc Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc] cancelIso
