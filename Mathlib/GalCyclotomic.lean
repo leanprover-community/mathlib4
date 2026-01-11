@@ -18,53 +18,12 @@ variable (n : ℕ) [NeZero n] (K : Type*) [Field K] [NumberField K]
   [hK : IsCyclotomicExtension {n} ℚ K] (R : Type*) [CommRing R] [IsDomain R]
   [HasEnoughRootsOfUnity R (Monoid.exponent (ZMod n)ˣ)] -- replace by φ n ?
 
--- TODO: replace ℂ by an arbitrary field with enough roots of unity
-
 open NumberField Ideal Pointwise RingOfIntegers MulChar
 
 include hK in
 def galEquiv : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
   IsCyclotomicExtension.autEquivPow K <|
       Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
-
-def intermediateFieldEquivSubgroupChar [IsGalois ℚ K] :
-    IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
-  IsGalois.intermediateFieldEquivSubgroup.trans <|
-    (galEquiv n K).mapSubgroup.dual.trans <|
-      (CommGroup.subgroupOrderIsoSubgroupMonoidHom (ZMod n)ˣ R).dual.trans <|
-        (OrderIso.dualDual _).symm.trans MulChar.mulEquivToUnitHom.mapSubgroup.symm
-
-theorem mem_fixingSubgroup_iff_forall [IsGalois ℚ K] (σ : Gal(K/ℚ)) (L : IntermediateField ℚ K) :
-    σ ∈ L.fixingSubgroup ↔ ∀ χ ∈ intermediateFieldEquivSubgroupChar n K R L,
-      χ (galEquiv n K σ) = 1 := by
-  unfold intermediateFieldEquivSubgroupChar
-  simp only [OrderIso.trans_apply, MulEquiv.symm_mapSubgroup, OrderIso.dual_apply,
-    OrderDual.ofDual_toDual, IsGalois.ofDual_intermediateFieldEquivSubgroup_apply,
-    OrderIso.dualDual_symm_apply, CommGroup.subgroupOrderIsoSubgroupMonoidHom_apply,
-    MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm]
-  rw [← mulEquivToUnitHom.symm.forall_congr_right]
-  simp only [MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, MulEquiv.toEquiv_symm,
-    MulEquiv.coe_toEquiv_symm, MulEquiv.apply_symm_apply, mulEquivToUnitHom_symm_apply_apply,
-    Units.isUnit, reduceDIte, IsUnit.unit_of_val_units, Units.val_eq_one]
-  rw [CommGroup.forall_mem_restrictHom_ker_apply_eq_one_iff]
-  simp only [IntermediateField.mem_fixingSubgroup_iff, Subgroup.mem_map, MonoidHom.coe_coe,
-    EmbeddingLike.apply_eq_iff_eq, exists_eq_right]
-
-example [IsGalois ℚ K] (χ : DirichletCharacter R n) (L : IntermediateField ℚ K) :
-    χ ∈ intermediateFieldEquivSubgroupChar n K R L ↔ ∀ σ ∈ L.fixingSubgroup,
-      χ (galEquiv n K σ)= 1 := by
-  simp_rw [mem_fixingSubgroup_iff_forall n K R]
-  rw [← (galEquiv n K).symm.forall_congr_right]
-  have := MulChar.forall_mem_subgroupOrderIsoSubgroupMulChar_apply_eq_one_iff (ZMod n) R
-    (intermediateFieldEquivSubgroupChar n K R L) χ
-  rw [← this]
-  simp
-
---  have := CommGroup.forall_mem_restrictHom_ker_apply_eq_one_iff
---    (intermediateFieldEquivSubgroupChar n K R L)
-
-
-  sorry
 
 theorem galEquiv_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
     σ x = x ^ (galEquiv n K σ).val.val := by
@@ -100,6 +59,128 @@ theorem galEquiv_restrictNormal [IsGalois ℚ F] (h : m ∣ n) :
     (galEquiv m F).toMonoidHom.comp (AlgEquiv.restrictNormalHom F) =
       (ZMod.unitsMap h).comp (galEquiv n K).toMonoidHom :=
   MonoidHom.ext fun σ ↦ galEquiv_restrictNormal_apply n K F h σ
+
+def subgroupGalEquivDirichletCharSubgroup :
+    Subgroup Gal(K/ℚ) ≃o (Subgroup (DirichletCharacter R n))ᵒᵈ :=
+  (galEquiv n K).mapSubgroup.trans <|
+    (CommGroup.subgroupOrderIsoSubgroupMonoidHom (ZMod n)ˣ R).trans
+      MulChar.mulEquivToUnitHom.mapSubgroup.symm.dual
+
+@[simp]
+theorem mem_subgroupGalEquivDirichletCharSubgroup_iff (χ : DirichletCharacter R n)
+    (H : Subgroup Gal(K/ℚ)) :
+    χ ∈ (subgroupGalEquivDirichletCharSubgroup n K R H).ofDual ↔
+      ∀ σ ∈ H, χ (galEquiv n K σ) = 1 := by
+  revert χ
+  rw [← MulChar.mulEquivToUnitHom.symm.forall_congr_right,
+    ← (galEquiv n K).monoidHomCongrLeft.forall_congr_right]
+  simp [subgroupGalEquivDirichletCharSubgroup]
+
+@[simp]
+theorem mem_subgroupGalEquivDirichletCharSubgroup_symm_iff (σ : Gal(K/ℚ))
+    (Y : Subgroup (DirichletCharacter R n)) :
+    σ ∈ (subgroupGalEquivDirichletCharSubgroup n K R).symm (OrderDual.toDual Y) ↔
+      ∀ χ ∈ Y, χ (galEquiv n K σ) = 1 := by
+  unfold subgroupGalEquivDirichletCharSubgroup
+  simp only [MulEquiv.symm_mapSubgroup, OrderIso.symm_trans_apply, OrderIso.dual_symm_apply,
+    MulEquiv.symm_symm, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv,
+    CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff]
+  revert Y
+  rw [← MulChar.mulEquivToUnitHom.symm.mapSubgroup.forall_congr_right]
+  simp
+
+def intermediateFieldEquivSubgroupChar [IsGalois ℚ K] :
+    IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
+  IsGalois.intermediateFieldEquivSubgroup.trans <|
+    (subgroupGalEquivDirichletCharSubgroup n K R).dual.trans (OrderIso.dualDual _).symm
+
+theorem forall_mem_intermediateFieldEquivSubgroupChar_iff [IsAbelianGalois ℚ K] (σ : Gal(K/ℚ))
+    (L : IntermediateField ℚ K) :
+    (∀ χ ∈ intermediateFieldEquivSubgroupChar n K R L, χ (galEquiv n K σ) = 1) ↔
+      σ ∈ L.fixingSubgroup := by
+  unfold intermediateFieldEquivSubgroupChar
+  simp [- IntermediateField.mem_fixingSubgroup_iff]
+  
+  simp_rw [OrderIso.trans_apply, OrderIso.dual_apply, OrderIso.dualDual_symm_apply,
+    OrderDual.ofDual_toDual, mem_subgroupGalEquivDirichletCharSubgroup_iff]
+  rw [@IsGalois.ofDual_intermediateFieldEquivSubgroup_apply]
+
+  simp only [OrderIso.dualDual_symm_apply, OrderDual.ofDual_toDual,
+    mem_subgroupGalEquivDirichletCharSubgroup_iff, IntermediateField.mem_fixingSubgroup_iff]
+  have := fun χ ↦ mem_subgroupGalEquivDirichletCharSubgroup_iff n K R χ
+  simp only [OrderIso.trans_apply, OrderIso.dual_apply, OrderDual.ofDual_toDual,
+    OrderIso.dualDual_symm_apply, mem_subgroupGalEquivDirichletCharSubgroup_iff]
+
+
+#exit
+
+  have : HasEnoughRootsOfUnity R (Monoid.exponent Gal(K/ℚ)) := sorry
+  have : HasEnoughRootsOfUnity R (Monoid.exponent (DirichletCharacter R n)) := sorry
+  have t₀ := CommGroup.forall_monoidHom_apply_eq_one_iff R L.fixingSubgroup
+  rw [← (galEquiv n K).symm.forall_congr_right] at t₀
+
+#exit
+
+  have t₁ := CommGroup.forall_monoidHom_apply_eq_one_iff R
+    (intermediateFieldEquivSubgroupChar n K R L)
+  simp_rw (config := {singlePass := true}) [← t₁]
+
+
+  have := CommGroup.forall_monoidHom_apply_eq_one_iff R L.fixingSubgroup
+  rw [← this]
+
+  unfold intermediateFieldEquivSubgroupChar
+
+
+
+  dsimp only [intermediateFieldEquivSubgroupChar, MulEquiv.symm_mapSubgroup, OrderIso.trans_apply,
+    IsGalois.intermediateFieldEquivSubgroup_apply, OrderIso.dual_apply, OrderDual.ofDual_toDual,
+    OrderIso.dualDual_symm_apply]
+  simp_rw [MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv]
+  simp_rw [CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_iff]
+  simp_rw [Subgroup.mem_map_equiv]
+  rw [MulEquiv.symm_symm]
+  simp_rw [← (galEquiv n K).forall_congr_right]
+  rw [← MulChar.mulEquivToUnitHom.symm.forall_congr_right]
+
+
+
+
+-- theorem mem_fixingSubgroup_iff_forall [IsGalois ℚ K] (σ : Gal(K/ℚ)) (L : IntermediateField ℚ K) :
+--     σ ∈ L.fixingSubgroup ↔ ∀ χ ∈ intermediateFieldEquivSubgroupChar n K R L,
+--       χ (galEquiv n K σ) = 1 := by
+--   unfold intermediateFieldEquivSubgroupChar
+--   simp only [OrderIso.trans_apply, MulEquiv.symm_mapSubgroup, OrderIso.dual_apply,
+--     OrderDual.ofDual_toDual, IsGalois.ofDual_intermediateFieldEquivSubgroup_apply,
+--     OrderIso.dualDual_symm_apply, CommGroup.subgroupOrderIsoSubgroupMonoidHom_apply,
+--     MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm]
+--   rw [← mulEquivToUnitHom.symm.forall_congr_right]
+--   simp only [MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, MulEquiv.toEquiv_symm,
+--     MulEquiv.coe_toEquiv_symm, MulEquiv.apply_symm_apply, mulEquivToUnitHom_symm_apply_apply,
+--     Units.isUnit, reduceDIte, IsUnit.unit_of_val_units, Units.val_eq_one]
+--   rw [CommGroup.forall_mem_restrictHom_ker_apply_eq_one_iff]
+--   simp only [IntermediateField.mem_fixingSubgroup_iff, Subgroup.mem_map, MonoidHom.coe_coe,
+--     EmbeddingLike.apply_eq_iff_eq, exists_eq_right]
+
+-- example [IsGalois ℚ K] (χ : DirichletCharacter R n) (L : IntermediateField ℚ K) :
+--     χ ∈ intermediateFieldEquivSubgroupChar n K R L ↔ ∀ σ ∈ L.fixingSubgroup,
+--       χ (galEquiv n K σ)= 1 := by
+--   simp_rw [mem_fixingSubgroup_iff_forall n K R]
+--   rw [← (galEquiv n K).symm.forall_congr_right]
+--   have := MulChar.forall_mem_subgroupOrderIsoSubgroupMulChar_apply_eq_one_iff (ZMod n) R
+--     (intermediateFieldEquivSubgroupChar n K R L) χ
+--   rw [← this]
+--   simp
+
+--  have := CommGroup.forall_mem_restrictHom_ker_apply_eq_one_iff
+--    (intermediateFieldEquivSubgroupChar n K R L)
+
+
+
+
+
+
+
 
 
 
