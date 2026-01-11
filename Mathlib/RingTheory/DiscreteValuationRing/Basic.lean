@@ -176,12 +176,11 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
     · rw [add_comm, pow_succ'] at H0
       exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
-variable [IsDomain R]
-
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+theorem toUniqueFactorizationMonoid [IsCancelMulZero R]
+    (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
