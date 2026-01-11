@@ -11,6 +11,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Square root of RCLike
+
+This file contains the definitions `Complex.sqrt` and `RCLike.sqrt`.
 -/
 
 public section
@@ -22,8 +24,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 
 /-- The square root of `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
-  if h : im (I : 𝕜) = 1 then
-    (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
+  if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
   else (re a).sqrt
 
 theorem Complex.re_sqrt_ofReal (a : ℝ) :
@@ -31,9 +32,8 @@ theorem Complex.re_sqrt_ofReal (a : ℝ) :
   by_cases! ha : 0 ≤ a
   · simp [sqrt, cpow_inv_two_re, abs_of_nonneg ha]
   set b := -a
-  have : a = -b := by grind
-  simp [this, sqrt, cpow_inv_two_re, abs_of_nonneg (a := b) (by simp [b, ha.le]),
-    Real.sqrt_eq_zero' (x := -b) |>.mpr (by simp [b, ha.le])]
+  simp [show a = -b by grind, sqrt, cpow_inv_two_re, abs_of_nonneg (a := b) (by simp [b, ha.le]),
+    Real.sqrt_eq_zero_of_nonpos (x := -b) (by simp [b, ha.le])]
 
 theorem RCLike.re_sqrt_ofReal (a : ℝ) :
     re (sqrt (a : 𝕜)) = a.sqrt := by
