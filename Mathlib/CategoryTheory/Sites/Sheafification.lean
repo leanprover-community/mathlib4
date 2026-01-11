@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
 
 # Sheafification
@@ -15,8 +17,10 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 `A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
 
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
-`Mathlib.CategoryTheory.Sites.LeftExact`.
+`Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -34,36 +38,36 @@ abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
-left adjiont (sheafification).
+left adjoint (sheafification).
 
-Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
+Given a functor, preserving finite limits, `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
 `adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
 -/
 class HasSheafify : Prop where
   isRightAdjoint : HasWeakSheafify J A
-  isLeftExact : Nonempty (PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint))
+  isLeftExact : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint)
 
 instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
 noncomputable section
 
 instance [HasSheafify J A] : PreservesFiniteLimits ((sheafToPresheaf J A).leftAdjoint) :=
-  HasSheafify.isLeftExact.some
+  HasSheafify.isLeftExact
 
 theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
     [PreservesFiniteLimits F] : HasSheafify J A where
   isRightAdjoint := ⟨F, ⟨adj⟩⟩
   isLeftExact := ⟨by
     have : (sheafToPresheaf J A).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
-    exact ⟨fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
-      (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩⟩
+    exact fun _ _ _ ↦ preservesLimitsOfShape_of_natIso
+      (adj.leftAdjointUniq (Adjunction.ofIsRightAdjoint (sheafToPresheaf J A)))⟩
 
 /-- The sheafification functor, left adjoint to the inclusion. -/
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   (sheafToPresheaf J A).leftAdjoint
 
 instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
-  HasSheafify.isLeftExact.some
+  HasSheafify.isLeftExact
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
@@ -73,14 +77,15 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
-variable {D : Type*} [Category D] [HasWeakSheafify J D]
+variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
@@ -136,7 +141,7 @@ variable {D}
 
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).val, ?_, ?_⟩
-  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) : _).app ⟨P, hP⟩
+  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
     rw [← sheafificationAdjunction J D |>.right_triangle]
     rfl
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
@@ -223,8 +228,18 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 
+instance (P : Sheaf J D) :
+    IsIso ((sheafificationAdjunction J D).counit.app P).val :=
+  inferInstanceAs (IsIso ((sheafToPresheaf J D).map _))
+
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
+
+@[reassoc]
+lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
+    sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by
+  rw [← cancel_mono ((sheafificationAdjunction J D).counit.app ⟨P, hP⟩).val]
+  cat_disch
 
 variable (J D)
 
@@ -232,6 +247,6 @@ variable (J D)
 @[simps!]
 noncomputable def sheafificationNatIso :
     𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
-  NatIso.ofComponents (fun P => sheafificationIso P) (by aesop_cat)
+  NatIso.ofComponents (fun P => sheafificationIso P) (by cat_disch)
 
 end CategoryTheory

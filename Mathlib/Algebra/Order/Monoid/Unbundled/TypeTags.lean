@@ -3,11 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Order.BoundedOrder
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -67,7 +71,7 @@ instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddO
   ⟨@exists_mul_of_le α _ _ _⟩
 
 namespace Additive
-
+section Preorder
 variable [Preorder α]
 
 @[simp]
@@ -86,10 +90,40 @@ theorem toMul_le {a b : Additive α} : a.toMul ≤ b.toMul ↔ a ≤ b :=
 theorem toMul_lt {a b : Additive α} : a.toMul < b.toMul ↔ a < b :=
   Iff.rfl
 
+@[gcongr] alias ⟨_, toMul_mono⟩ := toMul_le
+@[gcongr] alias ⟨_, ofMul_mono⟩ := ofMul_le
+@[gcongr] alias ⟨_, toMul_strictMono⟩ := toMul_lt
+@[gcongr] alias ⟨_, ofMul_strictMono⟩ := ofMul_lt
+
+@[deprecated (since := "2025-11-18")] alias foMul_strictMono := ofMul_strictMono
+
+end Preorder
+
+section OrderTop
+variable [LE α] [OrderTop α]
+
+@[simp] lemma ofMul_top : ofMul (⊤ : α) = ⊤ := rfl
+@[simp] lemma toMul_top : toMul ⊤ = (⊤ : α) := rfl
+
+@[simp] lemma ofMul_eq_top {a : α} : ofMul a = ⊤ ↔ a = ⊤ := .rfl
+@[simp] lemma toMul_eq_top {a : Additive α} : toMul a = ⊤ ↔ a = ⊤ := .rfl
+
+end OrderTop
+
+section OrderBot
+variable [LE α] [OrderBot α]
+
+@[simp] lemma ofMul_bot : ofMul (⊥ : α) = ⊥ := rfl
+@[simp] lemma toMul_bot : toMul ⊥ = (⊥ : α) := rfl
+
+@[simp] lemma ofMul_eq_bot {a : α} : ofMul a = ⊥ ↔ a = ⊥ := .rfl
+@[simp] lemma toMul_eq_bot {a : Additive α} : toMul a = ⊥ ↔ a = ⊥ := .rfl
+
+end OrderBot
 end Additive
 
 namespace Multiplicative
-
+section Preorder
 variable [Preorder α]
 
 @[simp]
@@ -107,5 +141,34 @@ theorem toAdd_le {a b : Multiplicative α} : a.toAdd ≤ b.toAdd ↔ a ≤ b :=
 @[simp]
 theorem toAdd_lt {a b : Multiplicative α} : a.toAdd < b.toAdd ↔ a < b :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, toAdd_mono⟩ := toAdd_le
+@[gcongr] alias ⟨_, ofAdd_mono⟩ := ofAdd_le
+@[gcongr] alias ⟨_, toAdd_strictMono⟩ := toAdd_lt
+@[gcongr] alias ⟨_, ofAdd_strictMono⟩ := ofAdd_lt
+
+end Preorder
+
+section OrderTop
+variable [LE α] [OrderTop α]
+
+@[simp] lemma ofAdd_top : ofAdd (⊤ : α) = ⊤ := rfl
+@[simp] lemma toAdd_top : toAdd ⊤ = (⊤ : α) := rfl
+
+@[simp] lemma ofAdd_eq_top {a : α} : ofAdd a = ⊤ ↔ a = ⊤ := .rfl
+@[simp] lemma toAdd_eq_top {a : Multiplicative α} : toAdd a = ⊤ ↔ a = ⊤ := .rfl
+
+end OrderTop
+
+section OrderBot
+variable [LE α] [OrderBot α]
+
+@[simp] lemma ofAdd_bot : ofAdd (⊥ : α) = ⊥ := rfl
+@[simp] lemma toAdd_bot : toAdd ⊥ = (⊥ : α) := rfl
+
+@[simp] lemma ofAdd_eq_bot {a : α} : ofAdd a = ⊥ ↔ a = ⊥ := .rfl
+@[simp] lemma toAdd_eq_bot {a : Multiplicative α} : toAdd a = ⊥ ↔ a = ⊥ := .rfl
+
+end OrderBot
 
 end Multiplicative

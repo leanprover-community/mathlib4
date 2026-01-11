@@ -3,9 +3,11 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Data.ZMod.Units
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Dirichlet Characters
@@ -26,6 +28,8 @@ Main definitions:
 dirichlet character, multiplicative character
 -/
 
+@[expose] public section
+
 /-!
 ### Definitions
 -/
@@ -41,7 +45,7 @@ namespace DirichletCharacter
 
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
-lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
@@ -91,9 +95,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
-  set_option tactic.skipAssignedInstances false in
-  simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
-      toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
+  simp [changeLevel_def, ZMod.unitsMap_val]
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
@@ -148,7 +150,7 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
 
 lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
   ext
-  simp [units_eq_one]
+  simp [Units.eq_one]
 
 lemma level_one' (hn : n = 1) : χ = 1 := by
   subst hn
@@ -233,15 +235,15 @@ variable (χ)
 /-- A character is primitive if its level is equal to its conductor. -/
 def IsPrimitive : Prop := conductor χ = n
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive := IsPrimitive
-
 lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
   Nat.dvd_one.mp (conductor_dvd_level _)
 
-lemma isPritive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
+lemma isPrimitive_one_level_zero : IsPrimitive (1 : DirichletCharacter R 0) :=
   conductor_eq_zero_iff_level_eq_zero.mpr rfl
+
+@[deprecated (since := "2025-07-27")] alias isPritive_one_level_zero := isPrimitive_one_level_zero
 
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
@@ -284,8 +286,6 @@ lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive.primitive_mul := primitive_mul_isPrimitive
-
 /-
 ### Even and odd characters
 -/
@@ -315,19 +315,19 @@ lemma Odd.not_even [NeZero (2 : S)] (hψ : Odd ψ) : ¬Even ψ :=
   not_and'.mp ψ.not_even_and_odd hψ
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
 lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
-  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  rw [← Units.val_inj, MulChar.coe_toUnitHom]
   exact hψ
 
-lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (-x) = - ψ x := by
   rw [Odd] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]
 
-lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (-x) = ψ x := by
   rw [Even] at hψ
   rw [← neg_one_mul, map_mul]
   simp [hψ]

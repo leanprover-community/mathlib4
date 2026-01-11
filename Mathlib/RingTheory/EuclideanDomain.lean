@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Lemmas about Euclidean domains
@@ -20,6 +22,8 @@ probably be reproved in more generality and this file perhaps removed?
 euclidean domain
 -/
 
+@[expose] public section
+
 
 section
 
@@ -28,12 +32,6 @@ open EuclideanDomain Set Ideal
 section GCDMonoid
 
 variable {R : Type*} [EuclideanDomain R] [GCDMonoid R] {p q : R}
-
-theorem gcd_ne_zero_of_left (hp : p ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
-  hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_left p q)
-
-theorem gcd_ne_zero_of_right (hp : q ≠ 0) : GCDMonoid.gcd p q ≠ 0 := fun h =>
-  hp <| eq_zero_of_zero_dvd (h ▸ gcd_dvd_right p q)
 
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
@@ -57,12 +55,20 @@ theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
         (EuclideanDomain.mul_div_cancel' (gcd_ne_zero_of_right hq) <| gcd_dvd_right _ _).symm <|
       gcd_ne_zero_of_right hq
 
+/-- This is a version of `isCoprime_div_gcd_div_gcd` which replaces the `q ≠ 0` assumption with
+`gcd p q ≠ 0`. -/
+theorem isCoprime_div_gcd_div_gcd_of_gcd_ne_zero (hpq : GCDMonoid.gcd p q ≠ 0) :
+    IsCoprime (p / GCDMonoid.gcd p q) (q / GCDMonoid.gcd p q) :=
+  (gcd_isUnit_iff _ _).1 <|
+    isUnit_gcd_of_eq_mul_gcd
+        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_left _ _).symm
+        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_right _ _).symm <| hpq
+
 end GCDMonoid
 
 namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
--- Porting note: added `DecidableEq R`
 def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm
@@ -96,7 +102,7 @@ theorem dvd_or_coprime (x y : α) (h : Irreducible x) :
     x ∣ y ∨ IsCoprime x y :=
   letI := Classical.decEq α
   letI := EuclideanDomain.gcdMonoid α
-  _root_.dvd_or_coprime x y h
+  _root_.dvd_or_isCoprime x y h
 
 end EuclideanDomain
 

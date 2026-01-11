@@ -3,20 +3,23 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element
 
 ## Main definitions
 
- * `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
-   abbreviation of `IsLocalization (Submonoid.powers x) S`.
- * `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
-   some `n : ℤ` and some `a : R` that is not divisible by `x`.
+* `IsLocalization.Away (x : R) S` expresses that `S` is a localization away from `x`, as an
+  abbreviation of `IsLocalization (Submonoid.powers x) S`.
+* `exists_reduced_fraction' (hb : b ≠ 0)` produces a reduced fraction of the form `b = a * x^n` for
+  some `n : ℤ` and some `a : R` that is not divisible by `x`.
 
 ## Implementation notes
 
@@ -26,6 +29,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 section CommSemiring
@@ -77,6 +82,14 @@ lemma algebraMap_pow_isUnit (n : ℕ) : IsUnit (algebraMap R S x ^ n) :=
 lemma algebraMap_isUnit : IsUnit (algebraMap R S x) :=
   IsLocalization.map_units _ (⟨x, 1, by simp⟩ : Submonoid.powers x)
 
+theorem associated_sec_fst (s : S) :
+    Associated (algebraMap R S (IsLocalization.Away.sec x s).1) s := by
+  rw [← IsLocalization.Away.sec_spec, map_pow]
+  exact associated_mul_unit_left _ _ <| .pow _ <| IsLocalization.Away.algebraMap_isUnit _
+
+lemma algebraMap_isUnit_iff {y : R} : IsUnit (algebraMap R S y) ↔ ∃ n, y ∣ x ^ n :=
+  (IsLocalization.algebraMap_isUnit_iff <| .powers x).trans <| by simp [Submonoid.mem_powers_iff]
+
 lemma surj (z : S) : ∃ (n : ℕ) (a : R), z * algebraMap R S x ^ n = algebraMap R S a := by
   obtain ⟨⟨a, ⟨-, n, rfl⟩⟩, h⟩ := IsLocalization.surj (Submonoid.powers x) z
   use n, a
@@ -92,11 +105,11 @@ lemma mk (r : R) (map_unit : IsUnit (algebraMap R S r))
     (surj : ∀ s, ∃ (n : ℕ) (a : R), s * algebraMap R S r ^ n = algebraMap R S a)
     (exists_of_eq : ∀ a b, algebraMap R S a = algebraMap R S b → ∃ (n : ℕ), r ^ n * a = r ^ n * b) :
     IsLocalization.Away r S where
-  map_units' := by
+  map_units := by
     rintro ⟨-, n, rfl⟩
     simp only [map_pow]
     exact IsUnit.pow _ map_unit
-  surj' z := by
+  surj z := by
     obtain ⟨n, a, hn⟩ := surj z
     use ⟨a, ⟨r ^ n, n, rfl⟩⟩
     simpa using hn
@@ -117,11 +130,14 @@ lemma of_associated {r r' : R} (h : Associated r r') [IsLocalization.Away r S] :
     rw [mul_pow, mul_comm (r ^ n), mul_assoc, mul_assoc, hn]
 
 /-- If `r` and `r'` are associated elements of `R`, an `R`-algebra `S`
-is the localization of `R` away from `r` if and only of it is the localization of `R` away from
+is the localization of `R` away from `r` if and only if it is the localization of `R` away from
 `r'`. -/
 lemma iff_of_associated {r r' : R} (h : Associated r r') :
     IsLocalization.Away r S ↔ IsLocalization.Away r' S :=
   ⟨fun _ ↦ IsLocalization.Away.of_associated h, fun _ ↦ IsLocalization.Away.of_associated h.symm⟩
+
+lemma isUnit_of_dvd {r : R} (h : r ∣ x) : IsUnit (algebraMap R S r) :=
+  isUnit_of_dvd_unit (map_dvd _ h) (algebraMap_isUnit x)
 
 variable {g : R →+* P}
 
@@ -136,20 +152,30 @@ noncomputable def lift (hg : IsUnit (g x)) : S →+* P :=
       exact IsUnit.map (powMonoidHom n : P →* P) hg
 
 @[simp]
-theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg ((algebraMap R S) a) = g a :=
+theorem lift_eq (hg : IsUnit (g x)) (a : R) : lift x hg (algebraMap R S a) = g a :=
   IsLocalization.lift_eq _ _
 
 @[simp]
-theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
+theorem lift_comp (hg : IsUnit (g x)) : (lift x hg).comp (algebraMap R S) = g :=
   IsLocalization.lift_comp _
+
+/-- Given `x y : R` and localizations `S`, `P` away from `x` and `y * x`
+respectively, the homomorphism induced from `S` to `P`. -/
+noncomputable def awayToAwayLeft (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] : S →+* P :=
+  lift x <| isUnit_of_dvd (y * x) (dvd_mul_left _ _)
 
 /-- Given `x y : R` and localizations `S`, `P` away from `x` and `x * y`
 respectively, the homomorphism induced from `S` to `P`. -/
 noncomputable def awayToAwayRight (y : R) [Algebra R P] [IsLocalization.Away (x * y) P] : S →+* P :=
-  lift x <|
-    show IsUnit ((algebraMap R P) x) from
-      isUnit_of_mul_eq_one ((algebraMap R P) x) (mk' P y ⟨x * y, Submonoid.mem_powers _⟩) <| by
-        rw [mul_mk'_eq_mk'_of_mul, mk'_self]
+  lift x <| isUnit_of_dvd (x * y) (dvd_mul_right _ _)
+
+theorem awayToAwayLeft_eq (y : R) [Algebra R P] [IsLocalization.Away (y * x) P] (a : R) :
+    awayToAwayLeft x y (algebraMap R S a) = algebraMap R P a :=
+  lift_eq _ _ _
+
+theorem awayToAwayRight_eq (y : R) [Algebra R P] [IsLocalization.Away (x * y) P] (a : R) :
+    awayToAwayRight x y (algebraMap R S a) = algebraMap R P a :=
+  lift_eq _ _ _
 
 variable (S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 
@@ -164,21 +190,24 @@ noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
 
 section Algebra
 
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable {B : Type*} [CommRing B] [Algebra R B]
-variable (Aₚ : Type*) [CommRing Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
-variable (Bₚ : Type*) [CommRing Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+variable {B : Type*} [CommSemiring B] [Algebra R B]
+variable (Aₚ : Type*) [CommSemiring Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
+variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
 
 instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
   simpa
 
-/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
+instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
+    IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
+  simpa
+
+/-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
   ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    erw [IsLocalization.map_eq]
     simp⟩
 
 @[simp]
@@ -253,12 +282,9 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid S₂ (Submonoid.powers x)) T := by
-    simp only [Algebra.algebraMapSubmonoid, Submonoid.map_powers]
-    infer_instance
   convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
-  simp [Algebra.algebraMapSubmonoid]
+  simp
 
 end Away
 
@@ -279,13 +305,13 @@ noncomputable def atUnit (x : R) (e : IsUnit x) [IsLocalization.Away x S] : R �
 noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
   @atUnit R _ S _ _ (1 : R) isUnit_one _
 
-theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommRing R] [CommRing S]
+theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  { map_units' := by
+  { map_units := by
       rintro ⟨_, n, rfl⟩
       exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj' := fun z => by
+    surj := fun z => by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
     exists_of_eq := fun {x y} => by
@@ -297,55 +323,82 @@ end AtUnits
 
 section Prod
 
+lemma away_of_isIdempotentElem_of_mul {R S} [CommSemiring R] [CommSemiring S] [Algebra R S]
+    {e : R} (he : IsIdempotentElem e)
+    (H : ∀ x y, algebraMap R S x = algebraMap R S y ↔ e * x = e * y)
+    (H' : Function.Surjective (algebraMap R S)) :
+    IsLocalization.Away e S where
+  map_units r := by
+    obtain ⟨r, n, rfl⟩ := r
+    simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he]]
+  surj z := by
+    obtain ⟨z, rfl⟩ := H' z
+    exact ⟨⟨z, 1⟩, by simp⟩
+  exists_of_eq {x y} h := ⟨⟨e, Submonoid.mem_powers e⟩, (H x y).mp h⟩
+
 lemma away_of_isIdempotentElem {R S} [CommRing R] [CommRing S] [Algebra R S]
     {e : R} (he : IsIdempotentElem e)
     (H : RingHom.ker (algebraMap R S) = Ideal.span {1 - e})
     (H' : Function.Surjective (algebraMap R S)) :
-    IsLocalization.Away e S where
-  map_units' r := by
-    have : algebraMap R S e = 1 := by
-      rw [← (algebraMap R S).map_one, eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker,
-        H, Ideal.mem_span_singleton]
-    obtain ⟨r, n, rfl⟩ := r
-    simp [this]
-  surj' z := by
-    obtain ⟨z, rfl⟩ := H' z
-    exact ⟨⟨z, 1⟩, by simp⟩
-  exists_of_eq {x y} h := by
-    rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, Ideal.mem_span_singleton] at h
-    obtain ⟨k, hk⟩ := h
-    refine ⟨⟨e, Submonoid.mem_powers e⟩, ?_⟩
-    rw [← sub_eq_zero, ← mul_sub, hk, ← mul_assoc, mul_sub, mul_one, he.eq, sub_self, zero_mul]
+    IsLocalization.Away e S :=
+  away_of_isIdempotentElem_of_mul he (fun x y ↦ by
+    rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, ← he.ker_toSpanSingleton_eq_span,
+      LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, sub_smul, sub_eq_zero]
+    simp_rw [mul_comm e, smul_eq_mul]) H'
 
-instance away_fst {R S} [CommRing R] [CommRing S] :
+instance away_fst {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.fst R S).toAlgebra
-    IsLocalization.Away (R := R × S) (1, 0) R := by
+    IsLocalization.Away (R := R × S) (1, 0) R :=
   letI := (RingHom.fst R S).toAlgebra
-  apply away_of_isIdempotentElem
-  · ext <;> simp
-  · ext x
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_fst,
-      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-    constructor
-    · intro e; use x; ext <;> simp [e]
-    · rintro ⟨⟨i, j⟩, rfl⟩; simp
-  · exact Prod.fst_surjective
+  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+    (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xR = yR ↔ _ by simp) Prod.fst_surjective
 
-instance away_snd {R S} [CommRing R] [CommRing S] :
+instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.snd R S).toAlgebra
-    IsLocalization.Away (R := R × S) (0, 1) S := by
+    IsLocalization.Away (R := R × S) (0, 1) S :=
   letI := (RingHom.snd R S).toAlgebra
-  apply away_of_isIdempotentElem
-  · ext <;> simp
-  · ext x
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_snd,
-      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-    constructor
-    · intro e; use x; ext <;> simp [e]
-    · rintro ⟨⟨i, j⟩, rfl⟩; simp
-  · exact Prod.snd_surjective
+  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+    (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xS = yS ↔ _ by simp) Prod.snd_surjective
 
 end Prod
+
+section
+
+variable {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
+
+open Pointwise in
+/-- Suppose `I` is an ideal of `R`, then `R / I` is the localization away from `r : R`
+if `r - 1 ∈ I` and for some `n`, `r ^ n • I = ⊥`.
+For sake of usability, we state this for surjective ring maps instead of ideals.
+For a version with two ideals, see `Away.of_sub_one_mem_ker'`. -/
+lemma Away.of_surjective (h₁ : Function.Surjective (algebraMap S T))
+    {r : S} (hr : IsUnit (algebraMap S T r))
+    (n : ℕ) (hn : r ^ n • RingHom.ker (algebraMap S T) ≤ ⊥) :
+    IsLocalization.Away r T := by
+  refine .mk _ hr (fun t ↦ ?_) fun x y h ↦ ⟨n, ?_⟩
+  · obtain ⟨s, rfl⟩ := h₁ t
+    exact ⟨0, by simp⟩
+  · rw [← sub_eq_zero, ← mul_sub]
+    exact hn ⟨x - y, by simp [h]⟩
+
+open Pointwise in
+/-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
+if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
+For sake of usability, we state this for surjective ring maps instead of ideals. -/
+lemma Away.of_surjective_of_isScalarTower {R : Type*}
+    [CommRing R] [Algebra R S] [Algebra R T] [IsScalarTower R S T]
+    (h₁ : Function.Surjective (algebraMap S T))
+    (h₂ : Function.Surjective (algebraMap R S))
+    (r : R) (hr : IsUnit (algebraMap R T r))
+    {n : ℕ} (hn : r ^ n • RingHom.ker (algebraMap R T) ≤ RingHom.ker (algebraMap R S)) :
+    IsLocalization.Away (algebraMap R S r) T := by
+  refine Away.of_surjective h₁ ?_ n ?_
+  · rwa [← IsScalarTower.algebraMap_apply]
+  · rw [← (RingHom.ker (algebraMap S T)).map_comap_of_surjective _ h₂, ← map_pow,
+      ← Ideal.map_pointwise_smul, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]
+    rwa [RingHom.ker_eq_comap_bot (algebraMap R S), ← Ideal.map_le_iff_le_comap] at hn
+
+end
 
 end IsLocalization
 
@@ -361,27 +414,85 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
-lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
-  rw [Localization.mk_eq_mk']
-  erw [IsLocalization.lift_mk']
-  rw [Units.mul_inv_eq_iff_eq_mul]
-  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
+  simp [Localization.mk_eq_mk', awayLift, Away.lift, IsLocalization.lift_mk',
+    Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
 
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
 
-variable {A : Type*} [CommRing A] [Algebra R A]
-variable {B : Type*} [CommRing B] [Algebra R B]
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+variable {B : Type*} [CommSemiring B] [Algebra R B]
 
 /-- Given a map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
     Localization.Away a →ₐ[R] Localization.Away (f a) :=
   IsLocalization.Away.mapₐ _ _ f a
+
+theorem algebraMap_injective_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤) :
+    Function.Injective (algebraMap R <| Π a : s, Away a.1) := fun x y eq ↦ by
+  suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (Ideal.eq_top_iff_one _).mp this
+  by_contra ne
+  have ⟨r, hrs, disj⟩ := Ideal.exists_disjoint_powers_of_span_eq_top s span_eq _ ne
+  let r : s := ⟨r, hrs⟩
+  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalization.eq_iff_exists (.powers r.1) _).mp (congr_fun eq r)
+  exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
+
+/-- The sheaf condition for the structure sheaf on `Spec R`
+for a covering of the whole prime spectrum by basic opens. -/
+theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.span s = ⊤)
+    (f : Π a : s, Away a.1) (h : ∀ a b : s,
+      Away.awayToAwayRight (P := Away (a * b : R)) a.1 b (f a) = Away.awayToAwayLeft b.1 a (f b)) :
+    ∃! r : R, ∀ a : s, algebraMap R _ r = f a := by
+  have mem := (Ideal.eq_top_iff_one _).mp span_eq; clear span_eq
+  wlog finset_eq : ∃ t : Finset R, t = s generalizing s
+  · have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span mem
+    have ⟨r, eq, uniq⟩ := this t (fun a ↦ f ⟨a, hts a.2⟩)
+      (fun a b ↦ h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) mem ⟨_, rfl⟩
+    refine ⟨r, fun a ↦ ?_, fun _ eq ↦ uniq _ fun a ↦ eq ⟨a, hts a.2⟩⟩
+    replace hts := Set.insert_subset a.2 hts
+    classical
+    have ⟨r', eq, _⟩ := this ({a.1} ∪ t) (fun a ↦ f ⟨a, hts a.2⟩) (fun a b ↦
+      h ⟨a, hts a.2⟩ ⟨b, hts b.2⟩) (Ideal.span_mono (fun _ ↦ .inr) mem) ⟨{a.1} ∪ t, by simp⟩
+    exact (congr_arg _ (uniq _ fun b ↦ eq ⟨b, .inr b.2⟩).symm).trans (eq ⟨a, .inl rfl⟩)
+  have span_eq := (Ideal.eq_top_iff_one _).mpr mem
+  refine existsUnique_of_exists_of_unique ?_ fun x y hx hy ↦
+    algebraMap_injective_of_span_eq_top s span_eq (funext fun a ↦ (hx a).trans (hy a).symm)
+  obtain ⟨s, rfl⟩ := finset_eq
+  choose n r eq using fun a ↦ Away.surj a.1 (f a)
+  let N := s.attach.sup n
+  let r a := a ^ (N - n a) * r a
+  have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
+    rw [map_mul, ← eq, mul_left_comm, ← map_pow, ← map_mul, ← pow_add,
+      Nat.sub_add_cancel (Finset.le_sup <| s.mem_attach a)]
+  have eq2 a b : ∃ N', (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) :=
+    Away.exists_of_eq (S := Away (a * b : R)) _ <| by
+      simp_rw [map_mul, ← Away.awayToAwayRight_eq (S := Away a.1) a.1 b (r a),
+        ← Away.awayToAwayLeft_eq (S := Away b.1) b.1 a (r b), ← eq, map_mul,
+        Away.awayToAwayRight_eq, Away.awayToAwayLeft_eq, h, mul_assoc, ← map_mul, mul_comm]
+  choose N' hN' using eq2
+  let N' := (s ×ˢ s).attach.sup fun a ↦ N'
+    ⟨_, (Finset.mem_product.mp a.2).1⟩ ⟨_, (Finset.mem_product.mp a.2).2⟩
+  have eq2 a b : (a * b) ^ N' * (r a * b ^ N) = (a * b) ^ N' * (r b * a ^ N) := by
+    dsimp only [N']; rw [← Nat.sub_add_cancel (Finset.le_sup <| (Finset.mem_attach _ ⟨⟨a, b⟩,
+      Finset.mk_mem_product a.2 b.2⟩)), pow_add, mul_assoc, hN', ← mul_assoc]
+  let N := N' + N
+  let r a := a ^ N' * r a
+  have eq a : f a * algebraMap R _ (a ^ N) = algebraMap R _ (r a) := by
+    rw [map_mul, ← eq, mul_left_comm, ← map_mul, ← pow_add]
+  have eq2 a b : r a * b ^ N = r b * a ^ N := by
+    rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
+      mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
+  have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
+    (Ideal.eq_top_iff_one _).mp <| (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
+  refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
+  simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),
+    ← Finset.mul_sum, ← smul_eq_mul (a := c _), eq1, mul_one]
 
 end Localization
 
@@ -389,14 +500,14 @@ end CommSemiring
 
 open Localization
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 section NumDen
 
 open IsLocalization
 
 variable (x : R)
-variable (B : Type*) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
+variable (B : Type*) [CommSemiring B] [Algebra R B] [IsLocalization.Away x B]
 
 /-- `selfZPow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
 noncomputable def selfZPow (m : ℤ) : B :=
@@ -415,7 +526,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_le
+  dif_neg hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -430,20 +541,15 @@ theorem selfZPow_neg_natCast (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Subm
 @[simp]
 theorem selfZPow_sub_natCast {n m : ℕ} :
     selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
-  by_cases h : m ≤ n
+  by_cases! h : m ≤ n
   · rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
       selfZPow_natCast, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
-  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZPow_neg_natCast,
-      IsLocalization.mk'_eq_iff_eq]
-    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
-
-@[deprecated (since := "2024-04-05")] alias selfZPow_coe_nat := selfZPow_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_neg_coe_nat := selfZPow_neg_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_sub_cast_nat := selfZPow_sub_natCast
+  · rw [← neg_sub, ← Int.ofNat_sub h.le, selfZPow_neg_natCast, IsLocalization.mk'_eq_iff_eq]
+    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel h.le]
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
-  rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
+  rcases le_or_gt 0 n with hn | hn <;> rcases le_or_gt 0 m with hm | hm
   · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
       selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_of_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by
@@ -461,16 +567,15 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     simp [pow_add]
 
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
-  by_cases hd : d ≤ 0
-  · erw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
-      IsLocalization.mk'_spec, map_one]
+  by_cases! hd : d ≤ 0
+  · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
+      Submonoid.pow_apply, IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · erw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
-      @IsLocalization.mk'_spec' R _ (Submonoid.powers x) B _ _ _ 1 (Submonoid.pow x d.natAbs),
-      map_one]
+  · rw [selfZPow_of_nonneg x B hd.le, selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
+      Submonoid.pow_apply, IsLocalization.mk'_spec'_mk, map_one]
     refine nonpos_of_neg_nonneg (le_of_lt ?_)
-    rwa [neg_neg, ← not_le]
+    rwa [neg_neg]
 
 theorem selfZPow_neg_mul (d : ℤ) : selfZPow x B (-d) * selfZPow x B d = 1 := by
   rw [mul_comm, selfZPow_mul_neg x B d]
@@ -489,17 +594,17 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
     simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 
-variable [IsDomain R] [WfDvdMonoid R]
+variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]
+variable [Algebra R B] [IsLocalization.Away x B] [IsDomain R] [WfDvdMonoid R]
 
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
   obtain ⟨⟨a₀, y⟩, H⟩ := surj (Submonoid.powers x) b
   obtain ⟨d, hy⟩ := (Submonoid.mem_powers_iff y.1 x).mp y.2
   have ha₀ : a₀ ≠ 0 := by
-    haveI :=
-      @isDomain_of_le_nonZeroDivisors B _ R _ _ _ (Submonoid.powers x) _
-        (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
-    simp only [map_zero, ← hy, map_pow] at H
+    haveI := isDomain_of_le_nonZeroDivisors B
+      (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    simp only [← hy, map_pow] at H
     apply ((injective_iff_map_eq_zero' (algebraMap R B)).mp _ a₀).mpr.mt
     · rw [← H]
       apply mul_ne_zero hb (pow_ne_zero _ _)

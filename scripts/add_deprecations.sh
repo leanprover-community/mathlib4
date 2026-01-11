@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
  : <<'BASH_MODULE_DOC'
 
@@ -9,7 +9,7 @@ confused.
 
 ** Assumptions **
 The script works under the assumption that the only modifications between `master` and the current
-branch are renames of lemmas that sould be deprecated.
+branch are renames of lemmas that should be deprecated.
 The script inspects the relevant `git diff`, extracts the old name and the new one and uses this
 information to insert deprecated aliases as needed.
 
@@ -64,17 +64,22 @@ mkDeclAndDepr () {
       regexIdent=regex "  *" idRegex
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
+      regex="^"regex"$"
     }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
-        if ($i ~ regex"$") { old=$(i+1); break }
+        strip=$i
+        gsub(/^[+-]*/, "", strip)
+        if (strip ~ regex) { old=$(i+1); break }
       }
     }
     # the check on `old` is to make sure that we found an "old" name to deprecate
     # otherwise, the declaration could be a genuinely new one.
     (($0 ~ plusRegex) && (!(old == ""))) {
       for(i=1; i<=NF; i++) {
-        if ($i ~ regex"$") {
+        strip=$i
+        gsub(/^[+-]*/, "", strip)
+        if (strip ~ regex) {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
             # print the line that passes on to `addDeprecations`
@@ -83,6 +88,12 @@ mkDeclAndDepr () {
             report[reps]=sprintf("%s\n", depr(old, $(i+1)))
             reps++
             # reset the "old name counter", since the deprecation happened
+            old=""
+            break
+          } else {
+            # We found a keyword corresponding to a declaration, but the following word was not
+            # different from the line prior to the change.  Hence, we do not need to deprecate.
+            # reset the "old name counter", since the deprecation should not happen
             old=""
             break
           }

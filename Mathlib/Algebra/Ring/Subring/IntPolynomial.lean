@@ -3,30 +3,31 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Polynomials over subrings.
 
 Given a field `K` with a subring `R`, in this file we construct a map from polynomials in `K[X]`
 with coefficients in `R` to `R[X]`. We provide several lemmas to deal with
-coefficients, degree, and evaluation of `intPolynomial`.
+coefficients, degree, and evaluation of `Polynomial.int`.
 This is useful when dealing with integral elements in an extension of fields.
 
-# Main Definitions
-* `Polynomial.int` : given a polynomial `P`. in `K[X]` with coefficients in a field `K` with a
-  subring `R` such that all coefficients belong to `R`, `P.int R` is the corresponding polynomial
-  in `R[X]`.
+## Main Definitions
+* `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
+  of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/
 
-variable {K : Type*} [Field K] (R : Subring K)
+@[expose] public section
 
-open Polynomial
+variable {K : Type*} [Field K] (R : Subring K)
 
 open scoped Polynomial
 
 /-- Given a polynomial in `K[X]` such that all coefficients belong to the subring `R`,
-  `intPolynomial` is the corresponding polynomial in `R[X]`. -/
+  `Polynomial.int` is the corresponding polynomial in `R[X]`. -/
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
   toFinsupp :=
   { support := P.support
@@ -39,7 +40,7 @@ namespace Polynomial
 variable (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R)
 
 @[simp]
-theorem int_coeff_eq  (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
+theorem int_coeff_eq (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
 
 @[simp]
 theorem int_leadingCoeff_eq : ↑(P.int R hP).leadingCoeff = P.leadingCoeff := rfl

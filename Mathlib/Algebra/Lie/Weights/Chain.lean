@@ -3,10 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Data.Int.Interval
-import Mathlib.LinearAlgebra.Trace
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -25,21 +29,33 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 ## Main definitions / results
 
- * `LieModule.exists₂_genWeightSpace_smul_add_eq_bot`: given weights `χ₁`, `χ₂` if `χ₁ ≠ 0`, we can
-   find `p < 0` and `q > 0` such that the weight spaces `p • χ₁ + χ₂` and `q • χ₁ + χ₂` are both
-   trivial.
- * `LieModule.genWeightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`,
-   this is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
- * `LieModule.trace_toEnd_genWeightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
-   subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
-   states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
-   `α`-chain, provided the weight spaces at the endpoints are both trivial.
- * `LieModule.exists_forall_mem_corootSpace_smul_add_eq_zero`: given a (potential) root
-   `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
-   `corootSpace α` of `H`, we may find an integral linear combination between
-   `α` and any weight `χ` of a representation.
+* `LieModule.exists₂_genWeightSpace_smul_add_eq_bot`: given weights `χ₁`, `χ₂` if `χ₁ ≠ 0`, we can
+  find `p < 0` and `q > 0` such that the weight spaces `p • χ₁ + χ₂` and `q • χ₁ + χ₂` are both
+  trivial.
+* `LieModule.genWeightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`,
+  this is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
+* `LieModule.trace_toEnd_genWeightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
+  subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
+  states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
+  `α`-chain, provided the weight spaces at the endpoints are both trivial.
+* `LieModule.exists_forall_mem_corootSpace_smul_add_eq_zero`: given a (potential) root
+  `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
+  `corootSpace α` of `H`, we may find an integral linear combination between
+  `α` and any weight `χ` of a representation.
+
+## TODO
+
+It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
+`LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
+`RootPairing.chainTopCoeff`. This is not quite trivial since:
+* The definitions here allow for chains in representations of Lie algebras.
+* The proof that the roots of a Lie algebra are a root system currently depends on these results.
+  (This can be resolved by proving the root reflection formula using the approach outlined in
+  Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
 
 -/
+
+@[expose] public section
 
 open Module Function Set
 
@@ -50,11 +66,11 @@ namespace LieModule
 
 section IsNilpotent
 
-variable [LieAlgebra.IsNilpotent R L] (χ₁ χ₂ : L → R) (p q : ℤ)
+variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -107,7 +123,7 @@ lemma genWeightSpaceChain_neg :
     genWeightSpaceChain M (-χ₁) χ₂ (-q) (-p) = genWeightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [genWeightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo]
 
 lemma genWeightSpace_le_genWeightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     genWeightSpace M (k • χ₁ + χ₂) ≤ genWeightSpaceChain M χ₁ χ₂ p q :=
@@ -121,27 +137,30 @@ open LieAlgebra
 
 variable {H : LieSubalgebra R L} (α χ : H → R) (p q : ℤ)
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilpotent H]
     (hq : genWeightSpace M (q • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H α)
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ genWeightSpaceChain M α χ p q := by
   rw [genWeightSpaceChain, iSup_subtype'] at hy
   induction hy using LieSubmodule.iSup_induction' with
-  | hN k z hz =>
+  | mem k z hz =>
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
-      simpa using (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
-        (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
+      -- was `simpa using [...]` and very slow
+      -- (https://github.com/leanprover-community/mathlib4/issues/19751)
+      simpa only [zsmul_eq_mul, Int.cast_add, Pi.intCast_def, Int.cast_one] using
+        (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
+            (by rw [add_smul]; abel) (⟨x, hx⟩ ⊗ₜ ⟨z, hz⟩)).property
     rw [genWeightSpaceChain]
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
     exact le_biSup (fun k ↦ genWeightSpace M (k • α + χ)) hk'
-  | h0 => simp
-  | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
+  | zero => simp
+  | add _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpotent H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H (-α))
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
@@ -160,8 +179,8 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     {x : H} (hx : x ∈ corootSpace α) :
     LinearMap.trace R _ (toEnd R H (genWeightSpaceChain M α χ p q) x) = 0 := by
   rw [LieAlgebra.mem_corootSpace'] at hx
-  induction hx using Submodule.span_induction
-  · next u hu =>
+  induction hx using Submodule.span_induction with
+  | mem u hu =>
     obtain ⟨y, hy, z, hz, hyz⟩ := hu
     let f : Module.End R (genWeightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
@@ -177,11 +196,11 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, f, g]
+        AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
-  · simp
-  · simp_all
-  · simp_all
+  | zero => simp
+  | add => simp_all
+  | smul => simp_all
 
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
@@ -202,27 +221,29 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
-  have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
-    rw [← LieSubmodule.independent_iff_coe_toSubmodule]
-    refine (independent_genWeightSpace R H M).comp fun i j hij ↦ ?_
+  have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
+    rw [LieSubmodule.iSupIndep_toSubmodule]
+    refine (iSupIndep_genWeightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : genWeightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
-    simp_rw [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
+    simp_rw [N, genWeightSpaceChain_def', LieSubmodule.iSup_toSubmodule]
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
+  #adaptation_note /-- 2025-06-18 (https://github.com/leanprover/lean4/issues/8804).
+    The `erw` causes a kernel timeout if there is no `subst`. -/
+  subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
-  dsimp [N]
   convert_to _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
-  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
+  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
+    ← smul_assoc, Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
 
@@ -231,8 +252,8 @@ end LieSubalgebra
 section
 
 variable {M}
-variable [LieAlgebra.IsNilpotent R L]
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [LieRing.IsNilpotent L]
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -295,14 +316,14 @@ lemma genWeightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β)
   by_cases hα : α = 0
   · rw [hα, smul_zero, zero_add]; exact β.genWeightSpace_ne_bot
   classical
-  rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
+  rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists hn
 
 lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       genWeightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
+  · simp only [Int.ofNat_eq_natCast, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact genWeightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
     rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]
@@ -310,7 +331,7 @@ lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
 
 lemma genWeightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
     genWeightSpace M ((-n : ℤ) • α + β : L → R) ≠ ⊥ := by
-  apply genWeightSpace_zsmul_add_ne_bot α β <;> omega
+  apply genWeightSpace_zsmul_add_ne_bot α β <;> lia
 
 /-- The last weight in an `α`-chain through `β`. -/
 noncomputable
@@ -362,3 +383,40 @@ lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
 end
 
 end LieModule
+
+section Field
+
+open LieAlgebra LieModule
+
+variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+  [Module K M] [LieModule K L M]
+  [IsTriangularizable K H M] [FiniteDimensional K M]
+
+lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (toEnd K L M x) := by
+  refine Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
+    simp [iSup_genWeightSpace_eq_top' K H M]
+  induction hm using LieSubmodule.iSup_induction' with
+  | zero => exact ⟨0, map_zero _⟩
+  | mem χ₂ m₂ hm₂ =>
+    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot M χ χ₂ hχ
+    use n
+    have := toEnd_pow_apply_mem hx hm₂ n
+    rwa [hn, LieSubmodule.mem_bot] at this
+  | add m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
+    obtain ⟨n₁, hn₁⟩ := hm₁'
+    obtain ⟨n₂, hn₂⟩ := hm₂'
+    refine ⟨max n₁ n₂, ?_⟩
+    rw [map_add, Module.End.pow_map_zero_of_le le_sup_left hn₁,
+      Module.End.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+
+lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
+    [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  isNilpotent_toEnd_of_mem_rootSpace (M := L) H hχ hx
+
+end Field

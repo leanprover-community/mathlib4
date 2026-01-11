@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monad.Equalizer
+module
+
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monad.Equalizer
 
 /-!
 # Adjoint lifting
@@ -40,7 +42,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : L ⋙ F ⊣ U'`.
 
-This file has been adapted from `Mathlib.CategoryTheory.Adjunction.Lifting.Left`.
+This file has been adapted from `Mathlib/CategoryTheory/Adjunction/Lifting/Left.lean`.
 Please try to keep them in sync.
 
 ## TODO
@@ -55,6 +57,8 @@ Please try to keep them in sync.
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
 * A unified approach to the lifting of adjoints (AJ Power, 1988)
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -75,20 +79,21 @@ variable (adj₁ : F ⊣ U) (adj₂ : L ⋙ F ⊣ U')
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
 -/
-def unitEqualises [∀ X : B, RegularMono (adj₁.unit.app X)] (X : B) :
+def unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine ⟨(RegularMono.lift' (adj₁.unit.app X) s.ι ?_).1, ?_, ?_⟩
-    · rw [← cancel_mono (adj₁.unit.app (RegularMono.Z (adj₁.unit.app X)))]
-      rw [assoc, ← adj₁.unit_naturality RegularMono.left]
+    have := fun Y ↦ h Y |>.mono
+    refine ⟨((h X).lift' s.ι ?_).1, ?_, ?_⟩
+    · rw [← cancel_mono (adj₁.unit.app ((h X).Z)), assoc, ← adj₁.unit_naturality (h _).left]
       dsimp only [Functor.comp_obj]
-      erw [← assoc, ← s.condition, assoc, ← U.map_comp, ← F.map_comp, RegularMono.w, F.map_comp,
-        U.map_comp, s.condition_assoc, assoc, ← adj₁.unit_naturality RegularMono.right]
-      rfl
-    · apply (RegularMono.lift' (adj₁.unit.app X) s.ι _).2
+      have := s.condition
+      dsimp only [Functor.comp_obj] at this
+      rw [← assoc, ← this, assoc, ← U.map_comp, ← F.map_comp, RegularMono.w, F.map_comp,
+        U.map_comp, s.condition_assoc, assoc, ← adj₁.unit_naturality (h _).right]
+    · apply ((h X).lift' s.ι _).2
     · intro m hm
       rw [← cancel_mono (adj₁.unit.app X)]
-      apply hm.trans (RegularMono.lift' (adj₁.unit.app X) s.ι _).2.symm
+      apply hm.trans ((h X).lift' s.ι _).2.symm
 
 /-- (Implementation)
 To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
@@ -98,7 +103,7 @@ To construct the right adjoint, we use the equalizer of `U' F η_X` with the com
 where the first morphism is `ι_U'FX`, the second is `U' F η_LU'FX` and the third is `U' F U δ_FX`.
 We will show that this equalizer exists and that it forms the object map for a right adjoint to `L`.
 -/
-def otherMap (X : B) : U'.obj (F.obj X) ⟶  U'.obj (F.obj (U.obj (F.obj X))) :=
+def otherMap (X : B) : U'.obj (F.obj X) ⟶ U'.obj (F.obj (U.obj (F.obj X))) :=
   adj₂.unit.app _ ≫ U'.map (F.map (adj₁.unit.app _ ≫ (U.map (adj₂.counit.app _))))
 
 /-- `(U'Fη_X, otherMap X)` is a coreflexive pair: in particular if `C` has coreflexive equalizers
@@ -120,7 +125,7 @@ noncomputable def constructRightAdjointObj (Y : B) : C :=
 
 /-- The homset equivalence which helps show that `L` is a left adjoint. -/
 @[simps!]
-noncomputable def constructRightAdjointEquiv [∀ X : B, RegularMono (adj₁.unit.app X)] (Y : C)
+noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (Y : C)
     (X : B) : (Y ⟶ constructRightAdjointObj _ _ adj₁ adj₂ X) ≃ (L.obj Y ⟶ X) :=
   calc
     (Y ⟶ constructRightAdjointObj _ _ adj₁ adj₂ X) ≃
@@ -142,17 +147,17 @@ noncomputable def constructRightAdjointEquiv [∀ X : B, RegularMono (adj₁.uni
       rw [← (adj₁.homEquiv _ _).injective.eq_iff, adj₁.homEquiv_unit,
         adj₁.homEquiv_unit, adj₁.homEquiv_unit, eq_comm]
       simp
-    _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualises adj₁ X) _).symm
+    _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualises adj₁ h X) _).symm
 
 /-- Construct the right adjoint to `L`, with object map `constructRightAdjointObj`. -/
-noncomputable def constructRightAdjoint [∀ X : B, RegularMono (adj₁.unit.app X)] : B ⥤ C := by
+noncomputable def constructRightAdjoint (h : ∀ X : B, RegularMono (adj₁.unit.app X)) : B ⥤ C := by
   refine Adjunction.rightAdjointOfEquiv
-    (fun X Y => (constructRightAdjointEquiv L _ adj₁ adj₂ X Y).symm) ?_
+    (fun X Y => (constructRightAdjointEquiv L _ adj₁ adj₂ h X Y).symm) ?_
   intro X Y Y' g h
   rw [constructRightAdjointEquiv_symm_apply, constructRightAdjointEquiv_symm_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+  simp only [Adjunction.homEquiv_counit]
   erw [Fork.IsLimit.homIso_natural, Fork.IsLimit.homIso_natural]
   simp only [Fork.ofι_pt, Functor.map_comp, assoc, limit.cone_x]
   erw [adj₂.homEquiv_naturality_left, Equiv.rightInverse_symm]
@@ -168,10 +173,10 @@ Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 lemma isLeftAdjoint_triangle_lift {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj₁ : F ⊣ U)
-    [∀ X, RegularMono (adj₁.unit.app X)] [HasCoreflexiveEqualizers C]
-    [(L ⋙ F).IsLeftAdjoint ] : L.IsLeftAdjoint where
+    (h : ∀ X, RegularMono (adj₁.unit.app X)) [HasCoreflexiveEqualizers C]
+    [(L ⋙ F).IsLeftAdjoint] : L.IsLeftAdjoint where
   exists_rightAdjoint :=
-    ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _),
+    ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _) h,
       ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
 
 /-- If `L ⋙ F` has a right adjoint, the domain of `L` has coreflexive equalizers and `F` is a
@@ -186,15 +191,15 @@ lemma isLeftAdjoint_triangle_lift_comonadic (F : B ⥤ A) [ComonadicLeftAdjoint 
       infer_instance
     refine ((Adjunction.ofIsLeftAdjoint
       (L' ⋙ (Comonad.comparison (comonadicAdjunction F)).inv)).ofNatIsoLeft ?_).isLeftAdjoint
-    exact isoWhiskerLeft L (Comonad.comparison _).asEquivalence.unitIso.symm ≪≫ L.leftUnitor
+    exact Functor.isoWhiskerLeft L (Comonad.comparison _).asEquivalence.unitIso.symm ≪≫ L.leftUnitor
   let this : (L' ⋙ Comonad.forget (comonadicAdjunction F).toComonad).IsLeftAdjoint := by
     refine ((Adjunction.ofIsLeftAdjoint (L ⋙ F)).ofNatIsoLeft ?_).isLeftAdjoint
-    exact isoWhiskerLeft L (Comonad.comparisonForget (comonadicAdjunction F)).symm
+    exact Functor.isoWhiskerLeft L (Comonad.comparisonForget (comonadicAdjunction F)).symm
   let this : ∀ X, RegularMono ((Comonad.adj (comonadicAdjunction F).toComonad).unit.app X) := by
     intro X
     simp only [Comonad.adj_unit]
     exact ⟨_, _, _, _, Comonad.beckCoalgebraEqualizer X⟩
-  exact isLeftAdjoint_triangle_lift L' (Comonad.adj _)
+  exact isLeftAdjoint_triangle_lift L' (Comonad.adj _) this
 
 variable {D : Type u₄}
 variable [Category.{v₄} D]
@@ -217,10 +222,10 @@ See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
 lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C ⥤ D)
     (comm : U ⋙ L ≅ Q ⋙ V) [U.IsLeftAdjoint] [V.IsLeftAdjoint] [L.IsLeftAdjoint]
-    [∀ X, RegularMono ((Adjunction.ofIsLeftAdjoint V).unit.app X)] [HasCoreflexiveEqualizers A] :
-    Q.IsLeftAdjoint :=
+    (h : ∀ X, RegularMono ((Adjunction.ofIsLeftAdjoint V).unit.app X))
+    [HasCoreflexiveEqualizers A] : Q.IsLeftAdjoint :=
   have := ((Adjunction.ofIsLeftAdjoint (U ⋙ L)).ofNatIsoLeft comm).isLeftAdjoint
-  isLeftAdjoint_triangle_lift Q (Adjunction.ofIsLeftAdjoint V)
+  isLeftAdjoint_triangle_lift Q (Adjunction.ofIsLeftAdjoint V) h
 
 /-- Suppose we have a commutative square of functors
 

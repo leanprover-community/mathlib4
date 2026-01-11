@@ -3,7 +3,9 @@ Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 # The `recover` tactic modifier
@@ -14,9 +16,10 @@ applies the tactics and then adds goals
 that are not closed, starting from the original goal.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
 
-open Lean (HashSet)
 open Lean Meta Elab Tactic
 
 /--
@@ -27,7 +30,7 @@ which occur in the target or local context or delayed assignment (if any) of
 partial def getUnassignedGoalMVarDependencies (mvarId : MVarId) :
     MetaM (Std.HashSet MVarId) :=
   return (← go mvarId |>.run {}).snd
-  where
+where
     /-- auxiliary function for `getUnassignedGoalMVarDependencies` -/
     addMVars (e : Expr) : StateRefT (Std.HashSet MVarId) MetaM Unit := do
       let mvars ← getMVars e

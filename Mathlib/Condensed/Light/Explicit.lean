@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Light.Module
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Light.Module
 /-!
 
 # The explicit sheaf condition for light condensed sets
@@ -14,21 +16,23 @@ We give explicit description of light condensed sets:
 * `LightCondensed.ofSheafLightProfinite`: A finite-product-preserving presheaf on `LightProfinite`,
   satisfying `EqualizerCondition`.
 
-The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive.lean`
-and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
-continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
-`F(X) ⇉ F(X ×_B X)`
+The property `EqualizerCondition` is defined in
+`Mathlib/CategoryTheory/Sites/Coherent/RegularSheaves.lean` and it says that for any effective epi
+`X ⟶ B` (in this case that is equivalent to being a continuous surjection), the presheaf `F`
+exhibits `F(B)` as the equalizer of the two maps `F(X) ⇉ F(X ×_B X)`.
 
 We also give variants for light condensed objects in concrete categories whose forgetful functor
 reflects finite limits (resp. products), where it is enough to check the sheaf condition after
 postcomposing with the forgetful functor.
 -/
 
+@[expose] public section
+
 universe v u w
 
 open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
-variable {A : Type*} [Category A]
+variable {A : Type*} [Category* A]
 
 namespace LightCondensed
 
@@ -42,7 +46,7 @@ noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [Pr
   val := F
   cond := by
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /--
 The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with
@@ -50,14 +54,14 @@ the forgetful functor preserves finite products and satisfies the equalizer cond
 -/
 @[simps]
 noncomputable def ofSheafForgetLightProfinite
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : LightCondensed A where
   val := F
   cond := by
     apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /-- A light condensed object satisfies the equalizer condition. -/
 theorem equalizerCondition (X : LightCondensed A) : EqualizerCondition X.val :=

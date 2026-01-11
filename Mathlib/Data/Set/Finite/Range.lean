@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.ULift
 
 /-!
 # Finiteness of `Set.range`
@@ -19,8 +21,9 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 
@@ -58,9 +61,8 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
+  classical
   haveI := Fintype.ofFinite (PLift ι)
   infer_instance
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Complex measure
@@ -20,7 +22,7 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 * `MeasureTheory.ComplexMeasure.im`: obtains a signed measure `s` from a complex measure `c`
   such that `s i = (c i).im` for all measurable sets `i`.
 * `MeasureTheory.SignedMeasure.toComplexMeasure`: given two signed measures `s` and `t`,
-  `s.to_complex_measure t` provides a complex measure of the form `s + it`.
+  `s.toComplexMeasure t` provides a complex measure of the form `s + it`.
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
@@ -28,6 +30,8 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 
 Complex measure
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -61,8 +65,8 @@ def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
 def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α) :
     ComplexMeasure α where
   measureOf' i := ⟨s i, t i⟩
-  empty' := by dsimp only; rw [s.empty, t.empty]; rfl
-  not_measurable' i hi := by dsimp only; rw [s.not_measurable hi, t.not_measurable hi]; rfl
+  empty' := by rw [s.empty, t.empty]; rfl
+  not_measurable' i hi := by rw [s.not_measurable hi, t.not_measurable hi]; rfl
   m_iUnion' _ hf hfdisj := (Complex.hasSum_iff _ _).2 ⟨s.m_iUnion hf hfdisj, t.m_iUnion hf hfdisj⟩
 
 theorem _root_.MeasureTheory.SignedMeasure.toComplexMeasure_apply
@@ -83,7 +87,7 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
   toFun c := ⟨ComplexMeasure.re c, ComplexMeasure.im c⟩
   invFun := fun ⟨s, t⟩ => s.toComplexMeasure t
   left_inv c := c.toComplexMeasure_to_signedMeasure
-  right_inv := fun ⟨s, t⟩ => Prod.mk.inj_iff.2 ⟨s.re_toComplexMeasure t, s.im_toComplexMeasure t⟩
+  right_inv := fun ⟨s, t⟩ => Prod.ext (s.re_toComplexMeasure t) (s.im_toComplexMeasure t)
 
 section
 

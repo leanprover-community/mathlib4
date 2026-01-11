@@ -3,7 +3,9 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Finiteness tactic
@@ -26,11 +28,18 @@ Standard `aesop` syntax applies. Namely one can write
 We also provide `finiteness_nonterminal` as a version of `finiteness` that doesn't have to close the
 goal.
 
+Note to users: when tagging a lemma for finiteness, prefer tagging a lemma with `≠ ⊤`.
+Aesop can deduce `< ∞` from `≠ ∞` safely (`Ne.lt_top` is a safe rule), but not conversely
+(`ne_top_of_lt` is an unsafe rule): in simpler words, aesop tries to use `≠` as its intermediate
+representation that things are finite, so we do so as well.
+
 ## TODO
 
 Improve `finiteness` to also deal with other situations, such as balls in proper spaces with
 a locally finite measure.
 -/
+
+public meta section
 
 open Aesop.BuiltinRules in
 attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
@@ -62,3 +71,9 @@ macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_c
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
                  warnOnNonterminal := false  })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
+
+/-!
+ We register `finiteness` with the `hint` tactic.
+ -/
+register_hint 1000 finiteness
+register_try?_tactic (priority := 1000) finiteness

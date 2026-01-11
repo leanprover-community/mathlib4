@@ -13,7 +13,7 @@ def reorderLastArguments : Expr → Expr :=
   Expr.replaceRec fun r e ↦
     let n := e.getAppNumArgs
     if n ≥ 2 then
-      mkAppN e.getAppFn <| e.getAppArgs.map r |>.swap! (n - 1) (n - 2)
+      mkAppN e.getAppFn <| e.getAppArgs.map r |>.swapIfInBounds (n - 1) (n - 2)
     else
       none
 
@@ -31,7 +31,7 @@ info: new type: (ℕ → ℕ → ℕ) → ℕ → ℕ → ℕ → ℕ → ℕ
 info: after: fun f n₁ n₂ n₃ n₄ ↦ f (f n₄ n₃) (f n₂ n₁)
 -/
 #guard_msgs in
-run_cmd liftTermElabM <| do
+run_cmd liftTermElabM do
   let d ← getConstInfo `foo
   let e := d.value!
   logInfo m!"before: {e}"

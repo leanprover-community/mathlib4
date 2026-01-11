@@ -3,9 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Germ of a function at a filter
@@ -49,8 +54,11 @@ For each of the following structures we prove that if `β` has this structure, t
 filter, germ
 -/
 
-assert_not_exists OrderedSemiring
+@[expose] public section
 
+assert_not_exists IsOrderedRing
+
+open scoped Relator
 namespace Filter
 
 variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
@@ -97,18 +105,21 @@ end Product
 
 namespace Germ
 
--- Porting note: added
+/-- The germ corresponding to a global function. -/
 @[coe]
-def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
+def ofFun : (α → β) → Germ l β := @Quotient.mk' _ (germSetoid _ _)
 
 instance : CoeTC (α → β) (Germ l β) :=
   ⟨ofFun⟩
 
-@[coe] -- Porting note: removed `HasLiftT` instance
+/-- Germ of the constant function `fun x : α ↦ c` at a filter `l`. -/
+@[coe]
 def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
-instance coeTC : CoeTC β (Germ l β) :=
+instance coeTail : CoeTail β (Germ l β) :=
   ⟨const⟩
+
+@[deprecated (since := "2025-08-28")] alias coeTC := coeTail
 
 /-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
 def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
@@ -196,7 +207,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 
 /-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
-  Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
+  Quotient.map₂ (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
 
 @[simp]
@@ -236,9 +247,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
     (f : Germ l β).compTendsto g hg = f ∘ g :=
   rfl
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
+@[simp]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
@@ -405,7 +414,7 @@ instance instMonoid [Monoid M] : Monoid (Germ l M) :=
     npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
-@[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
+@[to_additive /-- Coercion from functions to germs as an additive monoid homomorphism. -/]
 def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
   toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 
@@ -425,16 +434,14 @@ theorem natCast_def [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : α → M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : α → M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast M] : IntCast (Germ l M) where intCast n := (n : α → M)
@@ -442,12 +449,9 @@ instance instIntCast [IntCast M] : IntCast (Germ l M) where intCast n := (n : α
 @[simp]
 theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
-@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
-
 instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) where
   natCast_zero := congrArg ofFun <| by simp; rfl
-  natCast_succ _ := congrArg ofFun <| by simp [Function.comp]; rfl
+  natCast_succ _ := congrArg ofFun <| by simp; rfl
 
 instance instAddCommMonoidWithOne [AddCommMonoidWithOne M] : AddCommMonoidWithOne (Germ l M) :=
   { add_comm := add_comm }
@@ -474,7 +478,7 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
-  { inv_inv := Quotient.ind' fun _ => congrArg ofFun<| inv_inv _ }
+  { inv_inv := Quotient.ind' fun _ => congrArg ofFun <| inv_inv _ }
 
 instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
   { neg_mul := Quotient.ind₂' fun _ _ => congrArg ofFun <| neg_mul ..
@@ -658,7 +662,7 @@ instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ
   zero_smul f :=
     inductionOn f fun f => by
       norm_cast
-      simp [zero_smul, coe_zero]
+      simp [zero_smul]
 
 instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (Germ l R) (Germ l M) where
@@ -690,7 +694,6 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
   liftRel_const_iff
 
 instance instPreorder [Preorder β] : Preorder (Germ l β) where
-  le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
 

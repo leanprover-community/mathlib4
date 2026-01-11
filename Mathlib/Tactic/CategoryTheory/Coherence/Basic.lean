@@ -3,23 +3,30 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import Aesop
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics
 
 This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
 and bicategories. Using `main`, we will define the following tactics:
-- `monoidal` at `Mathlib.Tactic.CategoryTheory.Monoidal.Basic`
-- `bicategory` at `Mathlib.Tactic.CategoryTheory.Bicategory.Basic`
+- `monoidal` at `Mathlib/Tactic/CategoryTheory/Monoidal/Basic.lean`
+- `bicategory` at `Mathlib/Tactic/CategoryTheory/Bicategory/Basic.lean`
 
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
 `pureCoherence`.
 
 -/
+
+public meta section
 
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
@@ -66,7 +73,7 @@ def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
     let e ← instantiateMVars <| ← mvarId.getType
     let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "requires an equality goal"
     match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]),
       (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
       match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
       | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),

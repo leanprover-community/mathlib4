@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations of sets in a ring
@@ -17,7 +19,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists OrderedAddCommMonoid
+@[expose] public section
+
+assert_not_exists MulAction IsOrderedMonoid Field
 
 open Function
 open scoped Pointwise
@@ -29,8 +33,8 @@ namespace Set
 /-- `Set α` has distributive negation if `α` has. -/
 protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) where
   __ := Set.involutiveNeg
-  neg_mul _ _ := by simp_rw [← image_neg]; exact image2_image_left_comm neg_mul
-  mul_neg _ _ := by simp_rw [← image_neg]; exact image_image2_right_comm mul_neg
+  neg_mul _ _ := by simp_rw [← image_neg_eq_neg]; exact image2_image_left_comm neg_mul
+  mul_neg _ _ := by simp_rw [← image_neg_eq_neg]; exact image_image2_right_comm mul_neg
 
 scoped[Pointwise] attribute [instance] Set.hasDistribNeg
 

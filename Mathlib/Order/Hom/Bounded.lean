@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.BoundedOrder
+module
+
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Bounded order homomorphisms
@@ -26,6 +27,8 @@ be satisfied by itself and all stricter types.
 * `BotHomClass`
 * `BoundedOrderHomClass`
 -/
+
+@[expose] public section
 
 
 open Function OrderDual
@@ -76,8 +79,8 @@ class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLik
 
 You should extend this class when you extend `BoundedOrderHom`. -/
 class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
-  [BoundedOrder α] [BoundedOrder β] [FunLike F α β]
-  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
+    [BoundedOrder α] [BoundedOrder β] [FunLike F α β] : Prop
+  extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- Morphisms preserve the bottom element. The preferred spelling is `_root_.map_bot`. -/
@@ -128,22 +131,14 @@ instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [Bounded
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
 
--- Porting note: the `letI` is needed because we can't make the
--- `OrderTop` parameters instance implicit in `OrderIsoClass.toTopHomClass`,
--- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ := by
-  letI : TopHomClass F α β := OrderIsoClass.toTopHomClass
   rw [← map_top f, (EquivLike.injective f).eq_iff]
 
--- Porting note: the `letI` is needed because we can't make the
--- `OrderBot` parameters instance implicit in `OrderIsoClass.toBotHomClass`,
--- and they apparently can't be figured out through unification.
 @[simp]
 theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ := by
-  letI : BotHomClass F α β := OrderIsoClass.toBotHomClass
   rw [← map_bot f, (EquivLike.injective f).eq_iff]
 
 end Equiv
@@ -227,7 +222,7 @@ variable (α)
 protected def id : TopHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(TopHom.id α) = id :=
   rfl
 
@@ -400,7 +395,7 @@ variable (α)
 protected def id : BotHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BotHom.id α) = id :=
   rfl
 
@@ -527,8 +522,7 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
+-- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 
 namespace BoundedOrderHom
@@ -578,7 +572,7 @@ protected def id : BoundedOrderHom α α :=
 instance : Inhabited (BoundedOrderHom α α) :=
   ⟨BoundedOrderHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedOrderHom.id α) = id :=
   rfl
 
@@ -658,8 +652,6 @@ protected def dual :
     TopHom α β ≃ BotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_top'⟩
   invFun f := ⟨f, f.map_bot'⟩
-  left_inv _ := TopHom.ext fun _ => rfl
-  right_inv _ := BotHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : TopHom.dual (TopHom.id α) = BotHom.id _ :=
@@ -691,8 +683,6 @@ protected def dual :
     BotHom α β ≃ TopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_bot'⟩
   invFun f := ⟨f, f.map_top'⟩
-  left_inv _ := BotHom.ext fun _ => rfl
-  right_inv _ := TopHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : BotHom.dual (BotHom.id α) = TopHom.id _ :=
@@ -725,18 +715,16 @@ protected def dual :
     BoundedOrderHom α β ≃
       BoundedOrderHom αᵒᵈ
         βᵒᵈ where
-  toFun f := ⟨OrderHom.dual f.toOrderHom, f.map_bot', f.map_top'⟩
+  toFun f := ⟨f.toOrderHom.dual, f.map_bot', f.map_top'⟩
   invFun f := ⟨OrderHom.dual.symm f.toOrderHom, f.map_bot', f.map_top'⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := ext fun _ => rfl
 
 @[simp]
-theorem dual_id : BoundedOrderHom.dual (BoundedOrderHom.id α) = BoundedOrderHom.id _ :=
+theorem dual_id : (BoundedOrderHom.id α).dual = BoundedOrderHom.id _ :=
   rfl
 
 @[simp]
 theorem dual_comp (g : BoundedOrderHom β γ) (f : BoundedOrderHom α β) :
-    BoundedOrderHom.dual (g.comp f) = g.dual.comp (BoundedOrderHom.dual f) :=
+    (g.comp f).dual = g.dual.comp f.dual :=
   rfl
 
 @[simp]

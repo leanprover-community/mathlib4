@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations of sets in a group with zero
@@ -17,8 +19,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Ring
+public section
+
+assert_not_exists MulAction IsOrderedMonoid Ring
 
 open Function
 open scoped Pointwise
@@ -54,6 +57,8 @@ lemma Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
 
 lemma Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
   s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
+
+@[simp] protected lemma inv_zero : (0 : Set α)⁻¹ = 0 := by ext; simp
 
 end GroupWithZero
 end Set

@@ -3,8 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Measures positive on nonempty opens
@@ -15,6 +18,8 @@ measures that have positive density with respect to a Haar measure. We also prov
 about these measures.
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal MeasureTheory
@@ -110,12 +115,12 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
-  simp only [EventuallyEq, ae_iff, Classical.not_imp] at h
+  simp only [ae_iff, Classical.not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
     refine isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) ?_
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩
     exact
-      (hf.continuousAt (hU.mem_nhds ha)).prod_mk_nhds (hg.continuousAt (hU.mem_nhds ha))
+      (hf.continuousAt (hU.mem_nhds ha)).prodMk_nhds (hg.continuousAt (hU.mem_nhds ha))
         (isClosed_diagonal.isOpen_compl.mem_nhds ha')
   replace := (this.eq_empty_of_measure_zero h).le
   exact fun x hx => Classical.not_not.1 fun h => this ⟨hx, h⟩
@@ -132,13 +137,10 @@ theorem eqOn_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict s] g) (hf : Contin
         (hg.mono this)).of_subset_closure
     hf hg this hU
 
-variable (μ)
-
+variable (μ) in
 theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg : Continuous g) :
     f =ᵐ[μ] g ↔ f = g :=
   ⟨fun h => eq_of_ae_eq h hf hg, fun h => h ▸ EventuallyEq.rfl⟩
-
-variable {μ}
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
@@ -147,6 +149,14 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
   refine ⟨fun U hUo hUne => ?_⟩
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
+
+protected theorem IsOpenPosMeasure.comap [BorelSpace X]
+    {Z : Type*} [TopologicalSpace Z] {mZ : MeasurableSpace Z} [BorelSpace Z]
+    (μ : Measure Z) [IsOpenPosMeasure μ] {f : X → Z} (hf : IsOpenEmbedding f) :
+    (μ.comap f).IsOpenPosMeasure where
+  open_pos U hU Une := by
+    rw [hf.measurableEmbedding.comap_apply]
+    exact IsOpenPosMeasure.open_pos _ (hf.isOpen_iff_image_isOpen.mp hU) (Une.image f)
 
 end Basic
 
@@ -247,7 +257,8 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
 /-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the
-rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense). -/
+rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense).)
+-/
 lemma IsNowhereDense.of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
     IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
 

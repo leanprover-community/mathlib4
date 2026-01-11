@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.AEDisjoint
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
 # Null measurable sets and complete measures
@@ -33,7 +35,7 @@ In other words, `f : α → β` is null measurable if it is measurable as a func
 ### Complete measures
 
 We say that a measure `μ` is complete w.r.t. the `MeasurableSpace α` σ-algebra (or the σ-algebra is
-complete w.r.t measure `μ`) if every set of measure zero is measurable. In this case all null
+complete w.r.t. measure `μ`) if every set of measure zero is measurable. In this case all null
 measurable sets and functions are measurable.
 
 For each measure `μ`, we define `MeasureTheory.Measure.completion μ` to be the same measure
@@ -54,6 +56,8 @@ the output type.
 
 measurable, measure, null measurable, completion
 -/
+
+@[expose] public section
 
 open Filter Set Encodable
 open scoped ENNReal
@@ -81,7 +85,7 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @EventuallyMeasurableSpace α inferInstance (ae μ) _
+  @eventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -168,6 +172,11 @@ protected theorem diff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t �
   MeasurableSet.diff hs ht
 
 @[simp]
+protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : NullMeasurableSet s₁ μ)
+    (h₂ : NullMeasurableSet s₂ μ) : NullMeasurableSet (symmDiff s₁ s₂) μ :=
+  (h₁.diff h₂).union (h₂.diff h₁)
+
+@[simp]
 protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (n) :
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
@@ -177,7 +186,7 @@ protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
 
 instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
-  EventuallyMeasurableSpace.measurableSingleton (m := m0)
+  eventuallyMeasurableSingleton (m := m0)
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
     (hs : NullMeasurableSet s μ) (a : α) : NullMeasurableSet (insert a s) μ :=
@@ -206,6 +215,8 @@ theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
 end NullMeasurableSet
 
 open NullMeasurableSet
+
+open scoped Function -- required for scoped `on` notation
 
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that
@@ -366,7 +377,10 @@ section NullMeasurable
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {μ : Measure α}
 
 /-- A function `f : α → β` is null measurable if the preimage of a measurable set is a null
-measurable set. -/
+measurable set.
+
+A similar notion is `AEMeasurable`. That notion is equivalent to `NullMeasurable` if
+the σ-algebra on the codomain is countably generated, but stronger in general. -/
 def NullMeasurable (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∀ ⦃s : Set β⦄, MeasurableSet s → NullMeasurableSet (f ⁻¹' s) μ
 

@@ -3,7 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
+module
+
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Diagonal matrices
@@ -16,6 +19,8 @@ diagonal matrix (`range`, `ker` and `rank`).
 matrix, diagonal, linear_map
 -/
 
+public section
+
 
 noncomputable section
 
@@ -25,7 +30,7 @@ universe u v w
 
 namespace Matrix
 
-section CommSemiring -- Porting note: generalized from `CommRing`
+section CommSemiring
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
@@ -35,13 +40,6 @@ theorem proj_diagonal (i : n) (w : n → R) : (proj i).comp (toLin' (diagonal w)
 theorem diagonal_comp_single (w : n → R) (i : n) :
     (diagonal w).toLin'.comp (LinearMap.single R (fun _ : n => R) i) =
       w i • LinearMap.single R (fun _ : n => R) i :=
-  LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
-
-set_option linter.deprecated false in
-@[deprecated diagonal_comp_single (since := "2024-08-09")]
-theorem diagonal_comp_stdBasis (w : n → R) (i : n) :
-    (diagonal w).toLin'.comp (LinearMap.stdBasis R (fun _ : n => R) i) =
-      w i • LinearMap.stdBasis R (fun _ : n => R) i :=
   LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 
 theorem diagonal_toLin' (w : n → R) :
@@ -60,7 +58,7 @@ theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
       ⨆ i ∈ { i | w i = 0 }, LinearMap.range (LinearMap.single K (fun _ => K) i) := by
   rw [← comap_bot, ← iInf_ker_proj, comap_iInf]
   have := fun i : m => ker_comp (toLin' (diagonal w)) (proj i)
-  simp only [comap_iInf, ← this, proj_diagonal, ker_smul']
+  simp only [← this, proj_diagonal, ker_smul']
   have : univ ⊆ { i : m | w i = 0 } ∪ { i : m | w i = 0 }ᶜ := by rw [Set.union_compl_self]
   exact (iSup_range_single_eq_iInf_ker_proj K (fun _ : m => K) disjoint_compl_right this
     (Set.toFinite _)).symm

@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Compatibilities of properties of morphisms with respect to composition
@@ -13,6 +15,8 @@ which means that `P f → P g → P (f ≫ g)`. We also introduce the type class
 `W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
 
 -/
+
+@[expose] public section
 
 
 universe w v v' u u'
@@ -45,6 +49,12 @@ lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [W.unop.ContainsIdentities] :
     W.ContainsIdentities := (inferInstance : W.unop.op.ContainsIdentities)
 
+lemma eqToHom (W : MorphismProperty C) [W.ContainsIdentities] {x y : C} (h : x = y) :
+    W (eqToHom h) := by
+  subst h
+  rw [eqToHom_refl]
+  exact id_mem x
+
 instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤ D) :
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using P.id_mem (F.obj X)
@@ -55,13 +65,13 @@ instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdenti
 
 end ContainsIdentities
 
-instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 instance Pi.containsIdentities {J : Type w} {C : J → Type u}
-  [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
+    [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
@@ -122,8 +132,8 @@ instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsSta
   comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
-this is the `morphism_property C` satisfied by the morphisms in `C` with respect
-to whom `app` is natural. -/
+this is the `MorphismProperty C` satisfied by the morphisms in `C` with respect
+to which `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
   fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
@@ -150,8 +160,8 @@ end naturalityProperty
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
-class IsMultiplicative (W : MorphismProperty C)
-    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop
+class IsMultiplicative (W : MorphismProperty C) : Prop
+    extends W.ContainsIdentities, W.IsStableUnderComposition
 
 namespace IsMultiplicative
 
@@ -196,23 +206,123 @@ instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
 instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
     (P ⊓ Q).IsMultiplicative where
 
+instance naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
+    (naturalityProperty app).IsMultiplicative where
+  id_mem _ := by simp
+
 end IsMultiplicative
 
-/-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
+/-- Given a morphism property `W`, the `multiplicativeClosure W` is the smallest
+multiplicative property greater than or equal to `W`. -/
+inductive multiplicativeClosure (W : MorphismProperty C) : MorphismProperty C
+  | of {x y : C} (f : x ⟶ y) (hf : W f) : multiplicativeClosure W f
+  | id (x : C) : multiplicativeClosure W (𝟙 x)
+  | comp_of {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (hf : multiplicativeClosure W f) (hg : W g) :
+    multiplicativeClosure W (f ≫ g)
+
+/-- A variant of `multiplicativeClosure` in which compositions are taken on the left rather than
+on the right. It is not intended to be used directly, and one should rather access this via
+`multiplicativeClosure_eq_multiplicativeClosure'` in cases where the inductive principle of this
+variant is needed. -/
+inductive multiplicativeClosure' (W : MorphismProperty C) : MorphismProperty C
+  | of {x y : C} (f : x ⟶ y) (hf : W f) : multiplicativeClosure' W f
+  | id (x : C) : multiplicativeClosure' W (𝟙 x)
+  | of_comp {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (hf : W f) (hg : multiplicativeClosure' W g) :
+    multiplicativeClosure' W (f ≫ g)
+
+variable (W : MorphismProperty C)
+
+/-- `multiplicativeClosure W` is multiplicative. -/
+instance : IsMultiplicative W.multiplicativeClosure where
+  id_mem x := .id x
+  comp_mem f g hf hg := by
+    induction hg with
+    | of _ hf₀ => exact .comp_of f _ hf hf₀
+    | id _ => rwa [Category.comp_id]
+    | comp_of f' g hf' hg h_rec =>
+      rw [← Category.assoc]
+      exact .comp_of (f ≫ f') g (h_rec f hf) hg
+
+/-- `multiplicativeClosure' W` is multiplicative. -/
+instance : IsMultiplicative W.multiplicativeClosure' where
+  id_mem x := .id x
+  comp_mem f g hf hg := by
+    induction hf with
+    | of _ h => exact .of_comp _ g h hg
+    | id _ => rwa [Category.id_comp]
+    | of_comp g' f hg' hf h_rec =>
+      rw [Category.assoc]
+      exact .of_comp g' (f ≫ g) hg' (h_rec g hg)
+
+/-- The multiplicative closure is greater than or equal to the original property. -/
+lemma le_multiplicativeClosure : W ≤ W.multiplicativeClosure := fun {_ _} _ hf ↦ .of _ hf
+
+/-- The multiplicative closure of a multiplicative property is equal to itself. -/
+@[simp]
+lemma multiplicativeClosure_eq_self [W.IsMultiplicative] : W.multiplicativeClosure = W := by
+  apply le_antisymm _ <| le_multiplicativeClosure W
+  intro _ _ _ hf
+  induction hf with
+  | of _ hf₀ => exact hf₀
+  | id x => exact W.id_mem x
+  | comp_of _ _ _ hg hf => exact W.comp_mem _ _ hf hg
+
+lemma multiplicativeClosure_eq_self_iff : W.multiplicativeClosure = W ↔ W.IsMultiplicative where
+  mp h := by
+    rw [← h]
+    infer_instance
+  mpr h := multiplicativeClosure_eq_self W
+
+/-- The multiplicative closure of `W` is the smallest multiplicative property greater than or equal
+to `W`. -/
+@[simp]
+lemma multiplicativeClosure_le_iff (W' : MorphismProperty C) [W'.IsMultiplicative] :
+    multiplicativeClosure W ≤ W' ↔ W ≤ W' where
+  mp h := le_multiplicativeClosure W |>.trans h
+  mpr h := by
+    intro _ _ _ hf
+    induction hf with
+    | of _ hf => exact h _ hf
+    | id x => exact W'.id_mem _
+    | comp_of _ _ _ hg hf => exact W'.comp_mem _ _ hf (h _ hg)
+
+lemma multiplicativeClosure_monotone :
+    Monotone (multiplicativeClosure (C := C)) :=
+  fun _ W' h ↦ by simpa using h.trans W'.le_multiplicativeClosure
+
+lemma multiplicativeClosure_eq_multiplicativeClosure' :
+    W.multiplicativeClosure = W.multiplicativeClosure' :=
+  le_antisymm
+    ((multiplicativeClosure_le_iff _ _).mpr (fun _ _ f hf ↦ .of f hf)) <|
+    fun x y f hf ↦ by induction hf with
+      | of _ h => exact .of _ h
+      | id x => exact .id x
+      | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
+
+lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
+    W.multiplicativeClosure.strictMap F ≤ (W.strictMap F).multiplicativeClosure := by
+  intro _ _ f hf
+  induction hf with | map hf
+  induction hf with
+  | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
+  | id x => simpa using .id (F.obj x)
+  | comp_of _ _ hf hg h =>
+    simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
+
+/-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
 class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
   of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' g → W (f ≫ g) → W f
 
-/-- A class of morphisms `W` has the of-precomp property wrt. `W'` if whenever
+/-- A class of morphisms `W` has the of-precomp property w.r.t. `W'` if whenever
 `f` is in `W'` and `f ≫ g` is in `W`, also `g` is in `W`. -/
 class HasOfPrecompProperty (W W' : MorphismProperty C) : Prop where
   of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' f → W (f ≫ g) → W g
 
 /-- A class of morphisms `W` has the two-out-of-three property if whenever two out
 of three maps in `f`, `g`, `f ≫ g` are in `W`, then the third map is also in `W`. -/
-class HasTwoOutOfThreeProperty (W : MorphismProperty C)
-    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W,
-      W.HasOfPrecompProperty W : Prop where
+class HasTwoOutOfThreeProperty (W : MorphismProperty C) : Prop
+    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W, W.HasOfPrecompProperty W where
 
 section
 
@@ -235,6 +345,36 @@ lemma precomp_iff [W.RespectsLeft W'] [W.HasOfPrecompProperty W']
     W (f ≫ g) ↔ W g :=
   ⟨W.of_precomp f g hf, fun hg ↦ RespectsLeft.precomp _ hf _ hg⟩
 
+lemma HasOfPostcompProperty.of_le (Q : MorphismProperty C) [W.HasOfPostcompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPostcompProperty W' where
+  of_postcomp f g hg hfg := W.of_postcomp (W' := Q) f g (hle _ hg) hfg
+
+lemma HasOfPrecompProperty.of_le (Q : MorphismProperty C) [W.HasOfPrecompProperty Q]
+    (hle : W' ≤ Q) : W.HasOfPrecompProperty W' where
+  of_precomp f g hg hfg := W.of_precomp (W' := Q) f g (hle _ hg) hfg
+
+instance [W.HasOfPostcompProperty W'] : W.op.HasOfPrecompProperty W'.op where
+  of_precomp _ _ hf hfg := W.of_postcomp _ _ hf hfg
+
+instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
+  of_postcomp _ _ hg hfg := W.of_precomp _ _ hg hfg
+
+instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
+
+end
+
+section
+
+variable (W₁ W₂ : MorphismProperty Cᵒᵖ)
+
+instance [W₁.HasOfPostcompProperty W₂] : W₁.unop.HasOfPrecompProperty W₂.unop where
+  of_precomp _ _ hf hfg := W₁.of_postcomp _ _ hf hfg
+
+instance [W₁.HasOfPrecompProperty W₂] : W₁.unop.HasOfPostcompProperty W₂.unop where
+  of_postcomp _ _ hg hfg := W₁.of_precomp _ _ hg hfg
+
+instance [W₁.HasTwoOutOfThreeProperty] : W₁.unop.HasTwoOutOfThreeProperty where
+
 end
 
 instance : (isomorphisms C).HasTwoOutOfThreeProperty where
@@ -247,6 +387,12 @@ instance (F : C ⥤ D) (W : MorphismProperty D) [W.HasTwoOutOfThreeProperty] :
     (W.inverseImage F).HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg := W.of_postcomp (F.map f) (F.map g) hg (by simpa using hfg)
   of_precomp f g hf hfg := W.of_precomp (F.map f) (F.map g) hf (by simpa using hfg)
+
+instance [W.RespectsIso] : W.HasOfPrecompProperty (isomorphisms C) where
+  of_precomp _ _ (_ : IsIso _) := (W.cancel_left_of_respectsIso _ _).mp
+
+instance [W.RespectsIso] : W.HasOfPostcompProperty (isomorphisms C) where
+  of_postcomp _ _ (_ : IsIso _) := (W.cancel_right_of_respectsIso _ _).mp
 
 end MorphismProperty
 

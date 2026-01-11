@@ -3,9 +3,11 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types
@@ -13,20 +15,22 @@ import Mathlib.Data.Finite.Prod
 We show a type `F` with a `DFunLike F α β` is finite if both `α` and `β` are finite.
 This corresponds to the following two pairs of declarations:
 
- * `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
- * `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
-   are harder to infer.
+* `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
+* `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
+  are harder to infer.
 
 You can use these to produce instances for specific `DFunLike` types.
 (Although there might be options for `Fintype` instances with better definitional behaviour.)
 They can't be instances themselves since they can cause loops.
 -/
 
--- Porting note: `Type` is a reserved word, switched to `Type'`
+@[expose] public section
+
+-- `Type` is a reserved word, switched to `Type'`
 section Type'
 
 variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [FunLike G α γ]
@@ -50,7 +54,7 @@ noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : F
 
 end Type'
 
--- Porting note: `Sort` is a reserved word, switched to `Sort'`
+-- `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
 variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]

@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Finite categories
@@ -20,10 +22,10 @@ so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
 -/
 
+@[expose] public section
+
 
 universe w v u
-
-open scoped Classical
 
 noncomputable section
 
@@ -32,7 +34,11 @@ namespace CategoryTheory
 instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 
+instance {α : Type*} [Finite α] : Finite (Discrete α) :=
+  Finite.of_equiv α discreteEquiv.symm
+
 instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+  classical
   apply ULift.fintype
 
 /-- A category with a `Fintype` of objects, and a `Fintype` for each morphism space. -/
@@ -44,6 +50,9 @@ attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
 instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 
+instance {J : Type u} [Finite J] [SmallCategory J] [Quiver.IsThin J] : FinCategory J :=
+  FinCategory.mk (Fintype.ofFinite J) (fun j j' ↦ Fintype.ofFinite (j ⟶ j'))
+
 open Opposite
 
 /-- The opposite of a finite category is finite.
@@ -52,6 +61,7 @@ instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : Fi
   fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 
+attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where

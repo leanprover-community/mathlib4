@@ -3,13 +3,16 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Tree.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Data.Tree.Basic
+public meta import Mathlib.Logic.Basic
+public import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators
@@ -27,6 +30,8 @@ There are likely some rough edges to it.
 
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
+
+public meta section
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
@@ -64,34 +69,28 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
     k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
-theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
-  rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
+  rw [mul_lt_mul_iff_right₀, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd,
+    mul_lt_mul_iff_right₀]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 
-theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
-  rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
+  rw [mul_le_mul_iff_right₀, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd,
+    mul_le_mul_iff_right₀]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) := by
-  rw [← ha, ← hb, ← mul_assoc bd, ← mul_assoc ad, mul_comm bd]
-  ext; constructor
-  · rintro rfl
-    rfl
-  · intro h
-    simp only [← mul_assoc] at h
-    refine mul_left_cancel₀ (mul_ne_zero ?_ ?_) h
-    on_goal 1 => apply mul_ne_zero
-    on_goal 1 => apply div_ne_zero
-    · exact one_ne_zero
-    all_goals assumption
+  grind
 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -231,7 +230,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp {} false eSimp.expr
+  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
   trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
   let (n, t) := findCancelFactor eSimpNormNum.expr
   let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
@@ -251,7 +250,7 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
 
 /--
 `findCompLemma e` arranges `e` in the form `lhs R rhs`, where `R ∈ {<, ≤, =, ≠}`, and returns
-`lhs`, `rhs`, the `cancel_factors` lemma corresponding to `R`, and a boolean indicating whether
+`lhs`, `rhs`, the `cancel_factors` lemma corresponding to `R`, and a Boolean indicating whether
 `R` involves the order (i.e. `<` and `≤`) or not (i.e. `=` and `≠`).
 In the case of `LT`, `LE`, `GE`, and `GT` an order on the type is needed, in the last case
 it is not, the final component of the return value tracks this.
@@ -286,7 +285,9 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
   have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
   let (al_cond, ar_cond, gcd_cond) ← if ord then do
-      let _ ← synthInstanceQ q(LinearOrderedField $α)
+      let _ ← synthInstanceQ q(Field $α)
+      let _ ← synthInstanceQ q(LinearOrder $α)
+      let _ ← synthInstanceQ q(IsStrictOrderedRing $α)
       let al_pos : Q(Prop) := q(0 < $al)
       let ar_pos : Q(Prop) := q(0 < $ar)
       let gcd_pos : Q(Prop) := q(0 < $gcd)
@@ -341,6 +342,7 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
+@[tactic_alt cancelDenoms]
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))

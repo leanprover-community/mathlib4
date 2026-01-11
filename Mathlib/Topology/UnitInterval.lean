@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Order.Interval.Set.Instances
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real
+module
+
+public import Mathlib.Algebra.Order.Interval.Set.Instances
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The unit interval, as a topological space
@@ -16,6 +18,8 @@ We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -48,19 +52,7 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
-  rw [mem_Icc, mem_Icc]
-  constructor <;> intro <;> constructor <;> linarith
-
-instance hasZero : Zero I :=
-  ⟨⟨0, zero_mem⟩⟩
-
-instance hasOne : One I :=
-  ⟨⟨1, by constructor <;> norm_num⟩⟩
-
-instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
-
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -69,33 +61,30 @@ lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
-instance : Nonempty I :=
-  ⟨0⟩
-
-instance : Mul I :=
-  ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
-
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
+theorem eq_closedBall : I = Metric.closedBall 2⁻¹ 2⁻¹ := by
+  norm_num [unitInterval, Real.Icc_eq_closedBall]
+
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
+def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
-@[simp]
+@[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 
@@ -103,14 +92,28 @@ theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
-@[simp]
+@[simp, grind =]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
--- Porting note: Proof used to be `by continuity!`
+lemma image_coe_preimage_symm {s : Set I} :
+    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
+
+@[simp]
+theorem symm_projIcc (x : ℝ) :
+    symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by
+  ext
+  rcases le_total x 0 with h₀ | h₀
+  · simp [projIcc_of_le_left, projIcc_of_right_le, h₀]
+  · rcases le_total x 1 with h₁ | h₁
+    · lift x to I using ⟨h₀, h₁⟩
+      simp_rw [← coe_symm_eq, projIcc_val]
+    · simp [projIcc_of_le_left, projIcc_of_right_le, h₁]
+
 @[continuity, fun_prop]
-theorem continuous_symm : Continuous σ := by
-  apply Continuous.subtype_mk (by fun_prop)
+theorem continuous_symm : Continuous σ :=
+  Continuous.subtype_mk (by fun_prop) _
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
 @[simps]
@@ -122,8 +125,6 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -226,12 +227,25 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
-  zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by
-    simp only [← Subtype.coe_le_coe, coe_mul]
-    apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
-    simp [h_ij]
-  __ := inferInstanceAs (LinearOrder I)
+  zero_le x := x.2.1
+  mul_lt_mul_of_pos_left i hi j k hjk := by
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
+
+lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
+  rw [preimage_subtype_val_Iic]
+  exact Icc_bot.symm
+
+lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
+  rw [preimage_subtype_val_Iio]
+  exact Ico_bot.symm
+
+lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
+  rw [preimage_subtype_val_Ici]
+  exact Icc_top.symm
+
+lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
+  rw [preimage_subtype_val_Ioi]
+  exact Ioc_top.symm
 
 end unitInterval
 
@@ -239,14 +253,16 @@ section partition
 
 namespace Set.Icc
 
-variable {α} [LinearOrderedAddCommGroup α] {a b c d : α} (h : a ≤ b) {δ : α}
+variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+  {a b c d : α} (h : a ≤ b) {δ : α}
 
 -- TODO: Set.projIci, Set.projIic
 /-- `Set.projIcc` is a contraction. -/
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
-  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
-  rw [abs_eq_self.2 (sub_nonneg.2 hdc), abs_eq_self.2 (sub_nonneg.2 <| monotone_projIcc h hdc)]
+  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_ge hdc)
+  rw [abs_eq_self.2 (sub_nonneg.2 hdc),
+    abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
   refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) ?_)
   refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le ?_ ?_)
@@ -254,9 +270,10 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · exact (abs_eq_self.mpr hdc).le
 
 /-- When `h : a ≤ b` and `δ > 0`, `addNSMul h δ` is a sequence of points in the closed interval
-  `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
+`[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
+omit [IsOrderedAddMonoid α] in
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
   rw [addNSMul, zero_smul, add_zero, projIcc_left]
 
@@ -271,23 +288,167 @@ lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
   fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
-    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :
+    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n + 1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
-    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
-    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
-    _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
-    _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n := abs_eq_self.2 <| sub_nonneg.2 ht.1
+    _ ≤ projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
+    _ ≤ (|projIcc a b h (a + (n + 1) • δ) - addNSMul h δ n| : α) := le_abs_self _
+    _ ≤ |a + (n + 1) • δ - (a + n • δ)| := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
           rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
           exact (abs_eq_self.mpr hδ).le
+
+/--
+Form a convex linear combination of two points in a closed interval.
+
+This should be removed once a general theory of convex spaces is available in Mathlib.
+-/
+def convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) : Icc a b :=
+  ⟨(1 - t) * x + t * y, by
+    constructor
+    · nlinarith [x.2.1, y.2.1, t.2.1, t.2.2]
+    · nlinarith [x.2.2, y.2.2, t.2.1, t.2.2]⟩
+
+@[simp, grind =]
+theorem coe_convexCombo {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+  (convexCombo x y t : ℝ) = (1 - t) * x + t * y := rfl
+
+@[simp, grind =]
+theorem convexCombo_zero {a b : ℝ} (x y : Icc a b) : convexCombo x y 0 = x := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
+    convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
+  simp [convexCombo]
+  abel
+
+@[grind .]
+theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    x ≤ convexCombo x y t := by
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
+  nlinarith [t.2.1, t.2.2]
+
+@[grind .]
+theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    convexCombo x y t ≤ y := by
+  rw [← Subtype.coe_le_coe] at h ⊢
+  simp
+  nlinarith [t.2.1, t.2.2]
+
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
+abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
+  ⟨s * (1 - t) / (1 - s * t),
+    by
+      apply div_nonneg
+      · nlinarith [s.2.1, t.2.2]
+      · nlinarith [s.2.2, t.2.2, t.2.1],
+    by
+      apply div_le_one_of_le₀
+      · nlinarith [s.2.2]
+      · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+
+/--
+Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
+when we reassociate a convex combination.
+-/
+abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
+
+theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo x (convexCombo y z t) s =
+      convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
+        (convexCombo_assoc_coeff₂ s t) := by
+  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
+  by_cases hs : (s : ℝ) = 1
+  · simp only [hs]
+    by_cases ht : (t : ℝ) = 1
+    · simp [ht]
+    · have : (1 - t : ℝ) ≠ 0 := by grind
+      field_simp
+      simp
+  · by_cases ht : (t : ℝ) = 1
+    · simp [ht]
+    · have : (1 - s * t : ℝ) ≠ 0 := by
+        intro h
+        have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
+        grind
+      field_simp
+      ring_nf
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
+
+theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo (convexCombo x y s) z t =
+      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂' s t))
+        (convexCombo_assoc_coeff₁' s t) := by
+  rw [← convexCombo_symm, ← convexCombo_symm y x, convexCombo_assoc, ← convexCombo_symm x,
+    ← convexCombo_symm z y]
+  rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
+
+set_option backward.privateInPublic true in
+private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    0 ≤ ((y - x) / (z - x) : ℝ) := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_nonneg <;> grind
+
+set_option backward.privateInPublic true in
+private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    ((y - x) / (z - x) : ℝ) ≤ 1 := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_le_one_of_le₀ <;> grind
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+/--
+A point between two points in a closed interval
+can be expressed as a convex combination of them.
+-/
+theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    y = convexCombo x z ⟨((y - x) / (z - x)),
+          eq_convexCombo.zero_le hxy hyz, eq_convexCombo.le_one hxy hyz⟩ := by
+  ext
+  simp only [coe_convexCombo]
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all only [div_zero, sub_zero, one_mul, zero_mul, add_zero]
+    replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    linarith
+  · field_simp
+    ring_nf
 
 end Set.Icc
 
 open scoped unitInterval
 
-/-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
-  a finite partition into subintervals. -/
+/-- Any open cover `c` of a closed interval `[a, b]` in ℝ
+can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
@@ -295,7 +456,7 @@ lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {
   have hδ := half_pos δ_pos
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
     monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n) trivial
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n) trivial
   exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
@@ -315,7 +476,7 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   have h : (0 : ℝ) ≤ 1 := zero_le_one
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
     monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n, addNSMul h (δ/2) m) trivial
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
   exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
     abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
 
@@ -331,7 +492,6 @@ theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 �
 
 namespace Tactic.Interactive
 
--- Porting note: This replaces an unsafe def tactic
 /-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
 macro "unit_interval" : tactic =>
   `(tactic| (first
@@ -346,7 +506,8 @@ end Tactic.Interactive
 
 section
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
@@ -375,3 +536,22 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
   rfl
 
 end
+
+namespace unitInterval
+
+open NNReal
+
+/-- The coercion from `I` to `ℝ≥0`. -/
+def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+@[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
+
+@[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop
+
+@[simp] lemma coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+@[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
+@[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
+
+end unitInterval

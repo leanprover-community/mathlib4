@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of continuum
@@ -13,8 +15,10 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`.
+- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
+
+@[expose] public section
 
 
 namespace Cardinal
@@ -27,7 +31,7 @@ open Cardinal
 def continuum : Cardinal.{u} :=
   2 ^ ℵ₀
 
-scoped notation "𝔠" => Cardinal.continuum
+@[inherit_doc] scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
 theorem two_power_aleph0 : 2 ^ ℵ₀ = 𝔠 :=
@@ -87,8 +91,8 @@ theorem continuum_toNat : toNat continuum = 0 :=
   toNat_apply_of_aleph0_le aleph0_le_continuum
 
 @[simp]
-theorem continuum_toPartENat : toPartENat continuum = ⊤ :=
-  toPartENat_apply_of_aleph0_le aleph0_le_continuum
+theorem continuum_toENat : toENat continuum = ⊤ :=
+  (toENat_eq_top.2 aleph0_le_continuum)
 
 /-!
 ### Addition
@@ -115,14 +119,12 @@ theorem nat_add_continuum (n : ℕ) : ↑n + 𝔠 = 𝔠 :=
 theorem continuum_add_nat (n : ℕ) : 𝔠 + n = 𝔠 :=
   (add_comm _ _).trans (nat_add_continuum n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_add_continuum {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) + 𝔠 = 𝔠 :=
+theorem ofNat_add_continuum {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) + 𝔠 = 𝔠 :=
   nat_add_continuum n
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + no_index (OfNat.ofNat n) = 𝔠 :=
+theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + ofNat(n) = 𝔠 :=
   continuum_add_nat n
 
 /-!
@@ -150,14 +152,12 @@ theorem nat_mul_continuum {n : ℕ} (hn : n ≠ 0) : ↑n * 𝔠 = 𝔠 :=
 theorem continuum_mul_nat {n : ℕ} (hn : n ≠ 0) : 𝔠 * n = 𝔠 :=
   (mul_comm _ _).trans (nat_mul_continuum hn)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_mul_continuum {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * 𝔠 = 𝔠 :=
+theorem ofNat_mul_continuum {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) * 𝔠 = 𝔠 :=
   nat_mul_continuum (OfNat.ofNat_ne_zero n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * no_index (OfNat.ofNat n) = 𝔠 :=
+theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * ofNat(n) = 𝔠 :=
   continuum_mul_nat (OfNat.ofNat_ne_zero n)
 
 /-!

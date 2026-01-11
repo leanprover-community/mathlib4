@@ -3,10 +3,12 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.
@@ -40,6 +42,8 @@ small colimits.
 
 -/
 
+@[expose] public section
+
 
 universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -59,7 +63,7 @@ namespace CategoryTheory
 
 section IsCocontinuous
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E] (G : C ⥤ D)
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
@@ -68,7 +72,6 @@ variable {L : GrothendieckTopology E}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 
@@ -100,7 +103,7 @@ we actually verify that any pointwise right Kan extension of `F` along `G.op` is
 
 -/
 
-variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
 
@@ -116,17 +119,17 @@ variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
     (fun k ↦ s.ι (⟨_, G.map k.f ≫ f, k.hf⟩) ≫ α.app (op k.Y)) (by
-      rintro ⟨⟨Y₁, p₁, hp₁⟩, ⟨Y₂, p₂, hp₂⟩, W, g₁, g₂, w⟩
+      intro { fst := ⟨Y₁, p₁, hp₁⟩, snd := ⟨Y₂, p₂, hp₂⟩, r := ⟨W, g₁, g₂, w⟩ }
       dsimp at g₁ g₂ w ⊢
       simp only [Category.assoc, ← α.naturality, Functor.comp_map,
         Functor.op_map, Quiver.Hom.unop_op]
       apply s.condition_assoc
-        (GrothendieckTopology.Cover.Relation.mk
-          { hf := hp₁ }
-          { hf := hp₂ }
-          { g₁ := G.map g₁
-            g₂ := G.map g₂
-            w := by simpa using G.congr_map w =≫ f }))
+        { fst.hf := hp₁
+          snd.hf := hp₂
+          r.g₁ := G.map g₁
+          r.g₂ := G.map g₂
+          r.w := by simpa using G.congr_map w =≫ f
+          .. })
 
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
@@ -139,13 +142,14 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
         simp only [← Category.assoc]
         congr 1
         let r : S.Relation :=
-          GrothendieckTopology.Cover.Relation.mk
-            { f := G.map g ≫ f
-              hf := by simpa only [← w] using S.1.downward_closed i.hf h } i
-            { g₁ := 𝟙 _
-              g₂ := h
-              w := by simpa using w.symm }
-        simpa using s.condition r )
+          { fst.f := G.map g ≫ f
+            fst.hf := by simpa only [← w] using S.1.downward_closed i.hf h
+            snd := i
+            r.g₁ := 𝟙 _
+            r.g₂ := h
+            r.w := by simpa using w.symm
+            .. }
+        simpa [r] using s.condition r)
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :
@@ -199,8 +203,7 @@ lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
 
 variable (S)
 
-/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous`: if `G : C ⥤ D` is a
-cocontinuous functor,   -/
+/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous` -/
 def isLimitMultifork : IsLimit (S.multifork R) :=
   Multifork.IsLimit.mk _ (lift hF hR) (fac hF hR)
     (fun s _ hm ↦ hom_ext K hF hR (fun i ↦ (hm i).trans (fac hF hR s i).symm))
@@ -212,15 +215,13 @@ variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 /-- If `G` is cocontinuous, then `G.op.ran` pushes sheaves to sheaves.
 
-This is SGA 4 III 2.2. An alternative reference is
-https://stacks.math.columbia.edu/tag/00XK (where results
-are obtained under the additional assumption that
-`C` and `D` have pullbacks).
--/
+This is SGA 4 III 2.2. -/
+@[stacks 00XK "Alternative reference. There, results are obtained under the additional assumption
+that `C` and `D` have pullbacks."]
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
   rw [Presheaf.isSheaf_iff_multifork]
-  intros X S
+  intro X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
 
@@ -287,7 +288,7 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
-      (by aesop_cat)
+      (by cat_disch)
 
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :

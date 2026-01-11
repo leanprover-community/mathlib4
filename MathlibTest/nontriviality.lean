@@ -7,7 +7,7 @@ private axiom test_sorry : ∀ {α}, α
 
 set_option autoImplicit true
 
-example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
+example {R : Type} [Ring R] [PartialOrder R] [IsOrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality
   rename_i inst; guard_hyp inst : Nontrivial R
   assumption
@@ -22,21 +22,21 @@ example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
 
 /-! ### Test deducing `nontriviality` by instance search -/
 
-example {R : Type} [OrderedRing R] : 0 ≤ (1 : R) := by
+example {R : Type} [Ring R] [PartialOrder R] [IsOrderedRing R] : 0 ≤ (1 : R) := by
   nontriviality R
   rename_i inst; guard_hyp inst : Nontrivial R
   exact zero_le_one
 
-example {R : Type} [OrderedRing R] : 0 ≤ (1 : R) := by
+example {R : Type} [Ring R] [PartialOrder R] [IsOrderedRing R] : 0 ≤ (1 : R) := by
   nontriviality ℕ
   rename_i inst; guard_hyp inst : Nontrivial ℕ
   exact zero_le_one
 
-example {R : Type} [OrderedRing R] : 0 ≤ (2 : R) := by
+example {R : Type} [Ring R] [PartialOrder R] [IsOrderedRing R] : 0 ≤ (2 : R) := by
   fail_if_success nontriviality PUnit
   exact zero_le_two
 
-example {R : Type} [OrderedRing R] {a : R} (_ : 0 < a) : 2 ∣ 4 := by
+example {R : Type} [Ring R] [PartialOrder R] [IsOrderedRing R] {a : R} (_ : 0 < a) : 2 ∣ 4 := by
   nontriviality R
   rename_i inst; guard_hyp inst : Nontrivial R
   decide

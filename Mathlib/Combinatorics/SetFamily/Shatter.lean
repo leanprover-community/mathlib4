@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Combinatorics.SetFamily.Compression.Down
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families
@@ -24,6 +26,8 @@ This file defines the shattering property and VC-dimension of set families.
 * Order-shattering
 * Strong shattering
 -/
+
+@[expose] public section
 
 open scoped FinsetFamily
 
@@ -104,14 +108,14 @@ lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜
 protected alias ⟨_, Shatters.shatterer⟩ := shatters_shatterer
 
 private lemma aux (h : ∀ t ∈ 𝒜, a ∉ t) (ht : 𝒜.Shatters t) : a ∉ t := by
-  obtain ⟨u, hu, htu⟩ := ht.exists_superset; exact not_mem_mono htu <| h u hu
+  obtain ⟨u, hu, htu⟩ := ht.exists_superset; exact notMem_mono htu <| h u hu
 
 /-- Pajor's variant of the **Sauer-Shelah lemma**. -/
 lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatterer := by
   refine memberFamily_induction_on 𝒜 ?_ ?_ ?_
   · simp
   · rfl
-  intros a 𝒜 ih₀ ih₁
+  intro a 𝒜 ih₀ ih₁
   set ℬ : Finset (Finset α) :=
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
@@ -132,12 +136,12 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     rintro s hs t ht
     obtain ⟨u, hu, rfl⟩ := hs ht
     rw [mem_memberSubfamily] at hu
-    refine ⟨insert a u, hu.1, inter_insert_of_not_mem fun ha ↦ ?_⟩
+    refine ⟨insert a u, hu.1, inter_insert_of_notMem fun ha ↦ ?_⟩
     obtain ⟨v, hv, hsv⟩ := hs.exists_inter_eq_singleton ha
     rw [mem_memberSubfamily] at hv
     rw [← singleton_subset_iff (a := a), ← hsv] at hv
     exact hv.2 inter_subset_right
-  · refine forall_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
+  · refine forall_mem_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
     simp only [mem_inter, mem_shatterer] at hs
     rw [subset_insert_iff] at ht
     by_cases ha : a ∈ t
@@ -148,10 +152,10 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     · obtain ⟨u, hu, hsu⟩ := hs.2 ht
       rw [mem_nonMemberSubfamily] at hu
       refine ⟨_, hu.1, ?_⟩
-      rwa [insert_inter_of_not_mem hu.2, hsu, erase_eq_self]
+      rwa [insert_inter_of_notMem hu.2, hsu, erase_eq_self]
 
 lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s := by
-  intros t ht
+  intro t ht
   obtain ⟨u, hu, rfl⟩ := hs ht
   rw [Down.mem_compression] at hu
   obtain hu | hu := hu
@@ -170,7 +174,7 @@ lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s 
     rw [hsv]
     exact mem_insert_self _ _
   · refine ⟨insert a u, hu.2, ?_⟩
-    rw [inter_insert_of_not_mem ha]
+    rw [inter_insert_of_notMem ha]
 
 lemma shatterer_compress_subset_shatterer (a : α) (𝒜 : Finset (Finset α)) :
     (𝓓 a 𝒜).shatterer ⊆ 𝒜.shatterer := by

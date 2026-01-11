@@ -3,9 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Degree.Units
-import Mathlib.Algebra.Polynomial.Eval.Coeff
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Degree.Units
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
 
 /-!
 # Evaluation of polynomials and degrees
@@ -13,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Eval.Coeff
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.degree`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -71,19 +76,11 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
       ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
   have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
   rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
-  -- Porting note: `apply_congr` hadn't been ported yet, so `congr` & `ext` is used.
-  conv_lhs =>
-    congr
-    · congr
-      · skip
-      · congr
-        · skip
-        · ext
-          rw [one_pow, mul_one, mul_comm]
+  simp only [one_pow, mul_one, mul_comm (y ^ _) (d.choose _)]
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
-  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
+  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.add_one_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
 
 end Eval
@@ -94,7 +91,6 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
-  -- Porting note: `convert` → `refine`
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
@@ -102,55 +98,84 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     intro b hbs hbp
     refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
     rw [natDegree_C, zero_add]
-    refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
+    refine natDegree_pow_le.trans_lt ?_
+    gcongr
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
     simp +contextual
+
+@[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
+    (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
+  simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
+    ← C_pow, finset_sum_coeff, coeff_C_mul, coeff_X_pow]
+  rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
+  · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
+  · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
+    rwa [Finset.mem_range_succ_iff, not_le] at h
+
+lemma comp_C_mul_X_eq_zero_iff {r : R} (hr : r ∈ nonZeroDivisors R) :
+    p.comp (C r * X) = 0 ↔ p = 0 := by
+  simp_rw [ext_iff]
+  refine forall_congr' fun n ↦ ?_
+  rw [comp_C_mul_X_coeff, coeff_zero, mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hr _)]
 
 end Comp
 
 section Map
 
-variable [Semiring S]
-variable (f : R →+* S)
+variable [Semiring S] {f : R →+* S} {p : R[X]}
 
+variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
+  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
     (by ext; simp)
-
-theorem degree_map_le (p : R[X]) : degree (p.map f) ≤ degree p := by
-  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
-  rw [degree_lt_iff_coeff_zero] at hm
-  simp [hm m le_rfl]
-
-theorem natDegree_map_le (p : R[X]) : natDegree (p.map f) ≤ natDegree p :=
-  natDegree_le_natDegree (degree_map_le f p)
-
-variable {f}
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
     calc
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
       _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
-      _ = 0 := by simp only [hfp, mul_zero, coeff_zero]
-      ,
+      _ = 0 := by simp only [hfp, mul_zero, coeff_zero],
     fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
 
 theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>
   f.map_one_ne_zero ((map_monic_eq_zero_iff hp).mp h _)
 
+lemma degree_map_le : degree (p.map f) ≤ degree p := by
+  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
+  rw [degree_lt_iff_coeff_zero] at hm
+  simp [hm m le_rfl]
+
+lemma natDegree_map_le : natDegree (p.map f) ≤ natDegree p := natDegree_le_natDegree degree_map_le
+
+lemma degree_map_lt (hp : f p.leadingCoeff = 0) (hp₀ : p ≠ 0) : (p.map f).degree < p.degree := by
+  refine degree_map_le.lt_of_ne fun hpq ↦ hp₀ ?_
+  rw [leadingCoeff, ← coeff_map, ← natDegree_eq_natDegree hpq, ← leadingCoeff, leadingCoeff_eq_zero]
+    at hp
+  rw [← degree_eq_bot, ← hpq, hp, degree_zero]
+
+lemma natDegree_map_lt (hp : f p.leadingCoeff = 0) (hp₀ : map f p ≠ 0) :
+    (p.map f).natDegree < p.natDegree :=
+  natDegree_lt_natDegree hp₀ <| degree_map_lt hp <| by rintro rfl; simp at hp₀
+
+/-- Variant of `natDegree_map_lt` that assumes `0 < natDegree p` instead of `map f p ≠ 0`. -/
+lemma natDegree_map_lt' (hp : f p.leadingCoeff = 0) (hp₀ : 0 < natDegree p) :
+    (p.map f).natDegree < p.natDegree := by
+  by_cases H : map f p = 0
+  · rwa [H, natDegree_zero]
+  · exact natDegree_map_lt hp H
+
 theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
-    degree (p.map f) = degree p :=
-  le_antisymm (degree_map_le f _) <| by
-    have hp0 : p ≠ 0 :=
-      leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
-    rw [degree_eq_natDegree hp0]
-    refine le_degree_of_ne_zero ?_
-    rw [coeff_map]
-    exact hf
+    degree (p.map f) = degree p := by
+  refine degree_map_le.antisymm ?_
+  have hp0 : p ≠ 0 :=
+    leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
+  rw [degree_eq_natDegree hp0]
+  refine le_degree_of_ne_zero ?_
+  rw [coeff_map]
+  exact hf
 
 theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     natDegree (p.map f) = natDegree p :=
@@ -160,6 +185,10 @@ theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadin
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
   unfold leadingCoeff
   rw [coeff_map, natDegree_map_of_leadingCoeff_ne_zero f hf]
+
+theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
+    (p.map f).nextCoeff = f p.nextCoeff := by
+  grind [nextCoeff, natDegree_map_of_leadingCoeff_ne_zero, coeff_map]
 
 end Map
 

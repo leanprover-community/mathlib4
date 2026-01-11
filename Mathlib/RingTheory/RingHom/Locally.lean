@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Away.Lemmas
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
 # Target local closure of ring homomorphism properties
@@ -18,7 +20,8 @@ a subset `{ t }` of `S` generating the unit ideal, such that `P` holds for all c
 
 Assuming without further mention that `P` is stable under composition with isomorphisms,
 `Locally P` is local on the target by construction, i.e. it satisfies
-`OfLocalizationSpanTarget`. If `P` itself is local on the target, `Locally P` coincides with `P`.
+`RingHom.OfLocalizationSpanTarget`. If `P` itself is local on the target,
+`Locally P` coincides with `P`.
 
 The `Locally` construction preserves various properties of `P`, e.g. if `P` is stable under
 composition, base change, etc., so is `Locally P`.
@@ -31,12 +34,15 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_stableUnderCompositionWithLocalizationAway`: `Locally P` is stable under
+- `RingHom.locally_StableUnderCompositionWithLocalizationAwayTarget` and
+  `RingHom.locally_StableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -122,6 +128,12 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   simp only [Set.mem_singleton_iff, forall_eq, Ideal.span_singleton_one, exists_const]
   exact hP.left f e hf
 
+lemma locally_of_locally {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f)
+    {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S} (hf : Locally P f) : Locally Q f := by
+  obtain ⟨s, hsone, hs⟩ := hf
+  exact ⟨s, hsone, fun t ht ↦ hPQ (hs t ht)⟩
+
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
 lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
     (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
@@ -202,7 +214,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
   · rw [eq_top_iff, ← hsgone, Ideal.span_le]
     intro t ht
     have : 1 ∈ Ideal.span (Set.range <| fun a : sf ↦ a.val) := by simp [hsfone]
-    simp only [mem_ideal_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
+    simp only [Ideal.mem_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
     obtain ⟨cf, hcf⟩ := this
     let cg : sg → T := Pi.single ⟨t, ht⟩ 1
     use fun (a, b) ↦ g (cf a) * cg b
@@ -218,7 +230,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
       change _ = Localization.awayMap g' a.val (algebraMap S _ (f x))
       simp only [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_eq]
       rfl
-    simp only [this]
+    simp only [this, a']
     apply hPc _ _ (hsf a.val a.property)
     apply @hPl _ _ _ _ g' _ _ _ _ _ _ _ _ ?_ (hsg b.val b.property)
     exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
@@ -266,7 +278,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
     IsStableUnderBaseChange (Locally P) := by
-  apply IsStableUnderBaseChange.mk _ (locally_respectsIso hPi)
+  apply IsStableUnderBaseChange.mk (locally_respectsIso hPi)
   introv hf
   obtain ⟨s, hsone, hs⟩ := hf
   rw [locally_iff_exists hPi]
@@ -284,7 +296,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     simp [RingHom.algebraMap_toAlgebra]
   haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
       (S ⊗[R] Localization.Away a.val) := by
-    rw [← Algebra.IsPushout.comp_iff (R := R) (R' := S)]
+    rw [← Algebra.IsPushout.comp_iff R _ S]
     infer_instance
   refine ⟨s, fun a ↦ Algebra.TensorProduct.includeRight a.val, ?_,
       fun a ↦ (S ⊗[R] Localization.Away a.val), inferInstance, inferInstance, ?_, ?_⟩
@@ -299,15 +311,10 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
         (S := Submonoid.powers a.val) (A := Localization.Away a.val)]
       exact Algebra.IsPushout.out
   · intro a
-    have : (algebraMap (S ⊗[R] T) (S ⊗[R] Localization.Away a.val)).comp
-        Algebra.TensorProduct.includeLeftRingHom =
-        Algebra.TensorProduct.includeLeftRingHom := by
-      ext x
-      simp [RingHom.algebraMap_toAlgebra]
-    rw [this]
+    rw [← IsScalarTower.algebraMap_eq]
     apply hPb R (Localization.Away a.val)
-    rw [IsScalarTower.algebraMap_eq R T (Localization.Away a.val)]
-    apply hs a a.property
+    rw [IsScalarTower.algebraMap_eq R T]
+    exact hs a a.property
 
 /-- If `P` is preserved by localization away, then so is `Locally P`. -/
 lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
@@ -323,10 +330,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
-    simp [Algebra.algebraMapSubmonoid]
+    simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
-    simp [Submonoid.powers_le]
+    simp [rₐ, Submonoid.powers_le]
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val)) (H a)).toAlgebra
   haveI (a : s) : IsScalarTower S S' (Sₐ a) :=

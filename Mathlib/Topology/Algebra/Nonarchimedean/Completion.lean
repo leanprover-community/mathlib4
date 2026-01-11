@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # The completion of a nonarchimedean additive group
@@ -15,11 +17,13 @@ The completion of a nonarchimedean additive group is a nonarchimedean additive g
 The completion of a nonarchimedean ring is a nonarchimedean ring.
 -/
 
+@[expose] public section
+
 open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup Topology
 
 /-- The completion of a nonarchimedean additive group is a nonarchimedean additive group. -/
-instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [NonarchimedeanAddGroup G] :
-    NonarchimedeanAddGroup (Completion G) where
+instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [NonarchimedeanAddGroup G] : NonarchimedeanAddGroup (Completion G) where
   is_nonarchimedean := by
     /- Let `U` be a neighborhood of `0` in `Completion G`. We wish to show that `U` contains an open
     additive subgroup of `Completion G`. -/
@@ -60,7 +64,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     exact closure_minimal (Set.image_subset_iff.mpr hCW) C_closed
 
 /-- The completion of a nonarchimedean ring is a nonarchimedean ring. -/
-instance {R : Type*} [Ring R] [UniformSpace R] [TopologicalRing R] [UniformAddGroup R]
+instance {R : Type*} [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R]
     [NonarchimedeanRing R] :
     NonarchimedeanRing (Completion R) where
   is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean

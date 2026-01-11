@@ -3,8 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.Push
+module
+
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Push
 
 /-!
 ## Symmetric quivers and arrow reversal
@@ -20,13 +22,14 @@ This file contains constructions related to symmetric quivers:
   of `Symmetrify`.
 -/
 
+@[expose] public section
+
 universe v u w v'
 
 namespace Quiver
 
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
     NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
--- Porting note: no hasNonemptyInstance linter yet
 def Symmetrify (V : Type*) := V
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
@@ -149,6 +152,7 @@ end Paths
 namespace Symmetrify
 
 /-- The inclusion of a quiver in its symmetrification -/
+@[simps]
 def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl
@@ -160,7 +164,7 @@ variable {V' : Type*} [Quiver.{v' + 1} V']
 def lift [HasReverse V'] (φ : Prefunctor V V') :
     Prefunctor (Symmetrify V) V' where
   obj := φ.obj
-  map f := match f with
+  map
   | Sum.inl g => φ.map g
   | Sum.inr g => reverse (φ.map g)
 
@@ -230,14 +234,5 @@ instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 
 end Push
-
-/-- A quiver is preconnected iff there exists a path between any pair of
-vertices.
-Note that if `V` doesn't `HasReverse`, then the definition is stronger than
-simply having a preconnected underlying `SimpleGraph`, since a path in one
-direction doesn't induce one in the other.
--/
-def IsPreconnected (V) [Quiver.{u + 1} V] :=
-  ∀ X Y : V, Nonempty (Path X Y)
 
 end Quiver

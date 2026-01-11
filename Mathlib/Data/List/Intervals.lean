@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ
@@ -18,8 +20,10 @@ and strictly less than `n`.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
-- Once the above is done, get rid of `Data.Int.range` (and maybe `List.range'`?).
+- Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -29,9 +33,10 @@ namespace List
 /-- `Ico n m` is the list of natural numbers `n ≤ x < m`.
 (Ico stands for "interval, closed-open".)
 
-See also `Data/Set/Intervals.lean` for `Set.Ico`, modelling intervals in general preorders, and
-`Multiset.Ico` and `Finset.Ico` for `n ≤ x < m` as a multiset or as a finset.
- -/
+See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
+as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
+for sets, multisets and finite sets respectively.
+-/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
 
@@ -55,12 +60,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
-  rcases le_total n m with hnm | hmn
-  · rw [Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_eq_zero_iff_le.mpr hmn, Nat.add_zero]
-    exact
-      and_congr_right fun hnl =>
-        Iff.intro (fun hln => (not_le_of_gt hln hnl).elim) fun hlm => lt_of_lt_of_le hlm hmn
+  lia
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
@@ -70,7 +70,7 @@ theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := 
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
     ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
-  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
+  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' h₁]
 
 @[simp]
 theorem self_empty {n : ℕ} : Ico n n = [] :=
@@ -83,9 +83,9 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m) 1 using 2
+  convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_add_sub_cancel hml hnm]
+  · lia
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
@@ -104,7 +104,7 @@ theorem bagInter_consecutive (n m l : Nat) :
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', Nat.add_sub_cancel_left]
+  simp [Nat.add_sub_cancel_left]
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]
@@ -118,19 +118,23 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
-theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
-  by_cases h : n < m
+theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := by
+  by_cases! h : n < m
   · rw [eq_cons h]
-    exact chain_succ_range' _ _ 1
-  · rw [eq_nil_of_le (le_of_not_gt h)]
-    trivial
+    unfold List.Ico
+    exact isChain_range' _ (_ + 1) 1
+  · rw [eq_nil_of_le h]
+    exact .nil
 
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+@[deprecated (since := "2025-09-19")]
+alias chain'_succ := isChain_succ
+
+theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
-    simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_True]
+    simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_true]
 
 theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
   filter_eq_nil_iff.2 fun k hk => by
@@ -193,16 +197,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
 3. n ∈ Ico a b
 -/
 theorem trichotomy (n a b : ℕ) : n < a ∨ b ≤ n ∨ n ∈ Ico a b := by
-  by_cases h₁ : n < a
-  · left
-    exact h₁
-  · right
-    by_cases h₂ : n ∈ Ico a b
-    · right
-      exact h₂
-    · left
-      simp only [Ico.mem, not_and, not_lt] at *
-      exact h₂ h₁
+  grind [mem]
 
 end Ico
 

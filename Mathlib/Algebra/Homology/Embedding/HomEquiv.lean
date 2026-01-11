@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.Boundary
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Boundary
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Relations between `extend` and `restriction`
@@ -22,12 +24,14 @@ condition `e.HasLift φ`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace ComplexShape
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
-  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 namespace Embedding
 
@@ -62,10 +66,7 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
     f φ i' = (K.restrictionXIso e hi).inv ≫ φ.f i ≫ (L.extendXIso e hi).inv := by
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
-  dsimp [f]
-  rw [dif_pos ⟨i, hi⟩]
-  subst this
-  rfl
+  grind [f]
 
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
@@ -168,7 +169,7 @@ lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'
   have : (L.extend e).d i' (e.f j) = 0 := by
-    apply (L.isZero_extend_X e i' (hj.not_mem hij')).eq_of_src
+    apply (L.isZero_extend_X e i' (hj.notMem hij')).eq_of_src
   dsimp [homRestrict]
   rw [homRestrict.f_eq ψ rfl, restrictionXIso, eqToIso_refl, Iso.refl_hom, id_comp,
     ← ψ.comm_assoc, this, zero_comp, comp_zero]
@@ -193,6 +194,13 @@ lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
     e.homRestrict (α ≫ ψ) = restrictionMap α e ≫ e.homRestrict ψ := by
   ext i
   simp [homRestrict_f _ _ rfl, restrictionXIso]
+
+@[reassoc]
+lemma homRestrict_comp_extendMap (ψ : K ⟶ L.extend e) (β : L ⟶ L') :
+    e.homRestrict (ψ ≫ extendMap β e) =
+      e.homRestrict ψ ≫ β := by
+  ext i
+  simp [homRestrict_f _ _ rfl, extendMap_f β e rfl]
 
 variable (K L)
 

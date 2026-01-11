@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Finiteness.TensorProduct
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Hom
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The bilinear form on a tensor product
@@ -20,7 +22,7 @@ import Mathlib.RingTheory.Finiteness.TensorProduct
 
 -/
 
-suppress_compilation
+@[expose] public section
 
 universe u v w uR uA uM₁ uM₂ uN₁ uN₂
 
@@ -50,13 +52,13 @@ Note this is heterobasic; the bilinear map on the left can take values in a modu
 (commutative) algebra over the ring of the module in which the right bilinear map is valued. -/
 def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
-  (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
- ((LinearMap.llcomp A _ _ _).flip
-   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).toLinearMap)
+  (TensorProduct.lift.equiv (.id A) (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
+  ((LinearMap.llcomp A _ _ _).flip
+    (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
   ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (TensorProduct.lift.equiv A M₁ M₁ N₁)
-    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+    (TensorProduct.lift.equiv (.id A) M₁ M₁ N₁)
+    (TensorProduct.lift.equiv (.id R) _ _ _)).toLinearMap
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
@@ -70,6 +72,16 @@ protected abbrev tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂
     BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+attribute [local ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear maps is symmetric. -/
+lemma tmul_isSymm {B₁ : BilinMap A M₁ N₁} {B₂ : BilinMap R M₂ N₂}
+    (hB₁ : ∀ x y, B₁ x y = B₁ y x) (hB₂ : ∀ x y, B₂ x y = B₂ y x)
+    (x y : M₁ ⊗[R] M₂) :
+    B₁.tmul B₂ x y = B₁.tmul B₂ y x := by
+  revert x y
+  rw [isSymm_iff_eq_flip]
+  aesop
+
 variable (A) in
 /-- The base change of a bilinear map (also known as "extension of scalars"). -/
 protected def baseChange (B : BilinMap R M₂ N₂) : BilinMap A (A ⊗[R] M₂) (A ⊗[R] N₂) :=
@@ -78,8 +90,12 @@ protected def baseChange (B : BilinMap R M₂ N₂) : BilinMap A (A ⊗[R] M₂)
 @[simp]
 theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂')  :=
+    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂') :=
   rfl
+
+lemma baseChange_isSymm {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) (x y : A ⊗[R] M₂) :
+    B₂.baseChange A x y = B₂.baseChange A y x :=
+  tmul_isSymm mul_comm hB₂ x y
 
 end BilinMap
 
@@ -94,7 +110,6 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
   (AlgebraTensorModule.rid R A A).congrRight₂.toLinearMap ∘ₗ (BilinMap.tensorDistrib R A)
 
 variable (R A) in
-
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
 -- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in https://github.com/leanprover-community/mathlib4/pull/6306.
 @[simp]
@@ -105,7 +120,7 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
   rfl
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
-protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap  R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
+protected abbrev tmul (B₁ : BilinForm A M₁) (B₂ : BilinMap R M₂ R) : BilinMap A (M₁ ⊗[R] M₂) A :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
 attribute [local ext] TensorProduct.ext in
@@ -114,7 +129,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+  exact congr_arg₂ (HSMul.hSMul) (hB₂.eq x₂ y₂) (hB₁.eq x₁ y₁)
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -130,7 +145,7 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
 lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
-  IsSymm.tmul mul_comm hB₂
+  IsSymm.tmul ⟨mul_comm⟩ hB₂
 
 end BilinForm
 
@@ -152,10 +167,11 @@ noncomputable def tensorDistribEquiv :
     BilinForm R M₁ ⊗[R] BilinForm R M₂ ≃ₗ[R] BilinForm R (M₁ ⊗[R] M₂) :=
   -- the same `LinearEquiv`s as from `tensorDistrib`,
   -- but with the inner linear map also as an equiv
-  TensorProduct.congr (TensorProduct.lift.equiv R _ _ _) (TensorProduct.lift.equiv R _ _ _) ≪≫ₗ
+  TensorProduct.congr
+    (TensorProduct.lift.equiv (.id R) _ _ _) (TensorProduct.lift.equiv (.id R) _ _ _) ≪≫ₗ
   TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
   (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
-  (TensorProduct.lift.equiv R _ _ _).symm
+  (TensorProduct.lift.equiv (.id R) _ _ _).symm
 
 @[simp]
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)

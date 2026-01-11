@@ -3,8 +3,11 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Bounded operations
@@ -22,54 +25,9 @@ we can equip bounded continuous functions with the corresponding operations.
 
 -/
 
+@[expose] public section
+
 open scoped NNReal
-
-section bounded_add
-/-!
-### Bounded addition
--/
-
-open Pointwise
-
-/-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
-set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
-additive groups. -/
-class BoundedAdd (R : Type*) [Bornology R] [Add R] : Prop where
-  isBounded_add : ∀ {s t : Set R},
-    Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s + t)
-
-variable {R : Type*}
-
-lemma isBounded_add [Bornology R] [Add R] [BoundedAdd R] {s t : Set R}
-    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
-    Bornology.IsBounded (s + t) := BoundedAdd.isBounded_add hs ht
-
-lemma add_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Add R] [BoundedAdd R]
-    {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
-    (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
-    ∃ C, ∀ x y, dist ((f + g) x) ((f + g) y) ≤ C := by
-  obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <|
-    isBounded_add (Metric.isBounded_range_iff.mpr f_bdd) (Metric.isBounded_range_iff.mpr g_bdd)
-  use C
-  intro x y
-  exact hC (Set.add_mem_add (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
-           (Set.add_mem_add (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
-
-instance [PseudoMetricSpace R] [AddMonoid R] [LipschitzAdd R] : BoundedAdd R where
-  isBounded_add {s t} s_bdd t_bdd := by
-    have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
-    obtain ⟨C, add_lip⟩ := ‹LipschitzAdd R›.lipschitz_add
-    convert add_lip.isBounded_image bdd
-    ext p
-    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
-    constructor
-    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
-      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-      simpa [← eq_p] using Set.add_mem_add a_in_s b_in_t
-
-end bounded_add
-
 
 section bounded_sub
 /-!
@@ -108,46 +66,51 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
   isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     convert lip.isBounded_image bdd
-    ext p
-    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
-    constructor
-    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
-      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-      simpa [← eq_p] using Set.sub_mem_sub a_in_s b_in_t
+    simp
 
 end bounded_sub
 
-
 section bounded_mul
 /-!
-### Bounded multiplication
+### Bounded multiplication and addition
 -/
 
 open Pointwise Set
 
+/-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
+set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
+additive groups. -/
+class BoundedAdd (R : Type*) [Bornology R] [Add R] : Prop where
+  isBounded_add : ∀ {s t : Set R},
+    Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s + t)
+
 /-- A typeclass saying that `(p : R × R) ↦ p.1 * p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for non-unital seminormed rings, but it also holds, e.g.,
 for `ℝ≥0`. -/
+@[to_additive]
 class BoundedMul (R : Type*) [Bornology R] [Mul R] : Prop where
   isBounded_mul : ∀ {s t : Set R},
     Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s * t)
 
 variable {R : Type*}
 
+@[to_additive]
 lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     Bornology.IsBounded (s * t) := BoundedMul.isBounded_mul hs ht
 
+@[to_additive]
 lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
     (s_bdd : Bornology.IsBounded s) (n : ℕ) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
-  induction' n with n hn
-  · by_cases s_empty : s = ∅
+  induction n with
+  | zero =>
+    by_cases s_empty : s = ∅
     · simp [s_empty]
     simp_rw [← nonempty_iff_ne_empty] at s_empty
     simp [s_empty]
-  · have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
+  | succ n hn =>
+    have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by
       intro x hx
       simp only [mem_image] at hx
       obtain ⟨y, y_in_s, ypow_eq_x⟩ := hx
@@ -156,6 +119,7 @@ lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set
       use y
     exact (isBounded_mul hn s_bdd).subset obs
 
+@[to_additive]
 lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R] [BoundedMul R]
     {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
     (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
@@ -166,6 +130,20 @@ lemma mul_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Mul R
   intro x y
   exact hC (Set.mul_mem_mul (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
            (Set.mul_mem_mul (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
+
+@[to_additive]
+instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
+  isBounded_mul {s t} s_bdd t_bdd := by
+    have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
+    obtain ⟨C, mul_lip⟩ := ‹LipschitzMul R›.lipschitz_mul
+    convert mul_lip.isBounded_image bdd
+    ext p
+    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
+    constructor
+    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
+      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+      simpa [← eq_p] using Set.mul_mem_mul a_in_s b_in_t
 
 end bounded_mul
 
@@ -182,6 +160,46 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
   norm_num
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
+
+open Filter Pointwise Bornology
+
+/-
+TODO:
+* Generalize the following to bornologies and `BoundedFoo` classes.
+* Add `BoundedNeg`, `BoundedInv` and `BoundedDiv` in the process.
+-/
+
+@[simp]
+lemma tendsto_add_const_cobounded (x : R) :
+    Tendsto (· + x) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  ext y
+  simp [sub_eq_iff_eq_add]
+
+@[simp]
+lemma tendsto_const_add_cobounded (x : R) :
+    Tendsto (x + ·) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  ext y
+  simp
+
+@[simp]
+theorem tendsto_sub_const_cobounded (x : R) :
+    Tendsto (· - x) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using tendsto_add_const_cobounded (-x)
+
+@[simp]
+theorem tendsto_const_sub_cobounded (x : R) :
+    Tendsto (x - ·) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
 
 end SeminormedAddCommGroup
 
@@ -209,9 +227,9 @@ instance : BoundedMul R where
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
-     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖ := norm_sub_le _ _
+     _ ≤ Af * Ag + Af * Ag     := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
+     _ = 2 * Af * Ag           := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
 

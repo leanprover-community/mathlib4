@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Recall
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Data.Complex.Exponential
 
 set_option linter.style.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
@@ -15,8 +15,8 @@ https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/recall.20comm
 
 section
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type _} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type _} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 recall HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
   HasFDerivAtFilter f f' x (nhds x)
 end
@@ -27,7 +27,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  fun z ↦ (Complex.exp' z).lim
+  Complex.wrapped✝.1
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 
@@ -48,12 +48,13 @@ Other example tests
 recall id (x : α) : α := x
 
 /--
-error: type mismatch
+error: Type mismatch
   @id
 has type
-  {α : Sort u_1} → α → α → ℕ : Type u_1
-but is expected to have type
-  {α : Sort u} → α → α : Sort (imax (u + 1) u)
+  {α : Sort u_1} → α → α → ℕ
+of sort `Type u_1` but is expected to have type
+  {α : Sort u} → α → α
+of sort `Sort (imax (u + 1) u)`
 -/
 #guard_msgs in recall id (_x _y : α) : ℕ := 0
 
@@ -84,7 +85,7 @@ recall Nat.add_comm {n m : Nat} : n + m = m + n
 recall add_assoc {G : Type _} [AddSemigroup G] (a b c : G) : a + b + c = a + (b + c)
 recall add_assoc
 
-/-- error: unknown constant 'nonexistent' -/
+/-- error: Unknown constant `nonexistent` -/
 #guard_msgs in recall nonexistent
 
 axiom bar : Nat

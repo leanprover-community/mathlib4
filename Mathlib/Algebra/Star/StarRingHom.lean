@@ -3,8 +3,10 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Morphisms of star rings
@@ -22,12 +24,14 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
+This file is heavily inspired by `Mathlib/Algebra/Star/StarAlgHom.lean`.
 
 ## Tags
 
 non-unital, ring, morphism, star
 -/
+
+@[expose] public section
 
 open EquivLike
 
@@ -55,7 +59,7 @@ add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
-    [FunLike F A B] [NonUnitalRingHomClass F A B] extends StarHomClass F A B : Prop
+    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
@@ -88,7 +92,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -133,9 +137,7 @@ theorem copy_eq (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : f.copy f' h 
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A →ₙ+* B) (h) :
-    ((⟨f, h⟩ : A  →⋆ₙ+* B) : A → B) = f :=
-  rfl
+theorem coe_mk (f : A →ₙ+* B) (h) : ((⟨f, h⟩ : A →⋆ₙ+* B) : A → B) = f := rfl
 
 @[simp]
 theorem mk_coe (f : A →⋆ₙ+* B) (h₁ h₂ h₃ h₄) :
@@ -151,7 +153,7 @@ variable (A)
 protected def id : A →⋆ₙ+* A :=
   { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
   rfl
 
@@ -160,7 +162,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => by simp [Function.comp_def, map_star, map_star] }
+    map_star' := fun a => by simp [map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
@@ -248,8 +250,8 @@ add_decl_doc StarRingEquiv.toRingEquiv
 `B`.
 You should also extend this typeclass when you extend `StarRingEquiv`. -/
 class StarRingEquivClass (F : Type*) (A B : outParam Type*)
-    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B]
-    extends RingEquivClass F A B : Prop where
+    [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B] [EquivLike F A B] : Prop
+    extends RingEquivClass F A B where
   /-- By definition, a ⋆-ring equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
@@ -359,7 +361,7 @@ theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := rfl
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
+@[simp] theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 
 @[simp]
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
@@ -383,7 +385,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 
 /-- Transitivity of `StarRingEquiv`. -/
 @[trans]
-def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
@@ -398,7 +400,7 @@ theorem symm_apply_apply (e : A ≃⋆+* B) : ∀ x, e.symm (e x) = x :=
   e.toRingEquiv.symm_apply_apply
 
 @[simp]
-theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B≃⋆+* C) (x : C) :
+theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) (x : C) :
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
 

@@ -3,7 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Ergodic maps and measures
@@ -14,19 +17,21 @@ respect to `μ` (or `μ` is ergodic with respect to `f`) if the only measurable 
 
 In this file we define ergodic maps / measures together with quasi-ergodic maps / measures and
 provide some basic API. Quasi-ergodicity is a weaker condition than ergodicity for which the measure
-preserving condition is relaxed to quasi measure preserving.
+preserving condition is relaxed to quasi-measure-preserving.
 
-# Main definitions:
+## Main definitions
 
- * `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
-   to share code between the `Ergodic` and `QuasiErgodic` definitions.
- * `Ergodic`: the definition of ergodic maps / measures.
- * `QuasiErgodic`: the definition of quasi ergodic maps / measures.
- * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi ergodic.
- * `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi measure preserving, one may relax the
-   strict invariance condition to almost invariance in the ergodicity condition.
+* `PreErgodic`: the ergodicity condition without the measure-preserving condition. This exists
+  to share code between the `Ergodic` and `QuasiErgodic` definitions.
+* `Ergodic`: the definition of ergodic maps / measures.
+* `QuasiErgodic`: the definition of quasi-ergodic maps / measures.
+* `Ergodic.quasiErgodic`: an ergodic map / measure is quasi-ergodic.
+* `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi-measure-preserving, one may relax the
+  strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
+
+@[expose] public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure
@@ -38,19 +43,17 @@ variable {α : Type*} {m : MeasurableSpace α} {s : Set α}
 /-- A map `f : α → α` is said to be pre-ergodic with respect to a measure `μ` if any measurable
 strictly invariant set is either almost empty or full. -/
 structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop where
-  aeconst_set ⦃s⦄ : MeasurableSet s → f ⁻¹' s = s → EventuallyConst s (ae μ)
+  aeconst_set ⦃s : Set α⦄ : MeasurableSet s → f ⁻¹' s = s → EventuallyConst s (ae μ)
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
-structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  MeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  MeasurePreserving f μ μ, PreErgodic f μ
 
-/-- A map `f : α → α` is said to be quasi ergodic with respect to a measure `μ` if it is quasi
-measure preserving and pre-ergodic. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
-structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
+/-- A map `f : α → α` is said to be quasi-ergodic with respect to a measure `μ` if it is
+quasi-measure-preserving and pre-ergodic. -/
+structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  QuasiMeasurePreserving f μ μ, PreErgodic f μ
 
 variable {f : α → α} {μ : Measure α}
 
@@ -64,11 +67,11 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ sᶜ = 0 := by
   simpa using hf.ae_empty_or_univ hs hs'
 
-theorem ae_mem_or_ae_nmem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
+theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
 
-/-- On a probability space, the (pre)ergodicity condition is a zero one law. -/
+/-- On a probability space, the (pre)ergodicity condition is a zero-one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
   simpa [hs] using hf.measure_self_or_compl_eq_zero hs hs'
@@ -80,23 +83,34 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (hf : PreErgodic f μ) (c : R) : PreErgodic f (c • μ) where
   aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
 
+theorem zero_measure (f : α → α) : @PreErgodic α m f 0 where
+  aeconst_set _ _ _ := by simp
+
 end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
 variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {g : α → β}
 
-theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
+theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : Semiconj g f f') : PreErgodic f' μ' where
   aeconst_set s hs₀ hs₁ := by
     rw [← hg.aeconst_preimage hs₀.nullMeasurableSet]
     apply hf.aeconst_set (hg.measurable hs₀)
     rw [← preimage_comp, h_comm.comp_eq, preimage_comp, hs₁]
 
+@[deprecated (since := "2025-11-19")]
+alias preErgodic_of_preErgodic_conjugate := preErgodic_of_preErgodic_semiconj
+
+theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
+    {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
+  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf',
+   hg.preErgodic_of_preErgodic_semiconj hf.toPreErgodic h_comm⟩
+
 theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
     PreErgodic (e ∘ f ∘ e.symm) μ' ↔ PreErgodic f μ := by
-  refine ⟨fun hf => preErgodic_of_preErgodic_conjugate (h.symm e) hf ?_,
-      fun hf => preErgodic_of_preErgodic_conjugate h hf ?_⟩
+  refine ⟨fun hf => preErgodic_of_preErgodic_semiconj (h.symm e) hf ?_,
+      fun hf => preErgodic_of_preErgodic_semiconj h hf ?_⟩
   · simp [Semiconj]
   · simp [Semiconj]
 
@@ -117,18 +131,16 @@ theorem aeconst_set₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ) (
   let ⟨_t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hsm hs
   (hf.aeconst_set h₀ h₂).congr h₁
 
-/-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
+/-- For a quasi-ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
 theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
   eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ' := ae_empty_or_univ₀
-
-/-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
+/-- For a quasi-ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
+theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
@@ -137,11 +149,16 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
 
+theorem zero_measure {f : α → α} (hf : Measurable f) : @QuasiErgodic α m f 0 where
+  measurable := hf
+  absolutelyContinuous := by simp
+  toPreErgodic := .zero_measure f
+
 end QuasiErgodic
 
 namespace Ergodic
 
-/-- An ergodic map is quasi ergodic. -/
+/-- An ergodic map is quasi-ergodic. -/
 theorem quasiErgodic (hf : Ergodic f μ) : QuasiErgodic f μ :=
   { hf.toPreErgodic, hf.toMeasurePreserving.quasiMeasurePreserving with }
 
@@ -167,9 +184,22 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
       (hf.quasiMeasurePreserving.preimage_mono_ae hs')
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
 
+/-- If a measurable equivalence is ergodic, then so is the inverse map. -/
+theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ where
+  toMeasurePreserving := he.toMeasurePreserving.symm
+  aeconst_set s hsm hs := he.aeconst_set hsm <| by
+    conv_lhs => rw [← hs, ← e.image_eq_preimage_symm, e.preimage_image]
+
+@[simp] theorem symm_iff {e : α ≃ᵐ α} : Ergodic e.symm μ ↔ Ergodic e μ := ⟨.symm, .symm⟩
+
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
   ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+
+theorem zero_measure {f : α → α} (hf : Measurable f) : @Ergodic α m f 0 where
+  measurable := hf
+  map_eq := by simp
+  toPreErgodic := .zero_measure f
 
 section IsFiniteMeasure
 

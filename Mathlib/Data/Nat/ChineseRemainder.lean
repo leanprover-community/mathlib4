@@ -3,9 +3,11 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Chinese Remainder Theorem
@@ -22,15 +24,19 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 Chinese Remainder Theorem, Gödel, beta function
 -/
 
+@[expose] public section
+
+open scoped Function -- required for scoped `on` notation
 namespace Nat
 
 variable {ι : Type*}
 
 lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     a ≡ b [MOD l.prod] ↔ ∀ i, a ≡ b [MOD l.get i] := by
-  induction' l with m l ih
-  · simp [modEq_one]
-  · have : Coprime m l.prod := coprime_list_prod_right_iff.mpr (List.pairwise_cons.mp co).1
+  induction l with
+  | nil => simp [modEq_one]
+  | cons m l ih =>
+    have : Coprime m l.prod := coprime_list_prod_right_iff.mpr (List.pairwise_cons.mp co).1
     simp only [List.prod_cons, ← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co),
       List.length_cons]
     constructor
@@ -38,11 +44,12 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
       cases i using Fin.cases <;> simp_all
     · intro h; exact ⟨h 0, fun i => h i.succ⟩
 
-lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
+lemma modEq_list_map_prod_iff {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
     a ≡ b [MOD (l.map s).prod] ↔ ∀ i ∈ l, a ≡ b [MOD s i] := by
-  induction' l with i l ih
-  · simp [modEq_one]
-  · have : Coprime (s i) (l.map s).prod := by
+  induction l with
+  | nil => simp [modEq_one]
+  | cons i l ih =>
+    have : Coprime (s i) (l.map s).prod := by
       simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]
       intro j hj
@@ -51,6 +58,7 @@ lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise
 
 variable (a s : ι → ℕ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The natural number less than `(l.map s).prod` congruent to
 `a i` mod `s i` for all  `i ∈ l`. -/
 def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
@@ -67,7 +75,7 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
     use k
     simp only [List.mem_cons, forall_eq_or_imp, k.prop.1, true_and]
     intro j hj
-    exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
+    exact ((modEq_list_map_prod_iff co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
 
 @[simp] theorem chineseRemainderOfList_nil :
     (chineseRemainderOfList a s [] List.Pairwise.nil : ℕ) = 0 := rfl
@@ -85,7 +93,7 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     refine chineseRemainder_lt_mul this (a i) (chineseRemainderOfList a s l co.of_cons)
-      (hs i (List.mem_cons_self _ l)) ?_
+      (hs i List.mem_cons_self) ?_
     simp only [ne_eq, List.prod_eq_zero_iff, List.mem_map, not_exists, not_and]
     intro j hj
     exact hs j (List.mem_cons_of_mem _ hj)
@@ -93,16 +101,17 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
 theorem chineseRemainderOfList_modEq_unique (l : List ι)
     (co : l.Pairwise (Coprime on s)) {z} (hz : ∀ i ∈ l, z ≡ a i [MOD s i]) :
     z ≡ chineseRemainderOfList a s l co [MOD (l.map s).prod] := by
-  induction' l with i l ih
-  · simp [modEq_one]
-  · simp only [List.map_cons, List.prod_cons, chineseRemainderOfList]
+  induction l with
+  | nil => simp [modEq_one]
+  | cons i l ih =>
+    simp only [List.map_cons, List.prod_cons, chineseRemainderOfList]
     have : Coprime (s i) (l.map s).prod := by
       simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     exact chineseRemainder_modEq_unique this
-      (hz i (List.mem_cons_self _ _)) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
+      (hz i List.mem_cons_self) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
 
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
@@ -129,7 +138,7 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
       funext fun nod' : l'.Nodup =>
       have nod : l.Nodup := pp.symm.nodup_iff.mp nod'
       funext fun hs' : ∀ i ∈ l', s i ≠ 0 =>
-      have hs : ∀ i ∈ l, s i ≠ 0  := by simpa [List.Perm.mem_iff pp] using hs'
+      have hs : ∀ i ∈ l, s i ≠ 0 := by simpa [List.Perm.mem_iff pp] using hs'
       funext fun co' : Set.Pairwise {x | x ∈ l'} (Coprime on s) =>
       have co : Set.Pairwise {x | x ∈ l} (Coprime on s) := by simpa [List.Perm.mem_iff pp] using co'
       have lco : l.Pairwise (Coprime on s) := List.Nodup.pairwise_of_forall_ne nod co
@@ -145,7 +154,7 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
 theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
-  induction' m using Quot.ind with l
+  induction m using Quot.ind with | _ l
   unfold chineseRemainderOfMultiset
   simpa using chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)

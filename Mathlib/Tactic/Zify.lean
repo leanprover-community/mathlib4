@@ -3,10 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Attr.Register
+public meta import Aesop
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # `zify` tactic
@@ -23,6 +28,8 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   -/
 ```
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Zify
 
@@ -101,9 +108,6 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 @[zify_simps] lemma natCast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_dvd := natCast_dvd
 
 
 -- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like

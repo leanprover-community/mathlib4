@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.WLOG
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinal Divisibility
@@ -28,6 +30,8 @@ Note furthermore that no infinite cardinal is irreducible
 
 -/
 
+@[expose] public section
+
 
 namespace Cardinal
 
@@ -35,7 +39,7 @@ universe u
 
 variable {a b : Cardinal.{u}} {n m : ℕ}
 
-@[simp]
+/-- Alias of `isUnit_iff_eq_one` for discoverability. -/
 theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   refine
     ⟨fun h => ?_, by
@@ -44,7 +48,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact (not_isUnit_zero h).elim
   rw [isUnit_iff_forall_dvd] at h
-  cases' h 1 with t ht
+  obtain ⟨t, ht⟩ := h 1
   rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
   · exact ht.1
   · exact one_le_iff_ne_zero.mpr ha
@@ -60,7 +64,7 @@ instance : Unique Cardinal.{u}ˣ where
 theorem le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
   | a, x, b0, ⟨b, hab⟩ => by
     simpa only [hab, mul_one] using
-      mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
+      mul_le_mul_right (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
 
 theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩
@@ -85,7 +89,7 @@ theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
   refine Or.inr fun h => ?_
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
-    h a ℵ₀
+    @h a ℵ₀
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
@@ -105,7 +109,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
-  cases' lt_or_le (b * c) ℵ₀ with h' h'
+  rcases lt_or_ge (b * c) ℵ₀ with h' | h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp
@@ -124,7 +128,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
-  rcases le_or_lt ℵ₀ a with h | h
+  rcases le_or_gt ℵ₀ a with h | h
   · simp [h]
   lift a to ℕ using id h
   simp [not_le.mpr h]
@@ -132,7 +136,7 @@ theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, 
 theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n : ℕ, a = n ∧ IsPrimePow n := by
   by_cases h : ℵ₀ ≤ a
   · simp [h, (prime_of_aleph0_le h).isPrimePow]
-  simp only [h, Nat.cast_inj, exists_eq_left', false_or, isPrimePow_nat_iff]
+  simp only [h, false_or, isPrimePow_nat_iff]
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
   refine

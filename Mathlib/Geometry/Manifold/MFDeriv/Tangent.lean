@@ -3,9 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -15,16 +18,18 @@ bundle. Notably, it includes formulas for the tangent maps to charts, and unique
 statements for subsets of the tangent bundle.
 -/
 
+@[expose] public section
+
 open Bundle Set
 open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  [IsManifold I' 1 M']
 
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -47,7 +52,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
-  simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
+  simp only [TangentBundle.chartAt, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
   -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
   congr
@@ -62,7 +67,7 @@ lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y
 the basis also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
-  hs.smooth_bundle_preimage _
+  hs.bundle_preimage _
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
@@ -79,11 +84,20 @@ lemma inTangentCoordinates_eq_mfderiv_comp
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
       mdifferentiableAt_extChartAt hy
-    simp at this
-    simp [mfderiv, this]
+    simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
-    · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
+    · simp [Function.comp_def, OpenPartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
+
+open Bundle
+variable (I) in
+/-- The canonical identification between the tangent bundle to the model space and the product,
+as a diffeomorphism. -/
+def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
+    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
+  __ := TotalSpace.toProd H E
+  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph
+  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm

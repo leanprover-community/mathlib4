@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebra towers for polynomial
@@ -16,6 +18,8 @@ This structure itself is provided elsewhere as `Polynomial.isScalarTower`
 When you update this file, you can also try to make a corresponding update in
 `RingTheory.MvPolynomial.Tower`.
 -/
+
+public section
 
 
 open Polynomial
@@ -34,11 +38,6 @@ variable {R B}
 @[simp]
 theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
-
-@[simp]
-lemma eval_map_algebraMap (P : R[X]) (a : A) :
-    (map (algebraMap R A) P).eval a = aeval a P := by
-  rw [← aeval_map_algebraMap (A := A), coe_aeval_eq_eval]
 
 end Semiring
 
@@ -83,3 +82,15 @@ theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = ae
 end CommSemiring
 
 end Subalgebra
+
+namespace Polynomial
+
+variable {R A} [CommSemiring R] [CommRing A] [Algebra R A]
+
+theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C (s : Multiset A) {x : A} (hx : x ∈ s)
+    {p : R[X]} (hp : p.mapAlg R A = (s.map (X - C ·)).prod) : aeval x p = 0 := by
+  rw [← aeval_map_algebraMap A, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
+  rw [Multiset.map_map, Multiset.mem_map]
+  exact ⟨x, hx, by simp⟩
+
+end Polynomial

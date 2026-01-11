@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -16,11 +18,11 @@ We also prove that the projection and transition maps in this limit are surjecti
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open CategoryTheory Limits CompHausLike
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace LightProfinite
 
@@ -79,7 +81,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [toCompHausLike_obj, Functor.comp_obj, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _
@@ -93,7 +95,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
@@ -113,7 +115,7 @@ lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
   S.asLimitCone.w (homOfLE h).op
 
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
-    S.transitionMapLE h ∘ S.proj m  = S.proj n := by
+    S.transitionMapLE h ∘ S.proj m = S.proj n := by
   rw [← S.proj_comp_transitionMapLE h]
   rfl
 

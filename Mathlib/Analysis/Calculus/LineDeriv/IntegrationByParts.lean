@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integration by parts for line derivatives
@@ -43,6 +45,8 @@ towards applications to Fourier transforms.
 TODO: prove similar theorems assuming that the functions tend to zero at infinity and have
 integrable derivatives.
 -/
+
+public section
 
 open MeasureTheory Measure Module Topology
 
@@ -108,7 +112,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
   · simp [integral, hW]
-  rcases eq_or_ne v 0 with rfl|hv
+  rcases eq_or_ne v 0 with rfl | hv
   · have Hf' x : f' x = 0 := by
       simpa [(hasLineDerivAt_zero (f := f) (x := x)).lineDeriv] using (hf x).lineDeriv.symm
     have Hg' x : g' x = 0 := by
@@ -129,14 +133,14 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
   suffices H : ∫ (x : E' × ℝ), (B (f (L.symm x))) (g' (L.symm x)) ∂ν =
       -∫ (x : E' × ℝ), (B (f' (L.symm x))) (g (L.symm x)) ∂ν by
     have : μ = Measure.map L.symm ν := by
-      simp [Measure.map_map L.symm.continuous.measurable L.continuous.measurable]
+      simp [ν, Measure.map_map L.symm.continuous.measurable L.continuous.measurable]
     have hL : IsClosedEmbedding L.symm := L.symm.toHomeomorph.isClosedEmbedding
     simpa [this, hL.integral_map] using H
   have L_emb : MeasurableEmbedding L := L.toHomeomorph.measurableEmbedding
   apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hf'g
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hfg'
-  · simpa [L_emb.integrable_map_iff, Function.comp_def] using hfg
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hf'g
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg'
+  · simpa [ν, L_emb.integrable_map_iff, Function.comp_def] using hfg
   · intro x
     have : f = (f ∘ L.symm) ∘ (L : E →ₗ[ℝ] (E' × ℝ)) := by ext y; simp
     specialize hf (L.symm x)

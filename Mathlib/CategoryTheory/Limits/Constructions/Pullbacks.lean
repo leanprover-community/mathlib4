@@ -3,16 +3,20 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Constructing pullbacks from binary products and equalizers
 
-If a category as binary products and equalizers, then it has pullbacks.
-Also, if a category has binary coproducts and coequalizers, then it has pushouts
+If a category has binary products and equalizers, then it has pullbacks.
+Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
+
+public section
 
 
 universe v u
@@ -22,7 +26,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 /-- If the product `X ⨯ Y` and the equalizer of `π₁ ≫ f` and `π₂ ≫ g` exist, then the
-    pullback of `f` and `g` exists: It is given by composing the equalizer with the projections. -/
+pullback of `f` and `g` exists: It is given by composing the equalizer with the projections. -/
 theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [𝒞 : Category.{v} C]
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (pair X Y)]
     [HasLimit (parallelPair (prod.fst ≫ f) (prod.snd ≫ g))] : HasLimit (cospan f g) :=
@@ -31,7 +35,9 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
   let e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasLimit.mk
     { cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
+        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by
+          rw [Category.assoc, equalizer.condition]
+          simp [e]
       isLimit :=
         PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
@@ -47,16 +53,16 @@ section
 attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
 
 /-- If a category has all binary products and all equalizers, then it also has all pullbacks.
-    As usual, this is not an instance, since there may be a more direct way to construct
-    pullbacks. -/
+As usual, this is not an instance, since there may be a more direct way to construct
+pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
 
 end
 
 /-- If the coproduct `Y ⨿ Z` and the coequalizer of `f ≫ ι₁` and `g ≫ ι₂` exist, then the
-    pushout of `f` and `g` exists: It is given by composing the inclusions with the coequalizer. -/
+pushout of `f` and `g` exists: It is given by composing the inclusions with the coequalizer. -/
 theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type u}
     [𝒞 : Category.{v} C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasColimit (pair Y Z)]
     [HasColimit (parallelPair (f ≫ coprod.inl) (g ≫ coprod.inr))] : HasColimit (span f g) :=
@@ -83,8 +89,7 @@ section
 attribute [local instance] hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
 
 /-- If a category has all binary coproducts and all coequalizers, then it also has all pushouts.
-    As usual, this is not an instance, since there may be a more direct way to construct
-    pushouts. -/
+As usual, this is not an instance, since there may be a more direct way to construct pushouts. -/
 theorem hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers (C : Type u) [Category.{v} C]
     [HasBinaryCoproducts C] [HasCoequalizers C] : HasPushouts C :=
   hasPushouts_of_hasColimit_span C

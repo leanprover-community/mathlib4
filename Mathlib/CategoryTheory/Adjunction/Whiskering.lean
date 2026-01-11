@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -14,12 +16,14 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory
+open CategoryTheory Functor
 
-variable (C : Type*) {D E : Type*} [Category C] [Category D] [Category E] {F : D ⥤ E} {G : E ⥤ D}
+variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F : D ⥤ E} {G : E ⥤ D}
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/
@@ -28,12 +32,12 @@ protected def whiskerRight (adj : F ⊣ G) :
     (whiskeringRight C D E).obj F ⊣ (whiskeringRight C E D).obj G where
   unit :=
     { app := fun X =>
-        (Functor.rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (Functor.associator _ _ _).inv
-      naturality := by intros; ext; dsimp; simp }
+        (rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (associator _ _ _).inv
+      naturality := by intros; ext; simp }
   counit :=
     { app := fun X =>
-        (Functor.associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (Functor.rightUnitor _).hom
-      naturality := by intros; ext; dsimp; simp }
+        (associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (rightUnitor _).hom
+      naturality := by intros; ext; simp }
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
@@ -42,10 +46,10 @@ protected def whiskerLeft (adj : F ⊣ G) :
     (whiskeringLeft E D C).obj G ⊣ (whiskeringLeft D E C).obj F where
   unit :=
     { app := fun X =>
-        (Functor.leftUnitor _).inv ≫ whiskerRight adj.unit X ≫ (Functor.associator _ _ _).hom }
+        (leftUnitor _).inv ≫ whiskerRight adj.unit X ≫ (associator _ _ _).hom }
   counit :=
     { app := fun X =>
-        (Functor.associator _ _ _).inv ≫ whiskerRight adj.counit X ≫ (Functor.leftUnitor _).hom }
+        (associator _ _ _).inv ≫ whiskerRight adj.counit X ≫ (leftUnitor _).hom }
   left_triangle_components X := by ext; simp [← X.map_comp]
   right_triangle_components X := by ext; simp [← X.map_comp]
 

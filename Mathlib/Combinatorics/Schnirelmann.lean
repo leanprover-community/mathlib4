@@ -3,11 +3,14 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Schnirelmann density
@@ -20,7 +23,7 @@ we must exclude `0` from the infimum, and from the intersection.
 
 * Simple bounds on the Schnirelmann density, that it is between 0 and 1 are given in
   `schnirelmannDensity_nonneg` and `schnirelmannDensity_le_one`.
-* `schnirelmannDensity_le_of_not_mem`: If `k ∉ A`, the density can be easily upper-bounded by
+* `schnirelmannDensity_le_of_notMem`: If `k ∉ A`, the density can be easily upper-bounded by
   `1 - k⁻¹`
 
 ## Implementation notes
@@ -41,6 +44,8 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 * [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -88,7 +93,7 @@ lemma schnirelmannDensity_le_one : schnirelmannDensity A ≤ 1 :=
 /--
 If `k` is omitted from the set, its Schnirelmann density is upper bounded by `1 - k⁻¹`.
 -/
-lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
+lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
     schnirelmannDensity A ≤ 1 - (k⁻¹ : ℝ) := by
   rcases k.eq_zero_or_pos with rfl | hk'
   · simpa using schnirelmannDensity_le_one
@@ -101,23 +106,22 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   exact filter_subset _ _
 
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
-lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
-  ((schnirelmannDensity_le_of_not_mem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
+lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
+  ((schnirelmannDensity_le_of_notMem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
 
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact h
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
   rw [le_antisymm_iff, and_iff_right schnirelmannDensity_le_one]
   constructor
   · rw [← not_imp_not, not_le]
-    simp only [Set.not_subset, forall_exists_index, true_and, and_imp, Set.mem_singleton_iff]
+    simp only [Set.not_subset, forall_exists_index, and_imp]
     intro x hx hx'
-    apply (schnirelmannDensity_le_of_not_mem hx').trans_lt
+    apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
   · intro h
     refine le_ciInf fun ⟨n, hn⟩ => ?_
@@ -153,7 +157,7 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
     (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
-  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; simp_all
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
@@ -167,7 +171,7 @@ lemma schnirelmannDensity_diff_singleton_zero [DecidablePred (· ∈ A \ {0})] :
 
 lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A = B) :
     schnirelmannDensity A = schnirelmannDensity B :=
-  schnirelmannDensity_congr' (by aesop)
+  schnirelmannDensity_congr' (by simp_all)
 
 /--
 If the Schnirelmann density is `0`, there is a positive natural for which
@@ -183,7 +187,7 @@ lemma exists_of_schnirelmannDensity_eq_zero {ε : ℝ} (hε : 0 < ε) (hA : schn
 end
 
 @[simp] lemma schnirelmannDensity_empty : schnirelmannDensity ∅ = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem (by simp)
+  schnirelmannDensity_eq_zero_of_one_notMem (by simp)
 
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
@@ -192,7 +196,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   intro ε hε
   wlog hε₁ : ε ≤ 1 generalizing ε
   · obtain ⟨n, hn, hn'⟩ := this 1 zero_lt_one le_rfl
-    exact ⟨n, hn, hn'.trans_le (le_of_not_le hε₁)⟩
+    exact ⟨n, hn, hn'.trans_le (le_of_not_ge hε₁)⟩
   let n : ℕ := ⌊#A / ε⌋₊ + 1
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
@@ -207,10 +211,10 @@ lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : 
   (schnirelmannDensity_eq_one_iff_of_zero_mem (by simp)).2 (by simp)
 
 lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp
+  schnirelmannDensity_eq_zero_of_one_notMem <| by simp
 
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp [Nat.not_prime_one]
+  schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
 
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.
@@ -248,7 +252,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
-    rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
+    rwa [← Nat.succ_le_iff, Nat.succ_pred hn.ne'] at this
   intro a b
   simp [hm'.ne']
 

@@ -3,12 +3,14 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Dilation
+module
+
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Dilation equivalence
 
-In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and Y` such
+In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and `Y` such
 that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.
@@ -18,6 +20,8 @@ We also develop basic API about these equivalences.
 - Add missing lemmas (compare to other `*Equiv` structures).
 - [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
+
+@[expose] public section
 
 open scoped NNReal ENNReal
 open Function Set Filter Bornology
@@ -42,7 +46,7 @@ end Class
 structure DilationEquiv (X Y : Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
-infixl:25 " ≃ᵈ " => DilationEquiv
+@[inherit_doc] infixl:25 " ≃ᵈ " => DilationEquiv
 
 namespace DilationEquiv
 
@@ -91,7 +95,7 @@ initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_app
 lemma ratio_toDilation (e : X ≃ᵈ Y) : ratio e.toDilation = ratio e := rfl
 
 /-- Identity map as a `DilationEquiv`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
@@ -100,7 +104,7 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 /-- Composition of `DilationEquiv`s. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
   toEquiv := e₁.1.trans e₂.1
   __ := e₂.toDilation.comp e₁.toDilation
@@ -121,11 +125,10 @@ protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
   -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
-  by_cases hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
+  by_cases! hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
   · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
       refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
-  push_neg at hX
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
 
 @[simp]
@@ -191,7 +194,16 @@ lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : X ≃ᵢ Y) (x : X) :
 
 @[simp]
 lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : X ≃ᵢ Y) :
-    e.toDilationEquiv.symm = e.symm.toDilationEquiv :=
+    e.symm.toDilationEquiv = e.toDilationEquiv.symm :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.coe_toDilationEquiv (e : X ≃ᵢ Y) : ⇑e.toDilationEquiv = e :=
+  rfl
+
+@[simp]
+lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : X ≃ᵢ Y) :
+    ⇑e.toDilationEquiv.symm = e.symm :=
   rfl
 
 @[simp]
@@ -210,11 +222,15 @@ def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
   __ := e.toEquiv
 
 @[simp]
+lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
 lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
   rfl
 
 @[simp]
-lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+lemma coe_symm_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 end PseudoEMetricSpace

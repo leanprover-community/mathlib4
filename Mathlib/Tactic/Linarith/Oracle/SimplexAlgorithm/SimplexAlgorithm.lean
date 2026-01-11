@@ -3,7 +3,10 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Simplex Algorithm
@@ -12,7 +15,9 @@ To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we r
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
 
-namespace Linarith.SimplexAlgorithm
+public meta section
+
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- An exception in the `SimplexAlgorithmM` monad. -/
 inductive SimplexAlgorithmException
@@ -48,8 +53,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     let newBasic := s.basic.set! exitIdx s.free[enterIdx]!
     let newFree := s.free.set! enterIdx s.basic[exitIdx]!
 
-    have hb : newBasic.size = s.basic.size := by apply Array.size_setD
-    have hf : newFree.size = s.free.size := by apply Array.size_setD
+    have hb : newBasic.size = s.basic.size := by apply Array.size_setIfInBounds
+    have hf : newFree.size = s.free.size := by apply Array.size_setIfInBounds
 
     return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableau matType)
 
@@ -60,14 +65,14 @@ nonnegative.
 def checkSuccess : SimplexAlgorithmM matType Bool := do
   let lastIdx := (← get).free.size - 1
   return (← get).mat[(0, lastIdx)]! > 0 &&
-    (← Nat.allM (← get).basic.size (fun i => do return (← get).mat[(i, lastIdx)]! >= 0))
+    (← (← get).basic.size.allM (fun i _ => do return (← get).mat[(i, lastIdx)]! ≥ 0))
 
 /--
 Chooses an entering variable: among the variables with a positive coefficient in the objective
 function, the one with the smallest index (in the initial indexing).
 -/
 def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
-  let mut enterIdxOpt : Option Nat := .none -- index of entering variable in the `free` array
+  let mut enterIdxOpt : Option Nat := none -- index of entering variable in the `free` array
   let mut minIdx := 0
   for i in [:(← get).free.size - 1] do
     if (← get).mat[(0, i)]! > 0 &&
@@ -77,15 +82,15 @@ def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
 
   /- If there is no such variable the solution does not exist for sure. -/
   match enterIdxOpt with
-  | .none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
-  | .some enterIdx => return enterIdx
+  | none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
+  | some enterIdx => return enterIdx
 
 /--
 Chooses an exiting variable: the variable imposing the strictest limit on the increase of the
 entering variable, breaking ties by choosing the variable with smallest index.
 -/
 def chooseExitingVar (enterIdx : Nat) : SimplexAlgorithmM matType Nat := do
-  let mut exitIdxOpt : Option Nat := .none -- index of entering variable in the `basic` array
+  let mut exitIdxOpt : Option Nat := none -- index of entering variable in the `basic` array
   let mut minCoef := 0
   let mut minIdx := 0
   for i in [1:(← get).basic.size] do
@@ -120,4 +125,4 @@ def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm

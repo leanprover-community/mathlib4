@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Homological complexes supported in a single degree
@@ -18,6 +20,8 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 an augmented exact complex of projectives.)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -44,9 +48,10 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     split_ifs with h
     · subst h
       simp
-    · #adaptation_note /-- after nightly-2024-03-07, the previous sensible proof
-      `rw [if_neg h]; simp` fails with "motive not type correct".
-      The following is horrible. -/
+    · #adaptation_note /-- nightly-2024-03-07
+      previously was `rw [if_neg h]; simp`, but that fails with "motive not type correct"
+      This is because dsimp does not simplify numerals;
+      this note should be removable once https://github.com/leanprover/lean4/pull/8433 lands. -/
       convert (id_zero (C := V)).symm
       all_goals simp [if_neg h]
   map_comp f g := by
@@ -219,8 +224,8 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by aesop_cat
-  right_inv f := by aesop_cat
+  left_inv φ := by cat_disch
+  right_inv f := by simp
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero {C : ChainComplex V ℕ} {X : V}
@@ -236,8 +241,8 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
@@ -285,8 +290,8 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv φ := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero {C : CochainComplex V ℕ} {X : V}
@@ -302,8 +307,8 @@ noncomputable def toSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     (C ⟶ (single₀ V).obj X) ≃ (C.X 0 ⟶ X) where
   toFun f := f.f 0
   invFun f := HomologicalComplex.mkHomToSingle f (fun i hi => by simp at hi)
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_zero

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Effective epimorphisms in `CompHausLike`
@@ -17,11 +19,11 @@ preregular.
 If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoherent.
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits Topology
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CompHausLike
 
@@ -33,18 +35,28 @@ If `π` is a surjective morphism in `CompHausLike P`, then it is an effective ep
 noncomputable
 def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
-  desc e h := (IsQuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((IsQuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a)
+  desc e h :=
+    ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).lift e.hom.hom
+      fun a b hab ↦
+        CategoryTheory.congr_fun (h
+          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+        (by ext; exact hab)) a)
+  fac e h :=
+    InducedCategory.hom_ext (TopCat.hom_ext
+      ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).lift_comp _ _))
   uniq e h g hm := by
-    suffices g = (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (IsQuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
+    suffices g = ofHom _
+        ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv ⟨e.hom.hom,
+      fun a b hab ↦ CategoryTheory.congr_fun
+        (h
+          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+          (by ext; exact hab))
+        a⟩) by assumption
+    apply ConcreteCategory.ext
+    rw [hom_ofHom, ← Equiv.symm_apply_eq
+      (IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv]
     ext
     simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl

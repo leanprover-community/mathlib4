@@ -3,15 +3,19 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
-import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Range
-import Batteries.Data.List.Perm
+module
+
+public import Mathlib.Data.List.OfFn
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`
 
 This file develops some results on `finRange n`.
 -/
+
+public section
 
 assert_not_exists Monoid
 
@@ -21,31 +25,37 @@ namespace List
 
 variable {α : Type u}
 
+
 @[simp]
-theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  simp_rw [finRange, map_pmap, pmap_eq_map]
-  exact List.map_id _
+lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
+  simp [List.Nodup.count (nodup_finRange n)]
 
-theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
-  apply map_injective_iff.mpr Fin.val_injective
-  rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
-    map_map]
-  simp only [Function.comp_def, Fin.val_succ]
+@[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
+  simpa using (nodup_finRange k).idxOf_getElem i
 
-theorem finRange_succ (n : ℕ) :
-    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
-  apply map_injective_iff.mpr Fin.val_injective
-  simp [range_succ, Function.comp_def]
+@[deprecated finRange_eq_nil_iff (since := "2025-11-04")]
+alias finRange_eq_nil := finRange_eq_nil_iff
 
--- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
+@[deprecated (since := "2025-11-04")]
+alias finRange_map_get := map_get_finRange
+
+@[deprecated (since := "2025-11-04")]
+alias finRange_map_getElem := map_getElem_finRange
+
+@[deprecated (since := "2025-11-04")]
+alias map_coe_finRange := map_coe_finRange_eq_range
+
+@[deprecated finRange_succ (since := "2025-10-10")]
+theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ :=
+  finRange_succ
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
-  rw [pmap_eq_map_attach]
-  exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn f i hi1]
+  ext
+  grind
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
-  ofFn_eq_pmap
+  (rfl)
 
 theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]
@@ -53,7 +63,7 @@ theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
 theorem nodup_ofFn_ofInjective {n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
-  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
+  exact nodup_range.pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 
 theorem nodup_ofFn {n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
   refine ⟨?_, nodup_ofFn_ofInjective⟩

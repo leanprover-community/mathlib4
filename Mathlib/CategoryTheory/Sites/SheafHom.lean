@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-! Internal hom of sheaves
 
@@ -25,6 +26,8 @@ natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 namespace CategoryTheory
@@ -42,7 +45,7 @@ to the type of morphisms between the "restrictions" of `F` and `G` to the catego
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := whiskerLeft (Over.map f.unop).op
+  map f := Functor.whiskerLeft (Over.map f.unop).op
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -84,7 +87,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
         rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
-  invFun f := ⟨fun _ => whiskerLeft _ f, fun _ => rfl⟩
+  invFun f := ⟨fun _ => Functor.whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
     dsimp
     ext ⟨X⟩ ⟨Y : Over X⟩
@@ -92,7 +95,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv _ := rfl
 
 variable {F G}
 
@@ -110,7 +112,7 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
     dsimp at H
-    simp only [Functor.map_id, FunctorToTypes.map_id_apply] at H
+    simp only [FunctorToTypes.map_id_apply] at H
     rw [H, presheafHom_map_app_op_mk_id]
     rfl
 
@@ -133,7 +135,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
       π :=
         { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
           naturality := by
-            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
+            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨⟨f : Z₂ ⟶ Z₁⟩⟩
             dsimp
             rw [id_comp, assoc]
             have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
@@ -162,10 +164,10 @@ variable (F G S)
 
 include hG in
 open PresheafHom.IsSheafFor in
-lemma presheafHom_isSheafFor  :
+lemma presheafHom_isSheafFor :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by

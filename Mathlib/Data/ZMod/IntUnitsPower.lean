@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # The power operator on `ℤˣ` by `ZMod 2`, `ℕ`, and `ℤ`
@@ -22,6 +24,10 @@ In future, we could consider a `LawfulPower M R` typeclass; but we can save ours
 by using `Module R (Additive M)` in its place, especially since this already has instances for
 `R = ℕ` and `R = ℤ`.
 -/
+
+@[expose] public section
+
+assert_not_exists Ideal TwoSidedIdeal
 
 instance : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| au.toMul ^ z.val
@@ -51,7 +57,7 @@ variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
-In lemma names, this operations is called `uzpow` to match `zpow`.
+In lemma names, this operation is called `uzpow` to match `zpow`.
 
 Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
@@ -60,20 +66,18 @@ instance Int.instUnitsPow : Pow ℤˣ R where
 -- The above instances form no typeclass diamonds with the standard power operators
 -- but we will need `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
-example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
+example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
 
-@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) :
-  (r • u).toMul = u.toMul ^ r := rfl
+@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) : (r • u).toMul = u.toMul ^ r := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
--- See note [no_index around OfNat.ofNat]
 lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
-    s ^ (no_index (OfNat.ofNat n : R)) = s ^ (no_index (OfNat.ofNat n : ℕ)) :=
+    s ^ (ofNat(n) : R) = s ^ (ofNat(n) : ℕ) :=
   uzpow_natCast _ _
 
 @[simp] lemma one_uzpow (x : R) : (1 : ℤˣ) ^ x = 1 :=

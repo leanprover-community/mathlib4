@@ -3,12 +3,19 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Data.Set.Card
 
 /-!
 # Cardinalities of pointwise operations on sets
 -/
+
+public section
+
+assert_not_exists Field
 
 open scoped Cardinal Pointwise
 
@@ -32,22 +39,24 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
   refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
   aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := natCard_mul_le
-
 end Mul
 
 section InvolutiveInv
-variable [InvolutiveInv G] {s t : Set G}
+variable [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
-  rw [← image_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
+  rw [← image_inv_eq_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
 
 @[to_additive (attr := simp)]
-lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
-  rw [← image_inv, Nat.card_image_of_injective inv_injective]
+lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by
+  simp [← toENat_cardinalMk]
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_inv := natCard_inv
+@[to_additive (attr := simp)]
+lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
+
+@[to_additive]
+lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by simp
 
 end InvolutiveInv
 
@@ -67,8 +76,6 @@ variable [Group G] {s t : Set G}
 lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
   rw [div_eq_mul_inv, ← natCard_inv t]; exact natCard_mul_le
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := natCard_div_le
-
 variable [MulAction G α]
 
 @[to_additive (attr := simp)]
@@ -76,11 +83,15 @@ lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
   Cardinal.mk_image_eq_of_injOn _ _ (MulAction.injective a).injOn
 
 @[to_additive (attr := simp)]
-lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s :=
-  Nat.card_image_of_injective (MulAction.injective a) _
+lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
+  simp [← toENat_cardinalMk]
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))]
-alias card_smul_set := Cardinal.mk_smul_set
+@[to_additive (attr := simp)]
+lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]
+
+@[to_additive]
+lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s := by
+  simp
 
 end Group
 end Set

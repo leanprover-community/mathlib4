@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Category
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
 /-!
 # Trifunctors obtained by composition of bifunctors
 
@@ -17,18 +19,19 @@ objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G�
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
-  [Category C₄] [Category C₁₂] [Category C₂₃]
+variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* C₄] [Category* C₁₂] [Category* C₂₃]
 
-section
-
-variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
+section bifunctorComp₁₂Functor
 
 /-- Auxiliary definition for `bifunctorComp₁₂`. -/
 @[simps]
-def bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
+def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄) (X₁ : C₁) :
+    C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
       map := fun {_ _} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
@@ -38,7 +41,8 @@ def bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
 /-- Given two bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps]
-def bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+def bifunctorComp₁₂ (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄) :
+    C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
   obj X₁ := bifunctorComp₁₂Obj F₁₂ G X₁
   map {X₁ Y₁} φ :=
     { app := fun X₂ =>
@@ -48,33 +52,116 @@ def bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
         dsimp
         simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
 
-end
+/-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
+@[simps]
+def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
+    (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+  obj G := bifunctorComp₁₂ F₁₂ G
+  map {G G'} φ :=
+    { app X₁ :=
+        { app X₂ :=
+            { app X₃ := (φ.app ((F₁₂.obj X₁).obj X₂)).app X₃ }
+          naturality := fun X₂ Y₂ f ↦ by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, NatTrans.naturality] }
+      naturality X₁ Y₁ f := by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality] }
 
-section
+/-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
+@[simps]
+def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂} (φ : F₁₂ ⟶ F₁₂') :
+    bifunctorComp₁₂FunctorObj (C₃ := C₃) (C₄ := C₄) F₁₂ ⟶ bifunctorComp₁₂FunctorObj F₁₂' where
+  app G :=
+    { app X₁ :=
+        { app X₂ := { app X₃ := (G.map ((φ.app X₁).app X₂)).app X₃ }
+          naturality := fun X₂ Y₂ f ↦ by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+      naturality X₁ Y₁ f := by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }
+  naturality G G' f := by
+    ext X₁ X₂ X₃
+    dsimp
+    simp only [← NatTrans.comp_app, NatTrans.naturality]
 
-variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
+/-- The functor `(C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` which
+sends `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄` to the functor
+`bifunctorComp₁₂ F₁₂ G : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`. -/
+@[simps]
+def bifunctorComp₁₂Functor : (C₁ ⥤ C₂ ⥤ C₁₂) ⥤ (C₁₂ ⥤ C₃ ⥤ C₄) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+  obj := bifunctorComp₁₂FunctorObj
+  map := bifunctorComp₁₂FunctorMap
+
+end bifunctorComp₁₂Functor
+
+section bifunctorComp₂₃Functor
 
 /-- Auxiliary definition for `bifunctorComp₂₃`. -/
 @[simps]
-def bifunctorComp₂₃Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
+def bifunctorComp₂₃Obj (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃) (X₁ : C₁) :
+    C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
-    { obj := fun X₃ => (F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)
-      map := fun {_ _} φ => (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
+    { obj X₃ := (F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)
+      map φ := (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
   map {X₂ Y₂} φ :=
-    { app := fun X₃ => (F.obj X₁).map ((G₂₃.map φ).app X₃)
-      naturality := fun {X₃ Y₃} φ => by
+    { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃)
+      naturality X₃ Y₃ φ := by
         dsimp
         simp only [← Functor.map_comp, NatTrans.naturality] }
 
 /-- Given two bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps]
-def bifunctorComp₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+def bifunctorComp₂₃ (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃) :
+    C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
   obj X₁ := bifunctorComp₂₃Obj F G₂₃ X₁
   map {X₁ Y₁} φ :=
     { app := fun X₂ =>
         { app := fun X₃ => (F.map φ).app ((G₂₃.obj X₂).obj X₃) } }
 
-end
+/-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
+@[simps]
+def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
+    (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+  obj G₂₃ := bifunctorComp₂₃ F G₂₃
+  map {G₂₃ G₂₃'} φ :=
+    { app X₁ :=
+        { app X₂ :=
+            { app X₃ := (F.obj X₁).map ((φ.app X₂).app X₃)
+              naturality X₃ Y₃ f := by
+                dsimp
+                simp only [← Functor.map_comp, NatTrans.naturality] }
+          naturality X₂ Y₂ f := by
+            ext X₃
+            dsimp
+            simp only [← NatTrans.comp_app, ← Functor.map_comp, NatTrans.naturality] } }
+
+/-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
+@[simps]
+def bifunctorComp₂₃FunctorMap {F F' : C₁ ⥤ C₂₃ ⥤ C₄} (φ : F ⟶ F') :
+    bifunctorComp₂₃FunctorObj F (C₂ := C₂) (C₃ := C₃) ⟶ bifunctorComp₂₃FunctorObj F' where
+  app G₂₃ :=
+    { app X₁ := { app X₂ := { app X₃ := (φ.app X₁).app ((G₂₃.obj X₂).obj X₃) } }
+      naturality X₁ Y₁ f := by
+        ext X₂ X₃
+        dsimp
+        simp only [← NatTrans.comp_app, NatTrans.naturality] }
+
+/-- The functor `(C₁ ⥤ C₂₃ ⥤ C₄) ⥤ (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` which
+sends `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃` to the
+functor `bifunctorComp₂₃ F G₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`. -/
+@[simps]
+def bifunctorComp₂₃Functor :
+    (C₁ ⥤ C₂₃ ⥤ C₄) ⥤ (C₂ ⥤ C₃ ⥤ C₂₃) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
+  obj := bifunctorComp₂₃FunctorObj
+  map := bifunctorComp₂₃FunctorMap
+
+end bifunctorComp₂₃Functor
 
 end CategoryTheory

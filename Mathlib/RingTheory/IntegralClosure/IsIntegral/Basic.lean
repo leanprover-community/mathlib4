@@ -3,10 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.RingTheory.Finiteness.Subalgebra
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Finiteness.Subalgebra
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Properties of integral elements.
@@ -14,12 +17,14 @@ import Mathlib.RingTheory.Polynomial.Tower
 We prove basic properties of integral elements in a ring extension.
 -/
 
+public section
+
 open Polynomial Submodule
 
 section Ring
 
-variable {R S A : Type*}
-variable [CommRing R] [Ring A] [Ring S] (f : R →+* S)
+variable {R S A T : Type*}
+variable [CommRing R] [Ring A] [Ring S] [Ring T] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A]
 
 theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
@@ -28,22 +33,44 @@ theorem RingHom.isIntegralElem_map {x : R} : f.IsIntegralElem (f x) :=
 theorem isIntegral_algebraMap {x : R} : IsIntegral R (algebraMap R A x) :=
   (algebraMap R A).isIntegralElem_map
 
+variable {f} in
+lemma RingHom.IsIntegralElem.map {x : S} (hx : f.IsIntegralElem x) (g : S →+* T) :
+    (g.comp f).IsIntegralElem (g x) := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p, hp, by simp_rw [← hom_eval₂, eval₂_eq_eval_map] at hx ⊢; simp [hx]⟩
+
+variable {f g} in
+lemma RingHom.IsIntegralElem.of_map (hg : Function.Injective g) {x : S}
+    (hx : (g.comp f).IsIntegralElem (g x)) :
+    f.IsIntegralElem x := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p, hp, hg <| by simp [Polynomial.hom_eval₂, hx]⟩
+
+variable {f g} in
+lemma RingHom.IsIntegralElem.map_iff (hg : Function.Injective g) {x : S} :
+    (g.comp f).IsIntegralElem (g x) ↔ f.IsIntegralElem x :=
+  ⟨of_map hg, (map · g)⟩
+
 end Ring
 
 section
 
-variable {R A B S : Type*}
-variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
+variable {R A B S T : Type*}
+variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [Ring T]
 variable [Algebra R A] (f : R →+* S)
+
+variable {f} in
+lemma RingHom.IsIntegralElem.of_comp {g : S →+* T} {x : T} (hx : (g.comp f).IsIntegralElem x) :
+    g.IsIntegralElem x := by
+  obtain ⟨p, hp, hx⟩ := hx
+  exact ⟨p.map f, hp.map _, by simpa only [eval₂_eq_eval_map, map_map] using hx⟩
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
     [FunLike F B C] [AlgHomClass F A B C] (f : F)
     (hb : IsIntegral R b) : IsIntegral R (f b) := by
-  obtain ⟨P, hP⟩ := hb
-  refine ⟨P, hP.1, ?_⟩
-  rw [← aeval_def, ← aeval_map_algebraMap A,
-    aeval_algHom_apply, aeval_map_algebraMap, aeval_def, hP.2, _root_.map_zero]
+  rw [IsIntegral, ← ((AlgHomClass.toAlgHom f).restrictScalars R).comp_algebraMap]
+  exact .map hb (RingHomClass.toRingHom f)
 
 section
 
@@ -51,9 +78,7 @@ variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 
 theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
     IsIntegral R (f x) ↔ IsIntegral R x := by
-  refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
-  rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
-    map_eq_zero_iff f hf] at hx
+  simp [IsIntegral, ← RingHom.IsIntegralElem.map_iff (g := (f : A →+* B)) hf]
 
 end
 
@@ -65,7 +90,7 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
   nontriviality A
   have hf1 : f ≠ 1 := by rintro rfl; simp [one_ne_zero' A] at hfx
   refine (span_le.mpr fun s hs ↦ ?_).antisymm fun r hr ↦ ?_
-  · rcases Finset.mem_image.1 hs with ⟨k, -, rfl⟩
+  · rcases Finset.mem_image.1 (SetLike.mem_coe.mp hs) with ⟨k, -, rfl⟩
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin rfl) k
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
@@ -100,9 +125,14 @@ theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
 variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x := by
-  rcases hx with ⟨p, hmonic, heval⟩
-  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+    IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+
+theorem IsIntegral.of_aeval_monic {x : A} {p : R[X]} (monic : p.Monic)
+    (deg : p.natDegree ≠ 0) (hx : IsIntegral R (aeval x p)) : IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨_, hmonic.comp monic deg, by rwa [eval₂_comp, ← aeval_def x]⟩
 
 end
 
@@ -133,9 +163,9 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
 /- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
-  a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
-  over `T`.-/
-theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
+over `T`. -/
+theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing T]
     [Algebra R S] [Algebra T S] (φ : R ≃+* T)
     (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
     IsIntegral R a ↔ IsIntegral T a := by
@@ -164,7 +194,7 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
     (h : IsIntegral R x) : IsIntegral R (algebraMap A B x) := by
   rcases h with ⟨f, hf, hx⟩
   use f, hf
-  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, RingHom.map_zero]
+  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
     (hAB : Function.Injective (algebraMap A B)) :
@@ -182,21 +212,48 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
 
 @[stacks 09GH]
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
-    (Algebra.adjoin R s).toSubmodule.FG :=
-  Set.Finite.induction_on hfs
-    (fun _ =>
-      ⟨{1},
-        Submodule.ext fun x => by
-          rw [Algebra.adjoin_empty, Finset.coe_singleton, ← one_eq_span, Algebra.toSubmodule_bot]⟩)
-    (fun {a s} _ _ ih his => by
-      rw [← Set.union_singleton, Algebra.adjoin_union_coe_submodule]
-      exact
-        FG.mul (ih fun i hi => his i <| Set.mem_insert_of_mem a hi)
-          (his a <| Set.mem_insert a s).fg_adjoin_singleton)
-    his
+    (Algebra.adjoin R s).toSubmodule.FG := by
+  induction s, hfs using Set.Finite.induction_on with
+  | empty =>
+    refine ⟨{1}, Submodule.ext fun x => ?_⟩
+    rw [Algebra.adjoin_empty, Finset.coe_singleton, ← one_eq_span, Algebra.toSubmodule_bot]
+  | @insert a s _ _ ih =>
+    rw [← Set.union_singleton, Algebra.adjoin_union_coe_submodule]
+    exact FG.mul
+      (ih fun i hi => his i <| Set.mem_insert_of_mem a hi)
+      (his a <| Set.mem_insert a s).fg_adjoin_singleton
+
+theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)
+    (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
+  Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
+
+theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
+    Module.Finite R (adjoin R {x}) :=
+  Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
 
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (s : Set A)) :=
   isNoetherian_of_fg_of_noetherian _ (fg_adjoin_of_finite s.finite_toSet hs)
 
 end
+
+section Prod
+
+variable {R A B : Type*}
+variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+
+/-- An element of a product algebra is integral if each component is integral. -/
+theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsIntegral R x.2) :
+    IsIntegral R x := by
+  obtain ⟨p₁, ⟨hp₁Monic, hp₁Eval⟩⟩ := hx₁
+  obtain ⟨p₂, ⟨hp₂Monic, hp₂Eval⟩⟩ := hx₂
+  refine ⟨p₁ * p₂, ⟨hp₁Monic.mul hp₂Monic, ?_⟩⟩
+  rw [← aeval_def] at *
+  rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero,
+    Prod.zero_eq_mk]
+
+/-- An element of a product algebra is integral iff each component is integral. -/
+theorem IsIntegral.pair_iff {x : A × B} : IsIntegral R x ↔ IsIntegral R x.1 ∧ IsIntegral R x.2 :=
+  ⟨fun h ↦ ⟨h.map (AlgHom.fst R A B), h.map (AlgHom.snd R A B)⟩, fun h ↦ h.1.pair h.2⟩
+
+end Prod

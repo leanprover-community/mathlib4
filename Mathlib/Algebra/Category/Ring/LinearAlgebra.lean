@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Results on the category of rings requiring linear algebra
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat
   is non-trivial.
 
 -/
+
+public section
 
 universe u
 
@@ -29,7 +33,7 @@ lemma nontrivial_of_isPushout_of_isField {A B C D : CommRingCat.{u}}
     [Nontrivial B] [Nontrivial C]
     (h : IsPushout f g inl inr) : Nontrivial D := by
   letI : Field A := hA.toField
-  algebraize [RingHomClass.toRingHom f, RingHomClass.toRingHom g]
+  algebraize [f.hom, g.hom]
   let e : D ≅ .of (B ⊗[A] C) :=
     IsColimit.coconePointUniqueUpToIso h.isColimit (CommRingCat.pushoutCoconeIsColimit A B C)
   let e' : D ≃ B ⊗[A] C := e.commRingCatIsoToRingEquiv.toEquiv

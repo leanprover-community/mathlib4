@@ -3,27 +3,33 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Logic.Equiv.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
 
 -/
 
+@[expose] public section
+
 
 open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
   add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
   comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
 
-instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) where
+instance moduleEndLeft {X Y : C} : Module (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul_add _ _ _ := Preadditive.comp_add _ _ _ _ _ _
   smul_zero _ := Limits.comp_zero
   add_smul _ _ _ := Preadditive.add_comp _ _ _ _ _ _
@@ -75,7 +81,17 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
     (s.sum f).op = s.sum fun i => (f i).op :=
   map_sum (opHom X Y) _ _
 
-variable {D : Type*} [Category D] [Preadditive D]
+/-- `G ⟶ G` and `(End G)ᵐᵒᵖ` are isomorphic as `(End G)ᵐᵒᵖ`-modules. -/
+@[simps]
+def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
+  toFun f := ⟨f⟩
+  map_add' := by cat_disch
+  map_smul' := by cat_disch
+  invFun := fun ⟨f⟩ => f
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
+variable {D : Type*} [Category* D] [Preadditive D]
 
 instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 

@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups
@@ -19,7 +21,9 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 open Function
 
@@ -36,13 +40,13 @@ section MulLeftMono
 variable [LE α] [MulLeftMono α] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_left a]
   simp
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_left a]
   simp
@@ -70,8 +74,7 @@ theorem le_inv_mul_iff_le : 1 ≤ b⁻¹ * a ↔ b ≤ a := by
 
 @[to_additive]
 theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
-  -- Porting note: why is the `_root_` needed?
-  _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
+  inv_mul_le_iff_le_mul.trans <| by rw [mul_one]
 
 end MulLeftMono
 
@@ -80,12 +83,12 @@ section MulLeftStrictMono
 variable [LT α] [MulLeftStrictMono α] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) Left.neg_pos_iff "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) Left.neg_pos_iff /-- Uses `left` co(ntra)variant. -/]
 theorem Left.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_left a, mul_inv_cancel, mul_one]
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_left a, mul_inv_cancel, mul_one]
 
@@ -121,13 +124,13 @@ section MulRightMono
 variable [LE α] [MulRightMono α] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_right a]
   simp
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_right a]
   simp
@@ -167,12 +170,12 @@ section MulRightStrictMono
 variable [LT α] [MulRightStrictMono α] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_right a, inv_mul_cancel, one_mul]
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) Right.neg_pos_iff "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) Right.neg_pos_iff /-- Uses `right` co(ntra)variant. -/]
 theorem Right.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_right a, inv_mul_cancel, one_mul]
 
@@ -353,7 +356,6 @@ variable [LE α] [MulLeftMono α] {a b c d : α}
 @[to_additive]
 theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_mul_le_iff_le_mul, mul_comm]
 
--- Porting note: `simp` simplifies LHS to `a ≤ c * b`
 @[to_additive]
 theorem mul_inv_le_iff_le_mul' : a * b⁻¹ ≤ c ↔ a ≤ b * c := by
   rw [← inv_mul_le_iff_le_mul, mul_comm]
@@ -371,7 +373,6 @@ variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 @[to_additive]
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
 
--- Porting note: `simp` simplifies LHS to `a < c * b`
 @[to_additive]
 theorem mul_inv_lt_iff_le_mul' : a * b⁻¹ < c ↔ a < b * c := by
   rw [← inv_mul_lt_iff_lt_mul, mul_comm]
@@ -426,7 +427,6 @@ attribute [to_additive] le_inv_mul_of_mul_le
 
 alias ⟨_, inv_mul_le_of_le_mul⟩ := inv_mul_le_iff_le_mul
 
--- Porting note: was `inv_mul_le_iff_le_mul`
 attribute [to_additive] inv_mul_le_of_le_mul
 
 alias ⟨mul_lt_of_lt_inv_mul, _⟩ := lt_inv_mul_iff_mul_lt
@@ -537,6 +537,8 @@ section LE
 
 variable [LE α] [MulLeftMono α] {a b c d : α}
 
+/-- See also `div_le_div_iff` for a version that works for `LinearOrderedSemifield` with
+additional assumptions. -/
 @[to_additive sub_le_sub_iff]
 theorem div_le_div_iff' : a / b ≤ c / d ↔ a * d ≤ c * b := by
   simpa only [div_eq_mul_inv] using mul_inv_le_mul_inv_iff'
@@ -605,7 +607,7 @@ theorem one_lt_div' : 1 < a / b ↔ b < a := by
 
 alias ⟨lt_of_sub_pos, sub_pos_of_lt⟩ := sub_pos
 
-@[to_additive (attr := simp) sub_neg "For `a - -b = a + b`, see `sub_neg_eq_add`."]
+@[to_additive (attr := simp) sub_neg /-- For `a - -b = a + b`, see `sub_neg_eq_add`. -/]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 
@@ -721,7 +723,7 @@ variable {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_lt_mul (h : ∀ ε : α, 1 < ε → a < b * ε) : a ≤ b :=
-  le_of_not_lt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
+  le_of_not_gt fun h₁ => lt_irrefl a (by simpa using h _ (lt_inv_mul_iff_lt.mpr h₁))
 
 @[to_additive]
 theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=

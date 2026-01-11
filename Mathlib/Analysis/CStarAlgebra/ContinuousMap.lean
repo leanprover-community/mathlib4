@@ -3,15 +3,19 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-! # C⋆-algebras of continuous functions
 
 We place these here because, for reasons related to the import hierarchy, they cannot be placed in
 earlier files.
 -/
+
+@[expose] public section
 
 variable {α A : Type*}
 noncomputable section
@@ -23,12 +27,10 @@ variable [TopologicalSpace α]
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra (α →ᵇ A) where
 
 instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra (α →ᵇ A) where
-  mul_comm := mul_comm
 
 instance [CStarAlgebra A] : CStarAlgebra (α →ᵇ A) where
 
 instance [CommCStarAlgebra A] : CommCStarAlgebra (α →ᵇ A) where
-  mul_comm := mul_comm
 
 end BoundedContinuousFunction
 
@@ -39,12 +41,10 @@ variable [TopologicalSpace α] [CompactSpace α]
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) where
 
 instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) where
-  mul_comm := mul_comm
 
 instance [CStarAlgebra A] : CStarAlgebra C(α, A) where
 
 instance [CommCStarAlgebra A] : CommCStarAlgebra C(α, A) where
-  mul_comm := mul_comm
 
 end ContinuousMap
 
@@ -56,6 +56,5 @@ instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra
 
 instance [TopologicalSpace α] [NonUnitalCommCStarAlgebra A] :
     NonUnitalCommCStarAlgebra C₀(α, A) where
-  mul_comm := mul_comm
 
 end ZeroAtInftyContinuousMap

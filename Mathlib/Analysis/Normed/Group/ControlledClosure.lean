@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -13,6 +15,8 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
 -/
+
+public section
 
 
 open Filter Finset
@@ -41,7 +45,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     of a sequence `v` of elements of `K` which starts close to `h` and then quickly goes to zero.
     The sequence `b` below quantifies this. -/
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
-  have b_pos (i) : 0 < b i := by field_simp [b, hC, hyp_h]
+  have b_pos (i) : 0 < b i := by positivity
   obtain
     ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ => ∑ k ∈ range (n + 1), v k) atTop (𝓝 h), v_in :
       ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
@@ -54,12 +58,12 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     `b` ensures `s` is Cauchy. -/
   set s : ℕ → G := fun n => ∑ k ∈ range (n + 1), u k
   have : CauchySeq s := by
-    apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by norm_num) one_half_lt_one
+    apply NormedAddCommGroup.cauchy_series_of_le_geometric'' (by simp) one_half_lt_one
     · rintro n (hn : n ≥ 1)
       calc
         ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
         _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
-        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel₀ _ hC.ne.symm]
+        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [b, mul_div_cancel₀ _ hC.ne.symm]
         _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
@@ -89,7 +93,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     have : (∑ k ∈ range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc (∑ k ∈ range (n + 1), C * b k)
         _ = (∑ k ∈ range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) := by
-          simp only [mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
+          simp only [b, mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
         _ ≤ 2 * (ε * ‖h‖ / 2) := by gcongr; apply sum_geometric_two_le
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc
@@ -101,7 +105,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ = (∑ k ∈ range (n + 1), C * b k) + C * ‖h‖ := by rw [← add_assoc, sum_range_succ']
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
-        apply add_le_add_left this
+        gcongr
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
 an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most

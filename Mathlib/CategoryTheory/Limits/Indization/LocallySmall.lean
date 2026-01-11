@@ -3,9 +3,11 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.IndYoneda
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.IndYoneda
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
 # There are only `v`-many natural transformations between Ind-objects
@@ -18,6 +20,8 @@ serve as the basis for our definition of the category of Ind-objects.
 The equivalence established here serves as the basis for a well-known calculation of hom-sets of
 ind-objects as a limit of a colimit.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Opposite
 
@@ -51,9 +55,9 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     limit.π (F.op ⋙ G) i (colimitYonedaHomEquiv F G η) =
       η.app (op (F.obj i.unop)) ((colimit.ι (F ⋙ yoneda) i.unop).app _ (𝟙 _)) := by
   simp only [Functor.comp_obj, Functor.op_obj, colimitYonedaHomEquiv, uliftFunctor_obj,
-    Iso.instTransIso_trans, Iso.trans_assoc, Iso.toEquiv_comp, Equiv.symm_trans_apply,
+    Iso.trans_def, Iso.trans_assoc, Iso.toEquiv_comp, Equiv.symm_trans_apply,
     Equiv.symm_symm, Equiv.trans_apply, Iso.toEquiv_fun, Iso.symm_hom, Equiv.ulift_apply]
-  have (a) := congrArg ULift.down
+  have (a : _) := congrArg ULift.down
     (congrFun (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
   dsimp at this
   rw [this, ← types_comp_apply (HasLimit.isoOfNatIso _).hom (limit.π _ _),
@@ -65,7 +69,7 @@ instance : Small.{v} (colimit (F ⋙ yoneda) ⟶ G) where
 
 end
 
-instance : LocallySmall.{v} (FullSubcategory (IsIndObject (C := C))) where
+instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
     obtain ⟨⟨P⟩⟩ := X.2
     obtain ⟨⟨Q⟩⟩ := Y.2
@@ -73,6 +77,6 @@ instance : LocallySmall.{v} (FullSubcategory (IsIndObject (C := C))) where
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂
     dsimp only [colimit.cocone_x] at e₃
-    exact small_map e₃
+    exact small_map (InducedCategory.homEquiv.trans e₃)
 
 end CategoryTheory

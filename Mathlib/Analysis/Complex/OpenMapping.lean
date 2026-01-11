@@ -3,10 +3,12 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -29,6 +31,8 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
+
+public section
 
 
 open Set Filter Metric Complex
@@ -61,7 +65,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
   refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key => ?_
-  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; field_simp
+  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; simp
   replace h7 : ∃ᶠ w in 𝓝[≠] z, f w = f z := (h7.filter_mono nhdsWithin_le_nhds).frequently
   have h8 : IsPreconnected (ball z₀ r) := (convex_ball z₀ r).isPreconnected
   have h9 := h3.eqOn_of_preconnected_of_frequently_eq analyticOnNhd_const h8 hz1 h7
@@ -101,7 +105,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
-    (image_subset f (closedBall_subset_closedBall inf_le_right))
+    (by gcongr; exact inf_le_right)
 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
@@ -137,13 +141,12 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
       apply h1.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const e1 (mem_ball_self hr)
       simpa [ray, gray] using h w e2
     have h4 : ‖z - z₀‖ < r := by simpa [dist_eq_norm] using mem_ball.mp hz
-    replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by
-      simpa only [mem_ball_zero_iff, norm_eq_abs, abs_ofReal, abs_norm]
+    replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by simpa
     simpa only [ray, gray, w, smul_smul, mul_inv_cancel₀ h', one_smul, add_sub_cancel,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right
+    simp only [not_forall] at h
     -- Otherwise, it is open along at least one direction and that implies the result
-    push_neg at h
     obtain ⟨z, hz, hrz⟩ := h
     specialize h1 z hz 0 (mem_ball_self hr)
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
@@ -161,11 +164,8 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
   by_cases h : ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const hU hz₀ h⟩
-  · push_neg at h
+  · simp only [not_exists, not_and] at h
     refine Or.inr fun s hs1 hs2 => isOpen_iff_mem_nhds.mpr ?_
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.is_constant_or_isOpen := AnalyticOnNhd.is_constant_or_isOpen

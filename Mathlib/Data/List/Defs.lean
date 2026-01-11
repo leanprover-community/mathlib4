@@ -3,14 +3,15 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Control.Functor
-import Mathlib.Data.SProd
-import Mathlib.Util.CompileInductive
-import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Lemmas
-import Batteries.Data.RBMap.Basic
-import Batteries.Logic
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Control.Functor
+public import Mathlib.Data.SProd
+public import Mathlib.Util.CompileInductive
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Data.List.Basic
+public import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -18,6 +19,8 @@ import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -37,7 +40,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-  | []       => default
+  | [] => default
   | (a :: _) => a
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -49,10 +52,6 @@ def getLastI [Inhabited α] : List α → α
   | [a] => a
   | [_, b] => b
   | _ :: _ :: l => getLastI l
-
-/-- List with a single given element. -/
-@[inline, deprecated List.pure (since := "2024-03-24")]
-protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -119,6 +118,7 @@ end foldIdxM
 
 section mapIdxM
 
+-- This could be relaxed to `Applicative` but is `Monad` to match `List.mapIdxM`.
 variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mapIdxM'`. -/
@@ -158,10 +158,9 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 
--- Porting note: removed `[elab_as_elim]` per Mario C
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
+@[elab_as_elim]
 def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
     (H1 : ∀ t ts is, C ts (t :: is) → C is [] → C (t :: ts) is) : ∀ l₁ l₂, C l₁ l₂
   | [], is => H0 is
@@ -224,25 +223,9 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
       let (a', l') := extractp p l
       (a', a :: l')
 
-/-- Notation for calculating the product of a `List`
--/
-
+/-- Notation for calculating the product of a `List` -/
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
-
-section Chain
-
-instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
-    Decidable (Chain R a l) := by
-  induction l generalizing a with
-  | nil => simp only [List.Chain.nil]; infer_instance
-  | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
-
-instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
-    Decidable (Chain' R l) := by
-  cases l <;> dsimp only [List.Chain'] <;> infer_instance
-
-end Chain
 
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
   Defined as `pwFilter (≠)`.
@@ -259,15 +242,13 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 
 -- TODO: should below be "lazily"?
+-- TODO: Remove destutter' as we have removed chain'
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
 def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
   | h :: l => destutter' R h l
   | [] => []
--- Porting note: replace ilast' by getLastD
--- Porting note: remove last' from Batteries
-
 
 section Choose
 
@@ -277,7 +258,7 @@ variable (p : α → Prop) [DecidablePred p] (l : List α)
 choose the first element with this property. This version returns both `a` and proofs
 of `a ∈ l` and `p a`. -/
 def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
-  | [], hp => False.elim (Exists.elim hp fun a h => not_mem_nil a h.left)
+  | [], hp => False.elim (Exists.elim hp fun _ h => not_mem_nil h.left)
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
@@ -379,7 +360,6 @@ map₂Right f as bs = (map₂Right' f as bs).fst
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=
   map₂Left (flip f) bs as
 
--- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
@@ -411,9 +391,9 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
 
-/-- Given a starting list `old`, a list of booleans and a replacement list `new`,
+/-- Given a starting list `old`, a list of Booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `true` or `false`. -/
+not, according as to whether the corresponding Boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []
@@ -423,7 +403,7 @@ def replaceIf : List α → List Bool → List α → List α
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]
 def iterate (f : α → α) (a : α) : (n : ℕ) → List α
-  | 0     => []
+  | 0 => []
   | n + 1 => a :: iterate f (f a) n
 
 /-- Tail-recursive version of `List.iterate`. -/
@@ -435,7 +415,7 @@ where
   @[simp, specialize]
   loop (a : α) (n : ℕ) (l : List α) : List α :=
     match n with
-    | 0     => reverse l
+    | 0 => reverse l
     | n + 1 => loop (f a) n (a :: l)
 
 theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
@@ -487,28 +467,5 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
-
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => List.mem_range.1
-
-section Deprecated
-
-@[deprecated List.mem_cons (since := "2024-08-10")]
-theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
-  propext List.mem_cons
-
-alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
-
-@[deprecated List.not_mem_nil (since := "2024-08-10")]
-theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
-
-@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
-@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
-
-@[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
-
-end Deprecated
 
 end List

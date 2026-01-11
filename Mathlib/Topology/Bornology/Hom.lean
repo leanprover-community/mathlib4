@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Locally bounded maps
@@ -21,6 +23,8 @@ be satisfied by itself and all stricter types.
 
 * `LocallyBoundedMapClass`
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set
@@ -104,7 +108,6 @@ sets. -/
 def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBounded (f '' s)) :
     LocallyBoundedMap α β :=
   ⟨f, comap_cobounded_le_iff.2 h⟩
--- Porting note: I had to provide the type of `h` explicitly.
 
 @[simp]
 theorem coe_ofMapBounded (f : α → β) {h} : ⇑(ofMapBounded f h) = f :=
@@ -123,7 +126,7 @@ protected def id : LocallyBoundedMap α α :=
 instance : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(LocallyBoundedMap.id α) = id :=
   rfl
 

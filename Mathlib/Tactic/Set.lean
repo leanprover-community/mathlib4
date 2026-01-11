@@ -3,8 +3,10 @@ Copyright (c) 2022 Ian Benway. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.ElabTerm
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.ElabTerm
 
 /-!
 # The `set` tactic
@@ -17,16 +19,12 @@ the local context and replaces `t` with `a` everywhere it can.
 `set! a := t with h` does not do any replacing.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
 
 syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
-
--- This is called `setTactic` rather than `set`
--- as we sometimes refer to `MonadStateOf.set` from inside `Mathlib.Tactic`.
-syntax (name := setTactic) "set" "!"? setArgsRest : tactic
-
-macro "set!" rest:setArgsRest : tactic => `(tactic| set ! $rest:setArgsRest)
 
 /--
 `set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
@@ -48,8 +46,14 @@ h2 : x = y
 ⊢ y + y - y = 3
 -/
 ```
-
 -/
+-- This is called `setTactic` rather than `set`
+-- as we sometimes refer to `MonadStateOf.set` from inside `Mathlib.Tactic`.
+syntax (name := setTactic) "set" "!"? setArgsRest : tactic
+
+@[tactic_alt setTactic]
+macro "set!" rest:setArgsRest : tactic => `(tactic| set ! $rest:setArgsRest)
+
 elab_rules : tactic
 | `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>
   withMainContext do

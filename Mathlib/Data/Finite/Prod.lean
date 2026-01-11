@@ -3,18 +3,22 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Vector
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+@[expose] public section
 
-open scoped Classical
+assert_not_exists IsOrderedRing MonoidWithZero
 
 variable {α β : Type*}
 
@@ -36,24 +40,22 @@ theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
 
 end Finite
 
+lemma Prod.finite_iff [Nonempty α] [Nonempty β] : Finite (α × β) ↔ Finite α ∧ Finite β where
+  mp _ := ⟨.prod_left β, .prod_right α⟩
+  mpr | ⟨_, _⟩ => inferInstance
+
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
+  classical
   haveI := Fintype.ofFinite (PLift α)
   haveI := fun a => Fintype.ofFinite (PLift (β a))
   exact
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 
-instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
-  haveI := Fintype.ofFinite α
-  infer_instance
-
 instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
-  cases' isEmpty_or_nonempty (α ↪ β) with _ h
-  · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
-    -- "stuck at solving universe constraint" error.
-    apply Finite.of_subsingleton
-
+  rcases isEmpty_or_nonempty (α ↪ β) with _ | h
+  · infer_instance
   · refine h.elim fun f => ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
@@ -117,8 +119,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 instance finite_prod (s : Set α) (t : Set β) [Finite s] [Finite t] :
     Finite (s ×ˢ t : Set (α × β)) :=
   Finite.of_equiv _ (Equiv.Set.prod s t).symm
@@ -176,7 +176,7 @@ protected theorem infinite_prod :
     · exact h.1.prod_right h.2
 
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
-  simp only [← not_infinite, Set.infinite_prod, not_or, not_and_or, not_nonempty_iff_eq_empty]
+  contrapose! +distrib; exact Set.infinite_prod
 
 protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :=
   (hs.prod hs).subset s.offDiag_subset_prod
@@ -233,9 +233,9 @@ theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀
 
 lemma finite_image2 (hfs : ∀ b ∈ t, InjOn (f · b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ := by
-  rw [← not_infinite, infinite_image2 hfs hft]
-  simp [not_or, -not_and, not_and_or, not_nonempty_iff_eq_empty]
-  aesop
+  contrapose! +distrib
+  rw [Set.infinite_image2 hfs hft]
+  grind only [Set.Infinite.nonempty]
 
 end Image2
 

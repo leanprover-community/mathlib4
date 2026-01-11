@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set Topology
 open scoped NNReal
@@ -41,9 +45,6 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.comapPseudoMetricSpace := IsInducing.comapPseudoMetricSpace
-
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
@@ -51,15 +52,37 @@ def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : Pseu
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 
-@[deprecated (since := "2024-10-08")] alias UniformInducing.comapPseudoMetricSpace :=
-  IsUniformInducing.comapPseudoMetricSpace
+namespace Subtype
 
-instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
+variable {p : α → Prop}
+
+instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 
-lemma Subtype.dist_eq {p : α → Prop} (x y : Subtype p) : dist x y = dist (x : α) y := rfl
+lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
-lemma Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+
+@[simp]
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
 
 namespace MulOpposite
 
@@ -113,10 +136,10 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
+  by_cases! c_pos : 0 < c
   · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
     simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
+  simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
     Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
@@ -146,13 +169,11 @@ end ULift
 section Prod
 variable [PseudoMetricSpace β]
 
--- Porting note: added `let`, otherwise `simp` failed
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
-        Prod.edist_eq]
+    (fun x y ↦ by positivity) fun x y => by
+      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
@@ -162,11 +183,11 @@ lemma Prod.dist_eq {x y : α × β} : dist x y = max (dist x.1 y.1) (dist x.2 y.
 
 @[simp]
 lemma dist_prod_same_left {x : α} {y₁ y₂ : β} : dist (x, y₁) (x, y₂) = dist y₁ y₂ := by
-  simp [Prod.dist_eq, dist_nonneg]
+  simp [Prod.dist_eq]
 
 @[simp]
 lemma dist_prod_same_right {x₁ x₂ : α} {y : β} : dist (x₁, y) (x₂, y) = dist x₁ x₂ := by
-  simp [Prod.dist_eq, dist_nonneg]
+  simp [Prod.dist_eq]
 
 lemma ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
   ext fun z => by simp [Prod.dist_eq]
@@ -199,7 +220,7 @@ lemma uniformContinuous_dist : UniformContinuous fun p : α × α => dist p.1 p.
 
 protected lemma UniformContinuous.dist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun b => dist (f b) (g b) :=
-  uniformContinuous_dist.comp (hf.prod_mk hg)
+  uniformContinuous_dist.comp (hf.prodMk hg)
 
 @[continuity]
 lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformContinuous_dist.continuous
@@ -207,25 +228,25 @@ lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformC
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
-  continuous_dist.comp (hf.prod_mk hg : _)
+  continuous_dist.comp₂ hf hg
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => dist (f x) (g x)) x (𝓝 (dist a b)) :=
-  (continuous_dist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
+  (continuous_dist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ Continuous fun x : β × β => dist (f x.1) (f x.2) :=
   ⟨fun h => h.fst'.dist h.snd', fun h =>
     continuous_iff_continuousAt.2 fun _ => tendsto_iff_dist_tendsto_zero.2 <|
-      (h.comp (continuous_id.prod_mk continuous_const)).tendsto' _ _ <| dist_self _⟩
+      (h.comp (.prodMk_left _)).tendsto' _ _ <| dist_self _⟩
 
 lemma uniformContinuous_nndist : UniformContinuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_dist.subtype_mk _
 
 protected lemma UniformContinuous.nndist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun b => nndist (f b) (g b) :=
-  uniformContinuous_nndist.comp (hf.prod_mk hg)
+  uniformContinuous_nndist.comp (hf.prodMk hg)
 
 lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_nndist.continuous
@@ -233,9 +254,9 @@ lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
-  continuous_nndist.comp (hf.prod_mk hg : _)
+  continuous_nndist.comp₂ hf hg
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
-  (continuous_nndist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
+  (continuous_nndist.tendsto (a, b)).comp (hf.prodMk_nhds hg)

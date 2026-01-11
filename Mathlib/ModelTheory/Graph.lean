@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # First-Order Structures in Graph Theory
@@ -20,6 +22,8 @@ This file defines first-order languages, structures, and theories in graph theor
 - `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
   of the theory of simple graphs.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -76,8 +80,7 @@ instance simpleGraph_model (G : SimpleGraph V) :
   rw [Theory.simpleGraph_model_iff]
   exact ⟨G.loopless, G.symm⟩
 
-variable (V)
-
+variable (V) in
 /-- Any model of the theory of simple graphs represents a simple graph. -/
 @[simps]
 def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
@@ -90,8 +93,6 @@ def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGrap
   loopless :=
     Relations.realize_irreflexive.1
       (Theory.realize_sentence_of_mem Theory.simpleGraph (Set.mem_insert _ _))
-
-variable {V}
 
 @[simp]
 theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :

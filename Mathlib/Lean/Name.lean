@@ -3,16 +3,20 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Match.MatcherInfo
-import Lean.Meta.Tactic.Delta
-import Std.Data.HashMap.Basic
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Tactic.Delta
+public import Std.Data.HashMap.Basic
 
 /-!
 # Additional functions on `Lean.Name`.
 
 We provide `allNames` and `allNamesByModule`.
 -/
+
+public section
 
 open Lean Meta Elab
 
@@ -39,7 +43,7 @@ Retrieve all names in the environment satisfying a predicate,
 gathered together into a `HashMap` according to the module they are defined in.
 -/
 def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name)) := do
-  (← getEnv).constants.foldM (init := Std.HashMap.empty) fun names n _ => do
+  (← getEnv).constants.foldM (init := ∅) fun names n _ => do
     if p n && !(← isBlackListed n) then
       let some m ← findModuleOf? n | return names
       -- TODO use `modify` and/or `alter` when available
@@ -54,11 +58,3 @@ def Lean.Name.decapitalize (n : Name) : Name :=
   n.modifyBase fun
     | .str p s => .str p s.decapitalize
     | n       => n
-
-/-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
-def Lean.Name.isAuxLemma (n : Name) : Bool := n matches .num (.str _ "_auxLemma") _
-
-/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
-The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/
-def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
-  deltaExpand e Lean.Name.isAuxLemma

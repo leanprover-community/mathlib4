@@ -3,9 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the clifford algebra
@@ -13,6 +14,8 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford algebra is a
 ℤ₂-graded algebra (or "superalgebra").
 -/
+
+@[expose] public section
 
 
 namespace CliffordAlgebra
@@ -54,7 +57,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
   rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
   refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
-  simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
+  simp only [pow_add]
   exact Submodule.mul_mem_mul hx hy
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
@@ -75,39 +78,34 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-set_option linter.deprecated false in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
-    -- Porting note: added a second `by apply`
-    lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
+    lift Q ⟨GradedAlgebra.ι Q, GradedAlgebra.ι_sq_scalar Q⟩ x' =
       DirectSum.of (fun i => evenOdd Q i) i' x' := by
-  cases' x' with x' hx'
+  obtain ⟨x', hx'⟩ := x'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
-    -- Porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
-    change x ∈ LinearMap.range (ι Q) ^ i at hx
+    dsimp only [Subtype.coe_mk] at hx
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: in https://github.com/leanprover-community/mathlib4/pull/8386 `map_add` had to be specialized to avoid a timeout
-      -- (the definition was already very slow)
-      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
+      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
-    rw [AlgHom.map_zero]
+    rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>
-    rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+    rw [map_add, ihx, ihy, ← map_add]; rfl
 
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
@@ -153,7 +151,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
-  apply Submodule.iSup_induction' (C := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
+  apply Submodule.iSup_induction' (motive := motive) _ _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
   simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv

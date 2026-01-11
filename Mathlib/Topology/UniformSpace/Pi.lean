@@ -3,11 +3,15 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Indexed product of uniform spaces
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -41,7 +45,6 @@ instance [Countable ι] [∀ i, IsCountablyGenerated (𝓤 (α i))] :
 
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
-  -- Porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp_def]
 
 variable (α)
@@ -83,7 +86,7 @@ lemma Pi.uniformContinuous_restrict (S : Set ι) :
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
     UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
-  simp (config := { unfoldPartialApp := true })
+  simp +unfoldPartialApp
     [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :

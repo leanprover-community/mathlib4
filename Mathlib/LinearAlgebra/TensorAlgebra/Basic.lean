@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.TrivSqZeroExt
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Tensor Algebras
@@ -37,6 +39,8 @@ As noted above, the tensor algebra of `M` is constructed as the free `R`-algebra
 modulo the additional relations making the inclusion of `M` into an `R`-linear map.
 -/
 
+@[expose] public section
+
 
 variable (R : Type*) [CommSemiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
@@ -58,10 +62,7 @@ end TensorAlgebra
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
-
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
-instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
+deriving Inhabited, Semiring
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
@@ -115,7 +116,6 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rw [ι]
   rfl
 
--- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
@@ -125,8 +125,8 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
       RingQuot.liftAlgHom R ∘ fun f =>
         ⟨FreeAlgebra.lift R (⇑f), fun x y (h : Rel R M x y) => by
           induction h <;>
-            simp only [Algebra.smul_def, FreeAlgebra.lift_ι_apply, LinearMap.map_smulₛₗ,
-              RingHom.id_apply, map_mul, AlgHom.commutes, map_add]⟩
+            simp only [Algebra.smul_def, FreeAlgebra.lift_ι_apply, map_smulₛₗ, RingHom.id_apply,
+              map_mul, AlgHom.commutes, map_add]⟩
     invFun := fun F => F.toLinearMap.comp (ι R)
     left_inv := fun f => by
       rw [ι]
@@ -190,19 +190,30 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
+  have of_apply {x : M} : of x = (TensorAlgebra.ι R) x := by rfl
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
-    simp only [AlgHom.toLinearMap_id, LinearMap.id_comp, AlgHom.comp_toLinearMap,
-      LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, lift_ι_apply,
-      Subalgebra.coe_val]
-    erw [LinearMap.codRestrict_apply]
+    simp [of_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]
   exact Subtype.prop (lift R of a)
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R (M := M))) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | add x y hx hy => exact add_mem hx hy
+  | mul x y hx hy => exact mul_mem hx hy
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+@[simp]
+theorem range_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
+    (lift R f).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
@@ -263,7 +274,7 @@ theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, map_zero]
 
 variable {R}
 
@@ -277,7 +288,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
     exact this.symm.imp_left Eq.symm
   · rintro ⟨rfl, rfl⟩
-    rw [LinearMap.map_zero, RingHom.map_zero]
+    rw [map_zero, map_zero]
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by

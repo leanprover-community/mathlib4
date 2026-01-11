@@ -3,9 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
@@ -15,18 +18,20 @@ except the squares of units.
 Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Main Definitions
- - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
+- `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.
 
 ## Main Results
- - `multiplicity.squarefree_iff_emultiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
+- `multiplicity.squarefree_iff_emultiplicity_le_one`: `x` is `Squarefree` iff for every `y`, either
   `emultiplicity y x ≤ 1` or `IsUnit y`.
- - `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
- factorization monoid is squarefree iff `factors x` has no duplicate factors.
+- `UniqueFactorizationMonoid.squarefree_iff_nodup_factors`: A nonzero element `x` of a unique
+  factorization monoid is squarefree iff `factors x` has no duplicate factors.
 
 ## Tags
 squarefree, multiplicity
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -48,7 +53,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
-  erw [not_forall]
+  rw [Squarefree, not_forall]
   exact ⟨0, by simp⟩
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :
@@ -81,7 +86,7 @@ theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : �
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
     n = 0 ∨ n = 1 := by
   contrapose! h'
-  replace h' : 2 ≤ n := by omega
+  replace h' : 2 ≤ n := by lia
   have : x * x ∣ x ^ n := by rw [← sq]; exact pow_dvd_pow x h'
   exact h.squarefree_of_dvd this x (refl _)
 
@@ -103,13 +108,7 @@ theorem Squarefree.gcd_left {a : α} (b : α) (ha : Squarefree a) : Squarefree (
 
 end SquarefreeGcdOfSquarefree
 
-namespace multiplicity
-
-section CommMonoid
-
-variable [CommMonoid R]
-
-theorem squarefree_iff_emultiplicity_le_one (r : R) :
+theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
     Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
   refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
@@ -117,26 +116,13 @@ theorem squarefree_iff_emultiplicity_le_one (r : R) :
   rw [← one_add_one_eq_two]
   exact Order.add_one_le_iff_of_not_isMax (by simp)
 
-end CommMonoid
-
-section CancelCommMonoidWithZero
-
-variable [CancelCommMonoidWithZero R] [WfDvdMonoid R]
-
-theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b :=
-  finite_of_not_isUnit ha.not_unit hb
-
-end CancelCommMonoidWithZero
-
-end multiplicity
-
 section Irreducible
 
 variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
 theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
     Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
-  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  refine ⟨fun h p hp hp' ↦ hp.not_isUnit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
   have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
   obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
   exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
@@ -150,7 +136,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   · rintro (⟨rfl, h⟩ | h)
     · simpa using h
     intro x hx t
-    exact hx.not_unit (h x t)
+    exact hx.not_isUnit (h x t)
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
     Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
@@ -175,9 +161,6 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
 
 theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
-
-@[deprecated (since := "2024-02-12")]
-alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
 
 end
 
@@ -232,6 +215,19 @@ theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefre
     fun ⟨hp, sqx, sqy⟩ _ dvd ↦ hp (sqy.dvd_of_squarefree_of_mul_dvd_mul_left dvd)
       (sqx.dvd_of_squarefree_of_mul_dvd_mul_right dvd)⟩
 
+open scoped Function in
+theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} {s : Finset ι}
+    {f : ι → R} (hs : Set.Pairwise s (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
+    Squarefree (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [Finset.prod_cons, squarefree_mul_iff]
+    rw [Finset.coe_cons, Set.pairwise_insert] at hs
+    refine ⟨.prod_right fun i hi ↦ ?_, hs' a (by simp), ?_⟩
+    · exact (hs.right i (by simp [hi]) fun h ↦ ha (h ▸ hi)).left
+    · exact ih hs.left fun i hi ↦ hs' i <| Finset.mem_cons_of_mem hi
+
 theorem isRadical_iff_squarefree_or_zero : IsRadical x ↔ Squarefree x ∨ x = 0 :=
   ⟨fun hx ↦ (em <| x = 0).elim .inr fun h ↦ .inl <| hx.squarefree h,
     Or.rec Squarefree.isRadical <| by
@@ -250,10 +246,11 @@ variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
-  induction' x using WfDvdMonoid.induction_on_irreducible with u hu z p hz hp ih
-  · contradiction
-  · exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
-  · obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
+  induction x using WfDvdMonoid.induction_on_irreducible with
+  | zero => contradiction
+  | unit u hu => exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
+  | mul z p hz hp ih =>
+    obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
     rcases n.eq_zero_or_pos with rfl | hn
     · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
     by_cases hp' : p ∣ y
@@ -266,7 +263,7 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
-  rw [multiplicity.squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
+  rw [squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
   haveI := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
   · by_cases hmem : a ∈ normalizedFactors x
@@ -277,7 +274,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
         assumption_mod_cast
       · have := ha.1
         contradiction
-    · simp [Multiset.count_eq_zero_of_not_mem hmem]
+    · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
     rcases eq_or_ne a 0 with rfl | h0
@@ -298,8 +295,6 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 
 @[simp]
 theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
-  rw [← squarefree_natAbs, natAbs_ofNat]
-
-@[deprecated (since := "2024-04-05")] alias squarefree_coe_nat := squarefree_natCast
+  rw [← squarefree_natAbs, natAbs_natCast]
 
 end Int

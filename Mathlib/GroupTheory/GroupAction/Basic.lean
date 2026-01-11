@@ -3,13 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions
@@ -26,6 +31,8 @@ of `•` belong elsewhere.
 * `MulAction.stabilizer`
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -70,33 +77,37 @@ section FixedPoints
 
 variable {M α}
 
+@[to_additive (attr := simp)]
+theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
+    (orbit M a).Subsingleton ↔ a ∈ fixedPoints M α := by
+  rw [mem_fixedPoints]
+  constructor
+  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
+  · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
+    simp only [h]
+
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
-  rw [Fintype.card_eq_one_iff, mem_fixedPoints]
-  constructor
-  · exact fun h => ⟨⟨a, mem_orbit_self _⟩, fun ⟨a, ⟨x, hx⟩⟩ => Subtype.eq <| by simp [h x, hx.symm]⟩
-  · intro h x
-    rcases h with ⟨⟨z, hz⟩, hz₁⟩
-    calc
-      x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
-      _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
+  simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
+    Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
     DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  simp only [MulAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
 
 end MulAction
 
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+/-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
+    [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
   refine h _ ?_
@@ -104,6 +115,19 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
 
 namespace MulAction
 variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
+
+@[to_additive] theorem fixedPoints_of_subsingleton [Subsingleton α] :
+    fixedPoints G α = .univ := by
+  apply Set.eq_univ_of_forall
+  simp only [mem_fixedPoints]
+  intro x hx
+  apply Subsingleton.elim ..
+
+/-- If a group acts nontrivially, then the type is nontrivial -/
+@[to_additive /-- If a subgroup acts nontrivially, then the type is nontrivial. -/]
+theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
+    Nontrivial α :=
+  (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
 
 section Orbit
 
@@ -114,10 +138,10 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
-      _ ⊆ g • orbit G a := Set.image_subset _ (smul_orbit_subset _ _)
+      _ ⊆ g • orbit G a := Set.image_mono (smul_orbit_subset _ _)
 
 /-- The action of a group on an orbit is transitive. -/
-@[to_additive "The action of an additive group on an orbit is transitive."]
+@[to_additive /-- The action of an additive group on an orbit is transitive. -/]
 instance (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
@@ -137,11 +161,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   simp_rw [orbitRel_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
     simpa using gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
     refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
     · exact gp.2
@@ -152,8 +176,8 @@ variable (G α)
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
-@[to_additive "An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton."]
+@[to_additive /-- An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -164,8 +188,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
-@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
-quotient has exactly one element."]
+@[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element. -/]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
@@ -213,9 +237,16 @@ lemma orbitRel_le_snd :
 end Orbit
 
 section Stabilizer
-variable (G)
 
-variable {G}
+@[to_additive (attr := simp)]
+lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
+    stabilizer G a = ⊥ :=
+  Subgroup.eq_bot_iff_forall _ |>.mpr fun _ hg ↦ IsCancelSMul.eq_one_of_smul hg
+
+@[to_additive]
+lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
+    IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -224,14 +255,46 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
+variable {g h k : G} {a b c : α}
+
+/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+def stabilizerEquivStabilizer (hg : b = g • a) : stabilizer G a ≃* stabilizer G b :=
+  ((MulAut.conj g).subgroupMap (stabilizer G a)).trans
+    (MulEquiv.subgroupCongr (by
+      rw [hg, stabilizer_smul_eq_stabilizer_map_conj g a, ← MulEquiv.toMonoidHom_eq_coe]))
+
+theorem stabilizerEquivStabilizer_apply (hg : b = g • a) (x : stabilizer G a) :
+    stabilizerEquivStabilizer hg x = MulAut.conj g x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_symm_apply (hg : b = g • a) (x : stabilizer G b) :
+    (stabilizerEquivStabilizer hg).symm x = MulAut.conj g⁻¹ x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_trans (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
+    (H : k = h * g) :
+    (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh) =
+      stabilizerEquivStabilizer hk := by
+  ext; simp [stabilizerEquivStabilizer_apply, H]
+
+theorem stabilizerEquivStabilizer_one :
+    stabilizerEquivStabilizer (one_smul G a).symm = MulEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_symm (hg : b = g • a) :
+    (stabilizerEquivStabilizer hg).symm =
+      stabilizerEquivStabilizer (eq_inv_smul_iff.mpr hg.symm) := by
+  ext x; simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_inv (hg : b = g⁻¹ • a) :
+    stabilizerEquivStabilizer hg =
+      (stabilizerEquivStabilizer (inv_smul_eq_iff.mp hg.symm)).symm := by
+  ext; simp [stabilizerEquivStabilizer]
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃* stabilizer G b :=
-  let g : G := Classical.choose h
-  have hg : g • b = a := Classical.choose_spec h
-  have this : stabilizer G a = (stabilizer G b).map (MulAut.conj g).toMonoidHom := by
-    rw [← hg, stabilizer_smul_eq_stabilizer_map_conj]
-  (MulEquiv.subgroupCongr this).trans ((MulAut.conj g).subgroupMap <| stabilizer G b).symm
+  (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
 
 end Stabilizer
 
@@ -240,26 +303,62 @@ end MulAction
 namespace AddAction
 variable {G α : Type*} [AddGroup G] [AddAction G α]
 
+variable {g h k : G} {a b c : α}
 /-- If the stabilizer of `x` is `S`, then the stabilizer of `g +ᵥ x` is `g + S + (-g)`. -/
 theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
-    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
+    stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toMul.toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
     neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
+variable {g h k : G} {a b c : α}
+
+/-- The natural group equivalence between the stabilizers of two elements in the same orbit. -/
+def stabilizerEquivStabilizer (hg : b = g +ᵥ a) : stabilizer G a ≃+ stabilizer G b :=
+  AddEquiv.trans ((AddAut.conj g).toMul.addSubgroupMap _)
+    (AddEquiv.addSubgroupCongr (by
+      rw [hg, stabilizer_vadd_eq_stabilizer_map_conj g a, ← AddEquiv.toAddMonoidHom_eq_coe]))
+
+theorem stabilizerEquivStabilizer_apply (hg : b = g +ᵥ a) (x : stabilizer G a) :
+    stabilizerEquivStabilizer hg x = (AddAut.conj g).toMul x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer G b) :
+    (stabilizerEquivStabilizer hg).symm x = (AddAut.conj (-g)).toMul x := by
+  simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_trans
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
+    (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
+      = stabilizerEquivStabilizer hk := by
+  ext; simp [stabilizerEquivStabilizer_apply, H]
+
+theorem stabilizerEquivStabilizer_zero :
+    stabilizerEquivStabilizer (zero_vadd G a).symm = AddEquiv.refl (stabilizer G a) := by
+  ext; simp [stabilizerEquivStabilizer_apply]
+
+theorem stabilizerEquivStabilizer_symm (hg : b = g +ᵥ a) :
+    (stabilizerEquivStabilizer hg).symm =
+      stabilizerEquivStabilizer (eq_neg_vadd_iff.mpr hg.symm) := by
+  ext; simp [stabilizerEquivStabilizer]
+
+theorem stabilizerEquivStabilizer_neg (hg : b = -g +ᵥ a) :
+    stabilizerEquivStabilizer hg =
+      (stabilizerEquivStabilizer (neg_vadd_eq_iff.mp hg.symm)).symm := by
+  ext; simp [stabilizerEquivStabilizer]
+
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
-noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : orbitRel G α a b) :
+noncomputable def stabilizerEquivStabilizerOfOrbitRel (h : orbitRel G α a b) :
     stabilizer G a ≃+ stabilizer G b :=
-  let g : G := Classical.choose h
-  have hg : g +ᵥ b = a := Classical.choose_spec h
-  have this : stabilizer G a = (stabilizer G b).map (AddAut.conj g).toAddMonoidHom := by
-    rw [← hg, stabilizer_vadd_eq_stabilizer_map_conj]
-  (AddEquiv.addSubgroupCongr this).trans ((AddAut.conj g).addSubgroupMap <| stabilizer G b).symm
+  (stabilizerEquivStabilizer (Classical.choose_spec h).symm).symm
 
 end AddAction
 
-attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_trans
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_one
+attribute [to_additive existing] MulAction.stabilizerEquivStabilizer_inv
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
 
 theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
@@ -268,12 +367,13 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
 
-
 namespace MulAction
 
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
-/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
+@[to_additive
+  /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor
@@ -291,29 +391,18 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
 
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ g • s ⊆ s := by
-  haveI : Fintype s := Set.Finite.fintype hs
-  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
-  haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
-  rw [mem_stabilizer_iff]
-  constructor
-  · exact Eq.subset
-  · rw [← Set.toFinset_inj, ← Set.toFinset_subset_toFinset]
-    intro h
-    apply Finset.eq_of_subset_of_card_le h
-    apply le_of_eq
-    suffices (g • s).toFinset = Finset.map ⟨_, MulAction.injective g⟩ hs.toFinset by
-      rw [this, Finset.card_map, Set.toFinite_toFinset]
-    rw [← Finset.coe_inj]
-    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map,
-      Function.Embedding.coeFn_mk, Set.image_smul]
-
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ s ⊆ g • s := by
-  rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
-  exact Set.subset_set_smul_iff.symm
-
 end MulAction
+
+section
+
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+
+variable {M} in
+lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
+    MulAction.stabilizer Rˣ x = ⊥ := by
+  rw [eq_bot_iff]
+  intro g (hg : g.val • x = x)
+  ext
+  rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
+
+end

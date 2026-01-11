@@ -3,10 +3,16 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Short games
@@ -18,6 +24,8 @@ We prove that the order relations `≤` and `<`, and the equivalence relation `�
 short games, although unfortunately in practice `decide` doesn't seem to be able to
 prove anything using these instances.
 -/
+
+@[expose] public section
 
 -- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
 -- trigger this error.
@@ -86,7 +94,7 @@ attribute [class] Short
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
-    Fintype α := by cases' S with _ _ _ _ _ _ F _; exact F
+    Fintype α := by cases S; assumption
 
 attribute [local instance] fintypeLeft
 
@@ -97,7 +105,7 @@ instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
 This is an unindexed typeclass, so it can't be made a global instance.
 -/
 def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [S : Short ⟨α, β, L, R⟩] :
-    Fintype β := by cases' S with _ _ _ _ _ _ _ F; exact F
+    Fintype β := by cases S; assumption
 
 attribute [local instance] fintypeRight
 
@@ -105,26 +113,26 @@ instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := b
   cases S; assumption
 
 instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.moveLeft i) := by
-  cases' S with _ _ _ _ L _ _ _; apply L
+  obtain ⟨L, _⟩ := S; apply L
 
 /-- Extracting the `Short` instance for a move by Left.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
 def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short (xL i) := by
-  cases' S with _ _ _ _ L _ _ _; apply L
+  obtain ⟨L, _⟩ := S; apply L
 
 attribute [local instance] moveLeftShort'
 
 instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) := by
-  cases' S with _ _ _ _ _ R _ _; apply R
+  obtain ⟨_, R⟩ := S; apply R
 
 /-- Extracting the `Short` instance for a move by Right.
 This would be a dangerous instance potentially introducing new metavariables
 in typeclass search, so we only make it an instance locally.
 -/
 def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Short (xR j) := by
-  cases' S with _ _ _ _ _ R _ _; apply R
+  obtain ⟨_, R⟩ := S; apply R
 
 attribute [local instance] moveRightShort'
 
@@ -180,7 +188,7 @@ instance listShortGet :
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
   | L, R, _, _ => by
-    exact Short.mk (fun i ↦ inferInstance) fun j ↦ listShortGet R (↑j.down) (ofLists.proof_2 R j)
+    exact Short.mk (fun i ↦ inferInstance) fun j ↦ listShortGet R (↑j.down) (Fin.is_lt j.down)
 
 /-- If `x` is a short game, and `y` is a relabelling of `x`, then `y` is also short. -/
 def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → Short y
@@ -209,7 +217,7 @@ instance shortNat : ∀ n : ℕ, Short n
   | 0 => PGame.short0
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short ofNat(n) := shortNat n
 
 instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 

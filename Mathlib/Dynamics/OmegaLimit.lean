@@ -3,8 +3,10 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Dynamics.Flow
-import Mathlib.Tactic.Monotonicity
+module
+
+public import Mathlib.Dynamics.Flow
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits
@@ -22,13 +24,15 @@ recover the usual definition of the ω-limit set as the set of all `y`
 such that there exist sequences `(tₙ)`, `(xₙ)` such that `ϕ tₙ xₙ ⟶ y`
 as `n ⟶ ∞`.
 
-## Notations
+## Notation
 
-The `omegaLimit` locale provides the localised notation `ω` for
+The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit`, as well as `ω⁺` and `ω⁻` for `omegaLimit atTop` and
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter Topology
@@ -84,7 +88,7 @@ theorem mapsTo_omegaLimit' {α' β' : Type*} [TopologicalSpace β'] {f : Filter 
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') := by
   simp only [omegaLimit_def, mem_iInter, MapsTo]
   intro y hy u hu
-  refine map_mem_closure hgc (hy _ (inter_mem hu hg)) (forall_image2_iff.2 fun t ht x hx ↦ ?_)
+  refine map_mem_closure hgc (hy _ (inter_mem hu hg)) (forall_mem_image2.2 fun t ht x hx ↦ ?_)
   calc
     ϕ' t (ga x) ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
     _ = gb (ϕ t x) := ht.2 hx |>.symm
@@ -110,8 +114,7 @@ characterising ω-limits:
 -/
 
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
-    preimages of an arbitrary neighbourhood of `y` frequently
-    (w.r.t. `f`) intersects of `s`. -/
+preimages of an arbitrary neighbourhood of `y` frequently (w.r.t. `f`) intersects of `s`. -/
 theorem mem_omegaLimit_iff_frequently (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (s ∩ ϕ t ⁻¹' n).Nonempty := by
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
@@ -123,19 +126,18 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩
     exact ⟨_, hϕtx, _, ht, _, hx, rfl⟩
 
-/-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
-    forward images of `s` frequently (w.r.t. `f`) intersect arbitrary
-    neighbourhoods of `y`. -/
+/-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the forward images of `s`
+frequently (w.r.t. `f`) intersect arbitrary neighbourhoods of `y`. -/
 theorem mem_omegaLimit_iff_frequently₂ (y : β) :
     y ∈ ω f ϕ s ↔ ∀ n ∈ 𝓝 y, ∃ᶠ t in f, (ϕ t '' s ∩ n).Nonempty := by
   simp_rw [mem_omegaLimit_iff_frequently, image_inter_nonempty_iff]
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
-    images of `x` frequently (w.r.t. `f`) falls within an arbitrary
-    neighbourhood of `y`. -/
+images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
 theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
-  simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff, singleton_inter_nonempty, mem_preimage]
+  simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
+    mem_preimage]
 
 /-!
 ### Set operations and omega limits
@@ -153,7 +155,7 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
   · simp only [mem_union, mem_omegaLimit_iff_frequently, union_inter_distrib_right, union_nonempty,
       frequently_or_distrib]
     contrapose!
-    simp only [not_frequently, not_nonempty_iff_eq_empty, ← subset_empty_iff]
+    simp only [← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
     refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
     exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_left,
@@ -225,8 +227,9 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
     simp only [j, iUnion_subset_iff, compl_subset_compl]
-    intros u hu
-    mono
+    intro u hu
+    unfold w
+    gcongr
     refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)
     all_goals exact Subset.rfl
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
@@ -321,7 +324,7 @@ end Flow
 -/
 namespace Flow
 
-variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [TopologicalAddGroup τ] {α : Type*}
+variable {τ : Type*} [TopologicalSpace τ] [AddCommGroup τ] [IsTopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (f : Filter τ) (ϕ : Flow τ α) (s : Set α)
 
 open omegaLimit

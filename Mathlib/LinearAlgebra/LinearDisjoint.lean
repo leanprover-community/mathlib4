@@ -3,11 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -25,7 +27,7 @@ Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
   `M.LinearDisjoint N`), if the natural `R`-linear map `M ⊗[R] N →ₗ[R] S`
   (`Submodule.mulMap M N`) induced by the multiplication in `S` is injective.
 
-The following is the first equivalent characterization of linearly disjointness:
+The following is the first equivalent characterization of linear disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
@@ -49,7 +51,7 @@ Dually, we have:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
-The following is the second equivalent characterization of linearly disjointness:
+The following is the second equivalent characterization of linear disjointness:
 
 - `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
@@ -64,15 +66,18 @@ The following is the second equivalent characterization of linearly disjointness
 
 ## Other main results
 
-- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
-  linearly disjoint is symmetric under some commutative conditions.
+- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
+  linear disjointness is symmetric under some commutative conditions.
+
+- `Submodule.LinearDisjoint.map`:
+  linear disjointness is preserved by injective algebra homomorphisms.
 
 - `Submodule.linearDisjoint_op`:
-  linearly disjoint is preserved by taking multiplicative opposite.
+  linear disjointness is preserved by taking multiplicative opposite.
 
 - `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
-  linearly disjoint is preserved by taking submodules under some flatness conditions.
+  linear disjointness is preserved by taking submodules under some flatness conditions.
 
 - `Submodule.LinearDisjoint.of_linearDisjoint_fg_left`,
   `Submodule.LinearDisjoint.of_linearDisjoint_fg_right`,
@@ -98,7 +103,7 @@ The following is the second equivalent characterization of linearly disjointness
   their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
 
-  These results are stated using bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a not bundled
+  These results are stated using a bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a non-bundled
   version (i.e. `a : S` with `ha : a ∈ M ⊓ N`), you may use `LinearIndependent.of_comp` and
   `FinVec.map_eq` (in `Mathlib/Data/Fin/Tuple/Reflection.lean`),
   see the following code snippet:
@@ -124,6 +129,9 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
+@[expose] public section
+
+open Module
 open scoped TensorProduct
 
 noncomputable section
@@ -158,11 +166,15 @@ theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) 
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
-theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
   haveI : Subsingleton S := Module.subsingleton R S
-  exact ⟨Function.injective_of_subsingleton _⟩
+  ⟨Function.injective_of_subsingleton _⟩
 
-/-- Linearly disjoint is preserved by taking multiplicative opposite. -/
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
+  ⟨Function.injective_of_subsingleton _⟩
+
+/-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
@@ -171,18 +183,28 @@ theorem linearDisjoint_op :
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
+/-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
   rw [linearDisjoint_iff, mulMap_comm_of_commute M N hc]
   exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H.injective
 
-/-- Linearly disjoint is symmetric if elements in the module commute. -/
-theorem linearDisjoint_symm_of_commute
+/-- Linear disjointness is symmetric if elements in the module commute. -/
+theorem linearDisjoint_comm_of_commute
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
+
+/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
+theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
+    (f : S →ₐ[R] T) (hf : Function.Injective f) :
+    (M.map (f : S →ₗ[R] T)).LinearDisjoint (N.map (f : S →ₗ[R] T)) := by
+  rw [linearDisjoint_iff] at H ⊢
+  have := hf.comp H
+  rw [← coe_mulMap_comp_eq] at this
+  refine this.of_comp_right ?_
+  apply TensorProduct.map_surjective <;> exact LinearMap.submoduleMap_surjective _ _
 
 variable (M N)
 
@@ -246,7 +268,7 @@ theorem of_linearDisjoint_fg_left
     (H : ∀ M' : Submodule R S, M' ≤ M → M'.FG → M'.LinearDisjoint N) :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨M', hM, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
@@ -259,7 +281,7 @@ theorem of_linearDisjoint_fg_right
     (H : ∀ N' : Submodule R S, N' ≤ N → N'.FG → M.LinearDisjoint N') :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨N', hN, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_right_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
@@ -284,12 +306,12 @@ variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 variable {M N : Submodule R S}
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
+/-- Linear disjointness is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : M.LinearDisjoint N) : N.LinearDisjoint M :=
   H.symm_of_commute fun _ _ ↦ mul_comm _ _
 
-/-- Linearly disjoint is symmetric in a commutative ring. -/
-theorem linearDisjoint_symm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
+/-- Linear disjointness is symmetric in a commutative ring. -/
+theorem linearDisjoint_comm : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
 end CommSemiring
@@ -318,10 +340,8 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (m : Basis ι R M)
-    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
-  exact of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N :=
+  of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
@@ -339,10 +359,8 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (n : Basis ι R N)
-    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ M) := Finsupp.instAddCommGroup
-  exact of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N :=
+  of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any family of

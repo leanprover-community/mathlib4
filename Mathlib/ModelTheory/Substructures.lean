@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Closure
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Encoding
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Closure
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Encoding
 
 /-!
 # First-Order Substructures
@@ -39,6 +41,8 @@ substructures appearing in the algebra library.
 - `L.Substructure M` forms a `CompleteLattice`.
 -/
 
+@[expose] public section
+
 universe u v w
 
 namespace FirstOrder
@@ -50,7 +54,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
 
-open Structure Cardinal
+open Structure
 
 section ClosedUnder
 
@@ -90,6 +94,7 @@ variable (L) (M)
 
 /-- A substructure of a structure `M` is a set closed under application of function symbols. -/
 structure Substructure where
+  /-- The underlying set of this substructure -/
   carrier : Set M
   fun_mem : ∀ {n}, ∀ f : L.Functions n, ClosedUnder f carrier
 
@@ -106,7 +111,7 @@ instance instSetLike : SetLike (L.Substructure M) M :=
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
-initialize_simps_projections Substructure (carrier → coe)
+initialize_simps_projections Substructure (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_carrier {s : L.Substructure M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -128,9 +133,9 @@ variable {S : L.Substructure M}
 
 theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
-  induction' t with a n f ts ih
-  · exact h a
-  · exact Substructure.fun_mem _ _ _ ih
+  induction t with
+  | var a => exact h a
+  | func f ts ih => exact Substructure.fun_mem _ _ _ ih
 
 namespace Substructure
 
@@ -195,7 +200,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
@@ -235,7 +240,7 @@ theorem mem_closure {x : M} : x ∈ closure L s ↔ ∀ S : L.Substructure M, s 
 theorem subset_closure : s ⊆ closure L s :=
   (closure L).le_closure s
 
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
 @[simp]
@@ -251,6 +256,7 @@ theorem closure_le : closure L s ≤ S ↔ s ⊆ S :=
 
 /-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure L s ≤ closure L t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
   (closure L).monotone h
 
@@ -284,7 +290,7 @@ theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) 
 
 theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σ i, L.Functions i)) := by
   rw [← lift_umax]
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
@@ -312,7 +318,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
   rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
-    [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
+    [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
@@ -407,13 +413,13 @@ instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
     · intro x hx
       simp only [mem_empty_iff_false, forall_const] at hx
   rw [← closure_empty, ← SetLike.mem_coe, h]
-  exact Set.not_mem_empty _
+  exact Set.notMem_empty _
 
 variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -524,7 +530,7 @@ theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
-    closure_eq_of_le (Set.image_subset f subset_closure) <|
+    closure_eq_of_le (Set.image_mono subset_closure) <|
       map_le_iff_le_comap.2 <| closure_le.2 fun x hx => subset_closure ⟨x, hx, rfl⟩
 
 @[simp]
@@ -627,7 +633,14 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
-theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
@@ -635,7 +648,6 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :
@@ -705,7 +717,7 @@ namespace Substructure
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
-    cases' f with f f
+    obtain f | f := f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2
@@ -817,6 +829,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       apply hx
     simp [h]
 
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure L s) :=
@@ -850,7 +865,6 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
   inj' _ _ ab := f.injective (Subtype.mk_eq_mk.1 ab)
   map_fun' {_} F x := (f.toHom.codRestrict p h).map_fun' F x
   map_rel' {n} r x := by
-    simp only
     rw [← p.subtype.map_rel]
     change RelMap r (Hom.comp p.subtype.toHom (f.toHom.codRestrict p h) ∘ x) ↔ _
     rw [Hom.subtype_comp_codRestrict, ← f.map_rel]
@@ -889,8 +903,8 @@ noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
             (codRestrict (s.map f.toHom) (f.domRestrict s) (fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩)
                 ⟨m, hm⟩).2).2)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
-  map_fun' {n} f x := by aesop
-  map_rel' {n} R x := by aesop
+  map_fun' {n} f x := by simp
+  map_rel' {n} R x := by simp
 
 @[simp]
 theorem substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) :
@@ -909,8 +923,8 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
   left_inv m :=
     f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
   right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
-  map_fun' {n} f x := by aesop
-  map_rel' {n} R x := by aesop
+  map_fun' {n} f x := by simp
+  map_rel' {n} R x := by simp
 
 @[simp]
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
@@ -947,7 +961,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
-  simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
+  simp only [Hom.mem_range, Embedding.coe_toHom, coe_subtype]
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy

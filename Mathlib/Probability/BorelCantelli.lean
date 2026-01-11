@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Martingale.BorelCantelli
-import Mathlib.Probability.ConditionalExpectation
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Probability.Martingale.BorelCantelli
+public import Mathlib.Probability.ConditionalExpectation
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 
@@ -21,8 +23,10 @@ filtration.
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
-in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
+in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
+
+public section
 
 open scoped ENNReal Topology
 open MeasureTheory
@@ -37,26 +41,26 @@ variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddC
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
-    (hfi : iIndepFun (fun _ => mβ) f μ) (hij : i < j) :
+    (hfi : iIndepFun f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices Indep (⨆ k ∈ ({j} : Set ι), MeasurableSpace.comap (f k) mβ)
       (⨆ k ∈ {k | k ≤ i}, MeasurableSpace.comap (f k) mβ) μ by rwa [iSup_singleton] at this
   exact indep_iSup_of_disjoint (fun k => (hf k).measurable.comap_le) hfi (by simpa)
 
-theorem iIndepFun.condexp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
-    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun (fun _ => mβ) f μ)
+theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
+    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun f μ)
     (hij : i < j) : μ[f j|Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
   have : IsProbabilityMeasure μ := hfi.isProbabilityMeasure
-  exact condexp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
+  exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
-theorem iIndepSet.condexp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
+theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
-    fun _ => (μ (s j)).toReal := by
-  rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
-  refine (iIndepFun.condexp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
-  simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
+    fun _ => μ.real (s j) := by
+  rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
+  refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
+  simp only [integral_indicator_const _ (hsm _), smul_eq_mul, mul_one]; rfl
 
 open Filter
 
@@ -73,7 +77,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop} =ᵐ[μ] Set.univ by
     rw [measure_congr this, measure_univ]
   have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm n]) ω = _ :=
-    ae_all_iff.2 fun n => hs.condexp_indicator_filtrationOfSet_ae_eq hsm n.lt_succ_self
+    ae_all_iff.2 fun n => hs.condExp_indicator_filtrationOfSet_ae_eq hsm n.lt_succ_self
   filter_upwards [this] with ω hω
   refine eq_true (?_ : Tendsto _ _ _)
   simp_rw [hω]
@@ -90,11 +94,11 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     rw [mem_upperBounds] at hB
     specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
-      rw [ENNReal.toReal_sum]
-      exact fun _ _ => measure_ne_top _ _
-    · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_ne_top.2 _) ENNReal.coe_ne_top]
-      · exact hB.trans (by simp)
-      · exact fun _ _ => measure_ne_top _ _
+      rw [ENNReal.toReal_sum (by finiteness)]
+      rfl
+    · rwa [not_lt, ENNReal.ofNNReal_toNNReal, ENNReal.le_ofReal_iff_toReal_le]
+      · simp
+      · exact le_trans (by positivity) hB
 
 end BorelCantelli
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Unique factorization and multiplicity
@@ -16,6 +18,9 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   occurs in the `normalizedFactors`.
 -/
 
+public section
+
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -31,12 +36,16 @@ theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {
 
 theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
-  max_power_factor' h hx.not_unit
+  max_power_factor' h hx.not_isUnit
 
-theorem multiplicity.finite_of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : multiplicity.Finite a b := by
+theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
+
+theorem FiniteMultiplicity.of_prime_left [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
+  .of_not_isUnit ha.not_unit hb
 
 namespace UniqueFactorizationMonoid
 
@@ -55,7 +64,9 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_emultiplicity]
   revert b
-  induction' n with n ih; · simp
+  induction n with
+  | zero => simp
+  | succ n ih => ?_
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩
@@ -65,7 +76,7 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     apply Dvd.intro _ rfl
   · rw [Multiset.le_iff_exists_add]
     rintro ⟨u, hu⟩
-    rw [← (normalizedFactors_prod hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
+    rw [← (prod_normalizedFactors hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
     exact (Associated.pow_pow <| associated_normalize a).dvd.trans (Dvd.intro u.prod rfl)
 
 /-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
@@ -78,7 +89,7 @@ theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha :
     (hb : b ≠ 0) : emultiplicity a b = (normalizedFactors b).count (normalize a) := by
   apply le_antisymm
   · apply Order.le_of_lt_add_one
-    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge, ge_iff_le,
+    rw [← Nat.cast_one, ← Nat.cast_add, lt_iff_not_ge,
       le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
     simp
   rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
@@ -111,16 +122,11 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
     (normalizedFactors x).count p = n := by
   rcases hp with (rfl | hp)
   · cases n
-    · exact count_eq_zero.2 (zero_not_mem_normalizedFactors _)
+    · exact count_eq_zero.2 (zero_notMem_normalizedFactors _)
     · rw [zero_pow (Nat.succ_ne_zero _)] at hle hlt
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
 end multiplicity
-
-/-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
-@[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
-theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
-    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 
 end UniqueFactorizationMonoid

@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 
@@ -16,6 +17,8 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -45,8 +48,18 @@ theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α},
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
 
+theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
+  mt (eq_top_iff_one I).2 hI.1
+
+theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
+  hI.one_notMem
+
 theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y ∈ I → x ∈ I ∨ y ∈ I :=
   hI.2
+
+theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
+    x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
+  hy ((hI.mem_or_mem h).resolve_left hx)
 
 theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
@@ -57,7 +70,7 @@ theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ
   induction n with
   | zero =>
     rw [pow_zero] at H
-    exact (mt (eq_top_iff_one _).2 hI.1).elim H
+    exact hI.one_notMem.elim H
   | succ n ih =>
     rw [pow_succ] at H
     exact Or.casesOn (hI.mem_or_mem H) ih id
@@ -70,25 +83,14 @@ theorem not_isPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
+instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
-end Ideal
+@[deprecated isPrime_bot (since := "2026-01-10")]
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
 
-end Semiring
-
-section CommSemiring
-
-variable {a b : α}
-
--- A separate namespace definition is needed because the variables were historically in a different
--- order.
-namespace Ideal
-
-variable [CommSemiring α] (I : Ideal α)
-
-theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} (hI : I.IsPrime) :
+theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
     rintro (h | h)
@@ -98,9 +100,34 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+/-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
+def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
+  carrier := (Pᶜ : Set α)
+  one_mem' := P.one_notMem
+  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
+@[simp]
+theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
+    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
 end Ideal
 
-end CommSemiring
+end Semiring
+
+section Ring
+
+theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
+  @NoZeroDivisors.to_isDomain A _ ⟨1, 0, fun h => hbp.one_notMem h⟩ ⟨fun h => hbp.2 h⟩
+
+end Ring
 
 section DivisionSemiring
 

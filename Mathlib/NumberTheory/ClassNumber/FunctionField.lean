@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
-import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.FunctionField
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.FunctionField
 
 /-!
 # Class numbers of function fields
@@ -19,6 +21,8 @@ on the class number.
 cardinality of the class group of its ring of integers
 -/
 
+@[expose] public section
+
 
 namespace FunctionField
 
@@ -29,12 +33,11 @@ variable [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
 variable [IsScalarTower Fq[X] (RatFunc Fq) F]
 variable [FunctionField Fq F] [Algebra.IsSeparable (RatFunc Fq) F]
 
-open scoped Classical
-
 namespace RingOfIntegers
 
 open FunctionField
 
+open scoped Classical in
 noncomputable instance : Fintype (ClassGroup (ringOfIntegers Fq F)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite (RatFunc Fq) F
     (Polynomial.cardPowDegreeIsAdmissible :

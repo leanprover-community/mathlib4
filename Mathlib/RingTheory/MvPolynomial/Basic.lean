@@ -3,12 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Data.Fintype.Pi
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.DFinsupp.Small
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Multivariate polynomials over commutative rings
@@ -35,12 +37,12 @@ that the monomials form a basis.
 Generalise to noncommutative (semi)rings
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open Set LinearMap Submodule
-
-open Polynomial
+open Set LinearMap Module Submodule
 
 universe u v
 
@@ -48,10 +50,15 @@ variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
+instance {σ : Type*} {R : Type*} [CommSemiring R]
+    [Small.{u} R] [Small.{u} σ] :
+    Small.{u} (MvPolynomial σ R) :=
+  inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))
+
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 
@@ -61,6 +68,15 @@ instance [CharZero R] : CharZero (MvPolynomial σ R) where
   cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
+
+section ExpChar
+
+variable [ExpChar R p]
+
+instance : ExpChar (MvPolynomial σ R) p := by
+  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+
+end ExpChar
 
 section Homomorphism
 
@@ -158,43 +174,4 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
 
 end Degree
 
-section Algebra
-
-variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-/--
-If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
-
-Warning: This produces a diamond for
-`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
-global instance.
--/
-noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
-  (MvPolynomial.map (algebraMap R S)).toAlgebra
-
-attribute [local instance] algebraMvPolynomial
-
-@[simp]
-lemma algebraMap_def :
-    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
-  rfl
-
-instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
-
-end Algebra
-
 end MvPolynomial
-
--- this is here to avoid import cycle issues
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. -/
-noncomputable def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-
-end Polynomial

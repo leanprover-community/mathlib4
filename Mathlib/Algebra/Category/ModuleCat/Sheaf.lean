@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -16,6 +17,8 @@ In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCa
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ u₁ u w
 
@@ -81,9 +84,9 @@ instance : (forget.{v} R).ReflectsIsomorphisms := (fullyFaithfulForget R).reflec
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
-/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrp`. -/
+/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrpCat`. -/
 @[simps]
-def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
+noncomputable def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrpCat.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := (forget R ⋙ PresheafOfModules.toPresheaf R.val).map f }
 
@@ -93,18 +96,18 @@ when `X` is initial.
 -/
 @[simps]
 noncomputable def forgetToSheafModuleCat
-      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) M.isSheaf⟩
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
-`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
+`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
-def toSheafCompSheafToPresheafIso :
-    toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v} ≅
+noncomputable def toSheafCompSheafToPresheafIso :
+    toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v} ≅
       forget R ⋙ PresheafOfModules.toPresheaf R.val := Iso.refl _
 
 instance : (toSheaf.{v} R).Faithful :=
@@ -119,7 +122,7 @@ lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
 
 instance : Preadditive (SheafOfModules.{v} R) where
   add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
-  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+  comp_add := by tauto
 
 instance : (forget R).Additive where
 
@@ -130,7 +133,7 @@ variable {R}
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
-/-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of sheaves of modules. -/
+/-- The map `M.sections → N.sections` induced by a morphism `M ⟶ N` of sheaves of modules. -/
 abbrev sectionsMap {M N : SheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
   PresheafOfModules.sectionsMap f.val s
 
@@ -149,17 +152,17 @@ def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
   obj := sections
   map f := sectionsMap f
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
-def unit : SheafOfModules R where
+noncomputable def unit : SheafOfModules R where
   val := PresheafOfModules.unit R.val
-  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrp.{u})).obj R).cond
+  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrpCat.{u})).obj R).cond
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
-def unitHomEquiv (M : SheafOfModules R) :
+noncomputable def unitHomEquiv (M : SheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections :=
   (fullyFaithfulForget R).homEquiv.trans M.val.unitHomEquiv
 
@@ -193,7 +196,7 @@ abbrev IsLocallyInjective : Prop :=
   Presheaf.IsLocallyInjective J ((PresheafOfModules.toPresheaf R).map f)
 
 variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
-  [J.WEqualsLocallyBijective AddCommGrp.{v}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
   [IsLocallySurjective J f] [IsLocallyInjective J f]
 
 variable {J}
@@ -211,15 +214,15 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ congr_fun ((forget _).congr_map (congr_app hφ Z)) x
+          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
         rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = M₂.map p.op y⟩
         have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
-            N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
+            N.map p.op (φ.app _ z) := CategoryTheory.congr_fun (φ.naturality p.op)
         change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
-        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).map_smul, hφ, (ψ.app _).map_smul,
+        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, hφ, (ψ.app _).hom.map_smul,
           ← hφ, hx, N.map_smul, hφ'])
   left_inv φ := (toPresheaf _).map_injective
     (((J.W_of_isLocallyBijective

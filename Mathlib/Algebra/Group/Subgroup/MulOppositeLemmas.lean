@@ -3,10 +3,12 @@ Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Logic.Encodable.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Mul-opposite subgroups
@@ -19,6 +21,8 @@ which might be organized and split up further.
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 
@@ -127,7 +131,7 @@ theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
 
 @[to_additive (attr := simp)]
 theorem normal_op {H : Subgroup G} : H.op.Normal ↔ H.Normal := by
-  simp only [← normalizer_eq_top, ← op_normalizer, op_eq_top]
+  simp only [← normalizer_eq_top_iff, ← op_normalizer, op_eq_top]
 
 @[to_additive] alias ⟨Normal.of_op, Normal.op⟩ := normal_op
 

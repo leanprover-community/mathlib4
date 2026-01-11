@@ -3,8 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
@@ -17,9 +20,11 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -64,31 +69,35 @@ lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl�
 instance : TopologicalSpace (Aut F) :=
   TopologicalSpace.induced (autEmbedding F) inferInstance
 
-/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
-automorphisms. -/
-lemma autEmbedding_range :
+/-lemma autEmbedding_range :
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
-    rfl
+    rfl-/
+
+/-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
+automorphisms. -/
+lemma autEmbedding_range :
+    Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | (F.map f.hom ≫ (a f.right).hom : _ → _) =
+      (a f.left).hom ≫ F.map f.hom } := by
+  ext a
+  simp only [Set.mem_range, id_obj, DFunLike.coe_fn_eq, Set.mem_iInter, Set.mem_setOf_eq]
+  refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
+  use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
   rw [autEmbedding_range]
-  refine isClosed_iInter (fun f ↦ isClosed_eq (X := F.obj f.left → F.obj f.right) ?_ ?_)
-  · fun_prop
-  · fun_prop
+  exact isClosed_iInter (fun f ↦ isClosed_eq (by fun_prop) (by fun_prop))
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
   injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
-
-@[deprecated (since := "2024-10-20")]
-alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
 
 instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
@@ -105,7 +114,7 @@ instance : ContinuousMul (Aut F) :=
 instance : ContinuousInv (Aut F) :=
   (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
-instance : TopologicalGroup (Aut F) := ⟨⟩
+instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 
@@ -118,8 +127,29 @@ instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) whe
     let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ ↦ σ.hom x
     let h (q : Aut F × F.obj X) : Aut (F.obj X) × F.obj X :=
       ⟨((fun p ↦ p X) ∘ autEmbedding F) q.1, q.2⟩
-    show Continuous (g ∘ h)
+    change Continuous (g ∘ h)
     fun_prop
+
+/-- If `G` is a functor of categories of finite types, the induced map `Aut F → Aut (F ⋙ G)` is
+continuous. -/
+lemma continuous_mapAut_whiskeringRight (G : FintypeCat.{w} ⥤ FintypeCat.{v}) :
+    Continuous (((whiskeringRight _ _ _).obj G).mapAut F) := by
+  rw [Topology.IsInducing.continuous_iff (autEmbedding_isClosedEmbedding _).isInducing,
+    continuous_pi_iff]
+  intro X
+  change Continuous fun a ↦ G.mapAut (F.obj X) (autEmbedding F a X)
+  fun_prop
+
+/-- If `G` is a fully faithful functor of categories finite types, this is the automorphism of
+topological groups `Aut F ≃ Aut (F ⋙ G)`. -/
+noncomputable def autEquivAutWhiskerRight {G : FintypeCat.{w} ⥤ FintypeCat.{v}}
+    (h : G.FullyFaithful) :
+    Aut F ≃ₜ* Aut (F ⋙ G) where
+  __ := (h.whiskeringRight C).autMulEquivOfFullyFaithful F
+  continuous_toFun := continuous_mapAut_whiskeringRight F G
+  continuous_invFun := Continuous.continuous_symm_of_equiv_compact_to_t2
+    (f := ((h.whiskeringRight C).autMulEquivOfFullyFaithful F).toEquiv)
+    (continuous_mapAut_whiskeringRight F G)
 
 variable [GaloisCategory C] [FiberFunctor F]
 

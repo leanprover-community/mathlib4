@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 
 /-!
 # The graded object in a single degree
@@ -14,13 +16,15 @@ the initial object of `C` in other degrees.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
 namespace GradedObject
 
-variable {J : Type*} {C : Type*} [Category C] [HasInitial C] [DecidableEq J]
+variable {J : Type*} {C : Type*} [Category* C] [HasInitial C] [DecidableEq J]
 
 /-- The functor which sends `X : C` to the graded object which is `X` in degree `j`
 and the initial object in other degrees. -/
@@ -77,7 +81,7 @@ variable (C) in
 evaluation functor `eval j` identifies to the identity functor. -/
 @[simps!]
 noncomputable def singleCompEval (j : J) : single j ⋙ eval j ≅ 𝟭 C :=
-  NatIso.ofComponents (singleObjApplyIso j) (by aesop_cat)
+  NatIso.ofComponents (singleObjApplyIso j) (by simp)
 
 end GradedObject
 

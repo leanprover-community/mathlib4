@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -18,19 +20,18 @@ TODO: `linearYoneda R C` is `R`-linear.
 TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 -/
 
+@[expose] public section
+
 
 universe w v u
 
-open Opposite
+open Opposite CategoryTheory.Functor
 
 namespace CategoryTheory
 
 variable (R : Type w) [Ring R] {C : Type u} [Category.{v} C] [Preadditive C] [Linear R C]
 variable (C)
 
--- Porting note: inserted specific `ModuleCat.asHom` in the definition of `linearYoneda`
--- and similarly in `linearCoyoneda`, otherwise many simp lemmas are not triggered automatically.
--- Eventually, doing so allows more proofs to be automatic!
 /-- The Yoneda embedding for `R`-linear categories `C`,
 sending an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
@@ -38,9 +39,9 @@ with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
     { obj := fun Y => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.asHom (Linear.leftComp R _ f.unop) }
+      map := fun f => ModuleCat.ofHom (Linear.leftComp R _ f.unop) }
   map {X₁ X₂} f :=
-    { app := fun Y => @ModuleCat.asHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
+    { app := fun Y => @ModuleCat.ofHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
         (Linear.rightComp R _ f) }
 
 /-- The Yoneda embedding for `R`-linear categories `C`,
@@ -50,9 +51,9 @@ with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
     { obj := fun X => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.asHom (Linear.rightComp R _ f) }
+      map := fun f => ModuleCat.ofHom (Linear.rightComp R _ f) }
   map {Y₁ Y₂} f :=
-    { app := fun X => @ModuleCat.asHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
+    { app := fun X => @ModuleCat.ofHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
         (Linear.leftComp _ _ f.unop) }
 
 instance linearYoneda_obj_additive (X : C) : ((linearYoneda R C).obj X).Additive where
@@ -66,7 +67,7 @@ theorem whiskering_linearYoneda :
 
 @[simp]
 theorem whiskering_linearYoneda₂ :
-    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
+    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) =
       preadditiveYoneda :=
   rfl
 
@@ -78,12 +79,12 @@ theorem whiskering_linearCoyoneda :
 @[simp]
 theorem whiskering_linearCoyoneda₂ :
     linearCoyoneda R C ⋙
-        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
+        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}) =
       preadditiveCoyoneda :=
   rfl
 
 instance full_linearYoneda : (linearYoneda R C).Full :=
-  let _ :  Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
+  let _ : Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
     (forget (ModuleCat.{v} R))) := Yoneda.yoneda_full
   Functor.Full.of_comp_faithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))

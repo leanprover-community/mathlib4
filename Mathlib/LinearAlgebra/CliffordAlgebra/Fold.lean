@@ -3,7 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Recursive computation rules for the Clifford algebra
@@ -27,6 +29,8 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 * `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
 * `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3
@@ -69,9 +73,9 @@ theorem foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAl
 /-- This lemma demonstrates the origin of the `foldr` name. -/
 theorem foldr_prod_map_ι (l : List M) (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) :
     foldr Q f hf n (l.map <| ι Q).prod = List.foldr (fun m n => f m n) n l := by
-  induction' l with hd tl ih
-  · rw [List.map_nil, List.prod_nil, List.foldr_nil, foldr_one]
-  · rw [List.map_cons, List.prod_cons, List.foldr_cons, foldr_mul, foldr_ι, ih]
+  induction l with
+  | nil => rw [List.map_nil, List.prod_nil, List.foldr_nil, foldr_one]
+  | cons hd tl ih => rw [List.map_cons, List.prod_cons, List.foldr_cons, foldr_mul, foldr_ι, ih]
 
 end Foldr
 
@@ -145,10 +149,10 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R,
     (add : ∀ x y, P x → P y → P (x + y)) (ι_mul : ∀ x m, P x → P (ι Q m * x)) : ∀ x, P x := by
   refine reverse_involutive.surjective.forall.2 ?_
   intro x
-  induction' x using CliffordAlgebra.right_induction with r x y hx hy m x hx
-  · simpa only [reverse.commutes] using algebraMap r
-  · simpa only [map_add] using add _ _ hx hy
-  · simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
+  induction x using CliffordAlgebra.right_induction with
+  | algebraMap r => simpa only [reverse.commutes] using algebraMap r
+  | add _ _ hx hy => simpa only [map_add] using add _ _ hx hy
+  | mul_ι _ _ hx => simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
 
 /-! ### Versions with extra state -/
 
@@ -175,7 +179,6 @@ theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] 
 theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
-  cases' x_fx with x fx
   simp only [foldr'Aux_apply_apply]
   rw [← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, hf, Prod.smul_mk]
 

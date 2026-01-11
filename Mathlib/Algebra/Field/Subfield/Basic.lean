@@ -3,11 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subfields
@@ -59,6 +61,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subfield, subfields
 -/
 
+@[expose] public section
+
 
 universe u v w
 
@@ -90,7 +94,7 @@ protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c
 
 end DerivedFromSubfieldClass
 
-/-! # top -/
+/-! ### top -/
 
 
 /-- The subfield of `K` containing all elements of `K`. -/
@@ -104,7 +108,7 @@ instance : Inhabited (Subfield K) :=
 theorem mem_top (x : K) : x ∈ (⊤ : Subfield K) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
   rfl
 
@@ -112,7 +116,7 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 
-/-! # comap -/
+/-! ### comap -/
 
 
 variable (f : K →+* L)
@@ -137,7 +141,7 @@ theorem comap_comap (s : Subfield M) (g : L →+* M) (f : K →+* L) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
-/-! # map -/
+/-! ### map -/
 
 
 /-- The image of a subfield along a ring homomorphism is a subfield. -/
@@ -147,14 +151,14 @@ def map (s : Subfield K) : Subfield L :=
       rintro _ ⟨x, hx, rfl⟩
       exact ⟨x⁻¹, s.inv_mem hx, map_inv₀ f x⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map : (s.map f : Set L) = f '' s :=
   rfl
 
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
-  simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
+  simp only [mem_mk, Subring.mem_map, mem_toSubring]
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
@@ -172,14 +176,14 @@ namespace RingHom
 
 variable (g : L →+* M) (f : K →+* L)
 
-/-! # range -/
+/-! ### range -/
 
 
 /-- The range of a ring homomorphism, as a subfield of the target. See Note [range copy pattern]. -/
 def fieldRange : Subfield L :=
   ((⊤ : Subfield K).map f).copy (Set.range f) Set.image_univ.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_fieldRange : (f.fieldRange : Set L) = Set.range f :=
   rfl
 
@@ -211,7 +215,7 @@ end RingHom
 
 namespace Subfield
 
-/-! # inf -/
+/-! ### inf -/
 
 
 /-- The inf of two subfields is their intersection. -/
@@ -222,7 +226,7 @@ instance : Min (Subfield K) :=
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
   rfl
 
@@ -242,13 +246,9 @@ instance : InfSet (Subfield K) :=
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subfield K)) : ((sInf S : Subfield K) : Set K) = ⋂ s ∈ S, ↑s :=
   show ((sInf (Subfield.toSubring '' S) : Subring K) : Set K) = ⋂ s ∈ S, ↑s by
-    ext x
-    rw [Subring.coe_sInf, Set.mem_iInter, Set.mem_iInter]
-    exact
-      ⟨fun h s s' ⟨s_mem, s'_eq⟩ => h s.toSubring _ ⟨⟨s, s_mem, rfl⟩, s'_eq⟩,
-        fun h s s' ⟨⟨s'', s''_mem, s_eq⟩, (s'_eq : ↑s = s')⟩ =>
-        h s'' _ ⟨s''_mem, by simp [← s_eq, ← s'_eq]⟩⟩
+    simp
 
+@[simp]
 theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Subring.mem_sInf.trans
     ⟨fun h p hp => h p.toSubring ⟨p, hp, rfl⟩, fun h _ ⟨p', hp', p_eq⟩ => p_eq ▸ h p' hp'⟩
@@ -257,22 +257,15 @@ theorem mem_sInf {S : Set (Subfield K)} {x : K} : x ∈ sInf S ↔ ∀ p ∈ S, 
 theorem coe_iInf {ι : Sort*} {S : ι → Subfield K} : (↑(⨅ i, S i) : Set K) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
-theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[simp]
+theorem mem_iInf {ι : Sort*} {S : ι → Subfield K} {x : K} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubring (s : Set (Subfield K)) :
     (sInf s).toSubring = ⨅ t ∈ s, Subfield.toSubring t := by
   ext x
-  rw [mem_toSubring, mem_sInf]
-  erw [Subring.mem_sInf]
-  exact
-    ⟨fun h p ⟨p', hp⟩ => hp ▸ Subring.mem_sInf.mpr fun p ⟨hp', hp⟩ => hp ▸ h _ hp', fun h p hp =>
-      h p.toSubring
-        ⟨p,
-          Subring.ext fun x =>
-            ⟨fun hx => Subring.mem_sInf.mp hx _ ⟨hp, rfl⟩, fun hx =>
-              Subring.mem_sInf.mpr fun p' ⟨_, p'_eq⟩ => p'_eq ▸ hx⟩⟩⟩
+  simp [mem_sInf, ← sInf_image, Subring.mem_sInf]
 
 theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
   have : ∀ {s t : Subfield K}, (s : Set K) ≤ t ↔ s ≤ t := by simp [SetLike.coe_subset_coe]
@@ -290,7 +283,7 @@ instance : CompleteLattice (Subfield K) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
-/-! # subfield closure of a subset -/
+/-! ### subfield closure of a subset -/
 
 /-- The `Subfield` generated by a set. -/
 def closure (s : Set K) : Subfield K := sInf {S | s ⊆ S}
@@ -299,13 +292,16 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
   mem_sInf
 
 /-- The subfield generated by a set includes the set. -/
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
   Subring.closure_le.mpr subset_closure
 
-theorem not_mem_of_not_mem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
 /-- A subfield `t` includes `closure s` if and only if it includes `s`. -/
@@ -315,6 +311,7 @@ theorem closure_le {s : Set K} {t : Subfield K} : closure s ≤ t ↔ s ⊆ t :=
 
 /-- Subfield closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set K⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
@@ -332,19 +329,18 @@ theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
     (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx)) (inv : ∀ x hx, p x hx → p x⁻¹ (inv_mem hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (h : x ∈ closure s) : p x h :=
-    letI : Subfield K :=
-      { carrier := {x | ∃ hx, p x hx}
-        mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
-        one_mem' := ⟨_, one⟩
-        add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
-        zero_mem' := ⟨zero_mem _, by
-          simp_rw [← @add_neg_cancel K _ 1]; exact add _ _ _ _ one (neg _ _ one)⟩
-        neg_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, neg _ _ hx⟩
-        inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
-    ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
+  letI : Subfield K :=
+    { carrier := {x | ∃ hx, p x hx}
+      mul_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, mul _ _ _ _ hx hy⟩
+      one_mem' := ⟨_, one⟩
+      add_mem' := by rintro _ _ ⟨_, hx⟩ ⟨_, hy⟩; exact ⟨_, add _ _ _ _ hx hy⟩
+      zero_mem' := ⟨zero_mem _, by
+        simp_rw [← @add_neg_cancel K _ 1]; exact add _ _ _ _ one (neg _ _ one)⟩
+      neg_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, neg _ _ hx⟩
+      inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
+  ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
 
-variable (K)
-
+variable (K) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure K _) (↑) where
   choice s _ := closure s
@@ -352,9 +348,8 @@ protected def gi : GaloisInsertion (@closure K _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
 
-variable {K}
-
 /-- Closure of a subfield `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subfield K) : closure (s : Set K) = s :=
   (Subfield.gi K).l_u_eq s
 
@@ -447,6 +442,21 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
 
+theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
+  (Equiv.ofInjective f f.injective).bijective
+
+/--
+`RingHom.rangeRestrictField` as a `RingEquiv`.
+-/
+@[simps! apply_coe]
+noncomputable def rangeRestrictFieldEquiv (f : K →+* L) : K ≃+* f.fieldRange :=
+  RingEquiv.ofBijective f.rangeRestrictField f.rangeRestrictField_bijective
+
+@[simp]
+theorem rangeRestrictFieldEquiv_apply_symm_apply (f : K →+* L) (x : f.fieldRange) :
+    f (f.rangeRestrictFieldEquiv.symm x) = x := by
+  rw [← rangeRestrictFieldEquiv_apply_coe, RingEquiv.apply_symm_apply]
+
 section eqLocus
 
 variable {L : Type v} [Semiring L]
@@ -457,6 +467,9 @@ def eqLocusField (f g : K →+* L) : Subfield K where
   __ := (f : K →+* L).eqLocus g
   inv_mem' _ := eq_on_inv₀ f g
   carrier := { x | f x = g x }
+
+@[simp]
+theorem mem_eqLocusField {f g : K →+* L} {x : K} : x ∈ f.eqLocusField g ↔ f x = g x := Iff.rfl
 
 /-- If two ring homomorphisms are equal on a set, then they are equal on its subfield closure. -/
 theorem eqOn_field_closure {f g : K →+* L} {s : Set K} (h : Set.EqOn f g s) :
@@ -588,7 +601,7 @@ theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
 
 end Subfield
 
-/-! ## Actions by `Subfield`s
+/-! ### Actions by `Subfield`s
 
 These are just copies of the definitions about `Subsemiring` starting from
 `Subsemiring.MulAction`.

@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -25,7 +28,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 * `IsInducing`: a map `f : X → Y` is called *inducing*,
   if the topology on the domain is equal to the induced topology.
 
-* `Embedding`: a map `f : X → Y` is an *embedding*,
+* `IsEmbedding`: a map `f : X → Y` is an *embedding*,
   if it is a topology inducing map and it is injective.
 
 * `IsOpenEmbedding`: a map `f : X → Y` is an *open embedding*,
@@ -40,6 +43,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology
@@ -92,56 +97,42 @@ if either of the following equivalent conditions hold:
 - for any topological space `Y`, a function `f : X → Y` is continuous
   provided that it is continuous on each `s ∈ S`.
 -/
-structure RestrictGenTopology (S : Set (Set X)) : Prop where
+structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
 under `f` of some open set `t : Set Y`. -/
-@[mk_iff]
+@[fun_prop, mk_iff]
 structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   eq_induced : tX = tY.induced f
 
-@[deprecated (since := "2024-10-28")] alias Inducing := IsInducing
-
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff]
-structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
+@[fun_prop, mk_iff]
+structure IsEmbedding (f : X → Y) : Prop extends IsInducing f where
   /-- A topological embedding is injective. -/
   injective : Function.Injective f
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding := IsEmbedding
-
 /-- An open embedding is an embedding with open range. -/
-@[mk_iff]
-structure IsOpenEmbedding (f : X → Y) extends IsEmbedding f : Prop where
+@[fun_prop, mk_iff]
+structure IsOpenEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding := IsOpenEmbedding
-
 /-- A closed embedding is an embedding with closed image. -/
-@[mk_iff]
-structure IsClosedEmbedding (f : X → Y) extends IsEmbedding f : Prop where
+@[fun_prop, mk_iff]
+structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding := IsClosedEmbedding
-
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-@[mk_iff isQuotientMap_iff']
+@[fun_prop, mk_iff isQuotientMap_iff']
 structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop where
   surjective : Function.Surjective f
   eq_coinduced : tY = tX.coinduced f
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap := IsQuotientMap
 
 end Topology

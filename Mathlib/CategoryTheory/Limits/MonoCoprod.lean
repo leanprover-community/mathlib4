@@ -3,10 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 
@@ -17,7 +19,7 @@ inclusions `A ⟶ A ⨿ B` are monomorphisms when `HasCoproduct A B`
 is satisfied. If it is so, it is shown that right inclusions are
 also monomorphisms.
 
-More generally, we deduce that when suitable coproducts exists, then
+More generally, we deduce that when suitable coproducts exist, then
 if `X : I → C` and `ι : J → I` is an injective map,
 then the canonical morphism `∐ (X ∘ ι) ⟶ ∐ X` is a monomorphism.
 It also follows that for any `i : I`, `Sigma.ι X i : X i ⟶ ∐ X` is
@@ -28,18 +30,20 @@ TODO: define distributive categories, and show that they satisfy `MonoCoprod`, s
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
-
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 universe u
 
 namespace CategoryTheory
 
+open CategoryTheory.Category CategoryTheory.Limits
+
 namespace Limits
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- This condition expresses that inclusion morphisms into coproducts are monomorphisms. -/
 class MonoCoprod : Prop where
@@ -60,8 +64,8 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
-      (by aesop_cat) (by aesop_cat)
-      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
+      (by simp) (by simp)
+      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
   exact binaryCofan_inl _ hc'
 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) :=
@@ -76,8 +80,7 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
     ∀ (c₁ c₂ : BinaryCofan A B) (_ : IsColimit c₁) (_ : IsColimit c₂) (_ : Mono c₁.inl),
       Mono c₂.inl
     by exact ⟨fun h₁ => this _ _ hc₁ hc₂ h₁, fun h₂ => this _ _ hc₂ hc₁ h₂⟩
-  intro c₁ c₂ hc₁ hc₂
-  intro
+  intro c₁ c₂ hc₁ hc₂ _
   simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using
     mono_comp c₁.inl (hc₁.coconePointUniqueUpToIso hc₂).hom
 
@@ -128,7 +131,7 @@ def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂)
     (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
     (fun f₁ f₂ m hm₁ hm₂ => by
       apply Cofan.IsColimit.hom_ext hc
-      rintro (i₁|i₂) <;> aesop_cat)
+      rintro (i₁ | i₂) <;> cat_disch)
 
 lemma mono_binaryCofanSum_inl [MonoCoprod C] :
     Mono (binaryCofanSum c c₁ c₂ hc₁ hc₂).inl :=
@@ -219,7 +222,7 @@ open Functor
 
 section Preservation
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     [PreservesColimitsOfShape (Discrete WalkingPair) F]
@@ -227,25 +230,31 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
   binaryCofan_inl {A B} c h := by
     let c' := BinaryCofan.mk (F.map c.inl) (F.map c.inr)
     apply mono_of_mono_map F
-    show Mono c'.inl
+    change Mono c'.inl
     apply MonoCoprod.binaryCofan_inl
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
     refine Cocones.ext (φ := eqToIso rfl) ?_
-    rintro ⟨(j₁|j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
+    rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 
 end Preservation
 
 section Concrete
 
-instance [ConcreteCategory C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
+instance [HasForget C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
     [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
   monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)
 
 end Concrete
 
 end MonoCoprod
+
+instance (A : C) [HasCoproducts.{u} C] [MonoCoprod C] :
+    (sigmaConst.{u}.obj A).PreservesMonomorphisms where
+  preserves {J I} ι hι := by
+    rw [mono_iff_injective] at hι
+    exact MonoCoprod.mono_map'_of_injective (fun (i : I) ↦ A) ι hι
 
 end Limits
 

@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.GroupTheory.CoprodI
-import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.CoprodI
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.Complement
 
 /-!
 
@@ -33,13 +34,15 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 ## References
 
 * The normal form theorem follows these [notes](https://webspace.maths.qmul.ac.uk/i.m.chiswell/ggt/lecture_notes/lecture2.pdf)
-from Queen Mary University
+  from Queen Mary University
 
 ## Tags
 
 amalgamated product, pushout, group
 
 -/
+
+@[expose] public section
 
 namespace Monoid
 
@@ -88,14 +91,14 @@ theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base φ) := by
   ext x
   apply (Con.eq _).2
   refine ConGen.Rel.of _ _ ?_
-  simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
+  simp only [MonoidHom.comp_apply]
   exact ⟨_, _, rfl, rfl⟩
 
 variable (φ) in
 theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base φ x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
-/-- Define a homomorphism out of the pushout of monoids be defining it on each object in the
+/-- Define a homomorphism out of the pushout of monoids by defining it on each object in the
 diagram -/
 def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
@@ -121,7 +124,7 @@ theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
   delta PushoutI lift base
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_apply_inr]
 
--- `ext` attribute should be lower priority then `hom_ext_nonempty`
+-- `ext` attribute should be lower priority than `hom_ext_nonempty`
 @[ext 1199]
 theorem hom_ext {f g : PushoutI φ →* K}
     (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _))
@@ -174,11 +177,11 @@ theorem induction_on {motive : PushoutI φ → Prop}
     induction x using Coprod.induction_on with
     | inl g =>
       induction g using CoprodI.induction_on with
-      | h_of i g => exact of i g
-      | h_mul x y ihx ihy =>
+      | of i g => exact of i g
+      | mul x y ihx ihy =>
         rw [map_mul]
         exact mul _ _ ihx ihy
-      | h_one => simpa using base 1
+      | one => simpa using base 1
     | inr h => exact base h
     | mul x y ihx ihy => exact mul _ _ ihx ihy
 
@@ -216,7 +219,7 @@ by induction on the word using `consRecOn`.
 variable (φ)
 
 /-- The data we need to pick a normal form for words in the pushout. We need to pick a
-canonical element of each coset. We also need all the maps in the diagram to be injective  -/
+canonical element of each coset. We also need all the maps in the diagram to be injective -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
   injective : ∀ i, Injective (φ i)
@@ -228,7 +231,7 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  choose t ht using fun i => (φ i).range.exists_right_transversal 1
+  choose t ht using fun i => (φ i).range.exists_isComplement_right 1
   apply Nonempty.intro
   exact
     { injective := hφ
@@ -244,13 +247,13 @@ structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI
   /-- Every `NormalWord` is the product of an element of the base group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
   head : H
-  /-- All letter in the word are in the transversal. -/
+  /-- All letters in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ d.set i
 
 /--
 A `Pair d i` is a word in the coproduct, `Coprod G`, the `tail`, and an element of the group `G i`,
 the `head`. The first letter of the `tail` must not be an element of `G i`.
-Note that the `head` may be `1` Every letter in the `tail` must be in the transversal given by `d`.
+Note that the `head` may be `1`. Every letter in the `tail` must be in the transversal given by `d`.
 Similar to `Monoid.CoprodI.Pair` except every letter must be in the transversal
 (not including the head letter). -/
 structure Pair (d : Transversal φ) (i : ι) extends CoprodI.Word.Pair G i where
@@ -267,7 +270,7 @@ instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 
 instance (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
-      head := 1,
+      head := 1, tail := _,
       fstIdx_ne := fun h => by cases h }⟩
 
 @[ext]
@@ -320,9 +323,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
-    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
-    ofCoprodI_of, inv_mul_cancel_left]
+  simp [prod, cons, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv, mul_assoc]
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
@@ -347,13 +348,13 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     rw [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead] at this
     simpa [((injective_iff_map_eq_one' _).1 (d.injective i))] using this
   · simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
-      exists_eq_right', mul_right_eq_self, exists_prop, true_and, false_or]
+      exists_eq_right', mul_eq_left, exists_prop, true_and, false_or]
     constructor
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
-        Prod.ext_iff, Subgroup.coe_mul] at h
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
+        Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
       erw [mul_one] at h₁
@@ -363,12 +364,12 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       dsimp
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
-        rw [head?_eq_head hnil]
+        rw [head?_eq_some_head hnil]
         simp_all
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head hw, Word.fstIdx, hep hw]
+        · simp [head?_eq_some_head hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =
@@ -425,7 +426,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, Word.equivPair_symm,
+      simp only [toFun, rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
         mul_smul, inv_smul_smul, smul_inv_smul]
@@ -444,7 +445,7 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       exact (equivPair i).symm_apply_apply _
     mul_smul := fun _ _ _ => by
       dsimp [instHSMul]
-      simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
+      simp [mul_assoc, Equiv.apply_symm_apply] }
 
 theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
     g • w = (equivPair i).symm
@@ -468,18 +469,12 @@ noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
-    base φ h • w = { w with head := h * w.head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_base]
-  rfl
+    base φ h • w = { w with head := h * w.head } := rfl
 
 theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = (equivPair i).symm
       { equivPair i w with
-        head := g * (equivPair i w).head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_of]
-  rfl
+        head := g * (equivPair i w).head } := rfl
 
 theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = g • w := by
@@ -493,40 +488,39 @@ theorem base_smul_eq_smul (h : H) (w : NormalWord d) :
 the underlying list. -/
 @[elab_as_elim]
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
-    (h_empty : motive empty)
-    (h_cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
+    (empty : motive empty)
+    (cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
       (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
-      motive w →  motive (cons g w hmw hgr))
-    (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
+      motive w → motive (cons g w hmw hgr))
+    (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
-  convert h_base head ⟨w, 1, h3⟩ rfl ?_
+  convert base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
-    | h_empty => exact h_empty
-    | h_cons i g w h1 hg1 ih =>
-      convert h_cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ (List.mem_cons_self _ _)) ?_ rfl
+    | empty => exact empty
+    | cons i g w h1 hg1 ih =>
+      convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
+        h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
-      · ext
-        simp only [Word.cons, Option.mem_def, cons, map_one, mul_one,
+      · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
-        simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
+        simp only [NormalWord.cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
           map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
 
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
   apply ext_smul i
-  simp only [cons, ne_eq, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
+  simp only [cons, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
     equivPair, rcons, Word.equivPair_symm, Word.rcons_eq_smul, Equiv.coe_fn_mk,
     Word.equivPair_tail_eq_inv_smul, Equiv.coe_fn_symm_mk, smul_inv_smul]
@@ -550,10 +544,10 @@ theorem prod_smul (g : PushoutI φ) (w : NormalWord d) :
 
 theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
   induction w using consRecOn with
-  | h_empty => simp
-  | h_cons i g w _ _ _ _ ih =>
+  | empty => simp
+  | cons i g w _ _ _ _ ih =>
     rw [prod_cons, mul_smul, ih, cons_eq_smul]
-  | h_base h w _ ih =>
+  | base h w _ ih =>
     rw [prod_smul, mul_smul, ih]
 
 /-- The equivalence between normal forms and elements of the pushout -/
@@ -594,7 +588,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, of_smul_eq_smul])
 
@@ -605,34 +599,29 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
 
-open NormalWord
-
-variable (φ)
-
+variable (φ) in
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/
 def Reduced (w : Word G) : Prop :=
   ∀ g, g ∈ w.toList → g.2 ∉ (φ g.1).range
-
-variable {φ}
 
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
   classical
   induction w using Word.consRecOn with
-  | h_empty => exact ⟨empty, by simp, rfl⟩
-  | h_cons i g w hIdx hg1 ih =>
+  | empty => exact ⟨empty, by simp, rfl⟩
+  | cons i g w hIdx hg1 ih =>
     rcases ih (fun _ hg => hw _ (List.mem_cons_of_mem _ hg)) with
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons g w' ?_ ?_, ?_⟩
     · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]
-    · exact hw _ (List.mem_cons_self _ _)
+    · exact hw _ List.mem_cons_self
     · simp [hw'prod, hw'map]
 
 /-- For any word `w` in the coproduct,
@@ -679,12 +668,13 @@ theorem inf_of_range_eq_base_range
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
-          forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq, true_and, hg₁r, hg₂r,
-          List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
+        simp only [w, Reduced, List.mem_cons,
+          forall_eq_or_imp, not_false_eq_true,
+          hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
+          inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by
-        simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
-          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
+        simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
+          List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, mul_one,
           mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf

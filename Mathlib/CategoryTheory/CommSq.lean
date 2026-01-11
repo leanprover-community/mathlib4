@@ -3,17 +3,19 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # Commutative squares
 
-This file provide an API for commutative squares in categories.
+This file provides an API for commutative squares in categories.
 If `top`, `left`, `right` and `bottom` are four morphisms which are the edges
 of a square, `CommSq top left right bottom` is the predicate that this
 square is commutative.
 
-The structure `CommSq` is extended in `CategoryTheory/Shapes/Limits/CommSq.lean`
+The structure `CommSq` is extended in `Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean`
 as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 
 ## Future work
@@ -22,10 +24,12 @@ Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lea
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The proposition that a square
 ```
@@ -41,7 +45,7 @@ is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
   /-- The square commutes. -/
-  w : f ≫ h = g ≫ i
+  w : f ≫ h = g ≫ i := by cat_disch
 
 attribute [reassoc] CommSq.w
 
@@ -126,7 +130,7 @@ end CommSq
 
 namespace Functor
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
@@ -153,15 +157,14 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
   l : B ⟶ X
   /-- The upper left triangle commutes. -/
-  fac_left : i ≫ l = f
+  fac_left : i ≫ l = f := by cat_disch
   /-- The lower right triangle commutes. -/
-  fac_right : l ≫ p = g
+  fac_right : l ≫ p = g := by cat_disch
 
 namespace LiftStruct
 
@@ -188,17 +191,17 @@ in the opposite category. -/
 def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
-/-- Equivalences of `LiftStruct` for a square in the oppositive category and
+/-- Equivalences of `LiftStruct` for a square in the opposite category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 end LiftStruct
 
@@ -218,7 +221,6 @@ instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
 
 variable (sq : CommSq f i p g)
 
-
 /-- The assertion that a square has a `LiftStruct`. -/
 class HasLift : Prop where
   /-- Square has a `LiftStruct`. -/
@@ -226,12 +228,9 @@ class HasLift : Prop where
 
 namespace HasLift
 
-variable {sq}
-
+variable {sq} in
 theorem mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
-
-variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor

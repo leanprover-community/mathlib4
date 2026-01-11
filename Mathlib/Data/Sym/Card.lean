@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars
@@ -51,6 +53,8 @@ while the "stars and bars" technique gives
 stars and bars, multichoose
 -/
 
+@[expose] public section
+
 
 open Finset Fintype Function Sum Nat
 
@@ -87,7 +91,6 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
   right_inv s := by
     simp only [map_map, comp_apply, ← Fin.castSucc_zero, Fin.predAbove_succAbove, map_id']
 
--- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
@@ -103,9 +106,7 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
-  -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
-  -- deprecated?
-  exact Fintype.card_congr (equivCongr (equivFin α))
+  exact card_congr (equivCongr (equivFin α))
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
 `Nat.choose (card α + k - 1) k`. -/
@@ -141,12 +142,12 @@ lemma two_mul_card_image_offDiag (s : Finset α) : 2 * #(s.offDiag.image Sym2.mk
   have hxy' : y ≠ x := hxy.symm
   have : {z ∈ s.offDiag | Sym2.mk z = s(x, y)} = {(x, y), (y, x)} := by
     ext ⟨x₁, y₁⟩
-    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk.inj_iff, Prod.mk.inj_iff,
+    rw [mem_filter, mem_insert, mem_singleton, Sym2.eq_iff, Prod.mk_inj, Prod.mk_inj,
       and_iff_right_iff_imp]
     -- `hxy'` is used in `exact`
     rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> rw [mem_offDiag] <;> exact ⟨‹_›, ‹_›, ‹_›⟩
-  rw [this, card_insert_of_not_mem, card_singleton]
-  simp only [not_and, Prod.mk.inj_iff, mem_singleton]
+  rw [this, card_insert_of_notMem, card_singleton]
+  simp only [not_and, Prod.mk_inj, mem_singleton]
   exact fun _ => hxy'
 
 /-- The `offDiag` of `s : Finset α` is sent on a finset of `Sym2 α` of card `#s.offDiag / 2`.
@@ -172,6 +173,10 @@ theorem card_subtype_not_diag [Fintype α] :
   rw [mem_filter, univ_product_univ, mem_image]
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
+
+theorem card_diagSet_compl [Fintype α] :
+    Fintype.card ((@Sym2.diagSet α)ᶜ : Set _) = (card α).choose 2 := by
+  simp only [← card_subtype_not_diag, Sym2.diagSet_compl_eq_setOf_not_isDiag, Set.coe_setOf]
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=

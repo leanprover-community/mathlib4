@@ -3,11 +3,14 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Rel
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Rel
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -37,13 +40,11 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   look like.
 -/
 
--- Porting note: using `aesop` for automation
+@[expose] public section
 
--- Porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
--- Porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
@@ -93,11 +94,10 @@ structure SimpleGraph (V : Type u) where
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
--- Porting note: changed `obviously` to `aesop` in the `structure`
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+/-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
@@ -139,16 +139,8 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
     (SimpleGraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
--- Porting note: attributes needed for `completeGraph`
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
-
-/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
-adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
-def completeGraph (V : Type u) : SimpleGraph V where Adj := Ne
-
-/-- The graph with no edges on a given vertex type `V`. `Mathlib` prefers the notation `⊥`. -/
-def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
@@ -197,6 +189,12 @@ theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
   adj_injective.eq_iff
 
+theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ G.Adj w x := by
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h
+  rcases h with hl | hr
+  · rw [hl.1, hl.2]
+  · rw [hr.1, hr.2, adj_comm]
+
 section Order
 
 /-- The relation that one `SimpleGraph` is a subgraph of another.
@@ -206,6 +204,8 @@ def IsSubgraph (x y : SimpleGraph V) : Prop :=
 
 instance : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
+
+lemma le_iff_adj {G H : SimpleGraph V} : G ≤ H ↔ ∀ v w, G.Adj v w → H.Adj v w := .rfl
 
 @[simp]
 theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Prop) = (· ≤ ·) :=
@@ -300,36 +300,33 @@ instance distribLattice : DistribLattice (SimpleGraph V) :=
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
-  { SimpleGraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    compl := HasCompl.compl
-    sdiff := (· \ ·)
-    top := completeGraph V
-    bot := emptyGraph V
-    le_top := fun x _ _ h => x.ne_of_adj h
-    bot_le := fun _ _ _ h => h.elim
-    sdiff_eq := fun x y => by
-      ext v w
-      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
-      rintro rfl
-      exact x.irrefl h.1
-    inf_compl_le_bot := fun _ _ _ h => False.elim <| h.2.2 h.1
-    top_le_sup_compl := fun G v w hvw => by
-      by_cases h : G.Adj v w
-      · exact Or.inl h
-      · exact Or.inr ⟨hvw, h⟩
-    sSup := sSup
-    le_sSup := fun _ G hG _ _ hab => ⟨G, hG, hab⟩
-    sSup_le := fun s G hG a b => by
-      rintro ⟨H, hH, hab⟩
-      exact hG _ hH hab
-    sInf := sInf
-    sInf_le := fun _ _ hG _ _ hab => hab.1 hG
-    le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
-    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) where
+  top.Adj := Ne
+  bot.Adj _ _ := False
+  le_top x _ _ h := x.ne_of_adj h
+  bot_le _ _ _ h := h.elim
+  sdiff_eq x y := by
+    ext v w
+    refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+    rintro rfl
+    exact x.irrefl h.1
+  inf_compl_le_bot _ _ _ h := False.elim <| h.2.2 h.1
+  top_le_sup_compl G v w hvw := by
+    by_cases h : G.Adj v w
+    · exact Or.inl h
+    · exact Or.inr ⟨hvw, h⟩
+  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
+  sSup_le s G hG a b := by
+    rintro ⟨H, hH, hab⟩
+    exact hG _ hH hab
+  sInf_le _ _ hG _ _ hab := hab.1 hG
+  le_sInf _ _ hG _ _ hab := ⟨fun _ hH => hG _ hH hab, hab.ne⟩
+  iInf_iSup_eq f := by ext; simp [Classical.skolem]
+/-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
+abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
+
+/-- The graph with no edges on a given vertex type `V`. -/
+abbrev emptyGraph (V : Type u) : SimpleGraph V := ⊥
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -389,13 +386,13 @@ end Order
 
 /-- `G.support` is the set of vertices that form edges in `G`. -/
 def support : Set V :=
-  Rel.dom G.Adj
+  SetRel.dom {(u, v) : V × V | G.Adj u v}
 
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
-  Rel.dom_mono h
+  SetRel.dom_mono fun _uv huv ↦ h huv
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
@@ -403,6 +400,9 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
+
+lemma neighborSet_subset_support (v : V) : G.neighborSet v ⊆ G.support :=
+  fun _ hadj ↦ ⟨v, hadj.symm⟩
 
 section EdgeSet
 
@@ -431,6 +431,11 @@ theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun _ _ => Adj.ne) e
 
+@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
+  imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
+
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
+
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
 @[simp]
@@ -444,9 +449,9 @@ theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
 
-alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
+@[gcongr] alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
 
-alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
+@[gcongr] alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
 
@@ -457,12 +462,12 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
   Sym2.fromRel_bot
 
 @[simp]
-theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
-  Sym2.fromRel_ne
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
+  Sym2.diagSet_compl_eq_fromRel_ne.symm
 
 @[simp]
-theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ {e | ¬e.IsDiag} :=
-  fun _ h => (Sym2.fromRel_irreflexive (sym := G.symm)).mp G.loopless h
+theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ Sym2.diagSetᶜ :=
+  Sym2.irreflexive_iff_fromRel_subset_diagSet_compl G.symm |>.mp G.loopless
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -490,15 +495,12 @@ variable {G G₁ G₂}
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
   rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
 
-/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_from_edgeSet`,
-allows proving `(G \ from_edgeSet s).edge_set = G.edgeSet \ s` by `simp`. -/
+/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
+allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
-    G.edgeSet \ (s \ { e | e.IsDiag }) = G.edgeSet \ s := by
-  ext e
-  simp only [Set.mem_diff, Set.mem_setOf_eq, not_and, not_not, and_congr_right_iff]
-  intro h
-  simp only [G.not_isDiag_of_mem_edgeSet h, imp_false]
+    G.edgeSet \ (s \ Sym2.diagSet) = G.edgeSet \ s := by
+  grind [Sym2.mem_diagSet_iff_isDiag, not_isDiag_of_mem_edgeSet]
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
@@ -513,7 +515,19 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
   rwa [mem_edgeSet] at he
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
-  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right, Subtype.coe_mk]
+  simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
+
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
+  simp [← le_bot_iff, le_iff_adj]
+
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 
@@ -558,6 +572,9 @@ def fromEdgeSet : SimpleGraph V where
   Adj := Sym2.ToRel s ⊓ Ne
   symm _ _ h := ⟨Sym2.toRel_symmetric s h.1, h.2.symm⟩
 
+instance [DecidablePred (· ∈ s)] [DecidableEq V] : DecidableRel (fromEdgeSet s).Adj :=
+  inferInstanceAs <| DecidableRel fun v w ↦ s(v, w) ∈ s ∧ v ≠ w
+
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
   Iff.rfl
@@ -565,7 +582,7 @@ theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w 
 -- Note: we need to make sure `fromEdgeSet_adj` and this lemma are confluent.
 -- In particular, both yield `s(u, v) ∈ (fromEdgeSet s).edgeSet` ==> `s(v, w) ∈ s ∧ v ≠ w`.
 @[simp]
-theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := by
+theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ Sym2.diagSet := by
   ext e
   exact Sym2.ind (by simp) e
 
@@ -574,10 +591,19 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
+@[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
+    fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
+
+lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s Sym2.diagSet where
+  mp := by rintro rfl; simp +contextual [Set.disjoint_right]
+  mpr := by rintro ⟨rfl, hs⟩; simp [hs]
+
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
+
+@[simp] lemma fromEdgeSet_not_isDiag : @fromEdgeSet V Sym2.diagSetᶜ = ⊤ := by ext; simp
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
@@ -603,17 +629,14 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
   ext v w
   constructor <;> simp +contextual
 
-@[mono]
+@[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
-  rintro v w
-  simp +contextual only [fromEdgeSet_adj, Ne, not_false_iff,
-    and_true, and_imp]
-  exact fun vws _ => h vws
+  simpa using Set.diff_subset_diff h fun _ a ↦ a
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
-  conv_rhs => rw [← Set.diff_union_inter s {e : Sym2 V | e.IsDiag}]
-  rw [← disjoint_edgeSet,  edgeSet_fromEdgeSet, Set.disjoint_union_right, and_iff_left]
-  exact Set.disjoint_left.2 fun e he he' ↦ not_isDiag_of_mem_edgeSet _ he he'.2
+  conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
+  rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
+  grind [edgeSet_subset_setOf_not_isDiag]
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
@@ -623,6 +646,9 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   infer_instance
 
 end FromEdgeSet
+
+theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
+  simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
 /-! ### Incidence set -/
 
@@ -662,7 +688,7 @@ theorem adj_of_mem_incidenceSet (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
 
 theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠ b) :
     G.incidenceSet a ∩ G.incidenceSet b = ∅ := by
-  simp_rw [Set.eq_empty_iff_forall_not_mem, Set.mem_inter_iff, not_and]
+  simp_rw [Set.eq_empty_iff_forall_notMem, Set.mem_inter_iff, not_and]
   intro u ha hb
   exact h (G.adj_of_mem_incidenceSet hn ha hb)
 
@@ -674,7 +700,7 @@ instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 
-lemma not_mem_neighborSet_self : a ∉ G.neighborSet a := by simp
+lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -733,10 +759,10 @@ theorem mem_commonNeighbors {u v w : V} : u ∈ G.commonNeighbors v w ↔ G.Adj 
 theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbors w v :=
   Set.inter_comm _ _
 
-theorem not_mem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
+theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-theorem not_mem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
+theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
@@ -771,10 +797,10 @@ theorem edge_other_incident_set {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v
 
 theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
     G.otherVertexOfIncident h ∈ G.neighborSet v := by
-  cases' h with he hv
+  obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
--- Porting note: as a simp lemma this does not apply even to itself
+@[simp]
 theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
     G.otherVertexOfIncident (G.mem_incidence_iff_neighbor.mpr h) = w :=
   Sym2.congr_right.mp (Sym2.other_spec' (G.mem_incidence_iff_neighbor.mpr h).right)
@@ -787,57 +813,43 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
   invFun w := ⟨s(v, w.1), G.mem_incidence_iff_neighbor.mpr w.2⟩
   left_inv x := by simp [otherVertexOfIncident]
   right_inv := fun ⟨w, hw⟩ => by
-    simp only [mem_neighborSet, Subtype.mk.injEq]
+    simp only [Subtype.mk.injEq]
     exact incidence_other_neighbor_edge _ hw
 
 end Incidence
 
-/-! ## Edge deletion -/
+section IsCompleteBetween
 
-section deleteEdges
+variable {s t : Set V}
 
-/-- Given a set of vertex pairs, remove all of the corresponding edges from the
-graph's edge set, if present.
+/-- The condition that the portion of the simple graph `G` _between_ `s` and `t` is complete, that
+is, every vertex in `s` is adjacent to every vertex in `t`, and vice versa. -/
+def IsCompleteBetween (G : SimpleGraph V) (s t : Set V) :=
+  ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
 
-See also: `SimpleGraph.Subgraph.deleteEdges`. -/
-def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V := G \ fromEdgeSet s
+theorem IsCompleteBetween.disjoint (h : G.IsCompleteBetween s t) : Disjoint s t :=
+  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (h hv₁ hv₂)
 
-variable {G} {H : SimpleGraph V} {s s₁ s₂ : Set (Sym2 V)}
+theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween t s where
+  mp h _ h₁ _ h₂ := (h h₂ h₁).symm
+  mpr h _ h₁ _ h₂ := (h h₂ h₁).symm
 
-@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
-  and_congr_right fun h ↦ (and_iff_left h.ne).not
+alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
 
-@[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
-  ext; simp
+end IsCompleteBetween
 
-@[simp]
-theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
-    (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by simp [deleteEdges, sdiff_sdiff]
+section Subsingleton
 
-@[simp] lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
-@[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
+protected theorem subsingleton_iff : Subsingleton (SimpleGraph V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ Unique.instSubsingleton⟩
+  contrapose! h
+  exact instNontrivial
 
-lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
+protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ instNontrivial⟩
+  contrapose! h
+  exact Unique.instSubsingleton
 
-lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
-  sdiff_le_sdiff_left <| fromEdgeSet_mono h
+end Subsingleton
 
-lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
-
-@[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
-  rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
-
-theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
-    G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) := by
-  ext
-  simp +contextual [imp_false]
-
-theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
-    G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
-  rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
-
-theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
-  simp [deleteEdges]
-
-end deleteEdges
 end SimpleGraph

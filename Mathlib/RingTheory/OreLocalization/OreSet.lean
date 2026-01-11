@@ -3,10 +3,12 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.GroupTheory.OreLocalization.OreSet
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.GroupTheory.OreLocalization.OreSet
 
 /-!
 
@@ -19,6 +21,10 @@ This file contains results on left Ore sets for rings and monoids with zero.
 * https://ncatlab.org/nlab/show/Ore+set
 
 -/
+
+@[expose] public section
+
+assert_not_exists RelIso
 
 namespace OreLocalization
 
@@ -40,7 +46,7 @@ def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoi
   letI : CancelMonoidWithZero R := NoZeroDivisors.toCancelMonoidWithZero
   oreSetOfCancelMonoidWithZero oreNum oreDenom ore_eq
 
-lemma nonempty_oreSet_iff {R : Type*} [Ring R] {S : Submonoid R} :
+lemma nonempty_oreSet_iff {R : Type*} [Monoid R] {S : Submonoid R} :
     Nonempty (OreSet S) ↔ (∀ (r₁ r₂ : R) (s : S), r₁ * s = r₂ * s → ∃ s' : S, s' * r₁ = s' * r₂) ∧
       (∀ (r : R) (s : S), ∃ (r' : R) (s' : S), s' * r = r' * s) := by
   constructor

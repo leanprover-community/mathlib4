@@ -1,5 +1,12 @@
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
+
+
+-- #adaptation_note
+-- The haveLet linter started failing after https://github.com/leanprover/lean4/pull/6299
+-- Disabling aync elaboration fixes it, but of course we're not going to do that globally.
+set_option Elab.async false
 
 set_option linter.haveLet 1
 
@@ -24,7 +31,8 @@ example : True := by
 warning: declaration uses 'sorry'
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -34,7 +42,8 @@ example : True := by
 
 /--
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 set_option linter.haveLet 2 in
@@ -51,7 +60,8 @@ example : True := by
 warning: declaration uses 'sorry'
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -63,7 +73,8 @@ example : True := by
 warning: declaration uses 'sorry'
 ---
 warning: '_zero : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -75,16 +86,20 @@ example : True := by
 warning: declaration uses 'sorry'
 ---
 warning: '_a : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 ---
 warning: '_b : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 ---
 warning: '_oh : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 ---
 warning: '_b : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -102,7 +117,8 @@ set_option linter.haveLet 1 in
 warning: declaration uses 'sorry'
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 example : True := by
@@ -132,7 +148,8 @@ set_option linter.haveLet 1 in
 warning: declaration uses 'sorry'
 ---
 warning: 'this : ℕ' is a Type and not a Prop. Consider using 'let' instead of 'have'.
-You can disable this linter using `set_option linter.haveLet 0`
+
+Note: This linter can be disabled with `set_option linter.haveLet 0`
 -/
 #guard_msgs in
 theorem ghi : True := by

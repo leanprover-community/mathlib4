@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.MeasureTheory.Integral.ExpDecay
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Integral.ExpDecay
 
 /-!
 # The Gamma function
@@ -36,6 +38,8 @@ set it to be `0` by convention.)
 Gamma
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -54,9 +58,7 @@ theorem Gamma_integrand_isLittleO (s : ℝ) :
   have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
       (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by
     ext1 x
-    field_simp [exp_ne_zero, exp_neg, ← Real.exp_add]
-    left
-    ring
+    simp [field, ← exp_nsmul, exp_neg]
   rw [this]
   exact (tendsto_exp_mul_div_rpow_atTop s (1 / 2) one_half_pos).inv_tendsto_atTop
 
@@ -98,8 +100,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     refine HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 ?_
     apply (ae_restrict_iff' measurableSet_Ioi).mpr
     filter_upwards with x hx
-    rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
-      abs_cpow_eq_rpow_re_of_pos hx _]
+    rw [norm_mul, Complex.norm_of_nonneg <| le_of_lt <| exp_pos <| -x,
+      norm_cpow_eq_rpow_re_of_pos hx _]
     simp
 
 /-- Euler's integral for the `Γ` function (of a complex variable `s`), defined as
@@ -114,9 +116,9 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   dsimp only
-  rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
-    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
-    ofReal_log (le_of_lt hx), conj_ofReal, RingHom.map_sub, RingHom.map_one]
+  rw [map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
+    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, map_mul,
+    ← ofReal_log (le_of_lt hx), conj_ofReal, map_sub, map_one]
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
@@ -145,7 +147,7 @@ section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
 def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
-  ∫ x in (0)..X, (-x).exp * x ^ (s - 1)
+  ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
@@ -175,12 +177,12 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     refine (?_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
     exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
-  simp_rw [norm_eq_abs, map_mul]
+  simp_rw [norm_mul]
   refine (((Real.GammaIntegral_convergent hs).mono_set
     Ioc_subset_Ioi_self).hasFiniteIntegral.congr ?_).const_mul _
   rw [EventuallyEq, ae_restrict_iff']
   · filter_upwards with x hx
-    rw [abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
+    rw [Complex.norm_of_nonneg (exp_pos _).le, norm_cpow_eq_rpow_re_of_pos hx.1]
     simp
   · exact measurableSet_Ioc
 
@@ -211,8 +213,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
-  have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  rw [← t, ofReal_zero, zero_cpow]
+  rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
   · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 
@@ -236,8 +237,8 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
       (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
     intro x hx; dsimp only
-    rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
-      abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
+    rw [norm_mul, norm_neg, norm_cpow_eq_rpow_re_of_pos hx,
+      Complex.norm_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
   exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
 
 end GammaRecurrence
@@ -254,12 +255,14 @@ noncomputable def GammaAux : ℕ → ℂ → ℂ
 
 theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
-  induction' n with n hn generalizing s
-  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  induction n generalizing s with
+  | zero =>
+    simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]; rw [GammaIntegral_add_one h1]
     rw [mul_comm, mul_div_cancel_right₀]; contrapose! h1; rw [h1]
     simp
-  · dsimp only [GammaAux]
+  | succ n hn =>
+    dsimp only [GammaAux]
     have hh1 : -(s + 1).re < n := by
       rw [Nat.cast_add, Nat.cast_one] at h1
       rw [add_re, one_re]; linarith
@@ -267,7 +270,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
-  cases' n with n n
+  rcases n with - | n
   · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
@@ -288,10 +291,11 @@ irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
 theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
-  have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := by
-    intro k; induction' k with k hk
-    · simp [Gamma]
-    · rw [← hk, ← add_assoc]
+  have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := fun k ↦ by
+    induction k with
+    | zero => simp [Gamma]
+    | succ k hk =>
+      rw [← hk, ← add_assoc]
       refine (GammaAux_recurrence2 s (⌊1 - s.re⌋₊ + k) ?_).symm
       rw [Nat.cast_add]
       have i0 := Nat.sub_one_lt_floor (1 - s.re)
@@ -303,7 +307,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]
-    · omega
+    · lia
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -312,7 +316,7 @@ theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := 
   have t1 : -s.re < n := by simpa only [sub_sub_cancel_left] using Nat.sub_one_lt_floor (1 - s.re)
   have t2 : -(s + 1).re < n := by rw [add_re, one_re]; linarith
   rw [Gamma_eq_GammaAux s n t1, Gamma_eq_GammaAux (s + 1) n t2, GammaAux_recurrence1 s n t1]
-  field_simp
+  field
 
 theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s :=
   Gamma_eq_GammaAux s 0 (by norm_cast; linarith)
@@ -330,7 +334,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℂ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
@@ -361,9 +365,9 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     intro s
     rw [GammaAux]
     dsimp only
-    rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]
+    rw [div_eq_mul_inv _ s, map_mul, conj_inv, ← div_eq_mul_inv]
     suffices conj s + 1 = conj (s + 1) by rw [this, IH]
-    rw [RingHom.map_add, RingHom.map_one]
+    rw [map_add, map_one]
 
 /-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))` in terms of the Gamma
 function, for complex `a`. -/
@@ -384,7 +388,7 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
         real_smul, ← one_div, ofReal_div, ofReal_one]
     _ = 1 / r * (1 / r : ℂ) ^ (a - 1) * (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
-      simp_rw [← integral_mul_left, mul_assoc]
+      simp_rw [← MeasureTheory.integral_const_mul, mul_assoc]
     _ = (1 / r) ^ a * Gamma a := by
       rw [aux, Gamma_eq_integral ha]
       congr 2 with x
@@ -434,7 +438,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℝ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
@@ -482,7 +486,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
 open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
-def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
+meta def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Gamma $a) =>
     match ← core q(inferInstance) q(inferInstance) a with

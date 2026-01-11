@@ -3,7 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Preadditive structure on functor categories
@@ -13,11 +16,13 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive D]
 
 instance {F G : C ⥤ D} : Zero (F ⟶ G) where
   zero := { app := fun _ => 0 }
@@ -39,37 +44,30 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
         apply add_assoc
       zero_add := by
         intros
-        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
-        dsimp
         ext
         apply add_zero
       add_comm := by
         intros
-        dsimp
         ext
         apply add_comm
       sub_eq_add_neg := by
         intros
-        dsimp
         ext
         apply sub_eq_add_neg
       neg_add_cancel := by
         intros
-        dsimp
         ext
         apply neg_add_cancel }
   add_comp := by
     intros
-    dsimp
     ext
     apply add_comp
   comp_add := by
     intros
-    dsimp
     ext
     apply comp_add
 

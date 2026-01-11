@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Synonym
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Actions by and on order synonyms
@@ -13,9 +15,11 @@ This PR transfers group action instances from a type `α` to `αᵒᵈ` and `Lex
 
 ## See also
 
-* `Mathlib.Algebra.Order.GroupWithZero.Action.Synonym`
-* `Mathlib.Algebra.Order.Module.Synonym`
+* `Mathlib/Algebra/Order/GroupWithZero/Action/Synonym.lean`
+* `Mathlib/Algebra/Order/Module/Synonym.lean`
 -/
+
+@[expose] public section
 
 variable {M N α : Type*}
 
@@ -39,15 +43,15 @@ instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMu
 instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
   ‹SMulCommClass M N α›
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower Mᵒᵈ N α := ‹IsScalarTower M N α›
 
-@[to_additive instVAddAssocClass']
+@[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M Nᵒᵈ α := ‹IsScalarTower M N α›
 
-@[to_additive instVAddAssocClass'']
+@[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M N αᵒᵈ := ‹IsScalarTower M N α›
 
@@ -73,15 +77,15 @@ instance instSMulCommClass' [SMul M α] [SMul N α] [SMulCommClass M N α] :
 instance instSMulCommClass'' [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M N (Lex α) := ‹SMulCommClass M N α›
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower (Lex M) N α := ‹IsScalarTower M N α›
 
-@[to_additive instVAddAssocClass']
+@[to_additive]
 instance instIsScalarTower' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M (Lex N) α := ‹IsScalarTower M N α›
 
-@[to_additive instVAddAssocClass'']
+@[to_additive]
 instance instIsScalarTower'' [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower M N (Lex α) := ‹IsScalarTower M N α›
 

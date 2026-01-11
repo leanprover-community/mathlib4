@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
 # Change of presheaf of rings
@@ -14,6 +16,8 @@ In this file, we define the restriction of scalars functor
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -27,15 +31,20 @@ variable {C : Type u'} [Category.{v'} C] {R R' : Cᵒᵖ ⥤ RingCat.{u}}
 @[simps]
 noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶ R') :
     PresheafOfModules R where
-  obj := fun X ↦ (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X)
-  map := fun {X Y} f ↦
+  obj := fun X ↦ (ModuleCat.restrictScalars (α.app X).hom).obj (M'.obj X)
+  -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
+  -- This suggests `restrictScalars` needs to be redesigned.
+  map := fun {X Y} f ↦ ModuleCat.ofHom
+      (X := (ModuleCat.restrictScalars (α.app X).hom).obj (M'.obj X))
+      (Y := (ModuleCat.restrictScalars (R.map f).hom).obj
+        ((ModuleCat.restrictScalars (α.app Y).hom).obj (M'.obj Y)))
     { toFun := M'.map f
       map_add' := map_add _
       map_smul' := fun r x ↦ (M'.map_smul f (α.app _ r) x).trans (by
-        have eq := RingHom.congr_fun (α.naturality f) r
+        have eq := RingHom.congr_fun (congrArg RingCat.Hom.hom <| α.naturality f) r
         dsimp at eq
         rw [← eq]
-        rfl ) }
+        rfl) }
 
 /-- The restriction of scalars functor `PresheafOfModules R' ⥤ PresheafOfModules R`
 induced by a morphism of presheaves of rings `R ⟶ R'`. -/
@@ -44,7 +53,7 @@ noncomputable def restrictScalars (α : R ⟶ R') :
     PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
   obj M' := M'.restrictScalarsObj α
   map φ' :=
-    { app := fun X ↦ (ModuleCat.restrictScalars (α.app X)).map (Hom.app φ' X)
+    { app := fun X ↦ (ModuleCat.restrictScalars (α.app X).hom).map (Hom.app φ' X)
       naturality := fun {X Y} f ↦ by
         ext x
         exact naturality_apply φ' f x }

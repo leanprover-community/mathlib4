@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
+module
+
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
 # Nonnegative elements are archimedean
@@ -19,13 +21,15 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
 
-assert_not_exists Finset
+@[expose] public section
+
+assert_not_exists Finset Field
 
 namespace Nonneg
 
 variable {α : Type*}
 
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
+instance floorSemiring [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α] :
     FloorSemiring { r : α // 0 ≤ r } where
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊
@@ -34,12 +38,14 @@ instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
   gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
 
 @[norm_cast]
-theorem nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+theorem nat_floor_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
+    (a : { r : α // 0 ≤ r }) :
     ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
   rfl
 
 @[norm_cast]
-theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+theorem nat_ceil_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
+    (a : { r : α // 0 ≤ r }) :
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 

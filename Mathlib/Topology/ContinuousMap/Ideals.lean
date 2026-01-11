@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -67,6 +69,8 @@ order isomorphism described above, and instead we only consider the Galois inser
 ideal, continuous function, compact, Hausdorff
 -/
 
+@[expose] public section
+
 
 open scoped NNReal
 
@@ -74,17 +78,17 @@ namespace ContinuousMap
 
 open TopologicalSpace
 
-section TopologicalRing
+section IsTopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-variable [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace R] [IsTopologicalSemiring R]
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
-  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
+  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, add_zero]
   zero_mem' _ _ := rfl
   smul_mem' c _ hf x hx := mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 
@@ -100,7 +104,7 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
     f ∈ idealOfSet R s ↔ ∀ ⦃x : X⦄, x ∈ sᶜ → f x = 0 := by
   convert Iff.rfl
 
-theorem not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
+theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
@@ -108,7 +112,7 @@ ideal vanishes on the complement. -/
 def setOfIdeal (I : Ideal C(X, R)) : Set X :=
   {x : X | ∀ f ∈ I, (f : C(X, R)) x = 0}ᶜ
 
-theorem not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
+theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
 
@@ -147,13 +151,13 @@ variable (X R)
 theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
   refine fun I s => ⟨fun h f hf => ?_, fun h x hx => ?_⟩
   · by_contra h'
-    rcases not_mem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
-    exact hfx (not_mem_setOfIdeal.mp (mt (@h x) hx) hf)
+    rcases notMem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
+    exact hfx (notMem_setOfIdeal.mp (mt (@h x) hx) hf)
   · obtain ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
     by_contra hx'
-    exact not_mem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
+    exact notMem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
 
-end TopologicalRing
+end IsTopologicalRing
 
 section RCLike
 
@@ -185,7 +189,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     suffices to show that `f` is within `ε` of `I`. -/
   refine le_antisymm ?_
       ((idealOfSet_closed 𝕜 <| setOfIdeal I).closure_subset_iff.mpr fun f hf x hx =>
-        not_mem_setOfIdeal.mp hx hf)
+        notMem_setOfIdeal.mp hx hf)
   refine (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => ?_)
   lift ε to ℝ≥0 using hε.lt.le
   replace hε := show (0 : ℝ≥0) < ε from hε
@@ -229,12 +233,12 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           simp only [mul_sub, coe_sub, coe_one, Pi.sub_apply, Pi.one_apply, mul_one]
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
           ((nnnorm_mul_le _ _).trans
-            (mul_le_mul_right' (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
-        _ ≤ ε / 2 := by simpa only [mul_one] using mul_le_mul_left' this _
+            (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
+        _ ≤ ε / 2 := by simpa only [mul_one] using mul_le_mul_right this _
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
-    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
+    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly positive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
@@ -265,9 +269,9 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_toFun, map_pow,
+      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapCLM_apply, map_pow,
         mul_apply, star_apply, star_def]
-      simp only [normSq_eq_def', RCLike.conj_mul, ofReal_pow]
+      simp only [RCLike.conj_mul]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
     compactness of `t`, there is some `0 < c` such that `c ≤ g' x` for all `x ∈ t`. Then by
@@ -282,7 +286,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine ⟨g * g', ?_, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [algebraMapCLM_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
+  simp only [coe_algebraMapCLM, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
     idealOfSet 𝕜 (setOfIdeal I) = I :=
@@ -296,7 +300,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
     Set.Subset.antisymm
       ((setOfIdeal_open (idealOfSet 𝕜 s)).subset_interior_iff.mpr fun x hx =>
         let ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
-        Set.not_mem_compl_iff.mp (mt (@hf x) hfx))
+        Set.notMem_compl_iff.mp (mt (@hf x) hfx))
       fun x hx => ?_
   -- If `x ∉ closure sᶜ`, we must produce `f : C(X, 𝕜)` which is zero on `sᶜ` and `f x ≠ 0`.
   rw [← compl_compl (interior s), ← closure_compl] at hx
@@ -315,8 +319,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
 theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
   (setOfIdeal_ofSet_eq_interior 𝕜 s).trans hs.interior_eq
 
-variable (X)
-
+variable (X) in
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
@@ -332,8 +335,6 @@ def idealOpensGI :
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
-variable {X}
-
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]
@@ -342,7 +343,7 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   exact idealOfSet_ofIdeal_isClosed inferInstance
 
 theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
-  (idealOfSet_isMaximal_iff 𝕜 (Closeds.singleton x).compl).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
+  (idealOfSet_isMaximal_iff 𝕜 _).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
 
 variable {𝕜}
 
@@ -380,7 +381,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

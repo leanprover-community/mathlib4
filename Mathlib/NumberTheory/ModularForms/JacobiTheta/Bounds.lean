@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
 # Asymptotic bounds for Jacobi theta functions
@@ -34,7 +35,9 @@ hence Dirichlet L-functions, etc).
   `∞`.
 -/
 
-open Set Filter Topology Asymptotics Real Classical
+@[expose] public section
+
+open Set Filter Topology Asymptotics Real
 
 noncomputable section
 
@@ -46,14 +49,15 @@ lemma isBigO_exp_neg_mul_of_le {c d : ℝ} (hcd : c ≤ d) :
     (fun t ↦ exp (-d * t)) =O[atTop] fun t ↦ exp (-c * t) := by
   apply Eventually.isBigO
   filter_upwards [eventually_gt_atTop 0] with t ht
-  rwa [norm_of_nonneg (exp_pos _).le, exp_le_exp, mul_le_mul_right ht, neg_le_neg_iff]
+  rw [norm_of_nonneg (exp_pos _).le]
+  gcongr
 
 private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
   simpa only [exp_lt_one_iff, neg_mul, neg_lt_zero] using mul_pos pi_pos ht
 
 private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
-  refine ((Tendsto.const_sub _ ?_).inv₀ (by norm_num)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
+  refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
   simpa only [neg_mul, tendsto_exp_comp_nhds_zero, tendsto_neg_atBot_iff]
     using tendsto_id.const_mul_atTop pi_pos
 
@@ -70,14 +74,12 @@ def g_nat (k : ℕ) (a t : ℝ) (n : ℕ) : ℝ := (n + a) ^ k * exp (-π * (n +
 
 lemma f_le_g_nat (k : ℕ) {a t : ℝ} (ha : 0 ≤ a) (ht : 0 < t) (n : ℕ) :
     ‖f_nat k a t n‖ ≤ g_nat k a t n := by
-  rw [f_nat, norm_of_nonneg (by positivity)]
-  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-  rw [Real.exp_le_exp, mul_le_mul_right ht,
-    mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos), ← sub_nonneg]
-  have u : (n : ℝ) ≤ (n : ℝ) ^ 2 := by
-    simpa only [← Nat.cast_pow, Nat.cast_le] using Nat.le_self_pow two_ne_zero _
-  convert add_nonneg (sub_nonneg.mpr u) (by positivity : 0 ≤ 2 * n * a) using 1
-  ring
+  rw [f_nat, norm_of_nonneg (by positivity), g_nat]
+  simp only [neg_mul, add_sq]
+  gcongr
+  have H₁ : (n : ℝ) ≤ n ^ 2 := mod_cast Nat.le_self_pow two_ne_zero n
+  have H₂ : 0 ≤ 2 * n * a := by positivity
+  linear_combination H₁ + H₂
 
 /-- The sum to be bounded (`ℕ` version). -/
 def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
@@ -85,11 +87,11 @@ def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
     refine (((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right
-      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded _ (fun n ↦ ?_)
+      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded (fun n ↦ ?_)
     simp_rw [mul_assoc, Function.comp_apply, ← Real.exp_add, norm_mul, norm_pow, Int.cast_abs,
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (Nat.cast_nonneg _) _)
-    rw [exp_le_exp, ← sub_nonneg]
+    gcongr
+    rw [← sub_nonneg]
     rw [show -π * (t * n ^ 2 - 2 * (|a| * (t * n))) + -π * (a ^ 2 * t) - -π * ((n + a) ^ 2 * t)
          = π * t * n * (|a| + a) * 2 by ring]
     refine mul_nonneg (mul_nonneg (by positivity) ?_) two_pos.le
@@ -122,7 +124,7 @@ lemma F_nat_zero_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
 lemma F_nat_zero_zero_sub_le {t : ℝ} (ht : 0 < t) :
     ‖F_nat 0 0 t - 1‖ ≤ rexp (-π * t) / (1 - rexp (-π * t)) := by
   convert F_nat_zero_le zero_le_one ht using 2
-  · rw [F_nat, tsum_eq_zero_add (summable_f_nat 0 0 ht), f_nat, Nat.cast_zero, add_zero, pow_zero,
+  · rw [F_nat, (summable_f_nat 0 0 ht).tsum_eq_zero_add, f_nat, Nat.cast_zero, add_zero, pow_zero,
       one_mul, pow_two, mul_zero, mul_zero, zero_mul, exp_zero, add_comm, add_sub_cancel_right]
     simp_rw [F_nat, f_nat, Nat.cast_add, Nat.cast_one, add_zero]
   · rw [one_pow, mul_one]
@@ -208,7 +210,7 @@ def f_int (k : ℕ) (a t : ℝ) (n : ℤ) : ℝ := |n + a| ^ k * exp (-π * (n +
 
 lemma f_int_ofNat (k : ℕ) {a : ℝ} (ha : 0 ≤ a) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.ofNat n) = f_nat k a t n := by
-  rw [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, abs_of_nonneg (by positivity)]
+  rw [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, abs_of_nonneg (by positivity)]
 
 lemma f_int_negSucc (k : ℕ) {a : ℝ} (ha : a ≤ 1) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.negSucc n) = f_nat k (1 - a) t n := by
@@ -221,8 +223,8 @@ lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_in
     funext this ▸ (HasSum.int_rec (summable_f_nat k a ht).hasSum
       (summable_f_nat k (1 - a) ht).hasSum).summable.norm
   intro n
-  cases' n with m m
-  · simp only [f_int, f_nat, Int.ofNat_eq_coe, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
+  rcases n with - | m
+  · simp only [f_int, f_nat, Int.ofNat_eq_natCast, Int.cast_natCast, norm_mul, norm_eq_abs, abs_pow,
       abs_abs]
   · simp only [f_int, f_nat, Int.cast_negSucc, norm_mul, norm_eq_abs, abs_pow, abs_abs,
       (by { push_cast; ring } : -↑(m + 1) + a = -(m + (1 - a))), abs_neg, neg_sq]
@@ -232,15 +234,14 @@ def F_int (k : ℕ) (a : UnitAddCircle) (t : ℝ) : ℝ :=
   (show Function.Periodic (fun b ↦ ∑' (n : ℤ), f_int k b t n) 1 by
     intro b
     simp_rw [← (Equiv.addRight (1 : ℤ)).tsum_eq (f := fun n ↦ f_int k b t n)]
-    simp only [f_int, ← add_assoc, add_comm, Equiv.coe_addRight, Int.cast_add, Int.cast_one]
-    ).lift a
+    simp only [f_int, ← add_assoc, add_comm, Equiv.coe_addRight, Int.cast_add, Int.cast_one]).lift a
 
 lemma F_int_eq_of_mem_Icc (k : ℕ) {a : ℝ} (ha : a ∈ Icc 0 1) {t : ℝ} (ht : 0 < t) :
     F_int k a t = (F_nat k a t) + (F_nat k (1 - a) t) := by
   simp only [F_int, F_nat, Function.Periodic.lift_coe]
   convert ((summable_f_nat k a ht).hasSum.int_rec (summable_f_nat k (1 - a) ht).hasSum).tsum_eq
     using 3 with n
-  cases' n with m m
+  cases n
   · rw [f_int_ofNat _ ha.1]
   · rw [f_int_negSucc _ ha.2]
 
@@ -249,11 +250,7 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
-  have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
-    rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
-    · rw [zero_add]; exact ha
-    · simp
-  simp_rw [ha']
+  simp_rw [AddCircle.coe_eq_zero_iff_of_mem_Ico ha]
   simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]

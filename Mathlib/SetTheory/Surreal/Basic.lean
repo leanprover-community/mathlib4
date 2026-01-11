@@ -3,8 +3,15 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.SetTheory.Game.Ordinal
+module
+
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.SetTheory.Game.Ordinal
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Surreal numbers
@@ -30,7 +37,7 @@ Surreal numbers inherit the relations `≤` and `<` from games (`Surreal.instLE`
 
 In this file, we show that the surreals form a linear ordered commutative group.
 
-In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
+In `Mathlib/SetTheory/Surreal/Multiplication.lean`, we define multiplication and show that the
 surreals form a linear ordered commutative ring.
 
 One can also map all the ordinals into the surreals!
@@ -45,6 +52,8 @@ One can also map all the ordinals into the surreals!
 * [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -98,7 +107,7 @@ theorem numeric_rec {C : PGame → Prop}
     H _ _ _ _ h hl hr (fun i => numeric_rec H _ (hl i)) fun i => numeric_rec H _ (hr i)
 
 theorem Relabelling.numeric_imp {x y : PGame} (r : x ≡r y) (ox : Numeric x) : Numeric y := by
-  induction' x using PGame.moveRecOn with x IHl IHr generalizing y
+  induction x using PGame.moveRecOn generalizing y with | _ x IHl IHr
   apply Numeric.mk (fun i j => ?_) (fun i => ?_) fun j => ?_
   · rw [← lt_congr (r.moveLeftSymm i).equiv (r.moveRightSymm j).equiv]
     apply ox.left_lt_right
@@ -224,12 +233,12 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
-      · exact add_lt_add_right (ox.1 ix jx) _
+      · exact add_lt_add_left (ox.1 ix jx) _
       · exact (add_lf_add_of_lf_of_le (lf_mk _ _ ix) (oy.le_moveRight jy)).lt
           ((ox.moveLeft ix).add oy) (ox.add (oy.moveRight jy))
       · exact (add_lf_add_of_lf_of_le (mk_lf _ _ jx) (oy.moveLeft_le iy)).lt
           (ox.add (oy.moveLeft iy)) ((ox.moveRight jx).add oy)
-      · exact add_lt_add_left (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
+      · exact add_lt_add_right (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
       constructor
       · rintro (ix | iy)
         · exact (ox.moveLeft ix).add oy
@@ -251,7 +260,7 @@ theorem numeric_nat : ∀ n : ℕ, Numeric n
 
 /-- Ordinal games are numeric. -/
 theorem numeric_toPGame (o : Ordinal) : o.toPGame.Numeric := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   apply numeric_of_isEmpty_rightMoves
   simpa using fun i => IH _ (Ordinal.toLeftMovesToPGame_symm_lt i)
 
@@ -334,24 +343,23 @@ the negation of `{L | R}` is `{-R | -L}`. -/
 instance : Neg Surreal :=
   ⟨Surreal.lift (fun x ox => ⟦⟨-x, ox.neg⟩⟧) fun _ _ a => Quotient.sound (neg_equiv_neg_iff.2 a)⟩
 
-instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
-  add := (· + ·)
+instance addCommGroup : AddCommGroup Surreal where
   add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound add_assoc_equiv
-  zero := 0
   zero_add := by rintro ⟨a⟩; exact Quotient.sound (zero_add_equiv a)
   add_zero := by rintro ⟨a⟩; exact Quotient.sound (add_zero_equiv a)
-  neg := Neg.neg
   neg_add_cancel := by rintro ⟨a⟩; exact Quotient.sound (neg_add_cancel_equiv a)
   add_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound add_comm_equiv
-  le := (· ≤ ·)
-  lt := (· < ·)
-  le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
-  le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
-  lt_iff_le_not_le := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_le PGame
-  le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
-  add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+instance partialOrder : PartialOrder Surreal where
+  le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
+  le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
+  lt_iff_le_not_ge := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_ge PGame
+  le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
+
+instance isOrderedAddMonoid : IsOrderedAddMonoid Surreal where
+  add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
 
 lemma mk_add {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
     Surreal.mk (x + y) (hx.add hy) = Surreal.mk x hx + Surreal.mk y hy := by rfl
@@ -361,12 +369,12 @@ lemma mk_sub {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
 
 lemma zero_def : 0 = mk 0 numeric_zero := by rfl
 
-noncomputable instance : LinearOrderedAddCommGroup Surreal :=
-  { Surreal.orderedAddCommGroup with
+noncomputable instance : LinearOrder Surreal :=
+  { Surreal.partialOrder with
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 instance : AddMonoidWithOne Surreal :=
   AddMonoidWithOne.unary
@@ -378,6 +386,7 @@ def toGame : Surreal →+o Game where
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
 
+@[simp]
 theorem zero_toGame : toGame 0 = 0 :=
   rfl
 
@@ -392,7 +401,7 @@ theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddAbove (Set.range f) := by
-  induction' f using Quotient.induction_on_pi with f
+  induction f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>
@@ -413,7 +422,7 @@ lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of surreals is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddBelow (Set.range f) := by
-  induction' f using Quotient.induction_on_pi with f
+  induction f using Quotient.induction_on_pi with | _ f
   let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
   conv in (⟦f _⟧) =>

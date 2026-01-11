@@ -3,13 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.ShrinkingLemma
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous partition of unity
@@ -73,6 +74,8 @@ We use `WellOrderingRel j i` instead of `j < i` in the definition of
 
 partition of unity, bump function, Urysohn's lemma, normal space, paracompact space
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -200,13 +203,13 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   classical
   rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
   suffices ∑ i ∈ I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i ∈ I \ ρ.finsupport x₀, 0 by
-    rw [this, add_left_eq_self, Finset.sum_const_zero]
+    rw [this, add_eq_right, Finset.sum_const_zero]
   apply Finset.sum_congr rfl
   rintro x hx
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
   exact hx.2
 
-theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommMonoid M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
@@ -278,7 +281,7 @@ def IsSubordinate (U : ι → Set X) : Prop :=
 
 variable {f}
 
-theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
+theorem exists_finset_nhds' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
     ∃ I : Finset ι, (∀ᶠ x in 𝓝[s] x₀, ∑ i ∈ I, ρ i x = 1) ∧
       ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
   rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
@@ -286,16 +289,16 @@ theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
   have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
-theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
+theorem exists_finset_nhds (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i ∈ I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
-  rcases ρ.exists_finset_nhd' x₀ with ⟨I, H⟩
+  rcases ρ.exists_finset_nhds' x₀ with ⟨I, H⟩
   use I
   rwa [nhdsWithin_univ, ← eventually_and] at H
 
-theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
+theorem exists_finset_nhds_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
-  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
+  f.locallyFinite.exists_finset_nhds_support_subset hso ho x
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum
@@ -503,7 +506,7 @@ theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f
 open Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPOUFun i x = f i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
+    f.toPOUFun i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) := by
   refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => ?_)
   rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
@@ -528,7 +531,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
 
 open Classical in
 theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
-    f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j) := by
+    f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) := by
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
   use hf.toFinset
   filter_upwards [hU] with y hyU
@@ -538,8 +541,7 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
   exact hf.mem_toFinset.2 ⟨y, ⟨hj, hyU⟩⟩
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
-  refine (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
+  refine (map_continuous <| f i).mul <| continuous_finprod_cond (fun j _ => by fun_prop) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 
@@ -572,12 +574,12 @@ theorem toPartitionOfUnity_apply (i : ι) (x : X) :
 open Classical in
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPartitionOfUnity i x = f i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j x) :=
+    f.toPartitionOfUnity i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) :=
   f.toPOUFun_eq_mul_prod i x t ht
 
 open Classical in
 theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
-    f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j) :=
+    f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) :=
   f.exists_finset_toPOUFun_eventuallyEq i x
 
 theorem toPartitionOfUnity_zero_of_zero {i : ι} {x : X} (h : f i x = 0) :
@@ -654,26 +656,8 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
   · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
     have h := f.sum_eq_one' x hx
-    simp at h
     rw [finsum_eq_sum (fun i => (f.toFun i) x)
       (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
-    simp only [Finite.toFinset_setOf, ne_eq] at h
-    rw [← h, ← Finset.sum_subset
-      (Finset.subset_univ (Finset.filter (fun (j : Fin n) ↦ ¬(f.toFun j) x = 0) Finset.univ))
-      (by intro j hju hj
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hj
-          exact hj)]
-    rfl
+    rwa [Fintype.sum_subset (by simp)] at h
   intro i x
-  refine ⟨f.nonneg i x, ?_⟩
-  by_cases h0 : f i x = 0
-  · rw [h0]
-    exact zero_le_one
-  rw [← Finset.sum_singleton (f ·  x) i]
-  apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support (f.toFun · x)))]
-  simp only [Finite.toFinset_setOf, ne_eq]
-  gcongr with z hz
-  · exact fun j _ _ => f.nonneg j x
-  simp only [Finset.singleton_subset_iff, Finset.mem_filter, Finset.mem_univ, true_and]
-  exact h0
+  exact ⟨f.nonneg i x, PartitionOfUnity.le_one f i x⟩

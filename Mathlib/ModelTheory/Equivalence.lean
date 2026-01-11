@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+module
+
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Equivalence of Formulas
@@ -18,11 +20,13 @@ import Mathlib.ModelTheory.Satisfiability
 
 -/
 
+@[expose] public section
+
 universe u v w w'
 
 open Cardinal CategoryTheory
 
-open Cardinal FirstOrder
+open FirstOrder
 
 namespace FirstOrder
 
@@ -45,7 +49,7 @@ namespace Imp
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⟹[T] φ := fun _ _ _ => id
 
-instance : IsRefl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
+instance : @Std.Refl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
 
 @[trans]
 protected theorem trans {φ ψ θ : L.BoundedFormula α n} (h1 : φ ⟹[T] ψ) (h2 : ψ ⟹[T] θ) :
@@ -132,7 +136,7 @@ protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
   fun M v xs => by rw [BoundedFormula.realize_iff]
 
-instance : IsRefl (L.BoundedFormula α n) T.Iff :=
+instance : @Std.Refl (L.BoundedFormula α n) T.Iff :=
   ⟨Iff.refl⟩
 
 @[symm]
@@ -141,7 +145,7 @@ protected theorem symm {φ ψ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
   exact h M v xs
 
-instance : IsSymm (L.BoundedFormula α n) T.Iff :=
+instance : Std.Symm (α := L.BoundedFormula α n) T.Iff :=
   ⟨fun _ _ => Iff.symm⟩
 
 @[trans]
@@ -235,7 +239,7 @@ lemma inf_not_iff_bot :
 
 lemma sup_not_iff_top :
     φ ⊔ ∼φ ⇔[T] ⊤ := fun M v xs => by
-  simp only [realize_iff, realize_sup, realize_not, realize_top, iff_true, or_not]
+  simp only [realize_iff, realize_sup, realize_not, realize_top, or_not]
 
 end BoundedFormula
 

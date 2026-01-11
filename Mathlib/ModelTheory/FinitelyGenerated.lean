@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.ModelTheory.Substructures
+module
+
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.ModelTheory.Substructures
 
 /-!
 # Finitely Generated First-Order Structures
@@ -26,6 +28,8 @@ Develop a more unified definition of finite generation using the theory of closu
 this definition of finite generation to define the others.
 
 -/
+
+@[expose] public section
 
 open FirstOrder Set
 
@@ -131,7 +135,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
     rw [← h', closure_union, hS, sup_eq_left, closure_le]
     exact singleton_subset_iff.2 h.some_mem
   · intro h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨∅, countable_empty, closure_eq_of_le (empty_subset _) ?_⟩
       rw [← SetLike.coe_subset_coe, h]
       exact empty_subset _
@@ -170,7 +174,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [h2] at h'
   exact Hom.map_le_range h'
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M} :
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] {s : L.Substructure M} :
     s.CG ↔ Countable s := by
   refine ⟨?_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
   rintro ⟨s, h, rfl⟩
@@ -240,7 +244,7 @@ instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
   FG.countable_embedding N h
 
 theorem FG.of_finite [Finite M] : FG L M := by
-  simp only [fg_def, Substructure.FG.of_finite, topEquiv.toEquiv.finite_iff]
+  simp only [fg_def, Substructure.FG.of_finite]
 
 theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
   Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
@@ -265,11 +269,11 @@ theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →
   rw [cg_def, ← hs]
   exact h.range f
 
-theorem cg_iff_countable [Countable (Σl, L.Functions l)] : CG L M ↔ Countable M := by
+theorem cg_iff_countable [Countable (Σ l, L.Functions l)] : CG L M ↔ Countable M := by
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 
 theorem cg_of_countable [Countable M] : CG L M := by
-  simp only [cg_def, Substructure.cg_of_countable, topEquiv.toEquiv.countable_iff]
+  simp only [cg_def, Substructure.cg_of_countable]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
@@ -313,9 +317,9 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     fun S ↦ Exists.choose S.prop
   have g_inj : Function.Injective g := by
     intro S S' h
-    apply Subtype.eq
+    apply Subtype.ext
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg ((closure L) ∘ Finset.toSet) h
+    exact congr_arg (closure L ∘ SetLike.coe) h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

@@ -3,13 +3,16 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Tactic.Continuity.Init
+public import Mathlib.Tactic.Continuity.Init
 
 /-!
 # Continuity
 
 We define the `continuity` tactic using `aesop`. -/
+
+public meta section
 
 attribute [aesop (rule_sets := [Continuous]) unfold norm] Function.comp
 
@@ -20,7 +23,9 @@ macro "continuity" : attr =>
 
 /--
 The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
-`continuity` user attribute. -/
+`continuity` user attribute.
+
+`fun_prop` is a (usually more powerful) alternative to `continuity`. -/
 macro "continuity" : tactic =>
   `(tactic| aesop (config := { terminal := true })
      (rule_sets := [$(Lean.mkIdent `Continuous):ident]))

@@ -3,16 +3,16 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Super-Polynomial Function Decay
 
 This file defines a predicate `Asymptotics.SuperpolynomialDecay f` for a function satisfying
-  one of following equivalent definitions (The definition is in terms of the first condition):
+one of the following equivalent definitions (the definition is in terms of the first condition):
 
 * `x ^ n * f` tends to `𝓝 0` for all (or sufficiently large) naturals `n`
 * `|x ^ n * f|` tends to `𝓝 0` for all naturals `n` (`superpolynomialDecay_iff_abs_tendsto_zero`)
@@ -36,13 +36,15 @@ When the map `k` is given by `(r₁,...,rₙ) ↦ r₁*...*rₙ : ℝⁿ → ℝ
   to the definition of rapidly decreasing functions given here:
 https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
-# Main Theorems
+## Main statements
 
 * `SuperpolynomialDecay.polynomial_mul` says that if `f(x)` is negligible,
     then so is `p(x) * f(x)` for any polynomial `p`.
 * `superpolynomialDecay_iff_zpow_tendsto_zero` gives an equivalence between definitions in terms
     of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
 -/
+
+@[expose] public section
 
 
 namespace Asymptotics
@@ -126,20 +128,20 @@ end CommSemiring
 
 section OrderedCommSemiring
 
-variable [TopologicalSpace β] [OrderedCommSemiring β] [OrderTopology β]
+variable [TopologicalSpace β] [CommSemiring β] [PartialOrder β] [IsOrderedRing β] [OrderTopology β]
 
 theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : SuperpolynomialDecay l k g)
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
     SuperpolynomialDecay l k f := fun z =>
   tendsto_of_tendsto_of_tendsto_of_le_of_le' (hg z) (hg' z)
-    (hfg.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
-    (hfg'.mp (hk.mono fun _ hx hx' => mul_le_mul_of_nonneg_left hx' (pow_nonneg hx z)))
+    (by filter_upwards [hfg, hk] with x hx (hx' : 0 ≤ k x) using by gcongr)
+    (by filter_upwards [hfg', hk] with x hx (hx' : 0 ≤ k x) using by gcongr)
 
 end OrderedCommSemiring
 
 section LinearOrderedCommRing
 
-variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
+variable [TopologicalSpace β] [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :
@@ -191,7 +193,7 @@ end Field
 
 section LinearOrderedField
 
-variable [TopologicalSpace β] [LinearOrderedField β] [OrderTopology β]
+variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
@@ -215,12 +217,12 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
   refine ⟨fun h z => ?_, fun h n => by simpa only [zpow_natCast] using h (n : ℤ)⟩
-  by_cases hz : 0 ≤ z
+  by_cases! hz : 0 ≤ z
   · unfold Tendsto
     lift z to ℕ using hz
     simpa using h z
   · have : Tendsto (fun a => k a ^ z) l (𝓝 0) :=
-      Tendsto.comp (tendsto_zpow_atTop_zero (not_le.1 hz)) hk
+      Tendsto.comp (tendsto_zpow_atTop_zero hz) hk
     have h : Tendsto f l (𝓝 0) := by simpa using h 0
     exact zero_mul (0 : β) ▸ this.mul h
 
@@ -231,7 +233,7 @@ theorem SuperpolynomialDecay.param_zpow_mul (hk : Tendsto k l atTop)
     SuperpolynomialDecay l k fun a => k a ^ z * f a := by
   rw [superpolynomialDecay_iff_zpow_tendsto_zero _ hk] at hf ⊢
   refine fun z' => (hf <| z' + z).congr' ((hk.eventually_ne_atTop 0).mono fun x hx => ?_)
-  simp [zpow_add₀ hx, mul_assoc, Pi.mul_apply]
+  simp [zpow_add₀ hx, mul_assoc]
 
 theorem SuperpolynomialDecay.mul_param_zpow (hk : Tendsto k l atTop)
     (hf : SuperpolynomialDecay l k f) (z : ℤ) : SuperpolynomialDecay l k fun a => f a * k a ^ z :=
@@ -276,7 +278,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable [NormedLinearOrderedField β]
+variable [NormedField β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_norm_tendsto_zero :
@@ -289,7 +291,7 @@ theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
   (superpolynomialDecay_iff_norm_tendsto_zero l k f).trans (by simp [SuperpolynomialDecay])
 
 variable {l k}
-variable [OrderTopology β]
+variable [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 
 theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =O[l] fun a : α => k a ^ z := by
@@ -302,12 +304,9 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     exact h (-z)
   · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from
       IsBigO.trans_tendsto this hk.inv_tendsto_atTop
-    refine
-      ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
-        (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => ?_)
-    simp only [one_mul, neg_add z 1, zpow_add₀ ha0, ← mul_assoc, zpow_neg,
-      mul_inv_cancel₀ (zpow_ne_zero z ha0), zpow_one]
-    rfl
+    refine ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans ?_
+    refine .of_bound' <| hk0.mono fun a ha0 => ?_
+    simp [← zpow_add₀ ha0]
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
@@ -318,8 +317,8 @@ theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
       (by simpa using hk.inv_tendsto_atTop)
   have : f =o[l] fun x : α => k x * k x ^ (z - 1) := by
     simpa using this.mul_isBigO ((superpolynomialDecay_iff_isBigO f hk).1 h <| z - 1)
-  refine this.trans_isBigO (IsBigO.of_bound 1 (hk0.mono fun x hkx => le_of_eq ?_))
-  rw [one_mul, zpow_sub_one₀ hkx, mul_comm (k x), mul_assoc, inv_mul_cancel₀ hkx, mul_one]
+  refine this.trans_isBigO <| IsBigO.of_bound' <| hk0.mono fun x hkx => le_of_eq ?_
+  simp [← zpow_one_add₀ hkx]
 
 end NormedLinearOrderedField
 

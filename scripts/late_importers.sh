@@ -25,7 +25,7 @@ The script that takes 4 arguments:
 1. the module name that should be built (`Mathlib` by default);
 2. the number of module names of output that the script returns (all by default);
 3. the threshold difference in imports above which the script reports a module (all by default);
-4. the GitHub jod-ID of the workflow run.
+4. the GitHub job-ID of the workflow run.
 
 TODO
 * If a merged PR touched one of the files in the most recent report, trigger the workflow again.

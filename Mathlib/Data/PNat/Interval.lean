@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.PNat.Defs
+module
+
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.PNat.Defs
 
 /-!
 # Finite intervals of positive naturals
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Defs
 This file proves that `ℕ+` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+
+@[expose] public section
 
 
 open Finset Function PNat
@@ -71,23 +75,18 @@ theorem card_Ioo : #(Ioo a b) = b - a - 1 := by
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
--- Porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [← card_Icc, Fintype.card_ofFinset]
 
--- Porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = b - a := by
   rw [← card_Ico, Fintype.card_ofFinset]
 
--- Porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 
--- Porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 
--- Porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 
 /-!
 # Closure, interior, and frontier of preimages under `re` and `im`
@@ -31,6 +33,8 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 complex, real part, imaginary part, closure, interior, frontier
 -/
 
+public section
+
 open Set Topology
 
 noncomputable section
@@ -54,14 +58,8 @@ theorem isOpenMap_im : IsOpenMap im :=
 theorem isQuotientMap_re : IsQuotientMap re :=
   isHomeomorphicTrivialFiberBundle_re.isQuotientMap_proj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_re := isQuotientMap_re
-
 theorem isQuotientMap_im : IsQuotientMap im :=
   isHomeomorphicTrivialFiberBundle_im.isQuotientMap_proj
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_im := isQuotientMap_im
 
 theorem interior_preimage_re (s : Set ℝ) : interior (re ⁻¹' s) = re ⁻¹' interior s :=
   (isOpenMap_re.preimage_interior_eq_interior_preimage continuous_re _).symm
@@ -150,7 +148,7 @@ theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ
     equivRealProdCLM.symm.toHomeomorph.preimage_closure] using @closure_prod_eq _ _ _ _ s t
 
 theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×ℂ interior t := by
-  rw [Set.reProdIm, Set.reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
+  rw [reProdIm, reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
 
 theorem frontier_reProdIm (s t : Set ℝ) :
     frontier (s ×ℂ t) = closure s ×ℂ frontier t ∪ frontier s ×ℂ closure t := by

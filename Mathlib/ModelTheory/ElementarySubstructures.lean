@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+module
+
+public import Mathlib.ModelTheory.ElementaryMaps
 
 /-!
 # Elementary Substructures
@@ -18,7 +20,9 @@ import Mathlib.ModelTheory.ElementaryMaps
 - The Tarski-Vaught Test for substructures:
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
- -/
+-/
+
+@[expose] public section
 
 
 open FirstOrder
@@ -41,6 +45,7 @@ variable (L M)
 /-- An elementary substructure is one in which every formula applied to a tuple in the substructure
   agrees with its value in the overall structure. -/
 structure ElementarySubstructure where
+  /-- The underlying substructure -/
   toSubstructure : L.Substructure M
   isElementary' : toSubstructure.IsElementary
 
@@ -70,7 +75,14 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
   map_formula' := S.isElementary
 
 @[simp]
-theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S → M) :=
+theorem subtype_apply {S : L.ElementarySubstructure M} {x : S} : subtype S x = x :=
+  rfl
+
+theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype (S : L.ElementarySubstructure M) : ⇑S.subtype = Subtype.val :=
   rfl
 
 /-- The substructure `M` of the structure `M` is elementary. -/

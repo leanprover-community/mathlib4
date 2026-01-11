@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.ENNReal
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
@@ -32,11 +35,17 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
+@[expose] public section
+
+assert_not_exists Module.Basis IsTopologicalRing UniformSpace
+
 open scoped ENNReal
 
 variable {α : Type*}
 
 namespace MeasureTheory
+
+open scoped Function -- required for scoped `on` notation
 
 /-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
 structure OuterMeasure (α : Type*) where

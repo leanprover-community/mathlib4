@@ -3,11 +3,13 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Lean.Linter.Deprecated
-import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Tactic.TypeStar
+module
+
+public import Lean.Linter.Deprecated
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Binary representation of integers using inductive types
@@ -17,6 +19,8 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
+
+@[expose] public section
 
 /-- The type of positive binary numbers.
 
@@ -81,7 +85,7 @@ def succ : PosNum → PosNum
   | bit1 n => bit0 (succ n)
   | bit0 n => bit1 n
 
-/-- Returns a boolean for whether the `PosNum` is `one`. -/
+/-- Returns a Boolean for whether the `PosNum` is `one`. -/
 def isOne : PosNum → Bool
   | 1 => true
   | _ => false
@@ -138,7 +142,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -159,10 +163,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel PosNum (· < ·)
+instance decidableLT : DecidableLT PosNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel PosNum (· ≤ ·)
+instance decidableLE : DecidableLE PosNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -270,10 +274,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel Num (· < ·)
+instance decidableLT : DecidableLT Num
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel Num (· ≤ ·)
+instance decidableLE : DecidableLE Num
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -479,10 +483,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel ZNum (· < ·)
+instance decidableLT : DecidableLT ZNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel ZNum (· ≤ ·)
+instance decidableLE : DecidableLE ZNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum
@@ -505,7 +509,7 @@ def divMod (d : PosNum) : PosNum → Num × Num
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
-/-- Division of `PosNum`, -/
+/-- Division of `PosNum` -/
 def div' (n d : PosNum) : Num :=
   (divMod d n).1
 
@@ -523,7 +527,7 @@ private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
 private def sqrtAux : PosNum → Num → Num → Num
   | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
   | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | 1           => fun r n => (sqrtAux1 1 r n).1
+  | 1 => fun r n => (sqrtAux1 1 r n).1
 
 end PosNum
 

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # A type for VM-erased data
@@ -13,6 +15,8 @@ but erased in the VM. That is, at runtime every value of `Erased α` is
 represented as `0`, just like types and proofs.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -21,7 +25,7 @@ universe u
   and proofs. This can be used to track data without storing it
   literally. -/
 def Erased (α : Sort u) : Sort max 1 u :=
-  Σ's : α → Prop, ∃ a, (fun b => a = b) = s
+  { s : α → Prop // ∃ a, (a = ·) = s }
 
 namespace Erased
 
@@ -47,7 +51,7 @@ theorem out_proof {p : Prop} (a : Erased p) : p :=
 
 @[simp]
 theorem out_mk {α} (a : α) : (mk a).out = a := by
-  let h := (mk a).2; show Classical.choose h = a
+  let h := (mk a).2; change Classical.choose h = a
   have := Classical.choose_spec h
   exact cast (congr_fun this a).symm rfl
 
@@ -67,8 +71,6 @@ instance (α : Type u) : Repr (Erased α) :=
 
 instance (α : Type u) : ToString (Erased α) :=
   ⟨fun _ => "Erased"⟩
-
--- Porting note: Deleted `has_to_format`
 
 /-- Computably produce an erased value from a proof of nonemptiness. -/
 def choice {α} (h : Nonempty α) : Erased α :=
@@ -99,7 +101,7 @@ def join {α} (a : Erased (Erased α)) : Erased α :=
 
 @[simp]
 theorem join_eq_out {α} (a) : @join α a = a.out :=
-  bind_eq_out _ _
+  rfl
 
 /-- `(<$>)` operation on `Erased`.
 
@@ -129,7 +131,6 @@ theorem bind_def {α β} : ((· >>= ·) : Erased α → (α → Erased β) → E
 theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β) = @map _ _ :=
   rfl
 
--- Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
 protected instance instLawfulMonad : LawfulMonad Erased :=
   { id_map := by intros; ext; simp
     map_const := by intros; ext; simp [Functor.mapConst]
@@ -137,8 +138,8 @@ protected instance instLawfulMonad : LawfulMonad Erased :=
     bind_assoc := by intros; ext; simp
     bind_pure_comp := by intros; ext; simp
     bind_map := by intros; ext; simp [Seq.seq]
-    seqLeft_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]
-    seqRight_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight]
-    pure_seq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight] }
+    seqLeft_eq := by intros; ext; simp [Seq.seq, SeqLeft.seqLeft]
+    seqRight_eq := by intros; ext; simp [Seq.seq, SeqRight.seqRight]
+    pure_seq := by intros; ext; simp [Seq.seq] }
 
 end Erased

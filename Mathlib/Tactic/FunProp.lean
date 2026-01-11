@@ -3,17 +3,23 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.FunProp.Core
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Elab
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.RefinedDiscrTree
-import Mathlib.Tactic.FunProp.StateList
-import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToBatteries
-import Mathlib.Tactic.FunProp.Types
+module
+
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Tactic.FunProp.Mor
+public meta import Mathlib.Tactic.FunProp.Theorems
+public meta import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Mathlib.Tactic.FunProp.Types
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.FunProp.Core
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Elab
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Theorems
+public import Mathlib.Tactic.FunProp.ToBatteries
+public import Mathlib.Tactic.FunProp.Types
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
@@ -37,7 +43,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.Complex.Trigonometric
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
 ```
 Fails with the error:
@@ -47,8 +53,8 @@ Fails with the error:
 Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
-This can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
- where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
+This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
+where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
 When the issue is not simply a few missing theorems, you can turn on the option:
 ```lean
@@ -84,7 +90,7 @@ theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Co
   Continuous (fun x => f (g x)) := ...
 ```
 The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x => y)` does
- not hold, but we almost certainly want to mark it if it is available.
+not hold, but we almost certainly want to mark it if it is available.
 
 You should also provide theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`:
 ```lean
@@ -138,7 +144,7 @@ displays:
     form: compositional form
 ```
 This indicates that the theorem `continuous_add` states the continuity of `HAdd.hAdd` in the 4th and
- 5th arguments and the theorem is in compositional form.
+5th arguments and the theorem is in compositional form.
 
 ### Advanced
 
@@ -279,7 +285,7 @@ There are four types of theorems that are used a bit differently.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
-    Here is an example of custom structure `MyFunLike` that that should be considered as bundled
+    Here is an example of custom structure `MyFunLike` that should be considered as bundled
     morphism by `fun_prop`:
     ```lean
     structure MyFunLike (α β : Type) where
@@ -325,7 +331,7 @@ There are four types of theorems that are used a bit differently.
     By default, `fun_prop` will not apply more then one transitions theorems consecutivelly. For
     example, it won't prove `AEMeasurable f` from `Continuous f` by using transition theorems
     `Measurable.aemeasurable` and `Continuous.measurable`. You can enable this by running
-    `fun_prop (config:={maxTransitionDepth:=2})`.
+    `fun_prop (maxTransitionDepth :=2)`.
     Ideally `fun_prop` theorems should be transitivelly closed i.e. if `Measurable.aemeasurable` and
     `Continuous.measurable` are `fun_prop` theorems then `Continuous.aemeasurable` should be too.
 
@@ -344,3 +350,5 @@ There are four types of theorems that are used a bit differently.
     is used together with `aesop` to discharge the `2 ≤ ∞` subgoal.
 
 -/
+
+public meta section

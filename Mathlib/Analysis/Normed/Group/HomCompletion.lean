@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Group.Completion
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Group.Completion
 
 /-!
 # Completion of normed group homs
@@ -46,6 +48,8 @@ The vertical maps in the above diagrams are also normed group homs constructed i
   `f : NormedAddGroupHom G H` to a `NormedAddGroupHom (completion G) H`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -69,7 +73,6 @@ theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Comple
 theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
     (f.completion : Completion G → Completion H) = Completion.map f := rfl
 
--- Porting note: `@[simp]` moved to the next lemma
 theorem NormedAddGroupHom.completion_coe (f : NormedAddGroupHom G H) (g : G) :
     f.completion g = f g :=
   Completion.map_coe f.uniformContinuous _
@@ -120,7 +123,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
   normedAddGroupHomCompletionHom.map_zero
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
-@[simps] -- Porting note: added `@[simps]`
+@[simps]
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add

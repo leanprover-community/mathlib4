@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+module
+
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Type Spaces
@@ -36,6 +38,8 @@ This file defines the space of complete types over a first-order theory.
 - Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
 -/
 
+@[expose] public section
+
 
 
 universe u v w w'
@@ -53,6 +57,7 @@ variable {L : Language.{u, v}} (T : L.Theory) (α : Type w)
 /-- A complete type over a given theory in a certain type of variables is a maximally
   consistent (with the theory) set of formulas in that type. -/
 structure CompleteType where
+  /-- The underlying theory -/
   toTheory : L[[α]].Theory
   subset' : (L.lhomWithConstants α).onTheory T ⊆ toTheory
   isMaximal' : toTheory.IsMaximal
@@ -84,7 +89,7 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     ((models_iff_not_satisfiable _).1 h)
       (p.isMaximal.1.mono (union_subset p.subset (singleton_subset_iff.2 con)))
 
-theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ ¬φ ∈ p :=
+theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
       rintro ⟨@⟨_, _, h, _⟩⟩
@@ -184,8 +189,6 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
   Set.range (T.typeOf : (α → M) → T.CompleteType α)
 
 section
--- Porting note: This instance interrupts synthesizing instances.
-attribute [-instance] FirstOrder.Language.withConstants_expansion
 
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by

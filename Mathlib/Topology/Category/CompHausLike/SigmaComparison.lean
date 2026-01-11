@@ -3,7 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # The sigma-comparison map
@@ -16,6 +19,8 @@ The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S
 the inclusion maps `Sᵢ ⟶ S₁ ⊔ ... ⊔ Sₙ`, and it is an isomorphism when `X` preserves finite
 products.
 -/
+
+@[expose] public section
 
 universe u w
 
@@ -36,7 +41,7 @@ The comparison map from the value of a condensed set on a finite coproduct to th
 values on the components.
 -/
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
-  fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
+  fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
@@ -54,7 +59,7 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   apply congrFun
   congr 2
   rw [← opCoproductIsoProduct_inv_comp_ι]
-  simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
+  simp only [Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl

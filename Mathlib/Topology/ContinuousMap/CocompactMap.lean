@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Cocompact continuous maps
@@ -11,6 +13,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 The type of *cocompact continuous maps* are those which tend to the cocompact filter on the
 codomain along the cocompact filter on the domain. When the domain and codomain are Hausdorff, this
 is equivalent to many other conditions, including that preimages of compact sets are compact. -/
+
+@[expose] public section
 
 
 universe u v w
@@ -28,8 +32,9 @@ when the codomain is Hausdorff (see `CocompactMap.tendsto_of_forall_preimage` an
 
 Cocompact maps thus generalise proper maps, with which they correspond when the codomain is
 Hausdorff. -/
-structure CocompactMap (α : Type u) (β : Type v) [TopologicalSpace α] [TopologicalSpace β] extends
-  ContinuousMap α β : Type max u v where
+structure CocompactMap (α : Type u) (β : Type v) [TopologicalSpace α] [TopologicalSpace β] :
+    Type max u v
+    extends ContinuousMap α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto' : Tendsto toFun (cocompact α) (cocompact β)
 
@@ -39,7 +44,7 @@ section
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
 class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
+  [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 
@@ -121,7 +126,7 @@ variable (α)
 protected def id : CocompactMap α α :=
   ⟨ContinuousMap.id _, tendsto_id⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CocompactMap.id α) = id :=
   rfl
 
@@ -193,5 +198,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
     refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
-    erw [K.preimage_equiv_eq_image_symm]
+    have := f.toEquiv.image_symm_eq_preimage K
+    simp only [coe_toEquiv] at this
+    rw [← this]
     exact hK.image f.symm.continuous

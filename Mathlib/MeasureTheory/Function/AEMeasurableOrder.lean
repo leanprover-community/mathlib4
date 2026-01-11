@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Measurability criterion for ennreal-valued functions
@@ -20,10 +22,11 @@ but the proof would be more painful. Since our only use for now is for `ℝ≥0�
 as possible.
 -/
 
+public section
+
 
 open MeasureTheory Set TopologicalSpace
 
-open scoped Classical
 open ENNReal NNReal
 
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
@@ -36,6 +39,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     (h : ∀ p ∈ s, ∀ q ∈ s, p < q → ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ μ (u ∩ v) = 0) :
     AEMeasurable f μ := by
+  classical
   haveI : Encodable s := s_count.toEncodable
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
@@ -46,15 +50,14 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
     · refine
         ⟨univ, univ, MeasurableSet.univ, MeasurableSet.univ, subset_univ _, subset_univ _,
           fun ps qs pq => ?_⟩
-      simp only [not_and] at H
-      exact (H ps qs pq).elim
+      exact (H ⟨ps, qs, pq⟩).elim
   choose! u v huv using h'
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
     intro i
     exact MeasurableSet.biInter (s_count.mono inter_subset_left) fun b _ => (huv i b).1
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
-  have f'_meas : Measurable f' := by fun_prop (disch := aesop)
+  have f'_meas : Measurable f' := by fun_prop (disch := simp_all)
   let t := ⋃ (p : s) (q : ↥(s ∩ Ioi p)), u' p ∩ v p q
   have μt : μ t ≤ 0 :=
     calc
@@ -66,12 +69,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q
         exact biInter_subset_of_mem q.2
-      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
-        congr
-        ext1 p
-        congr
-        ext1 q
-        exact (huv p q).2.2.2.2 p.2 q.2.1 q.2.2
+      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by grind
       _ = 0 := by simp only [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by
     have : ∀ᵐ x ∂μ, x ∉ t := by
@@ -79,13 +77,13 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       change μ _ = 0
       convert this
       ext y
-      simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_not_mem]
+      simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
       by_cases H : x ∈ u' i
       swap
-      · simp only [H, le_top, not_false_iff, piecewise_eq_of_not_mem]
+      · simp only [H, le_top, not_false_iff, piecewise_eq_of_notMem]
       simp only [H, piecewise_eq_of_mem]
       contrapose! hx
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (i : β) (f x) ∩ s :=
@@ -99,7 +97,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
         dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
       refine ⟨⟨r, rs⟩, ?_⟩
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
-      simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
+      simp only [A, rq, piecewise_eq_of_mem]
   exact ⟨f', f'_meas, ff'⟩
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable

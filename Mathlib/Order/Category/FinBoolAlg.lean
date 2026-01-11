@@ -3,17 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Category.BoolAlg
-import Mathlib.Order.Category.FinBddDistLat
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Category.BoolAlg
+public import Mathlib.Order.Category.FinBddDistLat
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
-# The category of finite boolean algebras
+# The category of finite Boolean algebras
 
-This file defines `FinBoolAlg`, the category of finite boolean algebras.
+This file defines `FinBoolAlg`, the category of finite Boolean algebras.
 
 ## TODO
 
@@ -27,36 +28,28 @@ FintypeCat_to_FinBoolAlg_op.left_op
 `FinBoolAlg` is essentially small.
 -/
 
+@[expose] public section
+
 
 universe u
 
 open CategoryTheory OrderDual Opposite
 
-/-- The category of finite boolean algebras with bounded lattice morphisms. -/
-structure FinBoolAlg where
-  toBoolAlg : BoolAlg
+/-- The category of finite Boolean algebras with bounded lattice morphisms. -/
+structure FinBoolAlg extends BoolAlg where
   [isFintype : Fintype toBoolAlg]
+
+attribute [instance] FinBoolAlg.isFintype
 
 namespace FinBoolAlg
 
 instance : CoeSort FinBoolAlg Type* :=
-  ⟨fun X => X.toBoolAlg⟩
-
-instance (X : FinBoolAlg) : BooleanAlgebra X :=
-  X.toBoolAlg.str
-
-attribute [instance] FinBoolAlg.isFintype
-
--- Porting note: linter says this is a syntactic tautology now
--- @[simp]
--- theorem coe_toBoolAlg (X : FinBoolAlg) : ↥X.toBoolAlg = ↥X :=
---   rfl
+  ⟨fun X => X.carrier⟩
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
-def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg :=
-  ⟨{α := α}⟩
+abbrev of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg where
+  carrier := α
 
-@[simp]
 theorem coe_of (α : Type*) [BooleanAlgebra α] [Fintype α] : ↥(of α) = α :=
   rfl
 
@@ -64,28 +57,17 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  InducedCategory.category FinBoolAlg.toBoolAlg
+  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
 
-instance concreteCategory : ConcreteCategory FinBoolAlg :=
+instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
-
-instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instFunLike
-
--- Porting note: added
--- TODO: in all of the earlier bundled order categories,
--- we should be constructing instances analogous to this,
--- rather than directly coercions to functions.
-instance instBoundedLatticeHomClass {X Y : FinBoolAlg} : BoundedLatticeHomClass (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instBoundedLatticeHomClass
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
-  forget₂.obj X := FinBddDistLat.of X
-  forget₂.map f := f
-  forget_comp := rfl
+  forget₂.obj X := .of X
+  forget₂.map f := FinBddDistLat.ofHom f.hom.hom
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
@@ -95,38 +77,28 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
-  forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
+  forget₂.obj X := .of X
+  forget₂.map {X Y} f := InducedCategory.homMk (PartOrd.ofHom f.hom.hom)
 
-instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
-  -- Porting note: original code
-  -- ⟨fun {X Y} f g h =>
-  --   haveI := congr_arg (coeFn : _ → X → Y) h
-  --   DFunLike.coe_injective this⟩
-  -- Porting note: the coercions to functions for the various bundled order categories
-  -- are quite inconsistent. We need to go back through and make all these files uniform.
-  ⟨fun {X Y} f g h => by
-    dsimp at *
-    apply DFunLike.coe_injective
-    dsimp
+instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
+  map_injective h := by
     ext x
-    apply_fun (fun f => f x) at h
-    exact h ⟩
+    exact CategoryTheory.congr_fun h x
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
 @[simps]
 def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+  hom := InducedCategory.homMk (BoolAlg.ofHom e)
+  inv := InducedCategory.homMk (BoolAlg.ofHom e.symm)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map {_ _} := BoundedLatticeHom.dual
+  map f := InducedCategory.homMk (BoolAlg.ofHom f.hom.hom.dual)
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -146,6 +118,7 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 /-- The powerset functor. `Set` as a functor. -/
 @[simps]
 def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
-  obj X := op <| FinBoolAlg.of (Set X)
+  obj X := op <| .of (Set X)
   map {X Y} f :=
-    Quiver.Hom.op <| (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
+    Quiver.Hom.op <| InducedCategory.homMk <|
+      BoolAlg.ofHom <| CompleteLatticeHom.setPreimage f

@@ -3,12 +3,14 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Aesop
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.Core
+public meta import Aesop
+public meta import Mathlib.Tactic.Bound.Attribute
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 ## The `bound` tactic
@@ -27,7 +29,7 @@ uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 Additional hypotheses can be passed as `bound [h0, h1 n, ...]`.  This is equivalent to declaring
 them via `have` before calling `bound`.
 
-See `test/Bound.lean` for tests.
+See `MathlibTest/Bound/bound.lean` for tests.
 
 ### Calc usage
 
@@ -58,7 +60,7 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
 rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
 general, involving-zero), and tries to minimize the complexity of hypotheses we have to prove.
-See `Mathlib.Tactic.Bound.Attribute` for the full algorithm.
+See `Mathlib/Tactic/Bound/Attribute.lean` for the full algorithm.
 
 To register a lemma as a `forward` rule, tag it with `@[bound_forward]`.  The most important
 builtin forward rule is `le_of_lt`, so that strict inequalities can be used to prove weak
@@ -86,6 +88,8 @@ Currently the two types of guessing rules are
 We close numerical goals with `norm_num` and `linarith`.
 -/
 
+public meta section
+
 open Lean Elab Meta Term Mathlib.Tactic Syntax
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
 
@@ -99,16 +103,8 @@ Once Aesop can do general terms directly, we can remove these:
   https://github.com/leanprover-community/aesop/issues/107
 -/
 
-lemma mul_lt_mul_left_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) : b < c → a * b < a * c :=
-  (mul_lt_mul_left a0).mpr
-
-lemma mul_lt_mul_right_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [MulPosStrictMono α] [MulPosReflectLT α] (c0 : 0 < c) : a < b → a * c < b * c :=
-  (mul_lt_mul_right c0).mpr
-
-lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ} :
-    0 < n → 0 < (n : R) :=
+lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRing R] [Nontrivial R]
+    {n : ℕ} : 0 < n → 0 < (n : R) :=
   Nat.cast_pos.mpr
 
 lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder α]
@@ -141,7 +137,7 @@ attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right mul_le_mu
 
 -- <
 attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
-  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt
+  add_lt_add_right mul_lt_mul_of_pos_left mul_lt_mul_of_pos_right
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt
@@ -184,7 +180,7 @@ end Guessing
 /-!
 ### Closing tactics
 
-TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/
@@ -209,7 +205,8 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 
 /-- Aesop configuration for `bound` -/
 def boundConfig : Aesop.Options := {
-  enableSimp := false
+  enableSimp := false,
+  terminal := true
 }
 
 end Mathlib.Tactic.Bound
@@ -220,13 +217,14 @@ An example use case is
 
 ```
 -- Calc example: A weak lower bound for `z ↦ z^2 + c`
-lemma le_sqr_add {c z : ℂ} (cz : abs c ≤ abs z) (z3 : 3 ≤ abs z) :
-    2 * abs z ≤ abs (z^2 + c) := by
-  calc abs (z^2 + c)
-    _ ≥ abs (z^2) - abs c := by bound
-    _ ≥ abs (z^2) - abs z := by bound
-    _ ≥ (abs z - 1) * abs z := by rw [mul_comm, mul_sub_one, ← pow_two, ← abs.map_pow]
-    _ ≥ 2 * abs z := by bound
+lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
+    2 * ‖z‖ ≤ ‖z^2 + c‖ := by
+  calc ‖z^2 + c‖
+    _ ≥ ‖z^2‖ - ‖c‖ := by bound
+    _ ≥ ‖z^2‖ - ‖z‖ := by  bound
+    _ ≥ (‖z‖ - 1) * ‖z‖ := by
+      rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
+    _ ≥ 2 * ‖z‖ := by bound
 ```
 
 `bound` is built on top of `aesop`, and uses
@@ -243,7 +241,7 @@ by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_rig
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
 faster since it is more specialized (not built atop `aesop`). -/
-syntax "bound " (" [" term,* "]")? : tactic
+syntax "bound" (" [" term,* "]")? : tactic
 
 -- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
@@ -256,3 +254,10 @@ macro_rules
   | `(tactic| bound%$tk [$[$ts],*]) => do
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
+
+/-!
+We register `bound` with the `hint` tactic.
+-/
+
+register_hint 70 bound
+register_try?_tactic (priority := 70) bound

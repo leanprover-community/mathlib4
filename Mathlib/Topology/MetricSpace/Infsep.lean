@@ -3,7 +3,9 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Infimum separation
@@ -23,7 +25,9 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.einfsep`: Extended infimum separation of a set.
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
-!-/
+-/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -194,8 +198,8 @@ theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
   simp_rw [einfsep_insert, iInf_insert, iInf_singleton, einfsep_singleton, inf_top_eq,
     ciInf_pos hxy, ciInf_pos hyz, ciInf_pos hxz]
 
-theorem le_einfsep_pi_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
-    {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, c ≤ einfsep (s b)) :
+theorem le_einfsep_pi_of_le {X : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (X b)]
+    {s : ∀ b : β, Set (X b)} {c : ℝ≥0∞} (h : ∀ b, c ≤ einfsep (s b)) :
     c ≤ einfsep (Set.pi univ s) := by
   refine le_einfsep fun x hx y hy hxy => ?_
   rw [mem_univ_pi] at hx hy
@@ -217,7 +221,6 @@ theorem einfsep_eq_top_iff : s.einfsep = ∞ ↔ s.Subsingleton :=
 
 theorem Nontrivial.einfsep_ne_top (hs : s.Nontrivial) : s.einfsep ≠ ∞ := by
   contrapose! hs
-  rw [not_nontrivial_iff]
   exact subsingleton_of_einfsep_eq_top hs
 
 theorem Nontrivial.einfsep_lt_top (hs : s.Nontrivial) : s.einfsep < ∞ := by
@@ -317,7 +320,7 @@ variable [PseudoEMetricSpace α] {x y : α}
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (edist x y).toReal := by
   by_cases hxy : x = y
   · rw [hxy]
-    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.zero_toReal]
+    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
   · rw [infsep, einfsep_pair hxy]
 
 end PseudoEMetricSpace
@@ -333,9 +336,7 @@ theorem Nontrivial.le_infsep_iff {d} (hs : s.Nontrivial) :
 
 theorem Nontrivial.infsep_lt_iff {d} (hs : s.Nontrivial) :
     s.infsep < d ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ dist x y < d := by
-  rw [← not_iff_not]
-  push_neg
-  exact hs.le_infsep_iff
+  contrapose!; exact hs.le_infsep_iff
 
 theorem Nontrivial.le_infsep {d} (hs : s.Nontrivial)
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y) : d ≤ s.infsep :=
