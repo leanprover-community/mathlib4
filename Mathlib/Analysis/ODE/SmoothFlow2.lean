@@ -210,11 +210,16 @@ lemma continuousOn_integralN {n : ℕ} {g : E → E [×n]→L[ℝ] E}
   sorry
 
 /-
-`I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`
+`I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`, where `g : E → E [×n]→L[ℝ] E`
+
+By induction, we will show `I^(0) g^(n) = I^(n) g^(0)`
+Then `I^(0) f^(n) = I^(n) f^(0)`
 
 There's a type check problem, which can be solved by `ContinuousMultilinearMap.curryFinFinset`.
 I don't know why this lemma doesn't just use `Fin (k + l)`, so maybe we can write our own lemma
-using `finSumFinEquiv` instead of `finSumEquivOfFinset`.
+using `finSumFinEquiv` instead of `finSumEquivOfFinset`, which is only used once in Mathlib.
+
+`iteratedFDeriv` and `iteratedDeriv` don't yet have `k + l` composition lemmas, only `succ` lemmas.
 -/
 
 section
@@ -240,11 +245,11 @@ variable {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
 #check (curryFinSum (n := l + n) (k := l) (l := n) rfl).symm
 #check fun x ↦ (curryFinSum (𝕜 := ℝ) (G := E) (G' := E) rfl).symm (iteratedFDeriv ℝ l g x)
 
-
 -- need `g` continuous on `u` and `α` maps to `u`
 lemma integralNCMLM_succ {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
     {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    (α : C(Icc tmin tmax, E)) (h : k + (l + 1 + n) = (k + 1) + (l + n)) :
+    (α : C(Icc tmin tmax, E)) :
+  have h : k + (l + 1 + n) = (k + 1) + (l + n) := by group
   (curryFinSum (𝕜 := ℝ) (G := C(Icc tmin tmax, E)) (G' := C(Icc tmin tmax, E)) h).symm
   (iteratedFDeriv ℝ k (integralNCMLM
     (fun x ↦ (curryFinSum (𝕜 := ℝ) (G := E) (G' := E) rfl).symm (iteratedFDeriv ℝ (l + 1) g x))
