@@ -343,32 +343,33 @@ lemma eq_one_of_unique [Unique X] (s : stdSimplex S X) (x : X) :
 
 end
 
-/-! ### Barycenter
-
-The barycenter of the standard simplex is the center of mass of all vertices with equal weights.
--/
+/-! ### Barycenter of a Standard Simplex -/
 
 section Barycenter
 
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Nonempty X]
 
-/-- The barycenter of a standard simplex is the "center of mass" of the vertices. -/
-noncomputable def barycenter : stdSimplex 𝕜 X :=
-  open Classical in
-  ⟨Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1),
-    Convex.centerMass_mem (convex_stdSimplex 𝕜 X) (fun _ _ => zero_le_one)
-      (by simp [Fintype.card_pos]) (fun i _ => single_mem_stdSimplex _ _)⟩
+/-- The barycenter of a standard simplex is the center of mass of
+the set of vertices (equally weighted). -/
+def barycenter : stdSimplex 𝕜 X :=
+  ⟨fun i => (Fintype.card X : 𝕜)⁻¹, by simp [stdSimplex]⟩
 
 /-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
 @[simp]
 theorem barycenter_apply (x : X) :
-    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := by
-  classical
-  simp [barycenter, Finset.centerMass]
+    (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
 
 /-- The sum of the coordinates of the barycenter is 1. -/
 theorem sum_barycenter : ∑ x : X, (barycenter (𝕜 := 𝕜) (X := X)).val x = 1 :=
   sum_eq_one barycenter
+
+/-- The barycenter equals the center of mass of vertices with equal weights. -/
+theorem barycenter_eq_centerMass [DecidableEq X] :
+    (barycenter : stdSimplex 𝕜 X).val =
+      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
+  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
+  ext x
+  simp [barycenter, Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
 
 end Barycenter
 
