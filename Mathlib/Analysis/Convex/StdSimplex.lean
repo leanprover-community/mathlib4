@@ -370,38 +370,6 @@ theorem barycenter_apply (x : X) :
   classical
   simp [barycenter, Finset.centerMass]
 
-/-
-/-! ### Alternate Definition (Direct)
-
-The following is an alternate, simpler definition.
-Makes barycenter_apply' provable by rfl
--/
-
-/-- The barycenter of a standard simplex, with each coordinate equal to `(Fintype.card X)⁻¹`. -/
-def barycenter' : stdSimplex 𝕜 X :=
-  ⟨fun _ => (Fintype.card X : 𝕜)⁻¹,
-   ⟨fun _ => inv_nonneg.mpr (Nat.cast_nonneg _),
-    by simp [Finset.card_univ]⟩⟩
-
-/-- The barycenter of a standard simplex lies in the set of the standard simplex. -/
-theorem barycenter_mem' : (barycenter' : stdSimplex 𝕜 X).val ∈ stdSimplex 𝕜 X :=
-  barycenter'.property
-
-/-- The barycenter of a standard simplex has coordinates `(Fintype.card X)⁻¹` at each index. -/
-@[simp]
-theorem barycenter_apply' (x : X) :
-    (barycenter' : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
-
-/-- The barycenter equals the center of mass of vertices with equal weights. -/
-theorem barycenter_eq_centerMass' [DecidableEq X] :
-    (barycenter' : stdSimplex 𝕜 X).val =
-      Finset.centerMass Finset.univ (fun _ => (1 : 𝕜)) (fun i => Pi.single i 1) := by
-  simp only [Finset.centerMass, Finset.sum_const, Finset.card_univ]
-  ext x
-  simp [barycenter', Pi.smul_apply, Finset.sum_apply, Pi.single_apply]
-
--/
-
 end Barycenter
 
 end stdSimplex
