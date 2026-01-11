@@ -147,12 +147,8 @@ theorem cancel_natIso_inv_right_assoc {W X X' : D} {Y : C} (f : W ⟶ X) (g : X 
 
 attribute [grind ←=] CategoryTheory.IsIso.inv_eq_of_hom_inv_id
 
-@[simp, push]
+@[simp]
 theorem inv_inv_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.inv.app X) = e.hom.app X := by
-  cat_disch
-
-@[push]
-theorem inv_hom_app {F G : C ⥤ D} (e : F ≅ G) (X : C) : inv (e.hom.app X) = e.inv.app X := by
   cat_disch
 
 end
