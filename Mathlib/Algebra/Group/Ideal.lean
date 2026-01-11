@@ -6,6 +6,7 @@ Authors: Dexin Zhang
 module
 
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Semigroup ideals
