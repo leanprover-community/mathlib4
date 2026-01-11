@@ -66,20 +66,20 @@ theorem unitaryDivisorSum_odd_prime_pow_even {p k : ℕ} (hp : Nat.Prime p) (hod
 /-- For any odd `n > 1`, `σ*(n)` is even. -/
 theorem unitaryDivisorSum_odd_even {n : ℕ} (hn : 1 < n) (hodd : Odd n) : Even (σ* n) := by
   induction n using Nat.recOnPrimeCoprime with
-  | h0 => omega
-  | hp p k hp_prime =>
+  | zero => omega
+  | prime_pow p k hp_prime =>
     have hp_odd : Odd p := by
       rcases hp_prime.eq_two_or_odd with hp_2 | hp_mod
       · subst hp_2
-        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hn
+        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hn; omega
         have heven : Even ((2 : ℕ) ^ k) := Even.pow_of_ne_zero even_two hk_ne
         exact absurd heven (Nat.not_even_iff_odd.symm.mp hodd)
       · exact Nat.odd_iff.mpr hp_mod
     have hk_pos : 0 < k := by
       by_contra hk0; simp only [not_lt, nonpos_iff_eq_zero] at hk0; subst hk0
-      simp only [pow_zero] at hn
+      simp only [pow_zero] at hn; omega
     exact unitaryDivisorSum_odd_prime_pow_even hp_prime hp_odd hk_pos
-  | h a b ha hb hcoprime iha ihb =>
+  | coprime a b ha hb hcoprime iha ihb =>
     have ha_pos : a ≠ 0 := by omega
     have hb_pos : b ≠ 0 := by omega
     rw [unitaryDivisorSum_mul hcoprime ha_pos hb_pos]
@@ -98,7 +98,9 @@ theorem unitaryDivisorSum_coprime_four_dvd {a b : ℕ} (ha : 1 < a) (hb : 1 < b)
   obtain ⟨y, hy⟩ := hsb_even
   use x * y
   calc σ* a * σ* b = (x + x) * (y + y) := by rw [hx, hy]
-    _ = 4 * (x * y) := by ring
+    _ = (2 * x) * (2 * y) := by rw [two_mul, two_mul]
+    _ = 2 * 2 * (x * y) := by ac_rfl
+    _ = 4 * (x * y) := by rfl
 
 /-- `4` does not divide `2*n` when `n` is odd. -/
 theorem four_not_dvd_two_mul_odd {n : ℕ} (hodd : Odd n) : ¬(4 ∣ 2 * n) := by
@@ -123,17 +125,21 @@ factorization structure using `Nat.recOnPrimeCoprime`:
 theorem no_odd_unitary_perfect {n : ℕ} (hodd : Odd n) (hgt1 : n > 1) : ¬UnitaryPerfect n := by
   intro ⟨hn0, hup⟩
   induction n using Nat.recOnPrimeCoprime with
-  | h0 => omega
-  | hp p k hp_prime =>
+  | zero => omega
+  | prime_pow p k hp_prime =>
     have hp_odd : Odd p := by
       rcases hp_prime.eq_two_or_odd with hp_2 | hp_mod
       · subst hp_2
-        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hgt1
+        have hk_ne : k ≠ 0 := by intro hk0; subst hk0; simp only [pow_zero] at hgt1; omega
         have heven : Even ((2 : ℕ) ^ k) := Even.pow_of_ne_zero even_two hk_ne
         exact absurd heven (Nat.not_even_iff_odd.symm.mp hodd)
       · exact Nat.odd_iff.mpr hp_mod
-    have hk_pos : 0 < k := by by_contra hk0; simp only [not_lt, nonpos_iff_eq_zero] at hk0
-      subst hk0; simp only [pow_zero] at hgt1
+    have hk_pos : 0 < k := by
+      by_contra hk0
+      simp only [not_lt, nonpos_iff_eq_zero] at hk0
+      subst hk0
+      simp only [pow_zero] at hgt1
+      omega
     have hk_ne : k ≠ 0 := Nat.pos_iff_ne_zero.mp hk_pos
     rw [unitaryDivisorSum_prime_pow hp_prime hk_ne] at hup
     have hp_ge_3 : p ≥ 3 := by
@@ -146,7 +152,7 @@ theorem no_odd_unitary_perfect {n : ℕ} (hodd : Odd n) (hgt1 : n > 1) : ¬Unita
         _ = p := pow_one p
     have : p ^ k ≥ 3 := by omega
     omega
-  | h a b ha hb hcoprime _ _ =>
+  | coprime a b ha hb hcoprime _ _ =>
     have ⟨ha_odd, hb_odd⟩ := Nat.odd_mul.mp hodd
     have h4dvd : 4 ∣ σ* (a * b) := unitaryDivisorSum_coprime_four_dvd ha hb hcoprime ha_odd hb_odd
     have h4_dvd_2n : 4 ∣ 2 * (a * b) := by rw [← hup]; exact h4dvd
@@ -177,7 +183,8 @@ theorem UnitaryPerfect.eq_two_pow_mul_odd {n : ℕ} (h : UnitaryPerfect n) :
   refine ⟨a, k, ?_, hk_odd, hdecomp⟩
   by_contra ha_zero
   push_neg at ha_zero
-  interval_cases a
+  have : a = 0 := by omega
+  subst this
   rw [hdecomp, pow_zero, one_mul] at heven
   exact absurd hk_odd (Nat.not_odd_iff_even.mpr heven)
 

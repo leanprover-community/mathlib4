@@ -216,10 +216,10 @@ theorem unitaryDivisorSum_mul {m n : ℕ} (hcoprime : Nat.Coprime m n) (hm : m �
       have hg1_n : Nat.gcd p.1 n = 1 := Nat.Coprime.coprime_dvd_left h1_dvd hcoprime
       have hg2_n : Nat.gcd p.2 n = p.2 := Nat.gcd_eq_left h2_dvd
       ext
-      · show Nat.gcd (p.1 * p.2) m = p.1
+      · change Nat.gcd (p.1 * p.2) m = p.1
         rw [mul_comm]
         exact Nat.gcd_mul_of_coprime_of_dvd hg2_m h1_dvd
-      · show Nat.gcd (p.1 * p.2) n = p.2
+      · change Nat.gcd (p.1 * p.2) n = p.2
         exact Nat.gcd_mul_of_coprime_of_dvd hg1_n h2_dvd
     · intro d hd
       have h_in : UnitaryDivisor d (m * n) := (mem_unitaryDivisors (mul_ne_zero hm hn)).mp hd
