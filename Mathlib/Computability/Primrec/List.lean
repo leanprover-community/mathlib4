@@ -101,21 +101,6 @@ variable [Primcodable α] [Primcodable β]
 
 open Primrec
 
-instance sum : Primcodable (α ⊕ β) :=
-  ⟨Primrec.nat_iff.1 <|
-      (encode_iff.2
-            (cond nat_bodd
-              (((@Primrec.decode β _).comp nat_div2).option_map <|
-                to₂ <| nat_double_succ.comp (Primrec.encode.comp snd))
-              (((@Primrec.decode α _).comp nat_div2).option_map <|
-                to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
-        fun n =>
-        show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
-          cases Nat.bodd n <;> simp
-          · cases @decode α _ n.div2 <;> rfl
-          · cases @decode β _ n.div2 <;> rfl⟩
-
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
@@ -151,20 +136,6 @@ namespace Primrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
-
-theorem sumInl : Primrec (@Sum.inl α β) :=
-  encode_iff.1 <| nat_double.comp Primrec.encode
-
-theorem sumInr : Primrec (@Sum.inr α β) :=
-  encode_iff.1 <| nat_double_succ.comp Primrec.encode
-
-theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
-    (hg : Primrec₂ g) (hh : Primrec₂ h) : @Primrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
-  option_some_iff.1 <|
-    (cond (nat_bodd.comp <| encode_iff.2 hf)
-          (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hh)
-          (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
-      fun a => by rcases f a with b | c <;> simp [Nat.div2_val, encodek]
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' (Primcodable.prim _)
@@ -448,8 +419,6 @@ variable {α β : Type*} {R : α → β → Prop} {L : List α} {b : β}
 
 variable [Primcodable α] [Primcodable β]
 
-protected theorem not (hf : PrimrecRel R) : PrimrecRel fun a b ↦ ¬ R a b := PrimrecPred.not hf
-
 /-- If `R a b` is decidable, then given `L : List α` and `b : β`, it is primitive recursive
 to filter `L` for elements `a` with `R a b` -/
 theorem listFilter (hf : PrimrecRel R) [DecidableRel R] :
@@ -495,43 +464,11 @@ variable {α : Type*} [Primcodable α]
 
 open Primrec
 
-/-- A subtype of a primitive recursive predicate is `Primcodable`. -/
-def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
-  ⟨have : Primrec fun n => (@decode α _ n).bind fun a => Option.guard p a :=
-    option_bind .decode (option_guard (hp.comp snd).primrecRel snd)
-  nat_iff.1 <| (encode_iff.2 this).of_eq fun n =>
-    show _ = encode ((@decode α _ n).bind fun _ => _) by
-      rcases @decode α _ n with - | a; · rfl
-      dsimp [Option.guard]
-      by_cases h : p a <;> simp [h]; rfl⟩
-
-instance fin {n} : Primcodable (Fin n) :=
-  @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
-
 instance vector {n} : Primcodable (List.Vector α n) :=
   subtype ((@Primrec.eq ℕ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
-
-section ULower
-
-attribute [local instance] Encodable.decidableRangeEncode Encodable.decidableEqOfEncodable
-
-theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α → ℕ)) :=
-  have : PrimrecPred fun n => Encodable.decode₂ α n ≠ none :=
-    .not
-      (Primrec.eq.comp
-        (.option_bind .decode
-          (.ite (by simpa using Primrec.eq.comp (Primrec.encode.comp .snd) .fst)
-            (Primrec.option_some.comp .snd) (.const _)))
-        (.const _))
-  this.of_eq fun _ => decode₂_ne_none_iff
-
-instance ulower : Primcodable (ULower α) :=
-  Primcodable.subtype mem_range_encode
-
-end ULower
 
 end Primcodable
 
@@ -539,53 +476,6 @@ namespace Primrec
 
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
-
-theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
-    haveI := Primcodable.subtype hp
-    Primrec (@Subtype.val α p) := by
-  letI := Primcodable.subtype hp
-  refine (Primcodable.prim (Subtype p)).of_eq fun n => ?_
-  rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
-
-theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
-    haveI := Primcodable.subtype hp
-    (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI := Primcodable.subtype hp
-  refine ⟨fun h => ?_, fun hf => subtype_val.comp hf⟩
-  refine Nat.Primrec.of_eq h fun n => ?_
-  rcases @decode α _ n with - | a; · rfl
-  simp; rfl
-
-theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → β}
-    {h : ∀ a, p (f a)} (hf : Primrec f) :
-    haveI := Primcodable.subtype hp
-    Primrec fun a => @Subtype.mk β p (f a) (h a) :=
-  subtype_val_iff.1 hf
-
-theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
-    Primrec f → Primrec fun a => (f a).get (h a) := by
-  intro hf
-  refine (Nat.Primrec.pred.comp hf).of_eq fun n => ?_
-  generalize hx : @decode α _ n = x
-  cases x <;> simp
-
-theorem ulower_down : Primrec (ULower.down : α → ULower α) :=
-  letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  subtype_mk .encode
-
-theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
-  letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  option_get (Primrec.decode₂.comp subtype_val)
-
-theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI : Primcodable { a // id a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
-  exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
-
-theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=
-  fin_val_iff.2 .id
-
-theorem fin_succ {n} : Primrec (@Fin.succ n) :=
-  fin_val_iff.1 <| by simp [succ.comp fin_val]
 
 theorem vector_toList {n} : Primrec (@List.Vector.toList α n) :=
   subtype_val
