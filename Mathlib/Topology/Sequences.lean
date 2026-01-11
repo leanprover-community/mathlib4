@@ -378,8 +378,8 @@ protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   haveI := pseudoMetrizableSpaceUniformity_countably_generated X
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 
-/-- A version of Bolzano-Weierstrass: in a (pseudo)metrizable space, a set is compact if and only if
-it is sequentially compact. -/
+/-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
+only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
