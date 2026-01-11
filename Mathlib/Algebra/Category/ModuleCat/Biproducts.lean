@@ -152,7 +152,7 @@ private noncomputable def lequivProdOfRightSplitExact' {f : B →ₗ[R] M} (hj :
     (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ofHom f) (hom_ext h)
     (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
-    biprodIsoProd _ _ ).symm.toLinearEquiv
+    biprodIsoProd _ _).symm.toLinearEquiv
 
 set_option backward.privateInPublic true in
 private noncomputable def lequivProdOfLeftSplitExact' {f : M →ₗ[R] A} (hg : Function.Surjective g)

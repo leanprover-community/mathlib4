@@ -11,7 +11,7 @@ public import Mathlib.Topology.ContinuousOn
 ### Continuity of piecewise defined functions
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology Filter
 

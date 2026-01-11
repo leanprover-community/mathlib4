@@ -15,7 +15,7 @@ This file proves basic properties of `List.flatten`, which concatenates a list o
 defined in `Init.Prelude`.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

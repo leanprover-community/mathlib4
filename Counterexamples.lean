@@ -12,7 +12,6 @@ import Counterexamples.Girard
 import Counterexamples.HeawoodUnitDistance
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.IrrationalPowerOfIrrational
-import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin

@@ -73,6 +73,11 @@ theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
   apply CoreHom.ext
   exact Iso.ext h
 
+/-- Construct an isomorphism in `Core C` from an isomorphism in `C`. -/
+@[simps! hom_iso inv_iso]
+def isoMk {x y : Core C} (e : x.of ≅ y.of) : x ≅ y :=
+  Groupoid.isoEquivHom _ _ |>.symm (.mk e)
+
 variable (C)
 
 instance : (inclusion C).Faithful where

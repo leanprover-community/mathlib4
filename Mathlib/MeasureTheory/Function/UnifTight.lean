@@ -49,7 +49,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `Mathlib/MeasureTheory/Functions/UniformIntegrable.lean`. -/
+from `Mathlib/MeasureTheory/Function/UniformIntegrable.lean`. -/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -235,6 +235,7 @@ private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f 
   · exact unifTight_const hp' hg
   · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /- Next we deal with the forward direction. The `MemLp` and `TendstoInMeasure` hypotheses
 are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
 and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses. -/
