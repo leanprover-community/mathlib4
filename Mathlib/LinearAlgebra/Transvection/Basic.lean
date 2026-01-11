@@ -164,6 +164,47 @@ theorem apply (f : Dual R V) (v x : V) :
     transvection f v x = x + f x • v :=
   rfl
 
+def _root_.Module.Dual.rightSMul (f : Dual R V) (a : R) :
+    Dual R V where
+  toFun x := f x * a
+  map_add' x y := by simp [add_mul]
+  map_smul' r x := by simp [mul_assoc]
+
+theorem _root_.Module.Dual.rightSMul_apply (f : Dual R V) (a : R) (x : V) :
+    f.rightSMul a x = f x * a := rfl
+
+theorem _root_.Module.Dual.rightSMul_eq_smul
+    {R : Type*} [CommSemiring R] [Module R V] (f : Dual R V) (a : R) :
+    f.rightSMul a = a • f := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, mul_comm]
+
+theorem _root_.Module.Dual.rightSMul_add_left (f g : Dual R V) (a : R) :
+    (f + g).rightSMul a = f.rightSMul a + g.rightSMul a := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, add_mul]
+
+theorem _root_.Module.Dual.rightSMul_add_right (f : Dual R V) (a b : R) :
+    f.rightSMul (a + b) = f.rightSMul a + f.rightSMul b := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, mul_add]
+
+theorem _root_.Module.Dual.rightSMul_rightSMul (f : Dual R V) (a b : R) :
+    (f.rightSMul a).rightSMul b = f.rightSMul (a * b) := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, mul_assoc]
+
+theorem rightSMul_smul (f : Dual R V) (v : V) (a : R) :
+    transvection (f.rightSMul a) v = transvection f (a • v) := by
+  ext x
+  simp [apply, Module.Dual.rightSMul_apply, mul_smul]
+
+theorem commute {f : Dual R V} {v : V} {e : V →ₗ[R] V}
+    {a : R} (hav : e v = a • v) (haf : ∀ x, f (e x) = f x * a) :
+    e * transvection f v = transvection f v * e  := by
+  ext x
+  simp [apply, hav, haf, mul_smul]
+
 theorem comp_of_left_eq_apply {f : Dual R V} {v w : V} {x : V} (hw : f w = 0) :
     transvection f v (transvection f w x) = transvection f (v + w) x := by
   simp [transvection, hw, ← add_assoc, add_right_comm]
@@ -268,6 +309,11 @@ theorem coe_toLinearMap {f : Dual R V} {v : V} (h : f v = 0) :
 theorem coe_apply {f : Dual R V} {v x : V} {h : f v = 0} :
     LinearEquiv.transvection h x = LinearMap.transvection f v x :=
   rfl
+
+theorem rightSMul_smul {f : Dual R V} {v : V} (_ : f v = 0) {a : R}
+    (hafv' : f.rightSMul a v = 0 := by simp) (hafv : f (a • v) = 0 := by simp) :
+    transvection hafv' = transvection hafv := by
+  simp [← toLinearMap_inj, LinearMap.transvection.rightSMul_smul]
 
 theorem trans_of_left_eq {f : Dual R V} {v w : V}
     (hv : f v = 0) (hw : f w = 0) (hvw : f (v + w) = 0 := by simp [hv, hw]) :
@@ -375,10 +421,6 @@ theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
     rfl
   rw [this, LinearEquiv.transvection.symm_eq]
   apply mem_transvections
-
-example (e : V ≃ₗ[R] V) (x : V) :
-    e x = e.toLinearMap x := by
-  rw [@coe_coe]
 
 theorem toLinearMap_pow (e : V ≃ₗ[R] V) (n : ℕ) :
     (e ^ n) = (e.toLinearMap ^ n) := by
@@ -517,11 +559,53 @@ section divisionRing
 
 variable {K : Type*} [DivisionRing K] [Module K V]
 
+theorem _root_.LinearMap.transvection.commute_iff
+    {f : Dual K V} (hf0 : f ≠ 0) {v : V} (hv0 : v ≠ 0)
+    (e : V →ₗ[K] V) :
+    e * LinearMap.transvection f v = LinearMap.transvection f v * e ↔
+      ∃ a : K, e v = a • v ∧ ∀ x, f (e x) = f x * a := by
+  refine ⟨fun h ↦ ?_, fun ⟨a, hav, haf⟩ ↦ ?_⟩
+  · simp only [LinearMap.ext_iff, End.mul_apply, LinearMap.transvection.apply, map_add,
+    _root_.map_smul, add_right_inj] at h
+    obtain ⟨w, hw⟩ := (surjective_iff_ne_zero.mpr hf0) 1
+    have hw' := h w
+    simp only [hw, one_smul] at hw'
+    refine ⟨f (e w), hw', ?_⟩
+    intro x
+    apply smul_left_injective K hv0
+    simp [← h, mul_smul, hw]
+  · ext x
+    simp [LinearMap.transvection.apply, hav, haf, mul_smul]
+
+theorem transvection.commute_iff {f : Dual K V} {v : V}
+    (hf0 : f ≠ 0) (hv0 : v ≠ 0) (hfv : f v = 0) (e : V ≃ₗ[K] V) :
+    e * transvection hfv * e.symm = transvection hfv ↔
+      ∃ a : K, e v = a • v ∧ ∀ x, f (e x) = f x * a := by
+  rw [← coe_coe, ← LinearMap.transvection.commute_iff hf0 hv0 ↑e]
+  simp only [← toLinearMap_inj, coe_toLinearMap_mul, coe_toLinearMap]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · conv_rhs => rw [← h, mul_assoc]
+    rw [← @coe_toLinearMap_mul]
+    simp [mul_eq_trans, End.mul_eq_comp]
+  · rw [h]; aesop
+
+theorem transvection.eq_one_iff {f : Dual K V} {v : V} {hfv : f v = 0} :
+    LinearEquiv.transvection hfv = 1 ↔ f = 0 ∨ v = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rcases h <;> aesop⟩
+  by_contra! h'
+  apply h'.2
+  have : ∃ x, f x ≠ 0 := by
+    by_contra! hf; apply h'.1; ext; simp [hf]
+  obtain ⟨x, hx⟩ := this
+  rw [LinearEquiv.ext_iff] at h
+  specialize h x
+  simpa [LinearMap.transvection.apply, hx] using h
+
 /-- Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1. -/
 theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      Module.rank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
+      Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
   constructor
   · simp only [Set.mem_setOf_eq]
@@ -752,6 +836,15 @@ variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {f : Module.Dual K V} {v : V}
 
+theorem _root_.LinearEquiv.det_fixedReduce [Module.Finite K V] (e : V ≃ₗ[K] V) :
+    (e.fixedReduce).det = e.det := by
+  simp only [← Units.val_inj, LinearEquiv.coe_det]
+  rw [← one_mul (LinearMap.det _),
+    LinearMap.det_eq_det_mul_det e.fixedSubmodule e (fun x hx ↦ by simpa using hx)]
+  apply congr_arg₂ _ _ (by aesop)
+  convert LinearMap.det_id.symm
+  aesop
+
 /-- In a vector space, given a nonzero linear form `f`,
 a nonzero vector `v` such that `f v ≠ 0`,
 there exists a basis `b` with an index `i`
@@ -966,6 +1059,12 @@ theorem _root_.LinearEquiv.transvection.det_eq_one
   have : Module.Finite R V := finite_of_det_ne_one h
   apply h
   rw [LinearMap.transvection.det, hfv, add_zero]
+
+theorem _root_.LinearEquiv.det_dilatransvection [Module.Free R V] [Module.Finite R V]
+    {f : Module.Dual R V} {v : V} {h : IsUnit (1 + f v)} :
+    (LinearEquiv.dilatransvection h).det = h.unit := by
+  rw [← Units.val_inj]
+  simp [LinearMap.transvection.det]
 
 end transvection
 
