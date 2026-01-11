@@ -174,13 +174,13 @@ instance : IsIso f.snd :=
 lemma inv_fst : (inv f).fst = inv f.fst := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
-  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
+  simpa [-IsIso.hom_inv_id, -cancelIso] using congrArg (fun t ↦ t.fst) (IsIso.hom_inv_id f)
 
 @[simp]
 lemma inv_snd : (inv f).snd = inv f.snd := by
   symm
   apply IsIso.inv_eq_of_hom_inv_id
-  simpa [-IsIso.hom_inv_id] using congrArg (fun t ↦ t.snd) (IsIso.hom_inv_id f)
+  simpa [-IsIso.hom_inv_id, -cancelIso] using congrArg (fun t ↦ t.snd) (IsIso.hom_inv_id f)
 
 end
 
