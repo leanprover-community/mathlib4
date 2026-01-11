@@ -80,12 +80,12 @@ lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
     (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
-  have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
+  have : Module.Finite R S := .of_fg HS
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 
 theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)
     (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : B) (hx : x ∈ S) : IsIntegral R x :=
-  .of_mem_of_fg _ ((fg_top _).mp <| H.noetherian _) _ hx
+  .of_mem_of_fg _ ((Submodule.fg_top _).mp <| H.noetherian _) _ hx
 
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
@@ -118,7 +118,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
     exact Subtype.ext ((eq_zero_or_eq_zero_of_smul_eq_zero this).resolve_right ha₂)
   change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
-  haveI : Module.Finite R N := by rwa [Module.finite_def, Submodule.fg_top]
+  haveI : Module.Finite R N := by rwa [Module.Finite.iff_fg]
   apply Algebra.IsIntegral.isIntegral
 
 variable {f}

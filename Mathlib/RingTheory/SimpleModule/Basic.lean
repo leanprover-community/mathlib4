@@ -301,8 +301,10 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr e.symm
 
 instance (priority := low) [Module.Finite R M] : IsNoetherian R M where
-  noetherian m := have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
-    Module.Finite.iff_fg.mp (Module.Finite.equiv e.symm)
+  noetherian m :=
+    have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
+    letI := Module.Finite.equiv e.symm
+    .of_finite
 
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
