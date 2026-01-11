@@ -346,6 +346,32 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
 
+open Ideal in
+/-- If `R'` (resp. `S'`) is the localization of `R` (resp. `S`) and
+`P` lies over `p` then the image of `P` in `S'` lies over the image of `p` in `R'`. -/
+lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
+    (M : Submonoid R) (T : Submonoid S)
+    [CommSemiring R'] [CommSemiring S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
+    [IsLocalization M R'] [IsLocalization T S']
+    (p : Ideal R) {P : Ideal S} [P.IsPrime] [P.LiesOver p]
+    (disj : Disjoint (T : Set S) (P : Set S)) :
+    (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
+  suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
+      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+  rw [under_under, ← under_under (B := S), under_def, under_def,
+    IsLocalization.comap_map_of_isPrime_disjoint (M := T) _ _ ‹_› disj,
+    LiesOver.over (P := P) (p := p)]
+
+lemma Ideal.IsMaximal.of_isLocalization_of_disjoint [IsLocalization M S] {J : Ideal S}
+    [(Ideal.comap (algebraMap R S) J).IsMaximal] : J.IsMaximal := by
+  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <| by
+    rintro rfl
+    exact Ideal.IsMaximal.ne_top ‹_› (by simp)
+  apply comap_mono (f := algebraMap R S) at hm
+  rwa [← IsLocalization.map_comap M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
+    Ideal.under_def, IsLocalization.map_comap M S m]
+
 end
 
 namespace IsLocalization.AtPrime
