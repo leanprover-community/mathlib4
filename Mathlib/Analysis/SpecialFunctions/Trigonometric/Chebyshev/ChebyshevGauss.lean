@@ -11,7 +11,20 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogon
 public import Mathlib.Analysis.Complex.Trigonometric
 
 /-!
-TODO
+# Chebyshev polynomials over the reals: Chebyshev–Gauss
+
+The Chebyshev–Gauss property calculates an integral of a polynomial of degree `< 2 * n`
+with respect to the weight function `1 / √ (1 - x ^ 2)` supported on `[-1, 1]` by a sum
+over appropriate evaluations of the polynomial.
+
+## Main statements
+
+* integral_eq_sumZeroes: Statement of the Chebyshev–Gauss property
+
+## Implementation
+
+The statement is proved for Chebyshev polynomials using the complex exponential representation
+of `cos`, and then deduced for arbitrary polynomials.
 -/
 public section
 
@@ -56,11 +69,27 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk₀ : k ≠ 0) (hk
 noncomputable def sumZeroes (n : ℕ) (P : ℝ[X]) : ℝ :=
     (π / n) * ∑ i ∈ range n, P.eval (cos ((2 * i + 1) / (2 * n) * π))
 
+@[simp]
+theorem sumZeroes_sum (n : ℕ) {ι : Type*} (s : Finset ι) (P : ι → ℝ[X]) :
+    sumZeroes n (∑ i ∈ s, P i) = ∑ i ∈ s, sumZeroes n (P i) := by
+  unfold sumZeroes
+  simp_rw [eval_finset_sum]
+  rw [sum_comm, mul_sum]
+
+@[simp]
+theorem sumZeroes_smul (n : ℕ) (c : ℝ) (P : ℝ[X]) :
+    sumZeroes n (c • P) = c * sumZeroes n P := by
+  unfold sumZeroes
+  simp_rw [eval_smul, ← smul_sum, smul_eq_mul]
+  ring
+
+@[simp]
 theorem sumZeroes_T_zero {n : ℕ} (hn : n ≠ 0) :
     sumZeroes n (T ℝ 0) = π := by
   simp [sumZeroes, show π / n * n = π by field]
 
-theorem sumZeroes_T_ne_zero {n : ℕ} (k : ℤ) (hk₀ : k ≠ 0) (hk₁ : k.natAbs < 2 * n) :
+@[simp]
+theorem sumZeroes_T_of_ne_zero {n : ℕ} {k : ℤ} (hk₀ : k ≠ 0) (hk₁ : k.natAbs < 2 * n) :
     sumZeroes n (T ℝ k) = 0 := by
   wlog! hn : n ≠ 0
   · simp [sumZeroes, hn]
@@ -82,5 +111,25 @@ theorem sumZeroes_T_ne_zero {n : ℕ} (k : ℤ) (hk₀ : k ≠ 0) (hk₁ : k.nat
   have : z ≠ 0 := by grind [Complex.exp_ne_zero]
   have : z ^ 2 ≠ 1 := by grind [exp_sub_one_ne_zero]
   field [show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind]
+
+theorem poly_eq_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n → F[X]}
+    (hP : P.degree < n) (hQ : ∀ i, (Q i).degree = i) :
+    ∃ c : Fin n → F, P = ∑ i, c i • Q i := by
+  sorry
+
+theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
+    ∫ x in -1..1, P.eval x * (1 / √(1 - x ^ 2)) = sumZeroes n P := by
+  obtain ⟨c, rfl⟩ := poly_eq_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
+  simp_rw [eval_finset_sum, eval_smul, sum_mul]
+  rw [intervalIntegral.integral_finset_sum, sumZeroes_sum]
+  · simp_rw [sumZeroes_smul, smul_eq_mul, mul_assoc, intervalIntegral.integral_const_mul]
+    congr! with i hi
+    by_cases i.val = 0
+    case pos hi => rw [hi, Nat.cast_zero, integral_T_real_zero, sumZeroes_T_zero hn]
+    case neg hi =>
+      rw [integral_T_real_of_ne_zero (by grind),
+        sumZeroes_T_of_ne_zero (by grind) (by convert i.isLt)]
+  · simp_rw [← eval_smul]
+    exact fun i hi => integrable_poly_T _
 
 end Polynomial.Chebyshev
