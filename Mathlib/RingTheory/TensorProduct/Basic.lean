@@ -37,6 +37,7 @@ open scoped TensorProduct
 
 open TensorProduct
 
+
 namespace LinearMap
 
 section liftBaseChange
