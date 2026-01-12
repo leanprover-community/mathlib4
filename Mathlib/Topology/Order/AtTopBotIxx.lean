@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
@@ -8,6 +8,22 @@ module
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.SuccPred.Limit
 import Mathlib.Topology.Order.IsLUB
+
+/-!
+# `Filter.atTop` and `Filter.atBot` for intervals in a linear order topology
+
+Let `X` be a linear order with order topology.
+Let `a` be a point that is either the bottom element of `X` or is not isolated on the left,
+see `Order.IsSuccPrelimit`.
+Then the `Filter.atTop` filter on `Set.Iio a` and `𝓝[<] a` are related by the coercion map
+via pushforward and pullback, see `map_coe_Iio_atTop` and `comap_coe_Iio_nhdsLT`.
+
+We prove several versions of this statement for `Set.Iio`, `Set.Ioi`, and `Set.Ioo`,
+as well as `Filter.atTop` and `Filter.atBot`.
+
+The assumption on `a` is automatically satisfied for densely ordered types,
+see `Order.IsSuccPrelimit.of_dense`.
+-/
 
 public section
 
