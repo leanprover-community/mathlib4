@@ -1,12 +1,12 @@
 module
 
 public import Mathlib.CFT.Stuff2
+public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.ZariskiMain
-public import Mathlib.RingTheory.Etale.Locus
-public import Mathlib.RingTheory.Smooth.NoetherianDescent
 
 @[expose] public section
 
@@ -121,16 +121,48 @@ theorem Ideal.exists_mem_span_singleton_map_residueField_eq
     rw [(IsLocalization.map_units P.ResidueField[X] s).unit.eq_mul_inv_iff_mul_eq.mpr e]
     exact Ideal.mul_mem_right _ _ (Ideal.mem_span_singleton_self _)
 
+def HasStandardEtaleSurjectionAt (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (f : S) : Prop :=
+  ∃ (P : StandardEtalePair R) (φ : P.Ring →ₐ[R] Localization.Away f), Function.Surjective φ
+
+lemma HasStandardEtaleSurjectionAt.mk {R A S Sf : Type*} [CommRing R] [CommRing A] [CommRing S]
+    [CommRing Sf] [Algebra R S] [Algebra R A] [Algebra.IsStandardEtale R A] [Algebra S Sf]
+    [Algebra R Sf] [IsScalarTower R S Sf] {f : S} [IsLocalization.Away f Sf]
+    (φ : A →ₐ[R] Sf) (H : Function.Surjective φ) : HasStandardEtaleSurjectionAt R f := by
+  let P : StandardEtalePresentation R A := Nonempty.some inferInstance
+  refine ⟨P.P, (((IsLocalization.algEquiv (.powers f) (Localization.Away f) Sf).restrictScalars R)
+    |>.symm.toAlgHom).comp (φ.comp P.equivRing.symm.toAlgHom), by simpa⟩
+
+lemma HasStandardEtaleSurjectionAt.of_dvd
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {f g : S} (H : HasStandardEtaleSurjectionAt R f) (h : f ∣ g) :
+    HasStandardEtaleSurjectionAt R g := by
+  obtain ⟨P, φ, hsurj⟩ := H
+  obtain ⟨g, rfl⟩ := h
+  obtain ⟨a, ha⟩ := hsurj (algebraMap _ _ g)
+  have : IsLocalization.Away (f * g) (Localization.Away (φ a)) :=
+    ha ▸ .mul' (Localization.Away f) _ _ _
+  have : Algebra.IsStandardEtale R (Localization.Away a) := .of_isLocalizationAway a
+  exact .mk _ (IsLocalization.Away.mapₐ_surjective_of_surjective
+    (Aₚ := Localization.Away a) (Bₚ := Localization.Away (φ a)) a hsurj)
+
+lemma HasStandardEtaleSurjectionAt.isStandardEtale
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    {f : S} (H : HasStandardEtaleSurjectionAt R f) [Algebra.Etale R (Localization.Away f)] :
+    Algebra.IsStandardEtale R (Localization.Away f) :=
+  .of_surjective _ _ _ _ H.choose_spec.choose_spec
+
 attribute [local irreducible] Prime in
-lemma Algebra.FormallyEtale.isStandardEtale_of_finite_of_adjoin_eq_top
+lemma Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top
     {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
-    [Module.Finite R S] [Algebra.FinitePresentation R S]
-    (H : ∃ x : S, Algebra.adjoin R {x} = ⊤) (Q : Ideal S) [Q.IsPrime] [Algebra.IsEtaleAt R Q] :
-    ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
+    [Module.Finite R S] (H : ∃ x : S, Algebra.adjoin R {x} = ⊤)
+    (Q : Ideal S) [Q.IsPrime] [Algebra.IsUnramifiedAt R Q] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
   cases subsingleton_or_nontrivial S
   · cases Ideal.IsPrime.ne_top' (Subsingleton.elim Q ⊤)
   have := (algebraMap R S).domain_nontrivial
   let P := Q.under R
+  let : Algebra.IsIntegral P.ResidueField Q.ResidueField := inferInstance
   obtain ⟨x, hx⟩ := H
   let I := RingHom.ker (aeval (R := R) x).toRingHom
   have hx' : Function.Surjective (aeval (R := R) x) :=
@@ -183,36 +215,22 @@ lemma Algebra.FormallyEtale.isStandardEtale_of_finite_of_adjoin_eq_top
       (minpoly.prime (Algebra.IsIntegral.isIntegral _)).dvd_mul, dvd_derivative_iff] at h₃
     obtain ⟨d, rfl⟩ := h₃.resolve_left this
     exact ⟨d, by linear_combination hc⟩
-  obtain ⟨f, hfQ, hf⟩ := Algebra.exists_etale_of_isEtaleAt (R := R) Q
-  obtain ⟨f, rfl⟩ := hx' f
-  let P : StandardEtalePair R := ⟨q, hq, q.derivative * f, f, 0, 1, by simp⟩
-  have hP : P.HasMap (algebraMap _ (Localization.Away (aeval x (q.derivative * f))) x) := by
+  let P : StandardEtalePair R := ⟨q, hq, q.derivative, 1, 0, 1, by simp⟩
+  have hP : P.HasMap (algebraMap _ (Localization.Away (aeval x q.derivative)) x) := by
     constructor
     · have : aeval x P.f = 0 := by simpa [P, q]
       rw [aeval_algebraMap_apply, this, map_zero]
     · rw [aeval_algebraMap_apply]; exact IsLocalization.Away.algebraMap_isUnit _
   have : Function.Surjective (P.lift _ hP) := by
     intro a
-    obtain ⟨a, ⟨_, n, rfl⟩, rfl⟩ :=
-      IsLocalization.exists_mk'_eq (.powers (aeval x (q.derivative * f))) a
+    obtain ⟨a, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (aeval x q.derivative)) a
     obtain ⟨a, rfl⟩ := hx' a
     refine ⟨Ideal.Quotient.mk _ (C a * .X ^ n), ?_⟩
-    simp only [StandardEtalePair.Ring, StandardEtalePair.lift, map_mul, map_pow,
-      Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk, RingHom.coe_coe, AlgHom.coe_comp,
-      AlgHom.coe_restrictScalars', coe_aeval_eq_eval, Function.comp_apply, aeval_C, algebraMap_def,
-      coe_mapRingHom, eval_map_algebraMap, aeval_X, eval_C, aeval_algebraMap_apply]
-    simp only [← map_mul]
-    rw [← Units.inv_pow_eq_pow_inv, Units.mul_inv_eq_iff_eq_mul, Units.val_pow_eq_pow_val,
-      IsUnit.unit_spec, ← map_pow _ ((aeval x) P.g)]
-    exact (IsLocalization.mk'_spec _ _ _).symm
-  have inst : Algebra.Etale R (Localization.Away (aeval x (derivative q * f))) :=
-  { formallyEtale := by
-      rw [← basicOpen_subset_etaleLocus_iff]
-      refine .trans ?_ (basicOpen_subset_etaleLocus_iff.mpr hf.formallyEtale)
-      refine (PrimeSpectrum.basicOpen_le_basicOpen_iff _ _).mpr
-        (Ideal.le_radical (Ideal.mem_span_singleton.mpr (by simp)))
-    finitePresentation := .of_isLocalizationAway (aeval x (derivative q * f)) }
-  exact ⟨_, by simpa using Ideal.IsPrime.mul_notMem ‹_› hqx hfQ, .of_surjective _ _ _ _ this⟩
+    dsimp [StandardEtalePair.Ring, StandardEtalePair.lift]
+    simp only [map_mul, map_pow, aeval_X, eval_mul, eval_pow, eval_C,
+      ← Units.inv_pow_eq_pow_inv, Units.mul_inv_eq_iff_eq_mul]
+    simp [aeval_algebraMap_apply, ← map_pow, P]
+  exact ⟨aeval x q.derivative, hqx, .mk _ this⟩
 
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
@@ -543,10 +561,10 @@ attribute [local instance 11000] RingHom.instRingHomClass RingHomClass.toAddMono
   Algebra.toModule Module.toDistribMulAction
   DistribMulAction.toMulAction MulAction.toSemigroupAction SemigroupAction.toSMul
   IsScalarTower.right in
-lemma Algebra.FormallyEtale.isStandardEtale_of_finite_of_isNoetherianRing
-    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S] [IsNoetherianRing R]
-    (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsEtaleAt R Q] :
-    ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
+lemma Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt_of_finite
+    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
+    (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [Algebra.IsUnramifiedAt R Q] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
   obtain ⟨x, hQ', hQ'Q⟩ := Algebra.FormallyEtale.isStandardEtale_of_isNoetherianRing_aux (R := R) Q
   let S' := Algebra.adjoin R {x}
   let Q' := Q.under S'
@@ -557,21 +575,20 @@ lemma Algebra.FormallyEtale.isStandardEtale_of_finite_of_isNoetherianRing
       localRingHom_surjective_of_primesOver_eq_singleton _ _ hQ' hQ'Q⟩
   obtain ⟨r, hrQ', H⟩ := Localization.exists_awayMap_surjective_of_localRingHom_surjective
     (by rw [FaithfulSMul.ker_algebraMap_eq_bot S' S]; exact Submodule.fg_bot) _ _ hQ' hφ
-  have : Module.Finite R S' := .of_injective S'.val.toLinearMap Subtype.val_injective
-  have : FinitePresentation R S' := FinitePresentation.of_finiteType.mp inferInstance
-  have : IsEtaleAt R Q' := by
+  have : Module.Finite R S' := finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral _)
+  have : IsUnramifiedAt R Q' := by
     let φ : Localization.AtPrime Q' ≃ₐ[R] Localization.AtPrime Q :=
       .ofBijective (IsScalarTower.toAlgHom _ _ _) hφ
     exact .of_equiv φ.symm
-  obtain ⟨f, hfQ', hf⟩ := Algebra.FormallyEtale.isStandardEtale_of_finite_of_adjoin_eq_top (R := R)
-    (S := S') ⟨⟨x, Algebra.self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective (f := S'.val)
-      Subtype.val_injective (by simp [Subalgebra.range_val, S'])⟩ Q'
-  refine ⟨_, (inferInstanceAs Q'.IsPrime).mul_notMem hfQ' hrQ', ?_⟩
-  have : IsStandardEtale R (Localization.Away (f * r)) :=
-    .of_dvd (Aₛ := Localization.Away f) (dvd_mul_right f r)
-  let e : (Localization.Away (f * r)) ≃ₐ[R] (Localization.Away (S'.val (f * r))) :=
-    .ofBijective (Localization.awayMapₐ S'.val _) (H _ ⟨_, mul_comm _ _⟩)
-  exact .of_equiv e
+  obtain ⟨f, hfQ', hf⟩ :=
+    Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top
+    (R := R) (S := S') ⟨⟨x, Algebra.self_mem_adjoin_singleton _ _⟩, Subalgebra.map_injective
+      (f := S'.val) Subtype.val_injective (by simp [Subalgebra.range_val, S'])⟩ Q'
+  obtain ⟨P, φ, hP⟩ := hf.of_dvd (g := f * r) (by simp)
+  exact ⟨_, (inferInstanceAs Q'.IsPrime).mul_notMem hfQ' hrQ', .mk
+    (f := IsScalarTower.toAlgHom R S' S (f * r))
+    ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
+    ((H _ (by simp)).surjective.comp hP)⟩
 
 lemma ZariskiMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
@@ -655,33 +672,64 @@ lemma awayMap_bijective_of_dvd {R S : Type*} [CommRing R] [CommRing S] (f : R �
   · obtain ⟨c, m, e⟩ := H.2 x
     exact ⟨b ^ m * c, m, by simp [mul_pow, e, mul_assoc, mul_left_comm]⟩
 
+lemma Algebra.exists_formallyUnramified_of_isUnramifiedAt
+    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (P : Ideal A) [P.IsPrime] [Algebra.IsUnramifiedAt R P] [EssFiniteType R A] :
+    ∃ f ∉ P, Algebra.FormallyUnramified R (Localization.Away f) := by
+  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
+    PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
+      (show ⟨P, ‹_›⟩ ∈ unramifiedLocus R A by assumption) isOpen_unramifiedLocus
+  exact ⟨r, hpr, basicOpen_subset_unramifiedLocus_iff.mp hr⟩
+
+-- set_option synthInstance.maxHeartbeats 0 in
+attribute [-simp] mul_eq_zero smul_eq_zero FaithfulSMul.ker_algebraMap_eq_bot map_eq_zero in
 attribute [local instance 11000] RingHom.instRingHomClass RingHomClass.toAddMonoidHomClass
   Algebra.toModule Module.toDistribMulAction
   DistribMulAction.toMulAction MulAction.toSemigroupAction SemigroupAction.toSMul
   IsScalarTower.right in
-lemma Algebra.FormallyEtale.isStandardEtale_of_isNoetherianRing
-    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S] [IsNoetherianRing R]
-    (Q : Ideal S) [Q.IsPrime] [Algebra.Etale R S] :
-    ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
+lemma Algebra.Unramified.exist_hasStandardEtaleSurjectionAt
+    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
+    (Q : Ideal S) [Q.IsPrime] [Algebra.Unramified R S] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
   obtain ⟨S', hS', r, hrQ, hr⟩ := ZariskiMainProperty.of_finiteType (R := R) Q
     |>.exists_fg_and_exists_notMem_and_awayMap_bijective
-  have : Module.Finite R ↥S' := ⟨(Submodule.fg_top _).mpr hS'⟩
-  have : Algebra.Etale S (Localization.Away (S'.val r)) := .of_isLocalizationAway (S'.val r)
-  have : Algebra.Etale R (Localization.Away (S'.val r)) := .comp _ S _
-  have : Algebra.FormallyEtale R (Localization.Away r) :=
+  have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
+  have : Algebra.FormallyUnramified R (Localization.Away r) :=
     .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr:).symm
-  have : IsEtaleAt R (Ideal.under (↥S') Q) := by
-    rw [← Algebra.basicOpen_subset_etaleLocus_iff] at this
+  have : IsUnramifiedAt R (Ideal.under (↥S') Q) := by
+    rw [← Algebra.basicOpen_subset_unramifiedLocus_iff] at this
     exact @this ⟨Q.under S', inferInstance⟩ hrQ
   obtain ⟨f, hfQ, hf⟩ :=
-    Algebra.FormallyEtale.isStandardEtale_of_finite_of_isNoetherianRing (R := R) (Q.under S')
-  refine ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ, ?_⟩
-  have : IsStandardEtale R (Localization.Away (r * f)) :=
-    .of_dvd (Aₛ := Localization.Away f) (dvd_mul_left f r)
+    Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt_of_finite (R := R) (Q.under S')
   let e : Localization.Away (r * f) ≃ₐ[R] Localization.Away (r.1 * f.1) :=
     .ofBijective (Localization.awayMapₐ S'.val (r * f))
       (awayMap_bijective_of_dvd _ (dvd_mul_right r f) hr)
-  exact .of_equiv e
+  obtain ⟨P, φ, hφ⟩ := hf.of_dvd (g := r * f) (by simp)
+  refine ⟨_, ‹Q.IsPrime›.mul_notMem hrQ hfQ,
+    .mk (f := r.1 * f.1) (e.toAlgHom.comp φ) (e.surjective.comp hφ)⟩
+
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S] (s : S) :
+    Algebra.FiniteType R (Localization.Away s) :=
+  .trans (S := S) inferInstance inferInstance
+
+lemma Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt
+    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
+    (Q : Ideal S) [Q.IsPrime] [FiniteType R S] [Algebra.IsUnramifiedAt R Q] :
+    ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
+  obtain ⟨s, hsQ, hs⟩ := Algebra.exists_formallyUnramified_of_isUnramifiedAt (R := R) Q
+  have : (Ideal.map (algebraMap S (Localization.Away s)) Q).IsPrime :=
+    IsLocalization.isPrime_of_isPrime_disjoint (.powers s) _ _ ‹_› (by simp [Set.disjoint_iff,
+      Set.ext_iff, Submonoid.mem_powers_iff, mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ])
+  have : Unramified R (Localization.Away s) := {}
+  obtain ⟨f, hf, H⟩ := Algebra.Unramified.exist_hasStandardEtaleSurjectionAt (R := R)
+    (Q.map (algebraMap _ (Localization.Away s)))
+  obtain ⟨f, t, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) f
+  refine ⟨s * f, ?_, ?_⟩
+  · simpa [IsLocalization.mk'_mem_map_algebraMap_iff, Submonoid.mem_powers_iff,
+      Ideal.IsPrime.mul_mem_left_iff, hsQ, (mt (‹Q.IsPrime›.mem_of_pow_mem _) hsQ)] using hf
+  obtain ⟨P, φ, hφ⟩ : HasStandardEtaleSurjectionAt R (algebraMap S (Localization.Away s) f) :=
+    H.of_dvd ⟨algebraMap _ _ t.1, by simp⟩
+  exact .mk _ hφ
 
 section
 
@@ -740,65 +788,13 @@ instance [Algebra R S] [Algebra.IsStandardEtale R S] :
 
 end
 
-lemma Algebra.Etale.exists_isStandardEtale
-    {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
-    (Q : Ideal S) [Q.IsPrime] [Algebra.Etale R S] :
-    ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
-  obtain ⟨A₀, B₀, _, _, hA₀, h, ⟨e⟩⟩ :=
-    Algebra.Etale.exists_subalgebra_fg (R := ℤ) (A := R) (B := S)
-  have : Algebra.FiniteType ℤ A₀ := ⟨(Subalgebra.fg_top _).mpr hA₀⟩
-  have : IsNoetherianRing A₀ := Algebra.FiniteType.isNoetherianRing ℤ A₀
-  obtain ⟨f, hf, hf'⟩ := Algebra.FormallyEtale.isStandardEtale_of_isNoetherianRing
-    (R := A₀) (S := B₀)
-    (Q.comap (e.symm.toRingHom.comp Algebra.TensorProduct.includeRight.toRingHom))
-  refine ⟨e.symm (1 ⊗ₜ f), hf, ?_⟩
-  have : IsStandardEtale R (R ⊗[A₀] Localization.Away f) := inferInstance
-  letI : Algebra A₀ (Localization.Away (e.symm (1 ⊗ₜ f))) := OreLocalization.instAlgebra
-  let φ : R ⊗[A₀] Localization.Away f →ₐ[R] Localization.Away (e.symm (1 ⊗ₜ f)) :=
-    Algebra.TensorProduct.lift (Algebra.ofId _ _) (Localization.awayMapₐ
-      ((e.symm.toAlgHom.restrictScalars A₀).comp Algebra.TensorProduct.includeRight) f)
-      fun _ _ ↦ .all _ _
-  let ψ : R ⊗[A₀] B₀ →ₐ[R] R ⊗[A₀] Localization.Away f :=
-    Algebra.TensorProduct.map (.id _ _) (IsScalarTower.toAlgHom _ _ _)
-  have hφ : Function.Surjective φ := by
-    intro x
-    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (e.symm (1 ⊗ₜ f))) x
-    refine ⟨ψ (e x) * 1 ⊗ₜ (Localization.Away.invSelf f ^ n), ?_⟩
-    rw [IsLocalization.eq_mk'_iff_mul_eq]
-    obtain ⟨x, rfl⟩ := e.symm.surjective x
-    have : φ.comp ψ = (IsScalarTower.toAlgHom R S _).comp e.symm.toAlgHom := by
-      ext; simp [ψ, φ, Localization.awayMapₐ, IsLocalization.Away.map]
-    trans (φ.comp ψ) x
-    · simp [φ, Localization.Away.invSelf, Localization.awayMapₐ, Localization.mk_eq_mk', ← mul_pow,
-        IsLocalization.Away.map, IsLocalization.map_mk', ← TensorProduct.one_def, mul_assoc]
-    exact congr($this x)
-  have : Etale S (Localization.Away (e.symm (1 ⊗ₜ[A₀] f))) :=
-    .of_isLocalizationAway (e.symm (1 ⊗ₜ[A₀] f))
-  have : Etale R (Localization.Away (e.symm (1 ⊗ₜ[A₀] f))) :=
-    .comp R S _
-  exact .of_surjective _ _ _ φ hφ
-
 lemma Algebra.IsEtaleAt.exists_isStandardEtale
     {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
     (Q : Ideal S) [Q.IsPrime] [Algebra.FinitePresentation R S] [Algebra.IsEtaleAt R Q] :
     ∃ f, f ∉ Q ∧ IsStandardEtale R (Localization.Away f) := by
   obtain ⟨f, hfQ, h⟩ := exists_etale_of_isEtaleAt (R := R) Q
-  have H : Disjoint (Submonoid.powers f : Set S) Q := by
-    have (n : ℕ) : f ^ n ∉ Q := mt (‹Q.IsPrime›.mem_of_pow_mem n) hfQ
-    simpa [← Set.subset_compl_iff_disjoint_right, Set.subset_def, Submonoid.mem_powers_iff]
-  have : (Q.map (algebraMap S (Localization.Away f))).IsPrime :=
-    IsLocalization.isPrime_of_isPrime_disjoint _ _ Q ‹_› H
-  obtain ⟨r, hrQ, hr⟩ := Algebra.Etale.exists_isStandardEtale (R := R)
-    (Q.map (algebraMap S <| Localization.Away f))
-  obtain ⟨⟨a, b⟩, e⟩ := IsLocalization.surj (.powers f) r
-  have : IsStandardEtale R (Localization.Away (algebraMap S (Localization.Away f) a)) :=
-    .of_dvd (Aₛ := Localization.Away r) ⟨_, e.symm⟩
-  have : IsLocalization.Away (a * f) (Localization.Away (algebraMap S (Localization.Away f) a)) :=
-    .mul (Localization.Away f) _ f a
-  refine ⟨a * f, ‹Q.IsPrime›.mul_notMem ?_ hfQ, .of_equiv ((IsLocalization.algEquiv (.powers
-    (a * f)) (Localization.Away (algebraMap S (Localization.Away f) a)) _).restrictScalars R)⟩
-  have := IsLocalization.comap_map_of_isPrime_disjoint (.powers f) (Localization.Away f) Q ‹_› H
-  have h := ‹(Q.map (algebraMap S (Localization.Away f))).IsPrime›.mul_notMem hrQ
-    (y := algebraMap _ _ b.1)
-    (by rw [← Ideal.mem_comap, this]; exact Set.subset_compl_iff_disjoint_right.mpr H b.2)
-  rwa [e, ← Ideal.mem_comap, this] at h
+  obtain ⟨g, hgQ, hg⟩ := Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt (R := R) Q
+  have : Etale R (Localization.Away (f * g)) := by
+    rw [← basicOpen_subset_etaleLocus_iff_etale] at h ⊢
+    exact .trans (PrimeSpectrum.basicOpen_mul_le_left _ _) h
+  exact ⟨f * g, ‹Q.IsPrime›.mul_notMem hfQ hgQ, (hg.of_dvd (by simp)).isStandardEtale⟩
