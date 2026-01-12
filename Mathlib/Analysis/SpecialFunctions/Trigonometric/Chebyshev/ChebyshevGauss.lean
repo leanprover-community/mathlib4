@@ -35,19 +35,17 @@ open Complex (exp I)
 
 private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
   exp (k / n * π * I) ≠ 1 := by
-  have : (n : ℂ) ≠ 0 := by aesop
   contrapose! hk
   obtain ⟨m, hx⟩ := Complex.exp_eq_one_iff.mp hk
   have h : k = 2 * n * m := by
     apply (@Int.cast_inj ℂ _ _).mp
-    linear_combination (norm := (push_cast; field)) hx * (n / π / I)
+    linear_combination (norm := (push_cast; field [show (n : ℂ) ≠ 0 by aesop])) hx * (n / π / I)
   use m
 
 private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
     ∑ i ∈ range n, exp ((k * ((2 * i + 1) / (2 * n) * π)) * I) =
     (exp (k / (2 * n) * π * I) / (exp (k / n * π * I) - 1)) *
     ((-1) ^ k - 1) := by
-  have : (n : ℂ) ≠ 0 := by aesop
   suffices (∑ i ∈ range n, exp ((k * ((2 * i + 1) / (2 * n) * π)) * I)) *
     exp (-(k / (2 * n) * π * I)) * (exp (k / n * π * I) - 1) =
     (-1) ^ k - 1 by
@@ -56,12 +54,12 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
       linear_combination (norm := field) h * a / b
     apply hf this (Complex.exp_ne_zero _) (by grind [exp_sub_one_ne_zero])
   convert geom_sum_mul (exp (k / n * π * I)) n using 1
-  · congr 1
-    rw [sum_mul]
+  · simp_rw [sum_mul]
     congr! 1 with i hi
     rw [← Complex.exp_nat_mul, ← Complex.exp_add]
     grind
-  · rw [← Complex.exp_nat_mul, show (n * (k / n * π * I)) = k * (π * I) by field,
+  · rw [← Complex.exp_nat_mul,
+      show (n * (k / n * π * I)) = k * (π * I) by field [show (n : ℂ) ≠ 0 by aesop],
       Complex.exp_int_mul, Complex.exp_pi_mul_I]
 
 /-- Weighted sum of P (x) where x goes over cos ((2 * i + 1) / (2 * n) * π) for 0 ≤ i < n. -/
@@ -71,25 +69,20 @@ noncomputable def sumZeroes (n : ℕ) (P : ℝ[X]) : ℝ :=
 @[simp]
 theorem sumZeroes_sum (n : ℕ) {ι : Type*} (s : Finset ι) (P : ι → ℝ[X]) :
     sumZeroes n (∑ i ∈ s, P i) = ∑ i ∈ s, sumZeroes n (P i) := by
-  unfold sumZeroes
-  simp_rw [eval_finset_sum]
+  simp_rw [sumZeroes, eval_finset_sum]
   rw [sum_comm, mul_sum]
 
 @[simp]
 theorem sumZeroes_smul (n : ℕ) (c : ℝ) (P : ℝ[X]) :
     sumZeroes n (c • P) = c * sumZeroes n P := by
-  unfold sumZeroes
-  simp_rw [eval_smul, ← smul_sum, smul_eq_mul]
-  ring
+  simp_rw [sumZeroes, eval_smul, ← smul_sum, smul_eq_mul]; ring
 
-theorem sumZeroes_T_zero {n : ℕ} (hn : n ≠ 0) :
-    sumZeroes n (T ℝ 0) = π := by
+theorem sumZeroes_T_zero {n : ℕ} (hn : n ≠ 0) : sumZeroes n (T ℝ 0) = π := by
   simp [sumZeroes, show π / n * n = π by field]
 
 theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k) :
     sumZeroes n (T ℝ k) = 0 := by
-  wlog! hn : n ≠ 0
-  · simp [sumZeroes, hn]
+  wlog! hn : n ≠ 0; · simp [sumZeroes, hn]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
     rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
@@ -102,8 +95,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
     Int.cast_neg, neg_div, neg_mul, neg_mul, Complex.exp_neg,
     neg_div, neg_mul, neg_mul, Complex.exp_neg, this, ← add_mul, mul_eq_zero_of_left]
   set z := exp (k / (2 * n) * π * I) with hz
-  have hz₂ : exp (k / n * π * I) = z ^ 2 := by
-    rw [hz, ← Complex.exp_nat_mul]; grind
+  have hz₂ : exp (k / n * π * I) = z ^ 2 := by rw [hz, ← Complex.exp_nat_mul]; grind
   rw [hz₂, ← inv_pow z 2]
   field [show z ≠ 0 by grind [Complex.exp_ne_zero],
     show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind [exp_sub_one_ne_zero]]
@@ -113,9 +105,7 @@ theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n
     (hP : P.degree < n) (hQ : ∀ i, (Q i).degree = i) :
     ∃ c : Fin n → F, P = ∑ i, c i • Q i := by
   cases hd : P.degree
-  case bot =>
-    use fun _ => 0
-    simp [P.degree_eq_bot.mp hd]
+  case bot => exact ⟨fun _ => 0, by simp [P.degree_eq_bot.mp hd]⟩
   case coe d =>
     replace hP : d < n := by rw [hd] at hP; exact WithBot.coe_lt_coe.mp hP
     induction d using Nat.strong_induction_on generalizing P
@@ -135,10 +125,8 @@ theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n
         case neg hm' =>
           have : P'.degree < d + 1 := by
             suffices P'.degree ≤ d by
-              grw [this]
-              rw [← Nat.cast_one, ← Nat.cast_add]
-              norm_cast
-              simp
+              grw [this, ← Nat.cast_one, ← Nat.cast_add]
+              norm_cast; simp
             have := degree_sub_le P (γ • Q ⟨d, hP⟩)
             grw [this, hd, degree_smul_le, hQ]
             simp; rfl
@@ -148,8 +136,7 @@ theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n
       case bot =>
         use cγ
         suffices P = γ • Q ⟨d, hP⟩ by rw [this, hcγ]
-        have := P'.degree_eq_bot.mp hd'
-        grind
+        grind [P'.degree_eq_bot.mp hd']
       case coe d' =>
         have : d' < d := by rw [hd'] at hP'; exact WithBot.coe_lt_coe.mp hP'
         obtain ⟨c, hc⟩ := hind d' this hd' (by grind)
