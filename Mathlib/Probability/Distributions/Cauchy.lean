@@ -1,27 +1,26 @@
 /-
-Copyright (c) 2026 Claus Clausen. All rights reserved.
+Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
 module
 
-public import Mathlib
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-! # Cauchy Distribution over ℝ
 
 Define the Cauchy distribution over the reals.
 
-## Main definitions
-* `cauchyPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
-  or `0` else, which is the probability density function of an exponential distribution with
-  rate `r` (when `hr : 0 < r`).
-* `cauchyPDF`: `ℝ≥0∞`-valued pdf,
-  `exponentialPDF r = ENNReal.ofReal (cauchyPDFReal r)`.
-* `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
+## Main definition
 
-## Main results
-* `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
-  known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
+* `cauchyPDFReal`: the function `x₀ γ x ↦ .pi⁻¹ * γ * ((x - x₀) ^ 2 + γ ^ 2)⁻¹`,
+  which is the probability density function of a Cauchy distribution with location parameter `x₀`
+  and scale parameter `γ` (when `γ ≠ 0`).
+* `cauchyPDF`: `ℝ≥0∞`-valued pdf, `cauchyPDF μ v x = ENNReal.ofReal (cauchyPDFReal μ v x)`.
+* `cauchyMeasure`: a Cauchy measure on `ℝ`, parametrized by a location parameter `x₀ : ℝ` and a
+  scale parameter `γ : ℝ≥0`.  If `γ = 0`, this is `dirac x₀`, otherwise it is defined as the
+  measure with density `cauchyPDF x₀ γ` with respect to the Lebesgue measure.
+
 -/
 
 @[expose] public section
@@ -42,7 +41,13 @@ lemma cauchyPDFReal_def (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
     cauchyPDFReal x₀ γ x  = .pi⁻¹ * γ * ((x - x₀) ^ 2 + γ ^ 2)⁻¹ := by rfl
 
 lemma cauchyPDFReal_def' (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
-    cauchyPDFReal x₀ γ x = .pi⁻¹ * γ⁻¹ * (1 + ((x - x₀) / γ) ^ 2)⁻¹ := by sorry
+    cauchyPDFReal x₀ γ x = .pi⁻¹ * γ⁻¹ * (1 + ((x - x₀) / γ) ^ 2)⁻¹ := by
+  rw [cauchyPDFReal_def]
+  by_cases h : γ = 0
+  · simp [h]
+  · field_simp
+    simp [mul_comm, ← mul_assoc]
+    field
 
 /-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞`. -/
 noncomputable def cauchyPDF (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) : ℝ≥0∞ :=
@@ -74,14 +79,8 @@ lemma cauchyPDF_pos (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) (x : ℝ) : 0 <
   rw [cauchyPDFReal_def]
   positivity
 
-/-- The pdf of the cauchy distribution integrates to 1 -/
-@[simp]
-lemma lintegral_cauchyPDF_eq_one (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
-    ∫⁻ x, cauchyPDF x₀ γ x = 1 := by
-  unfold cauchyPDF
-  rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae
-    (by filter_upwards with x; simpa using by positivity [cauchyPDF_pos x₀ hγ x])
-    (by fun_prop)]
+lemma integral_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
+    ∫ x, cauchyPDFReal x₀ γ x = 1 := by
   simp [cauchyPDFReal_def', NNReal.coe_inv, integral_const_mul,
     integral_sub_right_eq_self (f := fun x : ℝ ↦ (1 + (x / ↑γ) ^ 2)⁻¹),
     integral_comp_div (g := fun x : ℝ ↦ (1 + x ^ 2)⁻¹)]
@@ -90,16 +89,23 @@ lemma lintegral_cauchyPDF_eq_one (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
 @[fun_prop]
 lemma integrable_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
     Integrable (cauchyPDFReal x₀ γ) := by
-  rw [← lintegral_ofReal_ne_top_iff_integrable (by fun_prop)
-    (by filter_upwards with x; simpa using by positivity [cauchyPDF_pos x₀ hγ x])]
-  simp [← cauchyPDF_def, lintegral_cauchyPDF_eq_one x₀ hγ]
+  apply Integrable.of_integral_ne_zero
+  simp [integral_cauchyPDFReal, hγ]
 
--- INTEGRAL CAUCHYREALPDF PROOF
+/-- The pdf of the cauchy distribution integrates to 1 -/
+@[simp]
+lemma lintegral_cauchyPDF_eq_one (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
+    ∫⁻ x, cauchyPDF x₀ γ x = 1 := by
+  unfold cauchyPDF
+  rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae
+    (by filter_upwards with x; simpa using by positivity [cauchyPDF_pos x₀ hγ x])
+    (by fun_prop), integral_cauchyPDFReal x₀ hγ]
 
 end CauchyPDF
 
 section CauchyMeasure
 
+/-- A Cauchy distribution on `ℝ` with location parameter `x₀` and scale parameter `γ`. -/
 noncomputable def cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) : Measure ℝ :=
   if γ = 0 then dirac x₀ else volume.withDensity (cauchyPDF x₀ γ)
 
@@ -114,3 +120,5 @@ instance instIsProbabilityMeasure_cauchyMeasure (x₀ : ℝ) (γ : ℝ≥0) :
   measure_univ := by by_cases h : γ = 0 <;> simp [cauchyMeasure_of_scale_ne_zero, h]
 
 end CauchyMeasure
+
+end Probability
