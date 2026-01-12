@@ -1019,7 +1019,7 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
-    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept]
+    iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
   obtain rfl | rfl : i = 2 ∨ i = 4 := by grind
   · simp [Finset.sum_range_succ]
   · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
