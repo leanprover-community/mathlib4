@@ -25,11 +25,12 @@ open ComplexOrder
 noncomputable abbrev Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
 
 theorem Complex.sqrt_def (a : ℂ) :
-    a.sqrt = √((‖a‖ + a.re) / 2) + (if a.im < 0 then -1 else 1) * √((‖a‖ - a.re) / 2) * I := by
+    a.sqrt = √((‖a‖ + a.re) / 2) + (if 0 ≤ a.im then 1 else -1) * √((‖a‖ - a.re) / 2) * I := by
   rw [← cpow_inv_two_re]
   by_cases! h : 0 ≤ a.im
-  · simp [← cpow_inv_two_im_eq_sqrt h, h.not_gt]
-  simp only [re_add_im, ↓reduceIte, h, neg_one_mul, ← ofReal_neg, ← cpow_inv_two_im_eq_neg_sqrt h]
+  · simp [← cpow_inv_two_im_eq_sqrt h, h]
+  simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
+    ← cpow_inv_two_im_eq_neg_sqrt h]
 
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
@@ -49,18 +50,18 @@ theorem RCLike.re_sqrt (a : 𝕜) : re (sqrt a) = √((‖a‖ + re a) / 2) := b
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
 
 theorem RCLike.sqrt_def (a : 𝕜) :
-    sqrt a = √((‖a‖ + re a) / 2) + (if im a < 0 then -1 else 1) * √((‖a‖ - re a) / 2) * I := by
+    sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
   rw [← re_sqrt]
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt]
   by_cases! ha : 0 ≤ im a
   · simp only [sqrt, h, ↓reduceDIte, complexRingEquiv_apply, complexRingEquiv_symm_apply, map_add,
-      ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one, sub_self, add_zero, ha.not_gt,
+      ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one, sub_self, add_zero, ha,
       ↓reduceIte, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, one_mul, add_right_inj,
       mul_eq_mul_right_iff]
     rw [Complex.cpow_inv_two_im_eq_sqrt (by simpa)]
     simp [h]
-  simp only [ha, ↓reduceIte, sqrt, h, ↓reduceDIte, complexRingEquiv_apply,
+  simp only [ha.not_ge, ↓reduceIte, sqrt, h, ↓reduceDIte, complexRingEquiv_apply,
     complexRingEquiv_symm_apply, map_add, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one,
     sub_self, add_zero, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, neg_mul, add_right_inj]
   rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa)]
