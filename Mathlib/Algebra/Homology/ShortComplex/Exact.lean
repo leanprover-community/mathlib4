@@ -829,6 +829,36 @@ section Abelian
 
 variable [Abelian C]
 
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+/-- The exact short complex `kernel f ⟶ X ⟶ Y` for any morphism `f : X ⟶ Y`. -/
+@[simps]
+noncomputable def kernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (kernel.condition f)
+
+/-- The exact short complex `X ⟶ Y ⟶ cokernel f` for any morphism `f : X ⟶ Y`. -/
+@[simps]
+noncomputable def cokernelSequence : ShortComplex C :=
+  ShortComplex.mk _ _ (cokernel.condition f)
+
+instance : Mono (kernelSequence f).f := by
+  dsimp
+  infer_instance
+
+instance : Epi (cokernelSequence f).g := by
+  dsimp
+  infer_instance
+
+lemma kernelSequence_exact : (kernelSequence f).Exact :=
+  exact_of_f_is_kernel _ (kernelIsKernel f)
+
+lemma cokernelSequence_exact : (cokernelSequence f).Exact :=
+  exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+end
+
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`
 (e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ S₂.X₃`), then `φ` is a quasi-isomorphism iff
