@@ -345,12 +345,10 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
   obtain ⟨_, _, _, h₁₂'⟩ := distinguished_cocone_triangle f
   obtain ⟨_, _, _, h₂₃'⟩ := distinguished_cocone_triangle g
   obtain ⟨_, _, _, h₁₃'⟩ := distinguished_cocone_triangle (f ≫ g)
-  constructor
-  exact Octahedron.ofIso
-    (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
+  exact ⟨Octahedron.ofIso (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
-    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..
+    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
 section
 
