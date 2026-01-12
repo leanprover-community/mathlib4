@@ -51,12 +51,13 @@ theorem expand_monomial (d : σ →₀ ℕ) (r : R) :
   · simp [pow_mul, algebraMap_apply, Algebra.algebraMap_self]
   · simp
 
-@[simp]
 theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 i
   simp [expand, subst_self]
 
-theorem expand_one_apply (f : MvPowerSeries σ R) : expand 1 one_ne_zero f = f := by simp
+@[simp]
+theorem expand_one_apply (f : MvPowerSeries σ R) : expand 1 one_ne_zero f = f := by
+  rw [expand_one, AlgHom.id_apply]
 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : MvPowerSeries σ R) :
