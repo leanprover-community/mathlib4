@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Function
 # Monotone functions over sets
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*}
 

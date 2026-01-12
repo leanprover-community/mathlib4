@@ -17,7 +17,7 @@ on `X × Y` valued in a ring (with a uniform structure) can be uniformly approxi
 sums of functions of the form `f x * g y`.
 -/
 
-@[expose] public section
+public section
 
 open UniformSpace
 

@@ -42,6 +42,7 @@ import Archive.Imo.Imo2006Q5
 import Archive.Imo.Imo2008Q2
 import Archive.Imo.Imo2008Q3
 import Archive.Imo.Imo2008Q4
+import Archive.Imo.Imo2010Q5
 import Archive.Imo.Imo2011Q3
 import Archive.Imo.Imo2011Q5
 import Archive.Imo.Imo2013Q1
