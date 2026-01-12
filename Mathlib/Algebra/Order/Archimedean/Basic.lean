@@ -10,23 +10,19 @@ public import Mathlib.Algebra.Order.Monoid.Units
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Data.Rat.Floor
+
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
-# Archimedean groups and fields.
+# Archimedean groups and fields
 
-This file defines the archimedean property for ordered groups and proves several results connected
-to this notion. Being archimedean means that for all elements `x` and `y>0` there exists a natural
-number `n` such that `x ≤ n • y`.
+This file proves several results connected to the notion of Archimedean groups. Being Archimedean
+means that for all elements `x` and `y > 0` there exists a natural number `n` such that `x ≤ n • y`.
 
 ## Main definitions
 
-* `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
-  property.
-* `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-archimedean
-  property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
-* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making
-  it into a `floorRing`.
+* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making it
+  into a `floorRing`.
 
 ## Main statements
 
