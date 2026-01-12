@@ -93,7 +93,7 @@ instance instEMetricSpace : EMetricSpace (Closeds α) where
   eq_of_edist_eq_zero {s t} h := Closeds.ext <| (s.isClosed.hausdorffEDist_zero_iff t.isClosed).1 h
 
 /-- The edistance to a closed set depends continuously on the point and the set -/
-theorem continuous_infEDist_hausdorffEDist :
+theorem continuous_infEDist :
     Continuous fun p : α × Closeds α => infEDist p.1 p.2 := by
   refine continuous_of_le_add_edist 2 (by simp) ?_
   rintro ⟨x, s⟩ ⟨y, t⟩
@@ -225,7 +225,7 @@ namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
+instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
   __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
@@ -274,20 +274,20 @@ theorem isClosed_in_closeds [CompleteSpace α] :
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/
-instance completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+instance instCompleteSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
         isometry_toCloseds.isUniformInducing).2 <|
     isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
-instance compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+instance instCompactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
     rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
     exact isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
-instance secondCountableTopology [SecondCountableTopology α] :
+instance instSecondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
   haveI : SeparableSpace (NonemptyCompacts α) := by
     /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
@@ -405,7 +405,7 @@ alias hausdorffEdist_le_of_mem_hausdorffEntourage := hausdorffEDist_le_of_mem_ha
 
 @[deprecated (since := "2026-01-08")]
 alias continuous_infEdist_hausdorffEdist :=
-  TopologicalSpace.Closeds.continuous_infEDist_hausdorffEDist
+  TopologicalSpace.Closeds.continuous_infEDist
 
 @[deprecated (since := "2026-01-08")]
 alias Closeds.edist_eq := TopologicalSpace.Closeds.edist_eq
@@ -454,7 +454,7 @@ variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
+instance NonemptyCompacts.instMetricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
     hausdorffEDist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded
