@@ -46,7 +46,7 @@ all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
 obtained in the file `SmallObject.Iteration.Nonempty`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` will done in the
+and of its colimit `Φ.iteration J : C` will be done in the
 file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
@@ -119,7 +119,7 @@ end
 
 variable (C) in
 /-- A successor structure on a category consists of the
-data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
+data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ succ X`
 (which does not need to be natural), and a zeroth object `X₀`.
 -/
 structure SuccStruct where
