@@ -325,10 +325,6 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 
-instance (p : Ideal R) (P : Ideal A) [P.IsPrime] [P.LiesOver p] :
-    (P.map (Ideal.Quotient.mk <| p.map (algebraMap R A))).IsPrime := by
-  apply Ideal.map_quotientMk_isPrime_of_isPrime
-
 lemma ker_stabilizerHom :
     (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
   ext σ

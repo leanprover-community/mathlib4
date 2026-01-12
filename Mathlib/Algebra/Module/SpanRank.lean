@@ -159,13 +159,6 @@ lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
   rw [← Nat.cast_le (α := ℕ∞)]
   exact le_trans (spanFinrank_span_le_encard _) hs.cast_ncard_eq.ge
 
-lemma spanFinrank_span_le_encard (s : Set M) : (span R s).spanFinrank ≤ s.encard := by
-  obtain h | h := s.finite_or_infinite
-  · refine le_trans ?_ s.ncard_le_encard
-    norm_cast
-    exact spanFinrank_span_le_ncard_of_finite h
-  · simp [h]
-
 /-- Constructs a generating set with cardinality equal to the `spanRank` of the submodule -/
 theorem exists_span_set_card_eq_spanRank (p : Submodule R M) :
     ∃ s : Set M, #s = p.spanRank ∧ span R s = p := by
