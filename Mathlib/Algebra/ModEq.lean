@@ -42,7 +42,6 @@ assert_not_exists Module
 namespace AddCommGroup
 
 section AddCommMonoid
-
 variable {M : Type*} [AddCommMonoid M] {a b c d p : M}
 
 /-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
@@ -106,7 +105,9 @@ theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
 theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
   modEq_iff_nsmul.mpr ⟨0, n, by simp⟩
 
-protected theorem ModEq.add (hab : a ≡ b [PMOD p]) (hcd : c ≡ d [PMOD p]) :
+namespace ModEq
+
+protected theorem add (hab : a ≡ b [PMOD p]) (hcd : c ≡ d [PMOD p]) :
     a + c ≡ b + d [PMOD p] := by
   rw [modEq_iff_nsmul] at *
   rcases hab with ⟨k, l, hab⟩
@@ -114,14 +115,33 @@ protected theorem ModEq.add (hab : a ≡ b [PMOD p]) (hcd : c ≡ d [PMOD p]) :
   use k + m, l + n
   rw [add_nsmul, add_add_add_comm, hab, hcd, add_nsmul, add_add_add_comm]
 
-protected theorem ModEq.of_nsmul {n : ℕ} : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨k, l, h⟩ =>
+protected theorem of_nsmul {n : ℕ} : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨k, l, h⟩ =>
   ⟨k * n, l * n, by simpa [mul_nsmul']⟩
 
-protected theorem ModEq.nsmul {n : ℕ} (h : a ≡ b [PMOD p]) : n • a ≡ n • b [PMOD n • p] := by
+protected theorem nsmul {n : ℕ} (h : a ≡ b [PMOD p]) : n • a ≡ n • b [PMOD n • p] := by
   rw [modEq_iff_nsmul] at *
   rcases h with ⟨k, l, h⟩
   use k, l
   rw [← mul_nsmul, mul_nsmul', ← nsmul_add, h, nsmul_add, ← mul_nsmul, mul_nsmul']
+
+protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
+  (add_nsmul_modEq _).trans
+
+protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
+  (nsmul_add_modEq _).trans
+
+theorem map {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+    (f : F) (h : a ≡ b [PMOD p]) : f a ≡ f b [PMOD f p] := by
+  rw [modEq_iff_nsmul] at *
+  rcases h with ⟨m, n, h⟩
+  use m, n
+  simpa using congr(f $h)
+
+end ModEq
+
+theorem map_modEq_iff {N F : Type*} [AddCommMonoid N] [FunLike F M N] [AddMonoidHomClass F M N]
+    (f : F) (hf : Function.Injective f) : f a ≡ f b [PMOD f p] ↔ a ≡ b [PMOD p] := by
+  simp only [modEq_iff_nsmul, ← map_nsmul, ← map_add, hf.eq_iff]
 
 @[simp]
 theorem nsmul_modEq_nsmul [IsAddTorsionFree M] {n : ℕ} (hn : n ≠ 0) :
@@ -130,16 +150,9 @@ theorem nsmul_modEq_nsmul [IsAddTorsionFree M] {n : ℕ} (hn : n ≠ 0) :
 
 alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 
-protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
-  (add_nsmul_modEq _).trans
-
-protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
-  (nsmul_add_modEq _).trans
-
 end AddCommMonoid
 
 section AddCancelCommMonoid
-
 variable {M : Type*} [AddCancelCommMonoid M] {a b c d p : M}
 
 namespace ModEq
@@ -351,8 +364,33 @@ end AddCommGroup
 theorem modEq_iff_int_modEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
   simp [modEq_iff_zsmul, dvd_iff_exists_eq_mul_left, Int.modEq_iff_dvd, eq_comm]
 
-section AddCommGroupWithOne
+@[simp]
+theorem modEq_iff_natModEq {a b n : ℕ} : a ≡ b [PMOD n] ↔ a ≡ b [MOD n] := by
+  constructor
+  · rw [modEq_iff_nsmul, Nat.ModEq]
+    rintro ⟨k, l, h⟩
+    simpa using congr($h % n)
+  · rw [Nat.ModEq]
+    intro h
+    rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]
+    exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm
 
+section AddCommMonoidWithOne
+variable {M : Type*} [AddCommMonoidWithOne M]
+
+theorem ModEq.natCast {a b n : ℕ} (h : a ≡ b [MOD n]) : a ≡ b [PMOD (n : M)] := by
+  rw [← modEq_iff_natModEq] at h
+  exact h.map (Nat.castAddMonoidHom M)
+
+@[simp, norm_cast]
+theorem natCast_modEq_natCast [CharZero M] {a b n : ℕ} : a ≡ b [PMOD (n : M)] ↔ a ≡ b [MOD n] := by
+  simpa using map_modEq_iff (Nat.castAddMonoidHom M) Nat.cast_injective
+
+alias ⟨_root_.Nat.ModEq.of_natCast, _⟩ := natCast_modEq_natCast
+
+end AddCommMonoidWithOne
+
+section AddCommGroupWithOne
 variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
 
 @[simp, norm_cast]
@@ -364,33 +402,26 @@ theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : G)] ↔ a ≡ b
 lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : G)] ↔ a ≡ b [PMOD (n : ℤ)] := by
   simpa using intCast_modEq_intCast (G := G) (z := n)
 
-@[simp, norm_cast]
-theorem natCast_modEq_natCast {a b n : ℕ} : a ≡ b [PMOD (n : G)] ↔ a ≡ b [MOD n] := by
-  simp_rw [← Int.natCast_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast G,
-    Int.cast_natCast]
-
 alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
-
-alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
 
 end AddCommGroupWithOne
 
-section DivisionRing
-variable {K : Type*} [DivisionRing K] {a b c p : K}
+section DivisionSemiring
+variable {K : Type*} [DivisionSemiring K] {a b c p : K}
 
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
-  simp [modEq_iff_zsmul, ← sub_div, eq_div_iff hc, mul_assoc]
+  simp [modEq_iff_nsmul, add_div' _ _ _ hc, div_left_inj' hc, mul_assoc]
 
 @[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
   rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]
 
-end DivisionRing
+end DivisionSemiring
 
-section Field
-variable {K : Type*} [Field K] {a b c p : K}
+section Semifield
+variable {K : Type*} [Semifield K] {a b c p : K}
 
 @[simp] lemma mul_modEq_mul_left (hc : c ≠ 0) : c * a ≡ c * b [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
   simp [mul_comm c, hc]
 
-end Field
+end Semifield
 end AddCommGroup
