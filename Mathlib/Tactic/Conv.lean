@@ -37,11 +37,11 @@ macro_rules
 /--
 `conv_rhs => cs` runs the `conv` tactic sequence `cs` on the right hand side of the target.
 
-In general, for an `n`-ary operator as the target, it traverses into the second to last argument.
-It is a synonym for `conv => arg -2; cs`.
+In general, for an `n`-ary operator as the target, it traverses into the last argument.
+It is a synonym for `conv => arg -1; cs`.
 
-* `conv_lhs at h => cs` runs `cs` on the right hand side of hypothesis `h`.
-* `conv_lhs in pat => cs` first looks for a subexpression matching `pat` (see the `pattern`
+* `conv_rhs at h => cs` runs `cs` on the right hand side of hypothesis `h`.
+* `conv_rhs in pat => cs` first looks for a subexpression matching `pat` (see the `pattern`
   conv tactic) and then traverses into the right hand side of this subexpression.
   This syntax also supports the `occs` clause for the pattern.
 -/
