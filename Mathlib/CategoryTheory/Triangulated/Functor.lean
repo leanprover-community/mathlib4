@@ -350,26 +350,17 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
-section
-
-variable {C D : Type _} [Category C] [Category D]
-  [HasShift C ℤ] [HasShift D ℤ] [HasZeroObject C] [HasZeroObject D]
-  [Preadditive C] [Preadditive D]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
-  [Pretriangulated C] [Pretriangulated D]
-  (F : C ⥤ D) [F.CommShift ℤ]
-
 lemma IsTriangulated.of_fully_faithful_triangulated_functor
+    (F : C ⥤ D) [F.CommShift ℤ]
     [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :
     IsTriangulated C where
   octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
     {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by
     have comm' : F.map u₁₂ ≫ F.map u₂₃ = F.map u₁₃ := by rw [← comm, F.map_comp]
-    have H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
+    let H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
       (F.map_distinguished _ h₂₃) (F.map_distinguished _ h₁₃)
     exact
-      ⟨{
-        m₁ := F.preimage H.m₁
+      ⟨{m₁ := F.preimage H.m₁
         m₃ := F.preimage H.m₃
         comm₁ := F.map_injective (by simpa using H.comm₁)
         comm₂ := F.map_injective (by
@@ -382,7 +373,5 @@ lemma IsTriangulated.of_fully_faithful_triangulated_functor
         mem := by
           rw [← F.map_distinguished_iff]
           simpa using H.mem }⟩
-
-end
 
 end CategoryTheory
