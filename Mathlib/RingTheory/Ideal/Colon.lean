@@ -60,9 +60,11 @@ theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I
 @[deprecated (since := "2026-01-11")] alias colon_top := colon_univ
 
 @[simp]
-theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
+theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
   ext x
   simp [mem_colon, mem_annihilator]
+
+@[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
 
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
@@ -101,7 +103,7 @@ lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
   intro p h_p
   exact smul_mem N x (h h_p)
 
-/-- If `S ⊆ N₂`, then intersecting with `N₁` does not change the colon ideal. -/
+/-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
   (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
     simpa [iInf_bool_eq, Set.iUnion_const] using
@@ -120,7 +122,8 @@ variable {N : Submodule R M} (S : Set M)
 theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
 
-theorem colon_bot' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihilator := by
+/-- A variant for arbitrary sets in commutative semirings -/
+theorem bot_colon' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihilator := by
   ext r
   rw [mem_colon, mem_annihilator]
   constructor
@@ -137,6 +140,9 @@ theorem colon_bot' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihi
   · intro hr s hs
     simpa [mem_bot] using hr s (mem_span_of_mem hs)
 
+@[deprecated (since := "2026-01-11")] alias colon_bot' := bot_colon'
+
+@[simp]
 theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
   ext r
   constructor
@@ -157,7 +163,6 @@ theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
     · intro a x hx hrx
       simpa [smul_comm r a x] using N.smul_mem a hrx
 
-@[simp]
 theorem mem_colon_span_singleton {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
   simp[colon_span (N := N) (S := {x})]
