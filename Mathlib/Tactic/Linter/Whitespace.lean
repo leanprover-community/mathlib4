@@ -233,8 +233,8 @@ A structure combining the various exceptions to the `whitespace` linter.
   starting from the given `SyntaxNodeKind` and resumes checking for all deeper nodes.
 -/
 structure ExcludedSyntaxNodeKind where
-  /-- `kinds` is the array of `SyntaxNodeKind`s that are ignored by the `whitespace` linter. -/
-  kinds : Array SyntaxNodeKind
+  /-- `kinds` is the `NameSet` of `SyntaxNodeKind`s that are ignored by the `whitespace` linter. -/
+  kinds : NameSet
   /--
   `depth` represents how many `SyntaxNodeKind`s the `whitespace` linter climbs, in search of an
   exception.
@@ -254,7 +254,7 @@ anywhere in the syntax tree makes the linter ignore the whole command.
 This is the reason their `depth` is `none`.
 -/
 def unparseable : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     ``Parser.Command.macro_rules,
     ``runCmd,
     ``Parser.Command.meta,
@@ -267,7 +267,7 @@ These are the `SyntaxNodeKind`s for which we want to ignore the pretty-printer.
 Deeper nodes are *not* inspected.
 -/
 def totalExclusions : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     -- Each entry prevents the formatting of...
     ``Parser.Command.docComment, -- of doc-strings.
     ``Parser.Command.moduleDoc, -- of module docs.
@@ -301,7 +301,7 @@ def totalExclusions : ExcludedSyntaxNodeKind where
   depth := none
 
 def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     ``«term¬_»,
     -- notation for `upShadow`, the pretty-printer prefers `∂⁺ ` over `∂⁺` *always*
     `FinsetFamily.«term∂⁺»,
@@ -320,7 +320,7 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
 -/
 -- TODO: this still ignores a bit too much, since also some spaces after `suffices` are ignored.
 def ignoreSpaceAfter3 : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     ``Parser.Term.sufficesDecl,
   ]
   depth := some 3
@@ -330,14 +330,14 @@ These are the `SyntaxNodeKind`s for which the pretty-printer would likely not sp
 following nodes, but we overrule it and place a space anyway.
 -/
 def forceSpaceAfter : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     ``termThrowError__, -- `throwError "message"`
     ``Parser.Term.whereDecls, -- `where`
   ]
   depth := some 2
 
 def forceSpaceAfter3 : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     `Bundle.termπ__,
   ]
   depth := some 3
@@ -347,7 +347,7 @@ These are the `SyntaxNodeKind`s for which the pretty-printer would likely space 
 following nodes, but we overrule it and do not place a space.
 -/
 def forceNoSpaceAfter : ExcludedSyntaxNodeKind where
-  kinds := #[
+  kinds := .ofArray #[
     --``Parser.Term.doubleQuotedName,
     `atom.«`», -- useful for double-quoted names
   ]
@@ -537,7 +537,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   -- If the file is mostly a "meta" file, then do not lint.  The heuristic for this is to look
   -- at the name of the module.
-  let comps : ExcludedSyntaxNodeKind := .mk (← getMainModule).components.toArray none
+  let comps : ExcludedSyntaxNodeKind := .mk (.ofList (← getMainModule).components) none
   if comps.contains #[`Tactic, `Util, `Lean, `Meta] then
     return
   -- Skip `eoi` and `#exit`.
