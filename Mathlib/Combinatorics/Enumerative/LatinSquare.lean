@@ -111,6 +111,29 @@ class LatinSquare (n : Type u) (α : Type v) [Fintype n] [Fintype α] [Decidable
   distinct_col_entries := latin_square_col_implies_latin_rectangle_col
     M once_per_column
   m_le_n := by rfl
+  
+@[coe]
+def to_matrix : (LatinRectangle m n α) → (Matrix m n α)
+ | A => A.M
+
+instance : Coe (LatinRectangle m n α) (Matrix m n α) where
+  coe := to_matrix
+  
+def LatinRectangle.to_latin_sq (A : LatinRectangle n n α) : (LatinSquare n α) := 
+{
+  M := A.M,
+  exactly_n_symbols := A.exactly_n_symbols,
+  once_per_row := A.once_per_row,
+  once_per_column := by
+    have h := A.distinct_col_entries
+    have s := A.exactly_n_symbols
+    unfold _root_.distinct_col_entries at h
+    unfold once_per_column 
+    intro y x
+    sorry
+}
+
+-- TODO add coe from square LR to LS
 
 instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
@@ -118,7 +141,7 @@ instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive]
-def group_to_cayley_table {G : Type*} [DecidableEq G] [Group G] [Fintype G] :
+def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
   LatinSquare G G := {
     M := fun i j ↦ i * j,
     exactly_n_symbols := by rfl,
@@ -199,13 +222,24 @@ def latin_rectangle_isomorphism
     have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
     omega
   }
+  
+def latin_square_isomorphisms
+  (f : n ≃ n')
+  (g : n ≃ n')
+  (h : α ≃ β)
+  (A : LatinSquare n α) : 
+  LatinSquare n' β := {
+  M := fun i' j' ↦ h (A.M (f.symm i') (g.symm j')),
+
 -- Cyclic Example
 -- We construct an infinite family of Latin Squares from the infinite family of Cyclic Groups
 
 -- For example, addGroup_to_cayley_table (ZMod.finEquiv 5).toEquiv
 
-instance nonempty {n : Nat} [NeZero n] : LatinSquare n (ZMod n) :=
-  addGroup_to_cayley_table (ZMod.finEquiv n).toEquiv
+instance nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
+  addGroup_to_cayley_table (ZMod n)
+  
+-- #check Matrix.transpose (addGroup_to_cayley_table (ZMod 5) : Matrix (ZMod 5) (ZMod 5) (ZMod 5))
 
 section Isotopy
 
