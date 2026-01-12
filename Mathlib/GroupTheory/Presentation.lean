@@ -11,13 +11,13 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Presentation of a group
-This file introduces generating systems and presentations for a group, aligned with
+This file introduces the notion of 'Presentation' of a group, aligned with
 `Mathlib.GroupTheory.PresentedGroup`.
 
 Main definitions:
 * `Group.GeneratingSet` packages a type of generators with a map to the group whose range
   generates it.
-* `Group.Presentation` extends a generating system with relators and the usual kernel condition.
+* `Group.Presentation` extends a generating set with relators and the usual kernel condition.
 * `Group.Presentation.toGroup` is the canonical map `PresentedGroup P.rels →* G`.
 * `Group.Presentation.mapMulEquiv` transports a presentation along a group isomorphism.
 * `Group.Presentation.equivPresentedGroup` identifies `PresentedGroup P.rels` with `G`.
@@ -156,6 +156,7 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
 /-!
 Any two presentations of the same group present isomorphic groups.
 -/
+--TODO: better name for this?
 noncomputable def equivPresentedGroups {G : Type*} [Group G]
     {ι κ : Type*} (P : Presentation G ι) (Q : Presentation G κ) :
     P.presentedGroup ≃* Q.presentedGroup :=
@@ -188,9 +189,7 @@ end PresentedGroup
 /-!
 ## Tietze transformations
 
-This section records the four standard Tietze moves for group presentations, phrased as
-equivalences between the *groups presented* by presentations (i.e. `P.presentedGroup`).
--/
+This section records the four standard Tietze moves for group presentations.
 
 namespace Tietze
 
