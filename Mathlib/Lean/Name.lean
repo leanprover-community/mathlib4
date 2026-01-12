@@ -62,12 +62,12 @@ def Lean.Name.decapitalize (n : Name) : Name :=
 /--
 Determines if the pretty-printed version of the given name would parse as an
 `ident` with an underlying name (via `getId`) equal to the original name.
-The pretty-printer usually escapes unparseable components of a name with `«»`,
+The pretty-printer usually escapes unparsable components of a name with `«»`,
 but makes exceptions for various names with special meaning, meaning that the result does not
 round trip. We therefore re-check those conditions here.
 
-This function is intended to be "safe" in that it if it returns `true`,
-the name will definitely round trip. Any deviation from this
+This function is intended to be "safe" in that if it returns `true`,
+the name will definitely round trip. (The converse is not guaranteed.) Any deviation from this
 behavior is a bug which should be fixed.
 -/
 -- See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/Check.20if.20a.20.60Lean.2EName.60.20is.20roundtrippable/with/565735560)
