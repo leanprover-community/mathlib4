@@ -695,23 +695,20 @@ def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
   have h := exists_iso_of_arrow_iso _ _ (inv_rot_of_distTriang _ hT₁)
     (inv_rot_of_distTriang _ hT₂)
     (Arrow.isoMk ((shiftFunctor C (-1)).mapIso e₃) e₁ (by
-      dsimp
+      have := (shiftFunctorCompIsoId C (1 : ℤ) (-1) (by simp)).hom.naturality e₁.hom
+      dsimp at this ⊢
       simp only [comp_neg, neg_comp, assoc, neg_inj, ← Functor.map_comp_assoc, ← comm]
-      simp only [Functor.map_comp, assoc]
-      erw [← NatTrans.naturality]
-      rfl))
+      simp [this]))
   let e := h.choose
+  have h₁ : e.hom.hom₁ = _ := h.choose_spec.1
+  have h₂ : _ = e.hom.hom₂ := h.choose_spec.2.symm
+  have h₃ := e.hom.comm₃
+  have h₄ := (shiftFunctorCompIsoId C (-1 : ℤ) 1 (by simp)).inv.naturality e₃.hom
+  dsimp at h₁ h₂ h₃ h₄
   refine Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ ?_ ?_ comm
-  · refine e.hom.comm₂.trans ?_
-    congr 1
-    exact h.choose_spec.2
-  · rw [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃)]
-    rw [assoc, assoc]
-    refine Eq.trans ?_ e.hom.comm₃
-    rw [h.choose_spec.1]
-    dsimp
-    erw [assoc, ← NatTrans.naturality]
-    rfl
+  · convert e.hom.comm₂ using 2
+  · simp [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃),
+      ← h₃, assoc, h₁, h₄]
 
 end Pretriangulated
 
