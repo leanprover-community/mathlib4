@@ -135,6 +135,7 @@ instance : FunLike (A →A[R] B) A B where
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : AlgHomClass (A →A[R] B) R A B where
   map_mul f x y := map_mul f.toAlgHom x y
   map_one f     := map_one f.toAlgHom

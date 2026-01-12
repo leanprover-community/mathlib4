@@ -132,6 +132,7 @@ def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
 
 variable (hI hJ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a ring homomorphism `A → B` and ideals `I ⊆ A` and `J ⊆ B` such that `I.map f ≤ J`,
   this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`.
   See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
