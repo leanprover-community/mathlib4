@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+import Mathlib.Algebra.Module.Torsion.Pi
+
 /-!
 
 # Quadratic Algebra
@@ -476,6 +478,10 @@ theorem algebraMap_re : (algebraMap R (QuadraticAlgebra R a b) r).re = r := rfl
 
 @[simp]
 theorem algebraMap_im : (algebraMap R (QuadraticAlgebra R a b) r).im = 0 := rfl
+
+instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
+    Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
+  (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
 
 instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
     NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=

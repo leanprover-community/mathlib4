@@ -55,9 +55,14 @@ theorem isRightRegular_iff [Mul R] {a : R} :
     IsRightRegular a ↔ IsSMulRegular R (MulOpposite.op a) :=
   Iff.rfl
 
-namespace IsSMulRegular
-
 variable {M}
+
+lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f a • m = a • m) :
+    IsSMulRegular M (f a) ↔ IsSMulRegular M a := by simp [IsSMulRegular, smul]
+
+protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
+
+namespace IsSMulRegular
 
 @[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
     IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
@@ -225,7 +230,7 @@ end Group
 
 section Units
 
-variable [Monoid R] [MulAction R M]
+variable (M) [Monoid R] [MulAction R M]
 
 /-- Any element in `Rˣ` is `M`-regular. -/
 theorem Units.isSMulRegular (a : Rˣ) : IsSMulRegular M (a : R) :=
@@ -240,15 +245,12 @@ end Units
 
 section SMulZeroClass
 
-variable {M}
-
 protected lemma IsSMulRegular.right_eq_zero_of_smul [Zero M] [SMulZeroClass R M]
     {r : R} {x : M} (h1 : IsSMulRegular M r) (h2 : r • x = 0) : x = 0 :=
   h1 (h2.trans (smul_zero r).symm)
 
 end SMulZeroClass
 
-variable {M} in
 lemma isSMulRegular_iff_right_eq_zero_of_smul [AddGroup M] [DistribSMul R M] {r : R} :
     IsSMulRegular M r ↔ ∀ m : M, r • m = 0 → m = 0 where
   mp h _ := h.right_eq_zero_of_smul

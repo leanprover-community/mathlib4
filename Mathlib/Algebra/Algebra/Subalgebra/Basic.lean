@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
@@ -19,6 +20,8 @@ The `Algebra.adjoin` operation and complete lattice structure can be found in
 -/
 
 @[expose] public section
+
+open Module
 
 universe u u' v w w'
 
@@ -329,6 +332,9 @@ theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S)
     ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
 
 end
+
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  S.toSubmodule.instIsTorsionFree
 
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c} {x : S} h =>
@@ -870,6 +876,10 @@ theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
   SetLike.ext'_iff.mp S.rangeS_algebraMap
+
+instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
+  .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
+    (by simp [smul_def])
 
 instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
   ⟨fun {c} x h =>

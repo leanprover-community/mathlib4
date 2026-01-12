@@ -7,6 +7,8 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Extension of Valuations
 
@@ -48,6 +50,9 @@ Valuation, Extension of Valuations
 -/
 
 @[expose] public section
+
+open Module
+
 namespace Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
@@ -123,6 +128,11 @@ instance instAlgebraInteger : Algebra vR.integer vA.integer where
 @[simp, norm_cast]
 theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
   rfl
+
+@[simp]
+lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
+    (⟨r, hr⟩ : vR.integer) • (⟨a, ha⟩ : vA.integer) =
+      ⟨r • a, Algebra.smul_def r a ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr hr) ha⟩ := rfl
 
 @[simp, norm_cast]
 theorem val_algebraMap (r : vR.integer) :

@@ -92,7 +92,7 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   fin_cases i
   · let val0 : (A k)[X] := Polynomial.C Y * Polynomial.X - Polynomial.C tY
     have h1_val0 : val0 ∈ Q.asIdeal := by simp [val0, Q, f, Y, tY]
-    have h2_val0 : val0 ≠ 0 := support_nonempty.mp ⟨1, by simpa [val0, Y]⟩
+    have h2_val0 : val0 ≠ 0 := support_nonempty.mp ⟨1, by simp [val0, Y]⟩
     exact ⟨OrderBot.bot_le Q, fun h ↦ h2_val0 (by simpa using h h1_val0)⟩
   · let val1 : (A k)[X] := Polynomial.C Y
     have h1_val1 : val1 ∈ P1.asIdeal := by simpa [P1, val1, g]

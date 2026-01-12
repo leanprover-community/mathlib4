@@ -339,6 +339,8 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 
+@[simp] lemma mk_eq_zero {x : R} (hx : x ∈ s) : (⟨x, hx⟩ : s) = 0 ↔ x = 0 := Subtype.ext_iff
+
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   SubringClass.toCommRing s

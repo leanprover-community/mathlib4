@@ -25,6 +25,8 @@ In this file we define `NonUnitalStarSubalgebra`s and the usual operations on th
 
 @[expose] public section
 
+open Module
+
 namespace StarMemClass
 
 /-- If a type carries an involutive star, then any star-closed subset does too. -/
@@ -294,6 +296,9 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end
+
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c x} h =>
