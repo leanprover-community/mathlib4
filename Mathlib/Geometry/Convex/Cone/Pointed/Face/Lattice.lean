@@ -57,11 +57,11 @@ instance : SetLike (Face C) M where
 theorem ext (h : ∀ x, x ∈ F₁ ↔ x ∈ F₂) : F₁ = F₂ := SetLike.ext h
 
 @[simp]
-theorem coe_le_iff {F₁ F₂ : Face C} : F₁ ≤ F₂ ↔ F₁.toPointedCone ≤ F₂.toPointedCone := by
+theorem coe_le_iff {F₁ F₂ : Face C} : F₁.toPointedCone ≤ F₂.toPointedCone ↔ F₁ ≤ F₂ := by
   constructor <;> intro h x xF₁ <;> exact h xF₁
 
 @[simp]
-theorem mem_coe {F : Face C} (x : M) : x ∈ F ↔ x ∈ F.toPointedCone := .rfl
+theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
 
 /-!
 ### Infimum, supremum and lattice
@@ -91,12 +91,12 @@ instance : SemilatticeInf (Face C) where
 instance : CompleteSemilatticeInf (Face C) where
   __ := instSemilatticeInf
   sInf_le S f fS := by
-    rw [coe_le_iff]
+    rw [← coe_le_iff]
     refine inf_le_of_right_le ?_
     simpa [LE.le] using fun _ xs => xs f fS
   le_sInf S f fS := by
     simp only [sInf, Set.mem_setOf_eq, Set.iInter_exists, Set.biInter_and',
-      Set.iInter_iInter_eq_right, coe_le_iff, toPointedCone, le_inf_iff]
+      Set.iInter_iInter_eq_right, ← coe_le_iff, toPointedCone, le_inf_iff]
     refine ⟨f.isFaceOf.le, ?_⟩
     simpa [LE.le] using fun _ xf s sm => fS s sm xf
 
@@ -145,16 +145,16 @@ def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 @[simp]
 theorem prod_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
-  simpa [fst, prod] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [fst, prod, ← mem_coe] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
 theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
-  simpa [snd, prod] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [snd, prod, ← mem_coe] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, toPointedCone, fst, snd, mem_coe, mem_prod, mem_map,
+  simp only [prod, toPointedCone, fst, snd, ← mem_coe, mem_prod, mem_map,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
