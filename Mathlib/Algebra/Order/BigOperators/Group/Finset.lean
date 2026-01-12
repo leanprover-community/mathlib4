@@ -21,7 +21,7 @@ This file contains the results concerning the interaction of finset big operator
 groups/monoids.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
