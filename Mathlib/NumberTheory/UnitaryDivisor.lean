@@ -336,7 +336,7 @@ theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0
       calc p ^ k ≥ p ^ 1 := Nat.pow_le_pow_right hp.pos hk_pos
         _ = p := pow_one p
     omega
-  simp only [Finset.sum_insert (notMem_singleton.mpr h_ne), Finset.sum_singleton]
+  simp only [Finset.sum_insert (Finset.notMem_singleton.mpr h_ne), Finset.sum_singleton]
   ac_rfl
 
 /-! ### Additional Properties -/
