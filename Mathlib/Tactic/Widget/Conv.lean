@@ -30,8 +30,8 @@ The constructors are chosen to be easily translatable into `conv` directions.
 -/
 inductive Path where
   /--
-  Accesses the `arg`th explicit or implicit argument,
-  depending on whether `all` is `true` or `false`.
+  Accesses the `arg`th implicit or explicit argument,
+  depending on whether `all` is `true` or `false`, respectively.
   Corresponds to the `conv` tactic `arg`.
   For example, `Path.arg 3 true next` is `arg @3` followed by `next`,
   and `Path.arg 0 false next` is `arg 0` followed by `next`.
@@ -160,7 +160,8 @@ open Lean.Parser.Tactic.Conv in
 /--
 Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` syntax
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
-start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`
+start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
+We end every `conv` sequence with `skip`, and highlight `skip` upon insertion.
 -/
 def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
     (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
@@ -218,7 +219,7 @@ public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goa
 open Lean Syntax in
 /-- Return the text for the link in the conv widget that inserts the replacement,
 and also return the replacement, and the range within the file to highlight after the
-replacement is inserted. -/
+replacement is inserted. The highlighted range will always be the trailing `skip`. -/
 public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (params : SelectInsertParams) :
     MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
