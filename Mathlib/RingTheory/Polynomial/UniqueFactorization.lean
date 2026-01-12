@@ -32,7 +32,7 @@ universe u v
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
+variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
 instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
   wf := by
