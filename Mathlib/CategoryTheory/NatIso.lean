@@ -258,5 +258,4 @@ lemma NatTrans.naturality_2 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ 
     F.map e.hom ≫ α.app Y ≫ G.map e.inv = α.app X := by
   simp
 
-
 end CategoryTheory
