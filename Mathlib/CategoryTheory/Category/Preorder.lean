@@ -97,7 +97,7 @@ lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
   ⟨homOfLE (le_of_eq heq.symm), by simp⟩
 
 lemma isIso_homOfLE {x y : X} (h : x = y) :
-    IsIso (homOfLE (by rw [h]): x ⟶ y) := by
+    IsIso (homOfLE (by rw [h]) : x ⟶ y) := by
   subst h
   change IsIso (𝟙 _)
   infer_instance
