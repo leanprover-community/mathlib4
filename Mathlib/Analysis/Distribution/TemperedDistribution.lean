@@ -258,6 +258,25 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
   ext1 f
   simp [hg₁, hg₂]
 
+open ENNReal MeasureTheory
+
+variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+  [CompleteSpace F]
+
+/-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
+multiplication if the left factor is a function of temperate growth. -/
+theorem _root_.MeasureTheory.Lp.toTemperedDistribution_holder_eq {p q r : ℝ≥0∞} [p.HolderTriple q r]
+    [Fact (1 ≤ q)] [Fact (1 ≤ r)] {g : E → ℂ} (hg₁ : g.HasTemperateGrowth) (hg₂ : MemLp g p μ)
+    (f : Lp F q μ) :
+    Lp.toTemperedDistribution ((ContinuousLinearMap.lsmul ℂ ℂ).holder r (hg₂.toLp _) f) =
+    smulLeftCLM F g (Lp.toTemperedDistribution f) := by
+  ext u
+  simp only [Lp.toTemperedDistribution_apply, smulLeftCLM_apply_apply]
+  apply integral_congr_ae
+  filter_upwards [(ContinuousLinearMap.lsmul ℂ ℂ).coeFn_holder (r := r) (hg₂.toLp _) f,
+    hg₂.coeFn_toLp] with x h_holder hg'
+  simp [h_holder, hg', hg₁, smul_smul, mul_comm]
+
 end Multiplication
 
 /-! ### Derivatives -/
