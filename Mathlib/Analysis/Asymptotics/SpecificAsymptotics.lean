@@ -16,7 +16,7 @@ theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 `Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics
@@ -100,6 +100,19 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
   conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
   filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
   simp [← Real.mul_rpow (le_of_lt hφ_pos) (hv x), huv']
+
+theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → ℝ} (hfg : f ~[l] g)
+    (g_tendsto : Tendsto g l atTop) :
+    (fun n ↦ Real.log (f n)) ~[l] (fun n ↦ Real.log (g n)) := by
+  have hg := g_tendsto.eventually_ne_atTop 0
+  have hf := hfg.symm.tendsto_atTop g_tendsto |>.eventually_ne_atTop 0
+  rw [isEquivalent_iff_tendsto_one hg] at hfg
+  have := hfg.log (by norm_num) |>.congr' <| by
+    filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
+  exact IsLittleO.isEquivalent <| calc
+    (fun n ↦ Real.log (f n) - Real.log (g n)) =o[l] fun _ ↦ (1 : ℝ) := by simpa
+    _ =o[l] fun n ↦ Real.log (g n) := isLittleO_one_left_iff ℝ |>.mpr <|
+      tendsto_norm_atTop_atTop.comp <| Real.tendsto_log_atTop.comp g_tendsto
 
 open Finset
 

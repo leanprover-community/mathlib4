@@ -37,7 +37,7 @@ but there are no `f g : S` such that `ω = g df`.
 - Deduce from this that smooth is equivalent to locally standard smooth (TODO @chrisflav).
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 

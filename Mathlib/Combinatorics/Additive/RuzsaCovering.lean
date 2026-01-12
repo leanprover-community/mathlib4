@@ -18,7 +18,7 @@ This file proves the Ruzsa covering lemma. This says that, for `A`, `B` finsets,
 with at most `#(A + B) / #B` copies of `B - B`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

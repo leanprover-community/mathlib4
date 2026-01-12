@@ -43,7 +43,7 @@ theorems.
 
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Filter MeasureTheory.Filtration

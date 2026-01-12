@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -434,7 +434,7 @@ lemma le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} 
   ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
 
 /-- A symmetric relation implies two values are equal, when it implies they're less-equal. -/
-lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [IsSymm α r] {f : α → β}
+lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.Symm r] {f : α → β}
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
 
@@ -601,10 +601,10 @@ theorem Pi.compl_apply [∀ i, HasCompl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
+instance Std.Irrefl.compl (r : α → α → Prop) [Std.Irrefl r] : Std.Refl rᶜ :=
   ⟨@irrefl α r _⟩
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
+instance Std.Refl.compl (r : α → α → Prop) [Std.Refl r] : Std.Irrefl rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
 theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]

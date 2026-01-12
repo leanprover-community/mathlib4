@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 /-!
 # Higher differentiability of usual operations
 
-We prove that the usual operations (addition, multiplication, difference, composition, and
+We prove that the usual operations (addition, multiplication, difference, and
 so on) preserve `C^n` functions.
 
 ## Notation
@@ -61,7 +61,7 @@ theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
-  set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
+  set L : ∀ m : ℕ, (∀ i, E [×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E [×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
   refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
   · exact h.continuousLinearMap_comp (pr i)
@@ -90,7 +90,7 @@ theorem contDiffWithinAt_pi :
     choose u hux p hp h'p using h
     refine ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
       hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _, fun m ↦ ?_⟩
-    set L : (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i :=
+    set L : (∀ i, E [×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E [×m]→L[𝕜] ∀ i, F' i :=
       ContinuousMultilinearMap.piₗᵢ _ _
     change AnalyticOn 𝕜 (fun x ↦ L (fun i ↦ p i x m)) (⋂ i, u i)
     apply (L.analyticOnNhd univ).comp_analyticOn ?_ (mapsTo_univ _ _)

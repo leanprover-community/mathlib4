@@ -26,7 +26,7 @@ This file shows that the (complex) `Γ` function is complex-differentiable at al
 Gamma
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
