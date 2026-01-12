@@ -15,7 +15,7 @@ In this file we prove that if a function is monotone and is bounded on a set `s`
 monotone extension to the whole space.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

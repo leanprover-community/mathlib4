@@ -93,24 +93,20 @@ instance : AddCommMagma (ArchimedeanClass R) where
     induction y with | mk y
     rw [← mk_mul, mul_comm, mk_mul]
 
-set_option backward.privateInPublic true in
 private theorem zero_add' (x : ArchimedeanClass R) : 0 + x = x := by
   induction x with | mk x
   rw [← mk_one, ← mk_mul, one_mul]
 
-set_option backward.privateInPublic true in
 private theorem add_assoc' (x y z : ArchimedeanClass R) : x + y + z = x + (y + z) := by
   induction x with | mk x
   induction y with | mk y
   induction z with | mk z
   simp_rw [← mk_mul, mul_assoc]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : AddCommMonoid (ArchimedeanClass R) where
-  add_assoc := add_assoc'
-  zero_add := zero_add'
-  add_zero x := add_comm x _ ▸ zero_add' x
+  add_assoc := private add_assoc'
+  zero_add := private zero_add'
+  add_zero x := private add_comm x _ ▸ zero_add' x
   nsmul n x := n • x
   nsmul_zero x := by induction x with | mk x => rw [← mk_pow, pow_zero, mk_one]
   nsmul_succ n x := by induction x with | mk x => rw [← mk_pow, pow_succ, mk_mul, mk_pow]

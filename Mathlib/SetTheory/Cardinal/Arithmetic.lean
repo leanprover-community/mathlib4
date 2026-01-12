@@ -25,7 +25,7 @@ use of ordinal numbers. This is done within this file.
 cardinal arithmetic (for infinite cardinals)
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module Finsupp Ordinal.log
 

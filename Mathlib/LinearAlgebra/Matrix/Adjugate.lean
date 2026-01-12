@@ -135,7 +135,6 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
@@ -293,7 +292,6 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 @[simp]

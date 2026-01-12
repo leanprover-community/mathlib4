@@ -16,7 +16,7 @@ This file proves that characters of a finite abelian group are orthogonal, and i
 there are at most as many characters as there are elements of the group.
 -/
 
-@[expose] public section
+public section
 
 open Finset hiding card
 open Fintype (card)

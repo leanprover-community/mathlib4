@@ -25,7 +25,7 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Complex

@@ -23,7 +23,7 @@ namely that cofibrations are stable under composition and cobase change.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits MorphismProperty
 

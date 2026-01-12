@@ -27,7 +27,7 @@ then `f'` is interval integrable on `a..b`.
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set Filter
 

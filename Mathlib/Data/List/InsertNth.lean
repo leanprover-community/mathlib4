@@ -14,4 +14,4 @@ which has been renamed to `Mathlib/Data/List/InsertIdx.lean`.
 This file can be removed once the deprecation for `List.insertNth` is removed.
 -/
 
-@[expose] public section
+public section

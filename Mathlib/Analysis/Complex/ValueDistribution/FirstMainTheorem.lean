@@ -27,7 +27,7 @@ See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 Approximation*][MR3156076] for a detailed discussion.
 -/
 
-@[expose] public section
+public section
 namespace ValueDistribution
 
 open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real

@@ -14,7 +14,7 @@ In this file we prove (see `IsClosed.not_normal_of_continuum_le_mk`) that a sepa
 discrete subspace of cardinality continuum is not a normal topological space.
 -/
 
-@[expose] public section
+public section
 
 open Set Function Cardinal Topology TopologicalSpace
 

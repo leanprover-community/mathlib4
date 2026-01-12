@@ -17,7 +17,7 @@ This file proves that the probability of a permutation on n elements being a der
 The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter NormedSpace

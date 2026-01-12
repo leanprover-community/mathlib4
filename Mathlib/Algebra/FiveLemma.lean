@@ -41,7 +41,7 @@ In theory, we could prove these in the multiplicative version and let `to_additi
 the additive variants. But `Function.Exact` currently has no multiplicative analogue (yet).
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal
 

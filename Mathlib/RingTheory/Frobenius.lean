@@ -18,7 +18,7 @@ integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime 
 there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
-Following `RingTheory/Invariant.lean`, we develop the theory in the setting that
+Following `Mathlib/RingTheory/Invariant/Basic.lean`, we develop the theory in the setting that
 there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring of `S`.
 
 ## Main results

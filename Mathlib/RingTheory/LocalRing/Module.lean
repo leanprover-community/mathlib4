@@ -34,7 +34,7 @@ This file gathers various results about finite modules over a local ring `(R, ğ
   `l` is a split injection if and only if `k âŠ— l` is a (split) injection.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

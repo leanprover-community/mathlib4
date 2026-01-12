@@ -117,4 +117,58 @@ end Module
 
 end Actions
 
+section mulLeftRight
+variable {R A : Type*} [Semiring R]
+
+section nonUnitalSemiring
+variable (R A) [NonUnitalSemiring A] [Module R A]
+
+@[simp]
+theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
+    mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) := by
+  ext
+  simp only [mulLeft_apply, comp_apply, mul_assoc]
+
+@[simp]
+theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
+    mulRight R (a * b) = (mulRight R b).comp (mulRight R a) := by
+  ext
+  simp only [mulRight_apply, comp_apply, mul_assoc]
+
+end nonUnitalSemiring
+
+section nonAssocSemiring
+variable [NonAssocSemiring A] [Module R A]
+
+@[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
+    mulLeft R a = mulLeft R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+@[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
+    mulRight R a = mulRight R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+section
+variable (R A)
+
+@[simp]
+theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id :=
+  ext fun _ => one_mul _
+
+@[simp]
+theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+  mulLeft_zero_eq_zero R A ▸ mulLeft_inj
+
+@[simp]
+theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
+  ext fun _ => mul_one _
+
+@[simp]
+theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
+  mulRight_zero_eq_zero R A ▸ mulRight_inj
+
+end
+end nonAssocSemiring
+end mulLeftRight
+
 end LinearMap
