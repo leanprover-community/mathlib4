@@ -5,13 +5,16 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Algebra.Order.Monoid.Units
-public import Mathlib.Algebra.Order.Ring.Pow
-public import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Order.Directed
 public import Mathlib.Data.Rat.Floor
 
 import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Monoid.Units
+import Mathlib.Algebra.Order.Ring.Pow
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # Archimedean groups and fields
@@ -37,25 +40,6 @@ open Int Set
 
 variable {G M R K : Type*}
 
-/-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
-such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
-class Archimedean (M) [AddCommMonoid M] [PartialOrder M] : Prop where
-  /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
-  such that `x ≤ n • y`. -/
-  arch : ∀ (x : M) {y : M}, 0 < y → ∃ n : ℕ, x ≤ n • y
-
-section MulArchimedean
-
-/-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
-such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
-@[to_additive Archimedean]
-class MulArchimedean (M) [CommMonoid M] [PartialOrder M] : Prop where
-  /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
-  such that `x ≤ y ^ n`. -/
-  arch : ∀ (x : M) {y : M}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
-
-end MulArchimedean
-
 @[to_additive]
 lemma MulArchimedean.comap [CommMonoid G] [LinearOrder G] [CommMonoid M] [PartialOrder M]
     [MulArchimedean M] (f : G →* M) (hf : StrictMono f) :
@@ -80,13 +64,7 @@ instance Multiplicative.instMulArchimedean [AddCommGroup G] [PartialOrder G] [Ar
     MulArchimedean (Multiplicative G) :=
   ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
-@[to_additive]
-theorem exists_lt_pow [CommMonoid M] [PartialOrder M] [MulArchimedean M] [MulLeftStrictMono M]
-    {a : M} (ha : 1 < a) (b : M) : ∃ n : ℕ, b < a ^ n :=
-  let ⟨k, hk⟩ := MulArchimedean.arch b ha
-  ⟨k + 1, hk.trans_lt <| pow_lt_pow_right' ha k.lt_succ_self⟩
-
-section LinearOrderedCommGroup
+section IsOrderedMonoid
 
 variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
@@ -147,20 +125,11 @@ theorem existsUnique_sub_zpow_mem_Ioc {a : G} (ha : 1 < a) (b c : G) :
     simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
       existsUnique_add_zpow_mem_Ioc ha b c
 
-@[to_additive]
-theorem exists_pow_lt {a : G} (ha : a < 1) (b : G) : ∃ n : ℕ, a ^ n < b :=
-  (exists_lt_pow (one_lt_inv'.mpr ha) b⁻¹).imp <| by simp
-
-end LinearOrderedCommGroup
+end IsOrderedMonoid
 
 section OrderedSemiring
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
-
-theorem exists_nat_ge (x : R) :
-    ∃ n : ℕ, x ≤ n := by
-  nontriviality R
-  exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 
 instance (priority := 100) : IsDirectedOrder R :=
   ⟨fun x y ↦
@@ -172,9 +141,6 @@ end OrderedSemiring
 
 section StrictOrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R] {y : R}
-
-lemma exists_nat_gt (x : R) : ∃ n : ℕ, x < n :=
-  (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
 
 theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y + 1) ^ n :=
   have : 0 ≤ 1 + y := add_nonneg zero_le_one hy.le
@@ -199,11 +165,6 @@ section OrderedRing
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [Archimedean R]
 
-theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists_nat_ge x; ⟨n, mod_cast h⟩
-
-theorem exists_int_le (x : R) : ∃ n : ℤ, n ≤ x :=
-  let ⟨n, h⟩ := exists_int_ge (-x); ⟨-n, by simpa [neg_le] using h⟩
-
 instance (priority := 100) : IsCodirectedOrder R where
   directed a b :=
     let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
@@ -214,14 +175,6 @@ end OrderedRing
 
 section StrictOrderedRing
 variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
-
-theorem exists_int_gt (x : R) : ∃ n : ℤ, x < n :=
-  let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Int.cast_natCast]⟩
-
-theorem exists_int_lt (x : R) : ∃ n : ℤ, (n : R) < x :=
-  let ⟨n, h⟩ := exists_int_gt (-x)
-  ⟨-n, by rw [Int.cast_neg]; exact neg_lt.1 h⟩
 
 theorem exists_floor (x : R) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : R) ≤ x := by
   classical
