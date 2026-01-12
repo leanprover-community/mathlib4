@@ -143,6 +143,11 @@ Specialise `k = 0`, `l = 0`, `m = n`:
 `I^(n) g^(0)` is continuous in `F`
 `I^(n) f` is continuous in `F`
 `I^(0) f` is `C^n`
+
+Differentiation under the integral sign requries
+`intervalIntegral.hasFDerivAt_integral_of_dominated_loc_of_lip` (or friends):
+`I^(1) g = I^(0) g^(1)`
+`I^(k+1) g^(l) = I^(k) g^(l+1)` follows
 -/
 
 noncomputable def integralN {n : ℕ} (g : E → E [×n]→L[ℝ] E)
@@ -152,7 +157,7 @@ noncomputable def integralN {n : ℕ} (g : E → E [×n]→L[ℝ] E)
 
 /-
 We need the target space to be continuous curves (`F`) so that we can later take derivatives with
-respect to `α : F`, which requires a finite metric on the target space
+respect to `α : F`, which requires a finite metric on the target space.
 -/
 
 -- need `g` continuous on `u` and `α` maps to `u`
@@ -198,7 +203,7 @@ But `I^(0) g^(k)` is only continuous on `{α : F | MapsTo α univ u}`
 -- need `g` continuous on `u` and `α` maps to `u`
 noncomputable def integralNCMLM {n : ℕ} (g : E → E [×n]→L[ℝ] E)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
-    ContinuousMultilinearMap ℝ (fun i : Fin n ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E) where
+    C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
   toFun := integralNCM g t₀ α
   map_update_add' := sorry
   map_update_smul' := sorry
@@ -208,6 +213,32 @@ lemma continuousOn_integralN {n : ℕ} {g : E → E [×n]→L[ℝ] E}
     {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
     ContinuousOn (integralNCMLM g t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
   sorry
+
+
+/-
+`I^(1) g = I^(0) g^(1)`
+-/
+
+-- variable
+-- {n : ℕ} (g : E → E [×n]→L[ℝ] E)
+--     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
+
+-- #check fun x ↦ fderiv ℝ g x
+-- #check ContinuousLinearMap.uncurryLeft (𝕜 := ℝ)
+--   (n := n) (Ei := fun _ : Fin (Nat.succ n) => E) (G := E)
+-- #check fun x ↦ ContinuousLinearMap.uncurryLeft (Ei := fun _ : Fin (n + 1) => E) (fderiv ℝ g x)
+-- #check integralNCMLM
+--   (fun x ↦ ContinuousLinearMap.uncurryLeft (Ei := fun _ : Fin (n + 1) => E) (fderiv ℝ g x)) t₀ α
+-- #check ContinuousMultilinearMap.curryLeft (integralNCMLM
+--   (fun x ↦ ContinuousLinearMap.uncurryLeft (Ei := fun _ : Fin (n + 1) => E) (fderiv ℝ g x)) t₀ α)
+-- #check fderiv ℝ (integralNCMLM g t₀) α
+
+lemma hasFDerivAt_integralNCM {n : ℕ} (g : E → E [×n]→L[ℝ] E)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
+    HasFDerivAt (integralNCMLM g t₀)
+      (ContinuousMultilinearMap.curryLeft
+        (integralNCMLM (fun x ↦ ContinuousLinearMap.uncurryLeft
+          (Ei := fun _ : Fin (n + 1) => E) (fderiv ℝ g x)) t₀ α)) α := by sorry
 
 /-
 `I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`, where `g : E → E [×n]→L[ℝ] E`
@@ -238,12 +269,17 @@ def curryFinSum {k l n : ℕ} (h : k + l = n) :
 
 end
 
-variable {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
-    {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    (α : C(Icc tmin tmax, E)) (h : k + l = n)
-    (ggg : ContinuousMultilinearMap ℝ (fun _ : Fin n ↦ E) E)
-#check (curryFinSum (n := l + n) (k := l) (l := n) rfl).symm
-#check fun x ↦ (curryFinSum (𝕜 := ℝ) (G := E) (G' := E) rfl).symm (iteratedFDeriv ℝ l g x)
+/-
+Should follow from `hasFDerivAt_integralNCM` by substituting `g := g^(l)` and taking `k` derivatives
+on the whole expression.
+-/
+
+-- variable {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
+--     {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+--     (α : C(Icc tmin tmax, E)) (h : k + l = n)
+--     (ggg : ContinuousMultilinearMap ℝ (fun _ : Fin n ↦ E) E)
+-- #check (curryFinSum (n := l + n) (k := l) (l := n) rfl).symm
+-- #check fun x ↦ (curryFinSum (𝕜 := ℝ) (G := E) (G' := E) rfl).symm (iteratedFDeriv ℝ l g x)
 
 -- need `g` continuous on `u` and `α` maps to `u`
 lemma integralNCMLM_succ {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
