@@ -370,8 +370,8 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     ring
 
 open scoped ComplexOrder in
-theorem _root_.RCLike.complexRingEquiv_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜}
-    (h : RCLike.im (RCLike.I : 𝕜) = 1) : 0 ≤ RCLike.complexRingEquiv h a ↔ 0 ≤ a := by
+@[simp] theorem _root_.RCLike.nonneg_to_complex_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
+    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := by
   rw [nonneg_iff, RCLike.nonneg_iff (K := 𝕜)]
   simp [eq_comm]
 
