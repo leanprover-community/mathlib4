@@ -29,9 +29,8 @@ noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
 
 theorem Complex.re_sqrt_ofReal (a : ℝ) :
     (sqrt (a : ℂ)).re = a.sqrt := by
-  by_cases! ha : 0 ≤ a
-  · simp [sqrt, cpow_inv_two_re, abs_of_nonneg ha]
-  simp [sqrt, cpow_inv_two_re, abs_of_nonpos ha.le, Real.sqrt_eq_zero_of_nonpos ha.le]
+  simp only [sqrt, cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re]
+  grind
 
 theorem RCLike.re_sqrt_ofReal (a : ℝ) :
     re (sqrt (a : 𝕜)) = a.sqrt := by
