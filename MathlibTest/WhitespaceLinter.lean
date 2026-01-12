@@ -958,12 +958,12 @@ example {k : Int} (hk : k = 0) : k + k + k = 0 := by
 example := ``Nat
 
 -- The *linter* forces a space after `where`, but the pretty-printer does not.
--- TODO: this test causes an error, fix!
--- /-- A doc-string -/
--- example := if bool then aux else aux
--- where
---   /-- A separate doc-string -/
---   aux : Unit := ()
+variable (bool : Bool) in
+/-- A doc-string -/
+example := if bool then aux else aux
+where
+  /-- A separate doc-string -/
+  aux : Unit := ()
 
 -- For structure fields, all field definitions are linted.
 /--
