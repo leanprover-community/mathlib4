@@ -45,9 +45,9 @@ lemma cauchyPDFReal_def' (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
   rw [cauchyPDFReal_def]
   by_cases h : γ = 0
   · simp [h]
-  · field_simp
-    simp [mul_comm, ← mul_assoc]
-    field
+  field_simp
+  simp [mul_comm, ← mul_assoc]
+  field
 
 /-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞`. -/
 noncomputable def cauchyPDF (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) : ℝ≥0∞ :=
