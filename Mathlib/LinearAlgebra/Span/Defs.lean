@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
+public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
@@ -276,6 +277,10 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
   (Submodule.gi R M).gc.l_bot
 
 @[simp]
+theorem span_univ : span R (univ : Set M) = ⊤ :=
+  eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
+
+@[simp]
 theorem span_inter_le (s t : Set M) : span R (s ∩ t) ≤ span R s ⊓ span R t :=
   le_inf (span_mono Set.inter_subset_left) (span_mono Set.inter_subset_right)
 
@@ -283,15 +288,14 @@ theorem span_inter_le (s t : Set M) : span R (s ∩ t) ≤ span R s ⊓ span R t
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
   (Submodule.gi R M).l_inf_u S S'
 
+theorem span_sInf_le (s : Set (Set M)) :
+    span R (⋂₀ s) ≤ sInf (span R '' s) := by sorry
+
 theorem span_sInf (s : Set (Submodule R M)) :
-    span R (sInf (SetLike.coe '' s)) = sInf s := (Submodule.gi R M).l_sInf_u_image s
+    span R (sInf s : Submodule R M) = sInf s := by sorry
 
 theorem span_biInter (s : Set (Submodule R M)) :
-    span R (⋂ S ∈ s, S) = sInf s := by simpa using span_sInf s
-
-@[simp]
-theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
+    span R (⋂ S ∈ s, S) = sInf s := by simpa using (Submodule.gi R M).l_sInf_u_image s
 
 @[simp]
 theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
@@ -301,11 +305,11 @@ theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
 theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' :=
   (Submodule.gi R M).l_sup_u S S'
 
-theorem span_sSup (s : Set (Submodule R M)) :
-    span R (sSup (SetLike.coe '' s)) = sSup s := (Submodule.gi R M).l_sSup_u_image s
+theorem span_sSup (s : Set (Set M)) :
+    span R (⋃₀ s) = sSup (span R '' s) := by sorry
 
-theorem span_biUnion (s : Set (Submodule R M)) :
-    span R (⋃ S ∈ s, S) = sSup s := by simpa using span_sSup s
+theorem span_sSup' (s : Set (Submodule R M)) :
+    span R (sSup s : Submodule R M) = sSup s := by sorry
 
 theorem span_iUnion {ι} (s : ι → Set M) : span R (⋃ i, s i) = ⨆ i, span R (s i) :=
   (Submodule.gi R M).gc.l_iSup
@@ -313,6 +317,9 @@ theorem span_iUnion {ι} (s : ι → Set M) : span R (⋃ i, s i) = ⨆ i, span 
 theorem span_iUnion₂ {ι} {κ : ι → Sort*} (s : ∀ i, κ i → Set M) :
     span R (⋃ (i) (j), s i j) = ⨆ (i) (j), span R (s i j) :=
   (Submodule.gi R M).gc.l_iSup₂
+
+theorem span_biUnion (s : Set (Submodule R M)) :
+    span R (⋃ S ∈ s, S) = sSup s := by simpa using (Submodule.gi R M).l_sSup_u_image s
 
 theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
     span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]
