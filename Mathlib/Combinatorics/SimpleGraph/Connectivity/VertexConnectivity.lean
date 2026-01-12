@@ -41,7 +41,7 @@ lemma IsVertexReachable.refl : G.IsVertexReachable k u u :=
 lemma IsVertexReachable.symm (h : G.IsVertexReachable k u v) : G.IsVertexReachable k v u :=
   fun _ hs hv hu ↦ (h hs hu hv).symm
 
-lemma isVertexReachable_symm : G.IsVertexReachable k u v ↔ G.IsVertexReachable k v u :=
+lemma isVertexReachable_comm : G.IsVertexReachable k u v ↔ G.IsVertexReachable k v u :=
   ⟨.symm, .symm⟩
 
 @[gcongr]
@@ -70,20 +70,22 @@ lemma IsVertexReachable.reachable (hk : k ≠ 0) (h : G.IsVertexReachable k u v)
   rw [← G.isolateVerts_empty]
   apply h <;> simp [pos_of_ne_zero hk]
 
+/-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
+@[simp]
+lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
+  refine ⟨(·.reachable one_ne_zero), fun h s hs hu hv ↦ ?_⟩
+  rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, isolateVerts_empty]
+
 variable (G k) in
-/-- A graph is `k`-vertex-connected if any two vertices are `k`-vertex-reachable. -/
+/-- A graph is `k`-vertex-connected if any two vertices are `k`-vertex-reachable.
+Note that we do not require the graph to have more than `k` vertices, you can use
+`k + 1 ≤ ENat.card V ∧ G.IsVertexConnected k` if you need this additional condition. -/
 def IsVertexConnected : Prop :=
   ∀ u v : V, G.IsVertexReachable k u v
 
 @[simp]
 lemma IsVertexConnected.zero : G.IsVertexConnected 0 :=
   fun _ _ ↦ .zero
-
-/-- Reachability under 1-vertex-connectivity is equivalent to standard reachability. -/
-@[simp]
-lemma isVertexReachable_one_iff : G.IsVertexReachable 1 u v ↔ G.Reachable u v := by
-  refine ⟨(·.reachable one_ne_zero), fun h s hs hu hv ↦ ?_⟩
-  rwa [Set.encard_eq_zero.mp <| ENat.lt_one_iff_eq_zero.mp hs, isolateVerts_empty]
 
 /-- 1-vertex-connectivity is equivalent to preconnectedness. -/
 @[simp]
