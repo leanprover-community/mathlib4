@@ -66,29 +66,20 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
 
 @[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
 
-theorem colon_anti_right (hs : S₁ ⊆ S₂) : N.colon S₂ ≤ N.colon S₁ :=
-  fun _ hrns ↦ mem_colon.2 <| fun s₁ hs₁ ↦ mem_colon.1 hrns s₁ (hs hs₁)
-
-theorem colon_mono_left (hn : N₁ ≤ N₂) : N₁.colon S ≤ N₂.colon S :=
-  fun _ hrns ↦ mem_colon.2 <| fun s₁ hs₁ ↦ hn (mem_colon.1 hrns s₁ hs₁)
-
-theorem colon_mono_right (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ := by
-  exact (colon_mono_left (N₁ := N₁) (N₂ := N₂) (S := S₂) hn).trans
-    (colon_anti_right (N := N₂) (S₁ := S₁) (S₂ := S₂) hs)
-
-@[deprecated (since := "2026-01-11")] alias colon_mono := colon_mono_right
+theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
+  fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
 
 theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] :
     I ≤ I.colon S := calc
   I = I.colon (Set.univ : Set R) := colon_univ.symm
-  _ ≤ I.colon S := colon_mono_right (le_refl I) (Set.subset_univ S)
+  _ ≤ I.colon S := colon_mono (le_refl I) (Set.subset_univ S)
 
 theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*) (g : ι₂ → Set M) :
     (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
   apply le_antisymm
   · exact le_iInf fun i =>
       le_iInf fun j =>
-        colon_mono_right (iInf_le _ _) (Set.subset_iUnion (fun j => g j) j)
+        colon_mono (iInf_le _ _) (Set.subset_iUnion (fun j => g j) j)
   · intro x hx
     refine mem_colon.2 ?_
     intro m hm
