@@ -49,7 +49,8 @@ Weierstrass p-functions, Weierstrass p functions
 
 @[expose] public section
 
-open Module
+open Module Filter
+open scoped Topology Nat
 
 noncomputable section
 
@@ -158,7 +159,6 @@ lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
   simp [latticeEquivProd, Finsupp.linearCombination]
   rfl
 
-open Topology Filter in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
@@ -769,15 +769,13 @@ lemma analyticAt_weierstrassPExcept (l₀ : ℂ) : AnalyticAt ℂ ℘[L - l₀] 
 attribute [local simp] Nat.factorial_ne_zero in
 lemma iteratedDeriv_weierstrassPExcept (l : ℂ) {n : ℕ} :
     iteratedDeriv n ℘[L - l] l =
-      if n = 0 then ℘[L - l] l else (n + 1).factorial * L.sumInvPow l (n + 2) := by
-  rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n.factorial)
-    (by simp [n.factorial_pos.ne']), ← eq_div_iff_mul_eq (by simp)]
+      if n = 0 then ℘[L - l] l else (n + 1)! * L.sumInvPow l (n + 2) := by
+  rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n !) (by simp),
+    ← eq_div_iff_mul_eq (by simp)]
   trans if n = 0 then ℘[L - l] l else (n + 1) * L.sumInvPow l (n + 2)
   · simpa using congr($((L.analyticAt_weierstrassPExcept l).hasFPowerSeriesAt
       |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_weierstrassPExcept l)).coeff n)
-  · obtain (_ | n) := n
-    · simp
-    · simp [Nat.factorial_succ (n + 1)]; field
+  · cases n <;> simp [Nat.factorial_succ]; field
 
 end AnalyticWeierstrassPExcept
 
@@ -807,9 +805,8 @@ lemma hasFPowerSeriesAt_derivWeierstrassPExcept (l : ℂ) :
       (.ofScalars ℂ fun i ↦ (i + 1) * (i + 2) * L.sumInvPow l (i + 3)) l := by
   obtain ⟨r, h₁, h₂⟩ := Metric.nhds_basis_closedBall.mem_iff.mp
     (L.compl_lattice_diff_singleton_mem_nhds l)
-  lift r to NNReal using h₁.le
   simpa [derivWeierstrassPExceptSeries] using
-    (L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l l r h₁ h₂).hasFPowerSeriesAt
+    (L.hasFPowerSeriesOnBall_derivWeierstrassPExcept l l ⟨r, h₁.le⟩ h₁ h₂).hasFPowerSeriesAt
 
 lemma analyticOnNhd_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticOnNhd ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ :=
@@ -821,13 +818,13 @@ lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :
   L.analyticOnNhd_derivWeierstrassPExcept l₀ _ (by simp)
 
 lemma iteratedDeriv_derivWeierstrassPExcept (l : ℂ) {n : ℕ} :
-    iteratedDeriv n ℘'[L - l] l = (n + 2).factorial * L.sumInvPow l (n + 3) := by
-  have : iteratedDeriv n ℘'[L - l] l / n.factorial =
+    iteratedDeriv n ℘'[L - l] l = (n + 2)! * L.sumInvPow l (n + 3) := by
+  have : iteratedDeriv n ℘'[L - l] l / n ! =
       (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
     simpa using congr($((L.analyticAt_derivWeierstrassPExcept l).hasFPowerSeriesAt
       |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_derivWeierstrassPExcept l)).coeff n)
   simp [div_eq_iff, Nat.factorial_ne_zero, Nat.factorial_succ] at this ⊢
-  linear_combination this
+  grind
 
 @[simp]
 lemma deriv_derivWeierstrassPExcept_self (l : ℂ) :
@@ -970,14 +967,14 @@ private lemma relation_mul_id_pow_six_eventuallyEq :
     (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
       (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
       (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) := by
-  refine Filter.eventuallyEq_of_mem (L.compl_lattice_diff_singleton_mem_nhds _) fun z hz ↦ ?_
+  filter_upwards [L.compl_lattice_diff_singleton_mem_nhds _] with z hz
   by_cases hz0 : z = 0
   · simp [hz0, relation]; norm_num
   replace hz : z ∉ L.lattice := by simp_all
   simp only [Pi.mul_apply, Pi.pow_apply, relation, ↓reduceIte, hz,
     ← ZeroMemClass.coe_zero L.lattice, L.derivWeierstrassPExcept_def, L.weierstrassPExcept_def]
   simp
-  field [show z ≠ 0 by aesop]
+  field
 
 @[fun_prop]
 private lemma analyticAt_relation_mul_id_pow_six :
@@ -1003,8 +1000,7 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
 
 attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
-  refine .of_meromorphicOrderAt_pos ?_ (by simp [relation])
-  suffices 1 ≤ meromorphicOrderAt L.relation 0 from lt_of_lt_of_le (b := 0 + 1) (by simp) this
+  refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])
   suffices 7 ≤ meromorphicOrderAt (L.relation * id ^ 6) 0 by
     rw [meromorphicOrderAt_mul (by fun_prop) (by fun_prop),
       meromorphicOrderAt_pow (by fun_prop)] at this
@@ -1012,12 +1008,9 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     simpa [-LinearOrderedAddCommGroupWithTop.add_le_add_iff_left_of_ne_top] using this
   rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
   refine ENat.monotone_map_iff.mpr Nat.mono_cast
-    ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr ?_)
-  intro i hi₁
+    ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
   by_cases hi₂ : Odd i
-  · rw [← CharZero.eq_neg_self_iff]
-    have := iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0
-    simpa [show ∀ x : ℂ, (-x) ^ 6 = x ^ 6 by intro; ring, hi₂] using
+  · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using
       (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0:)
   by_cases hi₃ : i = 0
   · simp [hi₃]
@@ -1028,14 +1021,9 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
     iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept]
-  interval_cases i
-  · cases hi₃ rfl
-  · cases hi₂ (by decide)
+  obtain rfl | rfl : i = 2 ∨ i = 4 := by grind
   · simp [Finset.sum_range_succ]
-  · cases hi₂ (by decide)
   · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
-  · cases hi₂ (by decide)
-  · cases hi₄ rfl
 
 @[simp]
 private lemma relation_add_coe (x : ℂ) (l : L.lattice) :
@@ -1061,9 +1049,8 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
       have := L.analyticOnNhd_derivWeierstrassP _ hx
       have := L.analyticOnNhd_weierstrassP _ hx
       fun_prop (disch := assumption)
-    refine this.congr (Filter.eventuallyEq_of_mem
-      (L.isClosed_lattice.isOpen_compl.mem_nhds (by simpa)) ?_)
-    intro x hx
+    apply this.congr
+    filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
     simp_all [relation]
 
 private lemma relation_eq_zero : L.relation = 0 := by
