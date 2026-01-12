@@ -39,18 +39,6 @@ variable [NormedAddTorsor V P]
 
 section signedDist
 
-set_option backward.privateInPublic true in
-/-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
-private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun w := .const ℝ P ⟪-normalize v, w⟫
-  map_add' x y := by ext; simp [inner_add_right]
-  map_smul' r x := by ext; simp [inner_smul_right]
-
-private lemma signedDistLinear_apply (v w : V) :
-    signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /--
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
 It is the size of `q - p` in the direction of `v`.
@@ -61,10 +49,12 @@ TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →�
 noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun p := (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
-  linear := signedDistLinear v
+  linear := {
+    toFun w := .const ℝ P ⟪-normalize v, w⟫
+    map_add' x y := by ext; simp [inner_add_right]
+    map_smul' r x := by ext; simp [inner_smul_right] }
   map_vadd' p v' := by
     ext q
-    rw [signedDistLinear_apply]
     simp [vsub_vadd_eq_vsub_sub, inner_sub_right, ← sub_eq_neg_add]
 
 variable (v w : V) (p q r : P)
