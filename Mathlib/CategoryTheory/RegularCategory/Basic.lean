@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 /-!
 # Regular categories
 
-A regular category is category with finite limits such that each kernel pair has a coequalizer
+A regular category is a category with finite limits such that each kernel pair has a coequalizer
 and such that regular epimorphisms are stable under pullback.
 
 These categories provide a good ground to develop the calculus of relations, as well as being the

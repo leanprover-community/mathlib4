@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Functor.EpiMono
 
 # Adjunctions involving evaluation
 
-We show that evaluation of functors have adjoints, given the existence of (co)products.
+We show that evaluation of functors has adjoints, given the existence of (co)products.
 
 -/
 

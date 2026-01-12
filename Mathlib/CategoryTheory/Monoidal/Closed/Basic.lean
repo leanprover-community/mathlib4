@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
-Some of the theorems proved about Cartesian closed categories
+Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
 

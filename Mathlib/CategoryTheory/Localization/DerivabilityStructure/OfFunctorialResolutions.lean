@@ -16,7 +16,7 @@ a fully faithful functor `Φ.functor : C₁ ⥤ C₂` and that we have a resolut
 functor `ρ : C₂ ⥤ C₁` with a natural transformation `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`
 such that `W₂ (i.app X₂)` for any `X₂ : C₂`. If we assume
 that `W₁` is induced by `W₂`, that `W₂` is multiplicative and has
-the two out of three property, then `Φ` is a right derivability structure.
+the two-out-of-three property, then `Φ` is a right derivability structure.
 
 -/
 

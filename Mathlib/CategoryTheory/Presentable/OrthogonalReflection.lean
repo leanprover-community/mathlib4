@@ -32,9 +32,9 @@ satisfying `W` such that `f ≫ g₁ = f ≫ g₂`.
 
 The morphism `toSucc W Z : Z ⟶ succ W Z` is a variant of the (wrong) definition
 p. 32 in the book by Adámek and Rosický. In this book, a slightly different object
-as `succ W Z` is defined directly as a colimit of an intricate diagram, but
+than `succ W Z` is defined directly as a colimit of an intricate diagram, but
 contrary to what is stated on p. 33, it does not satisfy `isIso_toSucc_iff`.
-The author of this file was unable to not understand the attempt of the authors
+The author of this file was unable to understand the attempt of the authors
 to fix this mistake in the errata to this book. This led to the definition
 in two steps outlined above.
 

@@ -51,7 +51,7 @@ namespace exists_cardinal_directed
 variable (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
 
 /-!
-Let `J` is a `κ`-filtered category. In order to construct a cofinal functor `α ⥤ J`
+Let `J` be a `κ`-filtered category. In order to construct a cofinal functor `α ⥤ J`
 with a `κ`-directed poset `α`, we first consider the case where there is no
 object `m : J` such that for any object `j : J`, there exists a map `j ⟶ m`.
 Under this assumption (`hJ`), the partially ordered type `DiagramWithUniqueTerminal J κ`
@@ -63,7 +63,7 @@ choice for `α`.
 in a category `J`. -/
 @[ext]
 structure Diagram where
-  /-- the morphisms which belongs to the diagram -/
+  /-- the morphisms which belong to the diagram -/
   W : MorphismProperty J
   /-- the objects in the diagram -/
   P : ObjectProperty J

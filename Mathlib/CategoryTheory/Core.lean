@@ -194,7 +194,7 @@ namespace Core
 
 variable {G : Type u₂} [Groupoid.{v₂} G]
 
-/-- The functor `functorToCore (F ⋙ H)` factors through `functortoCore H`. -/
+/-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)

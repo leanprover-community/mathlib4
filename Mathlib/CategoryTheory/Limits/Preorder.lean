@@ -48,7 +48,7 @@ lemma conePt_mem_lowerBounds (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.ob
 lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
   ⟨(conePt_mem_lowerBounds F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
 
-/-- If the point of cone is a glb, the cone is a limi.t -/
+/-- If the point of cone is a glb, the cone is a limit. -/
 def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
   lift d := (h.2 (conePt_mem_lowerBounds F d)).hom
 

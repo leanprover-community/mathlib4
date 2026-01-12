@@ -79,7 +79,7 @@ lemma extEquivCohomologyClass_symm_add
 
 /-- If `R` is a projective resolution of `X`, then `Ext X Y n` identifies
 to the type of cohomology classes of degree `n` from `R.cochainComplex`
-to `(singleFunctor C 0).obj X`. -/
+to `(singleFunctor C 0).obj Y`. -/
 @[simps!]
 noncomputable def extAddEquivCohomologyClass :
     Ext X Y n ≃+ CohomologyClass R.cochainComplex ((singleFunctor C 0).obj Y) n :=
