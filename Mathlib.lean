@@ -3353,9 +3353,9 @@ public import Mathlib.Computability.PostTuringMachine
 public import Mathlib.Computability.Primrec
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Computability.Primrec.List
+public import Mathlib.Computability.Primrec.Nat
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
-public import Mathlib.Computability.SpecialPrimrec
 public import Mathlib.Computability.TMComputable
 public import Mathlib.Computability.TMConfig
 public import Mathlib.Computability.TMToPartrec

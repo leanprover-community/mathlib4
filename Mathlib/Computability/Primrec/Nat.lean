@@ -5,7 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Computability.Primrec
+public import Mathlib.Computability.Primrec.List
 public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Order.Interval.Finset.Nat
@@ -13,11 +13,25 @@ public import Mathlib.Data.Nat.GCD.Prime
 public import Mathlib.NumberTheory.Divisors
 
 /-!
-# Particular functions are primitive recursive
+# Natural number arithmetic functions that are primitive recursive
 
-While `Primrec/Basic.lean` gives the basic machinery for proving functions primitive recursive,
-this file gives particular results for certain functions.
+The file `Computability/Primrec/Basic.lean` gives the basic machinery for primitive recursive
+constructions, such as pairing/unpairing, adding, multiplication etc. that are used to work with
+many other types. This file, in contrast, gives particular results for certain natural number
+functions that are might show up in math (but less likely to be needed in other contexts).
+
+## Main Results
+
+* `Primrec.factorial`: The factorial function is primitve recursive.
+* `Primrec₂.gcd`: The gcd function is primitve recursive.
+* `Primrec₂.lcm`: The lcm function is primitve recursive.
+* `Primrec.prime`: The primality test is primitve recursive.
+* `Primrec₂.pow`: The power function is primitve recursive.
+* `Primrec₂.log`: The logarithm function is primitve recursive.
+
 -/
+
+@[expose] public section
 
 open Primrec Primrec₂
 

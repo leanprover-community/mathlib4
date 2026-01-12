@@ -723,6 +723,3 @@ theorem vec_iff {m n f} : @Vec m n f ↔ Primrec f :=
     of_prim <| Primrec.vector_get.comp h (.const i)⟩
 
 end Nat.Primrec'
-
-theorem Primrec.nat_sqrt : Primrec Nat.sqrt :=
-  Nat.Primrec'.prim_iff₁.1 Nat.Primrec'.sqrt
