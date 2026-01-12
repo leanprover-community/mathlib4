@@ -7,8 +7,9 @@ import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.List.ChainOfFn
 import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.Nat.Dist
-import Mathlib.Order.Fin.Basic
+import Mathlib.Data.Fintype.Fin
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.FinCases
 
 /-!
 # IMO 2024 Q5

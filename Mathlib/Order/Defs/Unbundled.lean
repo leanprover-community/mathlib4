@@ -6,11 +6,8 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.SplitIfs
-public import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.ToDual
+public import Batteries.Tactic.Alias
 
 /-!
 # Orders

@@ -8,6 +8,7 @@ module
 public import Aesop
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Batteries.Data.List
 
 /-!
 # Triplewise predicates on list.
