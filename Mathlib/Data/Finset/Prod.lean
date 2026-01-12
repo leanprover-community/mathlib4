@@ -244,6 +244,7 @@ variable (s t : Finset α)
 def diag : Finset (α × α) :=
   s.map ⟨fun a ↦ (a, a), by simp [Function.Injective]⟩
 
+-- TODO: define `Multiset.offDiag`, provide basic API, use it here
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
 def offDiag : Finset (α × α) :=
@@ -307,31 +308,30 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
   rfl
 
 @[simp]
-theorem diag_union_offDiag [DecidableEq (α × α)] : s.diag ∪ s.offDiag = s ×ˢ s := by
+theorem diag_union_offDiag [DecidableEq α] : s.diag ∪ s.offDiag = s ×ˢ s := by
   grind
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by simp [disjoint_left]
 
-theorem product_sdiff_diag [DecidableEq (α × α)] : s ×ˢ s \ s.diag = s.offDiag := by grind
+theorem product_sdiff_diag [DecidableEq α] : s ×ˢ s \ s.diag = s.offDiag := by grind
 
-theorem product_sdiff_offDiag [DecidableEq (α × α)] : s ×ˢ s \ s.offDiag = s.diag := by grind
+theorem product_sdiff_offDiag [DecidableEq α] : s ×ˢ s \ s.offDiag = s.diag := by grind
 
-theorem diag_inter [DecidableEq α] [DecidableEq (α × α)] : (s ∩ t).diag = s.diag ∩ t.diag := by
+theorem diag_inter [DecidableEq α] : (s ∩ t).diag = s.diag ∩ t.diag := by
   grind
 
-theorem offDiag_inter [DecidableEq α] [DecidableEq (α × α)] :
-    (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
+theorem offDiag_inter [DecidableEq α] : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
     push_cast
     exact Set.offDiag_inter _ _
 
-theorem diag_union [DecidableEq α] [DecidableEq (α × α)] : (s ∪ t).diag = s.diag ∪ t.diag := by
+theorem diag_union [DecidableEq α] : (s ∪ t).diag = s.diag ∪ t.diag := by
   grind
 
 variable {s t}
 
-theorem offDiag_union [DecidableEq α] [DecidableEq (α × α)] (h : Disjoint s t) :
+theorem offDiag_union [DecidableEq α] (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
@@ -342,10 +342,10 @@ theorem offDiag_singleton (a : α) : ({a} : Finset α).offDiag = ∅ := by simp 
 
 theorem diag_singleton (a : α) : ({a} : Finset α).diag = {(a, a)} := by grind
 
-theorem diag_insert [DecidableEq α] [DecidableEq (α × α)] (a : α) :
+theorem diag_insert [DecidableEq α] (a : α) :
     (insert a s).diag = insert (a, a) s.diag := by grind
 
-theorem offDiag_insert [DecidableEq α] [DecidableEq (α × α)] {a : α} (has : a ∉ s) :
+theorem offDiag_insert [DecidableEq α] {a : α} (has : a ∉ s) :
     (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
