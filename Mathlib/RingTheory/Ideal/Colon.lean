@@ -19,6 +19,15 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 @[expose] public section
 
+open Pointwise
+-- import Mathlib.Algebra.Module.Submodule.Pointwise
+@[simp]
+theorem Submodule.smul_iSup' {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    {ι : Sort*} (f : ι → Submodule R M) (r : R) :
+    r • ⨆ i, f i = ⨆ i, r • f i := by
+  refine le_antisymm ?_ (iSup_le fun i ↦ smul_le_smul_left r (le_iSup f i))
+  refine map_le_iff_le_comap.mpr (iSup_le fun i ↦ map_le_iff_le_comap.mp (le_iSup (r • f ·) i))
+
 namespace Submodule
 
 open Pointwise
@@ -60,6 +69,20 @@ theorem colon_bot : colon ⊥ N = N.annihilator := by
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 
+@[simp]
+theorem colon_inf : (N₁ ⊓ N₂).colon P = N₁.colon P ⊓ N₂.colon P := by
+  simp [Submodule.ext_iff, colon]
+
+@[simp]
+theorem colon_iInf {ι : Sort*} (f : ι → Submodule R M) :
+    (⨅ i, f i).colon N = ⨅ i, (f i).colon N := by
+  simp [Submodule.ext_iff, colon]
+
+@[simp]
+theorem colon_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+    (s.inf f).colon N = s.inf (fun i ↦ (f i).colon N) := by
+  simp [Finset.inf_eq_iInf]
+
 theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J := by
   calc I = I.colon ⊤ := colon_top.symm
        _ ≤ I.colon J := colon_mono (le_refl I) le_top
@@ -69,23 +92,28 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {N P : Submodule R M}
+variable {N P Q : Submodule R M}
 
-theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
-  mem_colon
+theorem mem_colon_def {r} : r ∈ N.colon P ↔ r • P ≤ N :=
+  Iff.rfl
+
+@[simp]
+theorem colon_sup : N.colon (P ⊔ Q) = N.colon P ⊓ N.colon Q := by
+  simp [Submodule.ext_iff, mem_colon_def, smul_sup']
+
+@[simp]
+theorem colon_iSup {ι : Sort*} (f : ι → Submodule R M) :
+    N.colon (⨆ i, f i) = ⨅ i, N.colon (f i) := by
+  simp [Submodule.ext_iff, mem_colon_def]
+
+@[simp]
+theorem colon_finset_sup {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+    N.colon (s.sup f) = s.inf (fun i ↦ N.colon (f i)) := by
+  simp [Finset.inf_eq_iInf, Finset.sup_eq_iSup]
 
 theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
-    (g : ι₂ → Submodule R M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) :=
-  le_antisymm (le_iInf fun _ => le_iInf fun _ => colon_mono (iInf_le _ _) (le_iSup _ _)) fun _ H =>
-    mem_colon'.2 <|
-      iSup_le fun j =>
-        map_le_iff_le_comap.1 <|
-          le_iInf fun i =>
-            map_le_iff_le_comap.2 <|
-              mem_colon'.1 <|
-                have := (mem_iInf _).1 H i
-                have := (mem_iInf _).1 this j
-                this
+    (g : ι₂ → Submodule R M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
+  simp_rw [colon_iInf, colon_iSup]
 
 @[simp]
 theorem mem_colon_singleton {x : M} {r : R} : r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=

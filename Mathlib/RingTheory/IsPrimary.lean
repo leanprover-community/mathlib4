@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -49,7 +50,43 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 protected def IsPrimary (S : Submodule R M) : Prop :=
   S ≠ ⊤ ∧ ∀ {r : R} {x : M}, r • x ∈ S → x ∈ S ∨ ∃ n : ℕ, (r ^ n • ⊤ : Submodule R M) ≤ S
 
-variable {S : Submodule R M}
+variable {S T : Submodule R M}
+
+protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
+    (h : (S.colon ⊤).radical = (T.colon ⊤).radical) :
+    (S ⊓ T).IsPrimary := by
+  simp only [Submodule.IsPrimary, ← lt_top_iff_ne_top] at hS hT ⊢
+  obtain ⟨hS₀, hS⟩ := hS
+  obtain ⟨hT₀, hT⟩ := hT
+  refine ⟨inf_le_left.trans_lt hS₀, ?_⟩
+  intro r x hrx
+  specialize hS hrx.1
+  specialize hT hrx.2
+  simp only [← mem_colon_def, ← Ideal.mem_radical_iff, h, colon_inf,
+    Ideal.radical_inf, inf_idem] at hS hT ⊢
+  exact and_or_right.mpr ⟨hS, hT⟩
+
+open Finset in
+lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
+    (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
+    (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon ⊤).radical = ((f i).colon ⊤).radical) :
+    (s.inf f).IsPrimary := by
+  classical
+  induction s using Finset.induction_on generalizing i with
+  | empty => simp at hi
+  | insert a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
+    · simp only [insert_empty_eq, mem_singleton] at hi
+      simpa [hi] using hs
+    simp only [inf_insert]
+    have H : ∀ ⦃x : ι⦄, x ∈ s → ((f x).colon ⊤).radical = ((f y).colon ⊤).radical := by
+      intro x hx
+      rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
+    refine IsPrimary.inf (hs (by simp)) (IH hy ?_ H) ?_
+    · intro x hx
+      exact hs (by simp [hx])
+    · rw [colon_finset_inf, Ideal.radical_finset_inf hy H,
+        hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
