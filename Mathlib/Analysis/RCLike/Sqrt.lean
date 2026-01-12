@@ -49,7 +49,7 @@ theorem RCLike.re_sqrt (a : 𝕜) : re (sqrt a) = √((‖a‖ + re a) / 2) := b
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
 
 theorem RCLike.sqrt_def (a : 𝕜) :
-    sqrt a = √((‖a‖ + re a) / 2) + (if im a < 0 then - 1 else 1) * √((‖a‖ - re a) / 2) * I := by
+    sqrt a = √((‖a‖ + re a) / 2) + (if im a < 0 then -1 else 1) * √((‖a‖ - re a) / 2) * I := by
   rw [← re_sqrt]
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt]
