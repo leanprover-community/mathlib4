@@ -1,5 +1,7 @@
 import Mathlib.Lean.Name
 
+/-! Tests that if `Lean.Name.willRoundTrip` is true for a name, then it roundtrips. We do not
+insist that if `Lean.Name.willRoundTrip` is false, then it does *not* roundtrip. -/
 open Lean Name
 
 -- `fun $n : Prop => $n`
