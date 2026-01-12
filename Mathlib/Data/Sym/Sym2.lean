@@ -904,6 +904,7 @@ instance [IsEmpty α] : IsEmpty (Sym2 α) :=
 instance [Nontrivial α] : Nontrivial (Sym2 α) :=
   diag_injective.nontrivial
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"

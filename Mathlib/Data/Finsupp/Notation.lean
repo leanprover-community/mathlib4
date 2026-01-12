@@ -87,6 +87,7 @@ meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
     | _ => throw ()
   | _ => throw ()
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 /-- Display `Finsupp` using `fun₀` notation. -/
 unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
