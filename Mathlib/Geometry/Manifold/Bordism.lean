@@ -5,7 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory

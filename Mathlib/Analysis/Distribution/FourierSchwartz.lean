@@ -205,7 +205,7 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
   integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
-    ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
+    ∫ ξ, ‖𝓕 f ξ‖ ^ 2 = ∫ x, ‖f x‖ ^ 2 := by
   apply Complex.ofRealLI.injective
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
     integral_inner_fourier_fourier f f

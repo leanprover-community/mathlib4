@@ -293,6 +293,13 @@ protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
 
+omit [PseudoMetrizableSpace ε] in
+protected theorem aestronglyMeasurable_restrict_uIoc (h : IntervalIntegrable f μ a b) :
+    AEStronglyMeasurable f (μ.restrict (uIoc a b)) := by
+  by_cases hab : a ≤ b
+  · rw [uIoc_of_le hab]; exact h.aestronglyMeasurable
+  · rw [uIoc_of_ge (by linarith)]; exact h.aestronglyMeasurable'
+
 end
 
 variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
