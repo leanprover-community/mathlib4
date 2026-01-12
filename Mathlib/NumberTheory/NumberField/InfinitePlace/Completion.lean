@@ -236,7 +236,7 @@ scoped instance : Algebra v.Completion w.Completion := (isometry_algebraMap w).m
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
+    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
   (isometry_algebraMap w).mapRingHom_coe _
 
 /-- If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
