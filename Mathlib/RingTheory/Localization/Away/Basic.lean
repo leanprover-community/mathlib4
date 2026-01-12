@@ -323,7 +323,7 @@ variable {R S}
 
 lemma Away.mul_of_isUnit (x y : R) [IsLocalization.Away x S] (h : IsUnit (algebraMap R S y)) :
     IsLocalization.Away (x * y) S :=
-  have : Away ((algebraMap R S) y) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  have : Away (algebraMap R S y) S := away_of_isUnit_of_bijective _ h Function.bijective_id
   .mul' S _ _ _
 
 lemma Away.mul_of_isUnit' (x y : R) [IsLocalization.Away y S] (h : IsUnit (algebraMap R S x)) :
