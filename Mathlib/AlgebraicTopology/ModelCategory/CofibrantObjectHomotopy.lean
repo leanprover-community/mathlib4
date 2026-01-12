@@ -22,15 +22,13 @@ in `C`, and we define a cofibrant resolution functor
 
 -/
 
-universe v u
-
 @[expose] public section
 
 open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
 
 namespace CofibrantObject
 
