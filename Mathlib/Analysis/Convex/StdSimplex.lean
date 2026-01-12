@@ -359,10 +359,6 @@ def barycenter : stdSimplex 𝕜 X :=
 theorem barycenter_apply (x : X) :
     (barycenter : stdSimplex 𝕜 X).val x = (Fintype.card X : 𝕜)⁻¹ := rfl
 
-/-- The sum of the coordinates of the barycenter is 1. -/
-theorem sum_barycenter : ∑ x : X, (barycenter (𝕜 := 𝕜) (X := X)).val x = 1 :=
-  sum_eq_one barycenter
-
 /-- The barycenter equals the (equal weight) center of mass of vertices (`Finset.centerMass`). -/
 theorem barycenter_eq_centerMass [DecidableEq X] :
     (barycenter : stdSimplex 𝕜 X).val =
