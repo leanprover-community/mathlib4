@@ -41,9 +41,6 @@ theorem coe_injective : Function.Injective Int.toEInt :=
 
 lemma coe_monotone : Monotone Int.toEInt := coe_strictMono.monotone
 
-/-- The constructor `ℤ → EInt`. -/
-abbrev mk (a : ℤ) : EInt := a
-
 section
 
 variable {motive : EInt → Sort*}
@@ -64,23 +61,23 @@ end
 
 @[simp]
 lemma coe_le_coe_iff (a b : ℤ) :
-    mk a ≤ mk b ↔ a ≤ b :=
+    (a : EInt) ≤ b ↔ a ≤ b :=
   coe_strictMono.le_iff_le
 
 @[simp]
 lemma coe_lt_coe_iff (a b : ℤ) :
-    mk a < mk b ↔ a < b :=
+    (a : EInt) < b ↔ a < b :=
   coe_strictMono.lt_iff_lt
 
 @[simp]
 lemma coe_eq_bot_iff (a : ℤ) :
-    EInt.mk a = ⊥ ↔ False := by
+    (a : EInt) = ⊥ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
 @[simp]
 lemma coe_eq_top_iff (a : ℤ) :
-    EInt.mk a = ⊤ ↔ False := by
+    (a : EInt) = ⊤ ↔ False := by
   simp only [iff_false]
   rintro ⟨⟩
 
