@@ -551,15 +551,18 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
       simp_all [max, min, inf, SemilatticeInf.inf, Lattice.inf,
       sup, SemilatticeSup.sup]
       sorry
-  #exit
+
   inf_compl_le_bot := by
     intro ⟨H, H_prop⟩
-    simp [LE.le, min, SemilatticeInf.inf, Lattice.inf]
-    intro v w  h_adj g_adj not_h_adj
-    intros
-    simp only [Digraph.emptyDigraph]
-    exact not_h_adj h_adj
+    simp only [min, SemilatticeInf.inf, inf, Lattice.inf, ge_iff_le]
+    constructor
+    · simp [compl, bot, H_prop]
+    · simp only [compl, H_prop, bot, imp_false, not_and]
+      intro v w H_adj G_adj not_H_adj v_verts
+      exfalso
+      exact (ne_self_iff_false a).mp fun a ↦ not_H_adj H_adj
 
+#exit
 
 
 
