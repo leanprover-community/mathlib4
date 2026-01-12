@@ -64,10 +64,10 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
           right_inv := fun f => by simp } }
 
-instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
+instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
-/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
+/-- See also the file `Mathlib/CategoryTheory/Limits/FunctorCategory/EpiMono.lean`
 for a similar result under a `HasPullbacks` assumption. -/
 theorem NatTrans.mono_iff_mono_app' {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor

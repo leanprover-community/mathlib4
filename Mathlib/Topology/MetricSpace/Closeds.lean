@@ -172,7 +172,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by cutsat, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by lia, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -220,7 +220,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     simp_rw [subset_univ, setOf_true] at this
     exact this.isCompact_of_isClosed isClosed_univ⟩
 
-theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
+theorem Closeds.isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEdist_singleton
 
 theorem Closeds.lipschitz_sup :

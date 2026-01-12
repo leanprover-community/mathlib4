@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 
@@ -167,6 +168,19 @@ set_option synthInstance.maxHeartbeats 20 in
 section
 end
 
+/--
+warning: Unscoped option linter.flexible is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option linter.flexible in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option linter.flexible false
 
 end setOption
 

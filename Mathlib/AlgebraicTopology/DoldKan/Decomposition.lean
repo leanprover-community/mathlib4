@@ -43,7 +43,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
@@ -60,11 +60,11 @@ theorem decomposition_Q (n q : ℕ) :
       Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
     by_cases! hqn : n < q
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by cutsat), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by lia), hq]
       congr 1
       ext ⟨x, hx⟩
       simp_rw [Finset.mem_filter_univ]
-      cutsat
+      lia
     · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -72,12 +72,12 @@ theorem decomposition_Q (n q : ℕ) :
       let q' : Fin (n + 1) := ⟨q, Nat.lt_succ_of_le hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
-      · have hnaq' : n = a + q := by omega
+      · have hnaq' : n = a + q := by lia
         simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
         simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
-        cutsat
+        lia
 
 variable (X)
 

@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {C : Type _} [Category C] [Preadditive C] (r : HomRel C) [Congruence r]
+variable {C : Type _} [Category* C] [Preadditive C] (r : HomRel C) [Congruence r]
 
 namespace Preadditive
 
@@ -51,7 +51,7 @@ def neg (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂
       simp only [compClosure_iff_self] at hfg
       erw [functor_map_eq_iff]
       apply Congruence.equivalence.symm
-      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f-g)) using 1 <;> abel)
+      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f - g)) using 1 <;> abel)
 
 end Preadditive
 

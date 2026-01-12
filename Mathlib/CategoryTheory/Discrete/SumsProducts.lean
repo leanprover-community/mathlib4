@@ -65,7 +65,7 @@ end Discrete
 
 namespace IsDiscrete
 
-variable (C C' : Type*) [Category C] [Category C'] (D : Type*) [Category D]
+variable (C C' : Type*) [Category* C] [Category* C'] (D : Type*) [Category* D]
   [IsDiscrete C] [IsDiscrete C'] [IsDiscrete D]
 
 /-- A product of discrete categories is discrete. -/

@@ -24,7 +24,7 @@ namespace CategoryTheory.regularTopology
 
 open Limits
 
-variable {C : Type*} [Category C] [Preregular C] {X : C}
+variable {C : Type*} [Category* C] [Preregular C] {X : C}
 
 /--
 For a preregular category, any sieve that contains an `EffectiveEpi` is a covering sieve of the
@@ -77,7 +77,7 @@ theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
       exact ⟨Y', 𝟙 Y', π, Presieve.ofArrows.mk (), (by simp)⟩
     | top Y => exact ⟨Y, (𝟙 Y), inferInstance, by simp only [Sieve.top_apply]⟩
     | transitive Y R S _ _ a b =>
-      rcases a with ⟨Y₁, π, ⟨h₁,h₂⟩⟩
+      rcases a with ⟨Y₁, π, ⟨h₁, h₂⟩⟩
       choose Y' π' _ H using b h₂
       exact ⟨Y', π' ≫ π, inferInstance, (by simpa using H)⟩
   · exact regularTopology.mem_sieves_of_hasEffectiveEpi S

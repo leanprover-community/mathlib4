@@ -225,7 +225,7 @@ lemma exists_affineOpens_le_appLE_of_appLE
     (hx₁ : x ∈ V₁) (hx₂ : x ∈ V₂.1) (e₂ : V₂.1 ≤ f ⁻¹ᵁ U₂.1) (h₂ : P (f.appLE U₂ V₂ e₂).hom)
     (hfx₁ : f x ∈ U₁.1) :
     ∃ (U' : Y.affineOpens) (V' : X.affineOpens) (_ : U'.1 ≤ U₁) (_ : V'.1 ≤ V₁) (_ : x ∈ V'.1)
-      (e : V'.1 ≤ f⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
+      (e : V'.1 ≤ f ⁻¹ᵁ U'.1), P (f.appLE U' V' e).hom := by
   obtain ⟨r, hBr, hBfx⟩ := U₂.2.exists_basicOpen_le ⟨f x, hfx₁⟩ (e₂ hx₂)
   obtain ⟨s, hBs, hBx⟩ := V₂.2.exists_basicOpen_le ⟨x, hx₁⟩ hx₂
   obtain ⟨r', s', hBx', e', hf'⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine hPa hPl x
@@ -397,7 +397,7 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
     simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_X, ← Spec.map_comp,
       Scheme.AffineOpenCover.openCover_f, Scheme.affineOpenCoverOfSpanRangeEqTop_f]
     exact H i
-  · intro R S _ _  f s hs H
+  · intro R S _ _ f s hs H
     apply IsZariskiLocalAtTarget.of_iSup_eq_top _ (PrimeSpectrum.iSup_basicOpen_eq_top_iff
       (f := fun i : s ↦ (i : R)).mpr (by simpa))
     intro i

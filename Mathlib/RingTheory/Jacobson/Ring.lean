@@ -126,17 +126,17 @@ theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJ
   intro P hP
   by_cases hP_top : comap (algebraMap R S) P = ⊤
   · simp [comap_eq_top_iff.1 hP_top]
-  · have : Nontrivial (R ⧸ comap (algebraMap R S) P) := Quotient.nontrivial hP_top
-    rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
-    refine eq_bot_of_comap_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
-    rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
-      ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
-      comap_jacobson]
-    refine sInf_le_sInf fun J hJ => ?_
-    simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
-    have : J.IsMaximal := by simpa using hJ
-    exact exists_ideal_over_maximal_of_isIntegral J
-      (comap_bot_le_of_injective _ algebraMap_quotient_injective)
+  have : Nontrivial (R ⧸ comap (algebraMap R S) P) := by rwa [Quotient.nontrivial_iff]
+  rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
+  refine eq_bot_of_comap_eq_bot (R := R ⧸ comap (algebraMap R S) P) ?_
+  rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
+    ((isJacobsonRing_iff_prime_eq.1 ‹_›) (comap (algebraMap R S) P) (comap_isPrime _ _)),
+    comap_jacobson]
+  refine sInf_le_sInf fun J hJ => ?_
+  simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
+  have : J.IsMaximal := by simpa using hJ
+  exact exists_ideal_over_maximal_of_isIntegral J
+    (comap_bot_le_of_injective _ algebraMap_quotient_injective)
 
 /-- A variant of `isJacobsonRing_of_isIntegral` that takes `RingHom.IsIntegral` instead. -/
 theorem isJacobsonRing_of_isIntegral' (f : R →+* S) (hf : f.IsIntegral) [IsJacobsonRing R] :
@@ -349,7 +349,7 @@ theorem jacobson_bot_of_integral_localization
   -- Remainder of the proof is pulling and pushing ideals around the square and the quotient square
   have : (I.comap (algebraMap S Sₘ)).IsPrime := comap_isPrime _ I
   have : (I.comap φ').IsPrime := comap_isPrime φ' I
-  have : (⊥ : Ideal (S ⧸ I.comap (algebraMap S Sₘ))).IsPrime := bot_prime
+  have : (⊥ : Ideal (S ⧸ I.comap (algebraMap S Sₘ))).IsPrime := isPrime_bot
   have hcomm : φ'.comp (algebraMap R Rₘ) = (algebraMap S Sₘ).comp φ := IsLocalization.map_comp _
   let f := quotientMap (I.comap (algebraMap S Sₘ)) φ le_rfl
   let g := quotientMap I (algebraMap S Sₘ) le_rfl
@@ -453,7 +453,7 @@ theorem isMaximal_comap_C_of_isMaximal [IsJacobsonRing R] [Nontrivial R]
         (by simpa only [a, leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
   have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (eq_zero_of_pow_eq_zero hn)
   suffices (⊥ : Ideal (Localization M)).IsMaximal by
-    rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
+    rw [← IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ isPrime_bot
       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
     exact ((IsLocalization.isMaximal_iff_isMaximal_disjoint (Localization M) a _).mp
       (by rwa [Ideal.map_bot])).1
@@ -569,7 +569,7 @@ namespace MvPolynomial
 theorem isJacobsonRing_MvPolynomial_fin {R : Type u} [CommRing R] [H : IsJacobsonRing R] :
     ∀ n : ℕ, IsJacobsonRing (MvPolynomial (Fin n) R)
   | 0 => (isJacobsonRing_iso ((renameEquiv R (Equiv.equivPEmpty (Fin 0))).toRingEquiv.trans
-    (isEmptyRingEquiv R PEmpty.{u+1}))).mpr H
+    (isEmptyRingEquiv R PEmpty.{u + 1}))).mpr H
   | n + 1 => (isJacobsonRing_iso (finSuccEquiv R n).toRingEquiv).2
     (Polynomial.isJacobsonRing_polynomial_iff_isJacobsonRing.2 (isJacobsonRing_MvPolynomial_fin n))
 

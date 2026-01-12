@@ -72,9 +72,23 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
 variable [Module R A] [Module R B] [Module R C]
 
+lemma toNonUnitalSubsemiring_injective :
+    (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toNonUnitalSubsemiring_inj {s t : NonUnitalSubalgebra R A} :
+    s.toNonUnitalSubsemiring = t.toNonUnitalSubsemiring ↔ s = t :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective' := SetLike.coe_injective.comp toNonUnitalSubsemiring_injective
+
+lemma toSubmodule_injective : (toSubmodule : NonUnitalSubalgebra R A → Submodule R A).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+lemma toSubmodule_inj {s t : NonUnitalSubalgebra R A} : s.toSubmodule = t.toSubmodule ↔ s = t :=
+  toSubmodule_injective.eq_iff
 
 /-- The actual `NonUnitalSubalgebra` obtained from an element of a type satisfying
 `NonUnitalSubsemiringClass` and `SMulMemClass`. -/
@@ -125,29 +139,12 @@ theorem coe_toNonUnitalSubsemiring (S : NonUnitalSubalgebra R A) :
     (↑S.toNonUnitalSubsemiring : Set A) = S :=
   rfl
 
-theorem toNonUnitalSubsemiring_injective :
-    Function.Injective
-      (toNonUnitalSubsemiring : NonUnitalSubalgebra R A → NonUnitalSubsemiring A) :=
-  fun S T h =>
-  ext fun x => by rw [← mem_toNonUnitalSubsemiring, ← mem_toNonUnitalSubsemiring, h]
-
-theorem toNonUnitalSubsemiring_inj {S U : NonUnitalSubalgebra R A} :
-    S.toNonUnitalSubsemiring = U.toNonUnitalSubsemiring ↔ S = U :=
-  toNonUnitalSubsemiring_injective.eq_iff
-
 theorem mem_toSubmodule (S : NonUnitalSubalgebra R A) {x} : x ∈ S.toSubmodule ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
 theorem coe_toSubmodule (S : NonUnitalSubalgebra R A) : (↑S.toSubmodule : Set A) = S :=
   rfl
-
-theorem toSubmodule_injective :
-    Function.Injective (toSubmodule : NonUnitalSubalgebra R A → Submodule R A) := fun S T h =>
-  ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
-
-theorem toSubmodule_inj {S U : NonUnitalSubalgebra R A} : S.toSubmodule = U.toSubmodule ↔ S = U :=
-  toSubmodule_injective.eq_iff
 
 /-- Copy of a non-unital subalgebra with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
@@ -577,6 +574,7 @@ theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R hx
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R (Set.mem_singleton x)
 
@@ -720,24 +718,25 @@ theorem top_toNonUnitalSubsemiring : (⊤ : NonUnitalSubalgebra R A).toNonUnital
   rfl
 
 @[simp]
-theorem top_toSubring {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Module R A]
+theorem toNonUnitalSubring_top {R A : Type*} [CommRing R] [NonUnitalNonAssocRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] :
     (⊤ : NonUnitalSubalgebra R A).toNonUnitalSubring = ⊤ :=
   rfl
 
-@[simp]
-theorem toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toSubmodule'.injective.eq_iff' top_toSubmodule
+@[deprecated (since := "2026-01-03")] alias top_toSubring := toNonUnitalSubring_top
+
+@[simp] lemma toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
+    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
+
+-- This lemma isn't simp because `NonUnitalSubalgebra.toSubmodule` is reducible.
+lemma toSubmodule_eq_top {S : NonUnitalSubalgebra R A} : S.toSubmodule = ⊤ ↔ S = ⊤ := by simp
 
 @[simp]
-theorem toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
-    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toNonUnitalSubsemiring_injective.eq_iff' top_toNonUnitalSubsemiring
+theorem toNonUnitalSubring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
 
-@[simp]
-theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-    {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
+@[deprecated (since := "2026-01-01")] alias to_subring_eq_top := toNonUnitalSubring_eq_top
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [← SetLike.le_def]
@@ -783,6 +782,7 @@ theorem inf_toNonUnitalSubsemiring (S T : NonUnitalSubalgebra R A) :
 theorem coe_sInf (S : Set (NonUnitalSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (NonUnitalSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -800,8 +800,9 @@ theorem sInf_toNonUnitalSubsemiring (S : Set (NonUnitalSubalgebra R A)) :
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} :
     (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by simp [iInf]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι]
     [IsScalarTower R B B] [SMulCommClass R B B] (f : F)

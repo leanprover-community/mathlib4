@@ -20,7 +20,7 @@ The key result is `CliffordAlgebra.equivExterior`.
 
 * `CliffordAlgebra.contractLeft`: contract a multivector by a `Module.Dual R M` on the left.
 * `CliffordAlgebra.contractRight`: contract a multivector by a `Module.Dual R M` on the right.
-* `CliffordAlgebra.changeForm`: convert between two algebras of different quadratic form, sending
+* `CliffordAlgebra.changeForm`: convert between two algebras of different quadratic forms, sending
   vectors to vectors. The difference of the quadratic forms must be a bilinear form.
 * `CliffordAlgebra.equivExterior`: in characteristic not-two, the `CliffordAlgebra Q` is
   isomorphic as a module to the exterior algebra.
@@ -74,7 +74,7 @@ theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : Cl
 
 variable {Q}
 
-/-- Contract an element of the clifford algebra with an element `d : Module.Dual R M` from the left.
+/-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the left.
 
 Note that $v ⌋ x$ is spelt `contractLeft (Q.associated v) x`.
 
@@ -102,7 +102,7 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
         dsimp only [contractLeftAux_apply_apply]
         rw [LinearMap.smul_apply, smul_assoc, mul_smul_comm, smul_sub]
 
-/-- Contract an element of the clifford algebra with an element `d : Module.Dual R M` from the
+/-- Contract an element of the Clifford algebra with an element `d : Module.Dual R M` from the
 right.
 
 Note that $x ⌊ v$ is spelt `contractRight x (Q.associated v)`.
@@ -188,8 +188,7 @@ theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := b
   | algebraMap => simp_rw [contractLeft_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, hx, hy, add_zero]
   | ι_mul _ _ hx =>
-    rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
-      mul_zero, sub_zero, sub_self]
+    rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, map_smul, mul_zero, sub_zero, sub_self]
 
 /-- This is [grinberg_clifford_2016][] Theorem 13 -/
 theorem contractRight_contractRight (x : CliffordAlgebra Q) : x⌊d⌊d = 0 := by
@@ -201,7 +200,7 @@ theorem contractLeft_comm (x : CliffordAlgebra Q) : d⌋(d'⌋x) = -(d'⌋(d⌋x
   | algebraMap => simp_rw [contractLeft_algebraMap, map_zero, neg_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy, neg_add]
   | ι_mul _ _ hx =>
-    simp only [contractLeft_ι_mul, map_sub, LinearMap.map_smul]
+    simp only [contractLeft_ι_mul, map_sub, map_smul]
     rw [neg_sub, sub_sub_eq_add_sub, hx, mul_neg, ← sub_eq_add_neg]
 
 /-- This is [grinberg_clifford_2016][] Theorem 14 -/
@@ -233,10 +232,10 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
 
-/-- Convert between two algebras of different quadratic form, sending vector to vectors, scalars to
-scalars, and adjusting products by a contraction term.
+/-- Convert between two algebras of different quadratic forms, sending vectors to vectors, scalars
+to scalars, and adjusting products by a contraction term.
 
-This is $\lambda_B$ from [bourbaki2007][] $9 Lemma 2. -/
+This is $\lambda_B$ from [bourbaki2007][] §9 Lemma 2. -/
 def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q' :=
   foldr Q (changeFormAux Q' B)
     (fun m x =>
@@ -293,7 +292,7 @@ theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
   | algebraMap => simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy]
   | ι_mul _ _ hx =>
-    simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, LinearMap.map_smul]
+    simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, map_smul]
     rw [← hx, contractLeft_comm, ← sub_add, sub_neg_eq_add, ← hx]
 
 theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
@@ -309,7 +308,7 @@ theorem changeForm_self :
     changeForm changeForm.zero_proof = (LinearMap.id : CliffordAlgebra Q →ₗ[R] _) :=
   LinearMap.ext <| changeForm_self_apply
 
-/-- This is [bourbaki2007][] $9 Lemma 3. -/
+/-- This is [bourbaki2007][] §9 Lemma 3. -/
 theorem changeForm_changeForm (x : CliffordAlgebra Q) :
     changeForm h' (changeForm h x) = changeForm (changeForm.add_proof h h') x := by
   induction x using CliffordAlgebra.left_induction with
@@ -325,7 +324,7 @@ theorem changeForm_comp_changeForm :
 
 /-- Any two algebras whose quadratic forms differ by a bilinear form are isomorphic as modules.
 
-This is $\bar \lambda_B$ from [bourbaki2007][] $9 Proposition 3. -/
+This is $\bar \lambda_B$ from [bourbaki2007][] §9 Proposition 3. -/
 @[simps apply]
 def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
   { changeForm h with

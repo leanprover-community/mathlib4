@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-! # The characteristic polynomial of base change -/
 
-@[expose] public section
+public section
 
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
