@@ -114,6 +114,7 @@ def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
+set_option linter.style.whitespace false in -- linter false positive around subscripts
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
 def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
   vertex i := σ.app (op ⦋0⦌ₙ₊₁) (f.vertex i)
