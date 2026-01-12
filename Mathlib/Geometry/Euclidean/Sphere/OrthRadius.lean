@@ -221,6 +221,82 @@ lemma inter_orthRadius_eq_empty_of_radius_lt_dist {s : Sphere P} {p : P}
   rintro hle - h
   nlinarith
 
+lemma inter_orthRadius_eq_empty_of_finrank_eq_one {s : Sphere P} {p : P} (hpc : p ≠ s.center)
+    (hp : dist p s.center ≠ s.radius) (hf : Module.finrank ℝ V = 1) :
+    (s ∩ s.orthRadius p : Set P) = ∅ := by
+  ext p'
+  rw [mem_inter_orthRadius_iff_radius_nonneg_and_vsub_mem_and_norm_sq]
+  simp only [Set.mem_empty_iff_false, iff_false, not_and]
+  intro hr hpo
+  have : FiniteDimensional ℝ V := Module.finite_of_finrank_eq_succ hf
+  have ha := (ℝ ∙ (p -ᵥ s.center)).finrank_add_finrank_orthogonal
+  simp only [finrank_span_singleton (vsub_ne_zero.2 hpc), hf, Nat.add_eq_left,
+    Submodule.finrank_eq_zero, Submodule.orthogonal_eq_bot_iff] at ha
+  simp only [ha, Submodule.top_orthogonal_eq_bot, Submodule.mem_bot, vsub_eq_zero_iff_eq] at hpo
+  simp only [hpo, vsub_self, norm_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+  rw [eq_comm, sub_eq_zero, eq_comm, sq_eq_sq₀ dist_nonneg hr]
+  exact hp
+
+lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
+    (s ∩ s.orthRadius p : Set P) = ∅ ↔ s.radius < dist p s.center ∨
+      (Module.finrank ℝ V = 1 ∧ dist p s.center < s.radius ∧ p ≠ s.center) ∨
+      (Subsingleton V ∧ s.radius ≠ 0) := by
+  rcases lt_trichotomy (dist p s.center) s.radius with h | h | h
+  · simp only [h.not_gt, h, ne_eq, true_and, (dist_nonneg.trans_lt h).ne', not_false_eq_true,
+      and_true, false_or]
+    obtain rfl | hp := eq_or_ne p s.center
+    · rcases subsingleton_or_nontrivial V with hs | hs
+      · have hs' := (AddTorsor.subsingleton_iff V P).1 hs
+        simp [hs, Metric.sphere_eq_empty_of_subsingleton (dist_nonneg.trans_lt h).ne']
+      · simp only [orthRadius_center, top_coe, Set.inter_univ, not_true_eq_false, and_false,
+          not_subsingleton_iff_nontrivial.2 hs, or_self, iff_false, ← Set.nonempty_iff_ne_empty]
+        obtain ⟨v, hv⟩ := exists_norm_eq V (dist_nonneg.trans_lt h).le
+        exact ⟨v +ᵥ s.center, by simp [hv]⟩
+    · simp only [hp, not_false_eq_true, and_true]
+      rcases eq_or_ne (ℝ ∙ (p -ᵥ s.center)) ⊤ with hb | hb
+      · have hb' := hb
+        rw [Submodule.span_singleton_eq_top_iff] at hb'
+        have hf := finrank_eq_one_iff'.2 ⟨p -ᵥ s.center, vsub_ne_zero.2 hp, hb'⟩
+        simpa [hf] using inter_orthRadius_eq_empty_of_finrank_eq_one hp h.ne
+      · have hn : ¬Subsingleton V := by
+          rw [AddTorsor.subsingleton_iff V P]
+          intro hs
+          simp [Subsingleton.elim p s.center] at hp
+        have hnf : Module.finrank ℝ V ≠ 1 := by
+          intro hf
+          apply hb
+          rw [Submodule.span_singleton_eq_top_iff]
+          rw [finrank_eq_one_iff'] at hf
+          obtain ⟨v, hv0, hv⟩ := hf
+          obtain ⟨c, hc⟩ := hv (p -ᵥ s.center)
+          have hc0 : c ≠ 0 := by
+            rintro rfl
+            rw [zero_smul, eq_comm, vsub_eq_zero_iff_eq] at hc
+            simp [hc] at hp
+          intro v'
+          obtain ⟨c', rfl⟩ := hv v'
+          refine ⟨c' / c, ?_⟩
+          simp [← hc, smul_smul, hc0]
+        simp only [hnf, hn, or_self, iff_false, ← Set.nonempty_iff_ne_empty]
+        rw [ne_eq, ← Submodule.orthogonal_eq_bot_iff] at hb
+        obtain ⟨v, hvm, hv0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
+        refine ⟨(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p, ?_⟩
+        rw [vadd_mem_inter_orthRadius_iff_norm_sq (dist_nonneg.trans_lt h).le
+          (Submodule.smul_mem _ _ hvm)]
+        rw [norm_smul, norm_div, norm_norm, div_mul_cancel₀ _ (norm_ne_zero_iff.2 hv0)]
+        simp only [Real.norm_eq_abs, sq_abs]
+        refine Real.sq_sqrt ?_
+        rw [sub_nonneg, sq_le_sq, abs_of_nonneg dist_nonneg]
+        exact h.le.trans (le_abs_self _)
+  · rw [inter_orthRadius_eq_singleton_of_dist_eq_radius h]
+    simp only [Set.singleton_ne_empty, h, lt_self_iff_false, ne_eq, false_and, and_false, false_or,
+      false_iff, not_and, not_not]
+    intro hs
+    rw [AddTorsor.subsingleton_iff V P] at hs
+    rw [Subsingleton.elim p s.center] at h
+    simpa using h.symm
+  · simp [h, inter_orthRadius_eq_empty_of_radius_lt_dist]
+
 /-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 

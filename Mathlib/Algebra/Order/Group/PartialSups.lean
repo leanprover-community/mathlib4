@@ -12,7 +12,7 @@ public import Mathlib.Order.PartialSups
 # Results about `partialSups` of functions taking values in a `Group`
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*}
 

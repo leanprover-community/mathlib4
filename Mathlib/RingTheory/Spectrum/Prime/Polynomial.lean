@@ -29,7 +29,7 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial TensorProduct PrimeSpectrum
 
