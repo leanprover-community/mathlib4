@@ -25,19 +25,19 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 /-- The square root of `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
   if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
-  else (re a).sqrt
+  else √(re a)
 
 theorem Complex.re_sqrt_ofReal (a : ℝ) :
-    (sqrt (a : ℂ)).re = a.sqrt := by
+    (sqrt (a : ℂ)).re = √a := by
   simp only [sqrt, cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re]
   grind
 
 theorem RCLike.re_sqrt_ofReal (a : ℝ) :
-    re (sqrt (a : 𝕜)) = a.sqrt := by
+    re (sqrt (a : 𝕜)) = √a := by
   aesop (add simp [sqrt, Complex.re_sqrt_ofReal])
 
 @[simp] theorem RCLike.sqrt_real (a : ℝ) :
-    sqrt a = a.sqrt := by simp [← re_sqrt_ofReal (𝕜 := ℝ)]
+    sqrt a = √a := by simp [← re_sqrt_ofReal (𝕜 := ℝ)]
 
 @[simp] theorem RCLike.sqrt_complex (a : ℂ) :
     sqrt a = a.sqrt := by simp [sqrt]
@@ -45,7 +45,7 @@ theorem RCLike.re_sqrt_ofReal (a : ℝ) :
 open ComplexOrder
 
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
-    a.sqrt = a.re.sqrt := by
+    a.sqrt = √a.re := by
   obtain ⟨α : ℝ, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha
   simp only [coe_algebraMap, ofReal_re]
   rw [← re_add_im (α : ℂ).sqrt, re_sqrt_ofReal]
@@ -63,7 +63,7 @@ theorem Complex.sqrt_complexRingEquiv {a : 𝕜} (h : RCLike.im (RCLike.I : 𝕜
 attribute [local grind =] RCLike.complexRingEquiv_nonneg_iff
 
 theorem RCLike.sqrt_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
-    sqrt a = sqrt (re a) := by
+    sqrt a = √(re a) := by
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt]
   apply_fun complexRingEquiv h
