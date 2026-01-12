@@ -204,15 +204,19 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable [MonoidWithZero M₀] {a b c : M₀}
+variable {a b c : M₀}
 
 @[simp]
-theorem mul_eq_mul_right_iff [IsRightCancelMulZero M₀] : a * c = b * c ↔ a = b ∨ c = 0 := by
+theorem mul_eq_mul_right_iff [MulZeroClass M₀] [IsRightCancelMulZero M₀] :
+    a * c = b * c ↔ a = b ∨ c = 0 := by
   by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
 
 @[simp]
-theorem mul_eq_mul_left_iff [IsLeftCancelMulZero M₀] : a * b = a * c ↔ b = c ∨ a = 0 := by
+theorem mul_eq_mul_left_iff [MulZeroClass M₀] [IsLeftCancelMulZero M₀] :
+    a * b = a * c ↔ b = c ∨ a = 0 := by
   by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
+
+variable [MulZeroOneClass M₀]
 
 theorem mul_right_eq_self₀ [IsLeftCancelMulZero M₀] : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
@@ -240,14 +244,14 @@ theorem left_eq_mul₀ [IsLeftCancelMulZero M₀] (ha : a ≠ 0) : a = a * b ↔
 theorem right_eq_mul₀ [IsRightCancelMulZero M₀] (hb : b ≠ 0) : b = a * b ↔ a = 1 := by
   rw [eq_comm, mul_eq_right₀ hb]
 
-/-- An element of a `CancelMonoidWithZero` fixed by right multiplication by an element other
-than one must be zero. -/
+/-- An element of a left-cancellative `MulZeroOneClass` fixed by right multiplication by
+an element other than one must be zero. -/
 theorem eq_zero_of_mul_eq_self_right [IsLeftCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : a * b = a) :
     a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_left_cancel₀ ha <| h₂.symm ▸ (mul_one a).symm
 
-/-- An element of a `CancelMonoidWithZero` fixed by left multiplication by an element other
-than one must be zero. -/
+/-- An element of a right-cancellative `MulZeroOneClass` fixed by left multiplication by
+an element other than one must be zero. -/
 theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : b * a = a) :
     a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_right_cancel₀ ha <| h₂.symm ▸ (one_mul a).symm
