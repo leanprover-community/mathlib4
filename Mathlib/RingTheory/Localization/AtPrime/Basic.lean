@@ -434,6 +434,24 @@ def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
     exact s.prop
 
+@[simp]
+theorem equivQuotMaximalIdeal_apply_mk (x : R) :
+    equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
+      (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
+
+@[simp]
+theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
+    (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
+        (Ideal.Quotient.mk p x) * (Ideal.Quotient.mk p s)⁻¹ := by
+  have h₁ : Ideal.Quotient.mk p ↑s ≠ 0 := by
+    simpa [ne_eq, Ideal.Quotient.eq_zero_iff_mem] using Ideal.mem_primeCompl_iff.mp s.prop
+  have h₂ : equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk p ↑s) ≠ 0 := by
+    rwa [RingEquiv.map_ne_zero_iff]
+  rw [RingEquiv.symm_apply_eq, ← mul_left_inj' h₂, map_mul, mul_assoc, ← map_mul,
+    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotMaximalIdeal_apply_mk, ← map_mul,
+    mk'_spec, Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk,
+    Ideal.Quotient.mk_algebraMap]
+
 @[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
   equivQuotMaximalIdeal
 
