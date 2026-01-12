@@ -18,7 +18,7 @@ longer than its content; but giving it a name serves as a way of standardizing A
 @[expose] public section
 
 open Set Topology
-#check Equiv.setSubtypeComm
+
 theorem TopologicalSpace.Opens.exists {α : Type*} [TopologicalSpace α]
     {p : Opens α → Prop} : (∃ U, p U) ↔ ∃ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
   ⟨(⟨_, _, ·.choose_spec⟩), (⟨_, ·.choose_spec.choose_spec⟩)⟩
