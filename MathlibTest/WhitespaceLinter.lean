@@ -859,7 +859,6 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 -/
 #guard_msgs in
 example (h : ∀ a : Nat, a = a) : 0 = 0 := by
-  -- The *linter* forces a space in `replace(h)`, but the pretty-printer does not.
   replace(h) := h 0
   exact h
 
