@@ -1070,6 +1070,20 @@ lemma dualDistrib_apply_comm (w : Dual R N ⊗[R] Dual R M) (z : M ⊗[R] N) :
       dualDistrib R M N (TensorProduct.comm R _ _ w) z := by
   induction w <;> induction z <;> simp_all [mul_comm]
 
+/-- Two ways to evaluate a pair of functionals on a tensor are equal:
+Evaluating `g` after contracting `z : M ⊗[R] N` with `f` via `lid ∘ rTensor` equals
+applying `dualDistrib (f ⊗ g)` to `z`. -/
+lemma dualDistrib_lid_rTensor (f : Dual R M) (g : Dual R N) (z : M ⊗[R] N) :
+    dualDistrib R M N (f ⊗ₜ[R] g) z = g (TensorProduct.lid R N (f.rTensor N z)) := by
+  induction z <;> simp_all
+
+/-- Two ways to evaluate a pair of functionals on a tensor are equal:
+Evaluating `f` after contracting `z : M ⊗[R] N` with `g` via `rid ∘ lTensor` equals
+applying `dualDistrib (f ⊗ g)` to `z`. -/
+lemma dualDistrib_rid_lTensor (f : Dual R M) (g : Dual R N) (z : M ⊗[R] N) :
+    dualDistrib R M N (f ⊗ₜ[R] g) z = f (TensorProduct.rid R M (g.lTensor M z)) := by
+  induction z <;> simp_all [dualDistrib_apply, mul_comm, map_add]
+
 end
 
 namespace AlgebraTensorModule

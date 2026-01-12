@@ -116,13 +116,10 @@ theorem sum_tmul_mem_minTensorProduct {ι : Type*} [Fintype ι]
 yields an element in the double dual of `C₂`. -/
 theorem maxTensorProduct_lid_rTensor_mem_dual_dual (hz : z ∈ maxTensorProduct C₁ C₂)
     (φ : Module.Dual R G) (hφ : φ ∈ dual (dualPairing R G).flip C₁) :
-    TensorProduct.lid R H (φ.rTensor H z) ∈ dual (dualPairing R H)
-      (dual (dualPairing R H).flip C₂) := by
+    TensorProduct.lid R H (φ.rTensor H z) ∈
+      dual (dualPairing R H) (dual (dualPairing R H).flip C₂) := by
   intro ψ hψ
-  have h_eq (z : G ⊗[R] H) :
-      ψ (TensorProduct.lid R H (φ.rTensor H z)) = dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-    induction z <;> simp_all
-  rw [dualPairing_apply, h_eq, mem_maxTensorProduct] at *
+  rw [dualPairing_apply, ← dualDistrib_lid_rTensor, mem_maxTensorProduct] at *
   exact hz φ hφ ψ hψ
 
 /-- Evaluating the right factor of `z ∈ maxTensorProduct C₁ C₂` at `ψ ∈ C₂*`
@@ -132,18 +129,14 @@ theorem maxTensorProduct_rid_lTensor_mem_dual_dual (hz : z ∈ maxTensorProduct 
     TensorProduct.rid R G (ψ.lTensor G z) ∈ dual (dualPairing R G)
       (dual (dualPairing R G).flip C₁) := by
   intro φ hφ
-  have h_eq (z : G ⊗[R] H) :
-      φ (TensorProduct.rid R G (ψ.lTensor G z)) = dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-    induction z <;> simp_all [dualDistrib_apply, mul_comm, map_add]
-  rw [dualPairing_apply, h_eq, mem_maxTensorProduct] at *
+  rw [dualPairing_apply, ← dualDistrib_rid_lTensor, mem_maxTensorProduct] at *
   exact hz φ hφ ψ hψ
 
 /-- The minimal tensor product is commutative. -/
 @[simp]
 theorem minTensorProduct_comm :
     (minTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = minTensorProduct C₂ C₁ := by
-  simp only [minTensorProduct, map, span, Submodule.map_span, Set.image_image2,
-    LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
+  simp [minTensorProduct, map, span, Submodule.map_span, Set.image_image2,
     Set.image2_swap (· ⊗ₜ[R] · : H → G → _)]
 
 /-- The maximal tensor product is commutative. -/
@@ -152,13 +145,11 @@ theorem maxTensorProduct_comm :
     (maxTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = maxTensorProduct C₂ C₁ := by
   ext z
   simp only [mem_map, mem_maxTensorProduct]
-  constructor
+  refine ⟨?_, fun hz ↦
+    ⟨(TensorProduct.comm R H G) z, ?_, (TensorProduct.comm R H G).symm_apply_apply z⟩⟩
   · rintro ⟨w, hw, rfl⟩ ψ hψ φ hφ
-    simpa only [LinearEquiv.coe_coe, dualDistrib_apply_comm, TensorProduct.comm_tmul]
-      using hw φ hφ ψ hψ
-  · intro hz
-    refine ⟨(TensorProduct.comm R H G) z, ?_, (TensorProduct.comm R H G).symm_apply_apply z⟩
-    intro φ hφ ψ hψ
-    simpa only [dualDistrib_apply_comm, TensorProduct.comm_tmul] using hz ψ hψ φ hφ
+    simpa [dualDistrib_apply_comm] using hw φ hφ ψ hψ
+  · intro φ hφ ψ hψ
+    simpa [dualDistrib_apply_comm] using hz ψ hψ φ hφ
 
 end PointedCone
