@@ -20,7 +20,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/
 
-@[expose] public section
+public section
 
 open Topology Filter Finset
 

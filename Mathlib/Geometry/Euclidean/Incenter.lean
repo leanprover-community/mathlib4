@@ -115,8 +115,7 @@ lemma excenterWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset 
     (s.reindex e).excenterWeights signs =
       s.excenterWeights (signs.map e.symm) ∘ e.symm := by
   simp_rw [excenterWeights, excenterWeightsUnnorm_reindex, Finset.sum_comp_equiv,
-    Finset.map_univ_equiv]
-  rfl
+    Finset.map_univ_equiv, Pi.smul_comp]
 
 variable {s} in
 lemma ExcenterExists.excenterWeights_ne_zero {signs : Finset (Fin (n + 1))}
@@ -980,7 +979,7 @@ lemma touchpointWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finse
   rw [eq_comm, ← affineCombination_eq_touchpoint_iff]
   · rw [touchpoint_reindex, ← affineCombination_touchpointWeights, reindex]
     dsimp only
-    rw [←Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
+    rw [← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
     simp
   · rw [Finset.sum_comp_equiv]
     simp

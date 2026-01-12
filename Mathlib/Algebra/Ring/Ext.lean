@@ -29,7 +29,7 @@ sometimes we don't need them to prove extensionality.
 semiring, ring, extensionality
 -/
 
-@[expose] public section
+public section
 
 local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
