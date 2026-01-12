@@ -339,20 +339,23 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (
   convert hps
   simp [Ideal.map_span, ← himgo]
 
+lemma height_le_ringKrullDim_quotient_add_spanFinrank {p I : Ideal R} [p.IsPrime] (h : I ≤ p) :
+    p.height ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  trans (p.map (Ideal.Quotient.mk I)).height + I.spanFinrank
+  · norm_cast; exact Ideal.height_le_height_add_spanFinrank_of_le h
+  · gcongr
+    have : (Ideal.map (Ideal.Quotient.mk I) p).IsPrime :=
+      Ideal.isPrime_map_quotientMk_of_isPrime h
+    exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
+
 lemma ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (I : Ideal R)
     (h : I ≤ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
   nontriviality R
   rw [ringKrullDim_le_iff_isMaximal_height_le]
   intro m hm
-  have : I ≤ m := le_trans h <| Ring.jacobson_le_of_isMaximal m
-  trans (m.map (Ideal.Quotient.mk I)).height + I.spanFinrank
-  · norm_cast
-    exact Ideal.height_le_height_add_spanFinrank_of_le this
-  · gcongr
-    have : (Ideal.map (Ideal.Quotient.mk I) m).IsPrime :=
-      Ideal.isPrime_map_quotientMk_of_isPrime this
-    exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
+  exact height_le_ringKrullDim_quotient_add_spanFinrank <|
+    le_trans h <| Ring.jacobson_le_of_isMaximal m
 
 /-- If `p` is a prime ideal containing `s`, the height of `p` is bounded
 by the sum of the height of the image of `p` in `R ⧸ (s)` and the cardinality of `s`. -/
@@ -365,13 +368,9 @@ lemma Ideal.height_le_height_add_encard_of_subset (s : Set R) {p : Ideal R} [p.I
 
 lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
     (s : Set R) (hs : s ⊆ p) : p.height ≤ ringKrullDim (R ⧸ span s) + s.encard := by
-  trans (p.map (Ideal.Quotient.mk (span s))).height + s.encard
-  · norm_cast
-    exact Ideal.height_le_height_add_encard_of_subset _ hs
-  · gcongr
-    have : (Ideal.map (Ideal.Quotient.mk (span s)) p).IsPrime :=
-      isPrime_map_quotientMk_of_isPrime (by simpa [span_le])
-    exact Ideal.height_le_ringKrullDim_of_ne_top IsPrime.ne_top'
+  refine le_trans (height_le_ringKrullDim_quotient_add_spanFinrank (I := .span s) ?_) ?_
+  · simpa [span_le]
+  · gcongr; norm_cast; exact Submodule.spanFinrank_span_le_encard _
 
 lemma Ideal.height_le_height_add_one_of_mem {r : R} {p : Ideal R} [p.IsPrime] (hrm : r ∈ p) :
     p.height ≤ (p.map (Quotient.mk (span {r}))).height + 1 := by
@@ -385,11 +384,9 @@ lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsP
 
 lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span s) + s.encard := by
-  nontriviality R
-  rw [ringKrullDim_le_iff_isMaximal_height_le]
-  intro m hm
-  exact Ideal.height_le_ringKrullDim_quotient_add_encard _ <|
-    subset_trans hs (Ring.jacobson_le_of_isMaximal m)
+  refine le_trans (ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (Ideal.span s) ?_) ?_
+  · simpa [Ideal.span_le]
+  · gcongr; norm_cast; exact Submodule.spanFinrank_span_le_encard _
 
 lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
     (hs : (s : Set R) ⊆ Ring.jacobson R) :
