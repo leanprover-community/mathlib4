@@ -78,6 +78,23 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
   rw [this, Submodule.map_top (Submodule.subtype S), range_subtype]
 
+theorem exists_linearEquiv_restrict_eq
+    {W W' : Submodule K V} [FiniteDimensional K W] (f : W ≃ₗ[K] W') :
+    ∃ g : V ≃ₗ[K] V, ∀ x : W, f x = g x := by
+  obtain ⟨Q, hQ⟩ := Submodule.exists_isCompl W
+  let eQ := W.prodEquivOfIsCompl Q hQ
+  obtain ⟨Q', hQ'⟩ := Submodule.exists_isCompl W'
+  let eQ' := W'.prodEquivOfIsCompl Q' hQ'
+  suffices Nonempty (Q ≃ₗ[K] Q') by
+    let ⟨h⟩ := this
+    refine ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f h) ≪≫ₗ eQ', by aesop⟩
+  refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
+  rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
+    add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
+    add_comm, LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨f⟩,
+    ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ'⟩]
+  exact Module.rank_lt_aleph0 K ↥W
+
 section
 
 open Finset
