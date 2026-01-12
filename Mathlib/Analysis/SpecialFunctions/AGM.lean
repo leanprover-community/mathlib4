@@ -142,17 +142,20 @@ lemma agm_le_max : agm x y ≤ max x y := by
     nth_rw 2 [← add_halves x]
     gcongr
 
+lemma bddAbove_range_agmSequences_fst :
+    BddAbove (Set.range fun n ↦ (agmSequences x y).1 (n + 1)) := by
+  rw [bddAbove_def]
+  use (x.agmSequences y).2 (0 + 1)
+  simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  exact fun _ ↦ agmSequences_fst_le_agmSequences_snd
+
 /-- The AGM is also the supremum of the geometric means. -/
 lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y).1 (n + 1) := by
   sorry
 
 lemma agmSequences_fst_le_agm : (agmSequences x y).1 (n + 1) ≤ agm x y := by
   rw [agm_eq_ciSup]
-  refine le_ciSup (f := fun n ↦ (agmSequences x y).1 (n + 1)) ?_ n
-  rw [bddAbove_def]
-  use (x.agmSequences y).2 (0 + 1)
-  simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  exact fun _ ↦ agmSequences_fst_le_agmSequences_snd
+  exact le_ciSup bddAbove_range_agmSequences_fst _
 
 lemma min_le_agm : min x y ≤ agm x y := by
   rcases le_or_gt x y with h | h
