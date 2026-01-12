@@ -407,7 +407,7 @@ theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
 /-- The support of a graph is empty if there at most one vertex. -/
 @[simp]
 theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
-  SimpleGraph.uniqueOfSubsingleton.uniq G ▸ support_bot
+  uniqueOfSubsingleton.uniq G ▸ support_bot
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
