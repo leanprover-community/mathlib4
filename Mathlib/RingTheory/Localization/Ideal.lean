@@ -286,11 +286,11 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 
 variable (R) in
-lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
-    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
-    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
-    NoZeroSMulDivisors Rₚ Sₚ := by
+lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {Rₚ Sₚ : Type*}
+    [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
@@ -300,7 +300,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M
     simp only [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
-  rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+  rw [Module.isTorsionFree_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
