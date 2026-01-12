@@ -44,6 +44,8 @@ lemma isNilpotent_tensor_residueField_iff
   cases subsingleton_or_nontrivial R
   · have := (algebraMap R (A ⊗[R] I.ResidueField)).codomain_trivial
     simp [Subsingleton.elim I ⊤, Subsingleton.elim (f ⊗ₜ[R] (1 : I.ResidueField)) 0]
+  have : SMulCommClass R I.ResidueField I.ResidueField := Algebra.to_smulCommClass
+  have : IsScalarTower R I.ResidueField I.ResidueField := IsScalarTower.right
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
     rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
@@ -68,6 +70,8 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- `MonoidWithZeroClass` timeout
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A ⧸ I`. -/
@@ -103,6 +107,8 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     ext a
     exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- `MonoidWithZeroClass` timeout
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A`. -/
@@ -135,6 +141,8 @@ end PrimeSpectrum
 
 namespace Polynomial
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- `MonoidWithZeroClass` timeout
 lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     x ∈ comap C '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
@@ -196,6 +204,8 @@ namespace MvPolynomial
 
 variable {σ : Type*}
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- `MonoidWithZeroClass` timeout
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   classical

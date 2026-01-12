@@ -262,6 +262,8 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
   /-- `0` is right-absorbing. -/
   lcm_zero_right : ∀ a, lcm a 0 = 0
 
+attribute [instance 100] GCDMonoid.toIsCancelMulZero
+
 /-- Normalized GCD monoid: a `CancelCommMonoidWithZero` with normalization and `gcd`
 (greatest common divisor) and `lcm` (least common multiple) operations. In this setting `gcd` and
 `lcm` form a bounded lattice on the associated elements where `gcd` is the infimum, `lcm` is the

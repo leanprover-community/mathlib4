@@ -131,6 +131,8 @@ class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
     extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
+attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
+
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α where
