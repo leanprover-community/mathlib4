@@ -501,7 +501,7 @@ lemma final_functor : (functor J κ).Final := by
       uniq_terminal j hj := by
         obtain (hj' | ⟨⟨⟩⟩) := hj.prop
         · exact hm₀.elim (u ≫ hj.lift (Or.inr ⟨⟨⟩⟩) ≫ D.isTerminal.lift hj')
-        · rfl}
+        · rfl }
   exact ⟨D₄', homOfLE ⟨le_sup_left.trans le_sup_left, le_sup_left⟩,
     by simpa [functorMap, D₄', lift_eq _ D.isTerminal.prop, φ]⟩
 
