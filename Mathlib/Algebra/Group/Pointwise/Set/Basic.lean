@@ -985,6 +985,13 @@ lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
 
+@[to_additive]
+lemma preimage_pow_subset [MonoidHomClass F α β] (f : F) (s : Set β) :
+    ∀ n, (f ⁻¹' s) ^ n ⊆ f ⁻¹' (s ^ n)
+  | 0 => by simp [Set.subset_def]
+  | n + 1 => by simpa [pow_succ] using Subset.trans (mul_subset_mul_right
+    (preimage_pow_subset f s n)) (preimage_mul_preimage_subset f)
+
 end Monoid
 
 section Group
