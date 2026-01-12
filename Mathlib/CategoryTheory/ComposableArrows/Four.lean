@@ -10,6 +10,18 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 /-!
 # API for compositions of four arrows
 
+Given morphisms `f₁ : i₀ ⟶ i₁`, `f₂ : i₁ ⟶ i₂`, `f₃ : i₂ ⟶ i₃`, `f₄ : i₃ ⟶ i₄`,
+and their compositions `f₁₂ : i₀ ⟶ i₂`, `f₂₃ : i₁ ⟶ i₃` and `f₃₄ : i₂ ⟶ i₄`,
+we define maps `ComposableArrows.fourδ₄Toδ₃ : mk₃ f₁ f₂ f₃ ⟶ mk₂ f₁ f₂ f₃₄`,
+`fourδ₃Toδ₂ : mk₃ f₁ f₂ f₃₄ ⟶ mk₂ f₁ f₂₃ f₄`,
+`fourδ₂Toδ₁ : mk₃ f₁ f₂₃ f₄ ⟶ mk₂ f₁₂ f₃ f₄`, and
+`fourδ₁Toδ₀ : mk₃ f₁₂ f₃ f₄ ⟶ mk₂ f₂ f₃ f₄`.
+The names are justified by the fact that `ComposableArrow.mk₄ f₁ f₂ f₃ f₄`
+can be thought of as a `4`-simplex in the simplicial set `nerve C`,
+and its faces (numbered from `0` to `4`) are respectively
+`mk₂ f₂ f₃ f₄`, `mk₂ f₁₂ f₃ f₄`, `mk₂ f₁ f₂₃ f₄`, `mk₂ f₁ f₂ f₃₄` and
+`mk₂ f₁ f₂ f₃`.
+
 -/
 
 @[expose] public section

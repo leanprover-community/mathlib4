@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 Given morphisms `f₁ : i ⟶ j`, `f₂ : j ⟶ k`, `f₃ : k ⟶ l`, and their
 compositions `f₁₂ : i ⟶ k` and `f₂₃ : j ⟶ l`, we define
-maps `ComposableArrowsthreeδ₃Toδ₂ : mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃`
+maps `ComposableArrows.threeδ₃Toδ₂ : mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃`,
 `threeδ₂Toδ₁ : mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃`, and `threeδ₁Toδ₀ : mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃`.
 The names are justified by the fact that `ComposableArrow.mk₃ f₁ f₂ f₃`
 can be thought of as a `3`-simplex in the simplicial set `nerve C`,
