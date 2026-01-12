@@ -450,7 +450,7 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
 /-- `post (Over.forget X) : Over f ⥤ Over (forget.obj f)` is naturally isomorphic to the
-`Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
+functor `Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
 @[simps! hom_app inv_app]
 def iteratedSliceForwardIsoPost (f : Over X) :
     post (Over.forget X) ≅ Over.iteratedSliceForward f :=
