@@ -194,13 +194,13 @@ lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x
 variable {α : Type*}
 
 /-- The multiplicative height of a finitely supported function. -/
-def Finsupp.mulHeight (x : α →₀ K) : ℝ :=
+def _root_.Finsupp.mulHeight (x : α →₀ K) : ℝ :=
   Height.mulHeight fun i : x.support ↦ x i
 
 /-- The logarithmic height of a finitely supported function. -/
-def Finsupp.logHeight (x : α →₀ K) : ℝ := log (mulHeight x)
+def _root_.Finsupp.logHeight (x : α →₀ K) : ℝ := log (mulHeight x)
 
-lemma Finsupp.logHeight_eq_log_mulHeight (x : α →₀ K) :
+lemma _root_.Finsupp.logHeight_eq_log_mulHeight (x : α →₀ K) :
     logHeight x = log (mulHeight x) := rfl
 
 /-!
@@ -353,4 +353,3 @@ lemma logHeight₁_zpow (x : K) (n : ℤ) : logHeight₁ (x ^ n) = n.natAbs * lo
   simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_zpow, log_pow]
 
 end Height
-#min_imports
