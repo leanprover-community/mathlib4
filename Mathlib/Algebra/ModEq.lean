@@ -15,7 +15,11 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # Equality modulo an element
 
-This file defines equality modulo an element in a commutative group.
+This file defines equality modulo an element in an additive commutative monoid.
+In case of a group, `a` and `b` are congruent modulo `p` iff `b - a ∈ zmultiples p`.
+
+In case of a monoid, the definition is a bit more complicated,
+and it is given with the use case of natural numbers in mind.
 
 ## Main definitions
 
@@ -27,10 +31,8 @@ This file defines equality modulo an element in a commutative group.
 
 ## TODO
 
-Delete `Int.ModEq` in favour of `AddCommGroup.ModEq`. Generalise `SModEq` to `AddSubgroup` and
-redefine `AddCommGroup.ModEq` using it. Once this is done, we can rename `AddCommGroup.ModEq`
-to `AddSubgroup.ModEq` and multiplicativise it. Longer term, we could generalise to submonoids and
-also unify with `Nat.ModEq`.
+- Delete `Nat.ModEq` and `Int.ModEq` in favour of `AddCommGroup.ModEq`.
+- Relate to `SModEq`.
 -/
 
 public section
@@ -44,6 +46,10 @@ section AddCommMonoid
 variable {M : Type*} [AddCommMonoid M] {a b c d p : M}
 
 /-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
+
+If `a`, `b` are elements of an additive group,
+then `a ≡ b [PMOD p]` iff `m • p = b - a` for some `m : ℤ`, see `modEq_iff_zsmul` below.
+For additive commutative monoid, the definition is given by `modEq_iff_nsmul`.
 
 Equivalently (as shown in `Algebra.Order.ToIntervalMod`), `b` does not lie in the open interval
 `(a, a + p)` modulo `p`, or `toIcoMod hp a` disagrees with `toIocMod hp a` at `b`, or
