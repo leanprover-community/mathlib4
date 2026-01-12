@@ -49,48 +49,32 @@ lemma isEpi_iff_forall_one_tmul_eq :
   obtain ⟨b, rfl⟩ := h' y
   aesop
 
+-- TODO Generalise to any localization
+instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
+    Algebra.IsEpi R A := by
+  refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun x ↦ ?_
+  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  set f := algebraMap R A with hf
+  replace hb : f b ≠ 0 := by aesop
+  calc 1 ⊗ₜ[R] (f a / f b)
+       = 1 ⊗ₜ[R] (a • (1 / f b)) := by rw [← smul_div_assoc, algebraMap_eq_smul_one a]
+     _ = f a ⊗ₜ[R] (1 / f b) := by rw [← smul_tmul, algebraMap_eq_smul_one a]
+     _ = (b • (f a / f b)) ⊗ₜ[R] (1 / f b) := by rw [smul_def, mul_div_cancel₀ _ hb]
+     _ = (f a / f b) ⊗ₜ[R] (b • (1 / f b)) := by rw [smul_tmul]
+     _ = (f a / f b) ⊗ₜ[R] 1 := by rw [smul_def, mul_div_cancel₀ _ hb]
+
 variable [Algebra.IsEpi R A]
 
 variable {A} in
-lemma one_tmul_eq_tmul_one (a : A) :
-    1 ⊗ₜ[R] a = a ⊗ₜ[R] 1 :=
-  (isEpi_iff_forall_one_tmul_eq R A).mp inferInstance a
-
--- TODO Generalise to any localization
-instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
-    Algebra.IsEpi R A where
-  injective_lift_mul := by
-    rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
-    intro x hx
-    set f := algebraMap R A with hf
-    suffices ∃ (a b : R) (hb : b ∈ nonZeroDivisors R), (f a / f b) ⊗ₜ 1 = x by aesop
-    clear hx
-    induction x using TensorProduct.induction_on with
-    | zero => exact ⟨0, 1, by simp⟩
-    | tmul u v =>
-      obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := R) u
-      obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := R) v
-      refine ⟨a * c, b * d, mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors hb hd, ?_⟩
-      replace hb : f b ≠ 0 := by aesop
-      replace hd : f d ≠ 0 := by aesop
-      simp only [map_mul, ← hf]
-      calc ((f a * f c) / (f b * f d)) ⊗ₜ[R] 1
-          = ((f a * f c) / (f b * f d)) ⊗ₜ[R] (f d / f d) := by rw [div_self hd]
-        _ = ((f a * f c) / (f b * f d)) ⊗ₜ[R] (d • (1 / f d)) := ?_
-        _ = (d • ((f a * f c) / (f b * f d))) ⊗ₜ[R] (1 / f d) := by rw [smul_tmul]
-        _ = ((f a * f c) / f b) ⊗ₜ[R] (1 / f d) := by rw [Algebra.smul_def]; grind
-        _ = (c • (f a / f b)) ⊗ₜ[R] (1 / f d) := by rw [Algebra.smul_def]; grind
-        _ = (f a / f b) ⊗ₜ[R] (c • (1 / f d)) := by rw [smul_tmul]
-        _ = (f a / f b) ⊗ₜ[R] (f c / f d) := by rw [Algebra.smul_def]; grind
-      rw [← smul_div_assoc, algebraMap_eq_smul_one d]
-    | add u v hu hv =>
-      obtain ⟨a₁, b₁, h₁, rfl⟩ := hu
-      obtain ⟨a₂, b₂, h₂, rfl⟩ := hv
-      refine ⟨a₁ * b₂ + a₂ * b₁, b₁ * b₂, mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors h₁ h₂, ?_⟩
-      simp only [map_add, map_mul, add_div, add_tmul]
-      replace hb₁ : f b₁ ≠ 0 := by aesop
-      replace hb₂ : f b₂ ≠ 0 := by aesop
-      grind
+lemma tmul_comm (a b : A) :
+    a ⊗ₜ[R] b = b ⊗ₜ[R] a :=
+  calc a ⊗ₜ[R] b = a • (1 ⊗ₜ[R] b) := by rw [tmul_eq_smul_one_tmul]
+              _ = a • (b ⊗ₜ[R] 1) := by rw [(isEpi_iff_forall_one_tmul_eq R A).mp inferInstance b]
+              _ = a • (b • (1 ⊗ₜ[R] 1)) := by rw [tmul_eq_smul_one_tmul]
+              _ = b • (a • (1 ⊗ₜ[R] 1)) := by rw [smul_comm]
+              _ = b • (a ⊗ₜ[R] 1) := by rw [← tmul_eq_smul_one_tmul]
+              _ = b • (1 ⊗ₜ[R] a) := by rw [(isEpi_iff_forall_one_tmul_eq R A).mp inferInstance a]
+              _ = b ⊗ₜ[R] a := by rw [← tmul_eq_smul_one_tmul]
 
 section Module
 
@@ -127,7 +111,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using congr_arg f (one_tmul_eq_tmul_one R a)
+  simpa [f] using congr_arg f (tmul_comm R 1 a)
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

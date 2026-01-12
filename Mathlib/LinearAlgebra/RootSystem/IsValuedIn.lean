@@ -363,11 +363,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
   have _i : IsAddTorsionFree M := .of_noZeroSMulDivisors L M
-  let ι := Free.ChooseBasisIndex ℤ (Q.rootSpan ℤ)
-  let b₁ : Basis ι ℤ (Q.rootSpan ℤ) := Free.chooseBasis ℤ (Q.rootSpan ℤ)
-  let b₂ : Basis ι ℚ (Q.rootSpan ℚ) :=
-    (b₁.baseChange ℚ).map <| Submodule.tensorSpanEquivSpan ℤ ℚ (range Q.root)
-  rw [← Q.finrank_rootSpanIn ℚ, finrank_eq_card_basis b₁, finrank_eq_card_basis b₂]
+  rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
 
 @[simp]
 lemma finrank_corootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
