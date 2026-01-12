@@ -130,10 +130,10 @@ indexed by `ℤ × ℤ` from a spectral object indexed by `EInt`. -/
 def mkDataE₂Cohomological :
     SpectralSequenceMkData EInt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
   deg pq := pq.1 + pq.2
-  i₀ r hr pq := EInt.mk (pq.2 - r + 2)
-  i₁ pq := EInt.mk pq.2
-  i₂ pq := EInt.mk (pq.2 + 1)
-  i₃ r hr pq := EInt.mk (pq.2 + r - 1)
+  i₀ r hr pq := (pq.2 - r + 2 :)
+  i₁ pq := pq.2
+  i₂ pq := (pq.2 + 1 :)
+  i₃ r hr pq := (pq.2 + r - 1 :)
   le₀₁ r hr pq := by simp; lia
   le₁₂ pq := by simp
   le₂₃ r hr pq := by simp; lia
@@ -153,10 +153,10 @@ def mkDataE₂CohomologicalNat :
     SpectralSequenceMkData EInt
     (fun r ↦ ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩) 2 where
   deg pq := pq.1 + pq.2
-  i₀ r hr pq := EInt.mk (pq.2 - r + 2)
-  i₁ pq := EInt.mk pq.2
-  i₂ pq := EInt.mk (pq.2 + 1)
-  i₃ r hr pq := EInt.mk (pq.2 + r - 1)
+  i₀ r hr pq := (pq.2 - r + 2 :)
+  i₁ pq := (pq.2 : ℤ)
+  i₂ pq := (pq.2 + 1 : ℤ)
+  i₃ r hr pq := (pq.2 + r - 1 : ℤ)
   le₀₁ r hr pq := by simp; lia
   le₁₂ pq := by simp
   le₂₃ r hr pq := by simp; lia
@@ -238,10 +238,10 @@ def mkDataE₂HomologicalNat :
     SpectralSequenceMkData EInt
     (fun r ↦ ComplexShape.spectralSequenceNat ⟨-r, r - 1⟩) 2 where
   deg pq := - pq.1 - pq.2
-  i₀ r hr pq := EInt.mk (-pq.2 - r + 2)
-  i₁ pq := EInt.mk (-pq.2)
-  i₂ pq := EInt.mk (-pq.2 + 1)
-  i₃ r hr pq := EInt.mk (-pq.2 + r - 1)
+  i₀ r hr pq := (-pq.2 - r + 2 :)
+  i₁ pq := (-pq.2 : ℤ)
+  i₂ pq := (-pq.2 + 1 : ℤ)
+  i₃ r hr pq := (-pq.2 + r - 1 :)
   le₀₁ r hr pq := by simp; lia
   le₁₂ pq := by simp
   le₂₃ r hr pq := by simp; lia
@@ -369,18 +369,18 @@ variable (Y : SpectralObject C EInt)
 /-- The conditions on a spectral object indexed by `EInt` which allow
 to obtain a (convergent) first quadrant `E₂` cohomological spectral sequence. -/
 class IsFirstQuadrant : Prop where
-  isZero₁ (i j : EInt) (hij : i ≤ j) (hj : j ≤ EInt.mk 0) (n : ℤ) :
+  isZero₁ (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : EInt.mk n < i) :
+  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
 
 variable [Y.IsFirstQuadrant]
 
-lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ EInt.mk 0) (n : ℤ) :
+lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsFirstQuadrant.isZero₁ i j hij  hj n
 
-lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : EInt.mk n < i) :
+lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsFirstQuadrant.isZero₂ i j hij n hi
 
@@ -416,18 +416,18 @@ variable (Y : SpectralObject C EInt)
 to obtain a (convergent) third quadrant `E₂` cohomological spectral sequence,
 or a (convergent) first quadrant `E₂` *homological* spectral sequence -/
 class IsThirdQuadrant where
-  isZero₁ (i j : EInt) (hij : i ≤ j) (hi : EInt.mk 0 < i) (n : ℤ) :
+  isZero₁ (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
-  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ EInt.mk n) :
+  isZero₂ (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ n) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij)))
 
 variable [Y.IsThirdQuadrant]
 
-lemma isZero₁_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (hi : EInt.mk 0 < i) (n : ℤ) :
+lemma isZero₁_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (hi : (0 : ℤ) < i) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsThirdQuadrant.isZero₁ i j hij hi n
 
-lemma isZero₂_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ EInt.mk n) :
+lemma isZero₂_of_isThirdQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hj : j ≤ n) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
   IsThirdQuadrant.isZero₂ i j hij n hj
 
