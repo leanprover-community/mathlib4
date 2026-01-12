@@ -78,7 +78,7 @@ in the type, or not fire on *every* instance in these declarations. -/
 theorem fooUsing [DecidableEq (Nat → Nat)] : Uses (DecidableEq (Nat → Nat)) := trivial
 
 theorem fooUsing₁ [DecidableEq (Nat → Nat)] : Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 -- Should fire on parameter #1 but not parameter #2
 /--
@@ -93,11 +93,41 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 #guard_msgs in
 theorem fooUsing₂ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
     Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 -- Note `optParam` test
 theorem fooUsing₃ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)]
     (_ : Uses (DecidablePred Nonempty) := trivial) : Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 end used
+
+section setOptionIn
+
+/-! Test workaround for lean4#11313 -/
+
+set_option linter.unusedDecidableInType false in
+theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
+    Uses (DecidableEq (Nat → Nat)) → True :=
+  fun _ => trivial
+
+set_option linter.unusedDecidableInType false
+
+/--
+warning: `fooUsing₂''` has the hypothesis:
+  • [DecidablePred Nonempty] (#1)
+which is not used in the remainder of the type.
+
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
+-/
+#guard_msgs in
+set_option linter.unusedDecidableInType true in
+theorem fooUsing₂'' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
+    Uses (DecidableEq (Nat → Nat)) → True :=
+  fun _ => trivial
+
+end setOptionIn
+
+end decidable

@@ -75,7 +75,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 
-theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [IsIrrefl ι r] {x y : Π₀ i, α i} :
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [Std.Irrefl r] {x y : Π₀ i, α i} :
     DFinsupp.Lex r (fun _ ↦ (· < ·)) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
@@ -130,6 +130,7 @@ section LinearOrder
 
 variable [∀ i, LinearOrder (α i)]
 
+set_option backward.privateInPublic true in
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/
 private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) → Sort*}
@@ -150,6 +151,8 @@ instance Lex.isTotal_le : IsTotal (Lex (Π₀ i, α i)) (· ≤ ·) where
 instance Colex.isTotal_le : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
   Lex.isTotal_le (ι := ιᵒᵈ)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
@@ -160,6 +163,8 @@ instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
 instance Colex.decidableLE : DecidableLE (Colex (Π₀ i, α i)) :=
   Lex.decidableLE (ι := ιᵒᵈ)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The less-than relation for the lexicographic ordering is decidable. -/
 instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm

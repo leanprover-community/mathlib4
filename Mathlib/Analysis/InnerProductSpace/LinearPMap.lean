@@ -263,16 +263,17 @@ Note that the adjoint is taken with respect to the L^2 inner product on `E × F`
 as `WithLp 2 (E × F)`. -/
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
-  (g.map <| (LinearEquiv.skewSwap 𝕜 F E).symm.trans
-    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
+  (g.map ((LinearEquiv.skewSwap 𝕜 F E).symm.trans
+    (WithLp.linearEquiv 2 𝕜 (F × E)).symm).toLinearMap).orthogonal.map
+      (WithLp.linearEquiv 2 𝕜 (F × E) : WithLp 2 (F × E) →ₗ[𝕜] F × E)
 
 @[simp]
 theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
-  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.trans_apply,
-    LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists, prod_inner_apply, ofLp_fst,
-    ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
+  simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.coe_coe,
+    LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
+    prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
@@ -332,7 +333,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.image_eq_preimage_symm]
+  rw [LinearEquiv.coe_coe, LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

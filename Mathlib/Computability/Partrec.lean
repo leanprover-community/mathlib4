@@ -42,9 +42,11 @@ section Rfind
 
 variable (p : ℕ →. Bool)
 
+set_option backward.privateInPublic true in
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, false ∈ p k
 
+set_option backward.privateInPublic true in
 private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFounded (lbp p) :=
   ⟨by
     let ⟨n, pn⟩ := H
@@ -56,6 +58,8 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Find the smallest `n` satisfying `p n`, where all `p k` for `k < n` are defined as false.
 Returns a subtype. -/
 def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=

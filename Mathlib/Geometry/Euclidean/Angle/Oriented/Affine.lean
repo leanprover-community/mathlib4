@@ -46,7 +46,7 @@ def oangle (p₁ p₂ p₃ : P) : Real.Angle :=
 
 @[inherit_doc] scoped notation "∡" => EuclideanGeometry.oangle
 
-/-- Oriented angles are continuous when neither end point equals the middle point. -/
+/-- Oriented angles are continuous when neither endpoint equals the middle point. -/
 theorem continuousAt_oangle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∡ y.1 y.2.1 y.2.2) x := by
   unfold oangle
@@ -214,7 +214,7 @@ theorem oangle_sign_eq_zero_iff_collinear {p₁ p₂ p₃ : P} :
 
 /-- An oriented angle is not zero and `π` if and only if the three points are not collinear. -/
 theorem oangle_ne_zero_and_ne_pi_iff_not_collinear {p₁ p₂ p₃ : P} :
-  ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
+    ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
   rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent, affineIndependent_iff_not_collinear_set]
 
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely
@@ -770,6 +770,24 @@ fourth point between the second and third or first and third points have the sam
 theorem _root_.Sbtw.oangle_sign_eq_right {p₁ p₂ p₃ : P} (p₄ : P) (h : Sbtw ℝ p₁ p₂ p₃) :
     (∡ p₂ p₄ p₃).sign = (∡ p₁ p₄ p₃).sign :=
   h.wbtw.oangle_sign_eq_of_ne_right _ h.ne_right
+
+/-- Given two lines intersecting at a common point lying strictly between the defining points on
+each line. Fixing one point from each line as the endpoints, choosing either remaining point as the
+vertex yields oriented angles with the same sign. -/
+theorem _root_.Sbtw.oangle_sign_eq_of_sbtw {p p₁ p₂ p₃ p₄ : P} (hp₁₃ : Sbtw ℝ p₁ p p₃)
+    (hp₂₄ : Sbtw ℝ p₂ p p₄) :
+    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
+  rw [← Sbtw.oangle_eq_right hp₂₄.symm, Sbtw.oangle_sign_eq _ hp₁₃, ← oangle_rotate_sign,
+    Sbtw.oangle_sign_eq _ hp₂₄.symm, Sbtw.oangle_eq_left hp₁₃.symm]
+
+/-- Given two lines sharing a common point lying strictly outside the segments determined by the
+defining points. Fixing one point from each line as the endpoints, choosing either remaining point
+as the vertex yields oriented angles with the same sign. -/
+theorem _root_.Sbtw.oangle_sign_eq_of_sbtw_left {p p₁ p₂ p₃ p₄ : P} (hp₁₃ : Sbtw ℝ p p₁ p₃)
+    (hp₂₄ : Sbtw ℝ p p₂ p₄) :
+    (∡ p₁ p₄ p₂).sign = (∡ p₁ p₃ p₂).sign := by
+  rw [Sbtw.oangle_eq_right hp₂₄.symm, Sbtw.oangle_sign_eq_right _ hp₁₃.symm, oangle_rotate_sign,
+    ← Sbtw.oangle_sign_eq_left p₃ hp₂₄, Sbtw.oangle_eq_left hp₁₃.symm]
 
 /-- Given two points in an affine subspace, the angles between those two points at two other
 points on the same side of that subspace have the same sign. -/

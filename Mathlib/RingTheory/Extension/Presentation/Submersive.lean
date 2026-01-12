@@ -177,6 +177,33 @@ end
 
 section Constructions
 
+/-- Transport a pre-submersive presentation along an algebra isomorphism. -/
+@[simps toPresentation map]
+def ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) :
+    PreSubmersivePresentation R T ι σ where
+  __ := P.toPresentation.ofAlgEquiv e
+  map := P.map
+  map_inj := P.map_inj
+
+@[simp]
+lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+    [Algebra R T] (e : S ≃ₐ[R] T) [Fintype σ] [DecidableEq σ] :
+    (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
+  rfl
+
+@[simp]
+lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+    [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
+    (P.ofAlgEquiv e).jacobian = e P.jacobian := by
+  classical
+  cases nonempty_fintype σ
+  rw [jacobian_eq_jacobiMatrix_det, jacobian_eq_jacobiMatrix_det]
+  simp only [ofAlgEquiv_toPresentation, Presentation.ofAlgEquiv_toGenerators,
+    jacobiMatrix_ofAlgEquiv, Generators.algebraMap_apply, Generators.ofAlgEquiv_val,
+    ← AlgHom.coe_coe e, MvPolynomial.comp_aeval_apply]
+  simp [Function.comp_def]
+
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
 presentation with no relations. -/
 noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
@@ -452,6 +479,7 @@ def naive {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injectiv
   map := a
   map_inj := ha
 
+set_option backward.privateInPublic true in
 @[simp] lemma jacobiMatrix_naive [Fintype ι] [DecidableEq ι] (i j : ι) :
     (naive a ha s hs).jacobiMatrix i j = (v j).pderiv (a i) :=
   jacobiMatrix_apply _ _ _
@@ -477,6 +505,15 @@ namespace SubmersivePresentation
 open PreSubmersivePresentation
 
 section Constructions
+
+variable {R S ι σ} in
+/-- Transport a submersive presentation along an algebra isomorphism. -/
+@[simps toPreSubmersivePresentation]
+def ofAlgEquiv (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+    (e : S ≃ₐ[R] T) :
+    SubmersivePresentation R T ι σ where
+  __ := P.toPreSubmersivePresentation.ofAlgEquiv e
+  jacobian_isUnit := by simp [P.jacobian_isUnit]
 
 variable {R S} in
 /-- If `algebraMap R S` is bijective, the empty generators are a submersive

@@ -76,9 +76,6 @@ lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
   · intro i hi
     simp [mapf, PowerSeries.coeff_X_pow_mul', hi]
 
-@[deprecated (since := "2025-05-19")]
-alias degree_eq_order_map := degree_eq_coe_lift_order_map
-
 lemma coe_natDegree_eq_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :
     g.natDegree = (f.map (Ideal.Quotient.mk I)).order := by

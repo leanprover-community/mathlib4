@@ -623,9 +623,6 @@ theorem mem_starClosure (S : NonUnitalSubalgebra R A) {x : A} :
 theorem starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
     S.starClosure.toNonUnitalSubalgebra = S ⊔ star S := rfl
 
-@[deprecated (since := "2025-06-17")] alias
-  starClosure_toNonunitalSubalgebra := starClosure_toNonUnitalSubalgebra
-
 theorem starClosure_le {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalStarSubalgebra R A}
     (h : S₁ ≤ S₂.toNonUnitalSubalgebra) : S₁.starClosure ≤ S₂ :=
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_le_iff.1 <|
@@ -688,6 +685,7 @@ theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   NonUnitalAlgebra.subset_adjoin R <| Set.mem_union_left _ (Set.mem_singleton x)
 
@@ -1057,7 +1055,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
-        exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl)  _ (by simp)
+        exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
       map_mul' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero,

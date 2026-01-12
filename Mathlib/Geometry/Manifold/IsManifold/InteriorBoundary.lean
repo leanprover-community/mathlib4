@@ -12,7 +12,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 Define the interior and boundary of a manifold.
 
 ## Main definitions
-- **IsInteriorPoint x**: `x ∈ M` is an interior point if, for `φ` being the preferred chart at `x`,
+- **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
 - **interior I M** is the **interior** of `M`, the set of its interior points.
