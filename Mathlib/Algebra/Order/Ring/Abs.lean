@@ -276,6 +276,5 @@ lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 :=
   rintro rfl
   exact absurd (hn.of_dvd_nat hm) (by decide)
 
-/-- If `a` divides `b` and `b` is non-zero, then `a ≤ |b|` -/
 lemma le_abs_of_dvd {a b : ℤ} (h₁ : b ≠ 0) (h₂ : a ∣ b) : a ≤ |b| := by
   simp_all [Int.le_of_dvd]
