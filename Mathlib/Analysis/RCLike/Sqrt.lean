@@ -41,7 +41,7 @@ theorem RCLike.re_sqrt (a : 𝕜) : re (sqrt a) = √((‖a‖ + re a) / 2) := b
   split_ifs with h
   · convert Complex.cpow_inv_two_re (complexRingEquiv h a)
     · simp
-    · simpa [eq_comm] using norm_complexRingEquiv h a
+    · simpa [eq_comm] using norm_to_complex h a
     simp
   rw [← show re a = a by grind [I_eq_zero_or_im_I_eq_one, re_add_im]]
   by_cases! ha' : 0 ≤ re a
@@ -58,15 +58,13 @@ theorem RCLike.sqrt_def (a : 𝕜) :
       ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one, sub_self, add_zero, ha.not_gt,
       ↓reduceIte, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, one_mul, add_right_inj,
       mul_eq_mul_right_iff]
-    rw [← complexRingEquiv_apply h, Complex.cpow_inv_two_im_eq_sqrt (by simpa),
-      norm_complexRingEquiv h]
-    simp
+    rw [Complex.cpow_inv_two_im_eq_sqrt (by simpa)]
+    simp [h]
   simp only [ha, ↓reduceIte, sqrt, h, ↓reduceDIte, complexRingEquiv_apply,
     complexRingEquiv_symm_apply, map_add, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one,
     sub_self, add_zero, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, neg_mul, add_right_inj]
-  rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa), ← complexRingEquiv_apply h,
-    norm_complexRingEquiv h]
-  simp
+  rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa)]
+  simp [h]
 
 theorem Complex.re_sqrt_ofReal (a : ℝ) :
     (sqrt (a : ℂ)).re = √a := by
