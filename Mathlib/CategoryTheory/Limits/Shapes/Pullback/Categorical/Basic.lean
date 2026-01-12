@@ -232,6 +232,7 @@ structure Hom (x y : CatCommSqOver F G X) where
 
 attribute [reassoc (attr := simp)] Hom.w
 
+@[simps! id_fst_app id_snd_app comp_fst_app comp_snd_app]
 instance : Category (CatCommSqOver F G X) where
   Hom x y := CatCommSqOver.Hom X x y
   id x :=
@@ -243,26 +244,8 @@ instance : Category (CatCommSqOver F G X) where
 
 @[ext]
 lemma hom_ext {S S' : CatCommSqOver F G X} {f g : S ⟶ S'}
-    (h₁ : f.fst = g.fst) (h₂ : f.snd = g.snd) : f = g := by
-  cases f
-  cases g
-  grind
-
-@[simp]
-lemma id_fst_app (S : CatCommSqOver F G X) (x : X) : (𝟙 S : S ⟶ S).fst.app x = 𝟙 _ := rfl
-
-@[simp]
-lemma id_snd_app (S : CatCommSqOver F G X) (x : X) : (𝟙 S : S ⟶ S).snd.app x = 𝟙 _ := rfl
-
-@[simp, reassoc]
-lemma comp_fst_app {S S' S'' : CatCommSqOver F G X} (f : S ⟶ S') (g : S' ⟶ S'') (x : X) :
-    (f ≫ g).fst.app x = f.fst.app x ≫ g.fst.app x :=
-  rfl
-
-@[simp, reassoc]
-lemma comp_snd_app {S S' S'' : CatCommSqOver F G X} (f : S ⟶ S') (g : S' ⟶ S'') (x : X) :
-    (f ≫ g).snd.app x = f.snd.app x ≫ g.snd.app x :=
-  rfl
+    (h₁ : f.fst = g.fst) (h₂ : f.snd = g.snd) : f = g :=
+  Hom.ext h₁ h₂
 
 /-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps]
