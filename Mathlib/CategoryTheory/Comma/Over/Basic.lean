@@ -491,8 +491,9 @@ Restrict a cone to the diagram over `j`. This preserves being limiting if the fo
 `Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
 -/
 @[simps]
-def Limits.Cone.overPost {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D)
-    (j : J) : Cone (Over.post (X := j) D) where
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
   pt := Over.mk (c.π.app j)
   π.app k := Over.homMk (c.π.app k.left)
 
