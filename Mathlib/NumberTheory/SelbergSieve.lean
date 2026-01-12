@@ -274,7 +274,7 @@ variable {s : BoundingSieve}
 
 /-- These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
-$$S = \sum_{l|P, l≤\sqrt{y}} g(l)$$ -/
+$$S = \sum_{l \mid P, l \le \sqrt{y}} g(l)$$ -/
 def selbergTerms : ArithmeticFunction ℝ :=
   s.nu.pmul (.prodPrimeFactors fun p ↦  (1 - s.nu p)⁻¹)
 
