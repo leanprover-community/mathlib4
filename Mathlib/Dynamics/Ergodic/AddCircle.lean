@@ -30,7 +30,7 @@ This file contains proofs of ergodicity for maps of the additive circle.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function MeasureTheory MeasureTheory.Measure Filter Metric

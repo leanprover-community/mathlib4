@@ -174,8 +174,6 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
 theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
 
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
-
 @[simp]
 theorem mem_bot : a ∈ (⊥ : UpperSet α) :=
   trivial
@@ -311,8 +309,6 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
 @[simp]
 theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup_iff : a ∈ s ⊔ t ↔ a ∈ s ∨ a ∈ t :=

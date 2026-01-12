@@ -26,7 +26,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Implementation notes
 
-This file is split from `Mathlib/Algebra/Category/GrpCat/Injective.lean` to prevent import loops.
+This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
 -/
 
 @[expose] public section
