@@ -6,6 +6,7 @@ Authors: Simon Hudon, Yaël Dillies
 module
 
 public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Tactic.Bound.Attribute
@@ -271,6 +272,20 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
       · rw [log_of_left_le_one hb, Nat.zero_div, log_of_left_le_one]
         rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
 
+/--
+`log b n` is equal to `n.findGreatest (fun k ↦ b ^ k ≤ n)` for bases at least two.
+-/
+lemma log_eq_findGreatest {b n : ℕ} :
+    log b n = if 1 < b then n.findGreatest (b ^ · ≤ n) else 0 := by
+  rcases b with (_ | _ | b)
+  · simp
+  · simp
+  rw [if_pos (by omega), findGreatest_eq_iff.mpr]
+  and_intros
+  · grw [log_le_self]
+  · exact fun _ ↦ pow_log_le_self _ (by aesop)
+  · exact fun k hk₁ _ ↦ not_le_of_gt (lt_pow_of_log_lt (by omega) hk₁)
+
 /-! ### Ceil logarithm -/
 
 
@@ -421,6 +436,21 @@ theorem clog_pow_left (b k n : ℕ) : clog (b ^ k) n = (clog b n + (k - 1)) / k 
     · suffices (k - 1) / k = 0 by grind [clog_of_left_le_one, Nat.pow_le_one_iff]
       apply Nat.div_eq_of_lt
       grind
+
+theorem clog_eq_log_pred {b n : ℕ} : clog b n = if 1 < b ∧ 1 < n then log b (n - 1) + 1 else 0 := by
+  by_cases hb : b ≤ 1
+  · cases hb.eq_or_lt <;> simp_all
+  by_cases hn : n ≤ 1
+  · cases hn.eq_or_lt <;> simp_all
+  push_neg at hb hn
+  simp only [hb, hn]
+  apply le_antisymm
+  · rw [clog_le_iff_le_pow hb]
+    exact le_of_pred_lt (lt_pow_succ_log_self hb _)
+  · apply succ_le_of_lt
+    rw [lt_clog_iff_pow_lt hb]
+    exact lt_of_le_of_lt (pow_log_le_self _ (sub_ne_zero_of_lt hn))
+      (pred_lt (by grind))
 
 /-! ### Computating the logarithm efficiently -/
 section computation
