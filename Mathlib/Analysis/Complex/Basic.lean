@@ -387,6 +387,10 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
 
+@[simp] theorem _root_.RCLike.norm_complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
+    (h : RCLike.im (RCLike.I : 𝕜) = 1) (a : 𝕜) :
+    ‖RCLike.complexRingEquiv h a‖ = ‖a‖ := (RCLike.complexLinearIsometryEquiv h).norm_map a
+
 theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
     Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
