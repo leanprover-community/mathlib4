@@ -14,11 +14,20 @@ public import Mathlib.NumberTheory.MulChar.Lemmas
 Let `M` be a finite commutative monoid and `R` a ring that has enough `n`th roots of unity,
 where `n` is the exponent of `M`. Then the main results of this file are as follows.
 
+## Main results
+
 * `MulChar.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: multiplicative characters
   `M → R` separate elements of `Mˣ`.
 
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
   (noncanonically) isomorphic to `Mˣ`.
+
+* `MulChar.mulCharEquiv`: the `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M`
+  and `Mˣ` where `R` is a domain with enough roots of unity.
+
+* `MulChar.subgroupOrderIsoSubgroupMulChar`: the order reversing bijection that sends a
+  subgroup of `MulChar M R` to its dual subgroup in `MulChar (MulChar M R) R)`.
+
 -/
 
 @[expose] public section
