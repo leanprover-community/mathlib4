@@ -81,8 +81,8 @@ lemma restrictScalars_le {s t : Submodule R M} :
 
 variable {R M} in
 lemma restrictScalars_lt {s t : Submodule R M} :
-    s.restrictScalars S < t.restrictScalars S ↔ s < t := by
-  simp [SetLike.lt_iff_le_and_exists, restrictScalars_le]
+    s.restrictScalars S < t.restrictScalars S ↔ s < t :=
+  Iff.rfl
 
 /-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
