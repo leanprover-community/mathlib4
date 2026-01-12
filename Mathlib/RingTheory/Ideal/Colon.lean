@@ -117,7 +117,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {N : Submodule R M} (S : Set M)
+variable {N : Submodule R M} {S : Set M}
 
 theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
@@ -163,14 +163,17 @@ theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
     · intro a x hx hrx
       simpa [smul_comm r a x] using N.smul_mem a hrx
 
+@[simp]
+theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S :=
+  Submodule.colon_span
+
 theorem mem_colon_span_singleton {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
-  simp[colon_span (N := N) (S := {x})]
+  simp
 
-@[simp]
 theorem _root_.Ideal.mem_colon_span_singleton {I : Ideal R} {x r : R} :
     r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
-  simp only [← Ideal.submodule_span_eq, Submodule.mem_colon_span_singleton, smul_eq_mul]
+  simp
 
 end CommSemiring
 
