@@ -336,13 +336,6 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
   ]
   depth := some 2
 
-def forceSpaceAfter1 : ExcludedSyntaxNodeKind where
-  kinds := #[
-    `atom.«have», -- `have (a)` in term mode.
-    `atom.«let», -- `let (a)` in term mode.
-  ]
-  depth := some 1
-
 def forceSpaceAfter3 : ExcludedSyntaxNodeKind where
   kinds := #[
     `Bundle.termπ__,
@@ -432,7 +425,7 @@ def byTens (s : String) (n : Nat := 9) : String :=
 def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
     Option (Lean.Syntax.Range × MessageData × String) := Id.run do
   let origWs := orig.takeWhile (·.isWhitespace)
-  if forceSpaceAfter.contains ks || forceSpaceAfter1.contains ks || forceSpaceAfter3.contains ks then
+  if forceSpaceAfter.contains ks || forceSpaceAfter3.contains ks then
     let space := if (pp.take 1).trim.isEmpty then "" else " "
     if origWs.isEmpty then
       return some (⟨origWs.startPos, origWs.next origWs.startPos⟩, "add space in the source", space)

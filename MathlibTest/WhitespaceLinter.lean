@@ -965,6 +965,37 @@ where
   /-- A separate doc-string -/
   aux : Unit := ()
 
+/--
+warning: unused variable `x`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+---
+warning: add space in the source
+
+This part of the code
+  'let(x)'
+should be written as
+  'let (x)'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+---
+warning: add space in the source
+
+This part of the code
+  'have(x)'
+should be written as
+  'have (x)'
+
+
+Note: This linter can be disabled with `set_option linter.style.whitespace false`
+-/
+#guard_msgs in
+example : True :=
+  let(x) : True := trivial
+  have(x) : True := trivial
+  x
+
 -- For structure fields, all field definitions are linted.
 /--
 warning: remove space in the source
