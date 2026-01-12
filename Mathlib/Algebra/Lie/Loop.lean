@@ -6,14 +6,10 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
-public import Mathlib.Algebra.Lie.BaseChange
---public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.InvariantForm
 --public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Lie.Cochain
---public import Mathlib.Algebra.Polynomial.Laurent
 public import Mathlib.Data.Set.MulAntidiagonal
-public import Mathlib.LinearAlgebra.BilinearForm.Properties
---public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -114,6 +110,16 @@ lemma toFinsupp_comp_monomial (a : A) : toFinsupp R A L ∘ (monomial R L a) = F
   refine Eq.symm ?_
   refine (LinearEquiv.symm_comp_eq (R₁ := R) (R₂ := R) (monomial R L a) (Finsupp.single a)).mp ?_
   simp
+
+lemma toFinsupp_monomial_apply (a : A) (x : L) :
+    toFinsupp R A L (monomial R L a x) = Finsupp.single a x:= by
+  rw [← Function.comp_apply (f := toFinsupp R A L), ← toFinsupp_comp_monomial R]
+
+@[simp]
+lemma toFinsupp_single_tmul (c : A) (z : L) :
+    ((toFinsupp R A L) (AddMonoidAlgebra.single c 1 ⊗ₜ[R] z)) = Finsupp.single c z := by
+  ext a
+  rw [← addEquiv_monomial, toFinsupp_monomial_apply]
 
 lemma monomial_injective (a : A) : Function.Injective (monomial R L a) := by
   rw [← toFinsupp_symm_single]
@@ -465,20 +471,109 @@ def twoCochainOfBilinear [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
       rw [eq_neg_iff_add_eq_zero, ← h, neg_add_cancel, zerosmul]
     simpa [neg_eq_self, finsum_neg_distrib, funext this] using finsum_comp_equiv (.neg A) (f := φ)
 
--- need `public import Mathlib.Algebra.Lie.InvariantForm`
-/-
+@[simp]
+lemma twoCochainOfBilinear_apply_apply [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
+    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
+    (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) (x y : LoopAlgebra R A L) :
+    twoCochainOfBilinear R A L Φ hΦ h x y =
+      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
+        ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
+  rfl
+
+/-- A 2-cochain on a loop algebra given by an invariant bilinear form. The alternating condition
+follows from the fact that Res f df = 0 -/
+def twoCochainOfBilinear' [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+    (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ) :
+    LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
+      (TrivialLieModule R (LoopAlgebra R A L) R) where
+  val := (((residuePairingFinsupp R A L Φ).compr₂
+    ((TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm.toLinearMap)).compl₂
+    (toFinsupp R A L).toLinearMap).comp (toFinsupp R A L).toLinearMap
+  property := by
+    simp only [LieModule.Cohomology.mem_twoCochain_iff]
+    intro f
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearMap.compl₂_apply, LinearMap.compr₂_apply, residuePairingFinsupp_apply_apply,
+      EmbeddingLike.map_eq_zero_iff]
+    set φ := fun n ↦ n • (Φ (((toFinsupp R A L) f) (-n))) (((toFinsupp R A L) f) n) with hφ
+    have : Function.Odd φ := by
+      intro n
+      simp [hφ, neg_neg, hΦ.eq (toFinsupp R A L f n) (toFinsupp R A L f (-n))]
+    simpa [neg_eq_self, finsum_neg_distrib, funext this] using finsum_comp_equiv (.neg A) (f := φ)
+
+@[simp]
+lemma twoCochainOfBilinear'_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+    (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
+    (x y : LoopAlgebra R A L) :
+    twoCochainOfBilinear' R A L Φ hΦ x y =
+      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
+        ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
+  rfl
+
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
-def twoCocycle_of_Bilinear (Φ : LinearMap.BilinForm R L)
-    (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
-    LieModule.Cohomology.twoCocycle R (LoopAlgebra R L)
-      (TrivialLieModule R (LoopAlgebra R L) R) where
-  val := residuePairingLoop R L Φ
+def twoCocycle'_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+    (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) :
+    LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
+      (TrivialLieModule R (LoopAlgebra R A L) R) where
+  val := twoCochainOfBilinear' R A L Φ hΦs
+  property := by
+    refine (LieModule.Cohomology.mem_twoCocycle_iff R (LoopAlgebra R A L)
+            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear' R A L Φ hΦs)).mpr ?_
+    ext a x b y c z
+    simp only [LinearMap.coe_comp, Function.comp_apply, AddMonoidAlgebra.lsingle_apply,
+      TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
+      TensorProduct.curry_apply, LieModule.Cohomology.d₂₃_apply, twoCochainOfBilinear'_apply_apply,
+      toFinsupp_single_tmul, residuePairingFinsupp_apply_apply, trivial_lie_zero, sub_self,
+      add_zero, ExtendScalars.bracket_tmul, AddMonoidAlgebra.single_mul_single, mul_one, zero_sub,
+      LinearMap.zero_apply]
+    rw [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, EquivLike.apply_eq_iff_eq,
+      finsum_eq_single _ b (fun _ h ↦ by simp [h]), finsum_eq_single _ c (fun _ h ↦ by simp [h]),
+      finsum_eq_single _ a (fun _ h ↦ by simp [h])]
+    by_cases hz : a + b + c = 0
+    · rw [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind]
+      simp only [Finsupp.single_eq_same]
+      rw [hΦ, hΦs.eq z ⁅x, y⁆, hΦ y, ← lie_skew y x, hΦs.eq z, LinearMap.BilinForm.neg_left,
+        neg_neg, show b = -(a + c) by grind, neg_smul, smul_neg, neg_neg, add_smul, add_comm]
+    · simp [Finsupp.single_eq_of_ne (a := a + c) (a' := -b) (by grind),
+        Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
+        Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
-  property :=
+/-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
+def twoCocycle_of_Bilinear [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
+    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) :
+    LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
+      (TrivialLieModule R (LoopAlgebra R A L) R) where
+  val := twoCochainOfBilinear R A L Φ hΦs h
+  property := by
+    refine (LieModule.Cohomology.mem_twoCocycle_iff R (LoopAlgebra R A L)
+            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear R A L Φ hΦs h)).mpr ?_
+    ext a x b y c z
+    simp only [LinearMap.coe_comp, Function.comp_apply, AddMonoidAlgebra.lsingle_apply,
+      TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
+      TensorProduct.curry_apply, LieModule.Cohomology.d₂₃_apply, twoCochainOfBilinear_apply_apply,
+      toFinsupp_single_tmul, residuePairingFinsupp_apply_apply, trivial_lie_zero, sub_self,
+      add_zero, ExtendScalars.bracket_tmul, AddMonoidAlgebra.single_mul_single, mul_one, zero_sub,
+      LinearMap.zero_apply]
+    rw [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, EquivLike.apply_eq_iff_eq,
+      finsum_eq_single _ b (fun _ h ↦ by simp [h]), finsum_eq_single _ c (fun _ h ↦ by simp [h]),
+      finsum_eq_single _ a (fun _ h ↦ by simp [h])]
+    by_cases hz : a + b + c = 0
+    · have zerosmul (r : R) : (0 : A) • r = (0 : R) := by
+        have : (0 : A) • r = (0 : A) • r + (0 : A) • r := by rw [← h, zero_add (0 : A)]
+        rwa [right_eq_add] at this
+      have hneg (i : A) (r : R) : (-i) • r = -(i • r) := by
+        refine (neg_eq_of_add_eq_zero_right ?_).symm
+        rw [← h, add_neg_cancel, zerosmul]
+      rw [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind]
+      simp only [Finsupp.single_eq_same]
+      rw [hΦ, hΦs.eq z ⁅x, y⁆, hΦ y, ← lie_skew y x, hΦs.eq z, LinearMap.BilinForm.neg_left,
+        neg_neg, show b = -(a + c) by grind, hneg, smul_neg, neg_neg, h, add_comm]
+    · simp [Finsupp.single_eq_of_ne (a := a + c) (a' := -b) (by grind),
+        Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
+        Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
-    sorry
-
--/
 --⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
 
 -- show that an invariant bilinear form on `L` produces a 2-cocycle for `LoopAlgebra R L`.
