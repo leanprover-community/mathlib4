@@ -6,7 +6,7 @@ Authors: Yuval Filmus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 /-!
 # Inverse of the cosh function

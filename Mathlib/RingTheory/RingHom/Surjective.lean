@@ -23,7 +23,7 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace RingHom

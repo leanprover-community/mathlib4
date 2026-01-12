@@ -38,9 +38,6 @@ namespace Meta.NormNum
 
 variable {u : Level}
 
-/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
-def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
-
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance

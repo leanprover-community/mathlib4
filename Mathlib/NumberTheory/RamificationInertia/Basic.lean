@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Finiteness.Quotient
@@ -114,6 +115,10 @@ theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
   ramificationIdx_spec (by simp) (by simpa using h)
 
+theorem ramificationIdx_bot' (hp : p ≠ ⊥) (hf : Function.Injective f) :
+    ramificationIdx f p ⊥ = 0 :=
+  ramificationIdx_of_not_le <| le_bot_iff.not.mpr <| (map_eq_bot_iff_of_injective hf).not.mpr hp
+
 theorem ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
     (hnle : ¬map f p ≤ P ^ (e + 1)) : ramificationIdx f p P ≠ 0 := by
   rwa [ramificationIdx_spec hle hnle]
@@ -189,6 +194,15 @@ lemma ramificationIdx_eq_one_of_map_localization
   rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
   · exact hp this
   · exact IsLocalization.injective _ hp'
+
+theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
+    ramificationIdx f p (map f p) = 1 := by
+  refine ramificationIdx_spec (by simp) fun h ↦ ?_
+  have : map f p ^ 1 = (map f p) ^ 2 := by
+    rw [pow_one]
+    exact le_antisymm h <| pow_le_self two_ne_zero
+  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
+  simp_all
 
 namespace IsDedekindDomain
 
@@ -330,19 +344,22 @@ end DecEq
 
 section absNorm
 
+lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
+    [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
+    (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
+    absNorm P = absNorm p ^ (p.inertiaDeg P) := by
+  have : p.IsMaximal := hp.isMaximal hp_ne_bot
+  let _ : Field (S ⧸ p) := Quotient.field p
+  simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
+
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
-  have : (span {p}).IsMaximal :=
-    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
-  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
-  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
-  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
-    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
-  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+  simpa using absNorm_eq_pow_inertiaDeg_of_liesOver P (span {p})
+    (by rwa [span_singleton_prime hp.ne_zero]) (by simpa using hp.ne_zero)
 
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg P)`.

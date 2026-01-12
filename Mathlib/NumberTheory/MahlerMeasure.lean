@@ -26,7 +26,7 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
 - `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

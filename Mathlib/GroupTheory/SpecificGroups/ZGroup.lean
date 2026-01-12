@@ -142,8 +142,8 @@ section Commutator
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
-  refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
-  intro H hH
+  rw [commutator_def]
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h
   · rw [Subgroup.commutator_bot_left]
     infer_instance

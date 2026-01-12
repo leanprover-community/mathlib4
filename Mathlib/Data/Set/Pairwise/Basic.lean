@@ -91,7 +91,7 @@ theorem pairwise_empty (r : α → α → Prop) : (∅ : Set α).Pairwise r :=
 theorem pairwise_singleton (a : α) (r : α → α → Prop) : Set.Pairwise {a} r :=
   subsingleton_singleton.pairwise r
 
-theorem pairwise_iff_of_refl [IsRefl α r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
+theorem pairwise_iff_of_refl [Std.Refl r] : s.Pairwise r ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b :=
   forall₄_congr fun _ _ _ _ => or_iff_not_imp_left.symm.trans <| or_iff_right_of_imp of_eq
 
 alias ⟨Pairwise.of_refl, _⟩ := pairwise_iff_of_refl
@@ -102,7 +102,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
   · rcases hs with ⟨y, hy⟩
     refine fun H => ⟨f y, fun x hx => ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
-    · apply IsRefl.refl
+    · apply Std.Refl.refl
     · exact H hx hy hne
   · rintro ⟨z, hz⟩ x hx y hy _
     exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)

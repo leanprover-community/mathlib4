@@ -17,7 +17,7 @@ In this file we prove that if a function `f` is analytic on the ball of converge
 series, then the series converges to `f` on this ball.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
 

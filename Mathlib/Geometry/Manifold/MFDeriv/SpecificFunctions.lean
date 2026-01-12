@@ -20,7 +20,7 @@ In this file, we establish differentiability results for
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
