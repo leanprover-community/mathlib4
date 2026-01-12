@@ -142,6 +142,10 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
+instance {V : Type u} [DecidableEq V] (r : V → V → Prop)
+    [DecidableRel r] : DecidableRel (SimpleGraph.fromRel r).Adj :=
+  inferInstanceAs (DecidableRel fun a b ↦ a ≠ b ∧ (r a b ∨ r b a))
+
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
