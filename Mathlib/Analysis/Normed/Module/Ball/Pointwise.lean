@@ -53,9 +53,9 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
   simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
 
-theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
-    EMetric.infEdist (c • x) (c • s) = ‖c‖₊ • EMetric.infEdist x s := by
-  simp_rw [EMetric.infEdist]
+theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
+    infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
+  simp_rw [infEDist]
   have : Function.Surjective ((c • ·) : E → E) :=
     Function.RightInverse.surjective (smul_inv_smul₀ hc)
   trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
@@ -64,9 +64,11 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
     simp_rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_iInf_of_ne this ENNReal.coe_ne_top]
 
+@[deprecated (since := "2026-01-08")] alias infEdist_smul₀ := infEDist_smul₀
+
 theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
-  simp_rw [Metric.infDist, infEdist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
+  simp_rw [Metric.infDist, infEDist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
     smul_eq_mul]
 
 end DivisionRing
@@ -232,29 +234,32 @@ theorem disjoint_closedBall_closedBall_iff (hδ : 0 ≤ δ) (hε : 0 ≤ ε) :
 open EMetric ENNReal
 
 @[simp]
-theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
-    infEdist x (thickening δ s) = infEdist x s - ENNReal.ofReal δ := by
-  obtain hs | hs := lt_or_ge (infEdist x s) (ENNReal.ofReal δ)
-  · rw [infEdist_zero_of_mem, tsub_eq_zero_of_le hs.le]
+theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
+    infEDist x (thickening δ s) = infEDist x s - ENNReal.ofReal δ := by
+  obtain hs | hs := lt_or_ge (infEDist x s) (ENNReal.ofReal δ)
+  · rw [infEDist_zero_of_mem, tsub_eq_zero_of_le hs.le]
     exact hs
-  refine (tsub_le_iff_right.2 infEdist_le_infEdist_thickening_add).antisymm' ?_
+  refine (tsub_le_iff_right.2 infEDist_le_infEDist_thickening_add).antisymm' ?_
   refine le_sub_of_add_le_right ofReal_ne_top ?_
-  refine le_infEdist.2 fun z hz => le_of_forall_gt fun r h => ?_
+  refine le_infEDist.2 fun z hz => le_of_forall_gt fun r h => ?_
   cases r with
   | top =>
-    exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEdist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
+    exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEDist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
       ofReal_lt_top⟩
   | coe r =>
     have hr : 0 < ↑r - δ := by
       refine sub_pos_of_lt ?_
-      have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
+      have := hs.trans_lt ((infEDist_le_edist_of_mem hz).trans_lt h)
       rw [ofReal_eq_coe_nnreal hδ.le] at this
       exact mod_cast this
     rw [edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
     obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
     refine (ENNReal.add_lt_add_right ofReal_ne_top <|
-      infEdist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
+      infEDist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
     rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
+
+@[deprecated (since := "2026-01-08")]
+alias infEdist_thickening := infEDist_thickening
 
 @[simp]
 theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
@@ -270,7 +275,7 @@ theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
 theorem cthickening_thickening (hε : 0 ≤ ε) (hδ : 0 < δ) (s : Set E) :
     cthickening ε (thickening δ s) = cthickening (ε + δ) s :=
   (cthickening_thickening_subset hε _ _).antisymm fun x => by
-    simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ.le, infEdist_thickening hδ]
+    simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ.le, infEDist_thickening hδ]
     exact tsub_le_iff_right.2
 
 -- Note: `interior (cthickening δ s) ≠ thickening δ s` in general
@@ -280,11 +285,14 @@ theorem closure_thickening (hδ : 0 < δ) (s : Set E) :
   rw [← cthickening_zero, cthickening_thickening le_rfl hδ, zero_add]
 
 @[simp]
-theorem infEdist_cthickening (δ : ℝ) (s : Set E) (x : E) :
-    infEdist x (cthickening δ s) = infEdist x s - ENNReal.ofReal δ := by
+theorem infEDist_cthickening (δ : ℝ) (s : Set E) (x : E) :
+    infEDist x (cthickening δ s) = infEDist x s - ENNReal.ofReal δ := by
   obtain hδ | hδ := le_or_gt δ 0
-  · rw [cthickening_of_nonpos hδ, infEdist_closure, ofReal_of_nonpos hδ, tsub_zero]
-  · rw [← closure_thickening hδ, infEdist_closure, infEdist_thickening hδ]
+  · rw [cthickening_of_nonpos hδ, infEDist_closure, ofReal_of_nonpos hδ, tsub_zero]
+  · rw [← closure_thickening hδ, infEDist_closure, infEDist_thickening hδ]
+
+@[deprecated (since := "2026-01-08")]
+alias infEdist_cthickening := infEDist_cthickening
 
 @[simp]
 theorem thickening_cthickening (hε : 0 < ε) (hδ : 0 ≤ δ) (s : Set E) :
@@ -297,7 +305,7 @@ theorem thickening_cthickening (hε : 0 < ε) (hδ : 0 ≤ δ) (s : Set E) :
 theorem cthickening_cthickening (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Set E) :
     cthickening ε (cthickening δ s) = cthickening (ε + δ) s :=
   (cthickening_cthickening_subset hε hδ _).antisymm fun x => by
-    simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ, infEdist_cthickening]
+    simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ, infEDist_cthickening]
     exact tsub_le_iff_right.2
 
 @[simp]

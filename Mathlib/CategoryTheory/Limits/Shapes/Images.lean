@@ -50,7 +50,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 ## Future work
 * TODO: coimages, and abelian categories.
-* TODO: connect this with existing working in the group theory and ring theory libraries.
+* TODO: connect this with existing work in the group theory and ring theory libraries.
 
 -/
 

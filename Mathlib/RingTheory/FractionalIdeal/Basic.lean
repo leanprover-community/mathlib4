@@ -720,8 +720,8 @@ variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDiviso
 lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
     FG I.coeToSubmodule := by
   have := hR.noetherian I.num
-  rw [← fg_top] at this ⊢
-  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
+  rw [← Module.Finite.iff_fg] at this ⊢
+  exact .equiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩).symm
 
 end FG
 
