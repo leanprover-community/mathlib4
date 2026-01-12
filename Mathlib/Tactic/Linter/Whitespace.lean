@@ -333,7 +333,6 @@ def forceSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     ``termThrowError__, -- `throwError "message"`
     -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
-    ``Parser.Tactic.rcases, -- `rcases (a)`
     ``Parser.Tactic.replace, -- `replace (a)`
     ``Parser.Term.whereDecls, -- `where`
   ]

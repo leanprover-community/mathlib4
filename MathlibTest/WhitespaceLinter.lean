@@ -746,7 +746,6 @@ Note: This linter can be disabled with `set_option linter.style.whitespace false
 -/
 #guard_msgs in
 example (h : False) : False := by
-  -- The *linter* forces a space in `rcases(h)`, but the pretty-printer does not.
   rcases(h)
 
 structure X where
