@@ -37,7 +37,7 @@ This conveniently allows us to apply the measure to sets without proving that th
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
 See the documentation of `MeasureTheory.MeasureSpace` for ways to construct measures and proving
-that two measure are equal.
+that two measures are equal.
 
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.

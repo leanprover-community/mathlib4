@@ -12,7 +12,7 @@ public import Mathlib.NumberTheory.GaussSum
 # Gauss sums for Dirichlet characters
 -/
 
-@[expose] public section
+public section
 variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter

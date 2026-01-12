@@ -9,8 +9,9 @@ public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
-public meta import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
+public import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -85,7 +86,8 @@ explaining the need for them; another linter enforces this).
 The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
-individual commands, if they are truly necessary.
+individual commands, if they are truly necessary. The `linter.style.commandStart` option is
+deprecated and should be replaced by `linter.style.whitespace`.
 
 The `debug`, `pp`, `profiler` and `trace` are usually not necessary for production code,
 so you can simply remove them. (Some tests will intentionally use one of these options;
@@ -110,6 +112,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
           Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
           -- comment explaining why this is necessary\n\
           example : ... := ...\n```"
+        else if name == `linter.style.commandStart then
+          logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
+            use `linter.style.whitespace` instead."
 
 initialize addLinter setOptionLinter
 

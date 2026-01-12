@@ -48,8 +48,6 @@ def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
     choose t ht hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
 
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace := eventuallyMeasurableSpace
-
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
@@ -66,9 +64,6 @@ theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
 theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurable_le :=
-  le_eventuallyMeasurableSpace
-
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
   ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
 
@@ -84,9 +79,6 @@ section instances
 instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
   @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
-
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurableSingleton :=
-  eventuallyMeasurableSingleton
 
 end instances
 

@@ -22,15 +22,13 @@ in `C`, and we define a cofibrant resolution functor
 
 -/
 
-universe v u
-
 @[expose] public section
 
 open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
 
 namespace CofibrantObject
 
@@ -124,7 +122,7 @@ instance : (toπLocalizerMorphism C).IsLocalizedEquivalence := by
   apply (factorsThroughLocalization C).isLocalizedEquivalence
   apply MorphismProperty.eq_inverseImage_quotientFunctor
 
-instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : CofibrantObject.π C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     (toπ ⋙ L).IsLocalization (weakEquivalences _) := by
   change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)

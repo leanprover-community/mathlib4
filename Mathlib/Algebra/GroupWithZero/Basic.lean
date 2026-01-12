@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Conv
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element

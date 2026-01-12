@@ -16,7 +16,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 -/
 
-@[expose] public section
+public section
 
 open Set Topology Filter NNReal
 
