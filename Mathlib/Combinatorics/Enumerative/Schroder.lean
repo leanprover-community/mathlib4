@@ -8,12 +8,12 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Tactic.Linarith
 
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum.Abs
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.OfScientific
@@ -83,14 +83,14 @@ def smallSchroder : ℕ → ℕ
 @[simp] lemma smallSchroder_one : smallSchroder 1 = 1 := by
   simp only [smallSchroder, largeSchroder_one, ofNat_pos, Nat.div_self]
 
-lemma smallSchroder_eq_largeSchroder_div_two (hn : 0 < n) :
+lemma smallSchroder_eq_largeSchroder_div_two (hn : 0 ≠ n) :
     smallSchroder n = largeSchroder n / 2 := by
   rw [smallSchroder]
   intro x
   subst x
-  simp_all only [_root_.not_lt_zero]
+  simp_all only [ne_eq, not_true_eq_false]
 
-lemma two_mul_smallSchroder (hn : 0 < n) : 2 * smallSchroder n = largeSchroder n := by
+lemma two_mul_smallSchroder (hn : 0 ≠ n) : 2 * smallSchroder n = largeSchroder n := by
   rw [smallSchroder_eq_largeSchroder_div_two hn,
     Nat.mul_div_cancel_left' (even_largeSchroder (by omega)).two_dvd]
 
