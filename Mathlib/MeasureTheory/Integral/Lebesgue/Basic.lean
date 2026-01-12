@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.Algebra.Order.Pi
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -326,7 +327,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
       _ = _ := setLIntegral_const _ _
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
-    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    ext x
+    rw [mem_iUnion, mem_setOf_eq, ← pos_iff_ne_zero]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl

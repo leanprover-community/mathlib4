@@ -526,11 +526,11 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+  { isLindelof_univ := isCompact_univ.isLindelof }
 
 /-- A sigma-compact space `X` is Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof }
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -643,7 +643,7 @@ theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set
 theorem isLindelof_iff_lindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-12")]
 alias isLindelof_iff_LindelofSpace := isLindelof_iff_lindelofSpace
 
 lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_lindelofSpace.mpr ‹_›
@@ -684,13 +684,13 @@ instance Quot.lindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofS
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-12")]
 alias Quot.LindelofSpace := Quot.lindelofSpace
 
 instance Quotient.lindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.lindelofSpace
 
-@[deprecated (since := "2026-01-07")]
+@[deprecated (since := "2026-01-12")]
 alias Quotient.LindelofSpace := Quotient.lindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
@@ -725,15 +725,15 @@ theorem HereditarilyLindelofSpace.isLindelof [HereditarilyLindelofSpace X] (s : 
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
 
+@[deprecated (since := "2026-01-12")]
+alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
+
 theorem HereditarilyLindelofSpace.of_forall_isOpen (H : ∀ s : Set X, IsOpen s → IsLindelof s) :
     HereditarilyLindelofSpace X := by
   refine ⟨fun s _ ↦ isLindelof_of_countable_subcover fun U U_open hU ↦ ?_⟩
   obtain ⟨t, t_count, ht⟩ := H (⋃ i, U i) (isOpen_iUnion U_open)
     |>.elim_countable_subcover U U_open subset_rfl
   exact ⟨t, t_count, hU.trans ht⟩
-
-@[deprecated (since := "2026-01-07")]
-alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
 
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where

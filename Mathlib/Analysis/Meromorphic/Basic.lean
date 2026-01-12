@@ -5,7 +5,6 @@ Authors: David Loeffler, Stefan Kebekus
 -/
 module
 
-public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
@@ -551,7 +550,7 @@ The singular set of a meromorphic function is countable.
 theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [CompleteSpace E]
     (h : MeromorphicOn f U) :
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
-  apply (HereditarilyLindelof_LindelofSets _).countable_of_isDiscrete
+  apply (HereditarilyLindelofSpace.isLindelof _).countable_of_isDiscrete
     (isDiscrete_of_codiscreteWithin _)
   simpa using eventually_codiscreteWithin_analyticAt f h
 

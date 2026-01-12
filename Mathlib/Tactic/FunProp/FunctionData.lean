@@ -5,10 +5,11 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public meta import Qq
 
 public meta import Mathlib.Tactic.FunProp.Mor
-public meta import Mathlib.Tactic.FunProp.ToBatteries
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Std.Do
 
 /-!
 ## `funProp` data structure holding information about a function

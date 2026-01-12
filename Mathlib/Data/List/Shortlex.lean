@@ -6,8 +6,8 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Data.List.Lex
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.
@@ -64,7 +64,7 @@ theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   simp [shortlex_def, h]
 
-theorem shortlex_cons_iff [IsIrrefl α r] {a : α} {s t : List α} :
+theorem shortlex_cons_iff [Std.Irrefl r] {a : α} {s t : List α} :
     Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
   simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
 
