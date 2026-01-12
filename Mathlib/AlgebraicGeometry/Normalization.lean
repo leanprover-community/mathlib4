@@ -492,7 +492,7 @@ lemma inr_normalizationCoprodIso_hom_fromNormalization :
       (iV ≫ f).fromNormalization := by
   simp [Scheme.Hom.normalizationCoprodIso]
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma normalizationCoprodIso_inv_coprodDesc_fromNormalization :
     (f.normalizationCoprodIso e).inv ≫
       coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization =
