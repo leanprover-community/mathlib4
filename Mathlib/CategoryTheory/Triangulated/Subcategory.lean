@@ -50,52 +50,6 @@ namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject Pretriangulated Triangulated
 
-namespace Limits
-
-variable {C J₁ J₂ : Type _} [Category C]
-  (X : J₂ → C) (e : J₁ ≃ J₂) [HasProduct X]
-
-noncomputable def fanOfEquiv : Fan (X ∘ e) := Fan.mk (∏ᶜ X) (fun _ => Pi.π _ _)
-
-@[simp]
-lemma fanOfEquiv_proj (j : J₁) : (fanOfEquiv X e).proj j = Pi.π _ (e j) := rfl
-
-@[reassoc]
-lemma Fan.congr_proj {J : Type _} {F : J → C} (s : Fan F)
-    {j₁ j₂ : J} (h : j₁ = j₂) : s.proj j₁ ≫ eqToHom (by rw [h]) = s.proj j₂ := by
-  subst h
-  simp
-
-@[reassoc]
-lemma Pi.congr_π {J : Type _} (F : J → C) [HasProduct F] {j₁ j₂ : J} (h : j₁ = j₂) :
-    Pi.π F j₁ ≫ eqToHom (by rw [h]) = Pi.π F j₂ := by
-  subst h
-  simp
-
-noncomputable def isLimitFanOfEquiv : IsLimit (fanOfEquiv X e) :=
-  mkFanLimit _ (fun s => Pi.lift (fun j₂ => s.proj (e.symm j₂) ≫ eqToHom (by simp) ))
-    (fun s j => by simp [Fan.congr_proj _ (e.symm_apply_apply j)])
-    (fun s m hm => Limits.Pi.hom_ext (f := X) _ _ (fun j ↦ by simp [← hm]))
-
-lemma hasProductOfEquiv : HasProduct (X ∘ e) :=
-  ⟨⟨_, isLimitFanOfEquiv X e⟩⟩
-
-noncomputable def productIsoOfEquiv [HasProduct (X ∘ e)] : ∏ᶜ (X ∘ e) ≅ ∏ᶜ X :=
-  IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFanOfEquiv X e)
-
-noncomputable def productOptionIso {C J : Type _} [Category C]
-    (X : Option J → C) [HasProduct X] [HasProduct (fun j => X (some j))]
-    [HasBinaryProduct (∏ᶜ (fun j => X (some j))) (X none)] :
-    (∏ᶜ X) ≅ (∏ᶜ (fun j => X (some j))) ⨯ (X none) where
-  hom := prod.lift (Pi.lift (fun j => Pi.π _ (some j))) (Pi.π _ none)
-  inv := Pi.lift (fun b => match b with
-    | some j => prod.fst ≫ Pi.π _ j
-    | none => prod.snd)
-
-end Limits
-
-open Pretriangulated
-
 variable {C : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ]
   [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
@@ -363,16 +317,25 @@ lemma pi_finite_stable [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
   let Q : Type → Prop := fun J =>
     ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, P (X j)), P (∏ᶜ X)
   suffices Q J by convert this
-  apply @Finite.induction_empty_option
-  · intro J₁ J₂ e hJ₁ _ X hX
+  induction J using Finite.induction_empty_option with
+  | @of_equiv J₁ J₂ e hJ₁ =>
+    intro _ X hX
     have : Finite J₁ := Finite.of_equiv _ e.symm
-    exact prop_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
-  · intro _ X _
+    exact prop_of_iso _ (Pi.whiskerEquiv e (fun _ ↦ Iso.refl _))
+      (hJ₁ (fun j₁ ↦ X (e j₁)) (fun j₁ ↦ hX _))
+  | h_empty =>
+    intro _ X _
     refine prop_of_iso _ (IsZero.isoZero ?_).symm P.prop_zero
     rw [IsZero.iff_id_eq_zero]
     ext ⟨⟩
-  · intro J _ hJ _ X hX
-    exact prop_of_iso _ (productOptionIso  X).symm
+  | @h_option J _ hJ =>
+    intro _ X hX
+    let iso : ∏ᶜ X ≅ (∏ᶜ fun b ↦ X (some b)) ⨯ X none :=
+      { hom := prod.lift (Pi.lift (fun b ↦ Pi.π _ (some b))) (Pi.π _ none)
+        inv := Pi.lift (fun b ↦ match b with
+          | some j => prod.fst ≫ Pi.π _ j
+          | none => prod.snd) }
+    exact prop_of_iso _ iso.symm
       (P.binary_product_stable_of_isTriangulated _ _
         (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
 
