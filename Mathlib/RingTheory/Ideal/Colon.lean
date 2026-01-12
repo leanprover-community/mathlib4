@@ -44,7 +44,7 @@ def colon (N : Submodule R M) (S : Set M) : Ideal R where
 theorem mem_colon {r} : r ∈ N.colon S ↔ ∀ s ∈ S, r • s ∈ N := Set.smul_set_subset_iff
 
 @[simp]
-theorem mem_colon_singleton_set {x : M} {r : R} : r ∈ N.colon {x} ↔ r • x ∈ N := by
+theorem mem_colon_singleton {x : M} {r : R} : r ∈ N.colon {x} ↔ r • x ∈ N := by
   simp [mem_colon, forall_eq]
 
 instance (priority := low) (P : Submodule R M) : (N.colon (P : Set M)).IsTwoSided where
@@ -75,7 +75,6 @@ theorem colon_mono_left (hn : N₁ ≤ N₂) : N₁.colon S ≤ N₂.colon S :=
 theorem colon_mono_right (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ := by
   exact (colon_mono_left (N₁ := N₁) (N₂ := N₂) (S := S₂) hn).trans
     (colon_anti_right (N := N₂) (S₁ := S₁) (S₂ := S₂) hs)
-  --fun _ hrns ↦ mem_colon.2 fun s₁ hs₁ ↦ hn <| (mem_colon).1 hrns s₁ <| hs hs₁
 
 @[deprecated (since := "2026-01-11")] alias colon_mono := colon_mono_right
 
@@ -177,20 +176,8 @@ theorem mem_colon_span_singleton {x : M} {r : R} :
     r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
   simp[colon_span (N := N) (S := {x})]
 
-@[deprecated mem_colon_span_singleton "Use `mem_colon_span_singleton` for `Submodule.span R {x}`."
-(since := "2025-12-28")]
-theorem mem_colon_singleton {x : M} {r : R} : r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N :=
-  mem_colon_span_singleton
-
 @[simp]
 theorem _root_.Ideal.mem_colon_span_singleton {I : Ideal R} {x r : R} :
-    r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
-  simp only [← Ideal.submodule_span_eq, Submodule.mem_colon_span_singleton, smul_eq_mul]
-
-@[deprecated _root_.Ideal.mem_colon_span_singleton
-"Use `Ideal.mem_colon_span_singleton` for `Ideal.span {x}`."
-(since := "2025-12-28")]
-theorem _root_.Ideal.mem_colon_singleton {I : Ideal R} {x r : R} :
     r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
   simp only [← Ideal.submodule_span_eq, Submodule.mem_colon_span_singleton, smul_eq_mul]
 
