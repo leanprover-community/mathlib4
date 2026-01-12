@@ -52,11 +52,6 @@ def mapTriangle : Triangle C ⥤ Triangle D where
         simp only [Category.assoc, ← NatTrans.naturality,
           ← F.map_comp_assoc, f.comm₃] }
 
-attribute [local simp] map_zsmul comp_zsmul zsmul_comp
-  commShiftIso_zero commShiftIso_add
-  shiftFunctorAdd'_eq_shiftFunctorAdd
-  commShiftIso_comp_hom_app
-
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective

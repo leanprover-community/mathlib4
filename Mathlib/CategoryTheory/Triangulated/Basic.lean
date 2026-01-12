@@ -331,10 +331,14 @@ def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBipro
     Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
 
+/-- The obvious triangle `X₁ ⟶ X₁ ⨯ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
-def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] : Triangle C :=
+def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
+    Triangle C :=
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
+/-- The canonical isomorphism of triangles
+`binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
 def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
@@ -390,10 +394,7 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     intro s m hm
     ext1
     all_goals
-    · dsimp
-      ext1 j
-      dsimp
-      simp [← hm])
+      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
