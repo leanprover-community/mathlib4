@@ -230,7 +230,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
+theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by

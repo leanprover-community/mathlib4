@@ -91,7 +91,12 @@ protected lemma isNilpotent_iff :
     · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
-@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
+/- error: @Polynomial.isNilpotent_reflect_iff LINTER FAILED:
+simplify fails on left-hand side:
+failed to synthesize
+  IsReduced (Polynomial R)
+(deterministic) timeout at `typeclass`, maximum number of heartbeats (20000) has been reached -/
+@[simp, nolint simpNF] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff]
   refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
@@ -100,7 +105,7 @@ protected lemma isNilpotent_iff :
   · simpa [hi, revAt_le] using h (N - i)
   · simpa [revAt_eq_self_of_lt hi] using h i
 
-@[simp] lemma isNilpotent_reverse_iff :
+@[simp, nolint simpNF] lemma isNilpotent_reverse_iff :
     IsNilpotent P.reverse ↔ IsNilpotent P :=
   isNilpotent_reflect_iff (le_refl _)
 
@@ -160,7 +165,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
   ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
 
-@[simp] lemma isUnit_C_add_X_mul_iff :
+@[simp, nolint simpNF] lemma isUnit_C_add_X_mul_iff :
     IsUnit (C r + X * P) ↔ IsUnit r ∧ IsNilpotent P := by
   have : ∀ i, coeff (C r + X * P) (i + 1) = coeff P i := by simp
   simp_rw [isUnit_iff_coeff_isUnit_isNilpotent, Nat.forall_ne_zero_iff, this]

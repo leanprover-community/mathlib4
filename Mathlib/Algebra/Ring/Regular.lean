@@ -48,7 +48,7 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
 /-- A ring with no zero divisors is a cancellative `MonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-abbrev NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
+lemma NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α where
   mul_left_cancel_of_ne_zero ha := (isRegular_of_ne_zero' ha).1
   mul_right_cancel_of_ne_zero hb := (isRegular_of_ne_zero' hb).2
