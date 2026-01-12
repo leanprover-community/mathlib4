@@ -770,18 +770,14 @@ theorem smulLeftCLM_sub {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowt
   simp [hg₁, hg₂, hg₁.sub hg₂, sub_smul]
 
 theorem smulLeftCLM_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
-    smulLeftCLM F (-g) = - smulLeftCLM F g := by
+    smulLeftCLM F (-g) = -smulLeftCLM F g := by
   ext f x
   simp [hg, hg.neg, neg_smul]
 
 theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
   ext f x
-  simp only [Function.HasTemperateGrowth.sum hg, smulLeftCLM_apply_apply,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply, sum_apply, Finset.sum_smul]
-  apply Finset.sum_congr (refl _)
-  intro i hi
-  simp [hg i hi]
+  simp +contextual [Function.HasTemperateGrowth.sum hg, Finset.sum_smul, hg]
 
 variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
 
