@@ -4460,6 +4460,7 @@ public import Mathlib.Lean.Expr.Rat
 public import Mathlib.Lean.Expr.ReplaceRec
 public import Mathlib.Lean.GoalsLocation
 public import Mathlib.Lean.Json
+public import Mathlib.Lean.Linter
 public import Mathlib.Lean.LocalContext
 public import Mathlib.Lean.Message
 public import Mathlib.Lean.Meta

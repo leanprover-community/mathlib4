@@ -1006,9 +1006,9 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     | `(translationHint| self) => existing := true; self := true
     | `(translationHint| none) => none := true
     | _ => pure ()
-    if self && !attrs.isEmpty then
-      throwError "invalid `(attr := ...)` after `self`, \
-        as there is only one declaration for the attributes.\n\
+    if (self || none) && !attrs.isEmpty then
+      throwError "invalid `(attr := ...)` after `self` or `none`, \
+        as there is no other declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder?}"
     let doc ← doc.mapM fun
@@ -1050,35 +1050,35 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
 
 mutual
 /-- Apply attributes to the original and translated declarations. -/
-partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array Syntax)
-    (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
+partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name)
+    (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
   copyInstanceAttribute src tgt
   -- Warn users if the original declaration has an attributee
-  if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
+  if !cfg.self && !cfg.none && linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
       let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
       -- Note: we're not bothering to print the correct attribute arguments.
-      Linter.logLintIf linter.existingAttributeWarning stx m!"\
+      Linter.logLintIf linter.existingAttributeWarning cfg.ref m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
         calling @[{t.attrName}].\nThe preferred method is to use something like \
         `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Lean.Meta.Ext.extExtension
+    warnAttr cfg.ref Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
-    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
-    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
-    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
-    warnAttr stx Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
-    warnParametricAttr stx Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
+    warnAttr cfg.ref Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
+    warnAttr cfg.ref Lean.Meta.Symm.symmExt (·.values.contains ·) t.attrName `symm src tgt
+    warnAttr cfg.ref Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
+    warnAttr cfg.ref Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
+    warnParametricAttr cfg.ref Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
-    warnParametricAttr stx simpsAttr t.attrName `simps src tgt
-    warnAttrCore stx Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
+    warnParametricAttr cfg.ref simpsAttr t.attrName `simps src tgt
+    warnAttrCore cfg.ref Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
-  let attrs ← elabAttrs rawAttrs
+  let attrs ← elabAttrs cfg.attrs
   let (additiveAttrs, attrs) := attrs.partition (·.name == t.attrName)
   let nestedDecls ←
     match h : additiveAttrs.size with
@@ -1134,8 +1134,7 @@ partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (ar
       when doing a `rw`, but it won't be generated for `tgt`. -/
       translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
         (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
-  MetaM.run' <| Elab.Term.TermElabM.run' <|
-    applyAttributes t cfg.ref cfg.attrs src tgt argInfo
+  applyAttributes t cfg src tgt argInfo |>.run'.run'
 
 /-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
