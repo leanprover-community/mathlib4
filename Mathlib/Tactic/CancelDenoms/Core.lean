@@ -5,13 +5,14 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Algebra.Field.Basic
-public meta import Mathlib.Algebra.Order.Ring.Defs
 public meta import Mathlib.Data.Tree.Basic
 public meta import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Util.SynthesizeUsing
-public meta import Mathlib.Util.Qq
+public import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators

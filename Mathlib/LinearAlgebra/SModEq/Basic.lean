@@ -67,7 +67,7 @@ protected theorem refl (x : M) : x ≡ x [SMOD U] :=
 protected theorem rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 
-instance : IsRefl _ (SModEq U) :=
+instance : Std.Refl (SModEq U) :=
   ⟨SModEq.refl⟩
 
 @[symm]
