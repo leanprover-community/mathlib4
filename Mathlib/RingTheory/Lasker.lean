@@ -195,6 +195,75 @@ lemma IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical [Decidabl
   obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
   exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt), ht.le_radical hqt⟩ hqp)⟩
 
+theorem IsPrime.eq_of_inf_eq
+    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)
+    (hs : s.inf f = P) : ∃ i ∈ s, f i = P := by
+  subst hs
+  exact (hp.inf_le'.mp le_rfl).imp (fun a ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
+
+/-- The annihilator of an element. -/
+def annihilator {R : Type*} [Semiring R] (I : Ideal R) (x : R) : Ideal R where
+  carrier := {y | y * x ∈ I}
+  add_mem' ha hb := by simp [add_mul, I.add_mem ha hb]
+  zero_mem' := by simp
+  smul_mem' a b hb := by simp [mul_assoc, I.mul_mem_left a hb]
+
+lemma mem_annihilator_iff {R : Type*} [Semiring R] {I : Ideal R} {x y : R} :
+    y ∈ I.annihilator x ↔ y * x ∈ I :=
+  Iff.rfl
+
+open LinearMap in
+/-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald. -/
+lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
+    {R : Type*} [CommRing R] [DecidableEq (Ideal R)] {I : Ideal R}
+    {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t)
+    {p : Ideal R} :
+    p ∈ radical '' t ↔ p.IsPrime ∧ ∃ x, p = (I.annihilator x).radical := by
+  classical
+  have key1 (x : R) : I.annihilator x = t.inf fun q ↦ q.annihilator x := by
+    simp [← ht.inf_eq, Ideal.ext_iff, mem_annihilator_iff]
+  have key2 (x : R) : radical (I.annihilator x) = t.inf fun q ↦ radical (q.annihilator x) := by
+    simp [key1, ← radicalInfTopHom_apply, Function.comp_def]
+  have key3 (x : R) : ∀ q ∈ t, (q.annihilator x).radical = if x ∈ q then ⊤ else q.radical := by
+      intro q hq
+      split_ifs with hx
+      · rw [radical_eq_top, eq_top_iff]
+        intro y hy
+        exact mul_mem_left q y hx
+      · refine le_antisymm ?_ ?_
+        · rw [radical_le_radical_iff]
+          intro z hz
+          have key := ht.primary hq
+          rw [mem_annihilator_iff, mul_comm] at hz
+          rw [isPrimary_iff] at key
+          have key := key.2 hz
+          exact key.resolve_left hx
+        · apply radical_mono
+          intro z hz
+          simp only [mem_annihilator_iff]
+          exact q.mul_mem_right x hz
+  constructor <;> intro hp
+  · obtain ⟨q, hqt, rfl⟩ := hp
+    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    use isPrime_radical (ht.primary hqt)
+    use x
+    rw [key1, ← Finset.insert_erase hqt, Finset.inf_insert]
+    have key : ∀ q' ∈ t.erase q, q'.annihilator x = ⊤ := by
+      intro q' hq'
+      rw [Submodule.eq_top_iff']
+      intro y
+      rw [mem_annihilator_iff]
+      rw [Submodule.mem_finsetInf] at hxt
+      exact mul_mem_left q' y (hxt q' hq')
+    rw [Finset.inf_congr rfl key, Finset.inf_top, inf_top_eq]
+    symm
+    rw [key3 x q hqt, if_neg hxq]
+  · obtain ⟨hp, x, rfl⟩ := hp
+    have key : (I.annihilator x).radical = (t.filter (x ∉ ·)).inf radical := by
+      rw [key2, Finset.inf_congr rfl (key3 x), Finset.inf_ite, Finset.inf_top, top_inf_eq]
+    obtain ⟨q, hq1, hq2⟩ := IsPrime.eq_of_inf_eq hp key.symm
+    exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
+
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 theorem IsMinimalPrimaryDecomposition.foobar {R : Type*} [CommRing R]
     [DecidableEq (Ideal R)] {I : Ideal R} {t : Finset (Ideal R)}
