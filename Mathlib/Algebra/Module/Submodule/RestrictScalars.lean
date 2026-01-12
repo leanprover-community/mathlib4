@@ -74,21 +74,22 @@ instance restrictScalars.isScalarTower (p : Submodule R M) :
     IsScalarTower S R (p.restrictScalars S) where
   smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
+variable {R M} in
+lemma restrictScalars_le {s t : Submodule R M} :
+    s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t := by
+  simp [SetLike.le_def]
+
 /-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
 @[simps]
 def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   toFun := restrictScalars S
   inj' := restrictScalars_injective S R M
-  map_rel_iff' := by simp [SetLike.le_def]
+  map_rel_iff' := restrictScalars_le S
 
+@[mono]
 lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
   (restrictScalarsEmbedding S R M).monotone
-
-variable {R M} in
-@[mono]
-lemma restrictScalars_mono {s t : Submodule R M} (hst : s ≤ t) :
-    s.restrictScalars S ≤ t.restrictScalars S := restrictScalars_monotone S R M hst
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
@@ -139,9 +140,8 @@ lemma restrictScalars_iInf {ι : Sort*} (s : ι → Submodule R M) :
 
 @[simp]
 lemma restrictScalars_iSup {ι : Sort*} (s : ι → Submodule R M) :
-    (iSup s).restrictScalars S = ⨆ i, restrictScalars S (s i) := by
-  simp only [iSup, restrictScalars_sSup]
-  congr; ext; simp
+    (iSup s).restrictScalars S = ⨆ i, restrictScalars S (s i) :=
+  map_iSup (restrictScalarsLatticeHom S) s
 
 @[simp]
 lemma restrictScalars_inf (s t : Submodule R M) :
