@@ -140,6 +140,7 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 omit [CompleteSpace E] in
 /-- If a function `f` `IsConservativeOn` on a disk of center `c`, then for points `z` in this disk,
 the wedge integral from `c` to `z` is additive under a detour through a nearby point `w`. -/

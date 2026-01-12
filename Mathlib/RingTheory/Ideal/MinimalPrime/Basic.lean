@@ -132,7 +132,6 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 variable (R) in
 theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
     minimalPrimes R = {⊥} :=
-  have := Ideal.bot_prime (α := R)
   Ideal.minimalPrimes_eq_subsingleton_self
 
 end

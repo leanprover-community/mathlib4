@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.FastInstance
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Theory of univariate polynomials
@@ -174,6 +175,7 @@ theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
     (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 theorem ofFinsupp_pow (a) (n : ℕ) : (⟨a ^ n⟩ : R[X]) = ⟨a⟩ ^ n := by
   change _ = npowRec n _
@@ -575,6 +577,9 @@ theorem coeff_inj : p.coeff = q.coeff ↔ p = q :=
   coeff_injective.eq_iff
 
 theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f; rfl
+
+theorem finite_range_coeff (f : R[X]) : (Set.range f.coeff).Finite :=
+  Finsupp.finite_range _
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Notation.Indicator
 # Indicator functions and support of a function in groups with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

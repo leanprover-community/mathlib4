@@ -20,7 +20,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set
