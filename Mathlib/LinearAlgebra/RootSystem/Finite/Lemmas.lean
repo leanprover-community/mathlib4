@@ -29,7 +29,7 @@ root pairings.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -137,7 +137,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
   have h' := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases h with hij' | hij' | hij' | hij' | hij' | hij' | hij' | hij' <;>
-  rw [hij'.1, hij'.2] at h' <;> omega
+  rw [hij'.1, hij'.2] at h' <;> lia
 
 variable {P} in
 lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
@@ -156,11 +156,7 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
   have aux₂ := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
-  rw [hji, hij'] at aux₂ <;> omega
-
-@[deprecated (since := "2025-05-23")]
-alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
-  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
+  rw [hji, hij'] at aux₂ <;> lia
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}

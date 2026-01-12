@@ -64,9 +64,9 @@ theorem coe_fib_neg (n : ℤ) : (fib (-n) : ℚ) = (-1) ^ (n + 1) * fib n := by
 theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
-    rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_natCast, Nat.fib_add_two]
-    rfl
-  · rw [show negSucc n = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
+    rw [← Nat.cast_ofNat, ← Nat.cast_add, ← Nat.cast_add_one, fib_natCast, fib_natCast,
+      Nat.fib_add_two, Nat.cast_add]
+  · rw [negSucc_eq, ← Nat.cast_add_one, fib_neg_natCast]
     simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, reduceNeg, add_comm,
       add_assoc, reduceAdd, add_neg_cancel_comm_assoc, fib_neg_natCast]
     if hn0 : n = 0 then simp [hn0] else
@@ -154,6 +154,9 @@ theorem gcd_fib (m n : ℤ) : gcd (fib m) (fib n) = Nat.fib (gcd m n) := by
   obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
     <;> obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     <;> simp [fib_neg, Nat.fib_gcd, apply_ite, apply_ite_left]
+
+@[deprecated gcd_fib (since := "2025-12-09")]
+theorem fib_gcd (m n : ℤ) : fib (gcd m n) = gcd (fib m) (fib n) := by simpa using (gcd_fib m n).symm
 
 private theorem fib_natCast_dvd {m : ℕ} {n : ℤ} (h : (m : ℤ) ∣ n) : fib m ∣ fib n := by
   rwa [← gcd_eq_left_iff_dvd (by simp), gcd_fib, ← fib_natCast, (gcd_eq_left_iff_dvd (by simp)).mpr]

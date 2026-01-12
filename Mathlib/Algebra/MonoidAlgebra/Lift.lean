@@ -98,32 +98,6 @@ lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : 
     liftNCRingHom f g h_comm (single a b) = f b * g a :=
   liftNC_single _ _ _ _
 
-variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
-noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] :=
-  liftNCRingHom (singleOneRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
-
-@[simp]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
-    mapRangeRingHom M f x m = f (x m) := by
-  classical
-  induction x using induction_linear
-  · simp
-  · simp [*]
-  · simp [mapRangeRingHom, single_apply, apply_ite (f := f)]
-
-@[simp]
-lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
-    mapRangeRingHom M f (single a b) = single a (f b) := by
-  classical ext; simp [single_apply, apply_ite f]
-
-@[simp] lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id R[M] := by
-  ext <;> simp
-
-@[simp] lemma mapRangeRingHom_comp (f : S →+* T) (g : R →+* S) :
-    mapRangeRingHom M (f.comp g) = (mapRangeRingHom M f).comp (mapRangeRingHom M g) := by
-  ext <;> simp
-
 end Semiring
 
 end MonoidAlgebra
@@ -195,40 +169,6 @@ def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x 
 lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm) (a : G) (b : k) :
     liftNCRingHom f g h_comm (single a b) = f b * g (.ofAdd a) :=
   liftNC_single _ _ _ _
-
-variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
-noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] :=
-  liftNCRingHom (singleZeroRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
-
-@[simp]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
-    mapRangeRingHom M f x m = f (x m) := by
-  classical
-  induction x using induction_linear
-  · simp
-  · simp [*]
-  · simp [mapRangeRingHom, single_apply, apply_ite (f := f)]
-
-@[simp]
-lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
-    mapRangeRingHom M f (single a b) = single a (f b) := by
-  classical ext; simp [single_apply, apply_ite f]
-
-@[simp] lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id R[M] := by
-  ext <;> simp
-
-@[simp] lemma mapRangeRingHom_comp (f : S →+* T) (g : R →+* S) :
-    mapRangeRingHom M (f.comp g) = (mapRangeRingHom M f).comp (mapRangeRingHom M g) := by
-  ext <;> simp
-
--- `MonoidAlgebra.of` doesn't translate with `to_additive`, so instead
--- we have to tag these declarations with `to_additive existing`
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing]
-  MonoidAlgebra.mapRangeRingHom MonoidAlgebra.mapRangeRingHom_apply
-  MonoidAlgebra.mapRangeRingHom_single MonoidAlgebra.mapRangeRingHom_id
-  MonoidAlgebra.mapRangeRingHom_comp
 
 end Semiring
 

@@ -59,11 +59,12 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.leadingCoeff_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
   is nonzero, then the leading coefficient is that product.
 
-* `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the equality when the leading coefficient of `f` or `g` is regular,
+* `m.degree_mul_of_left_mem_nonZeroDivisors`, `m.degree_mul_of_right_mem_nonZeroDivisors` and
+  `m.degree_mul` assert the equality when the leading coefficient of `f` or `g` isn't zero divisors,
   or when `R` is a domain and `f` and `g` are nonzero.
 
-* `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
+* `m.leadingCoeff_mul_of_left_mem_nonZeroDivisors`,
+  `m.leadingCoeff_mul_of_right_mem_nonZeroDivisors`
   and `m.leadingCoeff_mul` say that `m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g`
 
 * `m.degree_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
@@ -72,11 +73,11 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
   of `f` is nonzero, then the leading coefficient of `f ^ n` is that power.
 
-* `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
-  are regular is the sum of their degrees.
+* `m.degree_prod_of_mem_nonZeroDivisors` : the degree of a product of polynomials whose leading
+  coefficients aren't zero divisors is the sum of their degrees.
 
-* `m.leadingCoeff_prod_of_regular` : the leading coefficient of a product of polynomials
-  whose leading coefficients are regular is the product of their leading coefficients.
+* `m.leadingCoeff_prod_of_mem_nonZeroDivisors` : the leading coefficient of a product of polynomials
+  whose leading coefficients aren't zero divisors is the product of their leading coefficients.
 
 * `m.Monic.prod` : a product of monic polynomials is monic.
 
@@ -120,7 +121,7 @@ def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
 variable (m) in
-/-- The leading term of of a multivariate polynomial with respect to a monomial ordering. -/
+/-- The leading term of a multivariate polynomial with respect to a monomial ordering. -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -403,7 +404,7 @@ theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀
     (ha : m.degree f ≼[m] a) (hb : m.degree g ≼[m] b) :
     (f * g).coeff (a + b) = f.coeff a * g.coeff b := by
   classical
-  rw [coeff_mul, Finset.sum_eq_single (a,b)]
+  rw [coeff_mul, Finset.sum_eq_single (a, b)]
   · rintro ⟨c, d⟩ hcd h
     simp only [Finset.mem_antidiagonal] at hcd
     by_cases hf : m.degree f ≺[m] c
@@ -445,6 +446,28 @@ theorem leadingCoeff_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   rw [leadingCoeff, ← coeff_mul_of_degree_add, degree_mul_of_mul_leadingCoeff_ne_zero hfg]
 
+theorem degree_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    m.degree (f * g) = m.degree f + m.degree g := by
+  apply degree_mul_of_mul_leadingCoeff_ne_zero
+  apply not_imp_not.mpr (mem_nonZeroDivisors_iff.mp hf |>.1 _)
+  simp [hg]
+
+theorem degree_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    m.degree (f * g) = m.degree f + m.degree g :=
+  add_comm (m.degree f) (m.degree g) ▸ mul_comm f g ▸ degree_mul_of_left_mem_nonZeroDivisors hg hf
+
+theorem leadingCoeff_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  simp only [leadingCoeff, degree_mul_of_left_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+
+theorem leadingCoeff_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  simp only [leadingCoeff, degree_mul_of_right_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
+
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.leadingCoeff f)) (hg : g ≠ 0) :
@@ -483,12 +506,14 @@ theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
   rw [hf.leadingCoeff_eq_one, hg.leadingCoeff_eq_one, one_mul]
 
 /-- Monomial degree of product -/
-theorem degree_mul [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
-    m.degree (f * g) = m.degree f + m.degree g :=
-  degree_mul_of_isRegular_left (isRegular_of_ne_zero (leadingCoeff_ne_zero_iff.mpr hf)) hg
+theorem degree_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
+    m.degree (f * g) = m.degree f + m.degree g := by
+  apply degree_mul_of_mul_leadingCoeff_ne_zero
+  simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero_iff, not_or]
+  tauto
 
 /-- Multiplicativity of leading coefficients -/
-theorem leadingCoeff_mul [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
+theorem leadingCoeff_mul [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
@@ -542,7 +567,6 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     by_cases hn : n = 0
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
-  nontriviality R
   apply degree_pow_of_pow_leadingCoeff_ne_zero
   apply IsReduced.pow_ne_zero
   rw [leadingCoeff_ne_zero_iff]
@@ -559,7 +583,8 @@ theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
   apply le_of_le_of_eq degree_mul_le
   simp
 
-theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
+theorem degree_smul_of_mem_nonZeroDivisors {r : R} (hr : r ∈ nonZeroDivisors _)
+    {f : MvPolynomial σ R} :
     m.degree (r • f) = m.degree f := by
   by_cases hf : f = 0
   · simp [hf]
@@ -568,7 +593,13 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   apply le_degree
   simp only [mem_support_iff, smul_eq_C_mul]
   rw [← zero_add (degree m f), ← degree_C r, coeff_mul_of_degree_add]
-  simp [leadingCoeff, hr.left.mul_left_eq_zero_iff, hf]
+  simp [not_imp_not.mpr ((mem_nonZeroDivisors_iff.mp hr).1 _) <| m.leadingCoeff_ne_zero_iff.mpr hf]
+
+theorem degree_smul_of_isRegular {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
+    m.degree (r • f) = m.degree f :=
+  m.degree_smul_of_mem_nonZeroDivisors hr.mem_nonZeroDivisors
+
+@[deprecated (since := "2025-12-12")] alias degree_smul := degree_smul_of_isRegular
 
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
     m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
@@ -592,6 +623,18 @@ theorem coeff_prod_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : F
     rw [coeff_mul_of_add_of_degree_le (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec
 
+theorem degree_prod_of_mem_nonZeroDivisors {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ nonZeroDivisors _) :
+    m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
+  cases subsingleton_or_nontrivial R with
+  | inl _ => simp [Subsingleton.elim _ (0 : MvPolynomial σ R)]
+  | inr _ =>
+    apply m.toSyn.injective
+    refine le_antisymm degree_prod_le (m.le_degree ?_)
+    rw [mem_support_iff, m.coeff_prod_sum_degree]
+    exact nonZeroDivisors.ne_zero (prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors H)
+
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
@@ -604,16 +647,17 @@ theorem degree_prod_of_regular {ι : Type*}
     rw [mem_support_iff, m.coeff_prod_sum_degree]
     exact (IsRegular.prod H).ne_zero
 
-theorem degree_prod [IsCancelMulZero R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
+theorem degree_prod [NoZeroDivisors R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
     (H : ∀ i ∈ s, P i ≠ 0) :
     m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
-  apply degree_prod_of_regular
-  intro i hi
-  apply isRegular_of_ne_zero
-  rw [leadingCoeff_ne_zero_iff]
-  exact H i hi
+  cases subsingleton_or_nontrivial R with
+  | inl _ => simp [Subsingleton.elim _ (0 : MvPolynomial σ R)]
+  | inr _ =>
+    apply m.toSyn.injective
+    refine le_antisymm degree_prod_le (m.le_degree ?_)
+    simpa [m.coeff_prod_sum_degree, Finset.prod_eq_zero_iff]
 
-lemma degree_mul' [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
+lemma degree_mul' [NoZeroDivisors R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
   apply ne_zero_and_ne_zero_of_mul at hf
   exact m.degree_mul hf.1 hf.2
@@ -621,6 +665,12 @@ lemma degree_mul' [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f * g ≠ 
 lemma notMem_support_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree g ∉ f.support := by
   simp [coeff_eq_zero_of_lt h]
+
+theorem leadingCoeff_prod_of_mem_nonZeroDivisors {ι : Type*}
+    {P : ι → MvPolynomial σ R} {s : Finset ι}
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ nonZeroDivisors _) :
+    m.leadingCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingCoeff (P i) := by
+  simp only [leadingCoeff, degree_prod_of_mem_nonZeroDivisors H, coeff_prod_sum_degree]
 
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem leadingCoeff_prod_of_regular {ι : Type*}
@@ -689,6 +739,40 @@ lemma leadingTerm_leadingTerm (f : MvPolynomial σ R) :
 lemma leadingTerm_C (c : R) : m.leadingTerm (C c) = C c := by
   simp [leadingTerm, leadingCoeff_C]
 
+@[simp]
+lemma leadingTerm_monomial (s : σ →₀ ℕ) (c : R) :
+    m.leadingTerm (monomial s c) = monomial s c := by
+  classical
+  by_cases h : c = 0 <;> simp [leadingTerm, degree_monomial, h]
+
+@[simp]
+lemma degree_leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.degree (m.leadingTerm p * q) = m.degree (p * q) := by
+  wlog! +distrib h : p ≠ 0 ∧ q ≠ 0
+  · obtain rfl | rfl := h <;> simp
+  classical
+  simp [leadingTerm, degree_mul, h, degree_monomial]
+
+@[simp]
+lemma degree_mul_leadingTerm [NoZeroDivisors R] (p q : MvPolynomial σ R) :
+    m.degree (p * m.leadingTerm q) = m.degree (p * q) :=
+  mul_comm _ p ▸ mul_comm _ p ▸ m.degree_leadingTerm_mul q p
+
+lemma degree_lt_of_left_ne_zero_of_degree_mul_lt [NoZeroDivisors R] {p p' q : MvPolynomial σ R}
+    (hp : p ≠ 0) (h : m.degree (p * q) ≺[m] m.degree (p' * q)) :
+    m.degree p ≺[m] m.degree p' := by
+  wlog! hq : q ≠ 0
+  · simp [hq] at h
+  apply lt_of_le_of_lt' m.degree_mul_le at h
+  simpa [m.degree_mul hp hq] using h
+
+lemma degree_mul_lt_iff_left_lt_of_ne_zero [NoZeroDivisors R] {p p' q : MvPolynomial σ R}
+    (hp : p ≠ 0) (hq : q ≠ 0) :
+    m.degree (p * q) ≺[m] m.degree (p' * q) ↔ m.degree p ≺[m] m.degree p' := by
+  refine ⟨m.degree_lt_of_left_ne_zero_of_degree_mul_lt hp, ?_⟩
+  intro h
+  simpa [m.degree_mul hp hq, m.degree_mul (show p' ≠ 0 by contrapose! h; simp [h]) hq] using h
+
 end Semiring
 
 section Ring
@@ -732,7 +816,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
     rw [sPolynomial, this, this, sup_comm]
   intro f g
   ext a
-  obtain (h|h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
+  obtain (h | h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
@@ -852,7 +936,7 @@ lemma sPolynomial_lt_of_degree_ne_zero_of_degree_eq {f g : MvPolynomial σ R}
     m.degree (m.sPolynomial f g) ≺[m] m.degree f := by
   simpa [h] using m.degree_sPolynomial_lt_sup_degree hs
 
-lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
+lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :
     m.sPolynomial ((monomial d₁ c₁) * p₁) ((monomial d₂ c₂) * p₂) =
       monomial ((d₁ + m.degree p₁) ⊔ (d₂ + m.degree p₂) - m.degree p₁ ⊔ m.degree p₂) (c₁ * c₂) *
@@ -872,6 +956,36 @@ lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ 
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
     add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
+
+lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
+    (c₁ c₂ : R) :
+    m.sPolynomial (monomial d₁ c₁ * p₁) (monomial d₂ c₂ * p₂) =
+      monomial (m.degree (monomial d₁ c₁ * p₁) ⊔ m.degree (monomial d₂ c₂ * p₂) -
+          m.degree p₁ ⊔ m.degree p₂) (c₁ * c₂) *
+      m.sPolynomial p₁ p₂ := by
+  classical
+  wlog! +distrib H : c₁ ≠ 0 ∧ c₂ ≠ 0 ∧ p₁ ≠ 0 ∧ p₂ ≠ 0
+  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  simp [H, degree_mul, sPolynomial_monomial_mul, degree_monomial]
+
+lemma sPolynomial_leadingTerm_mul [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvPolynomial σ R) :
+    m.sPolynomial (m.leadingTerm p₁ * q₁) (m.leadingTerm p₂ * q₂) =
+    monomial
+        ((m.degree p₁ + m.degree q₁) ⊔ (m.degree p₂ + m.degree q₂) - m.degree q₁ ⊔ m.degree q₂)
+        (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
+      m.sPolynomial q₁ q₂ := by
+  simp [sPolynomial_monomial_mul, leadingTerm]
+
+lemma sPolynomial_leadingTerm_mul' [NoZeroDivisors R] (p₁ p₂ q₁ q₂ : MvPolynomial σ R) :
+    m.sPolynomial (m.leadingTerm p₁ * q₁) (m.leadingTerm p₂ * q₂) =
+    monomial
+        ((m.degree (p₁ * q₁)) ⊔ (m.degree (p₂ * q₂)) - m.degree q₁ ⊔ m.degree q₂)
+        (m.leadingCoeff p₁ * m.leadingCoeff p₂) *
+      m.sPolynomial q₁ q₂ := by
+  classical
+  wlog! +distrib H : p₁ ≠ 0 ∧ p₂ ≠ 0 ∧ q₁ ≠ 0 ∧ q₂ ≠ 0
+  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  simp [H, leadingTerm, sPolynomial_monomial_mul, degree_mul]
 
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}

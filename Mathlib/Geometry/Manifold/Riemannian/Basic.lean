@@ -77,7 +77,7 @@ the tangent spaces.
 This is a `Prop`-valued typeclass, on top of existing data.
 
 If you need to *construct* a distance using a Riemannian structure,
-see `EmetricSpace.ofRiemannianMetric`. -/
+see `EMetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 
@@ -187,7 +187,7 @@ section
 
 Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
 show that the associated topology coincides with the pre-existing topology. Therefore, one may
-endow `M` with an emetric space structure, called `EmetricSpace.ofRiemannianMetric`.
+endow `M` with an emetric space structure, called `EMetricSpace.ofRiemannianMetric`.
 Moreover, we show that in this case the resulting emetric space satisfies the predicate
 `IsRiemannianManifold I M`.
 
@@ -349,7 +349,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
       (mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) η (Icc 0 1) t) := by
     apply mfderivWithin_comp
     · exact mdifferentiableWithinAt_extChartAt_symm (hη.1 ht)
-    · exact η_smooth.mdifferentiableOn le_rfl t ht
+    · exact η_smooth.mdifferentiableOn one_ne_zero t ht
     · exact hη.1.trans (preimage_mono (extChartAt_target_subset_range x))
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc zero_lt_one t ht
@@ -464,7 +464,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
         apply mfderiv_comp_mfderivWithin
         · refine mdifferentiableAt_extChartAt (uc' ?_)
           apply t₁_mem ht'
-        · exact (γ_smooth.mdifferentiable le_rfl).mdifferentiableOn _ ht'
+        · exact (γ_smooth.mdifferentiable one_ne_zero).mdifferentiableOn _ ht'
         · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
           exact uniqueDiffOn_Icc h't' _ ht'
       have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, E) γ' (Icc 0 t₁) t' 1 =
@@ -514,8 +514,8 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def PseudoEmetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
-  PseudoEmetricSpace.ofEdistOfTopology (riemannianEDist I (M := M))
+@[reducible] def PseudoEMetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
+  PseudoEMetricSpace.ofEDistOfTopology (riemannianEDist I (M := M))
     (fun _ ↦ riemannianEDist_self)
     (fun _ _ ↦ riemannianEDist_comm)
     (fun _ _ _ ↦ riemannianEDist_triangle)
@@ -523,13 +523,16 @@ additionally the predicate `IsRiemannianManifold I M`. -/
       (fun _ hs ↦ setOf_riemannianEDist_lt_subset_nhds' I hs)
       (fun _ hc ↦ eventually_riemannianEDist_lt I x hc))
 
+@[deprecated (since := "2026-01-08")]
+noncomputable alias PseudoEmetricSpace.ofRiemannianMetric := PseudoEMetricSpace.ofRiemannianMetric
+
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
 manifold satisfies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
-    letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+    letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
     IsRiemannianManifold I M := by
-  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+  letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   exact ⟨fun x y ↦ rfl⟩
 
 variable (M) in
@@ -539,8 +542,11 @@ so that the topology is defeq to the original one.
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
-@[reducible] def EmetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
-  letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
+@[reducible] def EMetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
+  letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M
+
+@[deprecated (since := "2026-01-08")]
+noncomputable alias EmetricSpace.ofRiemannianMetric := EMetricSpace.ofRiemannianMetric
 
 end
