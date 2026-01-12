@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Order.SuccPredLimit
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Complex and real exponential

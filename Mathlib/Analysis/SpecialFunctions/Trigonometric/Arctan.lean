@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Topology.Order.SuccPredLimit
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # The `arctan` function.

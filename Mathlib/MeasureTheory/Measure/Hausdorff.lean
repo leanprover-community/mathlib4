@@ -10,7 +10,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Topology.MetricSpace.Holder
 public import Mathlib.Topology.MetricSpace.MetricSeparated
-import Mathlib.Topology.Order.SuccPredLimit
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Hausdorff measure and metric (outer) measures
