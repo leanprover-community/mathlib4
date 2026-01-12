@@ -344,8 +344,21 @@ theorem completeGraph_eq_top (V : Type u) : completeGraph V = ⊤ :=
 theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
   rfl
 
+variable {G}
+
 theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
   simp [← le_bot_iff, le_iff_adj]
+
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
+
+variable (G)
 
 @[simps]
 instance (V : Type u) : Inhabited (SimpleGraph V) :=
@@ -410,7 +423,7 @@ theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
 /-- Only the empty graph has empty support. -/
 @[simp]
 theorem support_eq_bot_iff : G.support = ∅ ↔ G = ⊥ :=
-  ⟨fun h ↦ by rw [eq_bot_iff_forall_not_adj]; exact fun v w nadj ↦
+  ⟨fun h ↦ eq_bot_iff_forall_not_adj.mpr fun v w nadj ↦
     Set.ext_iff.mp (SetRel.dom_eq_empty_iff.mp h) (v, w) |>.mp nadj |>.elim,
    (· ▸ support_bot)⟩
 
@@ -541,15 +554,6 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
-
-theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
-  simp [eq_bot_iff_forall_not_adj]
-
-theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
-  simp [← top_le_iff, le_iff_adj]
-
-theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 
