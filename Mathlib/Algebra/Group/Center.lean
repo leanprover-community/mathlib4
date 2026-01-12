@@ -149,7 +149,7 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
 @[to_additive addCentralizer_empty]
-theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by simp [centralizer]
+@[simp] theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by simp [centralizer]
 
 /-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
 @[to_additive addCentralizer_prod]
