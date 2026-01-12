@@ -67,6 +67,9 @@ theorem RCLike.sqrt_def (a : 𝕜) :
   rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa)]
   simp [h]
 
+@[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
+@[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
+
 theorem Complex.re_sqrt_ofReal (a : ℝ) :
     (sqrt (a : ℂ)).re = √a := by
   simp only [cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re]
@@ -126,8 +129,7 @@ theorem Complex.sqrt_neg_one : sqrt (-1) = I := by
   simp [sqrt_neg_of_nonneg (a := 1) (by simp)]
 
 theorem RCLike.sqrt_neg_one : sqrt (-1) = (I : 𝕜) := by
-  rw [sqrt_neg_of_nonneg (by simp)]
-  simp [sqrt]
+  simp [sqrt_neg_of_nonneg (a := (1 : 𝕜)) (by simp)]
 
 theorem Complex.sqrt_I : sqrt (I : ℂ) = √2⁻¹ * (1 + I) := by
   rw [sqrt, ← re_add_im (I ^ 2⁻¹), cpow_inv_two_im_eq_sqrt (by simp), cpow_inv_two_re]
@@ -136,3 +138,10 @@ theorem Complex.sqrt_I : sqrt (I : ℂ) = √2⁻¹ * (1 + I) := by
 theorem Complex.sqrt_neg_I : sqrt (-I : ℂ) = √2⁻¹ * (1 - I) := by
   rw [sqrt, ← re_add_im ((-I) ^ 2⁻¹), cpow_inv_two_im_eq_neg_sqrt (by simp), cpow_inv_two_re]
   simp [mul_sub, ← sub_eq_add_neg]
+
+theorem RCLike.sqrt_I : sqrt (I : 𝕜) = √2⁻¹ * (1 - I) * I := by
+  rw [sqrt]
+  split_ifs with h
+  · simp_rw [RingEquiv.symm_apply_eq, map_mul]
+    simp [h, mul_assoc, add_mul, add_comm (1 : ℂ), Complex.sqrt_I]
+  grind [I_eq_zero_or_im_I_eq_one]
