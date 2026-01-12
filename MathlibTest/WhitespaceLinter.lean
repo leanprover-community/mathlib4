@@ -649,7 +649,6 @@ Note: This linter can be disabled with `set_option linter.unusedTactic false`
 #guard_msgs in
 example : True = True := by
   · conv =>
-    -- The *linter* forces a space in `·rfl`, but the pretty-printer does not.
     ·rfl
   done
 

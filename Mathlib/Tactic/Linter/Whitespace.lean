@@ -331,7 +331,6 @@ following nodes, but we overrule it and place a space anyway.
 -/
 def forceSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
-    `token.«·», -- the focusing dot `·` in `conv` mode
     ``termThrowError__, -- `throwError "message"`
     -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
     ``Parser.Tactic.rcases, -- `rcases (a)`
