@@ -100,7 +100,7 @@ theorem forall_mem_intermediateFieldEquivSubgroupChar_iff [IsAbelianGalois ℚ K
       σ ∈ L.fixingSubgroup := by
   unfold intermediateFieldEquivSubgroupChar
   simp [- IntermediateField.mem_fixingSubgroup_iff]
-  
+
   simp_rw [OrderIso.trans_apply, OrderIso.dual_apply, OrderIso.dualDual_symm_apply,
     OrderDual.ofDual_toDual, mem_subgroupGalEquivDirichletCharSubgroup_iff]
   rw [@IsGalois.ofDual_intermediateFieldEquivSubgroup_apply]
