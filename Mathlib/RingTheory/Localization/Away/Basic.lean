@@ -335,10 +335,7 @@ lemma Away.mul_of_associated (x z : R) (y : S) [IsLocalization.Away x S]
     {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [IsLocalization.Away y T]
     (h : Associated (algebraMap R S z) y) : IsLocalization.Away (x * z) T := by
-  obtain ⟨u, hu⟩ := h.symm
-  have : Away ((algebraMap R S) z) T := by
-    rw [← hu]
-    exact .mul_of_isUnit _ _ (u.isUnit.map _)
+  have : Away ((algebraMap R S) z) T := by rwa [iff_of_associated h]
   exact .mul' S _ _ _
 
 end AtUnits

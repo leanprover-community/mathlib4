@@ -46,10 +46,6 @@ See `Algebra.basicOpen_subset_smoothLocus_iff_smooth` and `Algebra.isOpen_smooth
 abbrev IsSmoothAt (p : Ideal A) [p.IsPrime] : Prop :=
   Algebra.FormallySmooth R (Localization.AtPrime p)
 
-instance (priority := 900) SmoothAt.of_formallySmooth
-    [FormallySmooth R A] (p : Ideal A) [p.IsPrime] : IsSmoothAt R p :=
-  .comp _ A _
-
 /-- `Algebra.smoothLocus R A` is the set of primes `p` of `A`
 such that `Aₚ` is formally smooth over `R`. -/
 def smoothLocus : Set (PrimeSpectrum A) := { p | IsSmoothAt R p.asIdeal }

@@ -183,7 +183,7 @@ theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
 
-instance : FormallyEtale R (Localization M) := by
+instance [FormallyEtale R S] (M : Submonoid S) : FormallyEtale R (Localization M) := by
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth]
   exact ⟨inferInstance, inferInstance⟩
 

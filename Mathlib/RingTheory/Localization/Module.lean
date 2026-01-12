@@ -335,8 +335,7 @@ lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] 
 variable {S} in
 lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
     [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
-    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂]
-    (l : M →ₗ[R] N) :
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] (l : M →ₗ[R] N) :
     ⇑(map S l) = (IsLocalizedModule.iso S g₂).symm ∘
       IsLocalizedModule.map S g₁ g₂ l ∘ IsLocalizedModule.iso S g₁ := by
   rw [← LinearMap.coe_restrictScalars R, restrictScalars_map_eq _ g₁ g₂ l]

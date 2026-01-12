@@ -484,8 +484,9 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   ext
   simp
 
-instance : FormallySmooth R (Localization M) :=
-  .of_isLocalization M
+instance [FormallySmooth R A] (M : Submonoid A) : FormallySmooth R (Localization M) :=
+  have : FormallySmooth A (Localization M) := of_isLocalization M
+  .comp _ A _
 
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   refine .of_comp_surjective fun Q _ _ I e f ↦ ?_
