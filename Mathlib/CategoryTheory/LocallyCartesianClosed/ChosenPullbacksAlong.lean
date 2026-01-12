@@ -183,23 +183,44 @@ abbrev fst : pullbackObj f g ⟶ Y := fst' f g |>.left
 
 theorem fst'_left : (fst' f g).left = fst f g := rfl
 
-/-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
-abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
-
-theorem pullback_map_left_snd {Y' : C} (f' : Y' ⟶ Y) :
-    ((pullback g).map (Over.homMk f')).left ≫ snd f g = snd (f' ≫ f) g := by
-  simp
+@[reassoc (attr := simp)]
+theorem fst'_naturality {S T : Over X} (φ : S ⟶ T) :
+    (Over.map g).map ((pullback g).map φ) ≫ fst' T.hom g = fst' S.hom g ≫ φ := by
+  have := (mapPullbackAdj g).counit.naturality φ
+  rw [fst', fst']
+  simp only [Functor.id_map, Functor.comp_map] at this
+  exact this
 
 @[reassoc (attr := simp)]
-theorem pullback_map_left_snd₂ {T T' : Over X} (f' : T' ⟶ T) :
-    ((pullback g).map f').left ≫ snd T.hom g = snd T'.hom g :=
-  Over.w ((pullback g).map f')
+theorem pullback_map_left_fst {S T : Over X} (φ : S ⟶ T) :
+    ((pullback g).map φ).left ≫ fst T.hom g = fst S.hom g ≫ φ.left := by
+  rw [← fst'_left, ← fst'_left]
+  have H := congr_arg CommaMorphism.left <| fst'_naturality g φ
+  dsimp at H
+  exact H
+
+@[reassoc (attr := simp)]
+theorem pullback_map_over_homMk_left_fst {Y' : C} (f' : Y' ⟶ Y) :
+    ((pullback g).map (Over.homMk f')).left ≫ fst f g = fst (f' ≫ f) g ≫ f' :=
+  pullback_map_left_fst g (Over.homMk (U := Over.mk (f' ≫ f)) (V:= Over.mk f) f')
+
+/-- The second projection from the chosen pullback along `g` of `f` to the domain of `g`. -/
+abbrev snd : pullbackObj f g ⟶ Z := (pullback g).obj (Over.mk f) |>.hom
 
 /-- A morphism in `Over X` from the chosen pullback along `g` of `f` to `Over.mk g`. -/
 abbrev snd' : (Over.map g).obj ((pullback g).obj (Over.mk f)) ⟶ (Over.mk g) :=
   Over.homMk (snd f g)
 
 theorem snd'_left : (snd' f g).left = snd f g := rfl
+
+@[reassoc (attr := simp)]
+theorem pullback_map_left_snd {T T' : Over X} (f' : T' ⟶ T) :
+    ((pullback g).map f').left ≫ snd T.hom g = snd T'.hom g :=
+  Over.w ((pullback g).map f')
+
+theorem pullback_map_over_homMk_left_snd {Y' : C} (f' : Y' ⟶ Y) :
+    ((pullback g).map (Over.homMk f')).left ≫ snd f g = snd (f' ≫ f) g := by
+  simp
 
 variable {f g}
 
@@ -245,6 +266,27 @@ set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
+
+@[simp]
+theorem lift_comp_fst_snd {W : C} (u : W ⟶ pullbackObj f g) :
+    lift (u ≫ fst f g) (u ≫ snd f g) (by simpa [assoc] using congrArg (u ≫ ·) condition) = u := by
+  cat_disch
+
+-- Note : Adding `simp` here would give rise linter errors about simp lemmas
+-- `pullback_map_left_fst` and `pullback_map_left_snd` and their variants with `homMk`.
+@[reassoc]
+theorem pullback_map_left_eq_lift {S T : Over X} (φ : S ⟶ T) :
+    ((pullback g).map φ).left =
+      lift (fst S.hom g ≫ φ.left) (snd S.hom g) (by rw [assoc, Over.w φ, condition]) := by
+  apply hom_ext
+  · simp only [pullback_map_left_fst, lift_fst]
+  · simp only [pullback_map_left_snd, lift_snd]
+
+@[reassoc]
+theorem pullback_map_over_homMk_left_eq_lift {Y' : C} (f' : Y' ⟶ Y) :
+    ((pullback g).map (Over.homMk f')).left =
+      lift (fst (f' ≫ f) g ≫ f') (snd (f' ≫ f) g) (by rw [assoc, condition]) := by
+  simp [pullback_map_left_eq_lift]
 
 end Lift
 
@@ -305,6 +347,14 @@ theorem pullbackMap_comp {Y' Z' X' Y'' Z'' X'' : C}
       (by rw [reassoc_of% comm₁', comm₁, assoc]) (by rw [reassoc_of% comm₂', comm₂, assoc]) := by
   cat_disch
 
+-- Note: adding `@[simp]` here would give rise to linter errors about
+-- `pullback_map_left_fst`, `pullback_map_left_snd` and their variants with `homMk`.
+@[reassoc]
+theorem pullback_map_left_eq_pullbackMap {S T : Over X} (φ : S ⟶ T) :
+    ((pullback g).map φ).left =
+      pullbackMap T.hom g S.hom g φ.left (𝟙 Z) (𝟙 X) (by simp [Over.w φ]) (by simp) := by
+  simp [pullbackMap, pullback_map_left_eq_lift]
+
 end PullbackMap
 
 section
@@ -332,7 +382,7 @@ theorem snd_comp_snd :
     snd f' (fst f g) ≫ snd f g = snd (f' ≫ f) g := by
   simp [snd]
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem lift_lift :
     lift (g := fst f g) a (lift (a ≫ f') b (by rw [assoc]; exact h)) =
       lift a b := by
@@ -354,7 +404,7 @@ open ChosenPullbacksAlong
 
 variable {Z X : C} {g : Z ⟶ X} [ChosenPullbacksAlong g]
 
-@[reassoc (attr := simp)]
+@[simp]
 theorem mapPullbackAdj_unit_app_left_eq_lift {W : Over Z} :
     ((mapPullbackAdj g).unit.app W).left = lift (𝟙 W.left) (W.hom) := by
   apply hom_ext
@@ -372,6 +422,7 @@ theorem mapPullbackAdj_unit_app {W : Over Z} :
       Over.homMk (lift (𝟙 W.left) (W.hom)) := by
   cat_disch
 
+#lint
 attribute [local instance] chosenPullbacksAlongFst
 
 theorem mapPullbackAdj_unit_app_eq_lift_lift {W : Over Z} :
