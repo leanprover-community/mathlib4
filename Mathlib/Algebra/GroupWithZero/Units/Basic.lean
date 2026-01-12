@@ -165,29 +165,33 @@ variable [Inv M₀] [LawfulInv M₀]
 theorem inv_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ = ((h.unit⁻¹ : M₀ˣ) : M₀) := by
   rw [← inv_unit]; simp
 
+theorem mul_inv_cancel₀ (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.mul_inv]
+
+theorem inv_mul_cancel₀ (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.inv_mul]
+
 @[grind =]
 theorem _root_.isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
-  · rcases h with ⟨u, rfl⟩
-    rw [inv_unit, Units.mul_inv]
-  · by_cases hzero : NeZero (1 : M₀)
-    · contrapose
-      intro h
-      simp [inv_of_not_isUnit _ h]
-    · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
-      exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
+  refine ⟨mul_inv_cancel₀ _, ?_⟩
+  by_cases hzero : NeZero (1 : M₀)
+  · contrapose
+    intro h
+    simp [inv_of_not_isUnit _ h]
+  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
+    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
 
 @[grind =]
 theorem _root_.isUnit_iff_inv_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ * x = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
-  · rcases h with ⟨u, rfl⟩
-    rw [inv_unit, Units.inv_mul]
-  · by_cases hzero : NeZero (1 : M₀)
-    · contrapose
-      intro h
-      simp [inv_of_not_isUnit _ h]
-    · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
-      exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
+  refine ⟨inv_mul_cancel₀ _, ?_⟩
+  by_cases hzero : NeZero (1 : M₀)
+  · contrapose
+    intro h
+    simp [inv_of_not_isUnit _ h]
+  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
+    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
 
 theorem mul_inv_cancel_right₀ (x y : M₀) (h : IsUnit x) : y * x * x⁻¹ = y := by grind
 
