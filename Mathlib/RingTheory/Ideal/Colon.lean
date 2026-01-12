@@ -90,10 +90,7 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
       exact (mem_iInf (p := fun j => (f i).colon (g j))).1 hx_i j
     exact mem_colon.1 h m hm'
 
-@[deprecated iInf_colon_iUnion (since := "2026-01-11")]
-theorem iInf_colon_iSup (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*)
-    (g : ι₂ → Set M) : (⨅ i, f i).colon (⨆ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
-  simpa using iInf_colon_iUnion (ι₁ := ι₁) (f := f) (ι₂ := ι₂) (g := g)
+@[deprecated (since := "2026-01-11")] alias iInf_colon_iSup := iInf_colon_iUnion
 
 /-- If `S ⊆ N`, then the colon ideal `N.colon S` is the whole ring. -/
 lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
