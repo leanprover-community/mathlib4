@@ -61,7 +61,7 @@ theorem coe_le_iff {F₁ F₂ : Face C} : F₁.toPointedCone ≤ F₂.toPointedC
   constructor <;> intro h x xF₁ <;> exact h xF₁
 
 @[simp]
-theorem mem_coe {F : Face C} (x : M) : x ∈ F.toSubmodule ↔ x ∈ F := .rfl
+theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
 
 /-!
 ### Infimum, supremum and lattice
@@ -145,17 +145,17 @@ def snd (F : Face (C₁.prod C₂)) : Face C₂ := ⟨_, F.isFaceOf.snd⟩
 @[simp]
 theorem prod_fst (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).fst = F₁ := by
   ext
-  simpa [fst, prod, ← mem_coe] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
+  simpa [fst, prod, ← mem_coe, toPointedCone] using fun _ => ⟨0, F₂.toSubmodule.zero_mem⟩
 
 @[simp]
 theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = F₂ := by
   ext
-  simpa [snd, prod, ← mem_coe] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
+  simpa [snd, prod, ← mem_coe, toPointedCone] using fun _ => ⟨0, F₁.toSubmodule.zero_mem⟩
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, fst, snd, ← mem_coe, mem_prod, mem_map, LinearMap.fst_apply, Prod.exists,
-    exists_and_right, exists_eq_right, LinearMap.snd_apply]
+  simp only [prod, fst, snd, ← mem_coe, toPointedCone, mem_prod, mem_map, LinearMap.fst_apply,
+    Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
     intro y yn z zm
