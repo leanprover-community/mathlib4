@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals
@@ -159,17 +158,12 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
--- TODO: add a `WithTop` instance and use it here
-noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
-  { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
-      inferInstanceAs (CommSemiring ℝ≥0∞) with
-    bot_le _ := bot_le
-    mul_le_mul_left _ _ := mul_le_mul_left
-    zero_le_one := zero_le 1 }
+instance : IsOrderedMonoid ℝ≥0∞ where
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
-  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
+  uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 

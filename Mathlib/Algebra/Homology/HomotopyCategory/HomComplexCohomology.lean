@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.Algebra.Category.Grp.Abelian
 
 /-!
 # Cohomology of the hom complex
@@ -98,7 +98,7 @@ lemma mk_sub (x y : Cocycle K L n) :
 
 @[simp]
 lemma mk_neg (x : Cocycle K L n) :
-    mk (-x) = - mk x := rfl
+    mk (-x) = -mk x := rfl
 
 lemma mk_eq_zero_iff (x : Cocycle K L n) :
     mk x = 0 ↔ x ∈ coboundaries K L n :=

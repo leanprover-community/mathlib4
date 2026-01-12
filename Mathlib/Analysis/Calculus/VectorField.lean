@@ -227,7 +227,7 @@ lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
       fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
         fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
   have H₀ : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
-    (hf.fderivWithin_right hs (by decide) hxs).differentiableWithinAt le_rfl
+    (hf.fderivWithin_right hs (by decide) hxs).differentiableWithinAt one_ne_zero
   have H₁ : UniqueDiffWithinAt 𝕜 s x := hs x hxs
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply] <;> try assumption
   simp [lieBracketWithin, hsymm (V _) (W _)]
@@ -426,13 +426,13 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
   have aux₁ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
       DifferentiableWithinAt 𝕜 (fun x ↦ (fderivWithin 𝕜 V s x) (U x)) s x :=
     have := hV.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
-    this.differentiableWithinAt le_rfl
+    this.differentiableWithinAt one_ne_zero
   have aux₂ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
       fderivWithin 𝕜 (fun y ↦ (fderivWithin 𝕜 U s y) (V y)) s x =
         (fderivWithin 𝕜 U s x).comp (fderivWithin 𝕜 V s x) +
         (fderivWithin 𝕜 (fderivWithin 𝕜 U s) s x).flip (V x) := by
-    refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt one_le_two)
-    exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt le_rfl
+    refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt two_ne_zero)
+    exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt one_ne_zero
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hV hW) (aux₁ hW hV)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
@@ -575,8 +575,8 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     simp [A', fderivWithin_const_apply]
   have I : (N x : E →L[𝕜] F) ∘L (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
       - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘L ((N x).symm : F →L[𝕜] E) := by
-    rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt le_rfl)
-      (hN'.differentiableWithinAt le_rfl) (hs x hx)] at this
+    rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt one_ne_zero)
+      (hN'.differentiableWithinAt one_ne_zero) (hs x hx)] at this
     simpa [eq_neg_iff_add_eq_zero] using this
   have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
     ext; simp
@@ -593,8 +593,8 @@ lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set
   simp only [pullbackWithin_eq]
   have : DifferentiableWithinAt 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
     apply DifferentiableWithinAt.clm_apply
-    · exact M_symm_smooth.differentiableWithinAt le_rfl
-    · exact hV.comp _ (hf.differentiableWithinAt one_le_two) hst
+    · exact M_symm_smooth.differentiableWithinAt one_ne_zero
+    · exact hV.comp _ (hf.differentiableWithinAt two_ne_zero) hst
   apply this.congr_of_eventuallyEq
   · filter_upwards [hM] with y hy using by simp [← hy]
   · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
@@ -636,16 +636,16 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
       fderivWithin 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (W (f y))) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq_of_mem _ hx
     filter_upwards [hM] with y hy using pullbackWithin_eq_of_fderivWithin_eq hy _
-  have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
+  have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt two_ne_zero
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
   · simp [fderivWithin_comp' x hW Af hst (hu x hx), ← hMx,
       fderivWithin_comp' x hV Af hst (hu x hx), M_diff, hf.eq]
   · exact hu x hx
-  · exact M_symm_smooth.differentiableWithinAt le_rfl
+  · exact M_symm_smooth.differentiableWithinAt one_ne_zero
   · exact hV.comp x Af hst
   · exact hu x hx
-  · exact M_symm_smooth.differentiableWithinAt le_rfl
+  · exact M_symm_smooth.differentiableWithinAt one_ne_zero
   · exact hW.comp x Af hst
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric

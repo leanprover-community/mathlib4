@@ -88,7 +88,7 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
 
 @[simp] lemma mongePoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).mongePoint = s.mongePoint := by
-  simp_rw [mongePoint, circumcenter_reindex, centroid, reindex]
+  simp_rw [mongePoint, circumcenter_reindex, centroid_def, reindex]
   have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   subst h
   congr 3
@@ -103,7 +103,7 @@ theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ
   field_simp
   have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
   rw [smul_eq_iff_eq_invOf_smul, smul_sum]
-  unfold Finset.centroid
+  rw [univ_centroid_eq, centroid_eq_affineCombination]
   rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
   simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
     Nat.cast_one, invOf_eq_inv]
@@ -260,7 +260,7 @@ lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3
     (s.reindex e).mongePlane i₁ i₂ = s.mongePlane (e.symm i₁) (e.symm i₂) := by
   have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   subst h
-  simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid,
+  simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid_def,
     reindex]
   congr 2
   convert Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3

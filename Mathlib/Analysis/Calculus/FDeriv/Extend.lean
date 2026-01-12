@@ -20,7 +20,7 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 one-dimensional derivative `deriv ℝ f`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
@@ -127,7 +127,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     · have : y ∈ s := sab ⟨lt_of_le_of_ne hy.1 (Ne.symm h), hy.2⟩
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
-    simp only [deriv_fderiv.symm]
+    simp only [toSpanSingleton_deriv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
       (tendsto_nhdsWithin_mono_left Ioo_subset_Ioi_self f_lim')
@@ -162,7 +162,7 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     · have : y ∈ s := sab ⟨hy.1, lt_of_le_of_ne hy.2 h⟩
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
-    simp only [deriv_fderiv.symm]
+    simp only [toSpanSingleton_deriv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
       (tendsto_nhdsWithin_mono_left Ioo_subset_Iio_self f_lim')

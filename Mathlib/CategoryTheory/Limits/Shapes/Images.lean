@@ -59,7 +59,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 noncomputable section
 
-universe v u
+universe w v u
 
 open CategoryTheory
 
@@ -180,6 +180,11 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
   m := m
   e := e
   m_mono := by rw [hm]; infer_instance
+
+@[simp]
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
+    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
+  simp [← types_comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
@@ -604,7 +609,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
                    lift_fac := fun F' => by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
-                    rw [← this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
+                    rw [← this, image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 
 /-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
 (we need `C` to have equalizers to prove this).
@@ -629,14 +634,14 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
       { lift := fun F' => image.lift F'.ofCompIso
         lift_fac := fun F' => by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
-            ← IsIso.inv_hom_id g,← Category.assoc]
+            ← IsIso.inv_hom_id g, ← Category.assoc]
           refine congrArg (· ≫ g) ?_
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
               simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
                 MonoFactorisation.ofCompIso_m]
-          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'),image.as_ι] }}
+          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] }}
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
 def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where

@@ -52,7 +52,7 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q + 1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
