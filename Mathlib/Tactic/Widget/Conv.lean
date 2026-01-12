@@ -147,7 +147,7 @@ where
       if let some n := n then do -- found the argument (it is `acc[n]`)
         let bis : Array BinderInfo :=
           (← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray).map (·.bInfo)
-        if let some .default := bis[n]? then -- explicit argument
+        if bis[n]? == some .default then -- explicit argument
           -- find the number of explicit arguments between the head and this arg (inclusive)
           arg ((bis.take n).count .default + 1)
             false <$> go acc[n] i
