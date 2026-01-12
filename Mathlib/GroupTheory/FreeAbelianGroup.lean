@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
