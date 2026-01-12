@@ -176,13 +176,11 @@ class PreIndSpreads (P : MorphismProperty C) : Prop where
 
 alias exists_isPushout_of_isFiltered := PreIndSpreads.exists_isPushout
 
-open Cardinal in
-attribute [local instance] fact_isRegular_aleph0 in
 /-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
 is stable under composition if `P` is. -/
 @[stacks 0BSI "The stacks project lemma is for the special case of ind-étale ring homomorphisms."]
 lemma IsStableUnderComposition.ind_of_preIndSpreads
-    [∀ X : C, (IsCardinalAccessibleCategory.{w} (Under X) ℵ₀)] [HasPushouts C]
+    [∀ X : C, (IsFinitelyAccessibleCategory.{w} (Under X))] [HasPushouts C]
     [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange]
     [PreIndSpreads.{w} P] (H : P ≤ isFinitelyPresentable.{w} C) :
     (ind.{w} P).IsStableUnderComposition where
@@ -216,5 +214,15 @@ lemma IsStableUnderComposition.ind_of_preIndSpreads
     · rwa [reassoc_of% hq]
     · rw [hcomp']
       exact P.comp_mem _ _ (h₁ _).left (P.pushout_inl _ _ hf')
+
+/-- If `P` ind-spreads and all under categories are finitely accessible, `ind P`
+is multiplicative if `P` is. -/
+lemma IsMultiplicative.ind_of_preIndSpreads
+    [∀ X : C, (IsFinitelyAccessibleCategory.{w} (Under X))] [HasPushouts C]
+    [P.IsMultiplicative] [P.IsStableUnderCobaseChange]
+    [PreIndSpreads.{w} P] (H : P ≤ isFinitelyPresentable.{w} C) :
+    (ind.{w} P).IsMultiplicative where
+  __ := inferInstanceAs <| ContainsIdentities _
+  __ := IsStableUnderComposition.ind_of_preIndSpreads H
 
 end CategoryTheory.MorphismProperty
