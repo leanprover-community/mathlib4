@@ -195,7 +195,6 @@ def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
     | none => `(tactic| conv => $seq:convSeq1Indented)
     | some n => `(tactic| conv at $(← mkIdentFromRef n):ident => $seq:convSeq1Indented)
 
-open Lean Syntax in
 /-- Return the syntax to insert for the conv widget.
 Factored out of `insertEnter` for easy testing. -/
 public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) :
@@ -213,7 +212,6 @@ public def insertEnterSyntax (locations : Array Lean.SubExpr.GoalsLocation) (goa
   let path ← Path.ofSubExprPosArray expr subexprPos.toArray
   pathToStx path fvarUserName?
 
-open Lean Syntax in
 /-- Return the text for the link in the conv widget that inserts the replacement,
 and also return the replacement, and the range within the file to highlight after the
 replacement is inserted. The highlighted range will always be the trailing `skip`. -/
@@ -263,7 +261,6 @@ public def ConvSelectionPanel.rpc :=
 public def ConvSelectionPanel : ProofWidgets.Component SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
-open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal or in the type of a local hypothesis or let-decl. -/
 elab stx:"conv?" : tactic => do
