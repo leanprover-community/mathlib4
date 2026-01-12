@@ -48,9 +48,8 @@ namespace Scheme.Cover
 variable {S : Scheme.{u}} (𝒰 : S.OpenCover) [Category 𝒰.I₀] [𝒰.LocallyDirected]
 
 /--
-A relative gluing datum over a locally directed cover `𝒰` of `S` is a functor is
-a scheme `Xᵢ` for every `i : 𝒰.I₀` and natural maps `Xᵢ ⟶ Uᵢ` such that for
-every `i ⟶ j`, the diagram
+A relative gluing datum over a locally directed cover `𝒰` of `S` is a scheme `Xᵢ` for every
+`i : 𝒰.I₀` and natural maps `Xᵢ ⟶ Uᵢ` such that for every `i ⟶ j`, the diagram
 ```
 Xᵢ --> Uᵢ
 |      |
