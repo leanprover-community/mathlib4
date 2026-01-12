@@ -348,7 +348,7 @@ theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
 instance (V : Type u) : Inhabited (SimpleGraph V) :=
   ⟨⊥⟩
 
-instance [Subsingleton V] : Unique (SimpleGraph V) where
+instance uniqueOfSubsingleton [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
@@ -396,21 +396,18 @@ theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.su
 
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
 @[simp]
-theorem support_top_ofNontrivial [Nontrivial V] :
-    (⊤ : SimpleGraph V).support = Set.univ := by
-  ext v
-  have := exists_ne v
-  tauto
-
-/-- The support of a graph is empty if there at most one vertex. -/
-@[simp]
-theorem support_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.support = ∅ :=
-  Set.eq_empty_of_forall_notMem fun v ⟨w, h⟩ => G.irrefl <| Subsingleton.elim v w ▸ h
+theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
+  Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _ h => h.symm
 
 /-- The support of the empty graph is empty. -/
 @[simp]
-theorem support_bot : (⊥ : SimpleGraph V).support = ∅ := by
+theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
   Set.eq_empty_of_forall_notMem fun _ ⟨_, h⟩ => h
+
+/-- The support of a graph is empty if there at most one vertex. -/
+@[simp]
+theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
+  SimpleGraph.uniqueOfSubsingleton.uniq G ▸ support_bot
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
