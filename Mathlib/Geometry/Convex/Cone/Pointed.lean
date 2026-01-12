@@ -241,13 +241,11 @@ variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
 def lineal (C : PointedCone R E) : Submodule R E where
-  carrier := C ∩ -C
-  add_mem' hx hy := by simpa using ⟨C.add_mem hx.1 hy.1, C.add_mem hy.2 hx.2⟩
-  zero_mem' := by simp
+  __ := C ⊓ -C
   smul_mem' r _ hx := by
-    by_cases hr : 0 ≤ r
+    obtain hr | hr := le_total 0 r
     · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
-    · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
+    · rw [← neg_nonneg] at hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
 
 @[simp]
