@@ -186,6 +186,73 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
 
+theorem _root_.Ideal.IsPrime.eq_of_inf_eq
+    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : Ideal.IsPrime P)
+    (hs : s.inf f = P) : ∃ i ∈ s, f i = P := by
+  subst hs
+  exact (hp.inf_le'.mp le_rfl).imp (fun a ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
+
+theorem _root_.Submodule.IsPrimary.foobar {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] {I : Submodule R M} (hI : I.IsPrimary) : (I.colon ⊤).radical.IsPrime := by
+  rw [Ideal.isPrime_iff]
+  refine hI.imp ?_ ?_
+  · contrapose!
+    rw [Ideal.radical_eq_top, Ideal.eq_top_iff_one]
+    simp [mem_colon]
+    simp [eq_top_iff']
+  · simp only [← mem_colon_def, ← Ideal.mem_radical_iff]
+    rintro h x y ⟨n, hn⟩
+    rw [or_iff_not_imp_left]
+    intro hx
+    have h1 := @h (x ^ n)
+    replace hx : x ^ n ∉ (I.colon ⊤).radical := by
+      contrapose! hx
+      exact Ideal.mem_radical_of_pow_mem hx
+    simp [hx] at h1
+    simp [mem_colon, mul_pow, mul_smul] at hn
+    use n
+    simp only [mem_colon, mem_top]
+    grind
+
+open Ideal LinearMap in
+/-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald. -/
+lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
+    {R M : Type*} [CommSemiring R] [AddCommGroup M] [Module R M] [DecidableEq (Submodule R M)]
+    {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
+    {p : Ideal R} :
+    p ∈ (fun J : (Submodule R M) ↦ (J.colon ⊤).radical) '' t ↔
+      p.IsPrime ∧ ∃ x : M, p = (I.ann x).radical := by
+  classical
+  have key1 (x : M) : I.ann x = t.inf fun q ↦ q.ann x := by
+    simp [← ht.inf_eq, Ideal.ext_iff, Submodule.mem_ann_iff]
+  have key2 (x : M) : radical (I.ann x) = t.inf fun q ↦ radical (q.ann x) := by
+    simp [key1, ← radicalInfTopHom_apply, Function.comp_def]
+  have key3 (x : M) : ∀ q ∈ t, (q.ann x).radical = if x ∈ q then ⊤ else (q.colon ⊤).radical := by
+    intro q hq
+    split_ifs with hx
+    · rwa [radical_eq_top, Submodule.ann_eq_top]
+    · exact (ht.primary hq).radical_ann_of_notMem hx
+  constructor <;> intro hp
+  · obtain ⟨q, hqt, rfl⟩ := hp
+    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    use (ht.primary hqt).foobar
+    use x
+    symm
+    rw [key1, ← Finset.insert_erase hqt, Finset.inf_insert]
+    have key : ∀ q' ∈ t.erase q, q'.ann x = ⊤ := by
+      intro q' hq'
+      rw [Submodule.ann_eq_top]
+      rw [Submodule.mem_finsetInf] at hxt
+      exact hxt q' hq'
+    rw [Finset.inf_congr rfl key, Finset.inf_top, inf_top_eq]
+    symm
+    rw [key3 x q hqt, if_neg hxq]
+  · obtain ⟨hp, x, rfl⟩ := hp
+    have key : (I.ann x).radical = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon ⊤).radical) := by
+      rw [key2, Finset.inf_congr rfl (key3 x), Finset.inf_ite, Finset.inf_top, top_inf_eq]
+    obtain ⟨q, hq1, hq2⟩ := IsPrime.eq_of_inf_eq hp key.symm
+    exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
+
 end Submodule
 
 namespace Ideal
@@ -201,12 +268,6 @@ lemma IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical [Decidabl
     rfl
   obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
   exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt), ht.le_radical hqt⟩ hqp)⟩
-
-theorem IsPrime.eq_of_inf_eq
-    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P)
-    (hs : s.inf f = P) : ∃ i ∈ s, f i = P := by
-  subst hs
-  exact (hp.inf_le'.mp le_rfl).imp (fun a ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
 
 open LinearMap in
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald. -/

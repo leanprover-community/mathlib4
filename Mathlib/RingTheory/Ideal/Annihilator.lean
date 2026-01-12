@@ -27,7 +27,7 @@ We provide the definition and related lemmas about annihilator ideals.
 
 namespace Submodule
 
-open Ideal
+open Ideal Submodule
 
 section Semiring
 
@@ -39,9 +39,9 @@ def ann : Ideal R where
   carrier := {r | r • m ∈ I}
   add_mem' ha hb := by simp [add_smul, I.add_mem ha hb]
   zero_mem' := by simp
-  smul_mem' a b hb := by simp [← smul_smul, I.smul_mem a hb]
+  smul_mem' a b hb := by simp [mul_smul, I.smul_mem a hb]
 
-variable {I r m} in
+variable {N r m} in
 theorem mem_ann_iff : r ∈ I.ann m ↔ r • m ∈ I :=
   Iff.rfl
 
@@ -49,37 +49,24 @@ variable {I J} in
 theorem ann_mono (h : I ≤ J) : I.ann m ≤ J.ann m :=
   fun _ hr ↦ h hr
 
-variable {I m} in
+variable {I} in
 theorem ann_eq_top : I.ann m = ⊤ ↔ m ∈ I := by
   rw [eq_top_iff_one, mem_ann_iff, one_smul]
 
-theorem _root_.Ideal.ann_le (I : Ideal R) [I.IsTwoSided] (r : R) : I ≤ I.ann r :=
-  fun _ ↦ I.mul_mem_right r
-
-theorem ann_inf : (I ⊓ J).ann m = I.ann m ⊓ J.ann m :=
-  rfl
-
--- various other inf lemmas
+theorem colon_top_le : I.colon ⊤ ≤ I.ann m :=
+  fun r hr ↦ mem_colon.mp hr m mem_top
 
 end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (I J : Ideal R) (x y : R)
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  {I : Submodule R M} {m : M}
 
-variable {I x} in
-theorem IsPrimary.radical_ann_of_notMem (hI : I.IsPrimary) (hx : x ∉ I) :
-    (I.ann x).radical = I.radical := by
-  refine le_antisymm (radical_le_radical_iff.mpr fun y hy ↦ ?_) (radical_mono (I.ann_le x))
-  rw [mem_ann_iff, smul_eq_mul, mul_comm] at hy
-  exact ((isPrimary_iff.mp hI).2 hy).resolve_left hx
-
-variable {I x} in
-theorem IsPrimary.ann_of_notMem_radical (hI : IsPrimary I) (hx : x ∉ I.radical) :
-    (I.ann x) = I := by
-  refine le_antisymm ?_ (I.ann_le x)
-  intro y hy
-  exact ((isPrimary_iff.mp hI).2 hy).resolve_right hx
+theorem IsPrimary.radical_ann_of_notMem (hI : I.IsPrimary) (hm : m ∉ I) :
+    (I.ann m).radical = (I.colon ⊤).radical :=
+  le_antisymm (radical_le_radical_iff.mpr fun y hy ↦ (hI.2 hy).resolve_left hm)
+    (radical_mono (colon_top_le I m))
 
 end CommSemiring
 
