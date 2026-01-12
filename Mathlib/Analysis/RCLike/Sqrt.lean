@@ -143,5 +143,13 @@ theorem RCLike.sqrt_I : sqrt (I : 𝕜) = √2⁻¹ * (1 - I) * I := by
   rw [sqrt]
   split_ifs with h
   · simp_rw [RingEquiv.symm_apply_eq, map_mul]
-    simp [h, mul_assoc, add_mul, add_comm (1 : ℂ), Complex.sqrt_I]
+    simp [h, mul_assoc, mul_add, add_comm, Complex.sqrt_I, add_mul]
+  grind [I_eq_zero_or_im_I_eq_one]
+
+theorem RCLike.sqrt_neg_I : sqrt (-I : 𝕜) = √2⁻¹ * (1 + I) * -I := by
+  rw [sqrt]
+  split_ifs with h
+  · simp_rw [RingEquiv.symm_apply_eq, map_mul]
+    simp [h, mul_assoc, add_comm, Complex.sqrt_neg_I, neg_mul, mul_add, add_mul, mul_sub,
+      mul_comm Complex.I, ← sub_eq_add_neg]
   grind [I_eq_zero_or_im_I_eq_one]
