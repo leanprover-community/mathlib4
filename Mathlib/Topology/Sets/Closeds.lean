@@ -435,6 +435,7 @@ theorem singleton_injective [T1Space α] : Function.Injective ({·} : α → Irr
 theorem singleton_inj [T1Space α] {x y : α} : ({x} : IrreducibleCloseds α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
 -/
@@ -443,6 +444,7 @@ def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧
   toFun a  := ⟨a.1, a.2, a.3⟩
   invFun a := ⟨a.1, a.2.1, a.2.2⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
 -/
