@@ -30,8 +30,6 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 `to_additive`ized from the versions for `^`.
 -/
 
-set_option backward.proofsInPublic true -- needed for `to_addditive`
-
 @[expose] public section
 
 namespace Function
