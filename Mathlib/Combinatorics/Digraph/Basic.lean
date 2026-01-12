@@ -510,9 +510,11 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   constructor
   · simp_all [sInf]
   · intro v w h_adj
-    simp_all [sInf]
+    simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf, Subtype.exists]
     constructor
-    ·
+    · use H, ⟨H_sub, H_verts⟩
+      
+      sorry
       done
     · intro a ha hv hmem
       specialize h_sub a ha hv hmem
