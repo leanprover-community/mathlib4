@@ -70,7 +70,7 @@ lemma AnalyticAt.meromorphicTrailingCoeffAt_of_eq_nhdsNE (h₁g : AnalyticAt �
   by_cases h₃ : meromorphicOrderAt f x = ⊤
   · simp only [h₃, WithTop.untop₀_top, zpow_zero, one_smul,
       MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top] at ⊢ h
-    apply EventuallyEq.eq_of_nhds (f := 0)
+    apply EventuallyEq.eq_of_nhds (f := (0 : 𝕜 → E))
     rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop) (by fun_prop)]
     apply (h.symm.trans (meromorphicOrderAt_eq_top_iff.1 h₃)).symm
   · unfold meromorphicTrailingCoeffAt
