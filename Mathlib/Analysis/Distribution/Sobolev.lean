@@ -123,83 +123,177 @@ theorem memSobolev_toTemperedDistributionCLM {s : ℝ} {p : ℝ≥0∞} [hp : Fa
     (Function.hasTemperateGrowth_one_add_norm_sq_rpow E (s / 2))
 
 variable (E F) in
-def Sobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] : Submodule ℂ 𝓢'(E, F) where
-  carrier := MemSobolev s p
-  add_mem' := memSobolev_add
-  zero_mem' := memSobolev_zero E F s p
-  smul_mem' := memSobolev_smul
+structure Sobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] where
+  toDistr : 𝓢'(E, F)
+  sobFn : Lp F p (volume : Measure E)
+  bessel_toDistr_eq_sobFn : besselPotential E F s toDistr = sobFn
 
 namespace Sobolev
 
-def sobFn {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Sobolev E F s p) :
-    Lp F p (volume : Measure E) :=
-  f.2.choose
+variable {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
 
-theorem sobFn_spec {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f : Sobolev E F s p} :
-    besselPotential E F s f = sobFn f :=
-  f.2.choose_spec
+theorem ext' {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : Sobolev E F s p}
+    (h₁ : f.toDistr = g.toDistr) (h₂ : f.sobFn = g.sobFn) : f = g := by
+  cases f; cases g; congr
+
+theorem memSobolev_toDistr (f : Sobolev E F s p) : MemSobolev s p f.toDistr :=
+  ⟨f.sobFn, f.bessel_toDistr_eq_sobFn⟩
 
 @[simp]
-theorem fourierMultiplier_neg_sobFn_eq {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-    {f : Sobolev E F s p} :
-    besselPotential E F (-s) (sobFn f) = f := by
-  simp [← sobFn_spec]
+theorem besselPotential_neg_sobFn_eq {f : Sobolev E F s p} :
+    besselPotential E F (-s) f.sobFn = f.toDistr := by
+  simp [← f.bessel_toDistr_eq_sobFn]
 
-theorem injective_sobFn {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
-    Function.Injective (sobFn (s := s) (p := p) (E := E) (F := F)) := by
-  intro ⟨f, hf⟩ ⟨g, hg⟩ hfg
-  simp only [Subtype.mk.injEq]
+@[ext]
+theorem ext {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {f g : Sobolev E F s p}
+    (h₁ : f.toDistr = g.toDistr) : f = g := by
+  apply ext' h₁
+  apply_fun MeasureTheory.Lp.toTemperedDistribution; swap
+  · apply LinearMap.ker_eq_bot.mp MeasureTheory.Lp.ker_toTemperedDistributionCLM_eq_bot
   calc
-    f = besselPotential E F (-s) (Sobolev.sobFn ⟨f, hf⟩) := by simp
-    _ = besselPotential E F (-s) (Sobolev.sobFn ⟨g, hg⟩) := by congr
-    _ = g := by simp
+    f.sobFn = besselPotential E F s f.toDistr := f.bessel_toDistr_eq_sobFn.symm
+    _ = besselPotential E F s g.toDistr := by congr
+    _ = g.sobFn := g.bessel_toDistr_eq_sobFn
 
-variable (E F) in
-def toLpₗ (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
-    Sobolev E F s p →ₗ[ℂ] Lp F p (volume : Measure E) where
-  toFun := Sobolev.sobFn
-  map_add' f g := by
-    apply_fun Lp.toTemperedDistributionCLM F (volume : Measure E) p
-    · simp [map_add, ← sobFn_spec]
-    exact LinearMap.ker_eq_bot.mp Lp.ker_toTemperedDistributionCLM_eq_bot
-  map_smul' c f := by
-    apply_fun Lp.toTemperedDistributionCLM F (volume : Measure E) p
-    · simp [← sobFn_spec]
-    exact LinearMap.ker_eq_bot.mp Lp.ker_toTemperedDistributionCLM_eq_bot
-
-theorem sobFn_add {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f g : Sobolev E F s p) :
-    sobFn (f + g) = sobFn f + sobFn g := (toLpₗ E F s p).map_add f g
-
-theorem sobFn_smul {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (c : ℂ) (f : Sobolev E F s p) :
-    sobFn (c • f) = c • sobFn f := (toLpₗ E F s p).map_smul c f
+def _root_.MemSobolev.toSobolev {f : 𝓢'(E, F)} (hf : MemSobolev s p f) : Sobolev E F s p where
+  toDistr := f
+  sobFn := hf.choose
+  bessel_toDistr_eq_sobFn := hf.choose_spec
 
 @[simp]
-theorem toLpₗ_apply {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Sobolev E F s p) :
+theorem _root_.MemSobolev.toSobolev_toDistr {f : 𝓢'(E, F)} (hf : MemSobolev s p f) :
+    hf.toSobolev.toDistr = f := rfl
+
+theorem _root_.MemSobolev.toSobolev_injective {f g : 𝓢'(E, F)} (hf : MemSobolev s p f)
+    (hg : MemSobolev s p g) (h : hf.toSobolev = hg.toSobolev) : f = g := by
+  rw [← hf.toSobolev_toDistr, ← hg.toSobolev_toDistr, h]
+
+variable (E F s p) in
+theorem injective_sobFn :
+    Function.Injective (sobFn (s := s) (p := p) (E := E) (F := F)) := by
+  intro f g hfg
+  refine ext' ?_ hfg
+  calc
+    f.toDistr = besselPotential E F (-s) (Sobolev.sobFn f) := by simp
+    _ = besselPotential E F (-s) (Sobolev.sobFn g) := by congr
+    _ = g.toDistr := by simp
+
+instance instZero : Zero (Sobolev E F s p) where
+  zero := {
+    toDistr := 0
+    sobFn := 0
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p _
+      simp [-Lp.toTemperedDistributionCLM_apply] }
+
+instance instAdd : Add (Sobolev E F s p) where
+  add f g := {
+    toDistr := f.toDistr + g.toDistr
+    sobFn := f.sobFn + g.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p (_ + _)
+      simp [map_add, f.bessel_toDistr_eq_sobFn, g.bessel_toDistr_eq_sobFn] }
+
+@[simp]
+theorem toDistr_add (f g : Sobolev E F s p) : (f + g).toDistr = f.toDistr + g.toDistr := rfl
+
+instance instSub : Sub (Sobolev E F s p) where
+  sub f g := {
+    toDistr := f.toDistr - g.toDistr
+    sobFn := f.sobFn - g.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p (_ - _)
+      simp [map_sub, f.bessel_toDistr_eq_sobFn, g.bessel_toDistr_eq_sobFn] }
+
+instance instNeg : Neg (Sobolev E F s p) where
+  neg f := {
+    toDistr := -f.toDistr
+    sobFn := -f.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p (- _)
+      simp [map_neg, f.bessel_toDistr_eq_sobFn] }
+
+instance instNSMul : SMul ℕ (Sobolev E F s p) where
+  smul c f := {
+    toDistr := c • f.toDistr
+    sobFn := c • f.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p _
+      simp [f.bessel_toDistr_eq_sobFn] }
+
+instance instZSMul : SMul ℤ (Sobolev E F s p) where
+  smul c f := {
+    toDistr := c • f.toDistr
+    sobFn := c • f.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p _
+      simp [f.bessel_toDistr_eq_sobFn] }
+
+/- Generalize this-/
+instance instSMul : SMul ℂ (Sobolev E F s p) where
+  smul c f := {
+    toDistr := c • f.toDistr
+    sobFn := c • f.sobFn
+    bessel_toDistr_eq_sobFn := by
+      change _ = Lp.toTemperedDistributionCLM F volume p _
+      simp [map_smul, f.bessel_toDistr_eq_sobFn] }
+
+@[simp]
+theorem toDistr_smul (c : ℂ) (f : Sobolev E F s p) : (c • f).toDistr = c • f.toDistr := rfl
+
+instance instAddCommGroup : AddCommGroup (Sobolev E F s p) :=
+  (injective_sobFn E F s p).addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+
+variable (E F s p) in
+/-- Coercion as an additive homomorphism. -/
+def coeHom : Sobolev E F s p →+ 𝓢'(E, F) where
+  toFun f := f.toDistr
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+theorem coeHom_injective : Function.Injective (coeHom E F s p) := by
+  apply ext
+
+instance instModule : Module ℂ (Sobolev E F s p) :=
+  coeHom_injective.module ℂ (coeHom E F s p) fun _ _ => rfl
+
+variable (E F s p) in
+def toLpₗ : Sobolev E F s p →ₗ[ℂ] Lp F p (volume : Measure E) where
+  toFun := sobFn
+  map_add' f g := by rfl
+  map_smul' c f := by rfl
+
+@[simp]
+theorem toLpₗ_apply (f : Sobolev E F s p) :
     toLpₗ E F s p f = sobFn f := rfl
 
-instance instNormedAddCommGroup (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+theorem sobFn_add (f g : Sobolev E F s p) :
+    sobFn (f + g) = sobFn f + sobFn g := rfl
+
+theorem sobFn_smul (c : ℂ) (f : Sobolev E F s p) :
+    sobFn (c • f) = c • sobFn f := rfl
+
+instance instNormedAddCommGroup :
     NormedAddCommGroup (Sobolev E F s p) :=
   NormedAddCommGroup.induced (Sobolev E F s p) (Lp F p (volume : Measure E)) (toLpₗ E F s p)
-    injective_sobFn
+    (injective_sobFn E F s p)
 
 @[simp]
-theorem norm_sobFn_eq (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (f : Sobolev E F s p) :
-    ‖sobFn f‖ = ‖f‖ :=
+theorem norm_sobFn_eq (f : Sobolev E F s p) : ‖f.sobFn‖ = ‖f‖ :=
   rfl
 
-instance instNormedSpace (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+instance instNormedSpace :
     NormedSpace ℂ (Sobolev E F s p) where
   norm_smul_le c f := by
     simp_rw [← norm_sobFn_eq, ← norm_smul]
-    apply Eq.le
-    congr
-    exact (toLpₗ E F s p).map_smul c f
+    rfl
 
-variable (E F) in
-def toLpₗᵢ (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+variable (E F s p) in
+def toLpₗᵢ :
     Sobolev E F s p →ₗᵢ[ℂ] Lp F p (volume : Measure E) where
   __ := toLpₗ E F s p
-  norm_map' f := by simp
+  norm_map' _ := rfl
 
 end Sobolev
 
@@ -315,11 +409,29 @@ namespace Sobolev
 
 instance instInnerProductSpace (s : ℝ) :
     InnerProductSpace ℂ (Sobolev E F s 2) where
-  inner f g := inner ℂ (sobFn f) (sobFn g)
+  inner f g := inner ℂ f.sobFn g.sobFn
   norm_sq_eq_re_inner f := by simp; norm_cast
   conj_inner_symm f g := by simp
   add_left f g h := by rw [sobFn_add, inner_add_left]
   smul_left f g c := by rw [sobFn_smul, inner_smul_left]
+
+open Laplacian
+
+instance instLaplacian (s : ℝ) : Laplacian (Sobolev E F s 2) (Sobolev E F (s - 2) 2) where
+  laplacian f := f.memSobolev_toDistr.laplacian.toSobolev
+
+@[simp]
+theorem laplacian_toDistr {s : ℝ} (f : Sobolev E F s 2) : (Δ f).toDistr = Δ f.toDistr := rfl
+
+def laplacianₗ {s : ℝ} : Sobolev E F s 2 →ₗ[ℂ] Sobolev E F (s - 2) 2 where
+  toFun := Δ
+  map_add' f g := by
+    ext1
+    simpa using (LineDeriv.laplacianCLM ℂ E 𝓢'(E, F)).map_add f.toDistr g.toDistr
+  map_smul' c f := by
+    ext1
+    simpa only [laplacian_toDistr, laplacianCLM_apply] using
+      (LineDeriv.laplacianCLM ℂ E 𝓢'(E, F)).map_smul c f.toDistr
 
 end Sobolev
 

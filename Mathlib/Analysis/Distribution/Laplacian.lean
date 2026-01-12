@@ -42,7 +42,6 @@ def laplacianCLM : V₁ →L[R] V₃ :=
   ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
     lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
 
-@[simp]
 theorem laplacianCLM_apply (f : V₁) : laplacianCLM R E V₁ f = laplacian E f := by
   simp [laplacianCLM, laplacian]
 
@@ -150,6 +149,10 @@ instance instLaplacian : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
 
 theorem laplacian_eq_sum' (f : 𝓢'(E, F)) :
     Δ f = ∑ i, ∂_{stdOrthonormalBasis ℝ E i} (∂_{stdOrthonormalBasis ℝ E i} f) := rfl
+
+@[simp]
+theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f = Δ f :=
+  LineDeriv.laplacianCLM_apply f
 
 @[simp]
 theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
