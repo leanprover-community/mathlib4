@@ -44,8 +44,8 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Modul
 variable {C C₁ C₂ : PointedCone R M} {F F₁ F₂ : Face C}
 
 /-- Converts a face of a pointed cone into a pointed cone. -/
-@[coe, simp]
-def toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
+@[coe]
+abbrev toPointedCone {C : PointedCone R M} (F : Face C) : PointedCone R M := F.toSubmodule
 
 instance : CoeOut (Face C) (PointedCone R M) := ⟨toPointedCone⟩
 
@@ -61,7 +61,7 @@ theorem coe_le_iff {F₁ F₂ : Face C} : F₁.toPointedCone ≤ F₂.toPointedC
   constructor <;> intro h x xF₁ <;> exact h xF₁
 
 @[simp]
-theorem mem_coe {F : Face C} (x : M) : x ∈ F.toPointedCone ↔ x ∈ F := .rfl
+theorem mem_coe {F : Face C} (x : M) : x ∈ F.toSubmodule ↔ x ∈ F := .rfl
 
 /-!
 ### Infimum, supremum and lattice
@@ -154,8 +154,8 @@ theorem prod_snd (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = 
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, toPointedCone, fst, snd, ← mem_coe, mem_prod, mem_map,
-    LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
+  simp only [prod, fst, snd, ← mem_coe, mem_prod, mem_map, LinearMap.fst_apply, Prod.exists,
+    exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
     intro y yn z zm
@@ -180,7 +180,7 @@ def prodOrderIso (C : PointedCone R M) (D : PointedCone R N) :
   left_inv G := by simp [fst_prod_snd]
   right_inv G := by simp
   map_rel_iff' := by
-    simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk, coe_le_iff]
+    simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
     intro F₁ F₂; constructor <;> intro a
     · simpa [fst_prod_snd, coe_le_iff] using Face.prod_mono a.1 a.2
     · constructor; all_goals
