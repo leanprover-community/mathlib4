@@ -5,12 +5,9 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
 -/
 module
 
-public meta import Mathlib.Data.String.Defs
-public meta import Mathlib.Lean.Name
-public meta import Lean.PrettyPrinter.Delaborator.Builtins
-public import Lean.Server.Rpc.RequestHandling
+public import Mathlib.Lean.Name
+public import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.Basic
 public import ProofWidgets.Component.OfRpcMethod
 
 /-! # Conv widget
@@ -22,7 +19,7 @@ allowing to generate a `conv` call zooming to the subexpression selected in the 
 
 meta section
 
-open Lean Meta Server ProofWidgets
+open Lean Meta
 
 /--
 A path to a subexpression from a root expression.
@@ -263,7 +260,7 @@ public def ConvSelectionPanel.rpc :=
 
 /-- The conv widget. -/
 @[widget_module]
-public def ConvSelectionPanel : Component SelectInsertParams :=
+public def ConvSelectionPanel : ProofWidgets.Component SelectInsertParams :=
   mk_rpc_widget% ConvSelectionPanel.rpc
 
 open scoped Json in
