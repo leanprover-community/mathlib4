@@ -491,8 +491,7 @@ lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ s
     intro v v_in_G
     grind
   · intro v w top_adj
-    simp only [top] at top_adj
-    simp_all [sup, max, SemilatticeSup.sup]
+    simp_all [top, sup, max, SemilatticeSup.sup]
     sorry
 
 lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
@@ -512,10 +511,7 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   · intro v w h_adj
     simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf, Subtype.exists]
     constructor
-    · use H, ⟨H_sub, H_verts⟩
-      
-      sorry
-      done
+    · sorry
     · intro a ha hv hmem
       specialize h_sub a ha hv hmem
       apply h_sub.right at h_adj
