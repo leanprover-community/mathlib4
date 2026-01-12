@@ -10,19 +10,19 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
-# Square root of RCLike
+# Square root on `RCLike`
 
-This file contains the definitions `Complex.sqrt` and `RCLike.sqrt`.
+This file contains the definitions `Complex.sqrt` and `RCLike.sqrt` and builds basic API.
 -/
 
-public section
+@[expose] public section
 
 /-- The square root of a complex number. -/
 noncomputable abbrev Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 
-/-- The square root of `RCLike`. -/
+/-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
   if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
   else √(re a)
