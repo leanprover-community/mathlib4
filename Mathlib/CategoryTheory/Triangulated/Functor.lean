@@ -364,14 +364,10 @@ lemma IsTriangulated.of_fully_faithful_triangulated_functor
         m₃ := F.preimage H.m₃
         comm₁ := F.map_injective (by simpa using H.comm₁)
         comm₂ := F.map_injective (by
-          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)]
-          simpa using H.comm₂)
+          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)] using H.comm₂)
         comm₃ := F.map_injective (by simpa using H.comm₃)
         comm₄ := F.map_injective (by
-          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)]
-          simpa using H.comm₄)
-        mem := by
-          rw [← F.map_distinguished_iff]
-          simpa using H.mem }⟩
+          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)] using H.comm₄)
+        mem := by simpa [← F.map_distinguished_iff] using H.mem }⟩
 
 end CategoryTheory
