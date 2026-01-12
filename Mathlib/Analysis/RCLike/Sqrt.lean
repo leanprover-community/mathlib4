@@ -55,10 +55,9 @@ theorem RCLike.sqrt_symm_complexRingEquiv {a : ℂ} (h : im (I : 𝕜) = 1) :
     sqrt ((complexRingEquiv h).symm a) = (complexRingEquiv h).symm a.sqrt := by
   aesop (add simp [sqrt])
 
-open RCLike in
-theorem Complex.sqrt_complexRingEquiv {a : 𝕜} (h : RCLike.im (RCLike.I : 𝕜) = 1) :
-    (complexRingEquiv h a).sqrt = complexRingEquiv h (RCLike.sqrt a) := by
-  aesop (add simp [RCLike.sqrt])
+theorem RCLike.sqrt_complexRingEquiv {a : 𝕜} (h : im (I : 𝕜) = 1) :
+    (complexRingEquiv h a).sqrt = complexRingEquiv h (sqrt a) := by
+  aesop (add simp [sqrt])
 
 attribute [local grind =] RCLike.complexRingEquiv_nonneg_iff
 
@@ -67,7 +66,7 @@ theorem RCLike.sqrt_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt]
   apply_fun complexRingEquiv h
-  rw [← Complex.sqrt_complexRingEquiv h, Complex.sqrt_of_nonneg (by grind)]
+  rw [← sqrt_complexRingEquiv h, Complex.sqrt_of_nonneg (by grind)]
   simp
 
 theorem Complex.sqrt_neg_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
@@ -83,8 +82,8 @@ theorem RCLike.sqrt_neg_of_nonneg {a : 𝕜} (ha : 0 ≤ a) :
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · simp [h, sqrt, Real.sqrt_eq_zero', nonneg_iff.mp ha]
   apply_fun complexRingEquiv h
-  rw [← Complex.sqrt_complexRingEquiv h, map_neg, Complex.sqrt_neg_of_nonneg (by grind),
-    map_mul, ← Complex.sqrt_complexRingEquiv h]
+  rw [← sqrt_complexRingEquiv h, map_neg, Complex.sqrt_neg_of_nonneg (by grind),
+    map_mul, ← sqrt_complexRingEquiv h]
   simp [h]
 
 theorem Complex.sqrt_neg_one : sqrt (-1) = I := by
