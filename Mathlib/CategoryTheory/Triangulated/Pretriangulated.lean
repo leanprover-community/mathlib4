@@ -35,43 +35,6 @@ universe v v₀ v₁ v₂ u u₀ u₁ u₂
 
 namespace CategoryTheory
 
-namespace Limits
-
--- should be moved to a better place
-namespace BinaryBiproductData
-
-variable {C : Type _} [Category C]
-    {X₁ X₂ : C} [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] (d : BinaryBiproductData X₁ X₂)
-
-def isoBiprod {C : Type _} [Category C]
-    {X₁ X₂ : C} [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] (d : BinaryBiproductData X₁ X₂) :
-    X₁ ⊞ X₂ ≅ d.bicone.pt :=
-  IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit X₁ X₂) d.isBilimit.isLimit
-
-@[reassoc (attr := simp)]
-lemma isoBiprod_inv_fst : d.isoBiprod.inv ≫ biprod.fst = d.bicone.fst :=
-  IsLimit.conePointUniqueUpToIso_inv_comp _ d.isBilimit.isLimit ⟨WalkingPair.left⟩
-
-@[reassoc (attr := simp)]
-lemma isoBiprod_inv_snd : d.isoBiprod.inv ≫ biprod.snd = d.bicone.snd :=
-  IsLimit.conePointUniqueUpToIso_inv_comp _ d.isBilimit.isLimit ⟨WalkingPair.right⟩
-
-@[reassoc (attr := simp)]
-lemma isoBiprod_hom_fst : d.isoBiprod.hom ≫ d.bicone.fst = biprod.fst := by
-  rw [← isoBiprod_inv_fst, Iso.hom_inv_id_assoc]
-
-@[reassoc (attr := simp)]
-lemma isoBiprod_hom_snd : d.isoBiprod.hom ≫ d.bicone.snd = biprod.snd := by
-  rw [← isoBiprod_inv_snd, Iso.hom_inv_id_assoc]
-
-end BinaryBiproductData
-
-end Limits
-
-end CategoryTheory
-
-namespace CategoryTheory
-
 open Category Pretriangulated ZeroObject
 
 /-
