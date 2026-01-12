@@ -24,7 +24,7 @@ elab_rules : tactic
       | none => pure <| GoalLocation.target pos
       | some h => pure <| GoalLocation.hypType (← getFVarId h) pos
     let locs := #[{ mvarId := goal, loc := loc }]
-    let conv ← insertEnterSyntax locs goalType
+    let conv ← Mathlib.Tactic.Conv.insertEnterSyntax locs goalType
     let insert ← conv.replaceM fun stx =>
       match stx with
       | `(Lean.Parser.Tactic.Conv.skip| skip) =>
@@ -39,7 +39,7 @@ elab_rules : tactic
       selectedLocations := locs
       replaceRange := range
     }
-    let (_, text, _) ← insertEnter locs goalType params
+    let (_, text, _) ← Mathlib.Tactic.Conv.insertEnter locs goalType params
     logInfo m!"`conv?` would output:\n{text}"
 
 elab "mdata% " e:term : term => do
