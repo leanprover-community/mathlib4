@@ -135,3 +135,8 @@ example {s t : Set ℝ} {f : ℝ → ℝ} (hs : MeasurableSet s) (hf : Measurabl
 example : Continuous (fun x : ℝ => x) := by
   fail_if_success measurability
   exact continuous_id
+
+-- `measurability` used to fail on this example, see
+-- https://github.com/leanprover-community/mathlib4/issues/26620
+example (τ : ℝ) : MeasurableSet {x : ℝ | x > τ} := by
+  measurability

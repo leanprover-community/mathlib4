@@ -62,21 +62,21 @@ scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
 @[simp]
 theorem coeff_eq_ncoeff (A : VertexOperator R V)
-    (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
+    (n : ℤ) : HVertexOperator.coeff A n = A[[-n - 1]] := by
   rw [ncoeff_apply, neg_sub, Int.sub_neg, add_sub_cancel_left]
 
 @[deprecated (since := "2025-08-30")] alias ncoeff_add := map_add
 @[deprecated (since := "2025-08-30")] alias ncoeff_smul := map_smul
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
-    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
+    (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A[[n]]) x = 0 := by
   simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_eq_zero_of_lt_order h
 
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : n < HahnSeries.order ((HahnModule.of R).symm (A x))) : coeff A n x = 0 := by
   rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
-  cutsat
+  lia
 
 /-- Given an endomorphism-valued function on integers satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
@@ -96,7 +96,7 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
-    (of_coeff f hf) [[n]] = f (-n - 1) := by
+    (of_coeff f hf)[[n]] = f (-n - 1) := by
   ext v
   rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
 

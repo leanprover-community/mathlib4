@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Conv
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element
@@ -165,7 +166,7 @@ lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
 
 lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
     (h : a ^ m * b = 0) : a ^ n * b = 0 := by
-  rw [show n = n - m + m by cutsat, pow_add, mul_assoc, h]
+  rw [show n = n - m + m by lia, pow_add, mul_assoc, h]
   simp
 
 variable [NoZeroDivisors M₀]
@@ -280,10 +281,13 @@ theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :
     _ = b := by simp [h]
 
 
+set_option backward.privateInPublic true in
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
   rw [← inv_mul_cancel_left₀ (left_ne_zero_of_mul_eq_one h) b, h, mul_one]
 
 -- See note [lower instance priority]
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
     inv := Inv.inv,

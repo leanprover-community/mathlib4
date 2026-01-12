@@ -7,6 +7,7 @@ module
 
 public meta import Std.Time.Format
 public import Mathlib.Init
+public import Std.Time.Date
 
 /-!
 # The `deprecated.module` linter
@@ -27,7 +28,7 @@ This triggers the `deprecated.module` linter to notify every file with `import A
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -39,7 +40,7 @@ is imported.
 The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
 of refactors and deprecations in `Mathlib` itself.
 -/
-register_option linter.deprecated.module : Bool := {
+public register_option linter.deprecated.module : Bool := {
   defValue := true
   descr := "enable the `deprecated.module` linter"
 }
@@ -52,7 +53,7 @@ Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
 
 to the environment.
 -/
-initialize deprecatedModuleExt :
+public initialize deprecatedModuleExt :
     SimplePersistentEnvExtension
       (Name × Array Name × Option String) (Std.HashSet (Name × Array Name × Option String)) ←
   registerSimplePersistentEnvExtension {
@@ -129,31 +130,36 @@ There are possible concurrency issues, but they should not be particularly worry
 initialize IsLaterCommand : IO.Ref Bool ← IO.mkRef false
 
 @[inherit_doc Mathlib.Linter.linter.deprecated.module]
-def deprecated.moduleLinter : Linter where
-  run := whenLinterActivated linter.deprecated.module fun stx ↦ do
-    if (← get).messages.hasErrors then
-      return
-    let laterCommand ← IsLaterCommand.get
-    -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
-    -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
-    -- the linter should not do anything.
-    if laterCommand || (Parser.isTerminalCommand stx && !laterCommand) then
-      return
-    IsLaterCommand.set true
-    let deprecations := deprecatedModuleExt.getState (← getEnv)
-    if deprecations.isEmpty then
-      return
-    if stx.isOfKind ``Linter.deprecated_modules then return
-    let fm ← getFileMap
-    let (importStx, _) ←
-      Parser.parseHeader { inputString := fm.source, fileName := ← getFileName, fileMap := fm }
-    let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
-    for (i, preferred, msg?) in deprecations do
-      for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
-        Linter.logLint linter.deprecated.module nmStx
-          m!"{msg?.getD ""}\n\
-            '{nmStx}' has been deprecated: please replace this import by\n\n\
-            {String.join (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
+def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterValue linter.deprecated.module (← getLinterOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  -- Exempt Mathlib.lean since it's auto-generated and imports all modules
+  -- for backwards compatibility
+  if (← getFileName).endsWith "Mathlib.lean" then
+    return
+  let laterCommand ← IsLaterCommand.get
+  -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.
+  -- If `laterCommand` is `false` at the end of file, the file is an import-only file and
+  -- the linter should not do anything.
+  if laterCommand || (Parser.isTerminalCommand stx && !laterCommand) then
+    return
+  IsLaterCommand.set true
+  let deprecations := deprecatedModuleExt.getState (← getEnv)
+  if deprecations.isEmpty then
+    return
+  if stx.isOfKind ``Linter.deprecated_modules then return
+  let fm ← getFileMap
+  let (importStx, _) ←
+    Parser.parseHeader { inputString := fm.source, fileName := ← getFileName, fileMap := fm }
+  let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
+  for (i, preferred, msg?) in deprecations do
+    for (nmStx, _) in modulesWithNames.filter (·.2 == i) do
+      Linter.logLint linter.deprecated.module nmStx
+        m!"{msg?.getD ""}\n\
+          '{nmStx}' has been deprecated: please replace this import by\n\n\
+          {String.join (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
 
 initialize addLinter deprecated.moduleLinter
 

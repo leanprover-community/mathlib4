@@ -7,16 +7,20 @@ module
 
 public meta import Lean
 public meta import Batteries.Lean.Except
-public meta import Batteries.Tactic.Exact
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
-public meta import Mathlib.Order.Defs.Unbundled
 import all Lean.Meta.Tactic.Apply
+public import Batteries.Tactic.Exact
+public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.GCongr.ForwardAttr
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
 
 The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS matching the same pattern to relational subgoals between the differing
+between an LHS and RHS matching the same pattern to relational subgoals between the differing
 inputs to the pattern.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
@@ -25,7 +29,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```
@@ -346,6 +350,12 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
+/-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
+
+This is an extensible tactic using [`macro_rules`](lean-manual://section/tactic-macro-extension).
+By default it calls `positivity` (after importing the `positivity` tactic).
+Example: ``macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)``.
+-/
 syntax "gcongr_discharger" : tactic
 
 /--
@@ -608,7 +618,7 @@ partial def _root_.Lean.MVarId.gcongr
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS.  For example,
+between an LHS and RHS.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
@@ -616,7 +626,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```

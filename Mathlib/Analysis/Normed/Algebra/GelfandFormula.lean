@@ -5,10 +5,11 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Analytic.RadiusLiminf
-public import Mathlib.Analysis.Complex.Liouville
-public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Complex.Liouville
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Analytic.RadiusLiminf
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -26,6 +27,12 @@ complex Banach algebra has nonempty spectrum.
 * `NormedRing.algEquivComplexOfComplete`: **Gelfand-Mazur theorem** For a complex
   Banach division algebra, the natural `algebraMap ℂ A` is an algebra isomorphism whose inverse
   is given by selecting the (unique) element of `spectrum ℂ a`
+
+## Implementation notes
+
+Note that it is important here that the complex analysis files are privately imported, since the
+material proven here gets used in contexts that have nothing to do with complex analysis
+(i.e. C⋆-algebras, etc).
 
 -/
 

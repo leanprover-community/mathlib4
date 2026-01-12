@@ -143,8 +143,8 @@ theorem coe_normalizer_eq_normalizer :
 
 variable {H}
 
-theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ (R ∙ x) ⊔ ↑H)
-    (hz : z ∈ (R ∙ x) ⊔ ↑H) : ⁅y, z⁆ ∈ (R ∙ x) ⊔ ↑H := by
+theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy : y ∈ R ∙ x ⊔ ↑H)
+    (hz : z ∈ R ∙ x ⊔ ↑H) : ⁅y, z⁆ ∈ R ∙ x ⊔ ↑H := by
   rw [Submodule.mem_sup] at hy hz
   obtain ⟨u₁, hu₁, v, hv : v ∈ H, rfl⟩ := hy
   obtain ⟨u₂, hu₂, w, hw : w ∈ H, rfl⟩ := hz

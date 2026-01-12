@@ -61,8 +61,8 @@ namespace Polynomial.Gal
 
 section Rationals
 
-theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact (p.Splits (algebraMap ℚ ℂ)) :=
-  ⟨IsAlgClosed.splits_codomain p⟩
+theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact ((p.map (algebraMap ℚ ℂ)).Splits) :=
+  ⟨IsAlgClosed.splits _⟩
 
 attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
@@ -130,8 +130,8 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   classical
   have h1 : Fintype.card (p.rootSet ℂ) = p.natDegree := by
     simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-    rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots]
-    · exact IsAlgClosed.splits_codomain p
+    rw [Multiset.toFinset_card_of_nodup, ← Splits.natDegree_eq_card_roots, natDegree_map]
+    · exact IsAlgClosed.splits _
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine
@@ -161,13 +161,13 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
   have hn : 2 ∣ n :=
     Equiv.Perm.two_dvd_card_support
       (by
-         rw [← MonoidHom.map_pow, ← MonoidHom.map_pow,
+         rw [← map_pow, ← map_pow,
           show AlgEquiv.restrictScalars ℚ Complex.conjAe ^ 2 = 1 from
             AlgEquiv.ext Complex.conj_conj,
-          MonoidHom.map_one, MonoidHom.map_one])
+          map_one, map_one])
   have key := card_complex_roots_eq_card_real_add_card_not_gal_inv p
   simp_rw [Set.toFinset_card] at key
-  omega
+  lia
 
 end Rationals
 

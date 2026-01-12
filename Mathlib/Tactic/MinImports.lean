@@ -11,7 +11,8 @@ public meta import ImportGraph.Imports
 public meta import ImportGraph.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Elab.DeclModifiers
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -113,7 +114,7 @@ def getAttrNames (stx : Syntax) : NameSet :=
     | some stx => getIds stx
 
 /-- `getAttrs env stx` returns all attribute declaration names contained in `stx` and registered
-in the `Environment `env`. -/
+in the `Environment` `env`. -/
 def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   Id.run do
   let mut new : NameSet := {}
@@ -130,14 +131,14 @@ by `_(n-1)`, unless `n ≤ 1`, in which case it simply removes the `_n` suffix.
 -/
 def previousInstName : Name → Name
   | nm@(.str init tail) =>
-    let last := tail.takeRightWhile (· != '_')
+    let last := tail.takeEndWhile (· != '_')
     let newTail := match last.toNat? with
                     | some (n + 2) => s!"_{n + 1}"
                     | _ => ""
-    let newTailPrefix := tail.dropRightWhile (· != '_')
+    let newTailPrefix := tail.dropEndWhile (· != '_')
     if newTailPrefix.isEmpty then nm else
     let newTail :=
-      (if newTailPrefix.back == '_' then newTailPrefix.dropRight 1 else newTailPrefix) ++ newTail
+      (if newTailPrefix.back == '_' then newTailPrefix.dropEnd 1 else newTailPrefix).copy ++ newTail
     .str init newTail
   | nm => nm
 

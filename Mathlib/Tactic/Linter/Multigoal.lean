@@ -9,7 +9,8 @@ public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Term
 
 /-!
 # The "multiGoal" linter
@@ -40,14 +41,14 @@ TODO:
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
-register_option linter.style.multiGoal : Bool := {
+public register_option linter.style.multiGoal : Bool := {
   defValue := false
   descr := "enable the multiGoal linter"
 }

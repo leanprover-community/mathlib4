@@ -61,15 +61,15 @@ variable [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
     (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
-  absorbent_ball (by simpa)|>.subset_range_iff_surjective
+  absorbent_ball (by simpa) |>.subset_range_iff_surjective (f := (f : E →ₛₗ[σ₁₂] F))
 
 theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  suffices ball 0 r ⊆ Set.range f from (ball_zero_subset_range_iff_surjective hr).mp this
+  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_coe]
+  simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
   intro _ _
-  change _ ∈ LinearMap.range f --this can be avoided by replacing `rw` with `erw` in the next line
-  rw [← Submodule.add_mem_iff_left (p := LinearMap.range f) (h <| mem_ball_self hr)]
+  rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
   apply h
   simp_all
 
@@ -84,8 +84,8 @@ variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontri
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x
-    (le_of_lt hr), convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x hr.le,
+    convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
   exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 
 end
@@ -350,6 +350,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
   refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
@@ -370,6 +371,8 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 

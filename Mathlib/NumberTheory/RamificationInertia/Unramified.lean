@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 
@@ -22,7 +23,7 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

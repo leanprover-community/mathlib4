@@ -112,7 +112,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   · use k
     change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
-      LinearMap.comp_apply, hk, LinearMap.map_zero]
+      LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
   simp only [Module.End.mem_maxGenEigenspace] at hm₁ hm₂
   obtain ⟨k₁, hk₁⟩ := hm₁
@@ -129,7 +129,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
-  simp only [Finset.sum_apply, LinearMap.coeFn_sum, LinearMap.smul_apply]
+  simp only [Finset.sum_apply, LinearMap.coe_sum, LinearMap.smul_apply]
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
@@ -138,8 +138,8 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Finish off with appropriate case analysis.
   rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
   · rw [(hf_comm.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hf₁,
-      LinearMap.map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, LinearMap.map_zero]
+      map_zero]
+  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
 
 lemma lie_mem_maxGenEigenspace_toEnd
     {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :
@@ -225,8 +225,7 @@ lemma genWeightSpace_ne_bot (χ : Weight R L M) : genWeightSpace M χ ≠ ⊥ :=
 
 variable {M}
 
-@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
-  obtain ⟨f₁, _⟩ := χ₁; obtain ⟨f₂, _⟩ := χ₂; aesop
+@[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := DFunLike.ext _ _ h
 
 lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by simp
 
@@ -316,7 +315,7 @@ theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent L M] :
 
 theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
-      genWeightSpace M χ ≤ LinearMap.ker ((toEnd R L M x - algebraMap R _ (χ x)) ^ k) := by
+      genWeightSpace M χ ≤ ((toEnd R L M x - algebraMap R _ (χ x)) ^ k).ker := by
   use (toEnd R L M x).maxGenEigenspaceIndex (χ x)
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
@@ -631,7 +630,8 @@ lemma isCompl_genWeightSpace_zero_posFittingComp :
     let e := LieModuleEquiv.ofTop R L M
     rw [← map_genWeightSpace_eq e, ← map_posFittingComp_eq e]
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
-  refine (LieSubmodule.wellFoundedLT_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
+  induction (⊤ : LieSubmodule R L M) using
+    (LieSubmodule.wellFoundedLT_of_isArtinian R L M).induction with | ind N hN
   refine isCompl_genWeightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
   suffices IsCompl (genWeightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
     let e := LieSubmodule.equivMapOfInjective N' N.injective_incl

@@ -20,7 +20,7 @@ but slightly different.
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 

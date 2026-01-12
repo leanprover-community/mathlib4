@@ -5,12 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public meta import Mathlib.Data.Nat.SuccPred
-public meta import Mathlib.Data.Int.Interval
-public meta import Mathlib.Data.Int.SuccPred
-public meta import Mathlib.Order.Interval.Finset.Nat
-public meta import Mathlib.Util.Qq
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.Qq
 
 /-!
 # Simproc for intervals of natural numbers
@@ -43,7 +43,7 @@ private lemma Ioo_eq_of_Icc_succ_pred_eq (hs : Icc (m + 1) (n - 1) = s) : Ioo m 
 private lemma Iic_eq_of_Icc_zero_eq (hs : Icc 0 n = s) : Iic n = s := hs
 
 private lemma Iio_succ_eq_of_Icc_zero_eq (hs : Icc 0 n = s) : Iio (n + 1) = s := by
-  erw [Iio_eq_Ico, Ico_add_one_right_eq_Icc, hs]
+  rw [Iio_eq_Ico, Ico_add_one_right_eq_Icc, bot_eq_zero, hs]
 
 private lemma Iio_zero : Iio 0 = ∅ := by simp
 

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
@@ -71,7 +71,7 @@ Additional useful definitions:
   maximal atlas associated to the groupoid `G`, the composition of `e.symm` and `e'` belongs to the
   `G` if `M` admits `G` as a structure groupoid.
 * `ChartedSpaceCore.toChartedSpace`: consider a space without a topology, but endowed with a set
-  of charts (which are partial equivs) for which the change of coordinates are partial homeos.
+  of charts (which are partial equivs) for which the changes of coordinates are partial homeos.
   Then one can construct a topology on the space for which the charts become partial homeos,
   defining a genuine charted space structure.
 
@@ -90,7 +90,7 @@ that these properties only depend on the maximal atlas, for instance). In practi
 create any real difficulty.
 
 We use the letter `H` for the model space thinking of the case of manifolds with boundary, where the
-model space is a half space.
+model space is a half-space.
 
 Manifolds are sometimes defined as topological spaces with an atlas of local diffeomorphisms, and
 sometimes as spaces with an atlas from which a topology is deduced. We use the former approach:
@@ -532,8 +532,8 @@ end Groupoid
 /-! ### Charted spaces -/
 
 /-- A charted space is a topological space endowed with an atlas, i.e., a set of local
-homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
-cover the whole space. We express the covering property by choosing for each `x` a member
+homeomorphisms taking values in a model space `H`, called charts, such that the domains of the
+charts cover the whole space. We express the covering property by choosing for each `x` a member
 `chartAt x` of the atlas containing `x` in its source: in the smooth case, this is convenient to
 construct the tangent bundle in an efficient way.
 The model space is written as an explicit parameter as there can be several model spaces for a
@@ -777,7 +777,7 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note2 «Manifold type tags» /-- For technical reasons we introduce two type tags:
+library_note «Manifold type tags» /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
@@ -1310,6 +1310,8 @@ protected instance instChartedSpace : ChartedSpace H s where
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
+
+lemma chartAt_eq {s : Opens M} {x : s} : chartAt H x = (chartAt H x.1).subtypeRestr ⟨x⟩ := rfl
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/

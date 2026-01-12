@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Algebraic.Defs
 This file contains results on cardinality of algebraic extensions.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

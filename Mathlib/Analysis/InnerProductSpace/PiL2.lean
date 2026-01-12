@@ -182,6 +182,9 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
 
 section
 
+instance EuclideanSpace.infinite [Nonempty ι] : Infinite (EuclideanSpace 𝕜 ι) :=
+  Module.Free.infinite 𝕜 _
+
 variable [Fintype ι]
 
 @[simp]
@@ -193,11 +196,18 @@ theorem finrank_euclideanSpace :
 theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
-theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
+namespace EuclideanSpace
+
+scoped instance (n : ℕ) : Fact (Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n) :=
+  ⟨finrank_euclideanSpace_fin⟩
+
+theorem inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
     ⟪x, y⟫ = ofLp y ⬝ᵥ star (ofLp x) := rfl
 
-lemma EuclideanSpace.inner_toLp_toLp (x y : ι → 𝕜) :
+lemma inner_toLp_toLp (x y : ι → 𝕜) :
     ⟪toLp 2 x, toLp 2 y⟫ = dotProduct y (star x) := rfl
+
+end EuclideanSpace
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
 from `E` to `PiLp 2` of the subspaces equipped with the `L2` inner product. -/
@@ -227,7 +237,6 @@ theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableE
     let e₁ := DirectSum.linearEquivFunOnFintype 𝕜 ι fun i => V i
     let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
     suffices ∀ v : ⨁ i, V i, e₂ v = ∑ i, e₁ v i by exact this (e₁.symm w)
-    intro v
     simp [e₁, e₂, DirectSum.coeLinearMap, DirectSum.toModule, DFinsupp.lsum,
       DFinsupp.sumAddHom_apply]
 
@@ -373,8 +382,8 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
         replace h := congr_fun h i
-        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
-          LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, EuclideanSpace.toLp_single,
+        simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+          coe_symm_linearEquiv, EuclideanSpace.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
@@ -448,8 +457,7 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  rfl
+  simp [← Basis.equivFun_apply]
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
@@ -478,8 +486,6 @@ lemma sum_sq_norm_inner_right (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     norm_star, ← pow_two]
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
-
-@[deprecated (since := "2025-06-23")] alias sum_sq_norm_inner := sum_sq_norm_inner_right
 
 lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪x, b i⟫‖ ^ 2 = ‖x‖ ^ 2 := by
@@ -514,11 +520,27 @@ lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) 
     · simp
     · exact le_ciSup_of_le (by simp) (Nonempty.some inferInstance) (by positivity)
 
-protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
+protected theorem orthogonalProjection_apply_eq_sum {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
     (b : OrthonormalBasis ι 𝕜 U) (x : E) :
     U.orthogonalProjection x = ∑ i, ⟪(b i : E), x⟫ • b i := by
   simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
     (b.sum_repr (U.orthogonalProjection x)).symm
+
+@[deprecated (since := "2025-12-31")] alias orthogonalProjection_eq_sum :=
+  OrthonormalBasis.orthogonalProjection_apply_eq_sum
+
+protected theorem orthogonalProjection_eq_sum_rankOne {U : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] (b : OrthonormalBasis ι 𝕜 U) :
+    U.orthogonalProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i : E) := by
+  ext; simp [b.orthogonalProjection_apply_eq_sum]
+
+protected theorem starProjection_eq_sum_rankOne {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
+    (b : OrthonormalBasis ι 𝕜 U) :
+    U.starProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i : E) (b i : E) := by
+  ext; simp [starProjection, b.orthogonalProjection_eq_sum_rankOne]
+
+lemma sum_rankOne_eq_id (b : OrthonormalBasis ι 𝕜 E) :
+    ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i) = .id 𝕜 E := by ext; simp [b.sum_repr']
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
 protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
@@ -1133,7 +1155,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       norm_map' := M_norm_map }
 
 theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
   simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
   simp only [add_eq_left, LinearIsometry.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
@@ -1210,9 +1231,30 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
 
 /-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
 is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
-theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
+theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintype m]
     (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
-    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+    (innerₛₗ 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
   ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
+@[deprecated (since := "2026-01-03")] alias toMatrix_innerSL_apply :=
+  LinearMap.toMatrix_innerₛₗ_apply
+
 end Matrix
+
+open ContinuousLinearMap LinearMap in
+theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    [Fintype ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
+    (b' : OrthonormalBasis ι' 𝕜 F) :
+    (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
+  rw [rankOne_def', ContinuousLinearMap.coe_comp, toLinearMap_toSpanSingleton,
+    toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis, toMatrix_toSpanSingleton,
+    toLinearMap_innerSL_apply, toMatrix_innerₛₗ_apply, OrthonormalBasis.toBasis_singleton,
+    Basis.coe_singleton, Matrix.vecMulVec_one, OrthonormalBasis.coe_singleton, star_one,
+    Matrix.one_vecMulVec, Matrix.vecMulVec_eq Unit]
+
+open Matrix LinearMap EuclideanSpace in
+theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
+    [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
+    toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
+  simp [toEuclideanLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]

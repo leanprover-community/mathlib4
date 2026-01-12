@@ -6,7 +6,7 @@ Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_additive]` attribute.
@@ -23,10 +23,10 @@ open Lean Elab Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
@@ -62,14 +62,14 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
-Use the `to_additive existing` syntax to use an existing additive declaration, instead of
-automatically generating it.
-
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is mostly useful to translate declarations using
 `Pow` to those using `SMul`.
+
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it. This attempts to autogenerate the `(reorder := ...)` argument.
 
 Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
 version:
@@ -153,7 +153,7 @@ mismatch error.
   Solutions:
   * First figure out what the fixed type is in the first argument of the declaration that didn't
     get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
-    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
+    it is hard, you can run `set_option trace.translate_detail true` and search the output for the
     fragment "contains the fixed type" to find what the fixed type is.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
@@ -265,15 +265,20 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+
+initialize
+  registerBuiltinAttribute {
+    name := `to_additive_do_translate
+    descr := "Auxiliary attribute for `to_additive` stating \
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -341,13 +346,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
   ("addSingle", "Single"),
-  ("add_single", "Single"),
   ("addSupport", "Support"),
-  ("add_support", "Support"),
   ("addTSupport", "TSupport"),
-  ("add_tsupport", "TSupport"),
   ("addIndicator", "Indicator"),
-  ("add_indicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
@@ -369,11 +370,13 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("function_addCommute", "Function_commute"),
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
-  ("modularCharacter", "AddModularCharacter")]
+  ("modularCharacter", "AddModularCharacter"),
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
+  ("addExact", "exact")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false

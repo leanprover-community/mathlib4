@@ -60,7 +60,7 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; cutsat
+      obtain (h | h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; lia
       all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
@@ -119,7 +119,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
     eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
-  specialize hk (k+1) (Nat.le_add_right k 1)
+  specialize hk (k + 1) (Nat.le_add_right k 1)
   rw [← Submodule.map_subtype_top N.toSubmodule, Submodule.map_le_iff_le_comap]
   apply hk
   · rw [← Submodule.map_le_iff_le_comap]
@@ -127,9 +127,9 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
     simp only [Submodule.mem_comap, mem_engel_iff, mem_toSubmodule]
-    use k+1
+    use k + 1
     clear hk; revert hy
-    generalize k+1 = k
+    generalize k + 1 = k
     induction k generalizing y with
     | zero =>
       cases y; intro hy; simp only [pow_zero, Module.End.one_apply]
@@ -163,7 +163,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   specialize h x x.2 y.2
   rw [mem_engel_iff] at h
   obtain ⟨m, hm⟩ := h
-  obtain (hmn|hmn) : m ≤ n ∨ n ≤ m := le_total m n
+  obtain (hmn | hmn) : m ≤ n ∨ n ≤ m := le_total m n
   · exact Module.End.pow_map_zero_of_le hmn hm
   · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by simp [K, Subtype.ext_iff, coe_ad_pow]
     rwa [this, ← hn m hmn, ← this] at hm

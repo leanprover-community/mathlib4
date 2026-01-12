@@ -9,10 +9,7 @@ public import Mathlib.Tactic.Attr.Register
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
-public import Batteries.Tactic.Trans
 public import Batteries.Util.LibraryNote
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -99,7 +96,7 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note2 «fact non-instances» /--
+library_note «fact non-instances» /--
 In most cases, we should not have global instances of `Fact`; typeclass search is not an
 advanced proof search engine, and adding any such instance has the potential to cause
 slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
@@ -143,6 +140,7 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 alias dec_em := Decidable.em
 
+set_option linter.unusedDecidableInType false in
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -169,7 +167,7 @@ theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 
 alias by_contra := by_contradiction
 
-library_note2 «decidable namespace» /--
+library_note «decidable namespace» /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -178,7 +176,7 @@ You can check if a lemma uses the axiom of choice by using `#print axioms foo` a
 `Classical.choice` appears in the list.
 -/
 
-library_note2 «decidable arguments» /--
+library_note «decidable arguments» /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
@@ -727,6 +725,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
+
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -908,6 +910,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
+
 section
 variable [Decidable Q]
 
@@ -964,12 +969,6 @@ end ite
 
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
 
 section Membership
 

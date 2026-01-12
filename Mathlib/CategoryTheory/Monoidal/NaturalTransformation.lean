@@ -67,6 +67,17 @@ instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' 
       tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
     simp only [← map_comp, tensor]
 
+instance whiskerRight {G₁ : D ⥤ E} [G₁.LaxMonoidal] [IsMonoidal τ] :
+    IsMonoidal (Functor.whiskerRight τ G₁) := by
+  rw [← Functor.hcomp_id]
+  infer_instance
+
+instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
+    (τ' : G₁ ⟶ G₂) [IsMonoidal τ'] :
+    IsMonoidal (Functor.whiskerLeft F₁ τ') := by
+  rw [← Functor.id_hcomp]
+  infer_instance
+
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
@@ -219,7 +230,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI G.Monoidal := transport e
+  letI : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.TryThis
-public meta import Mathlib.Util.AtLocation
 public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.TryThis
+public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -548,4 +548,4 @@ end Mathlib.Tactic.Abel
 We register `abel` with the `hint` tactic.
 -/
 
-register_hint 1000 abel
+register_hint 950 abel

@@ -370,7 +370,7 @@ theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p :
 theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
   obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
-  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.coe_castLE]
+  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
 
 end
 
@@ -460,8 +460,7 @@ theorem lift_unique (g : S →+* 𝕎 R) (g_compat : ∀ k, (WittVector.truncate
   ext1 x
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
   intro i
-  simp only [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, RingHom.map_sub,
-    sub_self]
+  simp only [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, map_sub, sub_self]
 
 /-- The universal property of `𝕎 R` as projective limit of truncated Witt vector rings. -/
 @[simps]

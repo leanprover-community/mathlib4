@@ -182,7 +182,7 @@ end ZeroObject
 section
 
 variable [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category* J]
 
 include hG
 

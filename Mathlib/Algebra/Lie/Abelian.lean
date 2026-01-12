@@ -142,6 +142,15 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
+lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
+    IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
+  refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
+  · ext y
+    have := IsTrivial.trivial (⟨x, hx⟩ : I) y
+    rw [LieIdeal.coe_bracket_of_module] at this
+    simp [this]
+  · simpa using LinearMap.congr_fun (h hx) ⟨y, hy⟩
+
 lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
   rw [isFaithful_iff', LieSubmodule.ext_iff]
   aesop

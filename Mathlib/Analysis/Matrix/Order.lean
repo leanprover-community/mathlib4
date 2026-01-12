@@ -32,7 +32,7 @@ Please `open scoped MatrixOrder` to use this.
 
 @[expose] public section
 
-variable {𝕜 n : Type*} [RCLike 𝕜] [Fintype n]
+variable {𝕜 n : Type*} [RCLike 𝕜]
 
 open scoped ComplexOrder
 open Matrix
@@ -59,19 +59,32 @@ protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff_posSemid
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 
+private lemma le_antisymm_aux {A : Matrix n n 𝕜} (h₁ : A.PosSemidef) (h₂ : (-A).PosSemidef) :
+    A = 0 := by
+  classical
+  ext i j
+  have hdiag i : A i i = 0 :=
+    le_antisymm (by simpa using h₂.diag_nonneg) (by simpa using h₁.diag_nonneg)
+  have h1 := h₁.2 (.single i 1 + .single j (A j i))
+  have h2 := h₂.2 (.single i 1 + .single j (A j i))
+  simp [Finsupp.sum_add_index, mul_add, add_mul,
+      -neg_add_rev, hdiag, ← h₁.1.apply j i, -RCLike.star_def] at *
+  simpa using le_antisymm h2 h1
+
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
-    rw [← sub_eq_zero, ← h₂.trace_eq_zero_iff]
-    have := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
-    exact le_antisymm this h₂.trace_nonneg
+    simpa [sub_eq_zero, eq_comm] using le_antisymm_aux h₁
+     (by simpa only [← neg_sub B, le_iff] using h₂)
 
 scoped[MatrixOrder] attribute [instance] Matrix.instPartialOrder
 
 lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
-  add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_left_eq_sub]
+  add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_right_eq_sub]
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
+
+variable [Fintype n]
 
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
   quasispectrum_nonneg_of_nonneg A hA := by
@@ -86,7 +99,7 @@ lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
 scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
 
 lemma instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
-  .of_nonneg_iff' add_le_add_left fun A ↦
+  .of_nonneg_iff' add_le_add_right fun A ↦
     ⟨fun hA ↦ by
       classical
       obtain ⟨X, hX, -, rfl⟩ :=
@@ -100,6 +113,8 @@ scoped[MatrixOrder] attribute [instance] instStarOrderedRing
 end PartialOrder
 
 open scoped MatrixOrder
+
+variable [Fintype n]
 
 namespace PosSemidef
 
@@ -151,7 +166,7 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
-  rw [eq_comm, CFC.sqrt_eq_iff _ _  hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
+  rw [eq_comm, CFC.sqrt_eq_iff _ _ hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
@@ -181,9 +196,6 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
   classical
   exact nonneg_iff_posSemidef (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
 
-@[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
-
 theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
@@ -205,7 +217,7 @@ theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB :
 @[grind =]
 theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
     (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
-  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  refine ⟨fun h => h.isUnit, fun h => .of_dotProduct_mulVec_pos hx.1 fun v hv => ?_⟩
   obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec, dotProduct_star_self_pos_iff]
@@ -233,7 +245,10 @@ lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
 
 section kronecker
-variable {m : Type*} [Fintype m]
+
+omit [Fintype n]
+
+variable [Finite n] {m : Type*} [Finite m]
 
 open scoped Kronecker
 
@@ -241,6 +256,7 @@ open scoped Kronecker
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   classical
+  have := Fintype.ofFinite n; have := Fintype.ofFinite m
   obtain ⟨a, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   obtain ⟨b, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hy.nonneg
   simpa [mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
@@ -251,6 +267,7 @@ open Matrix in
 theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   classical
+  have := Fintype.ofFinite n; have := Fintype.ofFinite m
   exact hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit.mpr <|
     hx.isUnit.kronecker hy.isUnit
 
@@ -267,6 +284,7 @@ lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜}
 @[deprecated (since := "2025-08-07")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
   CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
+set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
 and `Matrix.toMatrixInnerProductSpace`. -/
@@ -280,12 +298,16 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
   add_left := by simp [mul_add]
   smul_left := by simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :

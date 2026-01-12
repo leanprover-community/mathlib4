@@ -122,7 +122,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsuppSum] at hnm
-  rw [← sub_add_cancel m m', ← hnm,]
+  rw [← sub_add_cancel m m', ← hnm]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by
