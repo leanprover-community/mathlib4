@@ -37,19 +37,6 @@ open scoped TensorProduct
 
 open TensorProduct
 
-lemma TensorProduct.span_range_mk_one_eq_top
-    {R S M : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S] [Module R M] :
-    Submodule.span S (LinearMap.range (TensorProduct.mk R S M 1) : Set (S ⊗[R] M)) = ⊤ := by
-  rw [← top_le_iff]
-  rintro x -
-  induction x with
-  | zero => simp
-  | add x y _ _ => aesop
-  | tmul x y =>
-    rw [show x ⊗ₜ[R] y = x • (1 ⊗ₜ y) by simp [smul_tmul']]
-    exact Submodule.smul_mem _ x (Submodule.subset_span ⟨y, rfl⟩)
-#min_imports
-
 namespace LinearMap
 
 section liftBaseChange
