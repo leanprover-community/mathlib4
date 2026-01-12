@@ -332,7 +332,6 @@ following nodes, but we overrule it and place a space anyway.
 def forceSpaceAfter : ExcludedSyntaxNodeKind where
   kinds := #[
     ``termThrowError__, -- `throwError "message"`
-    -- Syntax nodes that do not pretty-print with a space, if followed by a parenthesis `()`
     ``Parser.Term.whereDecls, -- `where`
   ]
   depth := some 2
