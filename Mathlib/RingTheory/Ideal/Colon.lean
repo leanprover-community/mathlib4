@@ -57,8 +57,7 @@ theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
-@[deprecated colon_univ (since := "2026-01-11")]
-theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := colon_univ
+@[deprecated (since := "2026-01-11")] alias colon_top := colon_univ
 
 @[simp]
 theorem colon_bot : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := by
