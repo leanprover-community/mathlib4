@@ -76,8 +76,13 @@ instance restrictScalars.isScalarTower (p : Submodule R M) :
 
 variable {R M} in
 lemma restrictScalars_le {s t : Submodule R M} :
-    s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t := by
-  simp [SetLike.le_def]
+    s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t :=
+  Iff.rfl
+
+variable {R M} in
+lemma restrictScalars_lt {s t : Submodule R M} :
+    s.restrictScalars S < t.restrictScalars S ↔ s < t := by
+  simp [SetLike.lt_iff_le_and_exists, restrictScalars_le]
 
 /-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
 the lattice of `S`-submodules. -/
@@ -155,7 +160,7 @@ lemma restrictScalars_inf (s t : Submodule R M) :
 
 @[simp]
 lemma restrictScalars_sup (s t : Submodule R M) :
-    (s ⊔ t).restrictScalars S = (s.restrictScalars S) ⊔ (t.restrictScalars S) := by
+    (s ⊔ t).restrictScalars S = s.restrictScalars S ⊔ t.restrictScalars S := by
   simpa [Set.image_insert_eq] using restrictScalars_sSup S (s := {s, t})
 
 @[simp]
