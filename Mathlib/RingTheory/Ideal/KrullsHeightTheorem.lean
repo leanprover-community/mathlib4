@@ -42,38 +42,6 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
 
 @[expose] public section
 
-section
-
-open Polynomial in
-instance {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] : (p.map C).IsPrime :=
-  Ideal.isPrime_map_C_of_isPrime ‹_›
-
-lemma IsLocalization.height_map_of_disjoint {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] (M : Submonoid R)
-    [IsLocalization M S] (p : Ideal R) [p.IsPrime] (h : Disjoint (M : Set R) (p : Set R)) :
-    (p.map <| algebraMap R S).height = p.height := by
-  let P := p.map (algebraMap R S)
-  have : P.IsPrime := isPrime_of_isPrime_disjoint M S p ‹_› h
-  have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
-  simp_rw [P, comap_map_of_isPrime_disjoint M S p _ h] at this
-  have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
-    (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
-  rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
-  exact WithBot.coe_eq_coe.mp this
-
-lemma Ideal.IsMaximal.of_isLocalization_of_disjoint {R : Type*} [CommSemiring R] {M : Submonoid R}
-    {S : Type*} [CommSemiring S] [Algebra R S] [IsLocalization M S] {J : Ideal S}
-    [(Ideal.comap (algebraMap R S) J).IsMaximal]
-    (disj : Disjoint (M : Set R) (Ideal.comap (algebraMap R S) J)) :
-    J.IsMaximal := by
-  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <|
-    (IsLocalization.isPrime_iff_isPrime_disjoint M S J).mpr ⟨‹IsMaximal _›.isPrime, disj⟩ |>.ne_top
-  apply comap_mono (f := algebraMap R S) at hm
-  rwa [← IsLocalization.map_comap M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
-    Ideal.under_def, IsLocalization.map_comap M S m]
-
-end
-
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
 lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
