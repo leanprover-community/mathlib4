@@ -276,11 +276,36 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
   (Submodule.gi R M).gc.l_bot
 
 @[simp]
+theorem span_inter_le (s t : Set M) : span R (s ∩ t) ≤ span R s ⊓ span R t :=
+  le_inf (span_mono Set.inter_subset_left) (span_mono Set.inter_subset_right)
+
+@[simp]
+theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
+  (Submodule.gi R M).l_inf_u S S'
+
+theorem span_sInf (s : Set (Submodule R M)) :
+    span R (sInf (SetLike.coe '' s)) = sInf s := (Submodule.gi R M).l_sInf_u_image s
+
+theorem span_biInter (s : Set (Submodule R M)) :
+    span R (⋂ S ∈ s, S) = sInf s := by simpa using span_sInf s
+
+@[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
 
+@[simp]
 theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
   (Submodule.gi R M).gc.l_sup
+
+@[simp]
+theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' :=
+  (Submodule.gi R M).l_sup_u S S'
+
+theorem span_sSup (s : Set (Submodule R M)) :
+    span R (sSup (SetLike.coe '' s)) = sSup s := (Submodule.gi R M).l_sSup_u_image s
+
+theorem span_biUnion (s : Set (Submodule R M)) :
+    span R (⋃ S ∈ s, S) = sSup s := by simpa using span_sSup s
 
 theorem span_iUnion {ι} (s : ι → Set M) : span R (⋃ i, s i) = ⨆ i, span R (s i) :=
   (Submodule.gi R M).gc.l_iSup
