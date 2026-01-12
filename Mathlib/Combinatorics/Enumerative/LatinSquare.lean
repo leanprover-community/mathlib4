@@ -177,8 +177,27 @@ def latin_rectangle_isomorphism
       apply Equiv.congr_arg (f := g) at h2
       simp only [Equiv.apply_symm_apply] at h2
       exact h2,
-  distinct_col_entries := by sorry,
-  m_le_n := by sorry
+  distinct_col_entries := by 
+    have h' := A.distinct_col_entries 
+    unfold distinct_col_entries at h'
+    unfold distinct_col_entries
+    intro y i j hx
+    simp
+    specialize h' (g.symm y) (f.symm i) (f.symm j)
+    have h_neq : f.symm i ≠ f.symm j := by 
+      have h_inj := Equiv.injective f.symm
+      unfold Function.Injective at h_inj
+      conv at h_inj =>
+        ext
+        ext
+        rw [<- not_imp_not]
+      exact h_inj hx
+    exact h' h_neq,
+  m_le_n := by 
+    have ineq := A.m_le_n
+    have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
+    have g' : Fintype.card n = Fintype.card n' := Fintype.card_congr g
+    omega
   }
 -- Cyclic Example
 -- We construct an infinite family of Latin Squares from the infinite family of Cyclic Groups
