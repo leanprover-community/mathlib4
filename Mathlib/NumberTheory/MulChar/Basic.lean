@@ -362,7 +362,7 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-@[simps!]
+@[simps! apply symm_apply]
 noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
@@ -372,8 +372,15 @@ noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
         MonoidHom.mul_apply, Units.val_mul]
   }
 
-end Group
+/--
+The restriction of a `MulChar` to a submonoid.
+-/
+@[simps! apply]
+noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (χ : MulChar R R') : MulChar T R' :=
+  ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
+end Group
 
 /-!
 ### Properties of multiplicative characters
@@ -396,6 +403,10 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
+
+theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+  simp [eq_one_iff]
 
 end nontrivial
 
