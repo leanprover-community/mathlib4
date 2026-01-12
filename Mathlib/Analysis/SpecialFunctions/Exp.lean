@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.SuccPredLimit
 
 /-!
 # Complex and real exponential
@@ -294,10 +295,11 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
-  StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
+  StrictMono.orderIsoOfSurjective _
+    (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
+      (by simp [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -330,7 +332,8 @@ theorem tendsto_comp_exp_atTop {f : ℝ → α} :
 
 @[simp]
 theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
-  rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot, ← map_coe_Ioi_atBot]
+  rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot,
+    ← map_coe_Ioi_atBot _ (.of_dense _)]
 
 @[simp]
 theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by

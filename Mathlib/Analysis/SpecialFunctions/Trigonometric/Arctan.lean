@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Topology.Order.SuccPredLimit
 
 /-!
 # The `arctan` function.
@@ -98,8 +99,8 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
 theorem surjOn_tan : SurjOn tan (Ioo (-(π / 2)) (π / 2)) univ :=
   have := neg_lt_self pi_div_two_pos
   continuousOn_tan_Ioo.surjOn_of_tendsto (nonempty_Ioo.2 this)
-    (by rw [tendsto_comp_coe_Ioo_atBot this]; exact tendsto_tan_neg_pi_div_two)
-    (by rw [tendsto_comp_coe_Ioo_atTop this]; exact tendsto_tan_pi_div_two)
+    (by rw [tendsto_comp_coe_Ioo_atBot this (.of_dense _)]; exact tendsto_tan_neg_pi_div_two)
+    (by rw [tendsto_comp_coe_Ioo_atTop this (.of_dense _)]; exact tendsto_tan_pi_div_two)
 
 theorem tan_surjective : Function.Surjective tan := fun _ => surjOn_tan.subset_range trivial
 
@@ -189,10 +190,10 @@ theorem arctan_eq_zero_iff : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
 theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
-  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+  (tendsto_Ioo_atTop (.of_dense _)).mp tanOrderIso.symm.tendsto_atTop
 
 theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
-  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+  (tendsto_Ioo_atBot (.of_dense _)).mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
