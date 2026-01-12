@@ -67,11 +67,6 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
--- TODO: remove this configuration and use the default configuration.
-initialize_simps_projections SupBotHom (+toSupHom, -toFun)
-initialize_simps_projections InfTopHom (+toInfHom, -toFun)
-initialize_simps_projections BoundedLatticeHom (+toLatticeHom, -toFun)
-
 section
 
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
