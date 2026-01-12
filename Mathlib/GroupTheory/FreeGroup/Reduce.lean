@@ -32,7 +32,7 @@ section Reduce
 
 variable [DecidableEq α]
 
-set_option linter.style.whitespace false in -- TODO fix the linter!
+set_option linter.style.whitespace false in -- linter has *many* false positives on this definition
 /-- The maximal reduction of a word. It is computable
 iff `α` has decidable equality. -/
 @[to_additive

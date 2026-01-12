@@ -900,14 +900,13 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
-set_option linter.style.whitespace false in -- TODO fix linter/pretty-printing!
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `Linear.compAlternatingMap` as an isomorphism,
 and the alternating version of `LinearEquiv.multilinearMapCongrRight`. -/
 @[simps!]
 def LinearEquiv.alternatingMapCongrRight (e : N'' ≃ₗ[R'] N₂'') :
-    M''[⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
+    M'' [⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
   toFun f := e.compAlternatingMap f
   invFun f := e.symm.compAlternatingMap f
   map_add' _ _ := by ext; simp
