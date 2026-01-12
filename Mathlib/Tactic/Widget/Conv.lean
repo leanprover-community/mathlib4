@@ -21,6 +21,8 @@ meta section
 
 open Lean Meta
 
+namespace Mathlib.Tactic.Conv
+
 /--
 A path to a subexpression from a root expression.
 The constructors are chosen to be easily translatable into `conv` directions.
@@ -250,7 +252,7 @@ public def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType 
 
 /-- Rpc function for the conv widget. -/
 @[server_rpc_method]
-public def ConvSelectionPanel.rpc :=
+public protected def SelectionPanel.rpc :=
   mkSelectionPanelRPC insertEnter
     "Use shift-click to select one sub-expression in the goal or local context that you want to \
     zoom in on."
@@ -258,12 +260,14 @@ public def ConvSelectionPanel.rpc :=
 
 /-- The conv widget. -/
 @[widget_module]
-public def ConvSelectionPanel : ProofWidgets.Component SelectInsertParams :=
-  mk_rpc_widget% ConvSelectionPanel.rpc
+public protected def SelectionPanel : ProofWidgets.Component SelectInsertParams :=
+  mk_rpc_widget% SelectionPanel.rpc
 
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal or in the type of a local hypothesis or let-decl. -/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
-  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+  Widget.savePanelWidgetInfo Conv.SelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx
+
+end Mathlib.Tactic.Conv
