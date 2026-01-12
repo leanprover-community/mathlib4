@@ -715,7 +715,7 @@ instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
         Polynomial.isSplittingField_C 1
       let e : K ≃ₗ[K] (CyclotomicField 0 K) :=
         (Polynomial.IsSplittingField.algEquiv K (Polynomial.cyclotomic 0 K)).toLinearEquiv
-      simp [←LinearEquiv.finrank_eq e, finrank_self]
+      simp [← LinearEquiv.finrank_eq e, finrank_self]
     simp [Subalgebra.bot_eq_top_iff_finrank_eq_one.mpr finrank]
 
 omit [NeZero n]
@@ -823,7 +823,7 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     obtain ⟨x, hx⟩ := x
     refine
       adjoin_induction (fun y hy => ?_) (fun a => ?_) (fun y z _ _ hy hz => ?_)
-        (fun y z  _ _ hy hz => ?_) hx
+        (fun y z _ _ hy hz => ?_) hx
     · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       exact ⟨NeZero.ne n, by rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]⟩

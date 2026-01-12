@@ -113,10 +113,8 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
-  simp +contextual [
-    integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      (intervalIntegrable_bernoulliFun k _ _),
-    bernoulliFun_eval_one, ← sub_div, ite_div]
+  simp +contextual [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
+      (intervalIntegrable_bernoulliFun k _ _), bernoulliFun_eval_one, ← sub_div, ite_div]
 
 variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
