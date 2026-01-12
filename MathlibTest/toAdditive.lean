@@ -812,3 +812,13 @@ set_option pp.proofs true in
 /-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
 #guard_msgs in
 #check abstractAdd
+
+-- We give a warning if an existing translation is overwritten:
+/--
+warning: `abstractMul` was already translated to `abstractAdd` instead of `someOtherTranslation`.
+Unless the original translation was wrong, please remove this `to_additive` attribute.
+
+Note: This linter can be disabled with `set_option linter.translateOverwrite false`
+-/
+#guard_msgs in
+attribute [to_additive someOtherTranslation] abstractMul
