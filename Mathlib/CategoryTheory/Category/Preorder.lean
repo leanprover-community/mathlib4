@@ -68,10 +68,6 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
 @[inherit_doc homOfLE]
 abbrev _root_.LE.le.hom := @homOfLE
 
-/-- Express an inequality `x ≤ y` as a morphism in the corresponding preorder category.
-(In this version, the variables `x` and `y` are explicit.) -/
-abbrev homOfLE' (x y : X) (h : x ≤ y) : x ⟶ y := homOfLE h
-
 @[simp]
 theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
@@ -101,10 +97,6 @@ lemma isIso_homOfLE {x y : X} (h : x = y) :
   subst h
   change IsIso (𝟙 _)
   infer_instance
-
-lemma isIso_homOfLE' (x y : X) (h : x = y) :
-    IsIso (homOfLE' x y (by rw [h])) :=
-  isIso_homOfLE h
 
 @[simp, reassoc]
 lemma homOfLE_comp_eqToHom {a b c : X} (hab : a ≤ b) (hbc : b = c) :
