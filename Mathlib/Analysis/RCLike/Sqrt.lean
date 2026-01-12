@@ -31,9 +31,7 @@ theorem Complex.re_sqrt_ofReal (a : ℝ) :
     (sqrt (a : ℂ)).re = a.sqrt := by
   by_cases! ha : 0 ≤ a
   · simp [sqrt, cpow_inv_two_re, abs_of_nonneg ha]
-  set b := -a
-  simp [show a = -b by grind, sqrt, cpow_inv_two_re, abs_of_nonneg (a := b) (by simp [b, ha.le]),
-    Real.sqrt_eq_zero_of_nonpos (x := -b) (by simp [b, ha.le])]
+  simp [sqrt, cpow_inv_two_re, abs_of_nonpos ha.le, Real.sqrt_eq_zero_of_nonpos ha.le]
 
 theorem RCLike.re_sqrt_ofReal (a : ℝ) :
     re (sqrt (a : 𝕜)) = a.sqrt := by
