@@ -344,6 +344,9 @@ theorem completeGraph_eq_top (V : Type u) : completeGraph V = ⊤ :=
 theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
   rfl
 
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
+  simp [← le_bot_iff, le_iff_adj]
+
 @[simps]
 instance (V : Type u) : Inhabited (SimpleGraph V) :=
   ⟨⊥⟩
@@ -397,12 +400,19 @@ theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.su
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
 @[simp]
 theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
-  Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _ h => h.symm
+  Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
 
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
-  Set.eq_empty_of_forall_notMem fun _ ⟨_, h⟩ => h
+  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+
+/-- Only the empty graph has empty support. -/
+@[simp]
+theorem support_eq_bot_iff : G.support = ∅ ↔ G = ⊥ :=
+  ⟨fun h ↦ by rw [eq_bot_iff_forall_not_adj]; exact fun v w nadj ↦
+    Set.ext_iff.mp (SetRel.dom_eq_empty_iff.mp h) (v, w) |>.mp nadj |>.elim,
+   (· ▸ support_bot)⟩
 
 /-- The support of a graph is empty if there at most one vertex. -/
 @[simp]
@@ -531,9 +541,6 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
-
-theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
-  simp [← le_bot_iff, le_iff_adj]
 
 theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
   simp [eq_bot_iff_forall_not_adj]
