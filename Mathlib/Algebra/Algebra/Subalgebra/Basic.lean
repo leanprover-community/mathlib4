@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -15,6 +17,8 @@ In this file we define `Subalgebra`s and the usual operations on them (`map`, `c
 The `Algebra.adjoin` operation and complete lattice structure can be found in
 `Mathlib/Algebra/Algebra/Subalgebra/Lattice.lean`.
 -/
+
+@[expose] public section
 
 universe u u' v w w'
 
@@ -315,8 +319,8 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
       Algebra.algebraMap_eq_smul_one]
     exact algebraMap_mem S _
-  commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
-  smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _
+  commutes' := fun _ _ => Subtype.ext <| Algebra.commutes _ _
+  smul_def' := fun _ _ => Subtype.ext <| Algebra.smul_def _ _
 
 instance algebra : Algebra R S := S.algebra'
 
@@ -543,7 +547,7 @@ theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f)
 
 /-- Restrict the codomain of an algebra homomorphism. -/
 def codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₐ[R] S :=
-  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r => Subtype.eq <| f.commutes r }
+  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r => Subtype.ext <| f.commutes r }
 
 @[simp]
 theorem val_comp_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
@@ -557,13 +561,16 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
 
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
+
+theorem val_comp_rangeRestrict :
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
@@ -676,6 +683,11 @@ theorem inclusion_inclusion (hst : S ≤ T) (htu : T ≤ U) (x : S) :
   Subtype.ext rfl
 
 @[simp]
+theorem val_comp_inclusion (hst : S ≤ T) :
+    T.val.comp (inclusion hst) = S.val :=
+  rfl
+
+@[simp]
 theorem coe_inclusion (s : S) : (inclusion h s : A) = s :=
   rfl
 
@@ -782,14 +794,19 @@ instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S
   S.toSubsemiring.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
-    (S : Subalgebra R A) : IsScalarTower S α β :=
+instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β] :
+    IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
-instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
-    [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
-    IsScalarTower R S' T :=
-  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
+instance (priority := low) isScalarTower_mid [SMul α R] [SMul α A]
+    [IsScalarTower α R A] [SMul A β] [SMul α β] [IsScalarTower α A β] :
+    IsScalarTower α S β :=
+  ⟨fun a b c ↦ smul_assoc a b.1 c⟩
+
+instance (priority := low) isScalarTower_right [SMul α R] [SMul α A] [IsScalarTower α R A]
+    [SMul β R] [SMul β A] [IsScalarTower β R A] [SMul α β] [IsScalarTower α β A] :
+    IsScalarTower α β S :=
+  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.1)⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)

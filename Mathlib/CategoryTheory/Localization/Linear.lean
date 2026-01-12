@@ -3,19 +3,23 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Center.Localization
-import Mathlib.CategoryTheory.Center.Linear
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Center.Localization
+public import Mathlib.CategoryTheory.Center.Linear
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Localization of linear categories
 
 If `L : C ⥤ D` is an additive localization functor between preadditive categories,
-and `C` is `R`-linear, we show that `D` can also be equipped with a `R`-linear
-structure such that `L` is a `R`-linear functor.
+and `C` is `R`-linear, we show that `D` can also be equipped with an `R`-linear
+structure such that `L` is an `R`-linear functor.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 
@@ -40,8 +44,7 @@ lemma functor_linear :
   constructor
   intro X Y f r
   change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
-  simp only [CatCenter.localization_app, ← L.map_comp,
-    Functor.id_obj, Linear.toCatCenter_apply_app, Linear.smul_comp, Category.id_comp]
+  simp [← L.map_comp]
 
 section
 
@@ -65,7 +68,7 @@ end
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [Preadditive E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]

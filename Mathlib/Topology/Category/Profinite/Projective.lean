@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Profinite sets have enough projectives
@@ -22,6 +24,8 @@ Let `X` be a profinite set.
   is a projective presentation
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -42,7 +46,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     use CompHausLike.ofHom _ ⟨h, hh⟩
     apply ConcreteCategory.coe_ext
     simp only [h]
-    convert denseRange_pure.equalizer (g.hom.continuous.comp hh) f.hom.continuous _
+    convert denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous _
     have : g.hom ∘ g' = id := hg'.comp_eq_id
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl

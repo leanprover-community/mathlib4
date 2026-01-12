@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Maschke's theorem
@@ -30,6 +32,8 @@ taking the average over `G` of the conjugates of `π`.
 It's not so far to give the usual statement, that every finite-dimensional representation
 of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -57,10 +61,8 @@ namespace LinearMap
 -- At first we work with any `[CommRing k]`, and add the assumption that
 -- `IsUnit (Fintype.card G : k)` when it is required.
 variable {k : Type u} [CommRing k] {G : Type u} [Group G]
-variable {V : Type v} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
-variable [IsScalarTower k (MonoidAlgebra k G) V]
-variable {W : Type w} [AddCommGroup W] [Module k W] [Module (MonoidAlgebra k G) W]
-variable [IsScalarTower k (MonoidAlgebra k G) W]
+variable {V : Type v} [AddCommGroup V] [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
+variable {W : Type w} [AddCommGroup W] [Module k W] [Module k[G] W] [IsScalarTower k k[G] W]
 variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
@@ -71,7 +73,7 @@ theorem conjugate_apply (g : G) (v : W) :
     π.conjugate g v = MonoidAlgebra.single g⁻¹ (1 : k) • π (MonoidAlgebra.single g (1 : k) • v) :=
   rfl
 
-variable (i : V →ₗ[MonoidAlgebra k G] W)
+variable (i : V →ₗ[k[G]] W)
 
 section
 
@@ -96,7 +98,7 @@ lemma sumOfConjugates_apply (v : W) : π.sumOfConjugates G v = ∑ g : G, π.con
 
 /-- In fact, the sum over `g : G` of the conjugate of `π` by `g` is a `k[G]`-linear map.
 -/
-def sumOfConjugatesEquivariant : W →ₗ[MonoidAlgebra k G] V :=
+def sumOfConjugatesEquivariant : W →ₗ[k[G]] V :=
   MonoidAlgebra.equivariantOfLinearOfComm (π.sumOfConjugates G) fun g v => by
     simp only [sumOfConjugates_apply, Finset.smul_sum, conjugate_apply]
     refine Fintype.sum_bijective (· * g) (Group.mulRight_bijective g) _ _ fun i ↦ ?_
@@ -111,7 +113,7 @@ section
 /-- We construct our `k[G]`-linear retraction of `i` as
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
-def equivariantProjection : W →ₗ[MonoidAlgebra k G] V :=
+def equivariantProjection : W →ₗ[k[G]] V :=
   Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
@@ -136,32 +138,32 @@ namespace MonoidAlgebra
 -- Now we work over a `[Field k]`.
 variable {k : Type u} [Field k] {G : Type u} [Fintype G] [NeZero (Fintype.card G : k)]
 variable [Group G]
-variable {V : Type u} [AddCommGroup V] [Module (MonoidAlgebra k G) V]
-variable {W : Type u} [AddCommGroup W] [Module (MonoidAlgebra k G) W]
+variable {V : Type u} [AddCommGroup V] [Module k[G] V]
+variable {W : Type u} [AddCommGroup W] [Module k[G] W]
 
-theorem exists_leftInverse_of_injective
-    (f : V →ₗ[MonoidAlgebra k G] W) (hf : LinearMap.ker f = ⊥) :
-    ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
-  let A := MonoidAlgebra k G
+theorem exists_leftInverse_of_injective (f : V →ₗ[k[G]] W) (hf : LinearMap.ker f = ⊥) :
+    ∃ g : W →ₗ[k[G]] V, g.comp f = .id := by
+  let A := k[G]
   letI : Module k W := .compHom W (algebraMap k A)
   letI : Module k V := .compHom V (algebraMap k A)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
-  obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
-    simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| DFunLike.congr_fun hφ
+  set φ := (f.restrictScalars k).leftInverse
+  have hφ : ∀ (x : V), φ (f x) = x := by
+    apply LinearMap.leftInverse_apply_of_inj
+    simp [hf]
+  refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
 
 namespace Submodule
 
-theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
-    ∃ q : Submodule (MonoidAlgebra k G) V, IsCompl p q := by
+theorem exists_isCompl (p : Submodule k[G] V) : ∃ q : Submodule k[G] V, IsCompl p q := by
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   exact ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| DFunLike.congr_fun hf⟩
 
-/-- This also implies instances `ComplementedLattice (Submodule (MonoidAlgebra k G) V)` and
-`IsSemisimpleRing (MonoidAlgebra k G)`. -/
-instance : IsSemisimpleModule (MonoidAlgebra k G) V where
+/-- This also implies instances `ComplementedLattice (Submodule k[G] V)` and
+`IsSemisimpleRing k[G]`. -/
+instance : IsSemisimpleModule k[G] V where
   exists_isCompl := exists_isCompl
 
 instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=

@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.Localization.Submodule
+module
+
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Localization.Submodule
 
 /-!
 # Fractional ideals
@@ -22,7 +24,7 @@ Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R`
 
 ## Main statements
 
-  * `mul_left_mono` and `mul_right_mono` state that ideal multiplication is monotone
+  * the `MulLeftMono` and `MulRightMono` instances state that ideal multiplication is monotone
   * `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
 
 ## Implementation notes
@@ -35,7 +37,7 @@ instead of having `FractionalIdeal` be a structure of which `a` is a field.
 Most definitions in this file specialize operations from submodules to fractional ideals,
 proving that the result of this operation is fractional if the input is fractional.
 Exceptions to this rule are defining `(+) := (⊔)` and `⊥ := 0`,
-in order to re-use their respective proof terms.
+in order to reuse their respective proof terms.
 We can still use `simp` to show `↑I + ↑J = ↑(I + J)` and `↑⊥ = ↑0`.
 
 Many results in fact do not need that `P` is a localization, only that `P` is an
@@ -53,6 +55,8 @@ making the localization a field.
 fractional ideal, fractional ideals, invertible ideal
 -/
 
+@[expose] public section
+
 
 open IsLocalization Pointwise nonZeroDivisors
 
@@ -62,7 +66,8 @@ variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
 variable [Algebra R P]
 variable (S)
 
-/-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
+/-- A submodule `I` is a fractional ideal with respect to a submonoid `S`
+if `a I ⊆ R` for some `a ∈ S`. -/
 def IsFractional (I : Submodule R P) :=
   ∃ a ∈ S, ∀ b ∈ I, IsInteger R (a • b)
 
@@ -72,7 +77,7 @@ variable (P)
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
-such that there is a nonzero `a : R` with `a I ⊆ R`.
+such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
@@ -125,9 +130,9 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
   exact I.2.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
-defined by mapping `x` to `den I • x`. -/
-noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
-    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num := by
+defined by mapping `x` to `I.den • x`, assuming scalar multiplication by `I.den` is injective. -/
+noncomputable abbrev equivNumOfIsSMulRegular [FaithfulSMul R P] {I : FractionalIdeal S P}
+    (reg : IsSMulRegular P I.den) : I ≃ₗ[R] I.num := by
   refine LinearEquiv.trans
     (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
@@ -135,11 +140,22 @@ noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
       (FaithfulSMul.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
-  · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
-    rwa [Submonoid.smul_def, Submonoid.smul_def, smul_right_inj h_nz, SetCoe.ext_iff] at hxy
+  · simpa [LinearMap.restrict_apply, reg.eq_iff] using hxy
   · rw [← den_mul_self_eq_num] at hy
     obtain ⟨x, hx, hxy⟩ := hy
     exact ⟨⟨x, hx⟩, by simp_rw [LinearMap.restrict_apply, Subtype.ext_iff, ← hxy]; rfl⟩
+
+/-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
+defined by mapping `x` to `I.den • x`. -/
+noncomputable def equivNum [NoZeroSMulDivisors R P] [Nontrivial P]
+    {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_right_injective P h_nz)
+
+/-- The linear equivalence between the fractional ideal `I` in a faithful localization
+and the integral ideal `I.num`. -/
+noncomputable def equivNumOfIsLocalization [FaithfulSMul R P] [IsLocalization S P]
+    (I : FractionalIdeal S P) : I ≃ₗ[R] I.num :=
+  equivNumOfIsSMulRegular (smul_bijective ..).1
 
 section SetLike
 
@@ -282,6 +298,8 @@ theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionR
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
 
+@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
+
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
 
@@ -368,7 +386,7 @@ theorem coe_mem_one (x : R) : algebraMap R P x ∈ (1 : FractionalIdeal S P) :=
   (mem_one_iff S).mpr ⟨x, rfl⟩
 
 theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
-  (mem_one_iff S).mpr ⟨1, RingHom.map_one _⟩
+  (mem_one_iff S).mpr ⟨1, map_one _⟩
 
 variable {S}
 
@@ -553,15 +571,17 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   simp only [mul_def]
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 
-theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
-  intro J J' h
-  simp only [mul_def]
-  exact mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
+instance : MulLeftMono (FractionalIdeal S P) where
+  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
 
-theorem mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := by
-  intro J J' h
-  simp only [mul_def]
-  exact mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
+instance : MulRightMono (FractionalIdeal S P) where
+  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
+
+@[deprecated _root_.mul_right_mono (since := "2025-09-09")]
+protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := mul_right_mono
+
+@[deprecated _root_.mul_left_mono (since := "2025-09-09")]
+protected lemma mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := mul_left_mono
 
 theorem mul_mem_mul {I J : FractionalIdeal S P} {i j : P} (hi : i ∈ I) (hj : j ∈ J) :
     i * j ∈ I * J := by
@@ -622,25 +642,21 @@ variable {S P}
 
 section Order
 
-instance : AddLeftMono (FractionalIdeal S P) where
-  elim _ _ _ hIJ := sup_le_sup_left hIJ _
+@[deprecated _root_.add_le_add_right (since := "2025-09-14")]
+theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
+    J' + I ≤ J' + J := _root_.add_le_add_right hIJ _
 
-instance : AddRightMono (FractionalIdeal S P) where
-  elim _ _ _ hIJ := sup_le_sup_right hIJ _
+@[deprecated mul_le_mul_right (since := "2025-09-14")]
+theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
+    J' * I ≤ J' * J := mul_le_mul_right hIJ _
 
-instance : MulLeftMono (FractionalIdeal S P) where
-  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul hk (hIJ hj)
+@[deprecated le_mul_of_one_le_left' (since := "2025-09-14")]
+theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I :=
+  le_mul_of_one_le_left' hI
 
-instance : MulRightMono (FractionalIdeal S P) where
-  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul (hIJ hk) hj
-
-theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
-  convert mul_left_mono I hI
-  exact (mul_one I).symm
-
-theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I := by
-  convert mul_left_mono I hI
-  exact (mul_one I).symm
+@[deprecated mul_le_of_le_one_left' (since := "2025-09-14")]
+theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I :=
+  mul_le_of_le_one_left' hI
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>
   let ⟨y, _, hy⟩ := (mem_coeIdeal S).mp hx
@@ -652,12 +668,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, RingHom.map_add]
+      rw [mem_setOf, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, RingHom.map_zero]
+    · rw [mem_setOf, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, RingHom.map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor
@@ -704,8 +720,8 @@ variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDiviso
 lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
     FG I.coeToSubmodule := by
   have := hR.noetherian I.num
-  rw [← fg_top] at this ⊢
-  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
+  rw [← Module.Finite.iff_fg] at this ⊢
+  exact .equiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩).symm
 
 end FG
 

@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
@@ -24,6 +26,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
                                   only divisible by `1` iff it is prime
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -133,9 +137,9 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
   refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩
-  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by cutsat)
-  exact (Nat.mul_eq_right (by cutsat)).mp
-    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by cutsat))))
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by lia)
+  exact (Nat.mul_eq_right (by lia)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by lia))))
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
@@ -222,9 +226,12 @@ theorem minFac_two : minFac 2 = 2 := by
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
+set_option backward.privateInPublic true in
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
@@ -257,6 +264,8 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
       exact absurd this (by contradiction)
   termination_by k => sqrt n + 2 - k
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
   · simp [n0, minFacProp]
@@ -386,8 +395,7 @@ theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
       apply Nat.ne_of_gt
       apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ
-      )).one_lt
+      apply Nat.zero_lt_succ)).one_lt
 
 end MinFac
 

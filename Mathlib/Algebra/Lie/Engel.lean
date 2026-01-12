@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
+module
+
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Engel's theorem
@@ -64,6 +66,8 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 -/
 
+@[expose] public section
+
 
 universe u₁ u₂ u₃ u₄
 
@@ -75,7 +79,7 @@ namespace LieSubmodule
 
 open LieModule
 
-variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
+variable {I : LieIdeal R L} {x : L} (hxI : R ∙ x ⊔ I = ⊤)
 include hxI
 
 theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
@@ -194,7 +198,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
-  have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
+  have hI₂ : R ∙ (⟨x, hxK'⟩ : K') ⊔ LieSubmodule.toSubmodule I = ⊤ := by
     rw [← LieIdeal.toLieSubalgebra_toSubmodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
@@ -233,12 +237,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     apply lt_of_le_of_ne K.le_normalizer
     rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ←
       LieSubmodule.nontrivial_iff_ne_bot R K]
-    have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
-      replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.toSubmodule_inj, K.coe_toLieSubmodule,
-          LieSubmodule.top_toSubmodule, ← LieSubalgebra.top_toSubmodule,
-          K.toSubmodule_inj]
-      exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
+    have : Nontrivial (L' ⧸ K.toLieSubmodule) := Submodule.Quotient.nontrivial_iff.2 <| by simpa
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
       refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)

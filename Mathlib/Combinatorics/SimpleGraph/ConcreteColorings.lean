@@ -3,16 +3,19 @@ Copyright (c) 2023 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
-import Mathlib.Combinatorics.SimpleGraph.Circulant
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Fin.Parity
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
+public import Mathlib.Combinatorics.SimpleGraph.Circulant
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
 
-This file defines colorings for some common graphs
+This file defines colorings for some common graphs.
 
 ## Main declarations
 
@@ -20,17 +23,23 @@ This file defines colorings for some common graphs
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 namespace SimpleGraph
 
-theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hadj : G.Adj u v) :
-    2 ≤ G.chromaticNumber := by
-  refine le_of_not_gt ?_
-  intro h
-  have hc : G.Colorable 1 := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
-  let c : G.Coloring (Fin 1) := hc.some
-  exact c.valid hadj (Subsingleton.elim (c u) (c v))
+theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
+    G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
+  chromaticNumber_le_iff_colorable
+
+theorem chromaticNumber_eq_two_iff {V : Type*} {G : SimpleGraph V} :
+    G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
+  ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
+            two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
+   fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
+      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
+       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
 
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
@@ -114,7 +123,7 @@ theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even
 
 /-- Tricoloring of a cycle graph -/
 def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
-    (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by fin_omega⟩) <| by
+    (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by lia⟩) <| by
     intro u v hadj
     match n with
     | 0 => exact u.elim0
@@ -135,7 +144,7 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; cutsat,
+          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; lia,
             Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
@@ -161,7 +170,7 @@ section CompleteEquipartiteGraph
 
 variable {r t : ℕ}
 
-/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
+/-- The injection `(x₁, x₂) ↦ x₁` is always an `r`-coloring of a `completeEquipartiteGraph r ·`. -/
 def Coloring.completeEquipartiteGraph :
   (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
 
@@ -190,6 +199,6 @@ lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
     have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
         (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
       simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    exact (Nat.even_iff.mpr (by cutsat)).add_one
+    exact (Nat.even_iff.mpr (by lia)).add_one
 
 end SimpleGraph

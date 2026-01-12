@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, François Dupuis
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Filter.Extr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Convex and concave functions
@@ -25,6 +27,8 @@ a convex set.
 * `StrictConvexOn 𝕜 s f`: The function `f` is strictly convex on `s` with scalars `𝕜`.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
+
+@[expose] public section
 
 open LinearMap Set Convex Pointwise
 

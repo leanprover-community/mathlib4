@@ -3,7 +3,11 @@ Copyright (c) 2025 Henrik Böving, Yaël Dillies, Kyle Miller. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Lean.Expr.Basic
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Command
+public import Lean.Meta.Sorry
 
 /-!
 # Tracking uses of `sorry`
@@ -24,6 +28,8 @@ by the given command.
   representing unfinished proofs, and it has special support for "go to definition", etc.
 * Move to ImportGraph?
 -/
+
+public meta section
 
 open Lean Meta Elab Command
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Action.OfMinimal
-import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
+public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Ergodicity of an irrational rotation
@@ -13,6 +15,8 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 In this file we prove that rotation of `AddCircle p` by `a` is ergodic
 if and only if `a` has infinite order (in other words, if `a / p` is irrational).
 -/
+
+public section
 
 open Metric MeasureTheory AddSubgroup
 open scoped Pointwise

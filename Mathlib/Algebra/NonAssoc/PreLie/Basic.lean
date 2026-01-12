@@ -3,9 +3,11 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Ring.Associator
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.GroupTheory.GroupAction.Ring
 /-!
 # Pre-Lie rings and algebras
 
@@ -39,6 +41,8 @@ Perhaps one could be favored but there is no real reason to.
 [J.-M. Oudom, D. Guin, *On the Lie enveloping algebra of a pre-Lie algebra*][oudom_guin_2008]
 <https://ncatlab.org/nlab/show/pre-Lie+algebra>
 -/
+
+@[expose] public section
 
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 first two variables. -/

@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqFun
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 
@@ -23,16 +25,18 @@ typeclass for quasi-measure-preserving actions yet.
 
 -/
 
+@[expose] public section
+
 open MeasureTheory
 
 namespace DomMulAct
 
-variable {M N α β} [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α]
+variable {M N α β} [MeasurableSpace N] [MeasurableSpace α]
   {μ : MeasureTheory.Measure α} [TopologicalSpace β]
 
 section SMul
 
-variable [SMul M α] [MeasurableSMul M α] [SMulInvariantMeasure M α μ]
+variable [SMul M α] [MeasurableConstSMul M α] [SMulInvariantMeasure M α μ]
 
 @[to_additive]
 instance : SMul Mᵈᵐᵃ (α →ₘ[μ] β) where
@@ -61,7 +65,7 @@ instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass N Mᵈᵐᵃ (α
   .symm _ _ _
 
 @[to_additive]
-instance [SMul N α] [MeasurableSMul N α] [SMulInvariantMeasure N α μ] [SMulCommClass M N α] :
+instance [SMul N α] [MeasurableConstSMul N α] [SMulInvariantMeasure N α μ] [SMulCommClass M N α] :
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (α →ₘ[μ] β) where
   smul_comm := mk.surjective.forall.2 fun c₁ ↦ mk.surjective.forall.2 fun c₂ ↦
     (AEEqFun.induction_on · fun f hf ↦ by simp only [mk_smul_mk_aeeqFun, smul_comm])
@@ -77,7 +81,7 @@ end SMul
 
 section MulAction
 
-variable [Monoid M] [MulAction M α] [MeasurableSMul M α] [SMulInvariantMeasure M α μ]
+variable [Monoid M] [MulAction M α] [MeasurableConstSMul M α] [SMulInvariantMeasure M α μ]
 
 @[to_additive]
 instance : MulAction Mᵈᵐᵃ (α →ₘ[μ] β) where

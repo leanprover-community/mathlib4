@@ -3,12 +3,14 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Preimage
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Preimage
 
 /-!
 # Pointwise operations of finsets
@@ -37,7 +39,7 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -45,7 +47,9 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 
@@ -61,7 +65,7 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+/-- The finset `1 : Finset α` is defined as `{1}` in scope `Pointwise`. -/
 @[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
@@ -268,6 +272,16 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+@[to_additive]
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
@@ -286,7 +300,7 @@ lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_in
 
 @[to_additive (attr := simp)]
 lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
-    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast (s : Set α).inv_prod (t : Set β)
 
 end InvolutiveInv
 
@@ -433,7 +447,7 @@ lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image o
 @[to_additive (attr := simp)]
 lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
-  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+  mod_cast (s₁ : Set α).prod_mul_prod_comm s₂ (t₁ : Set β) t₂
 
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
@@ -646,7 +660,7 @@ theorem subset_div {s t : Set α} :
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
-    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x / y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
@@ -840,17 +854,12 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma pow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    -- TODO: The `nonempty_iff_ne_empty` would be unnecessary if `push_neg` knew how to simplify
-    -- `s ≠ ∅` to `s.Nonempty` when `s : Finset α`.
-    -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/push_neg.20extensibility
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).pow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.pow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_pow hn
 
@@ -880,7 +889,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp [← mem_coe, coe_pow, Set.mem_pow]
+  simp [← mem_coe (s := s ^ n), coe_pow, Set.mem_pow]
 
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
@@ -993,14 +1002,12 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   | (n : ℕ) => hs.pow
   | .negSucc n => by simpa using hs.pow
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma zpow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).zpow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.zpow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_zpow hn
 
@@ -1038,18 +1045,8 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_div_iff := one_notMem_div_iff
-
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=

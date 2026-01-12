@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Roots of natural numbers, rounded up and down
@@ -28,6 +30,8 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 
 * `norm_num` extension
 -/
+
+@[expose] public section
 
 open Finsupp
 

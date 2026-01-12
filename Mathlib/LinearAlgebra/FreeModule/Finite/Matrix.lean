@@ -3,8 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Finite
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Finite and free modules using matrices
@@ -18,6 +20,8 @@ We provide some instances for finite and free modules involving matrices.
 * `Module.Finite.linearMap` : if `M` and `N` are finite and free, then `M →ₗ[R] N`
   is finite.
 -/
+
+@[expose] public section
 
 
 universe u u' v w

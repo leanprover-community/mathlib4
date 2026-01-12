@@ -3,7 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 
@@ -24,6 +26,8 @@ This file contains basics about the relative rank of subfields and intermediate 
   This is similar to `Subgroup.relIndex`.
 
 -/
+
+@[expose] public section
 
 open Module Cardinal
 
@@ -421,7 +425,6 @@ variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
   letI : Algebra A B := (inclusion h).toAlgebra
-  haveI : IsScalarTower F A B := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank F A B
 
 variable {A B} in

@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -68,6 +70,8 @@ matched because they preserve the properties of QPF. The latter example,
 
 each proves that some operations on functors preserves the QPF structure
 -/
+
+@[expose] public section
 
 set_option linter.style.longLine false in
 /-!
@@ -264,11 +268,11 @@ def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]
     (map_eq : ∀ (α β : TypeVec n) (f : α ⟹ β) (a : F α),
       f <$$> a = ((eqv _).symm <| f <$$> eqv _ a) := by intros; rfl) :
     MvQPF F where
-  P         := q.P
-  abs α     := (eqv _).symm <| q.abs α
-  repr α    := q.repr <| eqv _ α
-  abs_repr  := by simp [q.abs_repr]
-  abs_map   := by simp [q.abs_map, map_eq]
+  P        := q.P
+  abs α    := (eqv _).symm <| q.abs α
+  repr α   := q.repr <| eqv _ α
+  abs_repr := by simp [q.abs_repr]
+  abs_map  := by simp [q.abs_map, map_eq]
 
 end MvQPF
 

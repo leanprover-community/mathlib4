@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
-import Mathlib.CategoryTheory.Abelian.Images
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Every NonPreadditiveAbelian category is preadditive
@@ -48,6 +50,8 @@ reconstruct any natural preadditive structure the category may have.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -64,7 +68,11 @@ universe v u
 variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
-products and coproducts, and every monomorphism and every epimorphism is normal. -/
+products and coproducts, and every monomorphism and every epimorphism is normal.
+
+Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
+so in practice it is preferable to work directly with `Abelian`.
+-/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
     IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
@@ -396,12 +404,9 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
 def preadditive : Preadditive C where
   homGroup X Y :=
-    { add := (· + ·)
-      add_assoc := add_assoc
-      zero := 0
+    { add_assoc := add_assoc
       zero_add := neg_neg
       add_zero := add_zero
-      neg f := -f
       neg_add_cancel := neg_add_cancel
       sub_eq_add_neg f g := (add_neg f g).symm
       add_comm := add_comm

@@ -3,7 +3,9 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 # Scott continuity
@@ -26,6 +28,8 @@ in this file, and ωScott Continuity on chains later in
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -111,6 +115,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β]
 
+/-- The join operation is Scott continuous -/
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp

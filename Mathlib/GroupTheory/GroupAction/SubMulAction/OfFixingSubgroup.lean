@@ -3,37 +3,41 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
-import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.Tactic.Group
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
+public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.Tactic.Group
+
 /-!
 # SubMulActions on complements of invariant subsets
 
-- We define `SubMulAction` of an invariant subset in various contexts,
-especially stabilizers and fixing subgroups : `SubMulAction_of_compl`,
-`SubMulAction_of_stabilizer`, `SubMulAction_of_fixingSubgroup`.
+Given a `MulAction` of `G` on `α` and `s : Set α`,
+
+* `SubMulAction.ofFixingSubgroup` is the action
+  of `FixingSubgroup G s` on the complement `sᶜ` of `s`.
 
 - We define equivariant maps that relate various of these `SubMulAction`s
 and permit to manipulate them in a relatively smooth way:
 
-  * `SubMulAction.ofFixingSubgroupEmpty_equivariantMap`:
-  the identity map, when the set is the empty set.
+  * `SubMulAction.ofFixingSubgroup_equivariantMap`:
+  the identity map from `sᶜ` to `α`, as an equivariant map
+  relative to the injection of `FixingSubgroup G s` into `G`.
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
-  multiplicative equivalence between `fixingSubgroup M (insert a s)``
+  multiplicative equivalence between `fixingSubgroup M (insert a s)`
   and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
-  map between `SubMulAction.ofFixingSubgroup M (insert a s)`
-  and `SubMulAction.ofFixingSubgroup (stabilizer M a) s`.
+  map between `SubMulAction.ofFixingSubgroup M (Set.insert a s)`
+  and `SubMulAction.ofFixingSubgroup (MulAction.stabilizer M a) s`.
 
   * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
-  the multiplicative equivalence between `SubMulAction.fixingSubgroup M s`
-  and `SubMulAction.fixingSubgroup M t` induced by `g : M`
+  the multiplicative equivalence between `SubMulAction.ofFixingSubgroup M s`
+  and `SubMulAction.ofFixingSubgroup M t` induced by `g : M`
   such that `g • t = s`.
 
   * `SubMulAction.conjMap_ofFixingSubgroup`:
@@ -60,6 +64,8 @@ and permit to manipulate them in a relatively smooth way:
   of an enumeration of `s`, as an equivariant map.
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -218,7 +224,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
 
 @[to_additive]
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
-    (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s :=  by
+    (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
   ext k
   simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_coe]
   constructor
@@ -279,7 +285,7 @@ theorem conjMap_ofFixingSubgroup_coe_apply {hg : g • t = s} (x : ofFixingSubgr
 theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} {hst : g • s = t} :
     Bijective (conjMap_ofFixingSubgroup hst) := by
   constructor
-  · rintro  x y hxy
+  · rintro x y hxy
     simpa [← SetLike.coe_eq_coe] using hxy
   · rintro ⟨x, hx⟩
     rw [eq_comm, ← inv_smul_eq_iff] at hst
@@ -295,7 +301,7 @@ lemma mem_fixingSubgroup_union_iff {g : M} :
     g ∈ fixingSubgroup M (s ∪ t) ↔ g ∈ fixingSubgroup M s ∧ g ∈ fixingSubgroup M t := by
   simp [fixingSubgroup_union, Subgroup.mem_inf]
 
-/-- The group  morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
+/-- The group morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
 @[to_additive
 /-- The additive group morphism from `fixingAddSubgroup` of a union
 to the iterated `fixingAddSubgroup`. -/]
@@ -310,6 +316,7 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   map_one' := by simp
   map_mul' _ _ := by simp [← Subtype.coe_inj]
 
+set_option backward.proofsInPublic true in
 variable (M s t) in
 /-- The identity between the iterated `SubMulAction`
   of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
@@ -425,6 +432,7 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
+set_option backward.proofsInPublic true in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
@@ -441,6 +449,7 @@ noncomputable def ofFixingSubgroup.append
   simp only [trans_apply, Function.Embedding.subtype_apply] at H
   simpa [H] using Subtype.coe_prop (y j)
 
+set_option backward.proofsInPublic true in
 @[to_additive]
 theorem ofFixingSubgroup.append_left {n : ℕ} [Finite s]
     (x : Fin n ↪ ofFixingSubgroup M s) (i : Fin s.ncard) :
@@ -508,3 +517,20 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
 end TwoCriteria
 
 end SubMulAction
+
+section Pointwise
+
+open MulAction Set
+
+variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+
+@[to_additive]
+theorem MulAction.fixingSubgroup_le_stabilizer (s : Set α) :
+    fixingSubgroup G s ≤ stabilizer G s := by
+  intro k hk
+  rw [mem_stabilizer_iff]
+  conv_rhs => rw [← Set.image_id s]
+  apply Set.image_congr
+  simpa only [mem_fixingSubgroup_iff, id] using hk
+
+end Pointwise

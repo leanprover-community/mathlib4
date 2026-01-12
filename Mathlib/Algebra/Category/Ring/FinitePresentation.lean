@@ -3,12 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.CategoryTheory.Limits.Preserves.Over
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
-import Mathlib.CategoryTheory.Presentable.Finite
-import Mathlib.RingTheory.EssentialFiniteness
-import Mathlib.RingTheory.FinitePresentation
+module
+
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
+public import Mathlib.CategoryTheory.Presentable.Finite
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.FinitePresentation
 
 /-!
 
@@ -18,6 +20,8 @@ In this file, we show that finitely presented algebras are finitely presentable 
 i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
+
+public section
 
 open CategoryTheory Limits
 
@@ -131,7 +135,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     rfl
 
 /-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
-lemma preservesColimit_coyoneda_of_finitePresentation
+lemma CommRingCat.preservesColimit_coyoneda_of_finitePresentation
     (S : Under R) (hS : S.hom.hom.FinitePresentation) (F : J ⥤ Under R)
     [PreservesColimit (F ⋙ Under.forget R) (forget CommRingCat)] :
     PreservesColimit F (coyoneda.obj (.op S)) := by
@@ -151,13 +155,30 @@ lemma preservesColimit_coyoneda_of_finitePresentation
       f₁.right (Under.w f₁) f₂.right (Under.w f₂) congr($(e).right)
     exact ⟨k, hik, hjk, Under.UnderMorphism.ext e⟩
 
+@[deprecated (since := "2025-12-19")]
+alias preservesColimit_coyoneda_of_finitePresentation :=
+  CommRingCat.preservesColimit_coyoneda_of_finitePresentation
+
 /-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
-lemma preservesFilteredColimits_coyoneda (S : Under R) (hS : S.hom.hom.FinitePresentation) :
+lemma CommRingCat.preservesFilteredColimits_coyoneda (S : Under R)
+    (hS : S.hom.hom.FinitePresentation) :
     PreservesFilteredColimits (coyoneda.obj (.op S)) :=
   ⟨fun _ _ _ ↦ ⟨preservesColimit_coyoneda_of_finitePresentation R S hS _⟩⟩
 
+@[deprecated (since := "2025-12-19")]
+alias preservesFilteredColimits_coyoneda := CommRingCat.preservesFilteredColimits_coyoneda
+
 /-- If `S` is a finitely presented `R`-algebra, `S : Under R` is finitely presentable. -/
-lemma isFinitelyPresentable (S : Under R) (hS : S.hom.hom.FinitePresentation) :
+lemma CommRingCat.isFinitelyPresentable_under (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     IsFinitelyPresentable.{u} S := by
   rw [isFinitelyPresentable_iff_preservesFilteredColimits]
   exact preservesFilteredColimits_coyoneda R S hS
+
+@[deprecated (since := "2025-12-19")]
+alias isFinitelyPresentable := CommRingCat.isFinitelyPresentable_under
+
+variable {R} in
+lemma CommRingCat.isFinitelyPresentable_hom {S : CommRingCat.{u}} (f : R ⟶ S)
+    (hf : f.hom.FinitePresentation) :
+    MorphismProperty.isFinitelyPresentable.{u} _ f :=
+  isFinitelyPresentable_under R (Under.mk f) hf

@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Frobenius elements
@@ -16,7 +18,7 @@ integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime 
 there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
-Following `RingTheory/Invariant.lean`, we develop the theory in the setting that
+Following `Mathlib/RingTheory/Invariant/Basic.lean`, we develop the theory in the setting that
 there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring of `S`.
 
 ## Main results
@@ -42,6 +44,8 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -146,7 +150,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
     rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
       Localization.AtPrime.comap_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,
@@ -160,8 +164,6 @@ lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
   have : H.localize = H'.localize := by
-    have : IsNoetherianRing (Localization.AtPrime Q) :=
-      IsLocalization.isNoetherianRing Q.primeCompl _ inferInstance
     apply Algebra.FormallyUnramified.ext_of_iInf _
       (Ideal.iInf_pow_eq_bot_of_isLocalRing (maximalIdeal _) Ideal.IsPrime.ne_top')
     intro x
@@ -213,7 +215,6 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
   have : Q.IsMaximal := Ideal.Quotient.maximal_of_isField _ (Finite.isField_of_domain (S ⧸ Q))
-  have : P.IsMaximal := Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q
   obtain ⟨p, hc⟩ := CharP.exists (R ⧸ P)
   have : Finite (R ⧸ P) := .of_injective _ Ideal.algebraMap_quotient_injective
   cases nonempty_fintype (R ⧸ P)

@@ -3,8 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -13,12 +15,14 @@ Forgetful functors from algebraic categories usually don't preserve colimits. Ho
 to preserve _filtered_ colimits.
 
 In this file, we start with a ring `R`, a small filtered category `J` and a functor
-`F : J ⥤ ModuleCat R`. We show that the colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrp`
-(in `AddCommGrp`) carries the structure of an `R`-module, thereby showing that the forgetful
-functor `forget₂ (ModuleCat R) AddCommGrp` preserves filtered colimits. In particular, this
+`F : J ⥤ ModuleCat R`. We show that the colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrpCat`
+(in `AddCommGrpCat`) carries the structure of an `R`-module, thereby showing that the forgetful
+functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In particular, this
 implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -36,12 +40,12 @@ section
 variable {R : Type u} [Ring R] {J : Type v} [SmallCategory J] [IsFiltered J]
 variable (F : J ⥤ ModuleCat.{max v u, u} R)
 
-/-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrp` in the category `AddCommGrp`.
+/-- The colimit of `F ⋙ forget₂ (ModuleCat R) AddCommGrpCat` in the category `AddCommGrpCat`.
 In the following, we will show that this has the structure of an `R`-module.
 -/
-def M : AddCommGrp :=
-  AddCommGrp.FilteredColimits.colimit.{v, u}
-    (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})
+def M : AddCommGrpCat :=
+  AddCommGrpCat.FilteredColimits.colimit.{v, u}
+    (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{max v u})
 
 /-- The canonical projection into the colimit, as a quotient type. -/
 def M.mk : (Σ j, F.obj j) → M F :=
@@ -126,7 +130,7 @@ instance colimitModule : Module R (M F) :=
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add,
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
-      (IsFiltered.rightToMax i j), LinearMap.map_smul, LinearMap.map_smul]
+      (IsFiltered.rightToMax i j), map_smul, map_smul]
   add_smul r s x := by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x
     simp [_root_.add_smul, colimit_add_mk_eq'] }
@@ -138,8 +142,8 @@ def colimit : ModuleCat.{max v u, u} R :=
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
-    { ((AddCommGrp.FilteredColimits.colimitCocone
-      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j).hom with
+    { ((AddCommGrpCat.FilteredColimits.colimitCocone
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{max v u})).ι.app j).hom with
     map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
@@ -156,7 +160,7 @@ We already know that this is a morphism between additive groups. The only thing 
 it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  let h := (AddCommGrp.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
+  let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
     congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
@@ -169,8 +173,8 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
-  (forget₂ _ AddCommGrp).map_injective
-    ((AddCommGrp.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
+  (forget₂ _ AddCommGrpCat).map_injective
+    ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
@@ -182,16 +186,16 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
       (congr_fun ((forget _).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where
+    PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
   { preservesColimit := fun {F} =>
       preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
-        (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
-          (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) }
+        (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
+          (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u})) }
 
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
-  Limits.comp_preservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
-    (forget AddCommGrp)
+  Limits.comp_preservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrpCat)
+    (forget AddCommGrpCat)
 
 instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
   reflects_filtered_colimits _ := { reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _ }

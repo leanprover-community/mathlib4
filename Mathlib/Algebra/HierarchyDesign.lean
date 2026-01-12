@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Init
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -16,6 +18,8 @@ refer to files/types that currently only exist in mathlib3.
 TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
 
 -/
+
+@[expose] public section
 
 
 library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
@@ -65,7 +69,7 @@ when applicable:
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pi/Basic.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
@@ -97,12 +101,13 @@ when applicable:
   instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib/Algebra/Pointwise.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
+  See `Mathlib/Algebra/Group/TransferInstance.lean` for more examples. See also the `transport`
+  tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -138,7 +143,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrpCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -146,9 +151,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGrp`, you can treat `G` as a type,
+  (so if `G : AddCommGrpCat`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrpCat.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance
@@ -204,12 +209,21 @@ Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 library_note2 «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. When they can be inferred from these other
-arguments, it is faster to use this method than to use type class inference.
+arguments to the type of one of the other arguments. There are several reasons for doing so.
 
+When they can be inferred from these other arguments,
+it is faster to use this method than to use type class inference.
 For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
 and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
 `[Semiring α] [Semiring β]`.
+
+When handling non-canonical instances, it is necessary that the relevant declarations take these
+instance arguments implicitly, otherwise Lean will refuse to apply them.
+For example, in measure theory a space `X` will often come equipped with a canonical base
+sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
+`MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
+abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
+one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
 library_note2 «lower instance priority» /--

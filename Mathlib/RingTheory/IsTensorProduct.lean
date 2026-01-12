@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The characteristic predicate of tensor product
@@ -27,6 +29,8 @@ import Mathlib.RingTheory.TensorProduct.Basic
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/
+
+@[expose] public section
 
 
 universe u v₁ v₂ v₃ v₄
@@ -259,9 +263,11 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
+@[simp]
 theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f m :=
   rfl
 
+@[simp]
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 
@@ -487,7 +493,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
   out := .of_equiv
     { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
       map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
-        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+        simp [equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp +contextual) }
     fun _ ↦ by simp [equiv_tmul]
 
 variable (R S R' S')
@@ -511,6 +517,18 @@ instance TensorProduct.isPushout {R S T : Type*} [CommSemiring R] [CommSemiring 
 instance TensorProduct.isPushout' {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (S ⊗[R] T) :=
   Algebra.IsPushout.symm inferInstance
+
+lemma Algebra.IsPushout.tensorProduct_tensorProduct
+    (R S A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring A] [CommSemiring B]
+    [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B] [Algebra R S]
+    {_ : Algebra (A ⊗[R] S) (B ⊗[R] S)} {_ : IsScalarTower A (A ⊗[R] S) (B ⊗[R] S)}
+    (H : (algebraMap (A ⊗[R] S) (B ⊗[R] S)).comp Algebra.TensorProduct.includeRight.toRingHom =
+      Algebra.TensorProduct.includeRight.toRingHom) :
+    Algebra.IsPushout A B (A ⊗[R] S) (B ⊗[R] S) := by
+  constructor
+  convert isBaseChange_tensorProduct_map (R := R) (P := S) _ (IsBaseChange.linearMap A B)
+  ext s
+  simpa using congr($H s)
 
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.
@@ -598,5 +616,54 @@ lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
   rw [isPushout_iff] at h ⊢
   refine IsBaseChange.of_equiv (h.equiv ≪≫ₗ e.toLinearEquiv) fun x ↦ ?_
   simpa [h.equiv_tmul] using DFunLike.congr_fun he x
+
+namespace Algebra
+
+variable (A B : Type*)
+  [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B] [Algebra S B]
+  [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+
+/-- (Implementation) If `B = S ⊗[R] A`, this is the canonical `R`-isomorphism:
+`B ⊗[A] M ≃ₗ[S] S ⊗[R] M`. See `IsPushout.cancelBaseChange` for the `S`-linear version. -/
+noncomputable
+def IsPushout.cancelBaseChangeAux : B ⊗[A] M ≃ₗ[R] S ⊗[R] M :=
+  have : IsPushout R A S B := IsPushout.symm inferInstance
+  (AlgebraTensorModule.congr ((IsPushout.equiv R A S B).toLinearEquiv).symm
+      (LinearEquiv.refl _ _)).restrictScalars R ≪≫ₗ
+    (_root_.TensorProduct.comm _ _ _).restrictScalars R ≪≫ₗ
+    (AlgebraTensorModule.cancelBaseChange _ _ A _ _).restrictScalars R ≪≫ₗ
+    (_root_.TensorProduct.comm _ _ _).restrictScalars R
+
+@[simp]
+lemma IsPushout.cancelBaseChangeAux_symm_tmul (s : S) (m : M) :
+    (IsPushout.cancelBaseChangeAux R S A B M).symm (s ⊗ₜ m) = algebraMap S B s ⊗ₜ m := by
+  simp [IsPushout.cancelBaseChangeAux, IsPushout.equiv_tmul]
+
+/-- If `B = S ⊗[R] A`, this is the canonical `S`-isomorphism: `B ⊗[A] M ≃ₗ[S] S ⊗[R] M`.
+This is the cancelling on the left version of
+`TensorProduct.AlgebraTensorModule.cancelBaseChange`. -/
+noncomputable
+def IsPushout.cancelBaseChange : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
+  LinearEquiv.symm <|
+  AddEquiv.toLinearEquiv (IsPushout.cancelBaseChangeAux R S A B M).symm <| by
+    intro s x
+    induction x with
+    | zero => simp
+    | add x y hx hy => simp only [smul_add, map_add, hx, hy]
+    | tmul s' m => simp [Algebra.smul_def, TensorProduct.smul_tmul']
+
+@[simp]
+lemma IsPushout.cancelBaseChange_tmul (m : M) :
+    IsPushout.cancelBaseChange R S A B M (1 ⊗ₜ m) = 1 ⊗ₜ m := by
+  change ((cancelBaseChangeAux R S A B M).symm).symm (1 ⊗ₜ[A] m) = 1 ⊗ₜ[R] m
+  simp [cancelBaseChangeAux, TensorProduct.one_def]
+
+@[simp]
+lemma IsPushout.cancelBaseChange_symm_tmul (s : S) (m : M) :
+    (IsPushout.cancelBaseChange R S A B M).symm (s ⊗ₜ m) = algebraMap S B s ⊗ₜ m :=
+  IsPushout.cancelBaseChangeAux_symm_tmul R S A B M s m
+
+end Algebra
 
 end IsBaseChange

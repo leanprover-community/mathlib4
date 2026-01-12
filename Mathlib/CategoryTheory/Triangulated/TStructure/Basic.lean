@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Shift
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Shift
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # t-structures on triangulated categories
 
-This files introduces the notion of t-structure on (pre)triangulated categories.
+This file introduces the notion of t-structure on (pre)triangulated categories.
 
 The first example of t-structure shall be the canonical t-structure on the
 derived category of an abelian category (TODO).
@@ -26,7 +28,7 @@ use depending on the context.
 
 ## TODO
 
-* define functors `t.truncLE n : C ⥤ C`,`t.truncGE n : C ⥤ C` and the
+* define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
   associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
 * define the heart of `t` and show it is an abelian category
@@ -38,6 +40,8 @@ use depending on the context.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
@@ -46,7 +50,7 @@ open Limits
 
 namespace Triangulated
 
-variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type _) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 open Pretriangulated
@@ -85,7 +89,7 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     refine Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _) ?_ ?_ ?_
     all_goals simp [T]
   exact ⟨_, _, t.le_shift _ _ _ (neg_add_cancel n₀) _ hX,
-    t.ge_shift _ _ _ (by cutsat) _ hY, _, _, _, hT'⟩
+    t.ge_shift _ _ _ (by lia) _ hY, _, _, _, hT'⟩
 
 lemma shift_le (a n n' : ℤ) (hn' : a + n = n') :
     (t.le n).shift a = t.le n' := by
@@ -93,7 +97,7 @@ lemma shift_le (a n n' : ℤ) (hn' : a + n = n') :
   constructor
   · intro hX
     exact ((t.le n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.le_shift n (-a) n' (by cutsat) _ hX)
+      (t.le_shift n (-a) n' (by lia) _ hX)
   · intro hX
     exact t.le_shift _ _ _ hn' X hX
 
@@ -103,7 +107,7 @@ lemma shift_ge (a n n' : ℤ) (hn' : a + n = n') :
   constructor
   · intro hX
     exact ((t.ge n').prop_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
-      (t.ge_shift n (-a) n' (by cutsat) _ hX)
+      (t.ge_shift n (-a) n' (by lia) _ hX)
   · intro hX
     exact t.ge_shift _ _ _ hn' X hX
 
@@ -112,7 +116,7 @@ lemma le_monotone : Monotone t.le := by
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by cutsat
+    obtain rfl : n₁ = n₀ + a := by lia
     apply this
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]
@@ -124,7 +128,7 @@ lemma le_monotone : Monotone t.le := by
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc]
-    exact (ha n).trans (hb (n+a))
+    exact (ha n).trans (hb (n + a))
   intro a
   induction a with
   | zero => exact H_zero
@@ -135,7 +139,7 @@ lemma ge_antitone : Antitone t.ge := by
   suffices ∀ (a : ℕ), H a by
     intro n₀ n₁ h
     obtain ⟨a, ha⟩ := Int.nonneg_def.1 h
-    obtain rfl : n₁ = n₀ + a := by cutsat
+    obtain rfl : n₁ = n₀ + a := by lia
     apply this
   have H_zero : H 0 := fun n => by
     simp only [Nat.cast_zero, add_zero]
@@ -146,7 +150,7 @@ lemma ge_antitone : Antitone t.ge := by
     exact t.ge_one_le _ hX
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
-    rw [← h, Nat.cast_add, ← add_assoc ]
+    rw [← h, Nat.cast_add, ← add_assoc]
     exact (hb (n + a)).trans (ha n)
   intro a
   induction a with
@@ -172,6 +176,66 @@ lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n wh
 
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
   ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
+
+lemma isLE_of_LE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
+  le := le_monotone t hpq _ (t.le_of_isLE X p)
+
+lemma isGE_of_GE (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
+  ge := ge_antitone t hpq _ (t.ge_of_isGE X q)
+
+lemma isLE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsLE X n] :
+    t.IsLE (X⟦a⟧) n' :=
+  ⟨t.le_shift n a n' hn' X (t.le_of_isLE X n)⟩
+
+lemma isGE_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsGE X n] :
+    t.IsGE (X⟦a⟧) n' :=
+  ⟨t.ge_shift n a n' hn' X (t.ge_of_isGE X n)⟩
+
+lemma isLE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsLE (X⟦a⟧) n'] :
+    t.IsLE X n := by
+  have h := t.isLE_shift (X⟦a⟧) n' (-a) n
+  exact t.isLE_of_iso (show X⟦a⟧⟦-a⟧ ≅ X from (shiftEquiv C a).unitIso.symm.app X) n
+
+lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) [t.IsGE (X⟦a⟧) n'] :
+    t.IsGE X n := by
+  have h := t.isGE_shift (X⟦a⟧) n' (-a) n
+  exact t.isGE_of_iso (show X⟦a⟧⟦-a⟧ ≅ X from (shiftEquiv C a).unitIso.symm.app X) n
+
+lemma isLE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) :
+    t.IsLE (X⟦a⟧) n' ↔ t.IsLE X n := by
+  constructor
+  · intro
+    exact t.isLE_of_shift X n a n' hn'
+  · intro
+    exact t.isLE_shift X n a n' hn'
+
+lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n' = n := by lia) :
+    t.IsGE (X⟦a⟧) n' ↔ t.IsGE X n := by
+  constructor
+  · intro
+    exact t.isGE_of_shift X n a n' hn'
+  · intro
+    exact t.isGE_shift X n a n' hn'
+
+lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
+    [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
+  have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)
+  have := t.isGE_shift Y n₁ n₀ (n₁ - n₀)
+  have := t.isGE_of_GE (Y⟦n₀⟧) 1 (n₁ - n₀)
+  apply (shiftFunctor C n₀).map_injective
+  simp only [Functor.map_zero]
+  apply t.zero'
+  · apply t.le_of_isLE
+  · apply t.ge_of_isGE
+
+lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    (_ : t.IsLE X n₀) (_ : t.IsGE Y n₁) : f = 0 :=
+  t.zero f n₀ n₁ h
+
+lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
+    [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  exact t.zero _ n₀ n₁ h
 
 end TStructure
 

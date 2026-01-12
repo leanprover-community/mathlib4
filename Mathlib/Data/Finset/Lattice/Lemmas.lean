@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Finset.Lattice.Basic
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Lemmas about the lattice structure of finite sets
@@ -17,6 +19,8 @@ interaction between union, intersection, empty set and inserting elements.
 finite sets, finset
 
 -/
+
+public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -129,13 +133,9 @@ theorem insert_inter_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂)
     have : ¬(x = a ∧ x ∈ s₂) := by rintro ⟨rfl, H⟩; exact h H
     simp only [mem_inter, mem_insert, or_and_right, this, false_or]
 
-@[deprecated (since := "2025-05-23")] alias insert_inter_of_not_mem := insert_inter_of_notMem
-
 @[simp]
 theorem inter_insert_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁) :
     s₁ ∩ insert a s₂ = s₁ ∩ s₂ := by rw [inter_comm, insert_inter_of_notMem h, inter_comm]
-
-@[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
 
 @[grind =]
 theorem inter_insert {s₁ s₂ : Finset α} {a : α} :
@@ -156,8 +156,6 @@ theorem singleton_inter_of_notMem {a : α} {s : Finset α} (H : a ∉ s) : {a} �
   eq_empty_of_forall_notMem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
-@[deprecated (since := "2025-05-23")] alias singleton_inter_of_not_mem := singleton_inter_of_notMem
-
 @[grind =]
 lemma singleton_inter {a : α} {s : Finset α} :
     {a} ∩ s = if a ∈ s then {a} else ∅ := by
@@ -170,8 +168,6 @@ theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a
 @[simp]
 theorem inter_singleton_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
   rw [inter_comm, singleton_inter_of_notMem h]
-
-@[deprecated (since := "2025-05-23")] alias inter_singleton_of_not_mem := inter_singleton_of_notMem
 
 lemma inter_singleton {a : α} {s : Finset α} :
     s ∩ {a} = if a ∈ s then {a} else ∅ := by

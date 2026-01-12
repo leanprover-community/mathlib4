@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Normed.Operator.Mul
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Bounded linear maps
@@ -38,7 +40,7 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 ## Notes
 
 The main use of this file is `IsBoundedBilinearMap`.
-The file `Analysis.NormedSpace.Multilinear.Basic`
+The file `Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean`
 already expounds the theory of multilinear maps,
 but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
@@ -48,6 +50,8 @@ in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 `ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -122,7 +126,7 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
       ‖c • f x‖ = ‖c‖ * ‖f x‖ := norm_smul c (f x)
-      _ ≤ ‖c‖ * (M * ‖x‖) := mul_le_mul_of_nonneg_left (hM _) (norm_nonneg _)
+      _ ≤ ‖c‖ * (M * ‖x‖) := by grw [hM]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
@@ -152,8 +156,7 @@ protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (
       (fun e =>
         calc
           ‖f e - f x‖ = ‖hf.mk' f (e - x)‖ := by rw [(hf.mk' _).map_sub e x]; rfl
-          _ ≤ M * ‖e - x‖ := hM (e - x)
-          )
+          _ ≤ M * ‖e - x‖ := hM (e - x))
       (suffices Tendsto (fun e : E => M * ‖e - x‖) (𝓝 x) (𝓝 (M * 0)) by simpa
       tendsto_const_nhds.mul (tendsto_norm_sub_self _))
 
@@ -215,56 +218,6 @@ end
 
 section BilinearMap
 
-namespace ContinuousLinearMap
-
-/-! We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
-  If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
-  `(f _).map_add` and similar.
-
-We have to assume that `F` and `G` are normed spaces in this section, to use
-`ContinuousLinearMap.toNormedAddCommGroup`, but we don't need to assume this for the first
-argument of `f`.
--/
-
-
-variable {R : Type*}
-variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
-variable {M : Type*} [TopologicalSpace M]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-variable {G' : Type*} [SeminormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
-variable [SMulCommClass 𝕜₂ 𝕜' G']
-
-section Semiring
-
-variable [Semiring R] [AddCommMonoid M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
-
-theorem map_add₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
-    f (x + x') y = f x y + f x' y := by rw [f.map_add, add_apply]
-
-theorem map_zero₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (y : F) : f 0 y = 0 := by
-  rw [f.map_zero, zero_apply]
-
-theorem map_smulₛₗ₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (c : R) (x : M) (y : F) :
-    f (c • x) y = ρ₁₂ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
-
-end Semiring
-
-section Ring
-
-variable [Ring R] [AddCommGroup M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
-
-theorem map_sub₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
-    f (x - x') y = f x y - f x' y := by rw [f.map_sub, sub_apply]
-
-theorem map_neg₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x : M) (y : F) : f (-x) y = -f x y := by
-  rw [f.map_neg, neg_apply]
-
-end Ring
-
-theorem map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F) : f (c • x) y = c • f x y := by
-  rw [f.map_smul, smul_apply]
-
-end ContinuousLinearMap
 
 variable (𝕜) in
 /-- A map `f : E × F → G` satisfies `IsBoundedBilinearMap 𝕜 f` if it is bilinear and
@@ -306,6 +259,10 @@ def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f
   LinearMap.mkContinuousOfExistsBound₂
     (LinearMap.mk₂ _ f.curry hf.add_left hf.smul_left hf.add_right hf.smul_right) <|
     hf.bound.imp fun _ ↦ And.right
+
+@[simp]
+lemma IsBoundedBilinearMap.toContinuousLinearMap_apply (hf : IsBoundedBilinearMap 𝕜 f)
+    (x : E) (y : F) : hf.toContinuousLinearMap x y = f (x, y) := rfl
 
 protected theorem IsBoundedBilinearMap.isBigO (h : IsBoundedBilinearMap 𝕜 f) :
     f =O[⊤] fun p : E × F => ‖p.1‖ * ‖p.2‖ :=
@@ -449,16 +406,30 @@ theorem Continuous.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
 
+@[fun_prop]
 theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
+
+@[fun_prop]
+theorem ContinuousAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+    {x : X} (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
+    ContinuousAt (fun x => (g x).comp (f x)) x :=
+  (compL 𝕜 E F G).continuous₂.continuousAt.comp (hg.prodMk hf)
+
+@[fun_prop]
+theorem ContinuousWithinAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+    {s : Set X} {x : X} (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun x => (g x).comp (f x)) s x :=
+  (compL 𝕜 E F G).continuous₂.continuousAt.comp_continuousWithinAt (hg.prodMk hf)
 
 @[continuity, fun_prop]
 theorem Continuous.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ f x (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
+@[fun_prop]
 theorem ContinuousOn.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
@@ -475,19 +446,37 @@ theorem ContinuousWithinAt.clm_apply {X} [TopologicalSpace X] {f : X → E →L[
     ContinuousWithinAt (fun x ↦ f x (g x)) s x :=
   isBoundedBilinearMap_apply.continuous.continuousAt.comp_continuousWithinAt (hf.prodMk hg)
 
+@[fun_prop]
+theorem ContinuousWithinAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X} {x : X}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x => (f x).coprod (g x)) s x := by
+  simp only [← comp_fst_add_comp_snd]
+  fun_prop
+
+@[fun_prop]
+theorem ContinuousAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {x : X}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
+    ContinuousAt (fun x => (f x).coprod (g x)) x := by
+  simp only [← comp_fst_add_comp_snd]
+  fun_prop
+
+@[fun_prop]
 theorem ContinuousOn.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => (f x).coprod (g x)) s := by
   simp only [← comp_fst_add_comp_snd]
-  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+  fun_prop
 
+@[fun_prop]
 theorem Continuous.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x => (f x).coprod (g x)) := by
   apply continuousOn_univ.mp
-  exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
+  fun_prop
 
 end
 

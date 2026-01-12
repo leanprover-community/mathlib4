@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-import Mathlib.NumberTheory.LucasPrimality
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+public import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Fermat numbers
@@ -19,6 +21,8 @@ for all natural numbers `n`.
 - `fermat_primeFactors_one_lt`: For 1 < n, Prime factors the Fermat number Fₙ are of
   form `k * 2 ^ (n + 2) + 1`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -45,7 +49,7 @@ lemma fermatNumber_injective : Injective fermatNumber := fermatNumber_strictMono
 lemma three_le_fermatNumber (n : ℕ) : 3 ≤ fermatNumber n := fermatNumber_mono n.zero_le
 lemma two_lt_fermatNumber (n : ℕ) : 2 < fermatNumber n := three_le_fermatNumber _
 
-lemma fermatNumber_ne_one (n : ℕ) : fermatNumber n ≠ 1 := by have := three_le_fermatNumber n; cutsat
+lemma fermatNumber_ne_one (n : ℕ) : fermatNumber n ≠ 1 := by have := three_le_fermatNumber n; lia
 
 theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
   (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
@@ -53,9 +57,9 @@ theorem odd_fermatNumber (n : ℕ) : Odd (fermatNumber n) :=
 theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermatNumber n - 2 := by
   induction n with | zero => rfl | succ n hn =>
   rw [prod_range_succ, hn, fermatNumber, fermatNumber, mul_comm,
-    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by cutsat), ← sq_sub_sq]
+    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by lia), ← sq_sub_sq]
   ring_nf
-  cutsat
+  lia
 
 theorem fermatNumber_eq_prod_add_two (n : ℕ) :
     fermatNumber n = ∏ k ∈ range n, fermatNumber k + 2 := by
@@ -70,7 +74,7 @@ theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
   simp only [fermatNumber, add_tsub_cancel_right]
   have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left _ _
   ring_nf
-  cutsat
+  lia
 
 theorem fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
     fermatNumber (n + 2) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
@@ -99,7 +103,7 @@ From a letter to Euler, see page 37 in [juskevic2022].
 theorem coprime_fermatNumber_fermatNumber {m n : ℕ} (hmn : m ≠ n) :
     Coprime (fermatNumber m) (fermatNumber n) := by
   wlog hmn' : m < n
-  · simpa only [coprime_comm] using this hmn.symm (by cutsat)
+  · simpa only [coprime_comm] using this hmn.symm (by lia)
   let d := (fermatNumber m).gcd (fermatNumber n)
   have h_n : d ∣ fermatNumber n := gcd_dvd_right ..
   have h_m : d ∣ 2 := (Nat.dvd_add_right <| (gcd_dvd_left _ _).trans <| dvd_prod_of_mem _
@@ -187,7 +191,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 
 -- TODO: move to NumberTheory.Mersenne, once we have that.
 /-!
-# Primality of Mersenne numbers `Mₙ = a ^ n - 1`
+### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/

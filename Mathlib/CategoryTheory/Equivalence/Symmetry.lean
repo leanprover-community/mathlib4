@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Functoriality of the symmetry of equivalences
@@ -23,13 +25,15 @@ and provides the definition of the functor that takes an equivalence to its inve
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open CategoryTheory.Functor NatIso Category
 
 namespace Equivalence
 
-variable (C : Type*) [Category C] (D : Type*) [Category D]
+variable (C : Type*) [Category* C] (D : Type*) [Category* D]
 
 /-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
@@ -83,7 +87,7 @@ lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : 
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
   cat_disch
 
-/-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
+/-- An "unopped" version of the equivalence `inverseFunctorObj'`. -/
 @[simps!]
 def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=
@@ -92,7 +96,7 @@ def inverseFunctorObj' (e : C ≌ D) :
 variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]
-def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
+def congrLeftFunctor (E : Type*) [Category* E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
   Functor.rightOp
     { obj f := f.unop.congrLeft
       map {e f} α := mkHom <| (whiskeringLeft _ _ _).map <|

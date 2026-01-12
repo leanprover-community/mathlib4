@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -33,6 +35,8 @@ We also deduce that the corresponding maps are measurable embeddings.
 
 measurable, equivalence, group action
 -/
+
+@[expose] public section
 
 open scoped Pointwise NNReal
 

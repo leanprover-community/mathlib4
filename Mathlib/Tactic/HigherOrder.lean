@@ -3,12 +3,15 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Lean.Meta.Tactic.Apply
-import Lean.Meta.Tactic.Assumption
-import Lean.Meta.MatchUtil
-import Lean.Meta.Tactic.Intro
-import Lean.Elab.DeclarationRange
-import Mathlib.Tactic.Attr.Register
+module
+
+public meta import Lean.Meta.Tactic.Apply
+public meta import Lean.Meta.Tactic.Assumption
+public meta import Lean.Meta.MatchUtil
+public meta import Lean.Meta.Tactic.Intro
+public meta import Lean.Elab.DeclarationRange
+public import Lean.Meta.Tactic.Simp
+public import Mathlib.Init
 
 /-!
 # HigherOrder attribute
@@ -17,6 +20,8 @@ This file defines the `@[higher_order]` attribute that applies to lemmas of the 
 `∀ x, f (g x) = h x`. It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about
 higher-order functions.
 -/
+
+public meta section
 
 open Lean Name Meta Elab Expr Term
 
@@ -73,7 +78,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
         updatePrefix sname.getId thm.getPrefix
       else
         thm.appendAfter "\'"
-    MetaM.run' <| TermElabM.run' <| do
+    MetaM.run' <| TermElabM.run' do
       let lvl := (← getConstInfo thm).levelParams
       let typ ← instantiateMVars (← inferType <| .const thm (lvl.map mkLevelParam))
       let hot ← mkHigherOrderType typ
@@ -91,7 +96,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
           type := hot
           value := prf }
       addDeclarationRangesFromSyntax hothmName (← getRef) ref
-      _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams hothmName
+      addTermInfo' ref (← mkConstWithLevelParams hothmName) (isBinder := true)
       let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then
         addSimpTheorem simpExtension hothmName true false .global 1000

@@ -3,17 +3,21 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctoriality of categorical joins
 
 In this file, we promote the join construction to two pseudofunctors
-`Join.pseudofunctorLeft` and `Join.pseudoFunctorRight`, expressing its pseudofunctoriality in
+`Join.pseudofunctorLeft` and `Join.pseudofunctorRight`, expressing its pseudofunctoriality in
 each variable.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -25,17 +29,17 @@ open Bicategory Functor
 -- so we break down the component proofs for the pseudofunctors over several lemmas.
 
 section
-variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
 
 
 variable (A) in
-/-- The structural isomorphism for composition of `pseudoFunctorRight`. -/
+/-- The structural isomorphism for composition of `pseudofunctorRight`. -/
 def mapCompRight (F : B ⥤ C) (G : C ⥤ D) :
     mapPair (𝟭 A) (F ⋙ G) ≅ mapPair (𝟭 A) F ⋙ mapPair (𝟭 A) G :=
   mapIsoWhiskerRight (Functor.leftUnitor _).symm _ ≪≫ mapPairComp (𝟭 A) F (𝟭 A) G
 
 variable (D) in
-/-- The structural isomorphism for composition of `pseudoFunctorLeft`. -/
+/-- The structural isomorphism for composition of `pseudofunctorLeft`. -/
 def mapCompLeft (F : A ⥤ B) (G : B ⥤ C) :
     mapPair (F ⋙ G) (𝟭 D) ≅ mapPair F (𝟭 D) ⋙ mapPair G (𝟭 D) :=
   mapIsoWhiskerLeft _ (Functor.leftUnitor _).symm ≪≫ mapPairComp F (𝟭 D) G (𝟭 D)
@@ -72,7 +76,7 @@ lemma mapWhiskerRight_whiskerRight {F G : A ⥤ B} (η : F ⟶ G) (H : B ⥤ C) 
       (mapCompLeft D G H).inv := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 
 variable (A) in
 @[reassoc]
@@ -126,33 +130,29 @@ end
 def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
     Pseudofunctor Cat.{v₂, u₂} Cat.{max v₁ v₂, max u₁ u₂} where
   obj D := Cat.of (C ⋆ D)
-  map F := mapPair (𝟭 C) F
-  map₂ := mapWhiskerLeft _
-  map₂_id {x y} f := by apply mapWhiskerLeft_id
-  map₂_comp η θ := by apply mapWhiskerLeft_comp
-  mapId D := mapPairId
-  mapComp := mapCompRight C
-  map₂_whisker_left := mapWhiskerLeft_whiskerLeft C
-  map₂_whisker_right := mapWhiskerLeft_whiskerRight C
-  map₂_associator := mapWhiskerLeft_associator_hom C
-  map₂_left_unitor := mapWhiskerLeft_leftUnitor_hom C
-  map₂_right_unitor := mapWhiskerLeft_rightUnitor_hom C
+  map F := (mapPair (𝟭 C) F.toFunctor).toCatHom
+  map₂ f := (mapWhiskerLeft (𝟭 C) f.toNatTrans).toCatHom₂
+  mapId D := Cat.Hom.isoMk mapPairId
+  mapComp F G:= Cat.Hom.isoMk <| mapCompRight C F.toFunctor G.toFunctor
+  map₂_whisker_left := by intros; exact congr($(mapWhiskerLeft_whiskerLeft C _ _).toCatHom₂)
+  map₂_whisker_right := by intros; exact congr($(mapWhiskerLeft_whiskerRight C _ _).toCatHom₂)
+  map₂_associator := by intros; exact congr($(mapWhiskerLeft_associator_hom C _ _ _).toCatHom₂)
+  map₂_left_unitor := by intros; exact congr($(mapWhiskerLeft_leftUnitor_hom C _).toCatHom₂)
+  map₂_right_unitor := by intros; exact congr($(mapWhiskerLeft_rightUnitor_hom C _).toCatHom₂)
 
 /-- The pseudofunctor sending `C` to `C ⋆ D`. -/
 @[simps!]
 def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
     Pseudofunctor Cat.{v₁, u₁} Cat.{max v₁ v₂, max u₁ u₂} where
   obj C := Cat.of (C ⋆ D)
-  map F := mapPair F (𝟭 D)
-  map₂ := (mapWhiskerRight · _)
-  map₂_id {x y} f := by apply mapWhiskerRight_id
-  map₂_comp η θ := by apply mapWhiskerRight_comp
-  mapId D := mapPairId
-  mapComp := mapCompLeft D
-  map₂_whisker_left := mapWhiskerRight_whiskerLeft D
-  map₂_whisker_right := mapWhiskerRight_whiskerRight D
-  map₂_associator := mapWhiskerRight_associator_hom D
-  map₂_left_unitor := mapWhiskerRight_leftUnitor_hom D
-  map₂_right_unitor := mapWhiskerRight_rightUnitor_hom D
+  map F := (mapPair F.toFunctor (𝟭 D)).toCatHom
+  map₂ := (mapWhiskerRight ·.toNatTrans _ |>.toCatHom₂)
+  mapId D := Cat.Hom.isoMk <| mapPairId
+  mapComp _ _ := Cat.Hom.isoMk <| mapCompLeft D _ _
+  map₂_whisker_left := by intros; exact congr($(mapWhiskerRight_whiskerLeft D _ _).toCatHom₂)
+  map₂_whisker_right := by intros; exact congr($(mapWhiskerRight_whiskerRight D _ _).toCatHom₂)
+  map₂_associator := by intros; exact congr($(mapWhiskerRight_associator_hom D _ _ _).toCatHom₂)
+  map₂_left_unitor := by intros; exact congr($(mapWhiskerRight_leftUnitor_hom D _).toCatHom₂)
+  map₂_right_unitor := by intros; exact congr($(mapWhiskerRight_rightUnitor_hom D _).toCatHom₂)
 
 end CategoryTheory.Join

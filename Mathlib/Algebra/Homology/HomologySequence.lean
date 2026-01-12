@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -29,13 +31,15 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
 section HasZeroMorphisms
 
-variable {C ι : Type*} [Category C] [HasZeroMorphisms C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L) (i j : ι)
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
@@ -94,7 +98,7 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
   (K : HomologicalComplex C c) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
@@ -163,7 +167,7 @@ end Preadditive
 
 section Abelian
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 
 /-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
 `X₁.opcycles i ⟶ X₂.opcycles i ⟶ X₃.opcycles i ⟶ 0` is exact. This lemma states
@@ -176,7 +180,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk => by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
@@ -264,7 +268,7 @@ namespace CategoryTheory
 
 open HomologicalComplex HomologySequence
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 

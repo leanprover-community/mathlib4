@@ -3,13 +3,14 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Complex.Order
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
+module
+
+public import Mathlib.Analysis.Complex.Order
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 
@@ -36,6 +37,8 @@ namespace `Complex`.
 We also register the fact that `ℂ` is an `RCLike` field.
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Absorbs
@@ -174,18 +177,23 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-theorem restrictScalars_one_smulRight' (x : E) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
+theorem restrictScalars_toSpanSingleton' (x : E) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
   simp [map_add, mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 
-theorem restrictScalars_one_smulRight (x : ℂ) :
-    ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =
+theorem restrictScalars_toSpanSingleton (x : ℂ) :
+    ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] ℂ) =
     x • (1 : ℂ →L[ℝ] ℂ) := by
   ext1 z
   dsimp
   apply mul_comm
+
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight' :=
+  restrictScalars_toSpanSingleton'
+@[deprecated (since := "2025-12-18")] alias restrictScalars_one_smulRight :=
+  restrictScalars_toSpanSingleton
 
 /-- The complex-conjugation function from `ℂ` to itself is an isometric linear equivalence. -/
 def conjLIE : ℂ ≃ₗᵢ[ℝ] ℂ :=
@@ -244,6 +252,9 @@ theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
   ⟨ofRealAm.toLinearMap, norm_real⟩
+
+@[simp]
+theorem ofRealLI_apply (x : ℝ) : ofRealLI x = x := rfl
 
 theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
@@ -599,8 +610,6 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 @[simp]
 lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
-
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
@@ -632,8 +641,8 @@ open Metric in
 the `slitPlane` if it does not contain `-r`. -/
 lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
     s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
-  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
-  push ¬ _
+  simp_rw [Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  contrapose!
   refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
   rintro ⟨z, hzs, hz⟩
   have : ‖z‖ = r := by simpa using hs hzs

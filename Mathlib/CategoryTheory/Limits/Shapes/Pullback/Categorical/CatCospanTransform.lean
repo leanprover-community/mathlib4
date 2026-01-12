@@ -3,12 +3,14 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-! # Morphisms of categorical cospans.
 
 Given `F : A ⥤ B`, `G : C ⥤ B`, `F' : A' ⥤ B'` and `G' : C' ⥤ B'`,
-this files defines `CatCospanTransform F G F' G'`, the category of
+this file defines `CatCospanTransform F G F' G'`, the category of
 "categorical transformations" from the (categorical) cospan `F G` to
 the (categorical) cospan `F' G'`. Such a transformation consists of a
 diagram
@@ -25,6 +27,8 @@ H₁|   |H₂ |H₃
 with specified `CatCommSq`s expressing 2-commutativity of the squares. These
 transformations are used to encode 2-functoriality of categorical pullback squares.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -302,7 +306,7 @@ lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right wh
   mpr h := by
     obtain ⟨_, _, _⟩ := h
     use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
-      f.left_coherence f.right_coherence|>.inv
+      f.left_coherence f.right_coherence |>.inv
     aesop_cat
 
 end Iso
@@ -369,7 +373,7 @@ lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by c
 
 @[reassoc]
 lemma whiskerRight_comp :
-    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
+    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _).hom := by
   cat_disch
 
 @[simp]

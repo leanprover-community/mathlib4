@@ -3,13 +3,15 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
 # Topology on the upper half plane
@@ -17,6 +19,8 @@ import Mathlib.Topology.OpenPartialHomeomorph
 In this file we introduce a `TopologicalSpace` structure on the upper half plane and provide
 various instances.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -60,9 +64,7 @@ instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpac
 instance : NoncompactSpace ℍ := by
   refine ⟨fun h => ?_⟩
   have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
-  replace := this.isClosed.closure_eq
-  rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
-  exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
+  simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
@@ -109,7 +111,7 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
 
 theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
     ∃ n : ℤ, ModularGroup.T ^ (N * n) • z ∈ verticalStrip N z.im := by
-  let n := Int.floor (z.re/N)
+  let n := Int.floor (z.re / N)
   use -n
   rw [modular_T_zpow_smul z (N * -n)]
   refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
@@ -120,7 +122,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
   have hnn : (0 : ℝ) < (N : ℝ) := by norm_cast at *
-  have h2 : z.re + -(N * n) =  z.re - n * N := by ring
+  have h2 : z.re + -(N * n) = z.re - n * N := by ring
   rw [h2, abs_eq_self.2 (Int.sub_floor_div_mul_nonneg (z.re : ℝ) hnn)]
   apply (Int.sub_floor_div_mul_lt (z.re : ℝ) hnn).le
 
@@ -159,14 +161,14 @@ lemma ofComplex_apply_eq_of_im_nonpos {w w' : ℂ} (hw : w.im ≤ 0) (hw' : w'.i
     ofComplex w = ofComplex w' := by
   simp [ofComplex_apply_of_im_nonpos, hw, hw']
 
-lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
+lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕf) z = f z :=
   congrArg _ <| ofComplex_apply z
 
-lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
+lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕf) z = f ⟨z, hz⟩ :=
   congrArg _ <| ofComplex_apply ⟨z, hz⟩
 
 lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0) :
-    (↑ₕ f) z = (↑ₕ f) z' := by
+    (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :

@@ -3,10 +3,11 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Jacobson.Radical
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Jacobson.Radical
 
 /-!
 # Jacobson radical
@@ -44,6 +45,8 @@ Furthermore when `I` is a two-sided ideal of `R`
 Jacobson, Jacobson radical, Local Ideal
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -171,8 +174,6 @@ theorem eq_jacobson_iff_notMem :
     push_neg
     exact h x hx
 
-@[deprecated (since := "2025-05-23")] alias eq_jacobson_iff_not_mem := eq_jacobson_iff_notMem
-
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
@@ -226,6 +227,9 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
+theorem ringJacobson_le_jacobson {I : Ideal R} : Ring.jacobson R ≤ I.jacobson :=
+  jacobson_bot.symm.trans_le (jacobson_mono bot_le)
+
 /-- The Jacobson radical of a two-sided ideal is two-sided. -/
 instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
   -- Proof generalized from
@@ -248,19 +252,17 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
       have ⟨s, y, y𝔪, sbyr⟩ :=
         mem_span_singleton_sup.mp <|
           mul_mem_left _ r <|
-            (isMaximal_iff.mp 𝔪_mem.right).right K (b*r)
+            (isMaximal_iff.mp 𝔪_mem.right).right K (b * r)
             le_sup_right b𝔪₀
             (mem_sup_left <| mem_span_singleton_self _)
-      have : 1 - s*b ∈ 𝔪₀ := by
+      have : 1 - s * b ∈ 𝔪₀ := by
         rw [mul_one, add_comm, ← eq_sub_iff_add_eq] at sbyr
         rw [sbyr, ← mul_assoc] at y𝔪
         simp [𝔪₀, sub_mul, y𝔪]
-      have : 1 - s*b + s*b ∈ J := by
+      have : 1 - s * b + s * b ∈ J := by
         apply add_mem (𝔪₀J this) (J.mul_mem_left _ bJ)
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
-
-@[deprecated (since := "2025-04-13")] alias jacobson_mul_mem_right := Ideal.instIsTwoSidedJacobson
 
 end Ring
 
@@ -281,7 +283,7 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
     IsUnit r := by
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
-  exact isUnit_of_mul_eq_one _ _ hs
+  exact .of_mul_eq_one _ hs
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>
@@ -371,19 +373,6 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x
 
 end IsLocal
-
-theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    I.IsPrimary :=
-  have : radical I = jacobson I :=
-    le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
-      (sInf_le ⟨le_radical, hi⟩)
-  isPrimary_iff.mpr
-  ⟨ne_top_of_lt <| lt_of_le_of_lt le_radical (lt_top_iff_ne_top.2 hi.1.1), fun {x y} hxy =>
-    ((isLocal_of_isMaximal_radical hi).mem_jacobson_or_exists_inv y).symm.imp
-      (fun ⟨z, hz⟩ => by
-        rw [← mul_one x, ← sub_sub_cancel (z * y) 1, mul_sub, mul_left_comm]
-        exact I.sub_mem (I.mul_mem_left _ hxy) (I.mul_mem_left _ hz))
-      (this ▸ id)⟩
 
 end Ideal
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.Norm.Defs
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Norm.Defs
 /-!
 # Irreducibility of X ^ p - a
 
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Norm.Defs
   `-4` is not a 4th power.
 
 -/
+
+public section
 universe u
 
 variable {K : Type u} [Field K]

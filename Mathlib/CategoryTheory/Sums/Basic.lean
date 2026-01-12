@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Binary disjoint unions of categories
@@ -23,15 +25,17 @@ The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B �
 This construction should be preferred when defining functors out of a sum.
 
 We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
-`inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
+`inrCompSum' : inr_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
-their precomposition with the inclusion. This construction sholud be preferred when trying
+their precomposition with the inclusion. This construction should be preferred when trying
 to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -60,7 +64,7 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     | inr X => ULift.up (𝟙 X)
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
+    | inl _, inl _, inl _, f, g => ULift.up <| f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
@@ -321,7 +325,7 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C :=
   Functor.inlCompSum' (inr_ _ _) (inl_ _ _)
 
-/-- Precomposing `swap` with the right inclusion gives the leftt inclusion. -/
+/-- Precomposing `swap` with the right inclusion gives the left inclusion. -/
 @[simps! hom_app inv_app]
 def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
   Functor.inrCompSum' (inr_ _ _) (inl_ _ _)

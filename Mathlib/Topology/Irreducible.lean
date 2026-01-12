@@ -3,10 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.Zorn
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Irreducibility in topological spaces
@@ -29,6 +32,8 @@ and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -121,7 +126,7 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 @[stacks 004W "(3)"]
 lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs : IsIrreducible s) :
     ∃ u ∈ irreducibleComponents X, s ⊆ u := by
-  obtain ⟨u,hu⟩ := exists_preirreducible s hs.isPreirreducible
+  obtain ⟨u, hu⟩ := exists_preirreducible s hs.isPreirreducible
   use u, ⟨⟨hs.left.mono hu.right.left,hu.left⟩,fun _ h hl => (hu.right.right _ h.right hl).le⟩
   exact hu.right.left
 
@@ -220,6 +225,22 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
   isPreirreducible_univ :=
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
+
+lemma IsPreirreducible.of_subtype [PreirreducibleSpace s] : IsPreirreducible s := by
+  rw [← Subtype.range_coe (s := s), ← Set.image_univ]
+  refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
+  exact continuous_subtype_val.continuousOn
+
+lemma IsIrreducible.of_subtype [IrreducibleSpace s] : IsIrreducible s := by
+  exact ⟨.of_subtype, .of_subtype⟩
+
+theorem isPreirreducible_iff_preirreducibleSpace :
+    IsPreirreducible s ↔ PreirreducibleSpace s :=
+  ⟨Subtype.preirreducibleSpace, fun _ ↦ .of_subtype⟩
+
+theorem isIrreducible_iff_irreducibleSpace :
+    IsIrreducible s ↔ IrreducibleSpace s :=
+  ⟨Subtype.irreducibleSpace, fun _ ↦ .of_subtype⟩
 
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
@@ -400,5 +421,13 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
     simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
 
 end
+
+lemma IsDiscrete.subsingleton_of_isPreirreducible (hs : IsDiscrete s) (hs' : IsPreirreducible s) :
+    s.Subsingleton := by
+  intro x hxs y hys
+  obtain ⟨U, hU, hUx⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs x hxs
+  obtain ⟨V, hV, hVy⟩ := isDiscrete_iff_forall_exists_isOpen.mp hs y hys
+  obtain ⟨z, hz⟩ := hs' _ _ hU hV ⟨x, by grind⟩ ⟨y, by grind⟩
+  exact (hUx.le (by grind)).symm.trans (b := z) (hVy.le (by grind))
 
 end Preirreducible

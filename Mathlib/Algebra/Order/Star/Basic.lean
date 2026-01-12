@@ -3,15 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Group.Opposite
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Algebra.Star.StarProjection
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -38,6 +40,8 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
   [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
   the advantage of not requiring a topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped NNRat
@@ -111,7 +115,7 @@ instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
-    rw [hs.2, add_assoc]
+    rw [hs.2, add_right_comm]
     exact ⟨hs.1, rfl⟩
 
 -- see note [lower instance priority]
@@ -204,7 +208,7 @@ theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
 @[aesop safe apply]
-theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
+theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine AddSubmonoid.closure_induction (fun x hx => ?_)
     (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
@@ -213,36 +217,48 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
   · calc
       0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
-      _ ≤ star c * x * c + star c * y * c := add_le_add_left hy _
+      _ ≤ star c * x * c + star c * y * c := by gcongr
       _ ≤ _ := by rw [mul_add, add_mul]
 
+@[deprecated (since := "2025-10-20")] alias conjugate_nonneg :=
+  star_left_conjugate_nonneg
+
 @[aesop safe apply]
-theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
-  simpa only [star_star] using conjugate_nonneg ha (star c)
+theorem star_right_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
+  simpa only [star_star] using star_left_conjugate_nonneg ha (star c)
+
+@[deprecated (since := "2025-10-20")] alias conjugate_nonneg' :=
+  star_right_conjugate_nonneg
 
 @[aesop 90% apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
     (hc : IsSelfAdjoint c) : 0 ≤ c * a * c := by
-  nth_rewrite 2 [← hc]; exact conjugate_nonneg' ha c
+  nth_rewrite 2 [← hc]; exact star_right_conjugate_nonneg ha c
 
 theorem conjugate_nonneg_of_nonneg {a : R} (ha : 0 ≤ a) {c : R} (hc : 0 ≤ c) :
     0 ≤ c * a * c :=
   IsSelfAdjoint.of_nonneg hc |>.conjugate_nonneg ha
 
-theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
+theorem star_left_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
   rw [StarOrderedRing.le_iff] at hab ⊢
   obtain ⟨p, hp, rfl⟩ := hab
   simp_rw [← StarOrderedRing.nonneg_iff] at hp ⊢
-  exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
+  exact ⟨star c * p * c, star_left_conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
+@[deprecated (since := "2025-10-20")] alias conjugate_le_conjugate :=
+  star_left_conjugate_le_conjugate
+
+theorem star_right_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
-  simpa only [star_star] using conjugate_le_conjugate hab (star c)
+  simpa only [star_star] using star_left_conjugate_le_conjugate hab (star c)
+
+@[deprecated (since := "2025-10-20")] alias conjugate_le_conjugate' :=
+  star_right_conjugate_le_conjugate
 
 protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
     (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
-  simpa only [hc.star_eq] using conjugate_le_conjugate hab c
+  simpa only [hc.star_eq] using star_left_conjugate_le_conjugate hab c
 
 theorem conjugate_le_conjugate_of_nonneg {a b : R} (hab : a ≤ b) {c : R} (hc : 0 ≤ c) :
     c * a * c ≤ c * b * c :=
@@ -286,20 +302,32 @@ lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
 lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
   simpa using star_lt_star_iff (x := x) (y := 0)
 
-theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+theorem star_left_conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
     star c * a * c < star c * b * c := by
-  rw [(conjugate_le_conjugate hab.le _).lt_iff_ne, hc.right.ne_iff, hc.star.left.ne_iff]
+  rw [(star_left_conjugate_le_conjugate hab.le _).lt_iff_ne, hc.right.ne_iff, hc.star.left.ne_iff]
   exact hab.ne
 
-theorem conjugate_lt_conjugate' {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
+@[deprecated (since := "2025-10-20")] alias conjugate_lt_conjugate :=
+  star_left_conjugate_lt_conjugate
+
+theorem star_right_conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
     c * a * star c < c * b * star c := by
-  simpa only [star_star] using conjugate_lt_conjugate hab hc.star
+  simpa only [star_star] using star_left_conjugate_lt_conjugate hab hc.star
 
-theorem conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < star c * a * c := by
-  simpa only [mul_zero, zero_mul] using conjugate_lt_conjugate ha hc
+@[deprecated (since := "2025-10-20")] alias conjugate_lt_conjugate' :=
+  star_right_conjugate_lt_conjugate
 
-theorem conjugate_pos' {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) : 0 < c * a * star c := by
-  simpa only [star_star] using conjugate_pos ha hc.star
+theorem star_left_conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) :
+    0 < star c * a * c := by
+  simpa only [mul_zero, zero_mul] using star_left_conjugate_lt_conjugate ha hc
+
+@[deprecated (since := "2025-10-20")] alias conjugate_pos := star_left_conjugate_pos
+
+theorem star_right_conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) :
+    0 < c * a * star c := by
+  simpa only [star_star] using star_left_conjugate_pos ha hc.star
+
+@[deprecated (since := "2025-10-20")] alias conjugate_pos' := star_right_conjugate_pos
 
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
   rw [(star_mul_self_nonneg _).lt_iff_ne, ← mul_zero (star x), hx.star.left.ne_iff]
@@ -335,6 +363,17 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a ^ 2 := by
   simp [sq, ha.mul_self_nonneg]
+
+lemma IsUnit.star_right_conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
+    0 ≤ u * x * star u ↔ 0 ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ star_right_conjugate_nonneg h _⟩
+  obtain ⟨v, hv⟩ := hu.exists_left_inv
+  have := by simpa [← mul_assoc] using star_right_conjugate_nonneg h v
+  rwa [hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
+
+lemma IsUnit.star_left_conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
+    0 ≤ star u * x * u ↔ 0 ≤ x := by
+  simpa using hu.star.star_right_conjugate_nonneg_iff
 
 end Semiring
 

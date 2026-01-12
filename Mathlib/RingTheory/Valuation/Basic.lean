@@ -3,11 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -54,9 +57,11 @@ In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative
 
 ## TODO
 
-If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
+If ever someone extends `Valuation`, we should fully comply with `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
+
+@[expose] public section
 
 open Function Ideal
 
@@ -113,7 +118,7 @@ variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZer
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     congr
 
 instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
@@ -305,10 +310,11 @@ theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
 
-open scoped Classical in
-theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
-    (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
+theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι → R} {j : ι}
+    (hj : j ∈ s) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
     v (∑ i ∈ s, f i) = v (f j) := by
+  rcases eq_or_ne (v (f j)) 0 with h0 | h0
+  · aesop
   rw [Finset.sum_eq_add_sum_diff_singleton hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
@@ -432,6 +438,21 @@ theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1
   · simp only [h, map_zero, zero_le', inv_zero, or_self]
   · simp only [← one_le_val_iff v h, le_total]
 
+/-- The subgroup of elements whose valuation is less than or equal to a certain value. -/
+def leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀) : AddSubgroup R where
+  carrier := { x | v x ≤ γ }
+  zero_mem' := by simp
+  add_mem' {x y} x_in y_in := (v.map_add x y).trans (max_le x_in y_in)
+  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+@[simp]
+lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
+    x ∈ v.leAddSubgroup γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
+  fun _ _ h _ ↦ h.trans'
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
@@ -442,6 +463,18 @@ theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1
 @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
     x ∈ ltAddSubgroup v γ ↔ v x < γ :=
   Iff.rfl
+
+lemma ltAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :
+    v.ltAddSubgroup γ ≤ v.leAddSubgroup γ :=
+  fun _ h ↦ h.le
+
+@[simp]
+lemma leAddSubgroup_zero {K : Type*} [Field K] (v : Valuation K Γ₀) :
+    v.leAddSubgroup 0 = ⊥ := by
+  ext; simp
 
 end Group
 
@@ -467,6 +500,20 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
 
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Submonoid.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Subgroup.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
 section Field
 
 variable {K : Type*} [Field K] {w : Valuation K Γ₀}
@@ -484,26 +531,29 @@ lemma isNontrivial_iff_exists_unit :
 
 lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ v x < 1 := by
+    ∃ x ≠ 0, v x < 1 := by
   obtain ⟨x, hx⟩ := isNontrivial_iff_exists_unit.mp hv
   rw [ne_iff_lt_or_gt] at hx
   rcases hx with hx | hx
   · use x
     simp [hx]
   · use x⁻¹
-    simp [- map_inv₀, ← one_lt_val_iff, hx]
+    simp [-map_inv₀, ← one_lt_val_iff, hx]
 
-theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
-    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation K Γ₀) : v.IsNontrivial ↔ ∃ x ≠ 0, v x < 1 :=
   ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
 
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
+    ∃ x, 1 < v x := by
   obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
   use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
+  simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
+
+lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x :=
+  ⟨fun h ↦ by simpa using h.exists_one_lt (v := v), fun ⟨x, hx1⟩ ↦ ⟨x, by aesop⟩⟩
 
 end Field
 
@@ -561,6 +611,10 @@ lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
 lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} :
+    0 < v₁ x ↔ 0 < v₂ x := by
+  rw [zero_lt_iff, zero_lt_iff, h.ne_zero]
 
 end IsEquiv
 
@@ -836,7 +890,7 @@ theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
 @[simp]
 theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   intro x y
-  rw [← @min_le_iff _ _ (v x) (v y) (v (x+y)), ← ge_iff_le]
+  rw [← @min_le_iff _ _ (v x) (v y) (v (x + y)), ← ge_iff_le]
   apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
@@ -955,7 +1009,7 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = -(v x) :=
   map_inv₀ (toValuation v) x
 
 @[simp]

@@ -3,11 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -58,8 +60,12 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
 
+@[expose] public section
+
 open WithZero
 
+-- TODO: fix non-terminal simp; acts on 8 goals, leaving one
+set_option linter.flexible false in
 /-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-padicValRat p x)
@@ -106,7 +112,7 @@ lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
 lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
     Int.padicValuation p x ≤ 1 := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp
   · rw [← le_log_iff_exp_le] <;>
@@ -115,7 +121,7 @@ lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
 lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
     Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
   simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero_iff, padicValRat.of_int]
   split_ifs
   · simp_all
   · rw [← exp_zero, exp_injective.eq_iff]
@@ -712,9 +718,12 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
+set_option backward.privateInPublic true in
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
 def limSeq : ℕ → ℚ :=
@@ -964,9 +973,9 @@ lemma norm_natCast_lt_one_iff {n : ℕ} :
 lemma norm_intCast_eq_one_iff {z : ℤ} :
     ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
   rw [← not_iff_not]
-  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff, - norm_intCast_lt_one_iff,
+  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff, -norm_intCast_lt_one_iff,
     Int.isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, Int.gcd,
-    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, norm_int_le_one]
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, -cast_natAbs, norm_int_le_one]
 
 @[simp]
 lemma norm_natCast_eq_one_iff {n : ℕ} :

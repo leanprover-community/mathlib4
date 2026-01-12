@@ -3,12 +3,16 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Instances for `grind`.
 -/
+
+@[expose] public section
 
 open Lean
 
@@ -92,7 +96,7 @@ example (s : Grind.CommRing α) : CommRing α :=
     zsmul := zsmulRec
     npow := npowRec
     natCast := Nat.cast
-    natCast_zero :=  Grind.Semiring.natCast_zero
+    natCast_zero := Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n
     intCast := Int.cast
     intCast_ofNat := Grind.Ring.intCast_natCast

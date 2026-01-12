@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Categorical images
@@ -52,10 +54,12 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-universe v u
+universe w v u
 
 open CategoryTheory
 
@@ -153,6 +157,35 @@ def ofArrowIso {f g : Arrow C} (F : MonoFactorisation f.hom) (sq : f ⟶ g) [IsI
   m_mono := mono_comp _ _
   fac := by simp only [fac_assoc, Arrow.w, IsIso.inv_comp_eq, Category.assoc]
 
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` gives a new mono
+factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI (F : MonoFactorisation f) {I'} (e : F.I ≅ I') :
+    MonoFactorisation f where
+  I := I'
+  m := e.inv ≫ F.m
+  e := F.e ≫ e.hom
+
+/--
+Copying a mono factorisation to another mono factorisation with propositionally equal
+`m` and `e` fields.
+-/
+@[simps]
+def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    MonoFactorisation f where
+  I := F.I
+  m := m
+  e := e
+  m_mono := by rw [hm]; infer_instance
+
+@[simp]
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
+    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
+  simp [← types_comp_apply, ← NatTrans.comp_app]
+
 end MonoFactorisation
 
 variable {f}
@@ -215,6 +248,26 @@ def ofArrowIso {f g : Arrow C} {F : MonoFactorisation f.hom} (hF : IsImage F) (s
     simpa only [MonoFactorisation.ofArrowIso_m, Arrow.inv_right, ← Category.assoc,
       IsIso.comp_inv_eq] using hF.lift_fac (F'.ofArrowIso (inv sq))
 
+/--
+Given a mono factorisation `X ⟶ I ⟶ Y` of an arrow `f` that is an image and an isomorphism `I ≅ I'`,
+the induced mono factorisation by the isomorphism is also an image.
+-/
+@[simps]
+def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (e : F.I ≅ I') :
+    IsImage (F.ofIsoI e) where
+  lift F' := e.inv ≫ hF.lift F'
+
+/--
+Copying a mono factorisation to another mono factorisation with propositionally equal fields
+preserves the property of being an image.
+This is useful when one needs precise control of the `m` and `e` fields.
+-/
+@[simps]
+def copy {F : MonoFactorisation f} (hF : IsImage F) (m : F.I ⟶ Y) (e : X ⟶ F.I)
+    (hm : m = F.m := by cat_disch) (he : e = F.e := by cat_disch) :
+    IsImage (F.copy m e) where
+  lift := hF.lift
+
 end IsImage
 
 variable (f)
@@ -239,6 +292,27 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
   F := F.F.ofArrowIso sq
   isImage := F.isImage.ofArrowIso sq
 
+/--
+Given an image factorisation `X ⟶ I ⟶ Y` of an arrow `f`, an isomorphism `I ≅ I'` induces a new
+image factorisation `X ⟶ I' ⟶ Y` of `f`.
+-/
+@[simps]
+def ofIsoI {f : X ⟶ Y} (F : ImageFactorisation f) {I' : C} (e : F.F.I ≅ I') :
+    ImageFactorisation f where
+  F := F.F.ofIsoI e
+  isImage := F.isImage.ofIsoI e
+
+/--
+Copying an image factorisation to another image factorisation with propositionally equal
+`m` and `e` fields.
+-/
+@[simps]
+def copy {f : X ⟶ Y} (F : ImageFactorisation f) (m : F.F.I ⟶ Y) (e : X ⟶ F.F.I)
+    (hm : m = F.F.m := by cat_disch) (he : e = F.F.e := by cat_disch) :
+    ImageFactorisation f where
+  F := F.F.copy m e
+  isImage := F.isImage.copy m e
+
 end ImageFactorisation
 
 /-- `HasImage f` means that there exists an image factorisation of `f`. -/
@@ -261,14 +335,18 @@ section
 
 variable [HasImage f]
 
+/-- Some image factorisation of `f` through a monomorphism (selected with choice). -/
+def Image.imageFactorisation : ImageFactorisation f :=
+  Classical.choice HasImage.exists_image
+
 /-- Some factorisation of `f` through a monomorphism (selected with choice). -/
 def Image.monoFactorisation : MonoFactorisation f :=
-  (Classical.choice HasImage.exists_image).F
+  (Image.imageFactorisation f).F
 
 /-- The witness of the universal property for the chosen factorisation of `f` through
 a monomorphism. -/
 def Image.isImage : IsImage (Image.monoFactorisation f) :=
-  (Classical.choice HasImage.exists_image).isImage
+  (Image.imageFactorisation f).isImage
 
 /-- The categorical image of a morphism. -/
 def image : C :=
@@ -470,7 +548,7 @@ theorem image.eq_fac [HasEqualizers C] (h : f = f') :
     image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
   apply image.ext
   subst h
-  simp [asIso,image.eqToIso, image.eqToHom]
+  simp [asIso, image.eqToIso, image.eqToHom]
 
 end
 
@@ -531,7 +609,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
                    lift_fac := fun F' => by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
-                    rw [← this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
+                    rw [← this, image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 
 /-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
 (we need `C` to have equalizers to prove this).
@@ -556,14 +634,14 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
       { lift := fun F' => image.lift F'.ofCompIso
         lift_fac := fun F' => by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
-            ← IsIso.inv_hom_id g,← Category.assoc]
+            ← IsIso.inv_hom_id g, ← Category.assoc]
           refine congrArg (· ≫ g) ?_
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
               simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
                 MonoFactorisation.ofCompIso_m]
-          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'),image.as_ι] }}
+          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] }}
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
 def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
@@ -663,7 +741,7 @@ instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [H
   HasImageMap.mk
     { map := (HasImageMap.imageMap sq1).map ≫ (HasImageMap.imageMap sq2).map
       map_ι := by
-        rw [Category.assoc,ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
+        rw [Category.assoc, ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
 
 variable {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
 
@@ -676,7 +754,7 @@ theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
     (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
     (map' : image f.hom ⟶ image g.hom)
     (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by
-  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
+  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι, map_ι']
   apply (cancel_mono (image.ι g.hom)).1 this
 
 theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
@@ -752,7 +830,7 @@ section
 
 variable (C) [HasImages C]
 
-/-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
+/-- If a category `HasImageMaps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 
@@ -939,7 +1017,7 @@ namespace CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=

@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.74" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.84" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -17,6 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.74" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+
 
 /-!
 ## Options for building mathlib
@@ -26,6 +27,12 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
+  -- but we want to run this linter in files imported by `Mathlib.Init`.
+  ⟨`linter.style.header, true⟩,
+  ⟨`linter.checkInitImports, true⟩,
+  ⟨`linter.allScriptsDocumented, true⟩,
+  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
@@ -112,8 +119,13 @@ lean_exe «lint-style» where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+/-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
+Currently, these checks are quite lenient, but could be made stricter in the future. -/
+lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
 /--
-`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+`lake exe pole` queries radar for build times for the current commit,
 and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
@@ -152,9 +164,23 @@ update its toolchain to match Mathlib's and fetch the new cache.
 -/
 post_update pkg do
   let rootPkg ← getRootPackage
-  if rootPkg.name = pkg.name then
+  if rootPkg.baseName = pkg.baseName then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
+    -- Check if Lake version matches toolchain version
+    let toolchainFile := rootPkg.dir / "lean-toolchain"
+    let toolchainContent ← IO.FS.readFile toolchainFile
+    let toolchainVersion := match toolchainContent.trimAscii.copy.splitOn ":" with
+      | [_, version] => version
+      | _ => toolchainContent.trimAscii.copy  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := (toolchainVersion.dropPrefix "v").copy
+    if Lean.versionString ≠ toolchainVersion then
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
+        You should run `lake exe cache get` manually."
+      return
     let exeFile ← runBuild cache.fetch
     -- Run the command in the root package directory,
     -- which is the one that holds the .lake folder and lean-toolchain file.
@@ -165,4 +191,4 @@ post_update pkg do
     finally
       IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
-      error s!"{pkg.name}: failed to fetch cache"
+      error s!"{pkg.baseName}: failed to fetch cache"

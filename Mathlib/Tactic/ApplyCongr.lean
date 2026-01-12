@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Allen, Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.Conv
+public meta import Lean.Elab.Tactic.Conv.Basic
+public import Mathlib.Init
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -15,7 +17,9 @@ are not of the optimal shape. An example, described in the doc-string is
 rewriting inside the operand of a `Finset.sum`.
 -/
 
-open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
+public meta section
+
+open Lean Expr Parser.Tactic Elab Elab.Tactic Meta Conv
 
 /--
 Apply a congruence lemma inside `conv` mode.

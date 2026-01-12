@@ -3,10 +3,14 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.SimpTheorems
-import Lean.Meta.Tactic.Simp.RegisterCommand
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.SimpTheorems
+public meta import Lean.Meta.Tactic.Simp.RegisterCommand
+public meta import Lean.LabelAttribute
+public import Lean.LabelAttribute
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes used in `Mathlib`
@@ -17,6 +21,8 @@ of them in one file for two reasons:
 - in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
+
+public meta section
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr functor_norm

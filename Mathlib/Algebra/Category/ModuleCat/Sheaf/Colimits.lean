@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 
 /-!
 # Colimits in categories of sheaves of modules
@@ -14,6 +16,8 @@ of presheaves of modules.
 
 -/
 
+@[expose] public section
+
 universe w' w v v' u' u
 
 namespace SheafOfModules
@@ -22,8 +26,8 @@ open CategoryTheory Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
-variable (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrp.{v}]
-  [J.WEqualsLocallyBijective AddCommGrp.{v}] (K : Type w) [Category.{w'} K]
+variable (R : Sheaf J RingCat.{u}) [HasWeakSheafify J AddCommGrpCat.{v}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{v}] (K : Type w) [Category.{w'} K]
 
 instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
     HasColimitsOfShape K (SheafOfModules.{v} R) where

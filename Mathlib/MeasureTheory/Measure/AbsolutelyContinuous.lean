@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Map
+module
+
+public import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Absolute Continuity of Measures
@@ -28,6 +30,8 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
   with respect to `ν`
 
 -/
+
+@[expose] public section
 
 variable {α β δ ι R : Type*}
 
@@ -71,7 +75,7 @@ protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ 
 
 protected theorem rfl : μ ≪ μ := fun _s hs => hs
 
-instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
+instance instRefl {_ : MeasurableSpace α} : @Std.Refl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 
 @[simp]

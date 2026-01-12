@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Disjoint coproducts
@@ -22,6 +24,8 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 * Define extensive categories, and show every extensive category has disjoint coproducts.
 * Define coherent categories and use this to define positive coherent categories.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -195,33 +199,14 @@ noncomputable def ofBinaryCoproductDisjointOfIsLimit
 
 end IsInitial
 
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfIsPullbackOfIsCoproduct :=
-  IsInitial.ofBinaryCoproductDisjointOfIsColimitOfIsLimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfIsPullbackOfCoproduct := IsInitial.ofBinaryCoproductDisjointOfIsLimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfPullbackOfIsCoproduct := IsInitial.ofBinaryCoproductDisjointOfIsColimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfPullbackOfCoproduct := IsInitial.ofBinaryCoproductDisjoint
-
-@[deprecated (since := "2025-06-18")]
-alias CoproductDisjoint.mono_inl := CategoryTheory.Mono.of_binaryCoproductDisjoint_left
-
-@[deprecated (since := "2025-06-18")]
-alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoint_right
-
 end
 
 /-- `C` has disjoint coproducts if every coproduct is disjoint. -/
-class CoproductsOfShapeDisjoint (C : Type*) [Category C] (ι : Type*) : Prop where
+class CoproductsOfShapeDisjoint (C : Type*) [Category* C] (ι : Type*) : Prop where
   coproductDisjoint (X : ι → C) : CoproductDisjoint X
 
 /-- `C` has disjoint binary coproducts if every binary coproduct is disjoint. -/
-abbrev BinaryCoproductsDisjoint (C : Type*) [Category C] : Prop :=
+abbrev BinaryCoproductsDisjoint (C : Type*) [Category* C] : Prop :=
   CoproductsOfShapeDisjoint C WalkingPair
 
 attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint
@@ -244,8 +229,5 @@ theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
           Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
         uniq := fun (_s : BinaryCofan _ _) _m w =>
           (id_comp _).symm.trans (w ⟨WalkingPair.right⟩) }
-
-@[deprecated (since := "2025-06-18")]
-alias initialMonoClass_of_disjoint_coproducts := initialMonoClass_of_coproductsDisjoint
 
 end CategoryTheory.Limits

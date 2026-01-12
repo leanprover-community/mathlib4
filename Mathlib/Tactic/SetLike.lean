@@ -3,9 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Tactic.Basic
-import Aesop
+public import Aesop
+public import Aesop.Frontend.Basic
+public meta import Batteries.Util.LibraryNote
+public import Mathlib.Tactic.Basic
 
 /-!
 # SetLike Rule Set
@@ -14,6 +17,8 @@ This module defines the `SetLike` and `SetLike!` Aesop rule sets.
 Aesop rule sets only become visible once the file in which they're declared is imported,
 so we must put this declaration into its own file.
 -/
+
+public meta section
 
 declare_aesop_rule_sets [SetLike] (default := true)
 declare_aesop_rule_sets [SetLike!] (default := false)
@@ -49,5 +54,5 @@ are given the `aesop` attribute according to the following principles:
   For example, `Subgroup.mem_closure_of_mem` covers a common use case of `SetLike.mem_of_subset`.
 
 Some examples of membership-related goals which Aesop with this ruleset is designed to close
-can be found in the file MathlibTest/set_like.lean.
+can be found in the file `MathlibTest/set_like.lean`.
 -/

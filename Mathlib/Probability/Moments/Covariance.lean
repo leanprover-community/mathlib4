@@ -3,7 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Notation
 
 /-!
 # Covariance
@@ -25,6 +30,8 @@ We define the covariance of two real-valued random variables.
 * `cov[X, Y] = covariance X Y volume`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 
@@ -48,7 +55,7 @@ lemma covariance_eq_sub [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemL
      cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
    simp_rw [covariance, sub_mul, mul_sub]
    repeat rw [integral_sub]
-   · simp_rw [integral_mul_const, integral_const_mul, integral_const, measureReal_univ_eq_one,
+   · simp_rw [integral_mul_const, integral_const_mul, integral_const, probReal_univ,
        one_smul]
      simp
    · exact hY.const_mul _ |>.integrable (by simp)
@@ -126,30 +133,39 @@ lemma covariance_smul_left (c : ℝ) : cov[c • X, Y; μ] = c * cov[X, Y; μ] :
 lemma covariance_smul_right (c : ℝ) : cov[X, c • Y; μ] = c * cov[X, Y; μ] := by
   rw [covariance_comm, covariance_smul_left, covariance_comm]
 
-lemma covariance_mul_left (c : ℝ) : cov[fun ω ↦ c * X ω, Y; μ] = c * cov[X, Y; μ] :=
+lemma covariance_const_mul_left (c : ℝ) : cov[fun ω ↦ c * X ω, Y; μ] = c * cov[X, Y; μ] :=
   covariance_smul_left c
 
-lemma covariance_mul_right (c : ℝ) : cov[X, fun ω ↦ c * Y ω; μ] = c * cov[X, Y; μ] :=
+lemma covariance_const_mul_right (c : ℝ) : cov[X, fun ω ↦ c * Y ω; μ] = c * cov[X, Y; μ] :=
   covariance_smul_right c
+
+lemma covariance_mul_const_left (c : ℝ) : cov[fun ω ↦ X ω * c, Y; μ] = cov[X, Y; μ] * c := by
+  simp [mul_comm, covariance_const_mul_left]
+
+lemma covariance_mul_const_right (c : ℝ) : cov[X, fun ω ↦ Y ω * c; μ] = cov[X, Y; μ] * c := by
+  simp [mul_comm, covariance_const_mul_right]
+
+@[deprecated (since := "2025-11-29")] alias covariance_mul_left := covariance_const_mul_left
+@[deprecated (since := "2025-11-29")] alias covariance_mul_right := covariance_const_mul_right
 
 @[simp]
 lemma covariance_neg_left : cov[-X, Y; μ] = -cov[X, Y; μ] := by
   calc cov[-X, Y; μ]
   _ = cov[(-1 : ℝ) • X, Y; μ] := by simp
-  _ = - cov[X, Y; μ] := by rw [covariance_smul_left]; simp
+  _ = -cov[X, Y; μ] := by rw [covariance_smul_left]; simp
 
 @[simp]
-lemma covariance_fun_neg_left : cov[fun ω ↦ - X ω, Y; μ] = -cov[X, Y; μ] :=
+lemma covariance_fun_neg_left : cov[fun ω ↦ -X ω, Y; μ] = -cov[X, Y; μ] :=
   covariance_neg_left
 
 @[simp]
 lemma covariance_neg_right : cov[X, -Y; μ] = -cov[X, Y; μ] := by
   calc cov[X, -Y; μ]
   _ = cov[X, (-1 : ℝ) • Y; μ] := by simp
-  _ = - cov[X, Y; μ] := by rw [covariance_smul_right]; simp
+  _ = -cov[X, Y; μ] := by rw [covariance_smul_right]; simp
 
 @[simp]
-lemma covariance_fun_neg_right : cov[X, fun ω ↦ - Y ω; μ] = -cov[X, Y; μ] :=
+lemma covariance_fun_neg_right : cov[X, fun ω ↦ -Y ω; μ] = -cov[X, Y; μ] :=
   covariance_neg_right
 
 lemma covariance_sub_left [IsFiniteMeasure μ]
@@ -169,7 +185,7 @@ lemma covariance_sub_const_left [IsProbabilityMeasure μ] (hX : Integrable X μ)
 
 @[simp]
 lemma covariance_const_sub_left [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
-    cov[fun ω ↦ c - X ω, Y; μ] = - cov[X, Y; μ] := by
+    cov[fun ω ↦ c - X ω, Y; μ] = -cov[X, Y; μ] := by
   simp [sub_eq_add_neg, hX.neg']
 
 @[simp]
@@ -179,7 +195,7 @@ lemma covariance_sub_const_right [IsProbabilityMeasure μ] (hY : Integrable Y μ
 
 @[simp]
 lemma covariance_const_sub_right [IsProbabilityMeasure μ] (hY : Integrable Y μ) (c : ℝ) :
-    cov[X, fun ω ↦ c - Y ω; μ] = - cov[X, Y; μ] := by
+    cov[X, fun ω ↦ c - Y ω; μ] = -cov[X, Y; μ] := by
   simp [sub_eq_add_neg, hY.neg']
 
 section Sum
@@ -279,7 +295,7 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
 
 end Map
 
-lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+lemma IndepFun.covariance_eq_zero (h : X ⟂ᵢ[μ] Y) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
      cov[X, Y; μ] = 0 := by
    by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
    · refine integral_eq_zero_of_ae ?_

@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
-import Mathlib.Data.Quot
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Quot
 
 /-!
 # List rotation
@@ -21,6 +23,8 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 rotated, rotation, permutation, cycle
 -/
+
+@[expose] public section
 
 
 universe u
@@ -204,7 +208,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
         rw [Nat.sub_lt_iff_lt_add hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
-      cutsat
+      lia
     · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
@@ -224,6 +228,8 @@ theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
     (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
   get_rotate l 1 k
 
+-- Allow `l[a]'b` to have a line break between `[a]'` and `b`.
+set_option linter.style.whitespace false in
 /-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
 `(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
 from right to left. -/
@@ -242,11 +248,7 @@ from right to left. -/
 theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
     l.get k = (l.rotate n).get ⟨(l.length - n % l.length + k) % l.length,
       (Nat.mod_lt _ (k.1.zero_le.trans_lt k.2)).trans_eq (length_rotate _ _).symm⟩ := by
-  rw [get_rotate]
-  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
-  simp only [mod_add_mod]
-  rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
-  exacts [k.2, (mod_lt _ (k.1.zero_le.trans_lt k.2)).le]
+  simpa using getElem_eq_getElem_rotate _ _ _ _
 
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
@@ -534,7 +536,7 @@ theorem head_cyclicPermutations (l : List α) :
 
 @[simp]
 theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
-  rw [head?_eq_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
+  rw [head?_eq_some_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
   simpa using congr_arg head? h

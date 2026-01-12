@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathlib.NumberTheory.ModularForms.Cusps
-import Mathlib.NumberTheory.ModularForms.SlashActions
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
+public import Mathlib.NumberTheory.ModularForms.Cusps
+public import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
 # Boundedness and vanishing at cusps
@@ -13,6 +15,8 @@ import Mathlib.NumberTheory.ModularForms.SlashActions
 We define the notions of "bounded at c" and "vanishing at c" for functions on `ℍ`, where `c` is
 an element of `OnePoint ℝ`.
 -/
+
+@[expose] public section
 
 open Matrix SpecialLinearGroup UpperHalfPlane Filter Polynomial OnePoint
 
@@ -53,11 +57,11 @@ variable {c f k} {g : GL (Fin 2) ℝ}
 
 lemma IsBoundedAt.smul_iff : IsBoundedAt (g • c) f k ↔ IsBoundedAt c (f ∣[k] g) k := by
   rw [IsBoundedAt, IsBoundedAt, (Equiv.mulLeft g⁻¹).forall_congr_left]
-  simp [MulAction.mul_smul, ← SlashAction.slash_mul]
+  simp [SemigroupAction.mul_smul, ← SlashAction.slash_mul]
 
 lemma IsZeroAt.smul_iff : IsZeroAt (g • c) f k ↔ IsZeroAt c (f ∣[k] g) k := by
   rw [IsZeroAt, IsZeroAt, (Equiv.mulLeft g⁻¹).forall_congr_left]
-  simp [MulAction.mul_smul, ← SlashAction.slash_mul]
+  simp [SemigroupAction.mul_smul, ← SlashAction.slash_mul]
 
 lemma IsBoundedAt.add {f' : ℍ → ℂ} (hf : IsBoundedAt c f k) (hf' : IsBoundedAt c f' k) :
     IsBoundedAt c (f + f') k :=

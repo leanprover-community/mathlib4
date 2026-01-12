@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 
@@ -16,6 +18,8 @@ Most of the theories are developed in `AlgebraicGeometry/OpenImmersion`, and we 
 remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -42,8 +46,8 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       have : IsLocalization.Away (1 - e) (↑R ⧸ Ideal.span {e}) :=
         IsLocalization.away_of_isIdempotentElem he.one_sub (by simp) Ideal.Quotient.mk_surjective
       IsOpenImmersion.of_isLocalization (1 - e)
-    have H : Set.range (Spec.map φ).base = Set.range (Spec.map f).base :=
-      ((PrimeSpectrum.range_comap_of_surjective _ _
+    have H : Set.range (Spec.map φ) = Set.range (Spec.map f) :=
+      ((range_comap_of_surjective _ _
         Ideal.Quotient.mk_surjective).trans (by simp)).trans he'.symm
     let i : S ≅ .of _ := (Scheme.Spec.preimageIso
       (IsOpenImmersion.isoOfRangeEq (Spec.map φ) (Spec.map f) H)).unop
@@ -62,10 +66,10 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 variable {X Y : Scheme.{u}}
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_stalk_iso f
+    IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_isIso_stalkMap f
 
 theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
-    (𝒰 : X.OpenCover) (hf : Function.Injective f.base) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
+    (𝒰 : X.OpenCover) (hf : Function.Injective f) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
     IsOpenImmersion f := by
   refine isOpenImmersion_iff_stalk.mpr ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
   · intro U hU
@@ -74,17 +78,17 @@ theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
     exact ⟨fun ⟨x, _, _⟩ ↦ by have := 𝒰.exists_eq x; simp; grind, by simp; grind⟩
   · intro x
     obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
-    rw [← (IsIso.comp_inv_eq _).mpr (Scheme.stalkMap_comp (𝒰.f i) f x)]
+    rw [← (IsIso.comp_inv_eq _).mpr (Scheme.Hom.stalkMap_comp (𝒰.f i) f x)]
     infer_instance
 
 lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
-    (hf : Function.Injective f.base)
+    (hf : Function.Injective f)
     (hX : ∀ x, ∃ (U : Scheme) (i : U ⟶ X) (_ : IsOpenImmersion i),
       x ∈ i.opensRange ∧ IsOpenImmersion (i ≫ f)) :
     IsOpenImmersion f := by
   choose U i _ hxi hi using hX
   let 𝒰 : X.OpenCover := ⟨⟨X, U, i⟩,
-    ⟨by simpa using show ∀ x, ∃ j y, (i j).base y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
+    ⟨by simpa using show ∀ x, ∃ j y, i j y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
   exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
 
 theorem isOpenImmersion_eq_inf :
@@ -103,5 +107,10 @@ instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) :
 
 instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
+
+instance {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') [IsOpenImmersion f] [IsOpenImmersion g] :
+    IsOpenImmersion (coprod.map f g) :=
+  IsZariskiLocalAtTarget.coprodMap f g ‹_› ‹_›
 
 end AlgebraicGeometry

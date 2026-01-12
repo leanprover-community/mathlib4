@@ -3,14 +3,18 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
 
 This, and the dual result, are used in the development of abelian categories.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -19,7 +23,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
@@ -58,15 +62,13 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
                       PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
                   _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
-                  _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp]
-                  )
+                  _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp])
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.snd =
                       PullbackCone.snd s ≫ b ≫ g := by
                     simp only [prod.lift_snd, Category.assoc]
                   _ = PullbackCone.snd s ≫ 0 := by rw [hbg]
-                  _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]
-                  ))
+                  _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]))
           (fun s =>
             (cancel_mono a).1 <| by
               rw [KernelFork.ι_ofι] at ha'
@@ -204,14 +206,12 @@ lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
                       f ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inl_desc_assoc]
                   _ = f ≫ a ≫ PushoutCocone.inl s := by rw [PushoutCocone.condition]
                   _ = 0 ≫ PushoutCocone.inl s := by rw [← Category.assoc, eq_whisker hfa]
-                  _ = coprod.inl ≫ 0 := by rw [comp_zero, zero_comp]
-                  )
+                  _ = coprod.inl ≫ 0 := by rw [comp_zero, zero_comp])
                 (calc
                   coprod.inr ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
                       g ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inr_desc_assoc]
                   _ = 0 ≫ PushoutCocone.inr s := by rw [← Category.assoc, eq_whisker hgb]
-                  _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]
-                  ))
+                  _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]))
           (fun s =>
             (cancel_epi a).1 <| by
               rw [CokernelCofork.π_ofπ] at ha'

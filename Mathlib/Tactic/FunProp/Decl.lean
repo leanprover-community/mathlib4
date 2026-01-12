@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -80,7 +84,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.funProp.attr]
+  trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
@@ -134,18 +138,17 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try
-        withoutModifyingStateWithInfoAndMessages do
-          instantiateMVarDeclMVars mvar.mvarId!
+        instantiateMVarDeclMVars mvar.mvarId!
 
-          let _ ←
-            withSynthesize (postpone := .no) do
-              Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
+        let _ ←
+          withSynthesize (postpone := .no) do
+            Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
-          let result ← instantiateMVars mvar
-          if result.hasExprMVar then
-            return none
-          else
-            return some result
+        let result ← instantiateMVars mvar
+        if result.hasExprMVar then
+          return none
+        else
+          return some result
       catch _ =>
         return none
     let (result?, _) ← runTac?.run {} {}

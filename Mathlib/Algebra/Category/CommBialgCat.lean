@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała, Andrew Yang. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of commutative bialgebras over a commutative ring
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Bialgebra.Equiv
 This file defines the bundled category `CommBialgCat R` of commutative bialgebras over a fixed
 commutative ring `R` along with the forgetful functor to `CommAlgCat`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -23,6 +27,7 @@ universe v u
 variable {R : Type u} [CommRing R]
 
 variable (R) in
+set_option backward.privateInPublic true in
 /-- The category of commutative `R`-bialgebras and their morphisms. -/
 structure CommBialgCat where
   private mk ::
@@ -44,6 +49,8 @@ instance : CoeSort (CommBialgCat R) (Type v) := ⟨carrier⟩
 attribute [coe] CommBialgCat.carrier
 
 variable (R) in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Turn an unbundled `R`-bialgebra into the corresponding object in the category of `R`-bialgebras.
 
 This is the preferred way to construct a term of `CommBialgCat R`. -/
@@ -52,6 +59,7 @@ abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommBialgCat R`. -/
 @[ext]
 structure Hom (A B : CommBialgCat.{v} R) where
@@ -59,11 +67,15 @@ structure Hom (A B : CommBialgCat.{v} R) where
   /-- The underlying bialgebra map. -/
   hom' : A →ₐc[R] B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (CommBialgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

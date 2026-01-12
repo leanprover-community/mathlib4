@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.GaloisObjects
-import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-import Mathlib.Data.Finite.Sum
+module
+
+public import Mathlib.CategoryTheory.Galois.GaloisObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+public import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -30,6 +32,8 @@ is represented by a Galois object.
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+
+public section
 
 universe u₁ u₂ w
 
@@ -152,16 +156,8 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have : IsIso u := IsConnected.noTrivialComponent Y u hn
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
   use (asIso u).symm ≪≫ asIso v
-  have hu : G.map u y = a := by
-    simp only [u, G, y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv,
-      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-      inv_hom_id_apply]
-    erw [Types.pullbackIsoPullback_inv_fst_apply (F.map i) (F.map j)]
-  have hv : G.map v y = b := by
-    simp only [v, G, y, e, ← PreservesPullback.iso_hom_snd G, fiberPullbackEquiv,
-      Iso.toEquiv_comp, Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply,
-      inv_hom_id_apply]
-    erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
+  have hu : G.map u y = a := fiberPullbackEquiv_symm_fst_apply _ _ _ h
+  have hv : G.map v y = b := fiberPullbackEquiv_symm_snd_apply _ _ _ h
   rw [← hu, ← hv]
   change (F.map u ≫ F.map _) y = F.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
@@ -193,39 +189,42 @@ section GaloisRepAux
 
 variable (X : C)
 
+set_option backward.privateInPublic true in
 /-- The self product of `X` indexed by its fiber. -/
 @[simp]
 private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
+set_option backward.privateInPublic true in
 /-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
 which has at index `x : F.obj X` the element `g x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
+set_option backward.privateInPublic true in
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
-  rw [← congrFun (piComparison_comp_π F _ t), FintypeCat.comp_apply,
-    ← PreservesProduct.iso_hom]
-  simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
-  exact Concrete.productEquiv_symm_apply_π.{w, w, w+1} (fun _ : F.obj X ↦ F.obj X) id t
+  rw [← piComparison_comp_π]
+  simp [← PreservesProduct.iso_hom, mkSelfProdFib]
 
 variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
 include h
 
+set_option backward.privateInPublic true in
 /-- For each `x : F.obj X`, this is the composition of `u` with the projection at `x`. -/
 @[simp]
 private noncomputable def selfProdProj (x : F.obj X) : A ⟶ X := u ≫ Pi.π _ x
 
 variable {u a}
 
+set_option backward.privateInPublic true in
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
-  simp only [selfProdProj, selfProd, F.map_comp, FintypeCat.comp_apply, h]
-  rw [mkSelfProdFib_map_π F X x]
+  simp_all
 
 variable [IsConnected A]
 
+set_option backward.privateInPublic true in
 /-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting onto the
 `F.map u b` factor. -/
 private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
@@ -237,12 +236,15 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
   have h' : selfProdProj u t = selfProdProj u s := evaluation_injective_of_isConnected F A X b hs
   rw [← selfProdProj_fiber h s, ← selfProdProj_fiber h t, h']
 
+set_option backward.privateInPublic true in
 /-- Twisting `u` by `fiberPerm h b` yields an inclusion of `A` into `selfProd F X`. -/
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
+set_option backward.privateInPublic true in
 private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
+set_option backward.privateInPublic true in
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     F.map u b = F.map (selfProdPermIncl h b) a := by
@@ -258,6 +260,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]
     rfl
 
+set_option backward.privateInPublic true in
 /-- There exists an automorphism `f` of `A` that maps `b` to `a`.
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element
@@ -283,7 +286,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact congr_fun (F.mapIso fi2).hom_inv_id y
+    exact DFunLike.congr_fun (F.mapIso fi2).hom_inv_id y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x
