@@ -119,14 +119,14 @@ where
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else throwError err
     | .app .. => appT expr i.castSucc [] none
-  /-- Traverse an application from argument to function, accumulating arguments and consuming `pos` 
-  (incrementing `i`) as we approach the head. If `pos[i]` tells us to enter the argument of `.app` 
-  instead of the function at some point, we stop consuming `pos` and start counting arguments 
-  (`some n`) until we hit the head. This gives us enough information to determine the value for 
+  /-- Traverse an application from argument to function, accumulating arguments and consuming `pos`
+  (incrementing `i`) as we approach the head. If `pos[i]` tells us to enter the argument of `.app`
+  instead of the function at some point, we stop consuming `pos` and start counting arguments
+  (`some n`) until we hit the head. This gives us enough information to determine the value for
   `Path.arg` once we reach the head, and then enter the argument we encountered earlier.
-  
+
   Note: if we instead run out of `pos` before reaching the head, the `Path` is a chain of `fun`s.
-  
+
   Note: `conv` does not see through `.mdata` surrounding an `.app`, so we do not here either. -/
   appT (expr : Expr) (i : Fin (pos.size + 1))
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
