@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
-public import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Algebra.MvPolynomial.Nilpotent
-import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Irreducibility of linear and quadratic polynomials

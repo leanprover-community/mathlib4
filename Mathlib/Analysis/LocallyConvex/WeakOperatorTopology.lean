@@ -121,7 +121,7 @@ def _root_.ContinuousLinearMap.toWOT :
   LinearEquiv.refl 𝕜₂ _
 
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
-  coe f :=  ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
+  coe f := ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
   coe_injective' := by intro; simp
 
 instance instContinuousLinearMapClass : ContinuousSemilinearMapClass (E →SWOT[σ] F) σ E F where
