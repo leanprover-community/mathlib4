@@ -46,6 +46,23 @@ private partial def vecOfListQ {u : Level} {α : Q(Type u)}
   | ~q(0), ~q([]) => return q(Matrix.vecEmpty)
 
 /--
+Takes an expression representing a list of elements of type `α` and outputs the corresponding
+vector `Fin n → α`.
+-/
+private partial def vecOfListQ' {α : Type*} (vec : List α) [Nonempty α] : Fin vec.length → α :=
+  match vec with
+  | head :: rest =>
+    Matrix.vecCons head (vecOfListQ' rest)
+  | [] => Matrix.vecEmpty
+
+run_meta do
+  let vec : Q(List Nat) := q([1, 2, 3])
+  let out1 ← whnf q(vecOfListQ' $vec)
+  let out2 ← vecOfListQ q(3) vec
+  IO.println s!"{out2}"
+
+
+/--
 Given a list `l` of elements `α` and a list `perm` of indices (as natural numbers), outputs
 the list whose `i`th entry is `l[perm[i]]`. If `perm[i]` is out of bounds, we simply move
 to the next `i`.
@@ -74,6 +91,30 @@ private def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) 
   catch _ =>
     return none
 
+def listOfVecFinQ' (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
+    MetaM (Option <| List Nat) :=
+  try
+    let _ ← synthInstanceQ q(NeZero $n)
+    let mut out : List Nat := []
+    for idx in List.range vn do
+      let idxQ := mkNatLitQ idx
+      let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
+      let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
+      let outIdxExpr : Q(Nat) ← whnf outIdxQ
+      let some outIdx ← Lean.Meta.getNatValue? outIdxExpr |
+        IO.println <| ← MessageData.toString s!"Expr is {← whnf outIdxExpr}"
+        return none
+      out := out ++ [outIdx]
+    return some out
+  catch _ =>
+    return none
+
+run_meta do
+  let vec : Q(Fin 3 → Fin 3) := q(![1, 2, 3])
+  let some out1 ← listOfVecFinQ' q(3) 3 vec | unreachable!
+  let some out2 ← listOfVecFinQ q(3) 3 vec | unreachable!
+  Lean.logInfo s!"{out1 == out2}"
+
 /--
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
 This can be used to simplify expressions as follows:
@@ -88,7 +129,8 @@ simproc_decl vecPerm (_ ∘ _) := fun e ↦ do
   let some qp ← Qq.checkTypeQ p q(Fin $n → Fin $n) | return .continue
   let some unpermList ← listOfVecQ (α := α) (n:= n) v | return .continue
   let vn := unpermList.length
-  let some permAsList ← listOfVecFinQ n vn qp | return .continue
+  let some permAsList ← listOfVecFinQ' n vn qp | return .continue
+  Lean.logInfo s!"{permAsList}"
   let outAsList := permList unpermList permAsList
   let outAsListQ := outAsList.foldr (fun head list  ↦ q($head :: $list)) q([])
   let out ← vecOfListQ n outAsListQ
@@ -96,5 +138,14 @@ simproc_decl vecPerm (_ ∘ _) := fun e ↦ do
   let pf ← mkAppM ``Eq.symm #[pf]
   let result : Result := {expr := out, proof? := some pf}
   return Step.continue result
+
+variable {α : Type*} (a b c d : α)
+
+run_meta do
+  let a : Q(Fin 3 → Fin 3) := q(![1, 2, 3])
+  IO.println f!"{← listOfVecFinQ' q(3) 3 a}"
+
+example : ![a, b, c] ∘ ![0, 1, 2] = ![b, a, c] := by
+  simp only [vecPerm]
 
 end FinVec
