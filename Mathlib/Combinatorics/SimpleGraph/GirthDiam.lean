@@ -45,13 +45,8 @@ lemma IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp
         · simp [List.mem_tail,h₂.1, q.getVert_eq_support_getElem hl₂.le]
       use b
       nth_rw 1 [h₁.1, h₂.2]
-      apply And.intro
-      · rw [p.getVert_eq_support_getElem hl₁.le]
-        apply List.mem_tail
-        simp
-      rw [q.getVert_eq_support_getElem hl₂]
-      apply List.mem_tail
-      simp
+      apply And.intro <;>
+      simp [List.mem_tail, p.getVert_eq_support_getElem hl₁.le, q.getVert_eq_support_getElem hl₂]
     | inr h₂ =>
       use a
       nth_rw 1 [h₁.2, h₂.2, p.getVert_eq_support_getElem hl₁, q.getVert_eq_support_getElem hl₂]
@@ -78,8 +73,7 @@ lemma isPath_append_isCycle' {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsP
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
-  rw [lt_sup_iff] at hn
-  cases hn with
+  cases lt_sup_iff.mp hn with
   | inl hn => exact isPath_append_isCycle' hp hq h hn
   | inr hn =>
     have := isPath_append_isCycle' hq hp (List.disjoint_left.mpr h.symm) hn
@@ -108,13 +102,11 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
       use x
       apply And.intro
-      · rw [List.mem_append] at hx
-        cases hx
+      · cases List.mem_append.mp hx
         · exact List.mem_append.mpr <| Or.inl <| p.support_takeUntil_subset _ ‹_›
         · exact List.mem_append.mpr <| Or.inr <| q.support_takeUntil_subset _ ‹_›
-      · use c, hc.1
-        apply hc.2.trans
-        exact hs ▸ Nat.add_le_add (p.length_takeUntil_le hwp) (q.length_takeUntil_le hwq)
+      · use c, hc.1, hc.2.trans
+        <| hs ▸ Nat.add_le_add (p.length_takeUntil_le hwp) (q.length_takeUntil_le hwq)
     · have hdrop : p.dropUntil w hwp ≠ q.dropUntil w hwq := by
         contrapose! h
         rw [← p.take_spec hwp, ← q.take_spec hwq, htake, h]
@@ -123,46 +115,40 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         (hp.dropUntil hwp) (hq.dropUntil hwq) hdrop rfl
       use x
       apply And.intro
-      · rw [List.mem_append] at hx
-        cases hx
+      · cases List.mem_append.mp hx
         · exact List.mem_append.mpr <| Or.inl <| p.support_dropUntil_subset _ ‹_›
         · exact List.mem_append.mpr <| Or.inr <| q.support_dropUntil_subset _ ‹_›
-      · use c, hc.1
-        apply hc.2.trans
-        exact hs ▸ Nat.add_le_add (p.length_dropUntil_le hwp) (q.length_dropUntil_le hwq)
+      · use c, hc.1, hc.2.trans
+        <| hs ▸ Nat.add_le_add (p.length_dropUntil_le hwp) (q.length_dropUntil_le hwq)
   · use u, by simp, p.append q.reverse
-    apply And.intro
-    · apply isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq)
-      · intro a hap haq
-        specialize hw a (List.mem_of_mem_tail hap) <| by
-          rw [support_reverse, List.tail_reverse, List.mem_reverse] at haq
-          exact List.mem_of_mem_dropLast haq
-        have : u ∉ p.support.tail := (List.nodup_cons.mp (p.support_eq_cons ▸ hp.support_nodup)).1
-        have : a ≠ u := by
-          contrapose! this
-          rwa [this] at hap
-        rw [hw this, support_reverse, List.tail_reverse, List.mem_reverse] at haq
-        have := (List.nodup_concat _ _).mp <| q.support_eq_concat ▸ hq.support_nodup
-        tauto
-      · rw [length_reverse, lt_sup_iff]
-        by_contra! hpq
-        obtain ⟨hpl, hql⟩ := hpq
-        rw [Nat.le_one_iff_eq_zero_or_eq_one] at hpl hql
-        rcases hpl with hpl | hpl <;> rcases hql with hql | hql
-        · have := (nil_iff_length_eq.mpr hpl).eq
-          subst this
-          rw [length_eq_zero_iff] at hpl hql
-          simp [hpl, hql] at h
-        · exact (adj_of_length_eq_one hql).ne (nil_iff_length_eq.mpr hpl).eq
-        · exact (adj_of_length_eq_one hpl).ne (nil_iff_length_eq.mpr hql).eq
-        · contrapose h
-          apply ext_getVert_le_length (by rw [hpl, hql]) (fun k hk ↦ ?_)
-          rw [hpl, Nat.le_one_iff_eq_zero_or_eq_one] at hk
-          cases hk
-          · simp [‹_›]
-          · subst ‹_›
-            nth_rw 1 [← hpl, ← hql, getVert_length, getVert_length]
-    simpa using hs.le
+    refine ⟨isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simpa using hs.le⟩
+    · intro a hap haq
+      specialize hw a (List.mem_of_mem_tail hap) <| by
+        rw [support_reverse, List.tail_reverse, List.mem_reverse] at haq
+        exact List.mem_of_mem_dropLast haq
+      have : u ∉ p.support.tail := (List.nodup_cons.mp (p.support_eq_cons ▸ hp.support_nodup)).1
+      have : a ≠ u := by
+        contrapose! this
+        rwa [this] at hap
+      rw [hw this, support_reverse, List.tail_reverse, List.mem_reverse] at haq
+      have := (List.nodup_concat _ _).mp <| q.support_eq_concat ▸ hq.support_nodup
+      tauto
+    · rw [length_reverse, lt_sup_iff]
+      by_contra! hpq
+      obtain ⟨hpl, hql⟩ := hpq
+      rw [Nat.le_one_iff_eq_zero_or_eq_one] at hpl hql
+      rcases hpl with hpl | hpl <;> rcases hql with hql | hql
+      · have := (nil_iff_length_eq.mpr hpl).eq
+        subst this
+        simp [length_eq_zero_iff.mp hpl, length_eq_zero_iff.mp hql] at h
+      · exact (adj_of_length_eq_one hql).ne (nil_iff_length_eq.mpr hpl).eq
+      · exact (adj_of_length_eq_one hpl).ne (nil_iff_length_eq.mpr hql).eq
+      · contrapose! h
+        apply ext_getVert_le_length (by rw [hpl, hql]) (fun k hk ↦ ?_)
+        cases Nat.le_one_iff_eq_zero_or_eq_one.mp (hpl ▸ hk)
+        · simp [‹_›]
+        · subst ‹_›
+          nth_rw 1 [← hpl, ← hql, getVert_length, getVert_length]
 
 end Walk
 
