@@ -1441,6 +1441,7 @@ theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 
+set_option linter.style.whitespace false in -- linter false positive around s!, TODO fix properly
 /-- Show the quaternion ⟨w, x, y, z⟩ as a string "{ re := w, imI := x, imJ := y, imK := z }".
 
 For the typical case of quaternions over ℝ, each component will show as a Cauchy sequence due to
