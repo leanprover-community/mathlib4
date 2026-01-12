@@ -119,7 +119,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
       gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-    _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg ht.le]
+    _ = (C * ‖v‖) * ‖g x‖ := by simp [field, norm_smul, abs_of_nonneg ht.le]
   · exact hg.norm.const_mul _
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
@@ -146,7 +146,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
       _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
         gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-      _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg t_pos.le]
+      _ = (C * ‖v‖) * ‖g x‖ := by simp [field, norm_smul, abs_of_nonneg t_pos.le]
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
         rw [← Function.notMem_support]
@@ -296,7 +296,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
   have : ‖y - w‖ < δ := by rwa [norm_sub_rev]
-  calc  ‖f (x + v) - f x - L v‖
+  calc ‖f (x + v) - f x - L v‖
       = ‖f (x + ρ • w) - f x - ρ • L w‖ := by simp [hvw]
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
           + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel

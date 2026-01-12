@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.FourierSchwartz
-public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 
 /-!
 # TemperedDistribution
@@ -94,7 +94,7 @@ set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
-    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -243,7 +243,7 @@ theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, 
   rfl
 
 @[simp]
-theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦  c) f = c • f := by
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
   ext1; simp
 
 @[simp]
@@ -400,7 +400,7 @@ variable [NormedSpace ℝ E]
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢'(E, ℂ) :=
-  toPointwiseConvergenceCLM _ _ _ _  <|
+  toPointwiseConvergenceCLM _ _ _ _ <|
     (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
 
 @[deprecated (since := "2025-12-23")]

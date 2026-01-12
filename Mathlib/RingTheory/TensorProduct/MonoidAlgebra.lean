@@ -30,7 +30,7 @@ variable [Algebra R S] [Algebra R A] [Algebra R B] [CommMonoid M]
 -- in `AddMonoidAlgebra.liftNCAlgHom` and `of`
 /-- Implementation detail. -/
 noncomputable def _root_.AddMonoidAlgebra.tensorEquiv.invFun [AddCommMonoid M] :
-    AddMonoidAlgebra (A ⊗[R] B) M →ₐ[A] A ⊗[R] AddMonoidAlgebra B M  :=
+    AddMonoidAlgebra (A ⊗[R] B) M →ₐ[A] A ⊗[R] AddMonoidAlgebra B M :=
   AddMonoidAlgebra.liftNCAlgHom
     (Algebra.TensorProduct.map (.id _ _) AddMonoidAlgebra.singleZeroAlgHom)
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp <| AddMonoidAlgebra.of B M)
@@ -39,8 +39,8 @@ noncomputable def _root_.AddMonoidAlgebra.tensorEquiv.invFun [AddCommMonoid M] :
 /-- Implementation detail. -/
 @[to_additive existing (dont_translate := R A B)]
 def tensorEquiv.invFun : (A ⊗[R] B)[M] →ₐ[A] A ⊗[R] B[M] :=
-    MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
-      (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
+  MonoidAlgebra.liftNCAlgHom (Algebra.TensorProduct.map (.id _ _) singleOneAlgHom)
+    (Algebra.TensorProduct.includeRight.toMonoidHom.comp (of B M)) fun _ _ ↦ .all ..
 
 omit [CommMonoid M] in
 variable (R A B) [AddCommMonoid M] in
