@@ -685,6 +685,8 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
     dsimp at eq ⊢
     conv_lhs => rw [← eq, TriangleMorphism.comm₃])
 
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₃ : T₁.obj₃ ≅ T₂.obj₃`. -/
 @[simps! hom_hom₁ hom_hom₃ inv_hom₁ inv_hom₃]
 def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₃ : T₁.obj₃ ≅ T₂.obj₃)
