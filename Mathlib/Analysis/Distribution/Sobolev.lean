@@ -56,6 +56,25 @@ theorem besselPotential_compL_besselPotential (s s' : ℝ) :
   ext1 f
   exact besselPotential_besselPotential_apply s s' f
 
+open scoped Real Laplacian
+
+theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
+    ((besselPotential E F (-2)) (Δ f)) = fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
+      -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := calc
+  _ = -(2 * π) ^ 2 • (fourierMultiplierCLM F
+      (fun x ↦ Complex.ofReal <| (‖x‖ ^ 2) * (1 + ‖x‖ ^ 2) ^ (- (1 : ℝ)))) f := by
+    rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
+      ContinuousLinearMap.map_smul_of_tower,
+      fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+    congr
+    ext x
+    simp
+  _ = _ := by
+    rw [← Complex.coe_smul, ← fourierMultiplierCLM_smul_apply (by fun_prop)]
+    congr
+    ext x
+    simp [mul_assoc]
+
 end normed
 
 section inner
@@ -369,25 +388,8 @@ open scoped LineDeriv Laplacian Real
 The other implication is slightly harder :-) -/
 theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev (s - 2) 2 (Δ f) := by
-  rw [SubNegMonoid.sub_eq_add_neg s 2, add_comm]
-  rw [← memSobolev_besselPotential_iff]
-  have : ((besselPotential E F (-2)) (Δ f)) =
-      fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
-        -(2 * π) ^ 2 * ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := calc
-      _ = -(2 * π) ^ 2 • (fourierMultiplierCLM F
-          (fun x ↦ Complex.ofReal <| (‖x‖ ^ 2) * (1 + ‖x‖ ^ 2) ^ (- (1 : ℝ)))) f := by
-        rw [laplacian_eq_fourierMultiplierCLM, besselPotential,
-          ContinuousLinearMap.map_smul_of_tower,
-          fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
-        congr
-        ext x
-        simp
-      _ = _ := by
-        rw [← Complex.coe_smul, ← fourierMultiplierCLM_smul_apply (by fun_prop)]
-        congr
-        ext x
-        simp [mul_assoc]
-  rw [this]
+  rw [SubNegMonoid.sub_eq_add_neg s 2, add_comm, ← memSobolev_besselPotential_iff,
+    besselPotential_neg_two_laplacian_eq f]
   apply memSobolev_fourierMultiplierCLM_bounded (by fun_prop) _ hf
   use (2 * π) ^ 2
   intro x
