@@ -3,11 +3,9 @@ Copyright (c) 2025 Zhipeng Chen, Haolun Tang, Jing Yi Zhan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 -/
-module
-
-public import Mathlib.NumberTheory.UnitaryDivisor
-public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.Factorization.Induction
+import Mathlib.NumberTheory.UnitaryDivisor
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Induction
 
 /-!
 # Unitary Perfect Numbers
@@ -49,6 +47,7 @@ unitary perfect number, perfect number, number theory
 namespace Nat
 
 open BigOperators
+open scoped ArithmeticFunction.UnitaryDivisorSum
 
 /-! ### Definition -/
 
