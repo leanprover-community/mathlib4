@@ -446,6 +446,13 @@ lemma coe_mapSubgroup (e : G ≃* H) : mapSubgroup e = Subgroup.map e.toMonoidHo
 @[to_additive (attr := simp)]
 lemma symm_mapSubgroup (e : G ≃* H) : (mapSubgroup e).symm = mapSubgroup e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem mapSubgroup_trans (f : G ≃* G') (g : G' ≃* G'') :
+    f.mapSubgroup.trans g.mapSubgroup = (f.trans g).mapSubgroup := by ext; simp
+
+theorem mapSubgroup_trans_apply (f : G ≃* G') (g : G' ≃* G'') (H : Subgroup G) :
+    f.mapSubgroup.trans g.mapSubgroup H = (f.trans g).mapSubgroup H := by simp
+
 end MulEquiv
 
 namespace Subgroup
