@@ -60,31 +60,18 @@ protected def rec : ∀ a : EInt, motive a
 end
 
 @[simp]
-lemma coe_le_coe_iff (a b : ℤ) :
+lemma coe_le_coe_iff {a b : ℤ} :
     (a : EInt) ≤ b ↔ a ≤ b :=
   coe_strictMono.le_iff_le
 
 @[simp]
-lemma coe_lt_coe_iff (a b : ℤ) :
+lemma coe_lt_coe_iff {a b : ℤ} :
     (a : EInt) < b ↔ a < b :=
   coe_strictMono.lt_iff_lt
 
-@[simp]
-lemma coe_eq_bot_iff (a : ℤ) :
-    (a : EInt) = ⊥ ↔ False := by
-  simp only [iff_false]
-  rintro ⟨⟩
-
-@[simp]
-lemma coe_eq_top_iff (a : ℤ) :
-    (a : EInt) = ⊤ ↔ False := by
-  simp only [iff_false]
-  rintro ⟨⟩
-
-@[simp]
-lemma top_eq_bot_iff :
-    (⊤ : EInt) = ⊥ ↔ False := by
-  simp only [iff_false]
-  exact ne_of_beq_false rfl
+@[simp] lemma coe_ne_bot (a : ℤ) : (a : EInt) ≠ ⊥ := by rintro ⟨⟩
+@[simp] lemma coe_ne_top (a : ℤ) : (a : EInt) ≠ ⊤ := by rintro ⟨⟩
+@[simp] lemma top_ne_bot : (⊤ : EInt) ≠ ⊥ := by rintro ⟨⟩
+@[simp] lemma bot_ne_top : (⊤ : EInt) ≠ ⊥ := by rintro ⟨⟩
 
 end EInt
