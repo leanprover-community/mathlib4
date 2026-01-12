@@ -47,7 +47,7 @@ instance IsStableUnderLimitsOfShape.functorCategory
     (W.functorCategory J).IsStableUnderLimitsOfShape K where
   condition X₁ X₂ _ _ hc₁ hc₂ f hf φ hφ j :=
     MorphismProperty.limitsOfShape_le _
-      (limitsOfShape.mk' (X₁ ⋙ (evaluation _ _ ).obj j) (X₂ ⋙ (evaluation _ _ ).obj j)
+      (limitsOfShape.mk' (X₁ ⋙ (evaluation _ _).obj j) (X₂ ⋙ (evaluation _ _).obj j)
       _ _ (isLimitOfPreserves _ hc₁) (isLimitOfPreserves _ hc₂) (Functor.whiskerRight f _)
       (fun k ↦ hf k j) (φ.app j) (fun k ↦ congr_app (hφ k) j))
 
