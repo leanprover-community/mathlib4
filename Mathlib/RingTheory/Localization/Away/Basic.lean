@@ -328,7 +328,7 @@ lemma Away.mul_of_isUnit (x y : R) [IsLocalization.Away x S] (h : IsUnit (algebr
 
 lemma Away.mul_of_isUnit' (x y : R) [IsLocalization.Away y S] (h : IsUnit (algebraMap R S x)) :
     IsLocalization.Away (x * y) S :=
-  have : Away ((algebraMap R S) x) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  have : Away (algebraMap R S x) S := away_of_isUnit_of_bijective _ h Function.bijective_id
   .mul S _ _ _
 
 lemma Away.mul_of_associated (x z : R) (y : S) [IsLocalization.Away x S]
