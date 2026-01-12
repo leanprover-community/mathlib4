@@ -266,7 +266,7 @@ theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
     (I.map (algebraMap R S) • N).restrictScalars R = I • N.restrictScalars R := by
   simp_rw [map, Submodule.span_smul_eq, ← Submodule.coe_set_smul,
     Submodule.set_smul_eq_iSup, ← element_smul_restrictScalars, iSup_image]
-  exact map_iSup₂ (Submodule.restrictScalarsLatticeHom R) _
+  exact map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _
 
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
