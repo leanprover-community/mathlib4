@@ -222,7 +222,6 @@ lemma IsMultiplicative.ind_of_preIndSpreads
     [P.IsMultiplicative] [P.IsStableUnderCobaseChange]
     [PreIndSpreads.{w} P] (H : P ≤ isFinitelyPresentable.{w} C) :
     (ind.{w} P).IsMultiplicative where
-  __ := inferInstanceAs <| ContainsIdentities _
   __ := IsStableUnderComposition.ind_of_preIndSpreads H
 
 end CategoryTheory.MorphismProperty
