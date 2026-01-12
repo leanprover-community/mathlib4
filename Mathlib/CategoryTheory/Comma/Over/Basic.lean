@@ -363,8 +363,13 @@ def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
     iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
   Iso.refl _
 
-/-- The natural isomorphism witnessing `Over.map` in the iterated slice is
-compatible with `Over.map` base category, mediated by the iterated slice equivalence. -/
+/-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
+mediated by the underlying functor of the iterated slice equivalence.
+Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
+2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`iteratedSliceEquivOverMapIso`.
+-/
 @[simps! hom_app_left_left inv_app_left_left]
 def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
     f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
