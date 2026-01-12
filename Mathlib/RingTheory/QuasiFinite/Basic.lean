@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Jacobson.Artinian
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Quasi-finite algebras
@@ -368,6 +369,11 @@ lemma QuasiFiniteAt.of_surjectiveOnStalks (p : Ideal S) [p.IsPrime] [QuasiFinite
   simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime (q.comap _)),
     IsScalarTower.algebraMap_apply R T (Localization.AtPrime _)]
 
+lemma QuasiFiniteAt.of_surjectiveOnStalks_of_liesOver (p : Ideal S) [p.IsPrime]
+    [QuasiFiniteAt R p] (hf : (algebraMap S T).SurjectiveOnStalks) (q : Ideal T) [q.IsPrime]
+    [q.LiesOver p] : QuasiFiniteAt R q :=
+  .of_surjectiveOnStalks p (IsScalarTower.toAlgHom R S T) hf _ (q.over_def p)
+
 instance QuasiFiniteAt.comap_algEquiv (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p]
     (f : T ≃ₐ[R] S) : QuasiFiniteAt R (p.comap f.toRingHom) :=
   .of_surjectiveOnStalks p f.symm.toAlgHom
@@ -431,8 +437,8 @@ lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
     · exact IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
     simp [IsLocalizedModule.map_comp])
   have hrp' : .powers r ≤ p.primeCompl := by simpa [Submonoid.powers_le]
-  have : IsLocalizedModule (.powers r) (.id (R := S) (M := Localization.AtPrime p)) := by
-    refine ⟨fun x ↦ IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
+  have : IsLocalizedModule (.powers r) (.id (R := S) (M := Localization.AtPrime p)) :=
+    ⟨fun x ↦ IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
       ⟨x, hrp' x.2⟩, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simp [Submonoid.mem_powers_iff]⟩
   let e₁ : LocalizedModule (.powers r) S ≃ₗ[S] Localization.Away r :=
     IsLocalizedModule.iso (.powers r) (Algebra.linearMap _ _)
@@ -511,6 +517,7 @@ end Algebra
 
 namespace Polynomial
 
+/-- `R[X]` is not quasi-finite over `R` at any prime. -/
 lemma not_quasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P := by
   intro H
   wlog hR : IsField R
@@ -545,7 +552,9 @@ lemma map_under_lt_comap_of_quasiFiniteAt
   exact RatFunc.transcendental_X (K := (P.under R).ResidueField)
     (Algebra.IsIntegral.isIntegral _).isAlgebraic
 
-lemma ker_le_map_C_of_surjective_of_quasiFiniteAt
+/-- If `P` is a prime of `R[X]/I` that is quasi finite over `R`,
+then `I` is not contained in `(P ∩ R)[X]`. -/
+lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P]
     (p : Ideal R) [P.LiesOver p] : ¬ RingHom.ker f ≤ p.map C := by
