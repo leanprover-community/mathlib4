@@ -767,7 +767,7 @@ lemma analyticAt_weierstrassPExcept (l₀ : ℂ) : AnalyticAt ℂ ℘[L - l₀] 
   L.analyticOnNhd_weierstrassPExcept _ _ (by simp)
 
 attribute [local simp] Nat.factorial_ne_zero in
-lemma iteratedDeriv_weierstrassPExcept (l : ℂ) {n : ℕ} :
+lemma iteratedDeriv_weierstrassPExcept_self (l : ℂ) {n : ℕ} :
     iteratedDeriv n ℘[L - l] l =
       if n = 0 then ℘[L - l] l else (n + 1)! * L.sumInvPow l (n + 2) := by
   rw [← div_mul_cancel₀ (a := iteratedDeriv _ _ _) (b := ↑n !) (by simp),
@@ -817,10 +817,9 @@ lemma analyticAt_derivWeierstrassPExcept (l₀ : ℂ) :
     AnalyticAt ℂ ℘'[L - l₀] l₀ :=
   L.analyticOnNhd_derivWeierstrassPExcept l₀ _ (by simp)
 
-lemma iteratedDeriv_derivWeierstrassPExcept (l : ℂ) {n : ℕ} :
+lemma iteratedDeriv_derivWeierstrassPExcept_self (l : ℂ) {n : ℕ} :
     iteratedDeriv n ℘'[L - l] l = (n + 2)! * L.sumInvPow l (n + 3) := by
-  have : iteratedDeriv n ℘'[L - l] l / n ! =
-      (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
+  have : iteratedDeriv n ℘'[L - l] l / n ! = (↑n + 1) * (↑n + 2) * L.sumInvPow l (n + 3) := by
     simpa using congr($((L.analyticAt_derivWeierstrassPExcept l).hasFPowerSeriesAt
       |>.eq_formalMultilinearSeries (L.hasFPowerSeriesAt_derivWeierstrassPExcept l)).coeff n)
   simp [div_eq_iff, Nat.factorial_ne_zero, Nat.factorial_succ] at this ⊢
@@ -829,7 +828,7 @@ lemma iteratedDeriv_derivWeierstrassPExcept (l : ℂ) {n : ℕ} :
 @[simp]
 lemma deriv_derivWeierstrassPExcept_self (l : ℂ) :
     deriv ℘'[L - l] l = 6 * L.sumInvPow l 4 := by
-  simpa using L.iteratedDeriv_derivWeierstrassPExcept l (n := 1)
+  simpa using L.iteratedDeriv_derivWeierstrassPExcept_self l (n := 1)
 
 lemma analyticOnNhd_derivWeierstrassP : AnalyticOnNhd ℂ ℘'[L] L.latticeᶜ :=
   L.differentiableOn_derivWeierstrassP.analyticOnNhd L.isClosed_lattice.isOpen_compl
@@ -954,7 +953,7 @@ private def relation (z : ℂ) : ℂ :=
   letI := Classical.propDecidable
   if z ∈ L.lattice then 0 else ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃
 
-@[fun_prop]
+@[local fun_prop]
 private lemma meromorphic_relation : Meromorphic L.relation := by
   have : Meromorphic fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃ := by fun_prop
   refine fun z ↦ (this _).congr ?_
@@ -963,10 +962,10 @@ private lemma meromorphic_relation : Meromorphic L.relation := by
   rw [relation, if_neg (by simp_all)]
 
 private lemma relation_mul_id_pow_six_eventuallyEq :
-    (L.relation * id ^ 6) =ᶠ[nhds 0]
-    (fun z ↦ (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
+    (L.relation * id ^ 6) =ᶠ[nhds 0] fun z ↦
+      (℘'[L - (0 : ℂ)] z * z ^ 3 - 2) ^ 2 - 4 *
       (℘[L - (0 : ℂ)] z * z ^ 2 + 1) ^ 3 + L.g₂ *
-      (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6) := by
+      (℘[L - (0 : ℂ)] z * z ^ 6 + z ^ 4) + L.g₃ * z ^ 6 := by
   filter_upwards [L.compl_lattice_diff_singleton_mem_nhds _] with z hz
   by_cases hz0 : z = 0
   · simp [hz0, relation]; norm_num
@@ -976,13 +975,13 @@ private lemma relation_mul_id_pow_six_eventuallyEq :
   simp
   field
 
-@[fun_prop]
+@[local fun_prop]
 private lemma analyticAt_relation_mul_id_pow_six :
     AnalyticAt ℂ (L.relation * id ^ 6) 0 := by
   refine .congr ?_ L.relation_mul_id_pow_six_eventuallyEq.symm
   fun_prop
 
-@[simp]
+@[local simp]
 private lemma relation_neg (x) : L.relation (-x) = L.relation x := by
   classical simp [relation]
 
@@ -993,7 +992,7 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
   simp_rw [pow_succ (_ + _), pow_succ (_ - _), pow_zero, one_mul]
   simp (discharger := fun_prop) only [iteratedDeriv_fun_add, iteratedDeriv_fun_sub,
     iteratedDeriv_fun_mul, iteratedDeriv_const, iteratedDeriv_fun_pow_zero,
-    iteratedDeriv_derivWeierstrassPExcept, iteratedDeriv_weierstrassPExcept]
+    iteratedDeriv_derivWeierstrassPExcept_self, iteratedDeriv_weierstrassPExcept_self]
   simp [Finset.sum_range_succ, L.G_eq_zero_of_odd 3 (by decide), g₃,
     show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
   ring
@@ -1025,14 +1024,14 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   · simp [Finset.sum_range_succ]
   · simp [Finset.sum_range_succ, show Nat.choose 4 2 = 6 by rfl, g₂]; ring
 
-@[simp]
+@[local simp]
 private lemma relation_add_coe (x : ℂ) (l : L.lattice) :
     L.relation (x + l) = L.relation x := by
   simp only [relation, derivWeierstrassP_add_coe, weierstrassP_add_coe]
   congr 1
   simpa using (L.lattice.toAddSubgroup.add_mem_cancel_right (y := x) l.2)
 
-@[simp]
+@[local simp]
 private lemma relation_sub_coe (x : ℂ) (l : L.lattice) :
     L.relation (x - l) = L.relation x := by
   rw [← L.relation_add_coe _ l, sub_add_cancel]
