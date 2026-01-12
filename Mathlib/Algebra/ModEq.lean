@@ -92,13 +92,13 @@ theorem modEq_zero : a ≡ b [PMOD 0] ↔ a = b := by simp [modEq_iff_nsmul]
 
 @[simp]
 theorem self_modEq_zero : p ≡ 0 [PMOD p] :=
-  ⟨0, 1, by simp⟩
+  modEq_iff_nsmul.mpr ⟨0, 1, by simp⟩
 
 theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
-  ⟨0, n, by simp [add_comm]⟩
+  modEq_iff_nsmul.mpr ⟨0, n, by simp [add_comm]⟩
 
 theorem nsmul_add_modEq (n : ℕ) : n • p + a ≡ a [PMOD p] :=
-  ⟨0, n, by simp⟩
+  modEq_iff_nsmul.mpr ⟨0, n, by simp⟩
 
 protected theorem ModEq.add (hab : a ≡ b [PMOD p]) (hcd : c ≡ d [PMOD p]) :
     a + c ≡ b + d [PMOD p] := by
@@ -123,6 +123,12 @@ theorem nsmul_modEq_nsmul [IsAddTorsionFree M] {n : ℕ} (hn : n ≠ 0) :
   simp only [modEq_iff_nsmul, ← mul_nsmul _ n, mul_nsmul' _ n, ← nsmul_add, nsmul_right_inj hn]
 
 alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
+
+protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
+  (add_nsmul_modEq _).trans
+
+protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
+  (nsmul_add_modEq _).trans
 
 end AddCommMonoid
 
@@ -153,7 +159,20 @@ protected alias ⟨add_left_cancel, _⟩ := ModEq.add_iff_left
 
 protected alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
 
+protected theorem add_left (c : M) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
+  modEq_rfl.add h
+
+protected theorem add_right (c : M) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
+  h.add modEq_rfl
+
 end ModEq
+
+@[simp]
+theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by
+  simpa using (modEq_refl a).add_iff_left (d := 0)
+
+@[simp]
+theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [add_comm a]
 
 end AddCancelCommMonoid
 
@@ -209,12 +228,6 @@ protected theorem add_zsmul (z : ℤ) : a ≡ b [PMOD p] → a + z • p ≡ b [
 protected theorem zsmul_add (z : ℤ) : a ≡ b [PMOD p] → z • p + a ≡ b [PMOD p] :=
   (zsmul_add_modEq _).trans
 
-protected theorem add_nsmul (n : ℕ) : a ≡ b [PMOD p] → a + n • p ≡ b [PMOD p] :=
-  (add_nsmul_modEq _).trans
-
-protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [PMOD p] :=
-  (nsmul_add_modEq _).trans
-
 protected theorem of_zsmul (h : a ≡ b [PMOD z • p]) : a ≡ b [PMOD p] := by
   rw [modEq_iff_zsmul] at *
   rcases h with ⟨m, h⟩
@@ -251,14 +264,8 @@ protected alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
 
 protected alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 
-protected theorem add_left (c : G) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
-  modEq_rfl.add h
-
 protected theorem sub_left (c : G) (h : a ≡ b [PMOD p]) : c - a ≡ c - b [PMOD p] :=
   modEq_rfl.sub h
-
-protected theorem add_right (c : G) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
-  h.add modEq_rfl
 
 protected theorem sub_right (c : G) (h : a ≡ b [PMOD p]) : a - c ≡ b - c [PMOD p] :=
   h.sub modEq_rfl
@@ -291,12 +298,6 @@ theorem sub_modEq_iff_modEq_add : a - b ≡ c [PMOD p] ↔ a ≡ c + b [PMOD p] 
 
 @[simp]
 theorem sub_modEq_zero : a - b ≡ 0 [PMOD p] ↔ a ≡ b [PMOD p] := by simp [sub_modEq_iff_modEq_add]
-
-@[simp]
-theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq']
-
-@[simp]
-theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq]
 
 -- this matches `Int.modEq_iff_add_fac`
 theorem modEq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
