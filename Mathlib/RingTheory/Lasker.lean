@@ -91,6 +91,10 @@ theorem _root_.IsLocalization.comap_map_of_isPrimary_disjoint
     exact I.mul_mem_left c b.2
   exact ((isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
 
+@[simp]
+theorem _root_.Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] :
+    (I.primeCompl : Set R) = (I : Set R)ᶜ := rfl
+
 end for_mathlib
 
 section IsLasker
@@ -190,6 +194,48 @@ lemma IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical [Decidabl
     rfl
   obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
   exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt), ht.le_radical hqt⟩ hqp)⟩
+
+/-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
+theorem IsMinimalPrimaryDecomposition.foobar {R : Type*} [CommRing R]
+    [DecidableEq (Ideal R)] {I : Ideal R} {t : Finset (Ideal R)}
+    (ht : I.IsMinimalPrimaryDecomposition t)
+    (s : Finset (Ideal R)) (hs : s ⊆ t)
+    (downward_closed : ∀ q ∈ t, ∀ r ∈ s, radical q ≤ radical r → q ∈ s) :
+    (I.map (algebraMap R (Localization (⨅ q ∈ s,
+      have : q.radical.IsPrime := isPrime_radical (ht.primary (by aesop));
+      q.radical.primeCompl)))).comap (algebraMap R (Localization (⨅ q ∈ s,
+      have : q.radical.IsPrime := isPrime_radical (ht.primary (by aesop));
+      q.radical.primeCompl))) = ⨅ q ∈ s, q := by
+  set M := ⨅ q ∈ s,
+    have : q.radical.IsPrime := isPrime_radical (ht.primary (by aesop));
+    q.radical.primeCompl
+  set f := algebraMap R (Localization M)
+  rw [← ht.inf_eq, ← IsLocalization.mapFrameHom_apply M, map_finset_inf, comap_finset_inf]
+  simp only [Function.comp_def, id_eq, IsLocalization.mapFrameHom_apply]
+  rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
+  have key0 : ∀ q ∈ s, (M : Set R) ⊆ q.radicalᶜ := by
+    intro q hq
+    simp only [M, Submonoid.coe_iInf]
+    exact Set.iInter₂_subset q hq
+  have key1 : ∀ q ∈ s, (q.map f).comap f = q := by
+    intro q hq
+    rw [IsLocalization.comap_map_of_isPrimary_disjoint M _ q (ht.primary (hs hq))]
+    refine disjoint_compl_left.mono ?_ le_radical
+    exact key0 q hq
+  have key2 : ∀ q ∈ t \ s, (q.map f).comap f = ⊤ := by
+    intro q hq
+    rw [comap_eq_top_iff]
+    contrapose! hq
+    rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint M] at hq
+    rw [Finset.mem_sdiff, not_and_not_right]
+    intro hqt
+    rw [← Set.subset_compl_iff_disjoint_left] at hq
+    simp only [M, Submonoid.coe_iInf, Set.compl_iInter, coe_primeCompl, compl_compl] at hq
+    obtain ⟨r, hrs, h⟩ :=
+      (subset_union_prime ⊥ ⊥ fun q hq _ _ ↦ isPrime_radical (ht.primary (hs hq))).mp hq
+    exact downward_closed q hqt r hrs (radical_le_radical_iff.mpr h)
+  rw [Finset.inf_congr rfl key2, Finset.inf_congr rfl key1]
+  simp [Finset.inf_eq_iInf]
 
 instance {I : Ideal R} (p : I.minimalPrimes) : IsPrime p.1 := p.2.1.1
 

@@ -59,6 +59,14 @@ theorem Homeomorph.image_mem_irreducibleComponents_iff {X Y : Type*}
 
 namespace AlgebraicGeometry
 
+/-- This will give a nice scheme structure on an irreducible component. -/
+def oneIdealToRuleThemAll {R : Type*} [CommSemiring R] {p : Ideal R} (hp : p ∈ minimalPrimes R) :
+    Ideal R := sorry
+
+end AlgebraicGeometry
+
+namespace AlgebraicGeometry
+
 def component' {R : Type*} [CommSemiring R] {p : Ideal R} (hp : p ∈ minimalPrimes R) : Ideal R :=
   have := hp.1.1; Ideal.component ⊥ p
 
