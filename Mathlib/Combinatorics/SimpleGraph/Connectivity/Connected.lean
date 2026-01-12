@@ -365,6 +365,7 @@ instance isEmpty [IsEmpty V] : IsEmpty G.ConnectedComponent := Quot.instIsEmpty
 instance [Subsingleton V] : Subsingleton G.ConnectedComponent := Quot.Subsingleton
 instance [Unique V] : Unique G.ConnectedComponent := Quot.instUnique
 instance [Nonempty V] : Nonempty G.ConnectedComponent := Nonempty.map G.connectedComponentMk ‹_›
+instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
 @[elab_as_elim]
 protected theorem ind {β : G.ConnectedComponent → Prop}
