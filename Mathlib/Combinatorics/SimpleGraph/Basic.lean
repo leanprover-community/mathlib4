@@ -402,10 +402,10 @@ theorem support_top_ofNontrivial [Nontrivial V] :
   have := exists_ne v
   tauto
 
-/-- The support of the complete graph is empty if there at most one vertex. -/
+/-- The support of a graph is empty if there at most one vertex. -/
 @[simp]
-theorem support_top_ofSubsingleton [Subsingleton V] : (⊤ : SimpleGraph V).support = ∅ :=
-  Set.ext fun v => ⟨fun ⟨w, hw⟩ => hw (Subsingleton.elim v w), (·.elim)⟩
+theorem support_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.support = ∅ :=
+  Set.eq_empty_of_forall_notMem fun v ⟨w, h⟩ => G.irrefl <| Subsingleton.elim v w ▸ h
 
 /-- The support of the empty graph is empty. -/
 @[simp]
