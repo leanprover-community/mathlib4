@@ -72,9 +72,9 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ
   · intro s
-    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.2 s
+    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.1.2 s
     exact ⟨t, ht, ht', h ▸ hx⟩
-  · constructor
+  · constructor; constructor
     · exact fun y ↦ y.prop
     · intro s
       obtain ⟨t, ht, ht', h⟩ := hσ s

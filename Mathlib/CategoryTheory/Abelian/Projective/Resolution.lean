@@ -114,7 +114,7 @@ def liftHomotopyZeroZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveR
 lemma liftHomotopyZeroZero_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) :
     liftHomotopyZeroZero f comm ≫ Q.complex.d 1 0 = f.f 0 :=
-  Q.exact₀.liftFromProjective_comp  _ _
+  Q.exact₀.liftFromProjective_comp _ _
 
 /-- An auxiliary definition for `liftHomotopyZero`. -/
 def liftHomotopyZeroOne {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -146,12 +146,12 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
     (w : f.f (n + 1) = P.complex.d (n + 1) n ≫ g + g' ≫ Q.complex.d (n + 2) (n + 1)) :
     liftHomotopyZeroSucc f n g g' w ≫ Q.complex.d (n + 3) (n + 2) =
       f.f (n + 2) - P.complex.d _ _ ≫ g' :=
-  (Q.exact_succ (n + 1)).liftFromProjective_comp  _ _
+  (Q.exact_succ (n + 1)).liftFromProjective_comp _ _
 
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : Homotopy f 0 :=
-  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp )
+  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp)
     (liftHomotopyZeroOne f comm) (by simp) fun n ⟨g, g', w⟩ =>
     ⟨liftHomotopyZeroSucc f n g g' w, by simp⟩
 

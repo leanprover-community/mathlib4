@@ -131,8 +131,6 @@ alias chain'_succ := isChain_succ
 
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
-
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
@@ -199,16 +197,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
 3. n ∈ Ico a b
 -/
 theorem trichotomy (n a b : ℕ) : n < a ∨ b ≤ n ∨ n ∈ Ico a b := by
-  by_cases h₁ : n < a
-  · left
-    exact h₁
-  · right
-    by_cases h₂ : n ∈ Ico a b
-    · right
-      exact h₂
-    · left
-      simp only [Ico.mem, not_and, not_lt] at *
-      exact h₂ h₁
+  grind [mem]
 
 end Ico
 

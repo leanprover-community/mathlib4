@@ -219,7 +219,7 @@ end ENat
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-private alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
+alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 
 /-- Extension for the `positivity` tactic: `ENat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉ₑ]

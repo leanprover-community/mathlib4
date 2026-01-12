@@ -67,7 +67,8 @@ theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p
 instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [ContractibleSpace Y] :
     SimplyConnectedSpace Y where
   equiv_unit :=
-    let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u+1} := (ContractibleSpace.hequiv Y PUnit.{u+1}).some
+    let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u + 1} :=
+      (ContractibleSpace.hequiv Y PUnit.{u + 1}).some
     ⟨(FundamentalGroupoidFunctor.equivOfHomotopyEquiv H).trans
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
 
@@ -102,7 +103,7 @@ theorem simply_connected_iff_loops_nullhomotopic {Y : Type*} [TopologicalSpace Y
     exact ⟨hpc, fun x γ => hall γ (Path.refl x)⟩
   · -- Backward: all loops null-homotopic implies all paths homotopic
     intro ⟨hpc, hloops⟩
-    refine ⟨hpc, @fun x y p₁ p₂ => ?_⟩
+    refine ⟨hpc, fun {x y} p₁ p₂ => ?_⟩
     -- Work in the quotient where structural steps can be done by simp
     rw [← eq]
     replace hloops : ∀ (x : Y) (γ : Path x x),

@@ -30,7 +30,7 @@ namespace CategoryTheory
 
 open Opposite
 
-variable {C D D' : Type*} [Category C] [Category D] [Category D']
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
 namespace Localization
 
@@ -80,7 +80,7 @@ private lemma induction_structuredArrow'
   induction f with
   | nil => exact hP₀
   | cons f g hf =>
-      obtain (g|⟨w, hw⟩) := g
+      obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
       · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
 

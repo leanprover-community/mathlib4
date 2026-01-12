@@ -14,10 +14,10 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 If `r : HomRel C` is a congruence on a preadditive category `C` which satisfies certain
 compatibilities, we have already defined a preadditive structure on `Quotient r` in
 the file `Mathlib/CategoryTheory/Quotient/Preadditive.lean` such that `functor r : C ⥤ Quotient r`
-is an additive functor. In this file, assuming moreover that `C` is a `R`-linear category
+is an additive functor. In this file, assuming moreover that `C` is an `R`-linear category
 and that the relation `r` is compatible with the scalar multiplication by any `a : R`, we
-show that `Quotient r` is a `R`-linear category and that `functor r : C ⥤ Quotient r`
-is a `R`-linear functor.
+show that `Quotient r` is an `R`-linear category and that `functor r : C ⥤ Quotient r`
+is an `R`-linear functor.
 
 -/
 
@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category* C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
 
 namespace Linear
@@ -88,7 +88,7 @@ end Linear
 variable (R)
 
 /-- Assuming `Quotient r` has already been endowed with a preadditive category structure
-such that `functor r : C ⥤ Quotient r` is additive, and that `C` has a `R`-linear category
+such that `functor r : C ⥤ Quotient r` is additive, and that `C` has an `R`-linear category
 structure compatible with `r`, this is the induced `R`-linear category structure on
 `Quotient r`. -/
 def linear (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))

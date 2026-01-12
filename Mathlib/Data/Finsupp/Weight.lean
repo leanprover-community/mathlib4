@@ -193,12 +193,9 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
     Finset.mem_antidiagonal, Prod.exists, exists_and_right, exists_eq_right]
   use Finsupp.equivFunOnFinite.symm (Function.const σ n) - d
   ext x
-  simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply,
-    Finsupp.equivFunOnFinite_symm_apply_toFun, Function.const_apply]
-  rw [add_comm]
-  apply Nat.sub_add_cancel
-  apply le_trans (le_weight w (hw x) d)
-  simpa only [Set.mem_setOf_eq] using hd
+  dsimp at hd
+  grw [← le_weight _ (hw x)] at hd
+  simp [*]
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -210,7 +207,14 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
+@[deprecated (since := "2025-12-09")] alias degree_add := map_add
+
+@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
+
 theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
+
+@[deprecated (since := "2025-12-09")]
+alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   rw [degree_apply, Finset.sum_subset] <;> simp
@@ -246,5 +250,13 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
+lemma range_single_one :
+    Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
+  refine subset_antisymm ?_ ?_
+  · simp [Set.range_subset_iff]
+  · intro p (hp : p.sum (fun a k ↦ k) = 1)
+    obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
+    use a
 
 end Finsupp

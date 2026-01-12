@@ -106,7 +106,7 @@ section Equivalence
 variable {P}
 
 lemma IsSeparating.of_equivalence
-    (h : IsSeparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.toAdjunction.homEquiv _ _).surjective h
@@ -114,7 +114,7 @@ lemma IsSeparating.of_equivalence
       H _ (P.strictMap_obj _ hZ) h']))
 
 lemma IsCoseparating.of_equivalence
-    (h : IsCoseparating P) {D : Type*} [Category D] (α : C ≌ D) :
+    (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsCoseparating (P.strictMap α.functor) := fun X Y f g H =>
   α.inverse.map_injective (h _ _ (fun Z hZ h ↦ by
     obtain ⟨h', rfl⟩ := (α.symm.toAdjunction.homEquiv _ _).symm.surjective h
@@ -504,7 +504,7 @@ namespace StructuredArrow
 variable (S : D) (T : C ⥤ D)
 
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
-    (P.inverseImage (proj S T)).IsCoseparating  := by
+    (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
 
@@ -515,7 +515,7 @@ namespace CostructuredArrow
 variable (S : C ⥤ D) (T : D)
 
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
-    (P.inverseImage (proj S T)).IsSeparating  := by
+    (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
 

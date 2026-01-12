@@ -192,7 +192,7 @@ lemma presieve₀_sum : (E.sum F).presieve₀ = E.presieve₀ ⊔ F.presieve₀ 
     cases i
     · exact Or.inl (.mk _)
     · exact Or.inr (.mk _)
-  · rintro Z g (⟨⟨i⟩⟩|⟨⟨i⟩⟩)
+  · rintro Z g (⟨⟨i⟩⟩ | ⟨⟨i⟩⟩)
     · exact ⟨Sum.inl i⟩
     · exact ⟨Sum.inr i⟩
 
@@ -212,6 +212,20 @@ def add (E : PreZeroHypercover.{w} S) {T : C} (f : T ⟶ S) : PreZeroHypercover.
 @[simp] lemma presieve₀_add {T : C} (f : T ⟶ S) :
     (E.add f).presieve₀ = E.presieve₀ ⊔ .singleton f := by
   simp [add, presieve₀_reindex, presieve₀_sum]
+
+/-- The single object pre-`0`-hypercover obtained from taking the coproduct of the components. -/
+@[simps I₀ X]
+def sigmaOfIsColimit (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c) :
+    PreZeroHypercover.{w} S where
+  I₀ := PUnit
+  X _ := c.pt
+  f _ := Cofan.IsColimit.desc hc E.f
+
+@[reassoc (attr := simp)]
+lemma inj_sigmaOfIsColimit_f (E : PreZeroHypercover.{w} S) {c : Cofan E.X} (hc : IsColimit c)
+    (i : E.I₀) (r : PUnit) :
+    c.inj i ≫ (E.sigmaOfIsColimit hc).f r = E.f i := by
+  simp [PreZeroHypercover.sigmaOfIsColimit]
 
 section Category
 
@@ -326,7 +340,7 @@ end Category
 
 section Functoriality
 
-variable {D : Type*} [Category D] {F : C ⥤ D}
+variable {D : Type*} [Category* D] {F : C ⥤ D}
 
 /-- The image of a pre-`0`-hypercover under a functor. -/
 @[simps]
@@ -687,7 +701,7 @@ def isoMk {E F : ZeroHypercover.{w} J S} (e : E.toPreZeroHypercover ≅ F.toPreZ
 
 section Functoriality
 
-variable {D : Type*} [Category D] {F : C ⥤ D} {K : Precoverage D}
+variable {D : Type*} [Category* D] {F : C ⥤ D} {K : Precoverage D}
 
 /-- The image of a `0`-hypercover under a functor. -/
 @[simps toPreZeroHypercover]

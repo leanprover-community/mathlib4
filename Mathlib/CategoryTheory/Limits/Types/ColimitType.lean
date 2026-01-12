@@ -91,7 +91,7 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]
-def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category J'] (G : J' ⥤ J) :
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category* J'] (G : J' ⥤ J) :
     CoconeTypes.{w₁} (G ⋙ F) where
   pt := c.pt
   ι _ := c.ι _
@@ -223,6 +223,17 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
     simp_all
+
+lemma iff_bijective {c' : CoconeTypes.{w₂} F}
+    (f : c.pt → c'.pt) (hf : ∀ j x, c'.ι j x = f (c.ι j x)) :
+    c'.IsColimit ↔ Function.Bijective f := by
+  refine ⟨fun hc' ↦ ?_, fun h ↦ hc.of_equiv (Equiv.ofBijective _ h) hf⟩
+  have h₁ := hc.bijective
+  rw [← Function.Bijective.of_comp_iff _ hc.bijective]
+  convert hc'.bijective
+  ext x
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective x
+  simp [hf]
 
 end IsColimit
 

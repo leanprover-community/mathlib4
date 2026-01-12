@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-! # Basic properties of the simplex category
 
@@ -29,6 +29,10 @@ universe v
 open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
+
+instance {a b : SimplexCategory} : Finite (a ⟶ b) :=
+  Finite.of_injective (fun f ↦ f.toOrderHom.toFun)
+    (fun _ _ _ ↦ by aesop)
 
 instance {n m : SimplexCategory} : DecidableEq (n ⟶ m) := fun a b =>
   decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
@@ -158,7 +162,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
     monotone' := fun
-      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 0, _ | 1, 1, _ | 2, 2, _ => le_rfl
       | 0, 1, _ => h₁
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂
@@ -194,7 +198,7 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
   ext (i : Fin 2)
-  match i with | 0 | 1 => simp <;> omega
+  match i with | 0 | 1 => simp <;> lia
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -236,7 +240,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> omega
+  split_ifs <;> · simp at * <;> lia
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
     δ i ≫ δ j =
@@ -294,7 +298,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   ext ⟨j, hj⟩
   simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp only [Fin.lt_def, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
+  simp only [Fin.lt_def, Fin.dite_val, Fin.ite_val, Fin.val_pred]
   split_ifs
   any_goals simp
   all_goals lia
@@ -312,7 +316,7 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ⦋n�
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  split_ifs <;> simp <;> simp at * <;> omega
+  split_ifs <;> simp <;> simp at * <;> lia
 
 @[reassoc]
 theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) :
@@ -521,7 +525,7 @@ def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd where
   map f := NonemptyFinLinOrd.ofHom f.toOrderHom
 
 theorem skeletalFunctor.coe_map {Δ₁ Δ₂ : SimplexCategory} (f : Δ₁ ⟶ Δ₂) :
-    ↑(skeletalFunctor.map f).hom = f.toOrderHom :=
+    ↑(skeletalFunctor.map f).hom.hom = f.toOrderHom :=
   rfl
 
 theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
@@ -534,7 +538,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom, rfl⟩
+  map_surjective f := ⟨SimplexCategory.Hom.mk f.hom.hom, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
@@ -550,8 +554,8 @@ instance : skeletalFunctor.EssSurj where
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
         refine
-          { hom := LinOrd.ofHom ⟨f, hf.monotone⟩
-            inv := LinOrd.ofHom ⟨f.symm, ?_⟩
+          { hom := InducedCategory.homMk (LinOrd.ofHom ⟨f, hf.monotone⟩)
+            inv := InducedCategory.homMk (LinOrd.ofHom ⟨f.symm, ?_⟩)
             hom_inv_id := by ext; apply f.symm_apply_apply
             inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
@@ -745,7 +749,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       exact Fin.castSucc_lt_succ
     · dsimp [δ]
       rw [Fin.succAbove_of_le_castSucc i.succ _]
-      simp only [Fin.lt_def, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
+      simp only [Fin.lt_def, Fin.le_iff_val_le_val, Fin.val_succ, Fin.val_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       lia
 

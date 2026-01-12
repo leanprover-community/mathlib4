@@ -659,7 +659,7 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 lemma id_map_iff (hX : AEMeasurable X μ) :
     HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun t ↦ ?_, fun t ↦ ?_⟩⟩
-  · change HasSubgaussianMGF (id ∘ X) c μ
+  · rw [← Function.id_comp X]
     exact .of_map hX h
   · rw [integrable_map_measure (by fun_prop) hX]
     exact h.integrable_exp_mul t

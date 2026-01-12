@@ -21,7 +21,7 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
   convergence.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Real Filter

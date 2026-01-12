@@ -178,12 +178,12 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   have Hs := enumOrd_strictMono hs
   refine
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
-      (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
+      isNormal_iff.2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [IsNormal.map_iSup h g]
+    rw [h.map_iSup (bddAbove_of_small _)]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x

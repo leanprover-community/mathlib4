@@ -24,7 +24,7 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 derivative, power
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 𝔸 E : Type*}
 

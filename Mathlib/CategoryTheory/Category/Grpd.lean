@@ -76,13 +76,14 @@ def objects : Grpd.{v, u} ⥤ Type u where
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
-  map := id
+  map := Functor.toCatHom
 
 instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)
 
-instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
+instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f.toFunctor, rfl⟩
 
 instance forgetToCat_faithful : forgetToCat.Faithful where
+  map_injective := congrArg (Cat.Hom.toFunctor)
 
 /-- Convert arrows in the category of groupoids to functors,
 which sometimes helps in applying simp lemmas -/

@@ -662,10 +662,9 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma pow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
     · exact hs.pow
     · simp
@@ -775,6 +774,14 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [singleton_mul_singleton, h, singleton_one]
 
+@[to_additive] theorem nonempty_image_mulLeft_inv_inter_iff {a : α} :
+    ((a⁻¹ * ·) '' s ∩ t).Nonempty ↔ ((· * a) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
+@[to_additive] theorem nonempty_image_mulRight_inv_inter_iff {a : α} :
+    ((· * a⁻¹) '' s ∩ t).Nonempty ↔ ((a * ·) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
@@ -820,10 +827,9 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   | (n : ℕ) => hs.pow
   | .negSucc n => by simpa using hs.pow
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma zpow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
     · exact hs.zpow
     · simp
@@ -863,29 +869,12 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_div_iff := one_notMem_div_iff
-
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")]
-alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 alias ⟨_, _root_.Disjoint.one_notMem_div_set⟩ := one_notMem_div_iff
 
 attribute [to_additive] Disjoint.one_notMem_div_set
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.zero_not_mem_sub_set := Disjoint.zero_notMem_sub_set
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.one_not_mem_div_set := Disjoint.one_notMem_div_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=

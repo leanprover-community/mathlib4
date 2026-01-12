@@ -93,6 +93,21 @@ lemma HasExt.standard : HasExt.{max u v} C := by
   letI := HasDerivedCategory.standard
   exact hasExt_of_hasDerivedCategory _
 
+instance [HasExt.{w} C] (X Y : C) (a b : ℤ) [HasDerivedCategory.{w'} C] :
+    Small.{w} ((singleFunctor C a).obj X ⟶ (singleFunctor C b).obj Y) := by
+  have (a b : ℤ) :
+      Small.{w} (((singleFunctor C 0).obj X)⟦a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦b⟧) :=
+    (hasSmallLocalizedShiftedHom_iff.{w}
+      (W := (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))) (M := ℤ)
+      (X := (CochainComplex.singleFunctor C 0).obj X)
+      (Y := (CochainComplex.singleFunctor C 0).obj Y) Q).1 inferInstance a b
+  exact small_of_injective
+    (β := ((singleFunctor C 0).obj X)⟦-a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦-b⟧)
+    (f := fun φ ↦
+      ((singleFunctors C).shiftIso (-a) a 0 (by simp)).hom.app X ≫ φ ≫
+        ((singleFunctors C).shiftIso (-b) b 0 (by simp)).inv.app Y)
+    (fun φ₁ φ₂ h ↦ by simpa using h)
+
 variable {C}
 
 variable [HasExt.{w} C]
@@ -308,6 +323,11 @@ lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
     mk₀ (addEquiv₀ f) = f :=
   addEquiv₀.left_inv f
 
+@[simp]
+lemma mk₀_eq_zero_iff {M N : C} (f : M ⟶ N) :
+    Ext.mk₀ f = 0 ↔ f = 0 :=
+  Ext.addEquiv₀.symm.map_eq_zero_iff (x := f)
+
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
@@ -401,7 +421,7 @@ noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} wher
     rw [← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
-    omega
+    lia
 
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/
@@ -416,7 +436,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} whe
         dsimp
         symm
         apply Ext.comp_assoc
-        all_goals omega }
+        all_goals lia }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     simp
