@@ -7,10 +7,11 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Mathlib.Tactic.Simps.NotationClass
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.Basic
 public import Mathlib.Util.AddRelatedDecl
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Simps attribute
@@ -838,7 +839,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
-library_note2 «custom simps projection» /--
+library_note «custom simps projection» /--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
 `MyStructure.Simps.myProjection` that is definitionally equal to
