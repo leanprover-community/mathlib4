@@ -299,7 +299,8 @@ lemma integralNCMLM_succ {n k l : ℕ} {g : E → E [×n]→L[ℝ] E}
 /-
 This is the step `I^(0) g^(n) = I^(n) g^(0)`
 
-state it generally with `g`?
+Follows by induction from `integralNCMLM_succ`, and then remove `curryFinSum` in the degenerate
+case.
 -/
 
 lemma integralNCMLM_eq {n : ℕ} (f : E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
