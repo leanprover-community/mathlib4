@@ -12,33 +12,73 @@ def mkDocComment (s : String) : TSyntax `Lean.Parser.Command.docComment :=
   .mk <| mkNode ``Parser.Command.docComment #[mkAtom "/--", mkAtom (s ++ "-/")]
 
 -- for easy testing
-macro "test" str:str bool:(&"false" <|> &"true") name:term : command => do
+open Parser Elab Command in
+/--
+`test "some.pretty.printed.name" shouldRoundTrip name` is silent iff all of the following are true:
+- `name : Name` pretty prints as `"some.pretty.printed.name"` (in a `fun` binder)
+- `name.willRoundTrip == shouldRoundTrip`
+- `shouldRoundTrip` implies that `"some.pretty.printed.name"` parses as an identifier with name
+  `name`
+-/
+elab "test" str:str bool:(&"false" <|> &"true") name:term : command => do
+  let shouldRoundTrip ←
+    if bool.raw.matchesLit `token.false "false" then pure false
+    else if bool.raw.matchesLit `token.true "true" then pure true
+    else throwUnsupportedSyntax
+  let n ← liftTermElabM <| unsafe Elab.Term.evalTerm Name (toTypeExpr Name) name
+  unless willRoundTrip n == shouldRoundTrip do
+    throwErrorAt name "``willRoundTrip {repr n}`` did not equal `{shouldRoundTrip}`"
+  let env ← getEnv
+  if shouldRoundTrip then
+    -- Check that parsing `str` yields `name`. c.f. `Parser.runParserCategory`
+    let ictx := mkInputContext str.getString "<test>"
+    let s := Parser.ident.fn.run ictx { env, options := ← getOptions } (getTokenTable env)
+      (mkParserState str.getString)
+    if s.allErrors.isEmpty && ictx.atEnd s.pos then
+      unless s.stxStack.back.getId == n do
+        throwError "Name{indentD <| repr s.stxStack.back.getId}\nparsed from {str} did not match \
+          elaborated name{indentD <| repr n}"
+    else
+      throwErrorAt str "Failed to parse {str} as an identifier, despite expecting to roundtrip"
+  -- Check that pretty-printing `name` recovers `str`
   let doc := mkDocComment s!"info: fun {str.getString} => {str.getString} : Prop → Prop\n"
-  let bool ←
-    if bool.raw.matchesLit `token.false "false" then `(term| false)
-    else if bool.raw.matchesLit `token.true "true" then `(term| true)
-    else Macro.throwUnsupported
-  let command1 ←
+  elabCommand <|←
     `(command| $doc:docComment #guard_msgs in #check by_elab return mkTestLambda $name:term)
-  let command2 ← `(command| #guard willRoundTrip $name:term == $bool)
-  `($command1:command $command2:command)
 
 -- test testing
+
+/-- error: Failed to parse "foo." as an identifier, despite expecting to roundtrip -/
+#guard_msgs in
+test "foo." true mkSimple "foo."
+
 /--
-info: fun bar => bar : Prop → Prop
+error: Name
+  `bar
+parsed from "bar" did not match elaborated name
+  `foo
+-/
+#guard_msgs in
+test "bar" true mkSimple "foo"
+
+/--
+error: Name
+  `foo
+parsed from "foo" did not match elaborated name
+  `bar
+-/
+#guard_msgs in
+test "foo" true mkSimple "bar"
+
+/--
+info: fun a => a : Prop → Prop
 ---
 error: ❌️ Docstring on `#guard_msgs` does not match generated message:
 
 - info: fun foo => foo : Prop → Prop
-+ info: fun bar => bar : Prop → Prop
----
-error: Expression
-  (mkSimple "bar").willRoundTrip == false
-did not evaluate to `true`
++ info: fun a => a : Prop → Prop
 -/
 #guard_msgs in
--- test that the name `mkSimple "bar"` pretty prints as `foo` and does not roundtrip
-test "foo" false mkSimple "bar"
+test "foo" false anonymous
 
 -- tests
 test "a" false anonymous
