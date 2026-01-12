@@ -72,6 +72,8 @@ Torsion, submodule, module, quotient
 
 @[expose] public section
 
+open Module
+
 namespace Ideal
 
 section TorsionOf
@@ -730,7 +732,7 @@ theorem torsion_isTorsion : Module.IsTorsion R (torsion R M) :=
 end Torsion'
 
 section Torsion
-
+section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M)
@@ -788,6 +790,17 @@ lemma torsion_int {G} [AddCommGroup G] :
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
+end CommSemiring
+
+section CommRing
+variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+
+/-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
+lemma isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
+  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
+  grind
+
+end CommRing
 end Torsion
 
 namespace QuotientTorsion

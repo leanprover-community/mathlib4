@@ -2891,6 +2891,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
+public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 public import Mathlib.CategoryTheory.MorphismProperty.Representable
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
@@ -3350,6 +3351,8 @@ public import Mathlib.Computability.Partrec
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Computability.PostTuringMachine
 public import Mathlib.Computability.Primrec
+public import Mathlib.Computability.Primrec.Basic
+public import Mathlib.Computability.Primrec.List
 public import Mathlib.Computability.Reduce
 public import Mathlib.Computability.RegularExpressions
 public import Mathlib.Computability.SpecialPrimrec
