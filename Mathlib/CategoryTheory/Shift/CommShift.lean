@@ -539,10 +539,10 @@ variable {A}
 
 /-- Auxiliary definition for `Functor.CommShift.ofComp`. -/
 noncomputable def iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
-  ((whiskeringRight C D E).obj G).preimageIso (Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ e ≪≫
-    H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
+  ((whiskeringRight C D E).obj G).preimageIso
+    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫
+      H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
 
 @[simp]
 lemma map_iso_hom_app (a : A) (X : C) :
