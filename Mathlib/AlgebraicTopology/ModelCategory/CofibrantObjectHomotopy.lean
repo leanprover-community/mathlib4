@@ -229,7 +229,7 @@ instance (X : CofibrantObject C) :
   rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_of_objectProperty]
   infer_instance
 
-instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : CofibrantObject.π C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     IsIso (Functor.whiskerRight π.ιCompResolutionNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
@@ -240,7 +240,7 @@ instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
 
 section
 
-variable {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
+variable {D : Type*} [Category* D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
 
 /-- The induced functor `CofibrantObject.π C ⥤ D`, when `D` is a localization
 of `C` with respect to weak equivalences. -/
@@ -316,7 +316,7 @@ instance (X : CofibrantObject C) :
     IsCofibrant ((localizerMorphism C).functor.obj X) := by
   dsimp; infer_instance
 
-instance {D : Type*} [Category D] (L : C ⥤ D)
+instance {D : Type*} [Category* D] (L : C ⥤ D)
     [L.IsLocalization (weakEquivalences C)] :
     (ι ⋙ L).IsLocalization (weakEquivalences (CofibrantObject C)) :=
   inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)
