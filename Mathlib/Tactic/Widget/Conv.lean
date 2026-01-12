@@ -119,6 +119,15 @@ where
           (Path.body n <$> go (b.instantiate1 fvar) i.succ)
       else throwError err
     | .app .. => appT expr i.castSucc [] none
+  /-- Traverse an application from argument to function, accumulating arguments and consuming `pos` 
+  (incrementing `i`) as we approach the head. If `pos[i]` tells us to enter the argument of `.app` 
+  instead of the function at some point, we stop consuming `pos` and start counting arguments 
+  (`some n`) until we hit the head. This gives us enough information to determine the value for 
+  `Path.arg` once we reach the head, and then enter the argument we encountered earlier.
+  
+  Note: if we instead run out of `pos` before reaching the head, the `Path` is a chain of `fun`s.
+  
+  Note: `conv` does not see through `.mdata` surrounding an `.app`, so we do not here either. -/
   appT (expr : Expr) (i : Fin (pos.size + 1))
       (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
     match expr with
@@ -137,9 +146,11 @@ where
             is invalid for{indentExpr expr}"
     | _ =>
       if let some n := n then do -- found the argument (it is `acc[n]`)
-        let c ← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray
-        if let some {bInfo := .default, ..} := c[n]? then -- explicit argument
-          arg (((c.map (·.bInfo)).take n).count .default + 1)
+        let bis : Array BinderInfo :=
+          (← PrettyPrinter.Delaborator.getParamKinds expr acc.toArray).map (·.bInfo)
+        if let some .default := bis[n]? then -- explicit argument
+          -- find the number of explicit arguments between the head and this arg (inclusive)
+          arg ((bis.take n).count .default + 1)
             false <$> go acc[n] i
         else arg (n + 1) true <$> go acc[n] i -- implicit argument
       else -- ran out of `Expr.app` nodes
