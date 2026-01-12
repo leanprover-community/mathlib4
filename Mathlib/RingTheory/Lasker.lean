@@ -121,7 +121,7 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
   have hf : Monotone f := by
     intro n m hnm
     simp_rw [f]
-    exact (Submodule.colon_mono le_rfl (Ideal.span_singleton_le_span_singleton.mpr
+    exact (Submodule.colon_mono_right le_rfl (Ideal.span_singleton_le_span_singleton.mpr
       (pow_dvd_pow b hnm)))
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
@@ -146,7 +146,7 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
             simp only [Submodule.colon_univ]
           _ = Submodule.colon I (↑(Submodule.span R {b}) : Set R) := by
             simpa [f] using hn 1 zero_le_one
-      refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
+      refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono_right le_rfl ?_))
       · intro
         simpa only [mem_colon_span_singleton] using mul_mem_right _ _
       · exact span_singleton_le_span_singleton.mpr (dvd_pow_self b hn')
