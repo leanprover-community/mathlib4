@@ -51,7 +51,7 @@ website shows the actual terms, not those abbreviated using local notations.
 divergence theorem, Bochner integral
 -/
 
-@[expose] public section
+public section
 
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter

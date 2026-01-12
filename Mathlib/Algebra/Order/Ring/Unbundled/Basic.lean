@@ -114,7 +114,7 @@ TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid MonoidHom
 

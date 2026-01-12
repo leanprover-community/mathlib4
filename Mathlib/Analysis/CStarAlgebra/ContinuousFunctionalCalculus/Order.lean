@@ -161,7 +161,7 @@ lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by 
   · simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
-    - (algebraMap ℝ A ‖a‖) ≤ a := by
+    -(algebraMap ℝ A ‖a‖) ≤ a := by
   rw [neg_le, ← norm_neg]
   exact ha.neg.le_algebraMap_norm_self
 
@@ -491,7 +491,7 @@ lemma inr_mem_Icc_iff_nnnorm_le {x : A} :
 lemma preimage_inr_Icc_zero_one :
     ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
   ext
-  simp [- mem_Icc, inr_mem_Icc_iff_norm_le]
+  simp [-mem_Icc, inr_mem_Icc_iff_norm_le]
 
 end Icc
 
