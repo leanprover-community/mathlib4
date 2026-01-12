@@ -777,7 +777,7 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note2 «Manifold type tags» /-- For technical reasons we introduce two type tags:
+library_note «Manifold type tags» /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
