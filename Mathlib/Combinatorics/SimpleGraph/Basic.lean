@@ -410,7 +410,7 @@ theorem support_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.support
 /-- The support of the empty graph is empty. -/
 @[simp]
 theorem support_bot : (⊥ : SimpleGraph V).support = ∅ := by
-  grind only [mem_support, Set.mem_empty_iff_false, bot_adj]
+  Set.eq_empty_of_forall_notMem fun _ ⟨_, h⟩ => h
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
