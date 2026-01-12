@@ -156,7 +156,7 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
 /-!
 Any two presentations of the same group present isomorphic groups.
 -/
---TODO: better name for this?
+-- better name for this?
 noncomputable def equivPresentedGroups {G : Type*} [Group G]
     {ι κ : Type*} (P : Presentation G ι) (Q : Presentation G κ) :
     P.presentedGroup ≃* Q.presentedGroup :=
@@ -190,13 +190,14 @@ end PresentedGroup
 ## Tietze transformations
 
 This section records the four standard Tietze moves for group presentations.
+-/
 
 namespace Tietze
 
 variable {G : Type*} [Group G] {ι : Type*}
 
 /-!
-### Helper: equal normal closures give isomorphic presented groups
+### Equal normal closures give isomorphic presented groups
 -/
 
 noncomputable def equiv_of_normalClosure_eq
