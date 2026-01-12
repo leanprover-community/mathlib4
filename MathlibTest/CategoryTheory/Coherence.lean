@@ -1,3 +1,6 @@
+import Mathlib.CategoryTheory.Bicategory.Coherence
+import Mathlib.CategoryTheory.Bicategory.End
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory
@@ -10,7 +13,7 @@ open scoped MonoidalCategory
 
 -- Internal tactics
 
-example (X₁ X₂ : C) :
+theorem t (X₁ X₂ : C) :
     ((λ_ (𝟙_ C)).inv ⊗ₘ 𝟙 (X₁ ⊗ X₂)) ≫ (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
       (𝟙 (𝟙_ C) ⊗ₘ (α_ (𝟙_ C) X₁ X₂).inv) =
     𝟙 (𝟙_ C) ⊗ₘ ((λ_ X₁).inv ⊗ₘ 𝟙 X₂) := by
@@ -103,7 +106,7 @@ example (f : a ⟶ b) (g : b ⟶ c) :
   f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g := by
   bicategory_coherence
 
-example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
+theorem s : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
   bicategory_coherence
 
 set_option linter.unusedVariables false in

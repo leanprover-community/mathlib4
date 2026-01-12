@@ -253,7 +253,7 @@ lemma jacobianRelations_spec [DecidableEq σ] [Fintype σ] :
 
 /-- The set of coefficients that is enough to descend a submersive presentation `P`. -/
 def coeffs : Set R :=
-  P.toPresentation.coeffs ∪ (P.σ (P.jacobian_isUnit.unit⁻¹:)).coeffs ∪
+  P.toPresentation.coeffs ∪ (P.σ (P.jacobian_isUnit.unit⁻¹ :)).coeffs ∪
     ⋃ i, (P.jacobianRelations i).coeffs
 
 lemma finite_coeffs : P.coeffs.Finite :=
