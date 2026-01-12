@@ -15,7 +15,7 @@ In [Moreira2001], Moreira proves a version of the Morse-Sard theorem
 for a carefully chosen class of maps he calls $C^{k+(α)}$ maps.
 Namely, a map `f` is said to be $C^{k+(α)}$ at `a`,
 where `k` is a natural number and `0 ≤ α ≤ 1`,
-if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ k)$ as `x → a`.
+if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`.
 
 The main theorem of [Moreira2001] only assumes
 that a function is $C^{k+(α)}$ at all points of a set `s`
