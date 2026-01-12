@@ -449,7 +449,7 @@ decaying terms.
 -/
 
 
-section EdistLeGeometric
+section EDistLeGeometric
 
 variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
@@ -478,9 +478,9 @@ theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f at
     edist (f 0) a ≤ C / (1 - r) := by
   simpa only [_root_.pow_zero, mul_one] using edist_le_of_edist_le_geometric_of_tendsto r C hu ha 0
 
-end EdistLeGeometric
+end EDistLeGeometric
 
-section EdistLeGeometricTwo
+section EDistLeGeometricTwo
 
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
@@ -508,7 +508,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 *
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
     edist_le_of_edist_le_geometric_two_of_tendsto C hu ha 0
 
-end EdistLeGeometricTwo
+end EDistLeGeometricTwo
 
 section LeGeometric
 
