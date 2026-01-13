@@ -849,10 +849,6 @@ section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance : SMulCommClass R (Submonoid.center R) M where
-  smul_comm r r' m := by
-    simp_rw [Submonoid.smul_def, smul_smul, ((Set.mem_center_iff.1 r'.prop).1 _).eq]
-
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
   invOf := (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
