@@ -264,6 +264,12 @@ def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center }
 
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass ↥(Submonoid.center R) R M where
+  smul_comm c r v := by
+    have := Semigroup.mem_center_iff.1 c.2
+    simp_rw [Submonoid.smul_def, smul_smul, this]
+
 /-- The center is commutative and associative.
 
 This is not an instance as it forms a non-defeq diamond with
@@ -902,6 +908,12 @@ instance smulCommClass_left [SMul R' β] [SMul α β] [SMulCommClass R' α β] (
 instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] (S : Subsemiring R') :
     SMulCommClass α S β :=
   inferInstance
+
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+    SMulCommClass R (↥(Subsemiring.center R)) M where
+  smul_comm r c v := by
+    have := Semigroup.mem_center_iff.1 c.2
+    simp_rw [Subsemiring.smul_def, smul_smul, this]
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]
