@@ -642,7 +642,7 @@ instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w =>
     (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) (ivertG w) (
       @instDecidableNot (G.Adj v w)
         (by simp only [DecidableRel] at iadjG; specialize iadjG v w; assumption)
-  )))
+    )))
 
 
 
