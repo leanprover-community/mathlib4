@@ -454,143 +454,107 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
     T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
+  refine isBigO_of_recurrence_of_eventually_pos ?_ ?_ ?_
+  · exact Eventually.of_forall fun h => R.T_nonneg _
+  · filter_upwards [R.eventually_asympBound_pos, eventually_one_sub_smoothingFn_pos] with n hn hn₂
+    positivity
   let b' := b (min_bi b) / 2
   have hb_pos : 0 < b' := R.bi_min_div_two_pos
-  rw [isBigO_atTop_iff_eventually_exists]
   obtain ⟨c₁, hc₁, h_sumTransform_aux⟩ := R.eventually_atTop_sumTransform_ge
+  filter_upwards [eventually_ge_atTop R.n₀] with n₀ n₀_ge_Rn₀
+  refine ⟨2 * c₁⁻¹, ?_⟩
   filter_upwards [
-      -- n₀_ge_Rn₀
-      eventually_ge_atTop R.n₀,
-      -- h_smoothing_pos
-      eventually_forall_ge_atTop.mpr eventually_one_sub_smoothingFn_pos,
-      -- h_smoothing_gt_half
-      eventually_forall_ge_atTop.mpr
-        <| eventually_one_sub_smoothingFn_gt_const (1 / 2) (by norm_num),
-      -- h_asympBound_pos
-      eventually_forall_ge_atTop.mpr R.eventually_asympBound_pos,
-      -- h_asympBound_r_pos
-      eventually_forall_ge_atTop.mpr R.eventually_asympBound_r_pos,
-      (tendsto_nat_floor_mul_atTop b' hb_pos).eventually_forall_ge_atTop
-        -- h_asympBound_floor
-        R.eventually_asympBound_pos,
-      -- n₀_pos
-      eventually_gt_atTop 0,
-      -- h_smoothing_r_pos
-      eventually_forall_ge_atTop.mpr R.eventually_one_sub_smoothingFn_r_pos,
-      -- bound1
-      eventually_forall_ge_atTop.mpr R.rpow_p_mul_one_sub_smoothingFn_le,
-      (tendsto_nat_floor_mul_atTop b' hb_pos).eventually_forall_ge_atTop
-        -- h_smoothingFn_floor
-        eventually_one_sub_smoothingFn_pos,
-      -- h_sumTransform
-      eventually_forall_ge_atTop.mpr h_sumTransform_aux,
-      -- h_bi_le_r
-      eventually_forall_ge_atTop.mpr R.eventually_bi_mul_le_r]
-    with n₀ n₀_ge_Rn₀ h_smoothing_pos h_smoothing_gt_half
-      h_asympBound_pos h_asympBound_r_pos h_asympBound_floor n₀_pos h_smoothing_r_pos
-      bound1 h_smoothingFn_floor h_sumTransform h_bi_le_r
-  -- Max of the ratio `T(n) / asympBound(n)` over the base case `n ∈ [b * n₀, n₀)`
-  have h_base_nonempty := R.base_nonempty n₀_pos
-  let base_max : ℝ :=
-    (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
-      fun n => T n / ((1 - ε n) * asympBound g a b n)
-  -- The big-O constant we are aiming for: max of the base case ratio and what we need to
-  -- cancel out the `g(n)` term in the calculation below
-  set C := max (2 * c₁⁻¹) base_max with hC
-  refine ⟨C, fun n hn => ?_⟩
-  -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
-  have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, T n ≤ C * ((1 - ε n) * asympBound g a b n) := by
-    intro n hn
-    rw [Finset.mem_Ico] at hn
-    have htmp1 : 0 < 1 - ε n := h_smoothingFn_floor n hn.1
-    have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.div_le_iff₀ (by positivity)]
-    rw [← Finset.mem_Ico] at hn
-    calc T n / ((1 - ε ↑n) * asympBound g a b n)
-           ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
-                (fun z => T z / ((1 - ε z) * asympBound g a b z)) :=
-                  Finset.le_sup'_of_le _ (b := n) hn le_rfl
-         _ ≤ C := le_max_right _ _
-  have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
-  have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
-  rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
-  -- We now prove all other cases by induction
-  induction n using Nat.strongRecOn with
-  | ind n h_ind =>
-    have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
-      exact_mod_cast calc ⌊b' * (n₀ : ℝ)⌋₊ ≤ b' * n₀ := Nat.floor_le <| by positivity
-                                  _ ≤ b' * n := by gcongr
-                                  _ ≤ r i n := h_bi_le_r n hn i
-    have g_pos : 0 ≤ g n := R.g_nonneg n (by positivity)
-    calc T n
-      _ = (∑ i, a i * T (r i n)) + g n := R.h_rec n <| n₀_ge_Rn₀.trans hn
-      _ ≤ (∑ i, a i * (C * ((1 - ε (r i n)) * asympBound g a b (r i n)))) + g n := by
-        -- Apply the induction hypothesis, or use the base case depending on how large n is
-        gcongr (∑ i, a i * ?_) + g n with i _
-        · exact le_of_lt <| R.a_pos _
-        · by_cases! ri_lt_n₀ : r i n < n₀
-          · exact h_base _ <| by
-              simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
-                eventually_atTop, sub_pos, one_div, mem_Ico, and_imp,
-                forall_true_left, mem_univ, and_self, b', C, base_max]
-          · exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
-              (h_asympBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
-      _ = (∑ i, a i * (C * ((1 - ε (r i n)) * ((r i n) ^ (p a b)
-                * (1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1))))))) + g n := by
-        simp_rw [asympBound_def']
-      _ = (∑ i, C * a i * ((r i n) ^ (p a b) * (1 - ε (r i n))
-                * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
-        congr; ext; ring
-      _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
-                * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
-        gcongr (∑ i, C * a i * (?_
-            * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
-        · positivity [R.a_pos i]
-        · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
-          rw [div_nonneg_iff]
-          exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
-        · exact bound1 n hn i
-      _ = (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
-                * ((1 + ((∑ u ∈ range n, g u / u ^ ((p a b) + 1))
-                - (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))) + g n := by
-        congr; ext i; congr
-        refine eq_sub_of_add_eq ?_
-        rw [add_comm]
-        exact add_eq_of_eq_sub <| Finset.sum_Ico_eq_sub _
-          <| le_of_lt <| R.r_lt_n i n <| n₀_ge_Rn₀.trans hn
-      _ = (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n) * ((n ^ (p a b)
-                * (1 + (∑ u ∈ range n, g u / u ^ ((p a b) + 1)))
-                - n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))
-                + g n := by
-        congr; ext; ring
-      _ = (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
-                * ((asympBound g a b n - sumTransform (p a b) g (r i n) n)))) + g n := by
-        simp_rw [asympBound_def', sumTransform_def]
-      _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
-                * ((asympBound g a b n - c₁ * g n)))) + g n := by
-        gcongr with i
-        · positivity [R.a_pos i]
-        · positivity [R.b_pos i]
-        · exact h_sumTransform n hn i
-      _ = (∑ i, C * (1 - ε n) * ((asympBound g a b n - c₁ * g n))
-                * (a i * (b i) ^ (p a b))) + g n := by
-        congr; ext; ring
-      _ = C * (1 - ε n) * (asympBound g a b n - c₁ * g n) + g n := by
-        rw [← Finset.mul_sum, R.sumCoeffsExp_p_eq_one, mul_one]
-      _ = C * (1 - ε n) * asympBound g a b n + (1 - C * c₁ * (1 - ε n)) * g n := by ring
-      _ ≤ C * (1 - ε n) * asympBound g a b n + 0 := by
-        gcongr
-        refine mul_nonpos_of_nonpos_of_nonneg ?_ g_pos
-        rw [sub_nonpos]
-        calc 1
-          _ ≤ 2 * (c₁⁻¹ * c₁) * (1 / 2) := by
-            rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
-          _ = (2 * c₁⁻¹) * c₁ * (1 / 2) := by ring
-          _ ≤ C * c₁ * (1 - ε n) := by
-            gcongr
-            · rw [hC]; exact le_max_left _ _
-            · exact le_of_lt <| h_smoothing_gt_half n hn
-      _ = C * ((1 - ε n) * asympBound g a b n) := by ring
+    eventually_ge_atTop n₀,
+    -- bound1
+    R.rpow_p_mul_one_sub_smoothingFn_le,
+    -- h_smoothing_pos
+    eventually_one_sub_smoothingFn_pos,
+    -- h_sumTransform
+    h_sumTransform_aux,
+    -- h_smoothing_gt_half
+    eventually_one_sub_smoothingFn_gt_const (1 / 2) (by norm_num),
+    -- h_bi_le_r
+    R.eventually_bi_mul_le_r,
+    -- n₀_div_le_n
+    eventually_ge_atTop ⌈n₀ / b'⌉₊]
+      with n hn bound1 h_smoothing_pos h_sumTransform h_smoothing_gt_half h_bi_le_r n₀_div_le_n
+  --have n₀_le_bn : n₀ ≤ b' * n := by
+  --  sorry
+  have n₀_le_r : ∀ i, n₀ ≤ r i n := by
+    intro i
+    exact_mod_cast
+      calc n₀ ≤ b' * n := by
+                have : (n₀ : ℝ) / b' ≤ n := by
+                  exact_mod_cast calc
+                    (n₀ : ℝ) / b' ≤ ⌈n₀ / b'⌉₊ := Nat.le_ceil (↑n₀ / b')
+                    _ ≤ n := by exact_mod_cast n₀_div_le_n
+                rwa [div_le_iff₀, mul_comm] at this
+                grind only
+        _ ≤ r i n := by grind
+  have r_le_n : ∀ i, r i n < n := by grind [AkraBazziRecurrence]
+  intro C hC h_ind
+  have C_pos : 0 ≤ C := by grind [inv_pos]
+  have g_pos : 0 ≤ g n := R.g_nonneg n (by positivity)
+  calc T n
+    _ = (∑ i, a i * T (r i n)) + g n := R.h_rec n (by grind)
+    _ ≤ (∑ i, a i * (C * ((1 - ε (r i n)) * asympBound g a b (r i n)))) + g n := by
+      -- Apply the induction hypothesis
+      gcongr (∑ i, a i * ?_) + g n with i _
+      · exact le_of_lt <| R.a_pos _
+      · exact h_ind (r i n) (by grind)
+    _ = (∑ i, a i * (C * ((1 - ε (r i n)) * ((r i n) ^ (p a b)
+              * (1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1))))))) + g n := by
+      simp_rw [asympBound_def']
+    _ = (∑ i, C * a i * ((r i n) ^ (p a b) * (1 - ε (r i n))
+              * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
+      congr; ext; ring
+    _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
+              * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
+      gcongr (∑ i, C * a i * (?_
+          * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
+      · positivity [R.a_pos i]
+      · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
+        rw [div_nonneg_iff]
+        exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
+      · grind
+    _ = (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
+              * ((1 + ((∑ u ∈ range n, g u / u ^ ((p a b) + 1))
+              - (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))) + g n := by
+      congr; ext i; congr
+      refine eq_sub_of_add_eq ?_
+      rw [add_comm]
+      exact add_eq_of_eq_sub <| Finset.sum_Ico_eq_sub _
+        <| le_of_lt <| R.r_lt_n i n <| n₀_ge_Rn₀.trans hn
+    _ = (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n) * ((n ^ (p a b)
+              * (1 + (∑ u ∈ range n, g u / u ^ ((p a b) + 1)))
+              - n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))
+              + g n := by
+      congr; ext; ring
+    _ = (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
+              * ((asympBound g a b n - sumTransform (p a b) g (r i n) n)))) + g n := by
+      simp_rw [asympBound_def', sumTransform_def]
+    _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
+              * ((asympBound g a b n - c₁ * g n)))) + g n := by
+      gcongr with i
+      · positivity [R.a_pos i]
+      · positivity [R.b_pos i]
+      · exact h_sumTransform i
+    _ = (∑ i, C * (1 - ε n) * ((asympBound g a b n - c₁ * g n))
+              * (a i * (b i) ^ (p a b))) + g n := by
+      congr; ext; ring
+    _ = C * (1 - ε n) * (asympBound g a b n - c₁ * g n) + g n := by
+      rw [← Finset.mul_sum, R.sumCoeffsExp_p_eq_one, mul_one]
+    _ = C * (1 - ε n) * asympBound g a b n + (1 - C * c₁ * (1 - ε n)) * g n := by ring
+    _ ≤ C * (1 - ε n) * asympBound g a b n + 0 := by
+      gcongr
+      refine mul_nonpos_of_nonpos_of_nonneg ?_ g_pos
+      rw [sub_nonpos]
+      calc 1
+        _ ≤ 2 * (c₁⁻¹ * c₁) * (1 / 2) := by
+          rw [inv_mul_cancel₀ (by positivity : c₁ ≠ 0)]; norm_num
+        _ = (2 * c₁⁻¹) * c₁ * (1 / 2) := by ring
+        _ ≤ C * c₁ * (1 - ε n) := by gcongr
+    _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
 #adaptation_note
 /--
