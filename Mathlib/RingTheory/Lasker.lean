@@ -134,6 +134,16 @@ noncomputable def IsLocalizedModule.mapSubmoduleInfHom
   map_inf' := h.mapSubmodule_inf S f
   map_top' := h.mapSubmodule_top S f
 
+theorem _root_.IsLocalizedModule.mapSubmodule_mono
+    {R : Type*} [CommSemiring R] (S : Submonoid R)
+    {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
+    (f : M →ₗ[R] M') [h : IsLocalizedModule S f] {I J : Submodule R M} (hIJ : I ≤ J) :
+    h.mapSubmodule S f I ≤ h.mapSubmodule S f J := by
+  intro x hx
+  rw [IsLocalizedModule.mem_mapSubmodule_iff] at hx ⊢
+  obtain ⟨s, hs⟩ := hx
+  exact ⟨s, Submodule.map_mono hIJ hs⟩
+
 -- upgrade to frame hom?
 
 @[simp]
