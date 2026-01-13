@@ -12,11 +12,36 @@ public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExact
 # Non-abelian group cohomology
 
 Let `G` be a group acting on another (not necessarily abelian) group `A`, in this file we define
-`H⁰(G, A)` and `H¹(G, A)`, and prove some basic properties about it.
+`H⁰(G, A)$` and `H¹(G, A)`, and prove some basic properties about it.
 
-## Main Results
+## Main definitions
 
-## Reference
+- `groupCohomology.NonAbelian.H0 G A`: The subgroup of `A` consisting of elements invariant under
+  `G`-action.
+- `groupCohomology.NonAbelian.Z1 G A`: The set of functions `f : G → A` such that
+  `∀ g h : G, f (g * h) = f g + g • f h`.
+- `groupCohomology.NonAbelian.Z1.cohomologous`: An equivalence relationship on `G → A` such that
+  `f g : G → A` are cohomologous if and only if `∃ a : A, ∀ h : G, f h = - a + g h + (h • a)`.
+- `groupCohomology.NonAbelian.H1 G A`: The quotient of `Z1 G A` by the relation `Z1.cohomologous`.
+- `groupCohomology.NonAbelian.δ₀ hf hfg`: For a short exact sequence `0 → A →f B →g C → 0`
+  preserving `G`-action, we define `δ₀` as the connection morphism from `H0 G C` to `H1 G A`.
+- `groupCohomology.NonAbelian.δ₁ hf hg hfg hA`: For a short exact sequence `0 → A →f B →g C → 0`
+  preserving `G`-action, if `A` is commutative (here we assume `A` has type `Rep k G`), and the
+  image of `A` under `f` is contained in the center of `B`, then we construct `δ₁` as the connection
+  morphism from `H1 G C` to `groupCohomology.H 2 A`.
+
+## Main results
+
+For a short exact sequence `0 → A →f B →g C → 0` preserving `G`-action, we construct the long exact
+sequence and prove its exactness:
+
+- `H0.map_injective`: Injectivity of `H0 G A → H0 G B`.
+- `H0.map_exact`: Exactness of `H0 G A → H0 G B → H0 G C`.
+- `exact_H0_map_δ₀`: Exactness of `H0 G B → H0 G C → H1 G A`.
+- `exact_δ₀_H1_map`: Exactness of `H0 G C → H1 G A → H1 G B`.
+- `H1.map_exact`: Exactness of `H1 G A → H1 G B → H1 G C`.
+- `exact_H1_map_δ₁`: If the image of `A` under `f` is contained in the center of `B`, then
+  `H1 G B → H1 G C → groupCohomology.H 2 A` is also exact.
 
 -/
 
@@ -397,7 +422,7 @@ lemma δ₁_apply' (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : cocycles�
     δ₁ hf hfg hA (H1.mk G C c) = H2π A x := δ₁_apply hf hg hfg hA c b hb x hx
 
 include hg in
-theorem exact_H1_map_δ₁₂ : Function.Exact (H1.map g) (δ₁ hf hfg hA) := by
+theorem exact_H1_map_δ₁ : Function.Exact (H1.map g) (δ₁ hf hfg hA) := by
   refine fun c ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨c, rfl⟩ := H1.mk_surjective G C c
     obtain ⟨b, hb⟩ := hg.comp_left c
@@ -540,10 +565,10 @@ theorem δ₁_H1Iso_eq_δ :
   have hA : (X.f : X.X₁ →+[G] X.X₂).toAddMonoidHom.range ≤ AddSubgroup.center X.X₂ := by
     simp [AddCommGroup.center_eq_top]
   refine funext fun x ↦ H1_induction_on x fun c ↦ ?_
-  simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply X.X₃]
+  simp only [Function.comp_apply, H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply X.X₃]
   obtain ⟨b, hb⟩ := hg.comp_left c
   have hb' : b ∈ (X.g ∘ ·) ⁻¹' (Z1 G X.X₃) := by
-    simp [show X.g ∘ b = c from hb]
+    simp only [Set.mem_preimage, show X.g ∘ b = c from hb]
     have := (mem_cocycles₁_iff c).mp c.2
     exact fun g h ↦ by simpa [add_comm] using this g h
   rw [groupCohomology.δ₁_apply hX c b hb (δ₁_aux hf hfg hA ⟨b, hb'⟩)]
