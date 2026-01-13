@@ -280,7 +280,7 @@ lemma isZero_eTruncGE_obj_obj (X : C) (n : ℤ) [t.IsLE X n] (j : EInt) (hj : n 
   induction j using WithBotTop.rec with
   | bot => simp at hj
   | coe j =>
-    simp only [WithBotTop.coe_lt_coe_iff] at hj
+    simp only [WithBotTop.coe_lt_coe] at hj
     have := t.isLE_of_LE X n (j - 1) (by lia)
     exact t.isZero_truncGE_obj_of_isLE (j - 1) j (by lia) _
   | top => simp
