@@ -272,7 +272,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
       refine .of_mul_eq_one (c + 1) ?_
       simp [mul_add, h]
 
-instance le_total_ideal : @Std.Total (Ideal A) LE.le := by
+instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   constructor; intro α β
   by_cases! h : ∀ x : A, x ∈ α → x ∈ β
   · exact Or.inl h

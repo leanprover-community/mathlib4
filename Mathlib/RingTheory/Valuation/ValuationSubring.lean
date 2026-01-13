@@ -355,7 +355,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : @Std.Total {S // A ≤ S} LE.le := by
+instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
   let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
   exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
