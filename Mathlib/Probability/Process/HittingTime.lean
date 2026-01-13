@@ -13,8 +13,8 @@ public import Mathlib.Tactic.AdaptationNote
 
 Given a stochastic process, the hitting time provides the first time the process "hits" some
 subset of the state space. The hitting time is a stopping time in the case that the time index is
-discrete and the process is adapted (this is true in a far more general setting however we have
-only proved it for the discrete case so far).
+discrete and the process is strongly adapted (this is true in a far more general setting however
+we have only proved it for the discrete case so far).
 
 ## Main definition
 
@@ -25,10 +25,10 @@ only proved it for the discrete case so far).
 
 ## Main results
 
-* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
-* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
+* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of a strongly adapted process
+  is a stopping time
+* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of a strongly adapted process
+  is a stopping time
 
 -/
 
@@ -52,7 +52,7 @@ open scoped Classical in
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
-The hitting time is a stopping time if the process is adapted and discrete. -/
+The hitting time is a stopping time if the process is strongly adapted and discrete. -/
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
@@ -422,7 +422,7 @@ end Inequalities
 /-- A discrete hitting time is a stopping time. -/
 theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
+    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : StronglyAdapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
   rcases le_or_gt n' i with hi | hi
@@ -442,7 +442,7 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
 theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n : ι}
-    (hu : Adapted f u) (hs : MeasurableSet s) :
+    (hu : StronglyAdapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -471,7 +471,7 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
     (hτ : IsStoppingTime f τ)
-    {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
+    {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : StronglyAdapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
   intro n
   have h₁ : {x | hittingBtwn u s (τ x).untopA N x ≤ n} =

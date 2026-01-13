@@ -897,12 +897,12 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
 
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
-/-- Let `Y` be a random process adapted to a filtration `ℱ`, such that for all `i : ℕ`, `Y i` is
-conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ (i - 1)`.
+/-- Let `Y` be a random process strongly adapted to a filtration `ℱ`, such that for all `i : ℕ`,
+`Y i` is conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ (i - 1)`.
 In particular, `n ↦ ∑ i ∈ range n, Y i` is a martingale.
 Then the sum `∑ i ∈ range n, Y i` is sub-Gaussian with parameter `∑ i ∈ range n, cY i`. -/
 lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
-    (h_adapted : Adapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
+    (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
     (h_subG : ∀ i < n - 1, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
   induction n with
@@ -922,7 +922,7 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
-    (h_adapted : Adapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
+    (h_adapted : StronglyAdapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ) (n : ℕ)
     (h_subG : ∀ i < n - 1, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ)
     {ε : ℝ} (hε : 0 ≤ ε) :
     μ.real {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}

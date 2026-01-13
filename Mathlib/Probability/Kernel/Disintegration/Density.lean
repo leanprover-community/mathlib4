@@ -158,10 +158,12 @@ lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ 
     StronglyMeasurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) :=
   (measurable_countableFiltration_densityProcess κ ν n a hs).stronglyMeasurable
 
-lemma adapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (a : α)
+lemma stronglyAdapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (a : α)
     {s : Set β} (hs : MeasurableSet s) :
-    Adapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
+    StronglyAdapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
   fun n ↦ stronglyMeasurable_countableFiltration_densityProcess κ ν n a hs
+
+@[deprecated (since := "2025-12-19")] alias adapted_densityProcess := stronglyAdapted_densityProcess
 
 lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) (x : γ) (s : Set β) :
@@ -293,7 +295,7 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=
-  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
+  ⟨stronglyAdapted_densityProcess κ ν a hs, fun _ _ h ↦ condExp_densityProcess hκν h a hs⟩
 
 lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ)
     {s s' : Set β} (h : s ⊆ s') :
