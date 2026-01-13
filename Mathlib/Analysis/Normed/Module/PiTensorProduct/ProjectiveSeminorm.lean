@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct
-∨
-⊗
+
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
 
@@ -243,11 +242,8 @@ theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
 theorem liftIsometry_tprodL :
     liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by ext; simp
 
-theorem norm_tprodL_le : ‖tprodL 𝕜 (E := E)‖ ≤ 1 := by
-  refine ContinuousMultilinearMap.opNorm_le_bound zero_le_one ?_
-  intro m
-  simp only [tprodL_toFun, one_mul]
-  apply projectiveSeminorm_tprod_le m
+theorem norm_tprodL_le : ‖tprodL 𝕜 (E := E)‖ ≤ 1 :=
+  ContinuousMultilinearMap.opNorm_le_bound zero_le_one fun m ↦ by simp [projectiveSeminorm_tprod_le]
 
 section map
 
@@ -391,7 +387,7 @@ theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
   apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
 
-/-- An injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
+/-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
@@ -411,16 +407,27 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
   simp [hp, toDualContinuousMultilinearMap_le_projectiveSeminorm]
 
 lemma projectiveSeminorn_mem_dualSeminorms : projectiveSeminorm ∈ {p | ∃ (G : Type (max uι u𝕜 uE))
-  (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
-  p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-  (toDualContinuousMultilinearMap G)} := by
+    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
+    (toDualContinuousMultilinearMap G)} := by
   use (⨂[𝕜] i, E i), inferInstance, inferInstance
-  ext x; symm
-  apply eq_of_le_of_ge (toDualContinuousMultilinearMap_le_projectiveSeminorm x)
-  have := ContinuousLinearMap.le_opNorm
-      ((toDualContinuousMultilinearMap (⨂[𝕜] i, E i)) x) (tprodL 𝕜)
+  ext x
+  refine le_antisymm ?_ (toDualContinuousMultilinearMap_le_projectiveSeminorm x)
+  have := ContinuousLinearMap.le_opNorm ((toDualContinuousMultilinearMap _) x) (tprodL 𝕜)
   grw [norm_tprodL_le, mul_one] at this
   simpa
+
+theorem injectiveSeminorm_eq_projectiveSeminorm :
+    injectiveSeminorm (𝕜 := 𝕜) (E := E) = projectiveSeminorm := by
+  rw [injectiveSeminorm]
+  refine le_antisymm (csSup_le ⟨_, projectiveSeminorn_mem_dualSeminorms⟩ fun p ⟨G, _, _, h⟩ x ↦ ?_)
+    (le_csSup_of_le dualSeminorms_bounded projectiveSeminorn_mem_dualSeminorms (le_refl _))
+  simp [h, toDualContinuousMultilinearMap_le_projectiveSeminorm]
+
+-- This used to be a long proof; now somewhat redundant.
+theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
+    ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
+    simp [injectiveSeminorm_eq_projectiveSeminorm, norm_eval_le_projectiveSeminorm]
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
@@ -429,20 +436,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (toDualContinuousMultilinearMap G)}, p.1 x := by
   simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
-
-theorem injectiveSeminorm_eq_projectiveSeminorm :
-  injectiveSeminorm (𝕜 := 𝕜) (E := E) = projectiveSeminorm := by
-  rw [injectiveSeminorm]
-  refine le_antisymm ?_
-    (le_csSup_of_le dualSeminorms_bounded projectiveSeminorn_mem_dualSeminorms (le_refl _))
-  refine csSup_le ⟨projectiveSeminorm, projectiveSeminorn_mem_dualSeminorms⟩ fun p ⟨G, _, _, h⟩ ↦ ?_
-  rw [h]; intro x
-  simp [toDualContinuousMultilinearMap_le_projectiveSeminorm _]
-
--- This used to be a long proof; now somewhat redundant.
-theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
-    ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
-    simp [injectiveSeminorm_eq_projectiveSeminorm, norm_eval_le_projectiveSeminorm]
 
 end dualCharacterization
 
