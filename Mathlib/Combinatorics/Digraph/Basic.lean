@@ -506,7 +506,6 @@ lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
   · intro v w adj
     simp_all only [sInf, Subtype.forall, forall_and_index]
 
-
 lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H ≤ H') → H ≤ sInf ℋ := by
   intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ h_sub
@@ -522,7 +521,6 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
     · apply H_sub.right at h_adj
       assumption
 
-
 lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
   (inf (sup H₁ H₂) (sup H₁ H₃))≤ (sup H₁ (inf H₂ H₃)) := by
   intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩ ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
@@ -535,8 +533,6 @@ lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
     simp_all only [subset_refl, inf_adj, sup_adj]
     tauto
 
-
-
 lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   inf H (compl H) ≤ bot := by
   intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
@@ -548,7 +544,6 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
     intro v w h _ hcontra
     exfalso
     exact hcontra h
-
 
 instance (G : Digraph V) : CompleteBooleanAlgebra
   (G.SpanningSubgraph) where
@@ -575,15 +570,11 @@ instance (G : Digraph V) : CompleteBooleanAlgebra
   sInf_le := sInf_le
   le_sInf := le_sInf
 
-
-
 instance Top : Top (Digraph V) where
   top := Digraph.completeDigraph V
 
 instance Bot : Bot (Digraph V) where
   bot := Digraph.emptyDigraph V
-
-
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 
@@ -596,10 +587,7 @@ instance Bot : Bot (Digraph V) where
 
 @[simps] instance (V : Type*) : Inhabited (Digraph V) := ⟨⊥⟩
 
-example {α} [IsEmpty α] (x : Set α) : x = ∅ := by
-  exact Set.eq_empty_of_isEmpty x
-
-instance [iE : IsEmpty V] : Unique (Digraph V) where
+instance [IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by
     ext1
@@ -638,8 +626,6 @@ instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w => by
       @instDecidableNot (G.Adj v w) ?_
     )))
   all_goals tauto
-
-
 
 end Decidable
 
