@@ -142,16 +142,18 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
 section RestrictScalars
 
-theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
-    (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
+variable {R A M : Type*} [Semiring A] [AddCommMonoid M] [Module A M]
+
+theorem fg_restrictScalars [CommSemiring R] [Algebra R A] [Module R M] [IsScalarTower R A M]
+    (N : Submodule A M) (hfin : N.FG) (h : Function.Surjective (algebraMap R A)) :
     (Submodule.restrictScalars R N).FG := by
   obtain ⟨X, rfl⟩ := hfin
   use X
-  exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
+  exact (restrictScalars_span R A h (X : Set M)).symm
 
-variable (R : Type*) {A M : Type*} [Semiring R] [Semiring A]
-  [AddCommMonoid M] [Module R M] [Module A M]
+variable [Semiring R] [Module R M]
+
+variable (R)
 
 lemma FG.of_restrictScalars [SMul R A] [IsScalarTower R A M] (S : Submodule A M)
     (hS : (S.restrictScalars R).FG) : S.FG := by
