@@ -619,8 +619,8 @@ instance [Nonempty V] : Nontrivial (Digraph V) := by
 
 section Decidable
 
-variable (V) (H : Digraph V) [iadjG : DecidableRel G.Adj] [DecidableRel H.Adj]
-variable [ivertG : DecidablePred G.verts] [ivertH : DecidablePred H.verts]
+variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable [DecidablePred G.verts] [DecidablePred H.verts]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ False
@@ -637,11 +637,12 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w =>
-  (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) (ivertG v)
-    (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) (ivertG w) (
-      @instDecidableNot (G.Adj v w) (iadjG v w)
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w => by
+  refine (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) ?_
+    (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) ?_ (
+      @instDecidableNot (G.Adj v w) ?_
     )))
+  all_goals tauto
 
 
 
