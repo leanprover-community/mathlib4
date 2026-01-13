@@ -488,7 +488,7 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
-/-- The trivial monoid algebra is the base ring. -/]
+/-- The trivial additive monoid algebra is the base ring. -/]
 def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
   toAddEquiv := .finsuppUnique
   map_mul' x y :=
@@ -498,25 +498,15 @@ variable [DecidableEq M]
 
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
-/-- A product monoid algebra is a nested monoid algebra. -/]
-def curryRingEquiv : R[M × N] ≃+* R[N][M] :=
-  .symm {
-    toAddEquiv := curryAddEquiv.symm
-    map_mul' x y := by
-      classical
-      ext ⟨m, n⟩
-      simp only [MonoidAlgebra, AddEquiv.toEquiv_eq_coe, AddEquiv.toEquiv_symm, Equiv.toFun_as_coe,
-        AddEquiv.coe_toEquiv_symm, curryAddEquiv_symm_apply, Finsupp.uncurry_apply_pair]
-      erw [mul_apply, mul_apply]
-      simp only [MonoidAlgebra, sum_apply, apply_ite, coe_zero, ite_apply, Pi.ofNat_apply,
-        sum_uncurry_index, Prod.mk_mul_mk, Prod.mk.injEq, ite_and]
-      congr! with _ m₁ f m₂ z₂
-      rw [Finsupp.sum_comm]
-      congr!
-      split
-      · erw [mul_apply]
-      · simp
-  }
+/-- An additive product monoid algebra is a nested additive monoid algebra. -/]
+def curryRingEquiv : R[M × N] ≃+* R[N][M] where
+  toAddEquiv := curryAddEquiv
+  map_mul' := by
+    let f : R[M × N] →+ R[N][M] := curryAddEquiv.toAddMonoidHom
+    have {mn r} : f (single mn r) = single mn.1 (single mn.2 r) := Finsupp.curry_single _ _
+    refine f.map_mul_iff.2 ?_
+    ext ⟨m₁, n₁⟩ r₁ ⟨m₂, n₂⟩ r₂
+    simp [this]
 
 @[to_additive (attr := simp)]
 lemma curryRingEquiv_single (m : M) (n : N) (r : R) :
