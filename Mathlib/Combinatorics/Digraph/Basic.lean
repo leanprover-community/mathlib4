@@ -273,19 +273,6 @@ instance distribLattice : DistribLattice (Digraph V) where
       · intro v w hGH gGI
         tauto
 
-abbrev spanningLE (H : Digraph V) (G : Digraph V) : Prop :=
-  distribLattice.le H G ∧ H.verts = G.verts
-
-
-abbrev spanningSubgraph_compl (H G : Digraph V) : Digraph V where
-  verts := G.verts
-  Adj v w := ¬ H.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts ∧ G.Adj v w
-
-lemma spanningSubgraph_compl_subgraph (H G : Digraph V) :
-  distribLattice.le (spanningSubgraph_compl H G) G := by
-  unfold spanningSubgraph_compl
-  simp [LE.le]
-
 
 section SpanningSubgraphs
 
@@ -293,11 +280,14 @@ section SpanningSubgraphs
 In this section we provide the complete boolean algebra for spanning subgraphs
 -/
 
+/--
+The type of spanning subgraphs of a digraph `G`
+-/
 abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // H ≤ G ∧ H.verts = G.verts}
 
-
-
-
+/--
+The join/union of two Digraphs i.e.`G₁ ⊔ G₂`
+-/
 def sup {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
   obtain ⟨H₁, H₁_sub, H₁_verts_eq⟩ := H₁
   obtain ⟨H₂, H₂_sub, H₂_verts_eq⟩ := H₂
@@ -324,9 +314,14 @@ lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
   simp [sup]
 
 
-
+/--
+The top subgraph `⊤`
+-/
 def top {G : Digraph V} : G.SpanningSubgraph := ⟨G, by simp⟩
 
+/--
+The complement of a spanning subgraph `H` of `G` w.r.t to `G`
+-/
 def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
   constructor
   case val => exact {
@@ -340,7 +335,9 @@ def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
     intro v w G_adj H_adj
     assumption
 
-
+/--
+The meet/intersection of two spanning subgraphs `H₁` and `H₂` of `G`
+-/
 def inf {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
   constructor
   case val => exact (min H₁.val H₂.val)
@@ -365,7 +362,9 @@ lemma inf_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
   obtain ⟨H₂, _, _⟩ := H₂
   simp [inf]
 
-
+/--
+The `⊥` subgraph according to the spanning subgraph relation
+-/
 def bot {G : Digraph V} : G.SpanningSubgraph where
   val :=
     ⟨G.verts, fun _ _ => False, by simp, by simp⟩
@@ -417,7 +416,9 @@ lemma bot_le {G : Digraph V} : ∀ (H : G.SpanningSubgraph), bot ≤ H := by
   unfold instLE LE.le Subtype.instLE
   simp_all [Digraph.IsSubgraph, bot]
 
-
+/--
+The supremum of a set of spanning subgraphs of a graph `G`
+-/
 def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts :=  G.verts,
@@ -445,6 +446,9 @@ def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         exact H_adj
     · simp only
 
+/--
+The infimum of a set of spanning subgraphs of a graph `G`
+-/
 def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts := G.verts
