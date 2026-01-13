@@ -11,10 +11,15 @@ public import Mathlib.RingTheory.PiTensorProduct
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
-# RFC: Re-define `injectiveSeminorm`
+# Define the least reasonable crossnorm
 
-RFC: Re-define `injectiveSeminorm` as the seminnorm which, on the tensor product
-of Banach spaces, specializes to the "least reasonable crossnorm".
+For `x : ⨂ Eᵢ`, we define `leastCrossnorm x` as the norm of the multilinear map
+that sends a family `fᵢ : StrongDual Eᵢ` to `(⨂ fᵢ) x`. If the `Eᵢ` are normed
+spaces over `ℝ` or `ℂ`, this is the "least reasonable crossnorm".
+
+Terminology: The "least reasonable crossnorm" is often called the "injective
+norm". In contrast, Mathlib currently uses "injective seminorm" to refer to an
+alternative construction of the projective seminorm.
 
 This is WIP.
 
@@ -26,30 +31,35 @@ https://www.ams.org/bookstore/pspdf/mbk-52-prev.pdf
 ## Main definitions
 
 * `leastCrossnorm`: For `x : ⨂ Eᵢ`, `leastCrossnorm x` is the norm of the multilinear map
-  that sends a family `fᵢ : StrongDual Eᵢ` of dual vectors to `(⨂ₜ fᵢ) x`.
+  that sends a family `fᵢ : StrongDual Eᵢ` to `(⨂ fᵢ) x`.
 * `dualDistribL`: A continuous version of `PiTensorProduct.dualDistrib`
 
 ## Main results
 
-* `le_leastCrossnorm` and `leastCrossnorm_le_bound` together characterize `leastCrossnorm x` in
-  terms of the vaues of `‖dualDistribL (⨂ fᵢ) x‖`.
-* `projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective seminorm is multiplicative in the
-  sense that `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if for each `mᵢ`, there is a dual vector `fᵢ` in the unit ball,
-  such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`
+* `le_leastCrossnorm`: `‖dualDistribL (⨂ fᵢ) x‖` lower-bounds `(leastCrossnorm x) * (∏ ‖fᵢ‖)`
+* `leastCrossnorm_le_bound`: If `‖dualDistribL (⨂ fᵢ) x‖ ≤ M * (∏ ‖fᵢ‖))` for all families
+  `fᵢ : StrongDual Eᵢ`, then `leastCrossnorm x ≤ M`
+* `projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective seminorm satisfies the
+  multiplicativity property `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if, for each `mᵢ`, there is an `fᵢ` in the dual unit
+  ball such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`. [This fits into ProjectiveSeminorm.lean; included here pending
+  comments on the proposed refactoring of that file.]
 
 ## Implementation notes
 
+In the definition of `leastCrossnorm`, we let the multilinear map take values
+values in `(⨂[𝕜] _ : ι, 𝕜)`. Only later do we define an isometric equivalence
+`(⨂[𝕜] _ : ι, 𝕜) ≃ₗᵢ 𝕜`.
+
 ## TODO
 
-* Get feedback on whether that's wanted.
-
-* Generalize `projectiveSeminorm_tprod_of_dual_vectors` to the case where the `fᵢ` are replaced by
-  a net of vectors in the dual unit ball such that the norm of the evaluation on `mᵢ` converges to `
-  `‖mᵢ‖`.
+* Mainly: Get feedback.
 * Show that the `leastCrossnorm` (and hence the `projectiveSeminorm`) are norms, assuming
   `∀ i, SeparatingDual Eᵢ`.
-* Show the "injectivity property": Given submodules `pᵢ ⊆ Eᵢ` and `x : ⨂ pᵢ`, then
+* Show the eponymous "injectivity property": Given submodules `pᵢ ⊆ Eᵢ` and `x : ⨂ pᵢ`, then
   `leastCrossnorm x = leastCrossnorm mapIncl x`.
+* Generalize `projectiveSeminorm_tprod_of_dual_vectors` to the case where the `fᵢ` are replaced by
+  a net of vectors in the dual unit ball, such that the norm of the evaluation on `mᵢ` converges to
+  `‖mᵢ‖`.
 -/
 
 @[expose] public section
@@ -182,7 +192,7 @@ variable [∀ i, Algebra R (A i)]
 The following definitonal equality is used in `PiTensorProduct.algebraMap_apply`, but does not seem
 to be registered as a `simp` lemma.
 
-Adding this to RingTheory/PiTensorProduct.lean would mirror the idiom of
+Adding this to RingTheory/PiTensorProduct.lean would mirror the idiom used for the pair
 `Pi.algebraMap_def`, `Pi.algebraMap_apply`.
 -/
 theorem algebraMap_def (r : R') : algebraMap R' (⨂[R] i, A i) r = r • (⨂ₜ[R] _ : ι, 1)
@@ -242,7 +252,7 @@ theorem piTensorHomMapL_tprod_tprod (f : Π i, E i →L[𝕜] E' i) (x : Π i, E
 
 theorem piTensorHomMapL_tprod_eq_mapL (f : Π i, E i →L[𝕜] E' i) :
     piTensorHomMapL (tprod 𝕜 f) = mapL f := by
-  simp [piTensorHomMapL, mapLMultilinear]  -- Not ideal.
+  simp [piTensorHomMapL, mapLMultilinear]  -- TBD: Refine API for `piTensorHomMapL`
 
 theorem opNorm_piTensorHomMapL_le : ‖piTensorHomMapL (𝕜:=𝕜) (E:=E) (E':=E')‖ ≤ 1 := by
   simp only [piTensorHomMapL, LinearIsometryEquiv.norm_map]
@@ -251,7 +261,7 @@ theorem opNorm_piTensorHomMapL_le : ‖piTensorHomMapL (𝕜:=𝕜) (E:=E) (E':=
 noncomputable def dualDistribL : (⨂[𝕜] i, StrongDual 𝕜 (E i)) →L[𝕜] StrongDual 𝕜 (⨂[𝕜] i, E i) :=
   (ContinuousLinearMap.compL 𝕜 _ _ 𝕜 (constantBaseRingIsometry ι 𝕜)).comp piTensorHomMapL
 
-/-- Not an analogue of `dualDistrib_apply`! See `dualDistrib_apply_apply`. -/
+/-- Warning: *Not* an analogue of `dualDistrib_apply`! See `dualDistrib_apply_apply`. -/
 @[simp]
 theorem dualDistribL_apply (f : Π i, StrongDual 𝕜 (E i)) (x : (⨂[𝕜] i, E i)) :
     dualDistribL (⨂ₜ[𝕜] i, f i) x = (constantBaseRingIsometry ι 𝕜) (mapL f x) := by
@@ -260,12 +270,12 @@ theorem dualDistribL_apply (f : Π i, StrongDual 𝕜 (E i)) (x : (⨂[𝕜] i, 
 /-- Corresponds to `dualDistrib_apply`. See also `dualDistribL_apply` -/
 theorem dualDistribL_apply_apply (f : Π i, StrongDual 𝕜 (E i)) (g : Π i, E i) :
     dualDistribL (⨂ₜ[𝕜] i, f i) (⨂ₜ[𝕜] i, g i) = ∏ i, f i (g i) := by
-  simp [dualDistribL]
+  simp
 
 end dualDistribL
 
 
-section CharacterizationViaDualDistribL
+section leastCrossnorm_dualDistribL
 
 theorem le_leastCrossnorm (f : Π i, StrongDual 𝕜 (E i)) (x : (⨂[𝕜] i, E i)) :
     ‖dualDistribL (⨂ₜ[𝕜] i, f i) x‖ ≤ (leastCrossnorm x) * (∏ i, ‖f i‖) := by
@@ -282,6 +292,6 @@ theorem leastCrossnorm_le_bound (x : (⨂[𝕜] i, E i)) {M : ℝ} (hMp : 0 ≤ 
   apply ContinuousMultilinearMap.opNorm_le_bound hMp
   simpa using hM
 
-end CharacterizationViaDualDistribL
+end leastCrossnorm_dualDistribL
 
 end PiTensorProduct
