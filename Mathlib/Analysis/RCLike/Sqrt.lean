@@ -24,7 +24,7 @@ open ComplexOrder
 /-- The square root of a complex number. -/
 noncomputable abbrev Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
 
-theorem Complex.sqrt_def (a : ℂ) :
+theorem Complex.sqrt_eq_add_ite (a : ℂ) :
     a.sqrt = √((‖a‖ + a.re) / 2) + (if 0 ≤ a.im then 1 else -1) * √((‖a‖ - a.re) / 2) * I := by
   rw [← cpow_inv_two_re]
   by_cases! h : 0 ≤ a.im
@@ -50,24 +50,6 @@ theorem RCLike.re_sqrt (a : 𝕜) : re (sqrt a) = √((‖a‖ + re a) / 2) := b
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
 
 theorem RCLike.sqrt_def (a : 𝕜) :
-    sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
-  rw [← re_sqrt]
-  obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
-  · simp [h, sqrt]
-  by_cases! ha : 0 ≤ im a
-  · simp only [sqrt, h, ↓reduceDIte, complexRingEquiv_apply, complexRingEquiv_symm_apply, map_add,
-      ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one, sub_self, add_zero, ha,
-      ↓reduceIte, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, one_mul, add_right_inj,
-      mul_eq_mul_right_iff]
-    rw [Complex.cpow_inv_two_im_eq_sqrt (by simpa)]
-    simp [h]
-  simp only [ha.not_ge, ↓reduceIte, sqrt, h, ↓reduceDIte, complexRingEquiv_apply,
-    complexRingEquiv_symm_apply, map_add, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, mul_one,
-    sub_self, add_zero, Nat.ofNat_nonneg, Real.sqrt_div', map_div₀, neg_mul, add_right_inj]
-  rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa)]
-  simp [h]
-
-theorem RCLike.sqrt_def' (a : 𝕜) :
     letI b : ℂ := (re a + im a * Complex.I).sqrt
     sqrt a = b.re + b.im * (I : 𝕜) := by
   rw [sqrt]
@@ -79,6 +61,15 @@ theorem RCLike.sqrt_def' (a : 𝕜) :
   by_cases! ha' : 0 ≤ re a
   · simp [abs_of_nonneg ha', ← two_mul]
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
+
+theorem RCLike.sqrt_eq_add_ite (a : 𝕜) :
+    sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
+  rw [sqrt_def, Complex.sqrt_eq_add_ite]
+  have : (I : 𝕜) = 0 → im a = 0 := by rw [← re_add_im a]; simp_all
+  obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
+  · rw [← re_add_im a]
+    simp [h, this h]
+  aesop
 
 @[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
 @[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
