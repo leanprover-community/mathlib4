@@ -436,32 +436,54 @@ def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         exact H_adj
     · simp only
 
+
+open Classical in
 def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts := G.verts
-    Adj v w := (∃ H, H ∈ ℋ) ∧ ∀ H ∈ ℋ, Adj H.val v w
+    Adj v w := if (∃ H, H ∈ ℋ) then ∀ H ∈ ℋ, Adj H.val v w else False
     left_mem_verts_of_adj := by
-      intro v w ⟨⟨⟨H, ⟨H_sub, H_verts⟩⟩, h_mem⟩, h_forall⟩
-      specialize h_forall ⟨H, ⟨H_sub, H_verts⟩⟩ h_mem
-      simp_all only [SpanningSubgraph]
-      apply H_sub.right at h_forall
-      apply G.left_mem_verts_of_adj h_forall
+      split_ifs
+      case pos hnonempty =>
+        obtain ⟨⟨H, ⟨H_sub, H_verts_eq⟩⟩, H_mem⟩ := hnonempty
+        intro v w h_univ
+        specialize h_univ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
+        apply H_sub.right at h_univ
+        apply G.left_mem_verts_of_adj h_univ
+      case neg _ =>
+        intro _ _ hfalse
+        exfalso
+        assumption
+
     right_mem_verts_of_adj := by
-      intro v w ⟨⟨⟨H, ⟨H_sub, H_verts⟩⟩, h_mem⟩, h_forall⟩
-      specialize h_forall ⟨H, ⟨H_sub, H_verts⟩⟩ h_mem
-      simp_all only [SpanningSubgraph]
-      apply H_sub.right at h_forall
-      apply G.right_mem_verts_of_adj h_forall
+      split_ifs
+      case pos hnonempty =>
+        obtain ⟨⟨H, ⟨H_sub, H_verts_eq⟩⟩, H_mem⟩ := hnonempty
+        intro v w h_univ
+        specialize h_univ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
+        apply H_sub.right at h_univ
+        apply G.right_mem_verts_of_adj h_univ
+      case neg _ =>
+        intro _ _ hfalse
+        exfalso
+        assumption
   }
   property := by
     constructor
     · constructor
       · simp
       · simp only [Subtype.forall, forall_and_index]
-        intro v w ⟨⟨H, ⟨H_sub, H_verts⟩⟩, H_mem⟩ h
-        specialize h H H_sub H_verts H_mem
-        apply H_sub.right at h
-        assumption
+        split_ifs
+        case pos h =>
+          obtain ⟨⟨H, ⟨H_sub, H_verts⟩⟩, H_mem⟩ := h
+          intro v w h_univ
+          specialize h_univ H H_sub H_verts H_mem
+          apply H_sub.right at h_univ
+          assumption
+        case neg h =>
+          intro _ _ hfalse
+          exfalso
+          assumption
     · simp
 
 
@@ -485,13 +507,13 @@ lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
     assumption
 
 lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
-  intro ⟨H, H_sub, H_verts⟩
+  intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
+  simp_all only [top, sup, compl, max, SemilatticeSup.sup, Set.union_self, ge_iff_le]
   constructor
-  · simp only [top, sup, compl, max, SemilatticeSup.sup, Set.union_self, Set.subset_def]
-    intro v v_in_G
+  · intro v v_in_G
     grind
   · intro v w top_adj
-    simp_all [top, sup, max, SemilatticeSup.sup]
+    
     sorry
 
 lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
@@ -510,12 +532,42 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   · simp_all [sInf]
   · intro v w h_adj
     simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf, Subtype.exists]
-    constructor
-    · sorry
-    · intro a ha hv hmem
-      specialize h_sub a ha hv hmem
+    split_ifs
+    case pos hnonempty =>
+      obtain ⟨H₁, H₁_mem⟩ := hnonempty
+      intro H' H'_sub_G H'verts H'mem
+      specialize h_sub H' H'_sub_G H'verts H'mem
       apply h_sub.right at h_adj
       assumption
+    case neg =>
+      sorry
+
+
+lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
+  inf (sup H₁ H₂) (sup H₁ H₃) ≤ sup H₁ (inf H₂ H₃) := by
+  intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩
+    ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
+    ⟨H₃, ⟨H₃_sub_verts, H₃_sub_adj⟩, H₃_verts_eq⟩
+  simp only [inf, min, SemilatticeInf.inf, Lattice.inf, sup, max, SemilatticeSup.sup]
+  simp_all only [Set.inter_self, Set.union_self]
+  constructor
+  · grind
+  · intro v w h
+    simp_all only
+
+    sorry
+lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
+  inf H (compl H) ≤ bot := by
+  intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
+  simp_all only [inf, min, SemilatticeInf.inf, Lattice.inf, compl, Set.inter_self, bot,
+    Subtype.mk_le_mk, ge_iff_le]
+  constructor
+  · simp only [subset_refl]
+  · simp only [imp_false, not_and]
+    intro v w h _ hcontra _
+    exfalso
+    exact hcontra h
+
 
 noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
   (G.SpanningSubgraph) where
@@ -539,34 +591,15 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
   top_le_sup_compl := top_le_sup_compl
   sInf_le := sInf_le
   le_sInf := le_sInf
-  le_sup_inf := by
-    intro ⟨H₁, hH₁⟩ ⟨H₂, hH₂⟩ ⟨H₃, hH₃⟩
-    constructor
-    · simp_all [max, min, inf, SemilatticeInf.inf, Lattice.inf, sup,
-        SemilatticeSup.sup]
-      grind
-    · intro v w adj
-      simp_all [max, min, inf, SemilatticeInf.inf, Lattice.inf,
-      sup, SemilatticeSup.sup]
-      sorry
-
-  inf_compl_le_bot := by
-    intro ⟨H, H_prop⟩
-    simp only [min, SemilatticeInf.inf, inf, Lattice.inf, ge_iff_le]
-    constructor
-    · simp [compl, bot, H_prop]
-    · simp only [compl, H_prop, bot, imp_false, not_and]
-      intro v w H_adj G_adj not_H_adj v_verts
-      exfalso
-      exact (ne_self_iff_false a).mp fun a ↦ not_H_adj H_adj
-
-#exit
+  le_sup_inf := le_sup_inf
+  inf_compl_le_bot := inf_compl_le_bot
 
 
+instance Top : Top (Digraph V) where
+  top := Digraph.completeDigraph V
 
-
-end SpanningSubgraphs
-
+instance Bot : Bot (Digraph V) where
+  bot := Digraph.emptyDigraph V
 
 
 
@@ -575,18 +608,23 @@ end SpanningSubgraphs
 @[simp] theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False := Iff.rfl
 
 @[simp] theorem completeDigraph_eq_top (V : Type*) : Digraph.completeDigraph V = ⊤ := by
-  simp [Digraph.completeDigraph]
-
+  rfl
 
 @[simp] theorem emptyDigraph_eq_bot (V : Type*) : Digraph.emptyDigraph V = ⊥ := rfl
 
 @[simps] instance (V : Type*) : Inhabited (Digraph V) := ⟨⊥⟩
 
+example {α} [IsEmpty α] (x : Set α) : x = ∅ := by
+  exact Set.eq_empty_of_isEmpty x
+
 instance [iE : IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by
     ext1
-    · sorry
+    · have s₁ : G.verts = ∅ := by
+        exact Set.eq_empty_of_isEmpty G.verts
+      rw [←Digraph.emptyDigraph_eq_bot, s₁]
+      rfl
     · congr!
 
 instance [Nonempty V] : Nontrivial (Digraph V) := by
@@ -613,10 +651,16 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
+set_option trace.Meta.synthInstance true in
+instance Compl.adjDecidable {G : Digraph V} [DecidablePred G.verts]: DecidableRel (Gᶜ.Adj) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
+
+
+
 
 end Decidable
+
+end SpanningSubgraphs
 
 end Order
 
