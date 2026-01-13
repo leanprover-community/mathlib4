@@ -215,9 +215,21 @@ attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option Name :=
   (t.translations.getState env).find?
 
+/-- Get the translation for the given name. If there is no direct translation,
+check if the name can be translated as a recursor of a translated name.
+
+TODO?: Remove this function and tag the recursors directly. -/
+def findTranslationRec? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
+  findTranslation? env t n <|> do
+    if let .str pre s := n then
+      if let some pre' := findTranslation? env t pre then
+        if Lean.isRecCore env n || Lean.isAuxRecursor env n then
+          return .str pre' s
+    failure
+
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
-This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
+This is used to guess the name translation -/
 def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
   nm.mapPrefix fun n ↦ do
     if let some n' := findTranslation? env t n then
@@ -245,7 +257,7 @@ where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (t : TranslateData) (src tgt : Name)
       (argInfo : ArgInfo) : CoreM Unit := do
-    if let some tgt' := findTranslation? (← getEnv) t src then
+    if let some tgt' := findTranslationRec? (← getEnv) t src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if tgt != tgt' then
@@ -418,13 +430,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
-  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
-  -- `aux` as it is monadic.
-  e'.getUsedConstants.forM fun n => do
-    if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
-      executeReservedNameAction n
-  return e'
+  return aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
   memoFix fun r e ↦ Id.run do
@@ -447,10 +453,7 @@ where /-- Implementation of `applyReplacementFun`. -/
                   However, we will still recurse into all the non-numeral arguments."
               let args := numeralArgs.foldl (·.modify · changeNumeral) args
               return mkAppN f (← args.mapM r)
-      let some n₁ := findTranslation? env t n₀ <|> do
-        let n₁ := findPrefixTranslation env n₀ t
-        guard (n₀ != n₁ && (isReservedName env n₁ || env.contains n₁)); some n₁
-        | return mkAppN f (← args.mapM r)
+      let some n₁ := findTranslationRec? env t n₀ | return mkAppN f (← args.mapM r)
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
@@ -664,7 +667,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot translate the name.
   let relevantArg ← findRelevantArg t src
-  if !pre.isPrefixOf src || src != pre && relevantArg != 0 then
+  if src != pre then
     insertTranslation t src tgt { relevantArg } ref
   -- We still lack a heuristic that automatically infers the `dontTranslate`,
   -- so for now we do a best guess based on argument names.

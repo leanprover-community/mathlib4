@@ -386,7 +386,8 @@ section
 
 variable {M : Type u}
 
-attribute [to_additive existing] npowRec
+run_meta Lean.executeReservedNameAction ``nsmulRec.eq_1
+attribute [to_additive existing] npowRec npowRec.eq_1 npowRec.eq_2
 
 variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
 include hn ha
