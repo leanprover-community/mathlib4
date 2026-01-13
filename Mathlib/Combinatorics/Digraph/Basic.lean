@@ -665,9 +665,10 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-set_option trace.Meta.synthInstance true in
-instance Compl.adjDecidable {G : Digraph V} [DecidablePred G.verts]: DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
+
+instance Compl.adjDecidable {G : Digraph V} [DecidablePred G.verts]: DecidableRel (Gᶜ.Adj) := sorry
+
+--  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
 
 
 
