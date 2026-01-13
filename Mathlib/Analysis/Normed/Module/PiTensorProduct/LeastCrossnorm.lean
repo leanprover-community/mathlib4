@@ -206,7 +206,7 @@ theorem opNorm_mulL_eq {a : 𝕜} : ‖mulL a‖ = ‖a‖ := by
 end mulL
 
 theorem projectiveSeminorm_tprod_field (m : ι → 𝕜) : ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ :=
-  projectiveSeminorm_tprod_eq_of_dual_vectors m (g := fun _ ↦ mulL (1 : 𝕜)) (by simp) (by simp)
+  projectiveSeminorm_tprod_eq_of_dual_vectors m (f := fun _ ↦ mulL (1 : 𝕜)) (by simp) (by simp)
 
 variable (ι 𝕜) in
 noncomputable def constantBaseRingIsometry : (⨂[𝕜] _ : ι, 𝕜) ≃ₗᵢ[𝕜] 𝕜 :=
