@@ -188,7 +188,8 @@ namespace IsWellFounded
 variable (r) [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → C y) → C x) : C a :=
+theorem induction {motive : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → motive y) → motive x) :
+    motive a :=
   wf.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
@@ -197,13 +198,14 @@ theorem apply : ∀ a, Acc r a :=
 
 /-- Creates data, given a way to generate a value from all that compare as less under a well-founded
 relation. See also `IsWellFounded.fix_eq`. -/
-def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, r y x → C y) → C x) → ∀ x : α, C x :=
+def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) →
+    ∀ x : α, motive x :=
   wf.fix
 
 /-- The value from `IsWellFounded.fix` is built from the previous ones as specified. -/
-theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, r y x → C y) → C x) :
-    ∀ x, fix r F x = F x fun y _ => fix r F y :=
-  wf.fix_eq F
+theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, r y x → motive y) → motive x) :
+    ∀ x, fix r ind x = ind x fun y _ => fix r ind y :=
+  wf.fix_eq ind
 
 /-- Derive a `WellFoundedRelation` instance from an `isWellFounded` instance. -/
 def toWellFoundedRelation : WellFoundedRelation α :=
@@ -290,14 +292,15 @@ theorem apply : ∀ a : α, Acc (· < ·) a :=
 `WellFoundedLT.fix_eq`. -/
 @[to_dual /-- Creates data, given a way to generate a value from all that compare as greater.
 See also `WellFoundedGT.fix_eq`. -/]
-def fix {C : α → Sort*} : (∀ x : α, (∀ y : α, y < x → C y) → C x) → ∀ x : α, C x :=
+def fix {motive : α → Sort*} : (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) →
+    ∀ x : α, motive x :=
   IsWellFounded.fix (· < ·)
 
 /-- The value from `WellFoundedLT.fix` is built from the previous ones as specified. -/
 @[to_dual /-- The value from `WellFoundedGT.fix` is built from the successive ones as specified. -/]
-theorem fix_eq {C : α → Sort*} (F : ∀ x : α, (∀ y : α, y < x → C y) → C x) :
-    ∀ x, fix F x = F x fun y _ => fix F y :=
-  IsWellFounded.fix_eq _ F
+theorem fix_eq {motive : α → Sort*} (ind : ∀ x : α, (∀ y : α, y < x → motive y) → motive x) :
+    ∀ x, fix ind x = ind x fun y _ => fix ind y :=
+  IsWellFounded.fix_eq _ ind
 
 /-- Derive a `WellFoundedRelation` instance from a `WellFoundedLT` instance. -/
 @[to_dual /-- Derive a `WellFoundedRelation` instance from a `WellFoundedGT` instance. -/]
