@@ -1004,7 +1004,7 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     rw [meromorphicOrderAt_mul (by fun_prop) (by fun_prop),
       meromorphicOrderAt_pow (by fun_prop)] at this
     rw [← WithTop.add_le_add_iff_right (z := 6) (by simp)]
-    simpa [-LinearOrderedAddCommGroupWithTop.add_le_add_iff_left_of_ne_top] using this
+    simpa [-add_le_add_iff_left_of_ne_top] using this
   rw [AnalyticAt.meromorphicOrderAt_eq (by fun_prop)]
   refine ENat.monotone_map_iff.mpr Nat.mono_cast
     ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
