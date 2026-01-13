@@ -162,12 +162,20 @@ theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x ∈ s, x = 0 := 
 theorem gcd_ne_zero_iff (s : Multiset α) : s.gcd ≠ 0 ↔ ∃ x ∈ s, x ≠ 0 := by
   simp [gcd_eq_zero_iff]
 
-theorem gcd_map_mul (a : α) (s : Multiset α) : (s.map (a * ·)).gcd = normalize a * s.gcd := by
+theorem gcd_map_mul {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
+    (a : α) (s : Multiset α) : (s.map (a * ·)).gcd = normalize a * s.gcd := by
   refine s.induction_on ?_ fun b s ih ↦ ?_
   · simp_rw [map_zero, gcd_zero, mul_zero]
   · simp_rw [map_cons, gcd_cons, ← gcd_mul_left]
     rw [ih]
     apply ((normalize_associated a).mul_right _).gcd_eq_right
+
+theorem gcd_map_mul' (a : α) (s : Multiset α) :
+    Associated (s.map (a * ·)).gcd (a * s.gcd) := by
+  refine s.induction_on ?_ fun b s ih ↦ ?_
+  · simp_rw [map_zero, gcd_zero, mul_zero, Associated.of_eq]
+  · simp_rw [map_cons, gcd_cons]
+    exact .trans (.gcd .rfl ih) (gcd_mul_left' ..)
 
 section
 
@@ -200,11 +208,12 @@ theorem gcd_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).gcd = GCDMonoid
 end
 
 theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α))
-    (ht : s = t.map (s.gcd * ·)) : t.gcd = 1 :=
-  ((mul_right_eq_self₀ (a := s.gcd)).1 <| by
-      conv_lhs => rw [← normalize_gcd, ← gcd_map_mul, ← ht]).resolve_right <| by
-    contrapose! hs
-    exact s.gcd_eq_zero_iff.1 hs
+    (ht : s = t.map (s.gcd * ·)) : t.gcd = 1 := by
+  rw [← normalize_gcd, normalize_eq_one, ← associated_one_iff_isUnit]
+  refine .of_mul_left (.symm ?_) .rfl (a := s.gcd) ?_
+  · simpa using (Associated.of_eq <| congr(gcd $ht)).trans (gcd_map_mul' ..)
+  contrapose! hs
+  exact s.gcd_eq_zero_iff.1 hs
 
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by

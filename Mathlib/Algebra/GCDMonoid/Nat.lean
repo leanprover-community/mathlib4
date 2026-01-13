@@ -16,10 +16,10 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 ## Main statements
 
 * ℕ is a `GCDMonoid`
-* ℕ is a `NormalizedGCDMonoid`
-* ℤ is a `NormalizationMonoid`
+* ℕ is a `StrongNormalizedGCDMonoid`
+* ℤ is a `StrongNormalizationMonoid`
 * ℤ is a `GCDMonoid`
-* ℤ is a `NormalizedGCDMonoid`
+* ℤ is a `StrongNormalizedGCDMonoid`
 
 ## Tags
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
@@ -46,7 +46,7 @@ theorem gcd_eq_nat_gcd (m n : ℕ) : gcd m n = Nat.gcd m n :=
 theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
   rfl
 
-instance : NormalizedGCDMonoid ℕ :=
+instance : StrongNormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
     (inferInstance : NormalizationMonoid ℕ) with
     normalize_gcd := fun _ _ => normalize_eq _
@@ -56,7 +56,7 @@ namespace Int
 
 section NormalizationMonoid
 
-instance normalizationMonoid : NormalizationMonoid ℤ where
+instance normalizationMonoid : StrongNormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
@@ -69,13 +69,13 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
 theorem normUnit_eq (z : ℤ) : normUnit z = if 0 ≤ z then 1 else -1 := rfl
 
 theorem normalize_of_nonneg {z : ℤ} (h : 0 ≤ z) : normalize z = z := by
-  rw [normalize_apply, normUnit_eq, if_pos h, Units.val_one, mul_one]
+  rw [StrongNormalizationMonoid.normalize_apply, normUnit_eq, if_pos h, Units.val_one, mul_one]
 
 theorem normalize_of_nonpos {z : ℤ} (h : z ≤ 0) : normalize z = -z := by
   obtain rfl | h := h.eq_or_lt
   · simp
-  · rw [normalize_apply, normUnit_eq, if_neg (not_le_of_gt h), Units.val_neg, Units.val_one,
-      mul_neg_one]
+  · rw [StrongNormalizationMonoid.normalize_apply, normUnit_eq, if_neg (not_le_of_gt h),
+      Units.val_neg, Units.val_one, mul_neg_one]
 
 theorem normalize_coe_nat (n : ℕ) : normalize (n : ℤ) = n :=
   normalize_of_nonneg (ofNat_le_ofNat_of_le <| Nat.zero_le n)
@@ -113,7 +113,7 @@ instance : GCDMonoid ℤ where
   lcm_zero_left _ := natCast_eq_zero.2 <| Nat.lcm_zero_left _
   lcm_zero_right _ := natCast_eq_zero.2 <| Nat.lcm_zero_right _
 
-instance : NormalizedGCDMonoid ℤ :=
+instance : StrongNormalizedGCDMonoid ℤ :=
   { Int.normalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
     normalize_gcd := fun _ _ => normalize_coe_nat _
@@ -150,7 +150,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
   · refine Associates.forall_associated.2 fun a ↦ ?_
     refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
-    simp [Int.natCast_natAbs, Int.abs_eq_normalize, normalize_apply]
+    simp [Int.natCast_natAbs, Int.abs_eq_normalize, StrongNormalizationMonoid.normalize_apply]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_natCast]
 

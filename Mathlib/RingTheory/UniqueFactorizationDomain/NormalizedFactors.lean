@@ -374,9 +374,9 @@ open Multiset Associates
 variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
-/-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
-protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
-  normalizationMonoidOfMonoidHomRightInverse
+/-- Noncomputably defines a `StrongNormalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
+protected noncomputable abbrev strongNormalizationMonoid : StrongNormalizationMonoid α :=
+  strongNormalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
         if a = 0 then 0
         else
@@ -403,5 +403,8 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       rw [if_neg hx, ← mkMonoidHom_apply, MonoidHom.map_multiset_prod, map_map, h, map_id, ←
         associated_iff_eq]
       apply prod_normalizedFactors hx)
+
+@[deprecated (since := "2026-01-13")] alias
+UniqueFactorizationMonoid.normalizationMonoid := UniqueFactorizationMonoid.strongNormalizationMonoid
 
 end UniqueFactorizationMonoid
