@@ -219,6 +219,73 @@ theorem list_append : Primrec₂ ((· ++ ·) : List α → List α → List α) 
   (list_foldr fst snd <| to₂ <| comp (@list_cons α _) snd).to₂.of_eq fun l₁ l₂ => by
     induction l₁ <;> simp [*]
 
+/-- Taking the first `n` elements of a list is primitive recursive. -/
+theorem list_take : Primrec₂ (@List.take α) :=
+  let step := fun (s : ℕ × List α) (a : α) => if s.1 = 0 then s else (s.1 - 1, a :: s.2)
+  let F (n : ℕ) (l : List α) : List α := (l.foldl step (n, [])).2.reverse
+  have hF : Primrec₂ F :=
+    (list_reverse.comp <| snd.comp <|
+      list_foldl snd (pair fst (const []))
+        (ite (Primrec.eq.comp (fst.comp (fst.comp snd)) (const 0))
+          (fst.comp snd)
+          (pair (pred.comp (fst.comp (fst.comp snd)))
+            (list_cons.comp (snd.comp snd) (snd.comp (fst.comp snd))))).to₂).to₂
+  hF.of_eq fun n l => by
+    suffices h : ∀ k acc, (l.foldl step (k, acc)).2 = (List.take k l).reverse ++ acc by
+      simp only [F, h n [], List.append_nil, List.reverse_reverse]
+    induction l with
+    | nil => intro k acc; simp [step]
+    | cons x xs ih =>
+      intro k acc
+      cases k with
+      | zero => simp only [step, List.foldl_cons, ↓reduceIte, ih, List.take_zero,
+                           List.reverse_nil, List.nil_append]
+      | succ k => simp only [step, List.foldl_cons, Nat.succ_ne_zero, ↓reduceIte,
+                             Nat.add_one_sub_one, ih, List.take_succ_cons, List.reverse_cons,
+                             List.append_assoc, List.singleton_append]
+
+theorem list_length : Primrec (@List.length α) :=
+  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
+    fun l => by dsimp; induction l <;> simp [*]
+
+/-- Dropping the first `n` elements of a list is primitive recursive. -/
+theorem list_drop : Primrec₂ (@List.drop α) :=
+  -- l.drop n = (l.reverse.take (l.length - n)).reverse
+  (list_reverse.comp
+    (list_take.comp (nat_sub.comp (list_length.comp snd) fst) (list_reverse.comp snd))).to₂.of_eq
+  fun n l => by
+    have h := List.drop_reverse (xs := l.reverse) (i := n)
+    simp only [List.reverse_reverse, List.length_reverse] at h
+    exact h.symm
+
+/-- Modifying the head of a list using a primitive recursive function is primitive recursive.
+This generalized version allows the modification function to depend on external data. -/
+theorem list_modifyHead' {g : β → α → α} (hg : Primrec₂ g) :
+    Primrec₂ fun (l : List α) (b : β) => l.modifyHead (g b) :=
+  (list_casesOn fst (const [])
+    (list_cons.comp (hg.comp (snd.comp fst) (fst.comp snd)) (snd.comp snd)).to₂).to₂.of_eq
+    fun l b => by cases l <;> rfl
+
+/-- Modifying elements at an index using a primitive recursive function is primitive recursive.
+This generalized version allows the modification function to depend on external data. -/
+theorem list_modify' {g : β → α → α} (hg : Primrec₂ g) :
+    Primrec₂ fun (l : List α) (p : ℕ × β) => l.modify p.1 (g p.2) :=
+  -- l.modify n (g b) = l.take n ++ (l.drop n).modifyHead (g b)
+  (list_append.comp
+    (list_take.comp (fst.comp snd) fst)
+    ((list_modifyHead' hg).comp (list_drop.comp (fst.comp snd) fst) (snd.comp snd))).to₂.of_eq
+  fun l ⟨n, b⟩ => (List.modify_eq_take_drop (g b) l n).symm
+
+/-- Modifying an element at an index by a primitive recursive function is primitive recursive. -/
+theorem list_modify {f : α → α} (hf : Primrec f) :
+    Primrec₂ fun (l : List α) (n : ℕ) => l.modify n f :=
+  ((list_modify' (hf.comp snd).to₂).comp fst (pair snd (const ()))).to₂
+
+/-- Updating an element at an index in a list is primitive recursive.
+See also `List.set_eq_modify` which relates `List.set` to `List.modify`. -/
+theorem list_set : Primrec₂ fun (l : List α) (p : ℕ × α) => l.set p.1 p.2 :=
+  (list_modify' fst.to₂).of_eq fun l ⟨n, v⟩ => (List.set_eq_modify v n l).symm
+
 theorem list_concat : Primrec₂ fun l (a : α) => l ++ [a] :=
   list_append.comp fst (list_cons.comp snd (const []))
 
@@ -250,10 +317,6 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
     fun _ ↦ Eq.symm <| List.filterMap_eq_flatMap_toList _ _
 
 variable {p : α → Prop} [DecidablePred p]
-
-theorem list_length : Primrec (@List.length α) :=
-  (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
-    fun l => by dsimp; induction l <;> simp [*]
 
 /-- Filtering a list for elements that satisfy a decidable predicate is primitive recursive. -/
 theorem listFilter (hf : PrimrecPred p) : Primrec fun L ↦ List.filter (p ·) L := by
