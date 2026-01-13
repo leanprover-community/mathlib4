@@ -33,13 +33,17 @@ variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
 
 open scoped IntrinsicStar
 
+/-- The intrinsic star on continuous linear maps.
+In general, this is not meant to be used, please use the scoped star instance `IntrinsicStar`
+instead. -/
+@[simps!] def intrinsicStarCLM (f : E →L[R] F) : E →L[R] F := { star f.toLinearMap with
+  cont := by
+    dsimp [star]
+    exact .comp' continuous_star (.comp' f.continuous continuous_star) }
+
 /-- The intrinsic star operation on continuous linear maps defined by
 `(star f) x = star (f (star x))`. -/
-def intrinsicStar : Star (E →L[R] F) where
-  star f := { star f.toLinearMap with
-    cont := by
-      dsimp [star]
-      exact .comp' continuous_star (.comp' f.continuous continuous_star) }
+def intrinsicStar : Star (E →L[R] F) where star f := f.intrinsicStarCLM
 
 scoped[IntrinsicStar] attribute [instance] ContinuousLinearMap.intrinsicStar
 
