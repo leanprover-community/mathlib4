@@ -55,7 +55,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
-* `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`.
+* `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
+  in the sense of `ContMDiff`..
 
 ## Implementation notes
 
@@ -417,9 +418,8 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     simp_all
   · exact I.right_inv (by simp_all)
 
-/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
-`continuousAt` is part of the public API -/
-private theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
+/-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
+theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContinuousOn f h.domChart.source := by
   rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl
       h.mapsto_domChart_source_codChart_source (I' := J) (I := I),
@@ -427,15 +427,14 @@ private theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
   have : ContinuousOn (h.equiv ∘ fun x ↦ (x, 0)) (h.domChart.extend I).target := by fun_prop
   exact this.congr h.writtenInCharts
 
-/-- A `C^k` immersion at `x` is continuous at `x`. -/
+/-- A `C^n` immersion at `x` is continuous at `x`. -/
 theorem continuousAt (h : IsImmersionAtOfComplement F I J n f x) : ContinuousAt f x :=
   h.continuousOn.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
 variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
-/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
-`contMDiffAt` is part of the public API -/
-private theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
+/-- Prefer using `IsImmersionAtOfComplement.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
     h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
@@ -449,7 +448,7 @@ private theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
     exact ⟨contDiff_id, contDiff_const (c := (0 : F))⟩
   exact this.contMDiffOn.congr h.writtenInCharts
 
-/-- A `C^k` immersion at `x` is `C^k` at `x`. -/
+/-- A `C^n` immersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : ContMDiffAt I J n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
@@ -624,25 +623,22 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
-/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
-`continuousAt` is part of the public API -/
-private theorem continuousOn (h : IsImmersionAt I J n f x) :
-    ContinuousOn f h.domChart.source :=
+/-- Prefer using `IsImmersionAt.continuousAt` instead -/
+theorem continuousOn (h : IsImmersionAt I J n f x) : ContinuousOn f h.domChart.source :=
   h.isImmersionAtOfComplement_complement.continuousOn
 
-/-- A `C^k` immersion at `x` is continuous at `x`. -/
+/-- A `C^n` immersion at `x` is continuous at `x`. -/
 theorem continuousAt (h : IsImmersionAt I J n f x) : ContinuousAt f x :=
   h.isImmersionAtOfComplement_complement.continuousAt
 
 variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
-/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
-`contMDiffAt` is part of the public API -/
-private theorem contMDiffOn (h : IsImmersionAt I J n f x) :
+/-- Prefer using `IsImmersionAt.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsImmersionAt I J n f x) :
     ContMDiffOn I J n f h.domChart.source :=
   h.isImmersionAtOfComplement_complement.contMDiffOn
 
-/-- A `C^k` immersion at `x` is `C^k` at `x`. -/
+/-- A `C^n` immersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsImmersionAt I J n f x) : ContMDiffAt I J n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
@@ -739,7 +735,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
-/-- A `C^k` immersion is `C^k`. -/
+/-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersionOfComplement F I J n f) : ContMDiff I J n f :=
   fun x ↦ (h x).contMDiffAt

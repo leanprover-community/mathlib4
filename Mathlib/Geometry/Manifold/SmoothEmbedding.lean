@@ -22,7 +22,8 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.id`: the identity map is a smooth embedding
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
-* `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`.
+* `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
+  in the sense of `ContMDiff`..
 
 ## Implementation notes
 
@@ -64,8 +65,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {n : WithTop ℕ∞}
 
 variable (I J n) in
-/-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
-and a `C^k` immersion. -/
+/-- A `C^n` map `f : M → M'` is a smooth `C^n` embedding if it is a topological embedding
+and a `C^n` immersion. -/
 @[mk_iff]
 structure IsSmoothEmbedding (f : M → N) where
   isImmersion : IsImmersion I J n f
