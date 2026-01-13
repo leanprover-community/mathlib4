@@ -372,7 +372,7 @@ section MetrizableSpaceSeqCompact
 
 variable [TopologicalSpace X] [PseudoMetrizableSpace X] {s : Set X}
 
-/-- If the space is (pseudo)metrizable, then any sequentially compact set is compact. -/
+/-- In a (pseudo)metrizable space, any sequentially compact set is compact. -/
 protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
   letI := pseudoMetrizableSpaceUniformity X
   haveI := pseudoMetrizableSpaceUniformity_countably_generated X
