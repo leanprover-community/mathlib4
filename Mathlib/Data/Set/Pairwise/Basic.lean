@@ -425,6 +425,10 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
 
+/-- Simp normal form of `pairwise_ne_iff_injective`. -/
 @[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
     Pairwise (fun i j ↦ ¬ f i = f j) ↔ f.Injective := by
   simp [Pairwise, Function.Injective, not_imp_not]
+
+lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
+  simp
