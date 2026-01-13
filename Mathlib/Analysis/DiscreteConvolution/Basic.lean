@@ -22,10 +22,10 @@ where `mulFiber x = {(a, b) | a * b = x}`. Additive monoids are also supported.
 
 Uses a bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, following
 `MeasureTheory.convolution`. For specializing to ring multiplication,
-use `ringConvolution` which is given by `convolution (LinearMap.mul R R)`.
+use `ringConvolution` which is given by `convolution (LinearMap.mul ℕ R)`.
 
-Then index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
-Coefficient ring requires `[CommSemiring R]` for bilinearity of `LinearMap.mul`.
+The index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
+Coefficient ring only requires `[Semiring R]` (commutativity needed for `ringConvolution_comm`).
 
 `@[to_additive]` generates multiplicative and additive versions from a single definition.
 The `mul/add` distinction refers to the index monoid `M`: multiplicative sums over
@@ -242,12 +242,12 @@ end Definition
 
 section RingMul
 
-variable [Monoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+variable [Monoid M] {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- Convolution using ring multiplication. This is `convolution (LinearMap.mul R R)`. -/
+/-- Convolution using ring multiplication. This is `convolution (LinearMap.mul ℕ R)`. -/
 @[to_additive (dont_translate := R) addRingConvolution
   /-- Additive convolution using ring multiplication. -/]
-def ringConvolution (f g : M → R) : M → R := convolution (LinearMap.mul R R) f g
+def ringConvolution (f g : M → R) : M → R := convolution (LinearMap.mul ℕ R) f g
 
 /-- Notation for ring multiplication convolution. -/
 scoped notation:70 f:70 " ⋆ₘ " g:71 => ringConvolution f g
@@ -271,7 +271,7 @@ end RingMul
 
 /-! ### Commutativity -/
 
-section Commutative
+section CommMonoid
 
 variable [CommMonoid M] [CommSemiring S] [AddCommMonoid E] [Module S E] [TopologicalSpace E]
 
@@ -292,7 +292,7 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
   congr 1; funext ⟨⟨a, b⟩, _⟩
   exact hL (f b) (g a)
 
-end Commutative
+end CommMonoid
 
 section RingConvolutionComm
 
@@ -300,7 +300,7 @@ variable [CommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) addRingConvolution_comm]
 theorem ringConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
-  convolution_comm (LinearMap.mul R R) f g (fun x y => mul_comm x y)
+  convolution_comm (LinearMap.mul ℕ R) f g (fun x y => mul_comm x y)
 
 end RingConvolutionComm
 
@@ -346,7 +346,7 @@ variable [Module S E] [Module S E'] [Module S E''] [Module S F] [Module S F'] [M
 variable [TopologicalSpace F] [TopologicalSpace F'] [TopologicalSpace G]
 variable [T3Space G] [ContinuousAdd G]
 
-/-- Convolution associativity at a point using `assocEquiv` as the bijection.
+/-- Convolution associativity at a point using `TripleConvolutionExistsAt`.
 
 The bilinear compatibility follows from `hL : L₂ (L x y) z = L₃ x (L₄ y z)`. -/
 @[to_additive (dont_translate := S M) addConvolution_assoc_at]
@@ -355,8 +355,7 @@ theorem convolution_assoc_at
     (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
     (hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z))
     (f : M → E) (g : M → E') (h : M → E'') (x : M)
-    (hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
-        L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2))
+    (hTriple : TripleConvolutionExistsAt L₃ L₄ f g h x)
     (hFiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
         L₂ (L (f ab.1.1) (g ab.1.2)) (h cd.1.2))
     (hFiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
@@ -369,6 +368,12 @@ theorem convolution_assoc_at
         ∑' bd : mulFiber ae.1.2, L₃ (f ae.1.1) (L₄ (g bd.1.1) (h bd.1.2))) :
     ((f ⋆[L] g) ⋆[L₂] h) x = (f ⋆[L₃] (g ⋆[L₄] h)) x := by
   simp only [convolution_apply]
+  -- Derive left-sigma summability from TripleConvolutionExistsAt via leftAssocEquiv
+  have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
+      L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2) := by
+    have : Summable ((fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))) ∘
+        (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr hTriple
+    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, hL]
   -- Derive hφ from bilinearity hL
   have hφ : ∀ (p : Σ cd : mulFiber x, mulFiber cd.1.1),
       L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2) =
@@ -397,8 +402,7 @@ theorem convolution_assoc_at
 
 /-- Convolution is associative: `(f ⋆[L] g) ⋆[L₂] h = f ⋆[L₃] (g ⋆[L₄] h)`.
 
-Requires `hTriple : TripleConvolutionExists` (summability over `tripleFiber x`) and derives
-sigma summability internally. -/
+Requires `hTriple : TripleConvolutionExists` (summability over `tripleFiber x`). -/
 @[to_additive (dont_translate := S M) addConvolution_assoc]
 theorem convolution_assoc
     (L : E →ₗ[S] E' →ₗ[S] F) (L₂ : F →ₗ[S] E'' →ₗ[S] G)
@@ -418,27 +422,21 @@ theorem convolution_assoc
         ∑' bd : mulFiber ae.1.2, L₃ (f ae.1.1) (L₄ (g bd.1.1) (h bd.1.2))) :
     (f ⋆[L] g) ⋆[L₂] h = f ⋆[L₃] (g ⋆[L₄] h) := by
   ext x
-  have hSigmaL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
-      L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2) := by
-    have : Summable ((fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))) ∘
-        (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr (hTriple x)
-    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, hL]
-  exact convolution_assoc_at L L₂ L₃ L₄ hL f g h x hSigmaL (hFiberL x) (hFiberR x)
+  exact convolution_assoc_at L L₂ L₃ L₄ hL f g h x (hTriple x) (hFiberL x) (hFiberR x)
     (hcontL x) (hcontR x)
 
 end AssociativityTheorem
 
 section RingConvolutionAssoc
 
-variable {R : Type*} [CommSemiring R] [TopologicalSpace R] [T3Space R] [ContinuousAdd R]
+variable {R : Type*} [Semiring R] [TopologicalSpace R] [T3Space R] [ContinuousAdd R]
 
 /-- Ring convolution associativity at a point: `((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x`.
 
-Specializes `convolution_assoc_at` to `LinearMap.mul R R`; bilinearity becomes `mul_assoc`. -/
+Specializes `convolution_assoc_at` to `LinearMap.mul ℕ R`; bilinearity becomes `mul_assoc`. -/
 @[to_additive (dont_translate := R M) addRingConvolution_assoc_at]
 theorem ringConvolution_assoc_at (f g h : M → R) (x : M)
-    (hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
-        f p.2.1.1 * g p.2.1.2 * h p.1.1.2)
+    (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h x)
     (hFiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
         f ab.1.1 * g ab.1.2 * h cd.1.2)
     (hFiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
@@ -450,15 +448,15 @@ theorem ringConvolution_assoc_at (f g h : M → R) (x : M)
         f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
         ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2)) :
     ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x :=
-  convolution_assoc_at (LinearMap.mul R R) (LinearMap.mul R R) (LinearMap.mul R R)
-    (LinearMap.mul R R) (fun x y z => mul_assoc x y z) f g h x hSumL hFiberL hFiberR hcontL hcontR
+  convolution_assoc_at (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R)
+    (LinearMap.mul ℕ R) (fun x y z => mul_assoc x y z) f g h x hTriple hFiberL hFiberR hcontL hcontR
 
 /-- Ring convolution associativity: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`.
 
-Specializes `convolution_assoc` to `LinearMap.mul R R`; bilinearity becomes `mul_assoc`. -/
+Specializes `convolution_assoc` to `LinearMap.mul ℕ R`; bilinearity becomes `mul_assoc`. -/
 @[to_additive (dont_translate := R M) addRingConvolution_assoc]
 theorem ringConvolution_assoc (f g h : M → R)
-    (hTriple : TripleConvolutionExists (LinearMap.mul R R) (LinearMap.mul R R) f g h)
+    (hTriple : TripleConvolutionExists (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h)
     (hFiberL : ∀ x (cd : mulFiber x), Summable fun ab : mulFiber cd.1.1 =>
         f ab.1.1 * g ab.1.2 * h cd.1.2)
     (hFiberR : ∀ x (ae : mulFiber x), Summable fun bd : mulFiber ae.1.2 =>
@@ -470,7 +468,7 @@ theorem ringConvolution_assoc (f g h : M → R)
         f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
         ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2)) :
     (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) :=
-  convolution_assoc (LinearMap.mul R R) (LinearMap.mul R R) (LinearMap.mul R R) (LinearMap.mul R R)
+  convolution_assoc (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R)
     (fun x y z => mul_assoc x y z) f g h hTriple hFiberL hFiberR hcontL hcontR
 
 end RingConvolutionAssoc
