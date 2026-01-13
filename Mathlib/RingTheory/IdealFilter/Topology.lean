@@ -101,7 +101,7 @@ def ringFilterBasis (uni_F : F.IsUniform) : RingFilterBasis A where
     refine ⟨I.colon {x₀}, ?_, ?_⟩
     · exact ⟨I.colon {x₀}, IsUniform.colon_mem uni_F h_I x₀, rfl⟩
     · intro a ha
-      exact Set.mem_preimage.mpr (Submodule.mem_colon_singleton_set.mp ha)
+      exact Set.mem_preimage.mpr (Submodule.mem_colon_singleton.mp ha)
 
 /-- An `IdealFilter` on a ring `A` is uniform if and only if its ideals form a `RingFilterBasis`
 for `A`. -/
