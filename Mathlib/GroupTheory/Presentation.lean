@@ -10,17 +10,30 @@ public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
-# Presentation of a group
-This file introduces the notion of 'Presentation' of a group, aligned with
-`Mathlib.GroupTheory.PresentedGroup`.
+# Group presentations and Tietze transformations
 
-Main definitions:
-* `Group.GeneratingSet` packages a type of generators with a map to the group whose range
-  generates it.
-* `Group.Presentation` extends a generating set with relators and the usual kernel condition.
-* `Group.Presentation.toGroup` is the canonical map `PresentedGroup P.rels →* G`.
-* `Group.Presentation.mapMulEquiv` transports a presentation along a group isomorphism.
-* `Group.Presentation.equivPresentedGroup` identifies `PresentedGroup P.rels` with `G`.
+This file defines a notion of presentation of a group `G`, compatible with
+`Mathlib.GroupTheory.PresentedGroup`. A presentation consists of generators `ι → G`
+whose range generates `G`, together with relators `rels : Set (FreeGroup ι)` whose normal
+closure is exactly the kernel of the induced map `FreeGroup ι →* G`. We also provide the
+canonical map `PresentedGroup P.rels →* G` and the standard equivalences showing that
+`PresentedGroup P.rels` recovers `G`, and that any two presentations of the same group give
+isomorphic presented groups.
+
+The second part records the four standard Tietze moves as equivalences between
+`PresentedGroup`s (i.e. quotients of a free group by the normal closure of relators):
+
+* (1) Add a derived relator: if `r` lies in the normal closure of the current relators, then
+  adding `r` does not change the presented group.
+* (2) Remove a derived relator: if a relator is a consequence of the others, then removing it
+  does not change the presented group.
+
+TODO:
+* (3) Add a generator: adjoining a new generator together with a defining relation equating it
+  to a word in the existing generators yields an isomorphic presented group.
+* (4) Remove a generator: if a generator is constrained by a defining relation equating it to a
+  word in the remaining generators, then it can be eliminated by substituting that word
+  throughout the relators, without changing the presented group.
 -/
 
 @[expose] public section
@@ -157,7 +170,7 @@ noncomputable def equivPresentedGroup {G : Type*} [Group G] {ι : Type*}
 Any two presentations of the same group present isomorphic groups.
 -/
 -- better name for this?
-noncomputable def equivPresentedGroups {G : Type*} [Group G]
+noncomputable def equivPresentedGroupOfSameGroup {G : Type*} [Group G]
     {ι κ : Type*} (P : Presentation G ι) (Q : Presentation G κ) :
     P.presentedGroup ≃* Q.presentedGroup :=
   P.equivPresentedGroup.trans Q.equivPresentedGroup.symm
@@ -256,7 +269,7 @@ noncomputable def add_relator_equiv
     (hr : r ∈ Subgroup.normalClosure P.rels) :
     P.presentedGroup ≃* (addRelator (G := G) (ι := ι) P r hr).presentedGroup := by
   simpa using
-    (Presentation.equivPresentedGroups (G := G) (P := P)
+    (Presentation.equivPresentedGroupOfSameGroup (G := G) (P := P)
       (Q := addRelator (G := G) (ι := ι) P r hr))
 
 /-!
@@ -310,7 +323,7 @@ noncomputable def remove_relator_equiv
     (hr : r ∈ Subgroup.normalClosure (P.rels \ {r})) :
     P.presentedGroup ≃* (removeRelator (G := G) (ι := ι) P r hr).presentedGroup := by
   simpa using
-    (Presentation.equivPresentedGroups (G := G) (P := P)
+    (Presentation.equivPresentedGroupOfSameGroup (G := G) (P := P)
       (Q := removeRelator (G := G) (ι := ι) P r hr))
 
 end Tietze
