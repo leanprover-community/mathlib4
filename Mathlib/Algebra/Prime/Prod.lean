@@ -3,14 +3,18 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.Prime.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.GroupWithZero.Prod
+public import Mathlib.Algebra.Prime.Defs
 
 /-!
 # Prime and irreducible elements in a product monoid
 
 -/
+
+@[expose] public section
 
 variable {M N : Type*}
 
