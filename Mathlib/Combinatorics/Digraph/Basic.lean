@@ -513,7 +513,7 @@ lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ s
   · intro v v_in_G
     grind
   · intro v w top_adj
-    
+
     sorry
 
 lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
