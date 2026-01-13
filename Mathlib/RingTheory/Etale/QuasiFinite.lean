@@ -28,6 +28,8 @@ This prime will also lie over `q`.
 
 open TensorProduct
 
+attribute [instance high] IsScalarTower.right
+
 section BijectiveResidueField
 
 variable {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
