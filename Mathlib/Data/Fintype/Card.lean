@@ -417,7 +417,7 @@ namespace Finite
 
 variable [Finite α]
 
-theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [Std.Irrefl r] :
     WellFounded r := by
   classical
   cases nonempty_fintype α

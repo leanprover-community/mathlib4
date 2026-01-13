@@ -29,7 +29,7 @@ would be the degree `i+n`-th term of `C`.
 
 `[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of
-shifts functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
+shift functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
 `shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
 `shiftFunctorAdd C i j : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j`
 (and its variant `shiftFunctorAdd'`). These isomorphisms satisfy some coherence properties
@@ -735,7 +735,7 @@ def hasShift :
       zero := zero hF s i
       add := add hF s i
       assoc_hom_app := fun m₁ m₂ m₃ X => hF.map_injective (by
-        have h := shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ _ _ (m₁+m₂+m₃) rfl rfl rfl (F.obj X)
+        have h := shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl (F.obj X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at h
         rw [← cancel_mono ((i m₃).hom.app ((s m₂).obj ((s m₁).obj X)))]
         simp only [Functor.comp_obj, Functor.map_comp, map_add_hom_app,
@@ -750,7 +750,7 @@ def hasShift :
         simp [shiftFunctorAdd', eqToHom_map])
       zero_add_hom_app := fun n X => hF.map_injective (by
         have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
-        rw [← cancel_mono ((i n).hom.app ((s 0).obj X)) ]
+        rw [← cancel_mono ((i n).hom.app ((s 0).obj X))]
         simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
           Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,
           Category.comp_id, map_comp, eqToHom_map]

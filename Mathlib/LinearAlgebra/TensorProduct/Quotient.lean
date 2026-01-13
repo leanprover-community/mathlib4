@@ -160,7 +160,7 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
   (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
     rw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
       map₂_eq_range_lift_comp_mapIncl]
-    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦ rfl))
+    exact congr_arg _ (TensorProduct.ext' fun _ _ ↦ by simp))
 
 variable (M) in
 /-- Right tensoring a module with a quotient of the ring is the same as

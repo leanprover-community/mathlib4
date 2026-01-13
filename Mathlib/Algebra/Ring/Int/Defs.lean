@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Data.Int.Basic
 public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # The integers are a ring
@@ -81,13 +80,13 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 
 end Int
