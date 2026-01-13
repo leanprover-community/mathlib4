@@ -155,14 +155,7 @@ instance hasCompl : HasCompl (Digraph V) where
   }
 
 @[simp] theorem compl_adj (G : Digraph V) (v w : V) (hmem : v ∈ G.verts ∧ w ∈ G.verts)
-  : Gᶜ.Adj v w ↔ ¬G.Adj v w := by
-  constructor
-  · intro compl_adj
-    simp only [hasCompl] at compl_adj
-    tauto
-  · intro adj
-    simp only [hasCompl]
-    tauto
+  : Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hmem.1, hmem.2, h⟩⟩
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
