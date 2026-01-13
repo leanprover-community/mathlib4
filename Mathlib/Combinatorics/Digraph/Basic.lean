@@ -408,7 +408,7 @@ The supremum of a set of spanning subgraphs of a graph `G`
 -/
 def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
-    verts :=  G.verts,
+    verts := G.verts,
     Adj v w := ∃ H ∈ ℋ, Adj H.val v w
     left_mem_verts_of_adj := by
       simp_all only [SpanningSubgraph, Subtype.exists, exists_and_right, forall_exists_index,
