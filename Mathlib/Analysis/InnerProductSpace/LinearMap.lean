@@ -354,17 +354,17 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {H I : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-  [NormedAddCommGroup I] [InnerProductSpace 𝕜 I]
+variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
-@[simp] theorem rankOne_eq_zero {x : E} {y : H} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
-    ext_iff_inner_right 𝕜 (E := H)]
+    ext_iff_inner_right 𝕜 (E := F)]
 
-lemma rankOne_ne_zero {x : E} {y : H} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
+lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
   grind [rankOne_eq_zero]
 
-theorem isIdempotentElem_rankOne_self_iff {x : H} (hx : x ≠ 0) :
+theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
     IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
@@ -375,16 +375,17 @@ theorem isIdempotentElem_rankOne_self_iff {x : H} (hx : x ≠ 0) :
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
-theorem rankOne_eq_rankOne_iff_comm {a c : H} {b d : I} :
+theorem rankOne_eq_rankOne_iff_comm {a c : F} {b d : H} :
     rankOne 𝕜 a b = rankOne 𝕜 c d ↔ rankOne 𝕜 b a = rankOne 𝕜 d c := by
-  simp_rw [ContinuousLinearMap.ext_iff, ext_iff_inner_left 𝕜 (E := H),
-    ext_iff_inner_right 𝕜 (E := I)]
+  simp_rw [ContinuousLinearMap.ext_iff, ext_iff_inner_left 𝕜 (E := F),
+    ext_iff_inner_right 𝕜 (E := H)]
   rw [forall_comm]
   simp [inner_smul_left, inner_smul_right, mul_comm]
 
-theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
+open ComplexOrder in
+theorem exists_of_rankOne_eq_rankOne {a c : F} {b d : H}
     (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 a b = rankOne 𝕜 c d) :
-    ∃ (α : 𝕜ˣ) (β : NNRealˣ), a = (α : 𝕜) • c ∧ b = (α * (((β : NNReal) : ℝ) : 𝕜) : 𝕜) • d := by
+    ∃ (α β : 𝕜) (_ : α ≠ 0) (_ : 0 < β), a = α • c ∧ b = (α * β) • d := by
   have h₂ := rankOne_eq_rankOne_iff_comm.mp h
   simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
   have h₃ := calc
@@ -398,44 +399,9 @@ theorem exists_of_rankOne_eq_rankOne {a c : H} {b d : I}
       simp_rw [h₂, h₃, inner_smul_right, smul_smul]; ring_nf
   have h₅ : ⟪d, b⟫_𝕜 ≠ 0 := fun h ↦ by simp [h, hb] at h₄
   have h₆ : c ≠ 0 := fun h ↦ by simp [h, ha] at h₃
-  refine ⟨.mk0 _ (div_ne_zero h₅ <| by simpa),
-    .mk0 ⟨‖c‖ ^ 2 / ‖a‖ ^ 2, div_nonneg (by simp) (by simp)⟩ <| ?_, h₃, ?_⟩
-  · simp only [ne_eq, ← NNReal.coe_eq_zero, NNReal.coe_mk, div_eq_zero_iff, OfNat.ofNat_ne_zero,
-      not_false_eq_true, pow_eq_zero_iff, norm_eq_zero, not_or]
-    grind
-  · simpa using h₄
-
-open NormedSpace in
-/-- The `iff` version of `exists_of_rankOne_eq_rankOne`. -/
-theorem rankOne_normalize_eq_rankOne_normalize_iff
-    {V W : Type*} [NormedAddCommGroup V] [NormedAddCommGroup W] [InnerProductSpace ℝ V]
-    [InnerProductSpace ℝ W] {a c : V} {b d : W} (ha : a ≠ 0) (hb : b ≠ 0) :
-    rankOne ℝ (normalize a) (normalize b) = rankOne ℝ (normalize c) (normalize d) ↔
-      ∃ (α : ℝˣ) (β : NNRealˣ), a = (α : ℝ) • c ∧ b = (α * ((β : NNReal) : ℝ)) • d := by
-  refine ⟨fun h ↦ ?_, fun ⟨α, β, hα, hβ⟩ ↦ ?_⟩
-  · obtain ⟨hc, hd⟩ : c ≠ 0 ∧ d ≠ 0 := by aesop
-    obtain ⟨α, β, hα, hβ⟩ := exists_of_rankOne_eq_rankOne (by simpa) (by simpa) h
-    rw [← norm_smul_normalize a, ← norm_smul_normalize b, hα, hβ]
-    simp only [NormedSpace.normalize, smul_smul, exists_and_left]
-    set x : ℝˣ := .mk0 (‖a‖ * ((α : ℝ) * ‖c‖⁻¹)) (by aesop)
-    refine ⟨x, rfl, .mk0 ⟨x⁻¹ * (Units.mk0 (↑α * (‖b‖ * ↑β * ‖d‖⁻¹)) (by simp_all)), ?_⟩ ?_, ?_⟩
-    · simp only [x, Units.mk0_mul, Units.mk0_val, mul_inv_rev, Units.val_mul,
-        Units.val_inv_eq_inv_val, Units.val_mk0, inv_inv]
-      rw [mul_assoc ‖c‖, mul_comm _ ‖a‖⁻¹]
-      aesop (add simp mul_assoc)
-    · simp only [x, Units.mk0_mul, Units.mk0_val, mul_inv_rev, Units.val_mul,
-        Units.val_inv_eq_inv_val, Units.val_mk0, inv_inv]
-      simp_rw [ne_eq, mul_assoc ‖c‖, mul_comm _ ‖a‖⁻¹, mul_assoc, ← NNReal.coe_eq_zero]
-      aesop
-    · simp
-      grind
-  · simp only [hα, normalize_smul, map_smul, hβ, coe_smul', Pi.smul_apply, smul_smul]
-    if 0 < (α : ℝ) then aesop else if (α : ℝ) < 0 then
-      have : (((α : ℝ) * ↑↑β) : ℝ) < 0 := by simp_all [mul_neg_iff]
-      simp_all
-    else
-      have : (α : ℝ) = 0 := by grind
-      aesop
+  refine ⟨_, ‖c‖ ^ 2 / ‖a‖ ^ 2, div_ne_zero h₅ <| by simpa, ?_, h₃, by simpa using h₄⟩
+  simp_rw [← ofReal_pow, ← ofReal_div, pos_iff (K := 𝕜), ofReal_re, ofReal_im, and_true]
+  exact div_pos (by simpa [sq_pos_iff]) (by simpa [sq_pos_iff])
 
 end Normed
 
