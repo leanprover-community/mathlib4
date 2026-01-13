@@ -70,8 +70,7 @@ lemma coe_lt_coe_iff (a b : ℤ) :
   coe_strictMono.lt_iff_lt
 
 @[simp]
-lemma coe_eq_bot_iff (a : ℤ) :
-    (a : EInt) = ⊥ ↔ False := by
+lemma coe_ne_bot (a : ℤ) : (a : EInt) ≠ ⊥ := by
   simp only [iff_false]
   rintro ⟨⟩
 
