@@ -21,7 +21,8 @@ where `mulFiber x = {(a, b) | a * b = x}`. Additive monoids are also supported.
 ## Design
 
 Uses a bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, following `MeasureTheory.convolution`.
-For specializing to ring multiplication, use `ringConvolution` = `convolution (LinearMap.mul R R)`.
+For specializing to ring multiplication, use `ringConvolution` which is given by
+`convolution (LinearMap.mul R R)`.
 
 Index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
 Coefficient ring requires `[CommSemiring R]` for bilinearity of `LinearMap.mul`.
