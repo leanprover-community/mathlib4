@@ -80,6 +80,8 @@ instance : SetLike (ProperCone R E) E where
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
+lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
+
 lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :=
   C.toPointedCone.pointed_toConvexCone
 

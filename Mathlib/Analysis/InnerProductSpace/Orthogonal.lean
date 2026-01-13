@@ -421,12 +421,11 @@ theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
 
 variable {K}
 
-theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
-  exact Submodule.sub_mem_orthogonal_of_inner_left h
+theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ :=
+  Submodule.sub_mem_orthogonal_of_inner_left h
 
 theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
-    x - y ∈ Kᗮ := by
-  exact Submodule.sub_mem_orthogonal_of_inner_right h
+    x - y ∈ Kᗮ := Submodule.sub_mem_orthogonal_of_inner_right h
 
 variable (K)
 
