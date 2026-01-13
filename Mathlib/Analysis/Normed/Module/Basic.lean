@@ -63,9 +63,6 @@ instance NormedSpace.toIsBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
-instance [CompleteSpace E] (K : Submodule 𝕜 E) [hc : IsClosed K.carrier] : CompleteSpace K :=
-  IsComplete.completeSpace_coe (IsClosed.isComplete hc)
-
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
