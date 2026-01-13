@@ -18,7 +18,6 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
-
 -/
 
 public section
