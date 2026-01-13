@@ -296,10 +296,6 @@ theorem span_biInter (s : Set (Submodule R M)) : span R (⋂ S ∈ s, S) = sInf 
 theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
   (Submodule.gi R M).gc.l_sup
 
-@[simp]
-theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' := by
-  simp only [span_union, span_eq]
-
 theorem span_sSup (s : Set (Set M)) : span R (⋃₀ s) = sSup (span R '' s) := by
   refine le_antisymm ?_ (sSup_le fun P ⟨t, ht, h⟩ ↦ h ▸ span_mono (subset_sUnion_of_mem ht))
   rw [span_le]
