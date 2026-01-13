@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.RingTheory.RingHom.OpenImmersion
 
 /-! # The meta properties of quasi-finite ring homomorphisms. -/
 
@@ -50,12 +51,8 @@ lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := b
 lemma QuasiFinite.stableUnderComposition : StableUnderComposition QuasiFinite :=
   fun _ _ _ _ _ _ _ _ hf hg ↦ comp hg hf
 
-lemma QuasiFinite.of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.QuasiFinite := by
-  algebraize [f]
-  exact .of_surjective_algHom (Algebra.ofId R S) hf
-
 lemma QuasiFinite.respectsIso : RespectsIso QuasiFinite :=
-  stableUnderComposition.respectsIso fun e ↦ .of_surjective (f := e.toRingHom) e.surjective
+  stableUnderComposition.respectsIso fun e ↦ .of_finite e.finite
 
 lemma QuasiFinite.isStableUnderBaseChange : IsStableUnderBaseChange QuasiFinite := by
   refine .mk respectsIso ?_
@@ -72,7 +69,7 @@ attribute [local instance high] Algebra.TensorProduct.leftAlgebra Algebra.toModu
 lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinite := by
   rw [RingHom.ofLocalizationSpanTarget_iff_finite]
   introv R hs H
-  let := f.toAlgebra
+  algebraize [f]
   refine ⟨fun P _ ↦ ?_⟩
   have (r : s) : Module.Finite P.ResidueField (P.Fiber (Localization.Away r.1)) := by
     have : Algebra.QuasiFinite R (Localization.Away r.1) := quasiFinite_algebraMap.mp (H r)
@@ -94,10 +91,10 @@ lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinit
   let ψ : P.Fiber (Localization.Away r) →ₐ[P.ResidueField] Localization.AtPrime J :=
     Algebra.TensorProduct.lift (Algebra.ofId _ _) ⟨IsLocalization.map (M := .powers r)
       (T := J.primeCompl) _ Algebra.TensorProduct.includeRight.toRingHom (by
-        simpa [Submonoid.powers_le] using hrI), by
-          simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
-            -Algebra.TensorProduct.algebraMap_apply,
-            ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)
+      simpa [Submonoid.powers_le] using hrI), by
+      simp [IsScalarTower.algebraMap_apply R S (Localization.Away r),
+        -Algebra.TensorProduct.algebraMap_apply,
+        ← IsScalarTower.algebraMap_apply R _ (Localization.AtPrime J)]⟩ (fun _ _ ↦ .all _ _)
   have hψ : ψ.comp (φ ⟨r, hrs⟩) = IsScalarTower.toAlgHom _ _ _ := by ext; simp [φ, ψ]
   refine congr($hψ a).symm.trans
     (show ψ (f a ⟨r, hrs⟩) = 0 by simp only [ha, Pi.zero_apply, map_zero])
@@ -117,11 +114,10 @@ open TensorProduct in
 then `T` is quasi-finite over `R` -/
 lemma QuasiFinite.of_isIntegral_of_finiteType
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S} (hf : f.IsIntegral)
-    {g : R →+* T} (hg : g.FiniteType)
-    [Algebra S T] (s : S) [IsLocalization.Away s T] (H : (algebraMap S T).comp f = g) :
-    g.QuasiFinite := by
-  algebraize [f, g]
-  have : IsScalarTower R S T := .of_algebraMap_eq' H.symm
+    {g : S →+* T} (hg : g.IsStandardOpenImmersion) (hg : (g.comp f).FiniteType) :
+    (g.comp f).QuasiFinite := by
+  algebraize [f, g, g.comp f]
+  obtain ⟨s, hs⟩ := Algebra.IsStandardOpenImmersion.exists_away S T
   exact Algebra.QuasiFinite.of_isIntegral_of_finiteType s
 
 end RingHom
