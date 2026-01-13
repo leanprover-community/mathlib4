@@ -312,28 +312,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
 theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
     (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
-    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
+    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
       ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas hφ hψ hy hgy]
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
-  · -- Decompose `f = (ψ.extend J).symm ∘ f' ∘ (φ.extend I)` on `s`,
-    -- where `f'` is the expression in the charts `φ` and `ψ`.
-    set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
-    have eq : EqOn f ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := fun x hx ↦ by
-      simp only [f', comp_apply, φ.extend_left_inv (hs hx), ψ.extend_left_inv (hmaps hx)]
-    have step1 : ContinuousWithinAt (f' ∘ (φ.extend I)) s y :=
-      h.continuousWithinAt.comp (((contMDiffOn_extend hφ).continuousOn y hy).mono hs)
-        fun x hx ↦ ⟨by rwa [mem_preimage, φ.extend_left_inv (hs hx)], mem_range_self _⟩
-    have step2 : ContinuousWithinAt ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s y := by
-      refine ContinuousWithinAt.comp (t := J '' ψ.target) ?_ step1 ?_
-      · refine (contMDiffOn_extend_symm hψ).continuousOn ?_ ?_
-        all_goals
-          simp only [f', comp_apply, φ.extend_left_inv hy]; exact mem_image_of_mem J (ψ.mapsTo hgy)
-      · intro x hx; simp only [f', comp_apply, φ.extend_left_inv (hs hx)]
-        exact mem_image_of_mem J (ψ.mapsTo (hmaps hx))
-    exact step2.congr_of_eventuallyEq (eventually_nhdsWithin_of_forall eq)
-      (by simp only [f', comp_apply, φ.extend_left_inv hy, ψ.extend_left_inv hgy])
+  · rw [← φ.continuousWithinAt_writtenInExtend_iff (I := I) (I' := J) hy hgy hmaps]
+    exact h.continuousWithinAt
   · rwa [← contMDiffWithinAt_iff_contDiffWithinAt]
   · rw [contMDiffWithinAt_iff_contDiffWithinAt]
     exact h.2
@@ -344,7 +329,7 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
     ContMDiffOn I J n f s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (contMDiffWithinAt_congr_set ?_).trans
-    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hs hmaps)
+    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
     ← φ.map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
