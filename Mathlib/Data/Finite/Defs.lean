@@ -215,6 +215,8 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
 
 alias ⟨_, Finite.not_infinite⟩ := not_infinite
 
+@[simp] lemma Infinite.not_finite {s : Set α} (hs : s.Infinite) : ¬ s.Finite := hs
+
 attribute [simp] Finite.not_infinite
 
 /-- See also `finite_or_infinite`, `fintypeOrInfinite`. -/
