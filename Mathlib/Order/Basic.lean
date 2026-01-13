@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Basic definitions about `≤` and `<`
