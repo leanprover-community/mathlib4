@@ -637,15 +637,12 @@ instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
 instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := by
-  simp only [hasCompl]
-  unfold DecidableRel
-  intro v w
-  exact (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) (ivertG v)
+instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) := fun v w =>
+  (@instDecidableAnd  (v ∈ G.verts) (w ∈ G.verts ∧ ¬ G.Adj v w) (ivertG v)
     (@instDecidableAnd (w ∈ G.verts) (¬ G.Adj v w) (ivertG w) (
       @instDecidableNot (G.Adj v w)
         (by simp only [DecidableRel] at iadjG; specialize iadjG v w; assumption)
-    )))
+  )))
 
 
 
