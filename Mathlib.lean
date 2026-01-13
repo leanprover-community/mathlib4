@@ -4963,6 +4963,7 @@ public import Mathlib.MeasureTheory.Group.AddCircle
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Group.FoelnerFilter
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 public import Mathlib.MeasureTheory.Group.Integral
