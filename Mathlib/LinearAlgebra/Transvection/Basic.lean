@@ -280,7 +280,7 @@ theorem coe_apply {f : Dual R V} {v x : V} {h : f v = 0} :
     LinearEquiv.transvection h x = LinearMap.transvection f v x :=
   rfl
 
-theorem rightSMul_smul {f : Dual R V} {v : V} (_ : f v = 0) {a : R}
+theorem rightSMul_smul {f : Dual R V} {v : V} {a : R}
     (hafv' : f.rightSMul a v = 0 := by simp) (hafv : f (a • v) = 0 := by simp) :
     transvection hafv' = transvection hafv := by
   simp [← toLinearMap_inj, LinearMap.transvection.rightSMul_smul]
@@ -393,10 +393,10 @@ theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
   apply mem_transvections
 
 theorem toLinearMap_pow (e : V ≃ₗ[R] V) (n : ℕ) :
-    (e ^ n) = (e.toLinearMap ^ n) := by
+    (e ^ n : V ≃ₗ[R] V) = (e.toLinearMap ^ n) := by
   induction n with
-  | zero => simp
-  | succ n hind => simp [pow_succ]
+  | zero => simp [End.one_eq_id]
+  | succ n hind => simp [pow_succ, hind]
 
 @[simp]
 theorem coe_toLinearMap_pow (e : V ≃ₗ[R] V) (n : ℕ) :

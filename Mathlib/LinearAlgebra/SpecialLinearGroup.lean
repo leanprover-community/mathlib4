@@ -189,7 +189,7 @@ def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
 
 @[simp]
 theorem toLinearEquiv_to_linearMap (A : SpecialLinearGroup R V) :
-    (SpecialLinearGroup.toLinearEquiv A) = (A : V →ₗ[R] V) :=
+    A.toLinearEquiv = (A : V →ₗ[R] V) :=
   rfl
 
 @[simp]
@@ -197,9 +197,13 @@ theorem toLinearEquiv_symm_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv.symm v = A⁻¹ v :=
   rfl
 
-@[simp]
 theorem toLinearEquiv_symm_to_linearMap (A : SpecialLinearGroup R V) :
     A.toLinearEquiv.symm = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
+  rfl
+
+@[simp]
+theorem coe_symm_to_linearMap (A : SpecialLinearGroup R V) :
+    ↑((A : V ≃ₗ[R] V).symm) = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
   rfl
 
 theorem toLinearEquiv_injective :
