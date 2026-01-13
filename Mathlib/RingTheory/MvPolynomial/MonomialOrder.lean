@@ -568,7 +568,7 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
   apply degree_pow_of_pow_leadingCoeff_ne_zero
-  apply IsReduced.pow_ne_zero
+  apply pow_ne_zero
   rw [leadingCoeff_ne_zero_iff]
   exact hf
 
