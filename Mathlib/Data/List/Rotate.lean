@@ -360,7 +360,7 @@ def IsRotated : Prop :=
 -- This matches the precedence of the infix `~` for `List.Perm`, and of other relation infixes
 infixr:50 " ~r " => IsRotated
 
-variable {l l'}
+variable {l l'} {a : α}
 
 @[refl]
 theorem IsRotated.refl (l : List α) : l ~r l :=
@@ -458,6 +458,8 @@ theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f :
   obtain ⟨n, rfl⟩ := h
   rw [map_rotate]
   use n
+
+lemma isRotated_cons_concat : a :: l ~r l.concat a := by simpa using isRotated_append (l := [a])
 
 theorem IsRotated.cons_getLast_dropLast
     (L : List α) (hL : L ≠ []) : L.getLast hL :: L.dropLast ~r L := by
