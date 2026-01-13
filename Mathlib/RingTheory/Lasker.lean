@@ -6,6 +6,7 @@ Authors: Thomas Browning, Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Order.Irreducible
 public import Mathlib.RingTheory.Ideal.Annihilator
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
@@ -69,19 +70,8 @@ lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submono
 noncomputable def IsLocalizedModule.mapSubmodule
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] (I : Submodule R M) : Submodule R M' where
-  carrier := {x | ∃ s : S, s • x ∈ I.map f}
-  add_mem' := by
-    rintro a b ⟨s, hs⟩ ⟨t, ht⟩
-    use t * s
-    rw [smul_add, mul_smul, mul_comm, mul_smul]
-    exact (I.map f).add_mem ((I.map f).smul_of_tower_mem t hs) ((I.map f).smul_of_tower_mem s ht)
-  zero_mem' := ⟨1, by simp⟩
-  smul_mem' := by
-    rintro a b ⟨s, hs⟩
-    use s
-    rw [Submonoid.smul_def, smul_smul, mul_comm, mul_smul]
-    exact (I.map f).smul_mem a hs
+    (f : M →ₗ[R] M') [IsLocalizedModule S f] (I : Submodule R M) : Submodule R M' :=
+  Submodule.localized₀ S f I
 
 lemma IsLocalizedModule.mem_mapSubmodule_iff
     {R : Type*} [CommSemiring R] (S : Submonoid R)
@@ -373,7 +363,7 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     (ht : I.IsMinimalPrimaryDecomposition t)
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
     (downward_closed : ∀ q ∈ t, ∀ r ∈ s, (q.colon ⊤).radical ≤ (r.colon ⊤).radical → q ∈ s) :
-    (IsLocalizedModule.mapSubmodule (⨅ q ∈ s,
+    (Submodule.localized₀ (⨅ q ∈ s,
       have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
       (q.colon ⊤).radical.primeCompl) (LocalizedModule.mkLinearMap (⨅ q ∈ s,
       have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
@@ -385,7 +375,7 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     (q.colon ⊤).radical.primeCompl
   let f := LocalizedModule.mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
-  change (h.mapSubmodule S f I).comap f = ⨅ q ∈ s, q
+  change (Submodule.localized₀ S f I).comap f = ⨅ q ∈ s, q
   rw [← ht.inf_eq, ← h.mapSubmoduleInfHom_apply, map_finset_inf, Submodule.comap_finset_inf]
   simp only [Function.comp_def, id_eq, h.mapSubmoduleInfHom_apply]
   rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
