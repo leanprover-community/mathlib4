@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -52,6 +53,10 @@ protected def IsPrimary (S : Submodule R M) : Prop :=
 variable {S : Submodule R M}
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
+
+lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {x : M} (hrx : r • x ∈ S) :
+    x ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+  h.2 hrx
 
 end CommSemiring
 

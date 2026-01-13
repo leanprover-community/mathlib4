@@ -37,9 +37,8 @@ abbrev IsPrimary (I : Ideal R) : Prop :=
 /-- A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical I`. -/
 lemma isPrimary_iff {I : Ideal R} :
     I.IsPrimary ↔ I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I := by
-  rw [IsPrimary, Submodule.IsPrimary, forall_comm]
-  simp only [mul_comm, mem_radical_iff,
-    ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
+  rw [IsPrimary, Submodule.IsPrimary, Submodule.colon_top, forall_comm]
+  simp only [smul_eq_mul, mul_comm]
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
   isPrimary_iff.mpr
