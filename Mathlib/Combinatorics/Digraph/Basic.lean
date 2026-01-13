@@ -608,9 +608,7 @@ instance [iE : IsEmpty V] : Unique (Digraph V) where
   default := ⊥
   uniq G := by
     ext1
-    · have s₁ : G.verts = ∅ := by
-        exact Set.eq_empty_of_isEmpty G.verts
-      rw [←Digraph.emptyDigraph_eq_bot, s₁]
+    · rw [←Digraph.emptyDigraph_eq_bot, Set.eq_empty_of_isEmpty G.verts]
       rfl
     · congr!
 
