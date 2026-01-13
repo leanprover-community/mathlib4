@@ -30,7 +30,7 @@ This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with G
 - `X_pow_sub_X_sub_one_gal`: The Selmer polynomial `X ^ n - X - 1` has Galois group `S_n`.
 -/
 
-@[expose] public section
+public section
 
 section Inertia
 
