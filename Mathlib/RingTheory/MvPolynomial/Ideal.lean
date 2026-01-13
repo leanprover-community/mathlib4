@@ -98,13 +98,7 @@ theorem pow_idealOfVars (n : ℕ) :
     simp only [Set.subset_def, Set.mem_preimage, Set.mem_Ici, Set.mem_add]
     intro x x_deg
     obtain ⟨i, i_in⟩ := support_nonempty_iff (f := x).mpr (by grind only [= map_zero])
-    have : single i 1 ≤ x := by
-      classical
-      rw [le_def]; intro j
-      rw [single_apply]; split_ifs with h
-      · rwa [← h, Nat.one_le_iff_ne_zero, ← Finsupp.mem_support_iff]
-      simp
-    obtain ⟨z, hz⟩ := exists_add_of_le this
+    obtain ⟨z, hz⟩ := exists_add_of_le (show single i 1 ≤ x by simp_all; lia)
     rw [add_comm, hz, map_add, degree_single, Nat.add_le_add_iff_left] at x_deg
     exact ⟨z, x_deg, ⟨single i 1, by simp, by rw [hz, add_comm]⟩⟩
 
