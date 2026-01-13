@@ -56,7 +56,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   is a smooth immersion
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
-  in the sense of `ContMDiff`..
+  in the sense of `ContMDiff`.
 
 ## Implementation notes
 
