@@ -66,7 +66,7 @@ lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submono
     IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
   rfl
 
-noncomputable def IsLocalizedModule.map_submodule
+noncomputable def IsLocalizedModule.mapSubmodule
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [IsLocalizedModule S f] (I : Submodule R M) : Submodule R M' where
@@ -83,26 +83,26 @@ noncomputable def IsLocalizedModule.map_submodule
     rw [Submonoid.smul_def, smul_smul, mul_comm, mul_smul]
     exact (I.map f).smul_mem a hs
 
-lemma IsLocalizedModule.mem_map_submodule_iff
+lemma IsLocalizedModule.mem_mapSubmodule_iff
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] {I : Submodule R M} {x : M'} :
-    x ∈ h.map_submodule S f I ↔ ∃ s : S, s • x ∈ I.map f :=
+    x ∈ h.mapSubmodule S f I ↔ ∃ s : S, s • x ∈ I.map f :=
   Iff.rfl
 
-lemma IsLocalizedModule.map_le_map_submodule
+lemma IsLocalizedModule.map_le_mapSubmodule
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] {I : Submodule R M} :
-    I.map f ≤ h.map_submodule S f I :=
+    I.map f ≤ h.mapSubmodule S f I :=
   fun x hx ↦ ⟨1, by rwa [one_smul]⟩
 
-theorem _root_.IsLocalizedModule.map_submodule_inf
+theorem _root_.IsLocalizedModule.mapSubmodule_inf
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] (I J : Submodule R M) :
-    h.map_submodule S f (I ⊓ J) = h.map_submodule S f I ⊓ h.map_submodule S f J := by
-  simp only [Submodule.ext_iff, Submodule.mem_inf, h.mem_map_submodule_iff, Submodule.mem_map]
+    h.mapSubmodule S f (I ⊓ J) = h.mapSubmodule S f I ⊓ h.mapSubmodule S f J := by
+  simp only [Submodule.ext_iff, Submodule.mem_inf, h.mem_mapSubmodule_iff, Submodule.mem_map]
   refine fun x ↦ ⟨by grind, ?_⟩
   rintro ⟨⟨s, i, hi, hs⟩, t, j, hj, ht⟩
   have key : f (t • i) = f (s • j) := by
@@ -113,35 +113,35 @@ theorem _root_.IsLocalizedModule.map_submodule_inf
     exact J.smul_of_tower_mem (k * s) hj
   · rw [mul_smul, hk, smul_smul, LinearMap.map_smul_of_tower, ht, smul_smul]
 
-theorem _root_.IsLocalizedModule.map_submodule_top
+theorem _root_.IsLocalizedModule.mapSubmodule_top
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] :
-    h.map_submodule S f ⊤ = ⊤ := by
-  simp only [Submodule.ext_iff, Submodule.mem_top, h.mem_map_submodule_iff, Submodule.mem_map]
+    h.mapSubmodule S f ⊤ = ⊤ := by
+  simp only [Submodule.ext_iff, Submodule.mem_top, h.mem_mapSubmodule_iff, Submodule.mem_map]
   simp only [true_and, Subtype.exists, Submonoid.mk_smul, exists_prop, iff_true]
   intro x
   obtain ⟨⟨y, s⟩, hy⟩ := h.surj x
   exact ⟨s, s.2, y, hy.symm⟩
 
 /-- `IsLocalizedModule.map_inf` as an `InfTopHom`. -/
-noncomputable def IsLocalizedModule.mapInfHom
+noncomputable def IsLocalizedModule.mapSubmoduleInfHom
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] :
     InfTopHom (Submodule R M) (Submodule R M') where
-  toFun := h.map_submodule S f
-  map_inf' := h.map_submodule_inf S f
-  map_top' := h.map_submodule_top S f
+  toFun := h.mapSubmodule S f
+  map_inf' := h.mapSubmodule_inf S f
+  map_top' := h.mapSubmodule_top S f
 
 -- upgrade to frame hom?
 
 @[simp]
-lemma IsLocalizedModule.mapInfHom_apply
+lemma IsLocalizedModule.mapSubmoduleInfHom_apply
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] (I : Submodule R M) :
-    h.mapInfHom S f I = h.map_submodule S f I :=
+    h.mapSubmoduleInfHom S f I = h.mapSubmodule S f I :=
   rfl
 
 theorem _root_.Submodule.comap_finset_inf {R M M' : Type*} [Semiring R] [AddCommMonoid M]
@@ -363,7 +363,7 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     (ht : I.IsMinimalPrimaryDecomposition t)
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
     (downward_closed : ∀ q ∈ t, ∀ r ∈ s, (q.colon ⊤).radical ≤ (r.colon ⊤).radical → q ∈ s) :
-    (IsLocalizedModule.map_submodule (⨅ q ∈ s,
+    (IsLocalizedModule.mapSubmodule (⨅ q ∈ s,
       have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
       (q.colon ⊤).radical.primeCompl) (LocalizedModule.mkLinearMap (⨅ q ∈ s,
       have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
@@ -375,19 +375,19 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     (q.colon ⊤).radical.primeCompl
   let f := LocalizedModule.mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
-  change (h.map_submodule S f I).comap f = ⨅ q ∈ s, q
-  rw [← ht.inf_eq, ← h.mapInfHom_apply, map_finset_inf, Submodule.comap_finset_inf]
-  simp only [Function.comp_def, id_eq, h.mapInfHom_apply]
+  change (h.mapSubmodule S f I).comap f = ⨅ q ∈ s, q
+  rw [← ht.inf_eq, ← h.mapSubmoduleInfHom_apply, map_finset_inf, Submodule.comap_finset_inf]
+  simp only [Function.comp_def, id_eq, h.mapSubmoduleInfHom_apply]
   rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
   have key0 : ∀ q ∈ s, (S : Set R) ⊆ (q.colon ⊤).radicalᶜ := by
     intro q hq
     simp only [S, Submonoid.coe_iInf]
     exact Set.iInter₂_subset q hq
-  have key1 : ∀ q ∈ s, (h.map_submodule S f q).comap f = q := by
+  have key1 : ∀ q ∈ s, (h.mapSubmodule S f q).comap f = q := by
     intro q hq
     refine le_antisymm ?_ ?_
     · intro x hx
-      simp only [mem_comap, IsLocalizedModule.mem_map_submodule_iff, Submodule.mem_map] at hx
+      simp only [mem_comap, IsLocalizedModule.mem_mapSubmodule_iff, Submodule.mem_map] at hx
       obtain ⟨a, b, hb, ha⟩ := hx
       rw [← LinearMap.map_smul_of_tower] at ha
       obtain ⟨c, hc⟩ := h.eq_iff_exists.mp ha
@@ -396,8 +396,8 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
       exact key0 q hq (c * a).2
     · rw [← map_le_iff_le_comap]
       let _ : Module (Localization S) (LocalizedModule S M) := h.module S f
-      apply IsLocalizedModule.map_le_map_submodule
-  have key2 : ∀ q ∈ t \ s, (h.map_submodule S f q).comap f = ⊤ := by
+      apply IsLocalizedModule.map_le_mapSubmodule
+  have key2 : ∀ q ∈ t \ s, (h.mapSubmodule S f q).comap f = ⊤ := by
     intro q hq
     rw [eq_top_iff']
     intro x
@@ -412,7 +412,7 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     rw [Set.not_subset_iff_exists_mem_notMem] at hq
     obtain ⟨y, hy1, hy2⟩ := hq
     replace hy2 : y ∈ S := by simpa [S] using hy2
-    rw [mem_comap, IsLocalizedModule.mem_map_submodule_iff]
+    rw [mem_comap, IsLocalizedModule.mem_mapSubmodule_iff]
     use ⟨y, hy2⟩
     rw [← LinearMap.map_smul_of_tower, Submonoid.mk_smul]
     apply mem_map_of_mem
