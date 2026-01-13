@@ -280,10 +280,6 @@ theorem span_univ : span R (univ : Set M) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
 
 @[simp]
-theorem span_inter_le (s t : Set M) : span R (s ∩ t) ≤ span R s ⊓ span R t :=
-  le_inf (span_mono Set.inter_subset_left) (span_mono Set.inter_subset_right)
-
-@[simp]
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
   (Submodule.gi R M).l_inf_u S S'
 
@@ -301,8 +297,8 @@ theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
   (Submodule.gi R M).gc.l_sup
 
 @[simp]
-theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' :=
-  (Submodule.gi R M).l_sup_u S S'
+theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' := by
+  simp only [span_union, span_eq]
 
 theorem span_sSup (s : Set (Set M)) : span R (⋃₀ s) = sSup (span R '' s) := by
   refine le_antisymm ?_ (sSup_le fun P ⟨t, ht, h⟩ ↦ h ▸ span_mono (subset_sUnion_of_mem ht))
