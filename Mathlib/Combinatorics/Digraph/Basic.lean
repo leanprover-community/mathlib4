@@ -192,7 +192,7 @@ theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i)
 
 /-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance distribLattice : DistribLattice (Digraph V) where
-    le := fun G H ↦  (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
+    le := fun G H ↦ (G.verts ⊆ H.verts) ∧ (∀ ⦃v w⦄, G.Adj v w → H.Adj v w)
     le_refl := by
       intro G
       tauto
