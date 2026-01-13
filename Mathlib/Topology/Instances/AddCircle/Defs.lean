@@ -11,9 +11,9 @@ public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.T5
 import Mathlib.Algebra.Order.Interval.Set.Group
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
 
 /-!
 # The additive circle
@@ -255,8 +255,7 @@ end Torsion
 variable [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜]
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 }.Finite :=
-  finite_torsion_of_isSMulRegular _ _ <|
-    .of_right_eq_zero_of_smul fun _ ↦ (nsmul_eq_zero_iff hn.ne').mp
+  finite_torsion_of_isSMulRegular _ _ <| .of_right_eq_zero_of_smul fun _ ↦ by simp [hn.ne']
 
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=

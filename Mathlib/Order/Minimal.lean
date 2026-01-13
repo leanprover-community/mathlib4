@@ -625,7 +625,7 @@ def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
       toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
-      __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMinimal
+      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
 
 /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/
 def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
@@ -633,7 +633,7 @@ def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
   toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal x).2⟩
   invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMaximal x).2⟩
-  __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMaximal
+  __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal
 
 end OrderIso
 

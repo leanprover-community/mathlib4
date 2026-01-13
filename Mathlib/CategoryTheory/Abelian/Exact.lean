@@ -23,7 +23,7 @@ true in more general settings.
 * A short complex `S` is exact iff `imageSubobject S.f = kernelSubobject S.g`.
 * If `(f, g)` is exact, then `image.ι f` has the universal property of the kernel of `g`.
 * `f` is a monomorphism iff `kernel.ι f = 0` iff `Exact 0 f`, and `f` is an epimorphism iff
-  `cokernel.π = 0` iff `Exact f 0`.
+  `cokernel.π f = 0` iff `Exact f 0`.
 * A faithful functor between abelian categories that preserves zero morphisms reflects exact
   sequences.
 * `X ⟶ Y ⟶ Z ⟶ 0` is exact if and only if the second map is a cokernel of the first, and

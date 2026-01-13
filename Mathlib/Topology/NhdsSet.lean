@@ -124,6 +124,18 @@ theorem nhdsSet_empty : 𝓝ˢ (∅ : Set X) = ⊥ := by rw [isOpen_empty.nhdsSe
 theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set X) := by simp
 
 @[simp]
+lemma nhdsSet_eq_bot_iff {α : Type*} [TopologicalSpace α] {s : Set α} :
+    𝓝ˢ s = ⊥ ↔ s = ∅ where
+  mp := by simp [← empty_mem_iff_bot, mem_nhdsSet_iff_forall, eq_empty_iff_forall_notMem]
+  mpr := by simp +contextual
+
+lemma nhdsSet_neBot_iff {α : Type*} [TopologicalSpace α] {s : Set α} :
+    (𝓝ˢ s).NeBot ↔ s.Nonempty :=
+  not_iff_not.mp <| by simp [not_nonempty_iff_eq_empty]
+
+alias ⟨Set.Nonempty.nhdsSet_neBot, _⟩ := nhdsSet_neBot_iff
+
+@[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 
 @[gcongr, mono]

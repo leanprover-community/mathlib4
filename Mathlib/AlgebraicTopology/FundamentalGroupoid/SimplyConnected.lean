@@ -38,7 +38,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 
-@[deprecated (since := "2025-12-31")]
+@[deprecated (since := "2026-01-08")]
 alias simply_connected_def := simplyConnectedSpace_iff
 
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
@@ -122,12 +122,11 @@ theorem simply_connected_iff_loops_nullhomotopic :
       _ = trans (trans ⟦p₁⟧ (symm ⟦p₂⟧)) ⟦p₂⟧ := by simp
       _ = ⟦p₂⟧ := by grind
 
-
 /-!
 ### Simply connected sets
 -/
 
-/-- We say that a set is simply connected, if it's a simply connected topological space
+/-- We say that a set is simply connected if it's a simply connected topological space
 in the induced topology. -/
 def IsSimplyConnected (s : Set X) : Prop := SimplyConnectedSpace s
 
@@ -143,7 +142,8 @@ theorem IsSimplyConnected.nonempty {s : Set X} (hs : IsSimplyConnected s) : s.No
   hs.isPathConnected.nonempty
 
 theorem Topology.IsEmbedding.isSimplyConnected_image {f : X → Y} (hf : Topology.IsEmbedding f)
-    {s : Set X} : IsSimplyConnected (f '' s) ↔ IsSimplyConnected s :=
+    {s : Set X} :
+    IsSimplyConnected (f '' s) ↔ IsSimplyConnected s :=
   hf.homeomorphImage s |>.toHomotopyEquiv |>.simplyConnectedSpace_iff |>.symm
 
 @[simp]
@@ -182,12 +182,13 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
 open scoped Pointwise
 
 @[to_additive (attr := simp)]
-theorem isSimplyConnected_smul_set {G : Type*} [Group G] [MulAction G X] [ContinuousConstSMul G X]
-    {c : G} {s : Set X} : IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
+theorem isSimplyConnected_smul_set_iff {G : Type*} [Group G]
+    [MulAction G X] [ContinuousConstSMul G X] {c : G} {s : Set X} :
+    IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
   Homeomorph.smul c |>.isSimplyConnected_image
 
 @[simp]
-theorem isSimplyConnected_smul_set₀ {G : Type*} [GroupWithZero G] [MulAction G X]
+theorem isSimplyConnected_smul_set₀_iff {G : Type*} [GroupWithZero G] [MulAction G X]
     [ContinuousConstSMul G X] {c : G} {s : Set X} (hc : c ≠ 0) :
     IsSimplyConnected (c • s) ↔ IsSimplyConnected s :=
-  isSimplyConnected_smul_set (c := Units.mk0 c hc)
+  isSimplyConnected_smul_set_iff (c := Units.mk0 c hc)

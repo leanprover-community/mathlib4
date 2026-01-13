@@ -63,7 +63,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 set_option pp.proofs.withType true in
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
-functors `f` and `g` -/
+functors `map f` and `map g` on fundamental groupoids. -/
 def homotopicMapsNatIso (H : ContinuousMap.Homotopy f g) : map f ⟶ map g where
   app x := ⟦H.evalAt x.as⟧
   naturality := by
