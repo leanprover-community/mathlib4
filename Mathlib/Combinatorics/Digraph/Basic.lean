@@ -522,7 +522,7 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
       assumption
 
 lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
-  (inf (sup H₁ H₂) (sup H₁ H₃))≤ (sup H₁ (inf H₂ H₃)) := by
+  (inf (sup H₁ H₂) (sup H₁ H₃)) ≤ (sup H₁ (inf H₂ H₃)) := by
   intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩ ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
     ⟨H₃, ⟨H₃_sub_verts, H₃_sub_adj⟩, H₃_verts_eq⟩
   constructor
