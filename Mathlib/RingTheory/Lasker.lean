@@ -69,17 +69,33 @@ lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submono
 noncomputable def IsLocalizedModule.map_submodule
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
-    (f : M →ₗ[R] M') [IsLocalizedModule S f] (I : Submodule R M) : Submodule R M' :=
-  let _ : Module (Localization S) M' := IsLocalizedModule.module S f
-  have : IsScalarTower R (Localization S) M' := IsLocalizedModule.isScalarTower_module S f
-  (Submodule.span (Localization S) (I.map f : Set M')).restrictScalars R
+    (f : M →ₗ[R] M') [IsLocalizedModule S f] (I : Submodule R M) : Submodule R M' where
+  carrier := {x | ∃ s : S, s • x ∈ I.map f}
+  add_mem' := by
+    rintro a b ⟨s, hs⟩ ⟨t, ht⟩
+    use t * s
+    rw [smul_add, mul_smul, mul_comm, mul_smul]
+    exact (I.map f).add_mem ((I.map f).smul_of_tower_mem t hs) ((I.map f).smul_of_tower_mem s ht)
+  zero_mem' := ⟨1, by simp⟩
+  smul_mem' := by
+    rintro a b ⟨s, hs⟩
+    use s
+    rw [Submonoid.smul_def, smul_smul, mul_comm, mul_smul]
+    exact (I.map f).smul_mem a hs
 
 lemma IsLocalizedModule.mem_map_submodule_iff
     {R : Type*} [CommSemiring R] (S : Submonoid R)
     {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
     (f : M →ₗ[R] M') [h : IsLocalizedModule S f] {I : Submodule R M} {x : M'} :
-    x ∈ h.map_submodule S f I ↔ ∃ s : S, s • x ∈ I.map f := by
-  sorry
+    x ∈ h.map_submodule S f I ↔ ∃ s : S, s • x ∈ I.map f :=
+  Iff.rfl
+
+lemma IsLocalizedModule.map_le_map_submodule
+    {R : Type*} [CommSemiring R] (S : Submonoid R)
+    {M M' : Type*} [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M']
+    (f : M →ₗ[R] M') [h : IsLocalizedModule S f] {I : Submodule R M} :
+    I.map f ≤ h.map_submodule S f I :=
+  fun x hx ↦ ⟨1, by rwa [one_smul]⟩
 
 theorem _root_.IsLocalizedModule.map_submodule_inf
     {R : Type*} [CommSemiring R] (S : Submonoid R)
@@ -380,12 +396,11 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
       exact key0 q hq (c * a).2
     · rw [← map_le_iff_le_comap]
       let _ : Module (Localization S) (LocalizedModule S M) := h.module S f
-      exact subset_span
+      apply IsLocalizedModule.map_le_map_submodule
   have key2 : ∀ q ∈ t \ s, (h.map_submodule S f q).comap f = ⊤ := by
     intro q hq
     rw [eq_top_iff']
     intro x
-    -- simp only [mem_comap, IsLocalizedModule.mem_map_submodule_iff, mem_map]
     contrapose! hq
     rw [Finset.mem_sdiff, not_and_not_right]
     intro hqt
