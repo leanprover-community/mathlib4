@@ -326,7 +326,7 @@ theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
 theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
     (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
-    ContMDiffOn I J n f s := by
+      ContMDiffOn I J n f s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
   refine (contMDiffWithinAt_congr_set ?_).trans
     (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)

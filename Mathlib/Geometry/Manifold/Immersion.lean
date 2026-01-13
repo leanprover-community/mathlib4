@@ -437,10 +437,8 @@ variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 `contMDiffAt` is part of the public API -/
 private theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
-  have mapsto : MapsTo f h.domChart.source h.codChart.source :=
-    fun x hx ↦ h.source_subset_preimage_source hx
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
-    h.codChart_mem_maximalAtlas le_rfl mapsto,
+    h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
     ← h.domChart.extend_target_eq_image_source]
   have : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'') n (h.equiv ∘ fun x ↦ (x, 0)) := by
     have : ContMDiff (𝓘(𝕜, E × F)) 𝓘(𝕜, E'') n h.equiv := by
@@ -803,7 +801,7 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
 
-/-- A `C^k` immersion is `C^k`. -/
+/-- A `C^n` immersion is `C^n`. -/
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersion I J n f) : ContMDiff I J n f :=
   h.isImmersionOfComplement_complement.contMDiff
