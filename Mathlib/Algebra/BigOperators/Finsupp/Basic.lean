@@ -190,6 +190,11 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     rw [h]
     exact h₁ h
 
+@[to_additive]
+lemma prod_unique [Unique α] {f : α →₀ M} {g : α → M → N} (h₁ : f default = 0 → g default 0 = 1) :
+    f.prod g = g default (f default) :=
+  prod_eq_single _ (fun a ↦ by simp [Subsingleton.elim a default]) h₁
+
 end SumProd
 
 section CommMonoidWithZero
