@@ -3,16 +3,21 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Maps on the unit circle
 
-In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
-to the unit circle. These two maps define a partial equivalence between `circle` and `ℝ`, see
-`circle.argPartialEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
+In this file we prove some basic lemmas about `Circle.exp` and the restriction of `Complex.arg`
+to the unit circle. These two maps define a partial equivalence between `Circle` and `ℝ`, see
+`Circle.argPartialEquiv` and `Circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
+
+@[expose] public section
 
 
 open Complex Function Set
@@ -35,7 +40,7 @@ theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x :
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
 
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
+/-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
 noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
@@ -48,7 +53,7 @@ noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   left_inv' z _ := exp_arg z
   right_inv' _ hx := arg_exp hx.1 hx.2
 
-/-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
+/-- `Complex.arg` and `Circle.exp ∘ (↑)` define an equivalence between `Circle` and `(-π, π]`. -/
 @[simps -fullyApplied]
 noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
@@ -126,7 +131,7 @@ variable {T : ℝ}
 theorem scaled_exp_map_periodic : Function.Periodic (fun x => Circle.exp (2 * π / T * x)) T := by
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
   rcases eq_or_ne T 0 with (rfl | hT)
-  · intro x; simp
+  · simp
   · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, Circle.periodic_exp]
 
 /-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
@@ -158,7 +163,6 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
   field_simp at hm
-  rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
@@ -181,7 +185,7 @@ noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ Circle :=
 
 theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
     homeomorphCircle hT x = toCircle x := by
-  induction' x using QuotientAddGroup.induction_on with x
+  cases x using QuotientAddGroup.induction_on
   rw [homeomorphCircle, Homeomorph.trans_apply,
     homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
   ring_nf
@@ -190,7 +194,13 @@ end AddCircle
 
 open AddCircle
 
--- todo: upgrade this to `IsCoveringMap Circle.exp`.
-lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
-  have : Fact (0 < 2 * π) := ⟨by positivity⟩
-  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+theorem Circle.isAddQuotientCoveringMap_exp :
+    IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * Real.pi)) := by
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  on_goal 2 => simp
+  ext; simp [homeomorphCircle_apply, toCircle]
+
+theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
+
+lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
+  Circle.isCoveringMap_exp.isLocalHomeomorph

@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Tactic.Conv
+module
+
+public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
 
 /-!
 # The `slice` tactic
@@ -14,12 +15,12 @@ of `Category.comp`.
 
 -/
 
+public meta section
+
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 -- TODO someone might like to generalise this tactic to work with other associative structures.
-
-/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib/Tactic/Core.lean` -/
 
 open Parser.Tactic.Conv
 

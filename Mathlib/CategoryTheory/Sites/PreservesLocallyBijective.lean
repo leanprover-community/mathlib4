@@ -3,20 +3,24 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Preserving and reflecting local injectivity and surjectivity
 
 This file proves that precomposition with a cocontinuous functor preserves local injectivity and
-surjectivity of morphisms of presheaves, and that precomposition with a cover preserving and cover
-dense functor reflects the same properties.
+surjectivity of morphisms of presheaves, and that precomposition with a cover-preserving and
+cover-dense functor reflects the same properties.
 -/
+
+public section
 
 open CategoryTheory Functor
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
   (H : C ⥤ D) {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 

@@ -3,12 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.GlueData
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Tactic.Generalize
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.GlueData
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Gluing Topological spaces
@@ -49,6 +51,8 @@ provided.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -142,9 +146,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 open CategoryTheory.Limits.WalkingParallelPair
 
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U}`
-    {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
-    (h : 𝖣.π x = 𝖣.π y) :
+    {x y : ↑(∐ D.U)} (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
       (Function.Coequalizer.Rel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
@@ -165,13 +167,8 @@ theorem eqvGen_of_π_eq
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  -- Porting note: was
-  -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
-  --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
-    colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
-    types_id_apply] at this
+  simp only [eqToHom_refl, colimit.ι_map_assoc, diagramIsoParallelPair_hom_app,
+    colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
@@ -295,13 +292,12 @@ structure MkCore where
   t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      -- Porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
       (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert Subtype.eq this
+    · convert Subtype.ext this
   rw [h.V_id]
   trivial
 
@@ -363,7 +359,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
-      V_id := fun i => by ext; simp
+      V_id := fun i => by simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }

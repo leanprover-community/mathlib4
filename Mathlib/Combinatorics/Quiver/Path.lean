@@ -3,10 +3,11 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Logic.Lemmas
-import Batteries.Data.List.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Logic.Lemmas
+public import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers
@@ -14,6 +15,8 @@ import Batteries.Data.List.Basic
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -172,9 +175,9 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
     p.length ≠ 0 ↔ ∃ (c : V) (e : a ⟶ c) (p' : Path c b),
       p = e.toPath.comp p' ∧ p.length = p'.length + 1 := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · have h_len : p.length = (p.length - 1) + 1 := by omega
+  · have h_len : p.length = (p.length - 1) + 1 := by lia
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by omega⟩
+    exact ⟨c, e, p', rfl, by lia⟩
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
@@ -207,10 +210,19 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, nil => by simp
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 
-theorem toList_chain_nonempty :
-    ∀ {b} (p : Path a b), p.toList.Chain (fun x y => Nonempty (y ⟶ x)) b
-  | _, nil => List.Chain.nil
-  | _, cons p f => p.toList_chain_nonempty.cons ⟨f⟩
+theorem isChain_toList_nonempty :
+    ∀ {b} (p : Path a b), (p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .nil
+  | _, cons nil _ => .singleton _
+  | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))
+
+theorem isChain_cons_toList_nonempty :
+    ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .singleton _
+  | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
+
+@[deprecated (since := "2025-09-19")]
+alias toList_chain_nonempty := isChain_cons_toList_nonempty
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
@@ -256,14 +268,15 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with
     | _, _, .nil, .nil => isTrue rfl
-    | _, _, .nil, .cons _ _ => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
-    | _, _, .cons _ _, .nil => isFalse fun h => Quiver.Path.noConfusion <| Subtype.mk.inj h
+    | _, _, .nil, .cons _ _
+    | _, _, .cons _ _, .nil =>
+      isFalse fun h => Quiver.Path.noConfusion rfl .rfl .rfl .rfl (heq_of_eq (Subtype.mk.inj h))
     | _, _, .cons (b := v') p' α, .cons (b := v'') q' β =>
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>
         if h : α = β then
-          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; omega
-          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; omega
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; lia
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; lia
           if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
             isTrue <| by
               apply Subtype.ext

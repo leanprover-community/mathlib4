@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Order.Defs.PartialOrder
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Intervals
@@ -22,6 +24,8 @@ For instance, `Ioc a b` denotes the interval `(a, b]`.
 We also define a typeclass `Set.OrdConnected`
 saying that a set includes `Set.Icc a b` whenever it contains both `a` and `b`.
 -/
+
+@[expose] public section
 
 namespace Set
 

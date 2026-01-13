@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -29,6 +31,8 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
+
+@[expose] public section
 
 open Topology Pointwise
 
@@ -248,15 +252,14 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
-  -- unification instead.
-  @ContinuousSMul.mk M X _ _ (_) <| by
+  let _ := sInf ts
+  { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
-            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
+            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht)) }
 
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}

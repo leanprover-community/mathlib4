@@ -3,10 +3,12 @@ Copyright (c) 2023 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Ruben Van de Velde
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Shift
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # One-dimensional iterated derivatives
@@ -14,6 +16,8 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 This file contains a number of further results on `iteratedDerivWithin` that need more imports
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
+
+public section
 
 section one_dimensional
 
@@ -92,8 +96,6 @@ variable (f) in
 theorem iteratedDerivWithin_fun_neg :
     iteratedDerivWithin n (fun z => -f z) s x = -iteratedDerivWithin n f s x :=
   iteratedDerivWithin_neg f
-
-@[deprecated (since := "2025-06-24")] alias iteratedDerivWithin_neg' := iteratedDerivWithin_fun_neg
 
 include h hx
 
@@ -183,9 +185,10 @@ theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
-  induction' n with n ih generalizing a
-  · simp only [iteratedDeriv_zero, pow_zero, one_smul]
-  · have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
+  induction n generalizing a with
+  | zero => simp only [iteratedDeriv_zero, pow_zero, one_smul]
+  | succ n ih =>
+    have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
       funext ih
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul',
@@ -212,9 +215,10 @@ end one_dimensional
 section shift_invariance
 
 variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (n : ℕ) (f : 𝕜 → F) (s : 𝕜)
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
-lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+lemma iteratedDeriv_comp_const_add :
     iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
   induction n with
   | zero => simp only [iteratedDeriv_zero]
@@ -222,11 +226,20 @@ lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
 
 /-- The iterated derivative commutes with shifting the function by a constant on the right. -/
-lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+lemma iteratedDeriv_comp_add_const :
     iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
   induction n with
   | zero => simp only [iteratedDeriv_zero]
   | succ n IH =>
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+
+lemma iteratedDeriv_comp_sub_const :
+    iteratedDeriv n (fun z ↦ f (z - s)) = fun t ↦ iteratedDeriv n f (t - s) := by
+  simp [sub_eq_add_neg, iteratedDeriv_comp_add_const]
+
+lemma iteratedDeriv_comp_const_sub :
+    iteratedDeriv n (fun z ↦ f (s - z)) = fun t ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (s - t) := by
+  simpa [funext_iff, neg_add_eq_sub, iteratedDeriv_comp_add_const] using
+    iteratedDeriv_comp_neg n (fun z => f (z + s))
 
 end shift_invariance

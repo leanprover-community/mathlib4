@@ -3,21 +3,24 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Term
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Assert
-import Lean.Meta.Tactic.Clear
-import Batteries.CodeAction -- to enable the hole code action
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Term
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Assert
+public import Lean.Meta.Tactic.Clear
 
 /-! ## Additional utilities in `Lean.MVarId` -/
+
+public section
 
 open Lean Meta
 
 namespace Lean.MVarId
 
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
-def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
+def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := none) :
     MetaM (FVarId × MVarId) := do
   (← g.define h (← t.getDM (inferType v)) v).intro1P
 

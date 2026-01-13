@@ -3,11 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.MeanInequalitiesPow
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 
 /-!
 # ℓp space
@@ -53,6 +56,8 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -379,6 +384,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
+    simp
   apply tsum_nonneg
   intro i
   calc
@@ -720,7 +726,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
+  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _, f.property.infty_mul g.property⟩
 
 @[simp]
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
@@ -1198,7 +1204,7 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
   rintro - ⟨i, rfl⟩
   calc
     |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
-    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add_le _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
         · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀

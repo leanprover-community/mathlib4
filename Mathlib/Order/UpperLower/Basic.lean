@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Order.SetNotation
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
 
 /-!
 # Properties of unbundled upper/lower sets
@@ -20,6 +22,8 @@ on the underlying order (such as `PartialOrder` and `LinearOrder`).
 * Lattice structure on antichains.
 * Order equivalence between upper/lower sets and antichains.
 -/
+
+public section
 
 open OrderDual Set
 
@@ -201,12 +205,12 @@ theorem IsLowerSet.preimage (hs : IsLowerSet s) {f : β → α} (hf : Monotone f
 
 theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f '' s : Set β) := by
   change IsUpperSet ((f : α ≃ β) '' s)
-  rw [Set.image_equiv_eq_preimage_symm]
+  rw [Equiv.image_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 
 theorem IsLowerSet.image (hs : IsLowerSet s) (f : α ≃o β) : IsLowerSet (f '' s : Set β) := by
   change IsLowerSet ((f : α ≃ β) '' s)
-  rw [Set.image_equiv_eq_preimage_symm]
+  rw [Equiv.image_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 
 theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
@@ -262,9 +266,6 @@ theorem IsUpperSet.top_mem (hs : IsUpperSet s) : ⊤ ∈ s ↔ s.Nonempty :=
 theorem IsUpperSet.top_notMem (hs : IsUpperSet s) : ⊤ ∉ s ↔ s = ∅ :=
   hs.top_mem.not.trans not_nonempty_iff_eq_empty
 
-@[deprecated (since := "2025-05-24")]
-alias IsUpperSet.not_top_mem := IsUpperSet.top_notMem
-
 end OrderTop
 
 section OrderBot
@@ -279,9 +280,6 @@ theorem IsLowerSet.bot_mem (hs : IsLowerSet s) : ⊥ ∈ s ↔ s.Nonempty :=
 
 theorem IsLowerSet.bot_notMem (hs : IsLowerSet s) : ⊥ ∉ s ↔ s = ∅ :=
   hs.bot_mem.not.trans not_nonempty_iff_eq_empty
-
-@[deprecated (since := "2025-05-24")]
-alias IsLowerSet.not_bot_mem := IsLowerSet.bot_notMem
 
 end OrderBot
 

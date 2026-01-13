@@ -3,11 +3,14 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.Order.Filter.Ring
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Order.Filter.Ring
 
 /-! # From equality of integrals to equality of functions
 
@@ -40,6 +43,8 @@ Generally useful lemmas which are not related to integrals:
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
+
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
@@ -94,11 +99,11 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     intro h
     apply lt_irrefl ‖s x x‖
     calc
-      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, ContinuousLinearMap.map_sub]
+      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, map_sub]
       _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
-      _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
+      _ = ‖s x x‖ := by simp [(hs x).2]
   have hfs : ∀ y : d, ∀ᵐ x ∂μ, ⟪f x, s y⟫ = (0 : 𝕜) := fun y => hf (s y)
   have hf' : ∀ᵐ x ∂μ, ∀ y : d, ⟪f x, s y⟫ = (0 : 𝕜) := by rwa [ae_all_iff]
   filter_upwards [hf', h't] with x hx h'x
@@ -234,7 +239,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     exact ContinuousLinearMap.integrable_comp c (hf_int_finite s hs hμs)
   · intro s hs hμs
     rw [ContinuousLinearMap.integral_comp_comm c (hf_int_finite s hs hμs), hf_zero s hs hμs]
-    exact ContinuousLinearMap.map_zero _
+    exact map_zero _
 
 theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)

@@ -3,13 +3,15 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.RCLike.Basic
 /-!
 # Mean value theorem
 
@@ -60,6 +62,8 @@ is not differentiable on the right at that point, and similarly differentiabilit
   is increasing or its second derivative is nonnegative, then the original function is convex.
 
 -/
+
+public section
 
 open Set Function Filter
 open scoped Topology
@@ -519,7 +523,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual 
     (hf _ (hmaps ht)).comp_hasDerivWithinAt t AffineMap.hasDerivWithinAt_lineMap hmaps
   -- apply 1-variable mean value theorem to pullback
   have hMVT : ∃ t ∈ Ioo (0 : ℝ) 1, f' (g t) (y - x) = (f (g 1) - f (g 0)) / (1 - 0) := by
-    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) ?_ ?_
+    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by simp) ?_ ?_
     · exact fun t Ht => (hfg t Ht).continuousWithinAt
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain

@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.TryThis
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
+module
+
+public meta import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Tactic.TryThis
+public import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -15,8 +17,10 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+public meta section
+
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
-assert_not_exists OrderedAddCommMonoid TopologicalSpace PseudoMetricSpace
+assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -123,9 +127,9 @@ def iapp (n : Name) (xs : Array Expr) : M Expr := do
   return c.app (if c.isGroup then addG n else n) c.inst xs
 
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
-def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
+@[expose] def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
+@[expose] def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
 
 /-- Evaluate a term with coefficient `n`, atom `x` and successor terms `a`. -/
 def mkTerm (n x a : Expr) : M Expr := iapp ``term #[n, x, a]
@@ -238,9 +242,9 @@ def evalNeg : NormalExpr → M (NormalExpr × Expr)
       (← read).app ``term_neg (← read).inst #[n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
 /-- A synonym for `•`, used internally in `abel`. -/
-def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
+@[expose] def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
 /-- A synonym for `•`, used internally in `abel`. -/
-def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
+@[expose] def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
 
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
@@ -362,7 +366,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     return (e', ← iapp ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p'])
-  | (``HSub.hSub, #[_, _, _ ,_, e₁, e₂]) => do
+  | (``HSub.hSub, #[_, _, _, _, e₁, e₂]) => do
     let e₂' ← mkAppM ``Neg.neg #[e₂]
     let e ← mkAppM ``HAdd.hAdd #[e₁, e₂']
     let (e', p) ← eval e
@@ -398,6 +402,29 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
       evalAtom e
   | _ => evalAtom e
 
+/-- Determine whether `e` will be handled as an atom by the `abel` tactic. The `match` in this
+function should be preserved to be parallel in case-matching to that in the
+`Mathlib.Tactic.Abel.eval` metaprogram. -/
+def isAtom (e : Expr) : Bool :=
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, _, _])
+  | (``HSub.hSub, #[_, _, _, _, _, _])
+  | (``Neg.neg, #[_, _, _])
+  | (``AddMonoid.nsmul, #[_, _, _, _])
+  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``SMul.smul, #[.const ``Int _, _, _, _, _])
+  | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, _, _])
+  | (``smul, #[_, _, _, _])
+  | (``smulg, #[_, _, _, _]) => false
+  /- The `OfNat.ofNat` and `Zero.zero` cases are deliberately omitted here: these two cases are not
+  strictly atoms for `abel`, but they are atom-like in that their handling by
+  `Mathlib.Tactic.Abel.eval` contains no recursive call. -/
+  -- | (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
+  -- | (``Zero.zero, #[_, _])
+  | _ => true
+
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
@@ -418,9 +445,9 @@ elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
 @[tactic_alt abel]
 macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
+theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := (rfl)
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
+theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := (rfl)
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
@@ -465,9 +492,8 @@ It differs in
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting group expressions are applications
+  guard !(isAtom e)
   let (a, pa) ← eval e (← mkContext e)
-  guard !a.isAtom
   return { expr := a, proof? := pa }
 
 open Parser.Tactic
@@ -522,4 +548,4 @@ end Mathlib.Tactic.Abel
 We register `abel` with the `hint` tactic.
 -/
 
-register_hint abel
+register_hint 950 abel

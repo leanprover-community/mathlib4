@@ -3,13 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.VanKampen
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.VanKampen
 
 /-!
 
@@ -45,6 +49,8 @@ Show that the following are finitary extensive:
 
 -/
 
+@[expose] public section
+
 open CategoryTheory.Limits Topology
 
 namespace CategoryTheory
@@ -67,7 +73,7 @@ attribute [instance] HasPullbacksOfInclusions.hasPullbackInl
 /--
 A functor preserves pullback of inclusions if it preserves all pullbacks along coproduct injections.
 -/
-class PreservesPullbacksOfInclusions {C : Type*} [Category C] {D : Type*} [Category D]
+class PreservesPullbacksOfInclusions {C : Type*} [Category* C] {D : Type*} [Category* D]
     (F : C ⥤ D) [HasBinaryCoproducts C] where
   [preservesPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), PreservesLimit (cospan coprod.inl f) F]
 
@@ -135,7 +141,7 @@ end HasPullbacksOfInclusions
 
 namespace PreservesPullbacksOfInclusions
 
-variable {D : Type*} [Category D] [HasBinaryCoproducts C] (F : C ⥤ D)
+variable {D : Type*} [Category* D] [HasBinaryCoproducts C] (F : C ⥤ D)
 
 noncomputable
 instance (priority := 100) [PreservesLimitsOfShape WalkingCospan F] :
@@ -380,14 +386,14 @@ instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
     FinitaryExtensive.vanKampen _ <| isColimitOfPreserves _ hc⟩
 
-instance {C} [Category C] {D} [Category D] (F : C ⥤ D)
+instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso f] : PreservesLimit (cospan f g) F :=
   have := hasPullback_of_left_iso f g
   preservesLimit_of_preserves_limit_cone (IsPullback.of_hasPullback f g).isLimit
     ((isLimitMapConePullbackConeEquiv _ pullback.condition).symm
       (IsPullback.of_vert_isIso ⟨by simp only [← F.map_comp, pullback.condition]⟩).isLimit)
 
-instance {C} [Category C] {D} [Category D] (F : C ⥤ D)
+instance {C} [Category* C] {D} [Category* D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g] : PreservesLimit (cospan f g) F :=
   preservesPullback_symmetry _ _ _
 
@@ -448,9 +454,10 @@ theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C]
     Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  induction' n with n IH
-  · exact isVanKampenColimit_of_isEmpty _ hc
-  · apply IsVanKampenColimit.of_iso _
+  induction n with
+  | zero => exact isVanKampenColimit_of_isEmpty _ hc
+  | succ n IH =>
+    apply IsVanKampenColimit.of_iso _
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
     apply @isVanKampenColimit_extendCofan _ _ _ _ _ _ _ _ ?_
     · apply IH
@@ -540,9 +547,6 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
     (by simp) (by simp [c]) (by simp [pullback.condition, c])
   exact pullback.isLimit _ _
 
-@[deprecated (since := "2025-06-20")]
-alias FinitaryPreExtensive.sigma_desc_iso := FinitaryPreExtensive.isIso_sigmaDesc_fst
-
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
 coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
 For an `IsPullback` version, see `FinitaryPreExtensive.isPullback_sigmaDesc`. -/
@@ -574,9 +578,6 @@ lemma FinitaryPreExtensive.isPullback_sigmaDesc [HasPullbacks C] [FinitaryPreExt
       (Limits.Sigma.desc fun (p : ι × ι') ↦ pullback.fst (f p.1) (g p.2) ≫ Sigma.ι X p.1)
       (Limits.Sigma.desc fun (p : ι × ι') ↦ pullback.snd (f p.1) (g p.2) ≫ Sigma.ι Y p.2)
       (Limits.Sigma.desc f) (Limits.Sigma.desc g) := by
-  let c : Cofan _ := Cofan.mk _ <| fun (p : ι × ι') ↦
-      pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
-        (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)
   convert IsUniversalColimit.isPullback_prod_of_isColimit
       (d := Cofan.mk _ (Sigma.ι fun (p : ι × ι') ↦ pullback (f p.1) (g p.2)))
       (hd := coproductIsCoproduct (fun (p : ι × ι') ↦ pullback (f p.1) (g p.2)))

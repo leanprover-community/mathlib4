@@ -3,9 +3,13 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-import Mathlib.Order.Interval.Set.Union
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.CompactlySupported
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -13,7 +17,7 @@ import Mathlib.Order.Interval.Set.Union
 The Riesz–Markov–Kakutani representation theorem relates linear functionals on spaces of continuous
 functions on a locally compact space to measures.
 
-There are many closely related variations of the theorem. This file contains that proof of the
+There are many closely related variations of the theorem. This file contains the proof of the
 version where the space is a locally compact T2 space, the linear functionals are real and the
 continuous functions have compact support.
 
@@ -22,6 +26,8 @@ continuous functions have compact support.
 * `RealRMK.rieszMeasure`: the measure induced by a real linear positive functional.
 * `RealRMK.integral_rieszMeasure`: the Riesz–Markov–Kakutani representation theorem for a real
   linear positive functional.
+* `RealRMK.rieszMeasure_integralPositiveLinearMap`: the uniqueness of the representing measure in
+  the Riesz–Markov–Kakutani representation theorem.
 
 ## Implementation notes
 
@@ -37,15 +43,21 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
-open scoped ENNReal
+@[expose] public section
+
+open scoped ENNReal BoundedContinuousFunction
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
 
 namespace RealRMK
 
-variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
+variable {X : Type*} [TopologicalSpace X] [T2Space X] [MeasurableSpace X]
   [BorelSpace X]
 variable (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
+
+section Construction
+
+variable [LocallyCompactSpace X]
 
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
 and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
@@ -128,7 +140,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by omega : m < n ∨ n < m) with hc | hc
+    rcases (by lia : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
@@ -187,11 +199,13 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
   let ε' := (b - a) / N
-  replace hε' : 0 < ε' ∧  ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
+  replace hε' : 0 < ε' ∧ ε' * (2 * μ.real K + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
-    field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀, hab.2]
+    dsimp [ε']
+    field_simp
+    simp [hab.2]
   -- Introduce notation for the partition of the range.
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
   -- The measure of each `E n` is finite.
@@ -234,9 +248,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
     _ = ∑ n, (y n - ε') * μ.real (E n) +
       2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + 2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + ε' * (2 * μ.real K + |a| + b + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + ε := by simp [hε'.2]
+    _ ≤ ∫ x, f x ∂μ + 2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
+    _ ≤ ∫ x, f x ∂μ + ε' * (2 * μ.real K + |a| + b + ε') := ?_
+    _ ≤ ∫ x, f x ∂μ + ε := by simp [hε'.2]
   · -- Equality since `∑ i : Fin N, (g i)` is equal to unity on the support of `f`
     congr; ext x
     simp only [coe_sum, smul_eq_mul, coe_mul, Pi.mul_apply,
@@ -296,7 +310,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     gcongr
     have h : ∀ n, (y n - ε') * μ.real (E n) ≤ ∫ x in (E n), f x ∂μ := by
       intro n
-      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
+      apply setIntegral_ge_of_const_le_real (hE.2.2.2 n) (hE' n)
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
@@ -305,7 +319,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-        refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
+        refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦
           Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
@@ -314,8 +328,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   · -- Rough bound of the sum
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
-        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
-        _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; lia]
+        _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all
     simp only [Finset.sum_add_distrib, Finset.sum_add_distrib,
@@ -325,6 +339,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
+@[simp]
 theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ) = Λ f := by
   -- We apply the result `Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ)` to `f` and `-f`.
   apply le_antisymm
@@ -335,5 +350,143 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ
       _ = _ := by simp
   -- prove the inequality for `f`
   · exact integral_riesz_aux Λ f
+
+/-- The Riesz measure induced by a positive linear functional on `C_c(X, ℝ)` is regular. -/
+instance regular_rieszMeasure : (rieszMeasure Λ).Regular :=
+  (rieszContent _).regular
+
+end Construction
+
+section integralPositiveLinearMap
+
+variable {μ ν : Measure X} [LocallyCompactSpace X]
+
+/-! We show that `RealRMK.rieszMeasure` is a bijection between positive linear functionals on
+`C_c(X, ℝ)` and regular measures with inverse `RealRMK.integralPositiveLinearMap`. -/
+
+/-- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
+`μ` is infinite on any nonempty set and `ν = 0`, then the hypotheses are satisfied. -/
+lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
+    [IsFiniteMeasureOnCompacts ν] [IsFiniteMeasureOnCompacts μ]
+    (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ ≤ ∫ x, f x ∂ν)
+    ⦃K : Set X⦄ (hK : IsCompact K) : μ K ≤ ν K := by
+  refine ENNReal.le_of_forall_pos_le_add fun ε hε hν ↦ ?_
+  have hνK : ν K ≠ ⊤ := hν.ne
+  have hμK : μ K ≠ ⊤ := hK.measure_lt_top.ne
+  obtain ⟨V, pV1, pV2, pV3⟩ : ∃ V ⊇ K, IsOpen V ∧ ν V ≤ ν K + ε :=
+    exists_isOpen_le_add K ν (ne_of_gt (ENNReal.coe_lt_coe.mpr hε))
+  suffices μ.real K ≤ ν.real K + ε by
+    rwa [← ENNReal.toReal_le_toReal, ENNReal.toReal_add, ENNReal.coe_toReal]
+    all_goals finiteness
+  have VltTop : ν V < ⊤ := pV3.trans_lt <| by finiteness
+  obtain ⟨f, pf1, pf2, pf3⟩ :
+      ∃ f : C_c(X, ℝ), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
+    obtain ⟨f, hf1, hf2, hf3⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK pV2 pV1
+    exact ⟨⟨f, hasCompactSupport_def.mpr hf2⟩, hf1, hf3⟩
+  have hfV (x : X) : f x ≤ V.indicator 1 x := by
+    by_cases hx : x ∈ tsupport f
+    · simp [(pf2 hx), (pf3 x).2]
+    · simp [image_eq_zero_of_notMem_tsupport hx, Set.indicator_nonneg]
+  have hfK (x : X) : K.indicator 1 x ≤ f x := by
+    by_cases hx : x ∈ K
+    · simp [hx, pf1 hx]
+    · simp [hx, (pf3 x).1]
+  calc
+    μ.real K = ∫ x, K.indicator 1 x ∂μ := integral_indicator_one hK.measurableSet |>.symm
+    _ ≤ ∫ x, f x ∂μ := by
+      refine integral_mono ?_ f.integrable hfK
+      exact (continuousOn_const.integrableOn_compact hK).integrable_indicator hK.measurableSet
+    _ ≤ ∫ x, f x ∂ν := hμν f
+    _ ≤ ∫ x, V.indicator 1 x ∂ν := by
+      refine integral_mono f.integrable ?_ hfV
+      exact IntegrableOn.integrable_indicator integrableOn_const pV2.measurableSet
+    _ ≤ (ν K).toReal + ↑ε := by
+      rwa [integral_indicator_one pV2.measurableSet, measureReal_def,
+        ← ENNReal.coe_toReal, ← ENNReal.toReal_add, ENNReal.toReal_le_toReal]
+      all_goals finiteness
+
+/-- If two regular measures give the same integral for every function in `C_c(X, ℝ)`,
+then they are equal. -/
+theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported
+    [μ.Regular] [ν.Regular] (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
+    μ = ν := by
+  apply Measure.OuterRegular.ext_isOpen
+  apply Measure.InnerRegularWRT.eq_of_innerRegularWRT_of_forall_eq Measure.Regular.innerRegular
+    Measure.Regular.innerRegular
+  intro K hK
+  apply le_antisymm
+  · exact measure_le_of_isCompact_of_integral (fun f ↦ (hμν f).le) hK
+  · exact measure_le_of_isCompact_of_integral (fun f ↦ (hμν f).ge) hK
+
+/-- Two regular measures are equal iff they induce the same positive linear functional
+on `C_c(X, ℝ)`. -/
+theorem integralPositiveLinearMap_inj [μ.Regular] [ν.Regular] :
+    integralPositiveLinearMap μ = integralPositiveLinearMap ν ↔ μ = ν where
+  mp hμν := Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ congr($hμν f)
+  mpr _ := by congr
+
+/-- Every regular measure is induced by a positive linear functional on `C_c(X, ℝ)`.
+That is, `RealRMK.rieszMeasure` is a surjective function onto regular measures. -/
+@[simp]
+theorem rieszMeasure_integralPositiveLinearMap [μ.Regular] :
+    rieszMeasure (integralPositiveLinearMap μ) = μ :=
+  Measure.ext_of_integral_eq_on_compactlySupported (by simp)
+
+@[simp]
+theorem integralPositiveLinearMap_rieszMeasure :
+    integralPositiveLinearMap (rieszMeasure Λ) = Λ := by ext; simp
+
+end integralPositiveLinearMap
+
+section Compact
+
+instance [CompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : IsFiniteMeasure (rieszMeasure Λ) := by
+  constructor
+  let o : C_c(X, ℝ) := ⟨1, HasCompactSupport.of_compactSpace 1⟩
+  calc rieszMeasure Λ univ
+  _ ≤ ENNReal.ofReal (Λ o) :=
+    rieszMeasure_le_of_eq_one _ (fun x ↦ zero_le_one) isCompact_univ (fun x hx ↦ rfl)
+  _ < ⊤ := by simp
+
+/-- Given a finite measure on a compact space, there exists another finite measure which
+integrates in the same way bounded continuous functions, and is regular. -/
+lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpace X]
+    (μ : Measure X) [IsFiniteMeasure μ] :
+    ∃ (ν : Measure X), ν.Regular ∧ IsFiniteMeasure ν ∧
+      ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
+  let Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
+  { toFun g := ∫ x, g x ∂μ
+    map_add' g g' := integral_add g.integrable g'.integrable
+    map_smul' c g := integral_smul c g
+    monotone' g g' hgg' := integral_mono g.integrable g'.integrable hgg' }
+  refine ⟨RealRMK.rieszMeasure Λ, by infer_instance, by infer_instance, fun g ↦ ?_⟩
+  let g' : C_c(X, ℝ) :=
+  { toFun := g
+    hasCompactSupport' := HasCompactSupport.of_compactSpace _ }
+  exact (integral_rieszMeasure Λ g').symm
+
+/-- Given a finite measure supported on a compact set, there exists another finite measure which
+integrates in the same way bounded continuous functions, and is regular. -/
+lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
+    (μ : Measure X) [IsFiniteMeasure μ] {K : Set X} (hK : IsCompact K) (h : μ Kᶜ = 0) :
+    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧ ν Kᶜ = 0 ∧
+      ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
+  let μ' : Measure K := μ.comap Subtype.val
+  obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ (ν : Measure K), ν.Regular ∧ IsFiniteMeasure ν ∧
+      ∀ g : K →ᵇ ℝ, ∫ x, g x ∂μ' = ∫ x, g x ∂ν := by
+    have : CompactSpace K := isCompact_iff_compactSpace.mp hK
+    exact Measure.exists_regular_eq_of_compactSpace μ'
+  refine ⟨ν'.map Subtype.val, Measure.InnerRegular.map_of_continuous (by fun_prop),
+    by infer_instance, ?_, fun g ↦ ?_⟩
+  · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
+    simp
+  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+  · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
+    rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
+    simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]
+  · rw [integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
+    simp
+
+end Compact
 
 end RealRMK

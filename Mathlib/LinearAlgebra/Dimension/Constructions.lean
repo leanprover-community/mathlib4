@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
@@ -28,6 +30,8 @@ Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -55,9 +59,6 @@ theorem LinearIndependent.sumElim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsuppSum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-@[deprecated (since := "2025-02-21")]
-alias LinearIndependent.sum_elim_of_quotient := LinearIndependent.sumElim_of_quotient
-
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
@@ -71,9 +72,6 @@ theorem LinearIndepOn.union_id_of_quotient {M' : Submodule R M}
   hs'.union_of_quotient <| by
     rw [image_id]
     exact ht.of_comp ((span R s).mapQ M' (LinearMap.id) (span_le.2 hs))
-
-@[deprecated (since := "2025-02-16")] alias LinearIndependent.union_of_quotient :=
-  LinearIndepOn.union_id_of_quotient
 
 theorem linearIndepOn_union_iff_quotient {s t : Set ι} {f : ι → M} (hst : Disjoint s t) :
     LinearIndepOn R f (s ∪ t) ↔
@@ -256,7 +254,6 @@ theorem finrank_finsupp_self {ι : Type v} [Fintype ι] : finrank R (ι →₀ R
 theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
-  letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
@@ -301,7 +298,6 @@ theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
-  letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
     mk_toNat_eq_card, Fintype.card_sigma]
 
@@ -434,7 +430,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   simp only [lift_lift, le_refl]
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
-  simpa using rank_span_le s.toSet
+  simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
@@ -543,8 +539,8 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
-    letI := Module.nontrivial F E
-    exact LinearIndepOn.id_singleton _ one_ne_zero
+    have := Module.nontrivial F E
+    exact .singleton one_ne_zero
 
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
@@ -553,3 +549,85 @@ theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
 end Ring
 
 end SubalgebraRank
+
+section Extend
+
+namespace Module.Basis
+
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+    {W : Submodule R V} {m n : Type*}
+    (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
+
+/-- Given a basis `bW` of a submodule of an `R`-module `V`,
+and a basis `bQ` of the quotient `V ⧸ W`,
+this is a basis of `V` combining `bW` and a lift of `bQ`. -/
+noncomputable def sumQuot :
+    Basis (m ⊕ n) R V := by
+  let b : m ⊕ n → V := Sum.elim (fun i ↦ bW i) ((Function.surjInv W.mkQ_surjective) ∘ bQ)
+  have br : W.mkQ ∘ b ∘ Sum.inr = bQ := by
+    ext j
+    apply Function.rightInverse_surjInv W.mkQ_surjective
+  apply Basis.mk (v := b)
+  · apply LinearIndependent.sumElim_of_quotient
+    · exact bW.linearIndependent
+    · convert bQ.linearIndependent
+  · unfold b
+    rw [Set.Sum.elim_range, Submodule.span_union,
+      show Set.range (fun i ↦ (bW i : V)) = W.subtype '' (Set.range (fun i ↦ bW i)) by aesop,
+      ← Submodule.map_span, bW.span_eq, Submodule.map_top, Submodule.range_subtype, top_le_iff,
+      ← Submodule.map_mkQ_eq_top, Submodule.map_span, ← Set.range_comp, ← bQ.span_eq]
+    congr 2
+
+@[simp]
+theorem sumQuot_inl (i : m) :
+    sumQuot bW bQ (Sum.inl i) = bW i := by
+  simp [sumQuot]
+
+@[simp]
+theorem sumQuot_inr (j : n) :
+    Submodule.Quotient.mk (sumQuot bW bQ (Sum.inr j)) = bQ j := by
+  simpa only [sumQuot, Basis.coe_mk, Sum.elim_inr, Function.comp_apply, ← W.mkQ_apply]
+    using Function.rightInverse_surjInv W.mkQ_surjective _
+
+@[simp]
+theorem sumQuot_repr_left (i : m) :
+    (sumQuot bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
+  rw [← Module.Basis.apply_eq_iff, sumQuot_inl]
+
+theorem sumQuot_repr_inl (w : W) (i : m) :
+    (sumQuot bW bQ).repr w (Sum.inl i) = bW.repr w i := by
+  classical
+  refine Eq.symm <| (bW.repr_apply_eq
+      (fun w i => (sumQuot bW bQ).repr (W.subtype w) (Sum.inl i)) ?_ ?_ ?_ w i) <;>
+  aesop (add simp Finsupp.single_apply)
+
+@[simp]
+theorem sumQuot_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
+    (sumQuot bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i :=
+  sumQuot_repr_inl bW bQ ⟨v, hv⟩ i
+
+@[simp]
+theorem sumQuot_repr_inr (v : V) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
+  simp only [← Module.Basis.coord_apply]
+  rw [← LinearMap.comp_apply]
+  revert v
+  rw [← LinearMap.ext_iff]
+  apply (sumQuot bW bQ).ext
+  intro x
+  induction x with
+  | inl i =>
+    simp [sumQuot_inl, LinearMap.comp_apply,
+      (Quotient.mk_eq_zero W).mpr (Submodule.coe_mem (bW i))]
+  | inr i =>
+    classical
+    simp [LinearMap.comp_apply, sumQuot_inr, Finsupp.single_apply]
+
+theorem sumQuot_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
+    (sumQuot bW bQ).repr v (Sum.inr j) = 0 := by
+  suffices W.mkQ v = 0 by simp [sumQuot_repr_inr, this]
+  aesop
+
+end Module.Basis
+
+end Extend

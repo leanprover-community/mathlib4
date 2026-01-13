@@ -3,10 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+module
+
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 
 /-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
+
+public section
 
 namespace MvPolynomial
 
@@ -14,7 +18,11 @@ open MonomialOrder Finsupp
 
 open scoped MonomialOrder
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] {f g : MvPolynomial σ R}
+variable {σ : Type*} {R : Type*}
+
+section CommSemiring
+
+variable [CommSemiring R] {f g : MvPolynomial σ R}
 
 section LinearOrder
 
@@ -37,11 +45,6 @@ theorem degLex_totalDegree_monotone (h : degLex.degree f ≼[degLex] degLex.degr
 
 end LinearOrder
 
-theorem totalDegree_mul_of_isDomain [IsCancelMulZero R] (hf : f ≠ 0) (hg : g ≠ 0) :
-    totalDegree (f * g) = totalDegree f + totalDegree g := by
-  cases exists_wellOrder σ
-  rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
-    ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
-  simp
+end CommSemiring
 
 end MvPolynomial

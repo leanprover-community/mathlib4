@@ -3,7 +3,9 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Chebyshev-Markov inequality in terms of Lp seminorms
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we formulate several versions of the Chebyshev-Markov inequality
 in terms of the `MeasureTheory.eLpNorm` seminorm.
 -/
+
+public section
 open scoped NNReal ENNReal
 
 namespace MeasureTheory
@@ -55,15 +59,9 @@ theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
     simp [h, this, hmeas_top]
   · have hεpow : ε ^ p.toReal ≠ 0 := (ENNReal.rpow_pos (pos_iff_ne_zero.2 hε) h).ne.symm
     have hεpow' : ε ^ p.toReal ≠ ∞ := by finiteness
-    rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_left hεpow hεpow', ← mul_assoc,
+    rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_iff_right hεpow hεpow', ← mul_assoc,
       ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
     exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
-
-@[deprecated meas_ge_le_mul_pow_eLpNorm_enorm (since := "2025-05-01")]
-theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    {f : α → E} (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    μ { x | ε ≤ ‖f x‖₊ } ≤ ε⁻¹ ^ p.toReal * eLpNorm f p μ ^ p.toReal :=
-  meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hf hε (by simp)
 
 theorem MemLp.meas_ge_lt_top'_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
@@ -81,9 +79,6 @@ theorem MemLp.meas_ge_lt_top' {μ : Measure α} {f : α → E} (hℒp : MemLp f 
   · simp [h]
   exact hℒp.meas_ge_lt_top'_enorm hp_ne_zero hp_ne_top hε (by simp)
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.meas_ge_lt_top' := MemLp.meas_ge_lt_top'
-
 theorem MemLp.meas_ge_lt_top_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ :=
@@ -94,8 +89,5 @@ theorem MemLp.meas_ge_lt_top {μ : Measure α} {f : α → E} (hℒp : MemLp f p
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   simp_rw [← ENNReal.coe_le_coe]
   apply hℒp.meas_ge_lt_top' hp_ne_zero hp_ne_top (by simp [hε])
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.meas_ge_lt_top := MemLp.meas_ge_lt_top
 
 end MeasureTheory

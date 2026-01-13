@@ -3,7 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 
@@ -16,14 +18,16 @@ This file contains basics about the relative rank of subfields and intermediate 
 - `Subfield.relrank A B`, `IntermediateField.relrank A B`:
   defined to be `[B : A ⊓ B]` as a `Cardinal`.
   In particular, when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-  This is similar to `Subgroup.relindex` but it is `Cardinal` valued.
+  This is similar to `Subgroup.relIndex` but it is `Cardinal` valued.
 
 - `Subfield.relfinrank A B`, `IntermediateField.relfinrank A B`:
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
-  This is similar to `Subgroup.relindex`.
+  This is similar to `Subgroup.relIndex`.
 
 -/
+
+@[expose] public section
 
 open Module Cardinal
 
@@ -37,7 +41,7 @@ variable (A B C : Subfield E)
 
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
 /-- The `Nat` version of `Subfield.relrank`.
@@ -279,7 +283,7 @@ variable (A B C : IntermediateField F E)
 
 /-- `IntermediateField.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := A.toSubfield.relrank B.toSubfield
 
 /-- The `Nat` version of `IntermediateField.relrank`.
@@ -421,7 +425,6 @@ variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
   letI : Algebra A B := (inclusion h).toAlgebra
-  haveI : IsScalarTower F A B := IsScalarTower.of_algebraMap_eq' rfl
   exact rank_mul_rank F A B
 
 variable {A B} in

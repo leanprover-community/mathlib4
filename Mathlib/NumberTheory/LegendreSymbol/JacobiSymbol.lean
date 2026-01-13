@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # The Jacobi Symbol
@@ -50,13 +52,15 @@ We prove the main properties of the Jacobi symbol, including the following.
   reducing to the case `0 ≤ a < b` and `a`, `b` odd, and then swaps `a`, `b` and recurses using
   quadratic reciprocity.
 
-## Notations
+## Notation
 
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 
 ## Tags
 Jacobi symbol, quadratic reciprocity
 -/
+
+@[expose] public section
 
 
 section Jacobi
@@ -70,7 +74,7 @@ prime divisors (with multiplicity) of `b`, as provided by `b.factors`. This agre
 Jacobi symbol when `b` is odd and gives less meaningful values when it is not (e.g., the symbol
 is `1` when `b = 0`). This is called `jacobiSym a b`.
 
-We define localized notation (locale `NumberTheorySymbols`) `J(a | b)` for the Jacobi
+We define localized notation (scope `NumberTheorySymbols`) `J(a | b)` for the Jacobi
 symbol `jacobiSym a b`.
 -/
 
@@ -463,7 +467,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
     · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
       simp only [ha₂, Nat.cast_mul, ← mul_assoc]
       apply dvd_mul_left
-  rcases e with - | e; · rfl
+  rcases e with - | e; · simp
   · rw [χ₈_nat_mod_eight, χ₈_nat_mod_eight (b % (4 * a)), mod_mod_of_dvd b]
     use 2 ^ e * a'; rw [ha₂, Nat.pow_succ]; ring
 
@@ -487,6 +491,7 @@ section FastJacobi
 We follow the implementation as in `Mathlib/Tactic/NormNum/LegendreSymbol.lean`.
 -/
 
+set_option backward.privateInPublic true
 
 open NumberTheorySymbols jacobiSym
 
@@ -552,6 +557,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   else
     fastJacobiSymAux (a % b).natAbs b false (Int.natAbs_pos.mpr hab)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
   induction b using Nat.strongRecOn with | ind b IH =>
@@ -579,6 +586,8 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inline, nolint unusedArguments]
 private def fastLegendreSym (p : ℕ) [Fact p.Prime] (a : ℤ) : ℤ := J(a | p)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[csimp] private theorem fastLegendreSym.eq : legendreSym = fastLegendreSym := by
   ext p _ a; rw [legendreSym.to_jacobiSym, fastLegendreSym]
 

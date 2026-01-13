@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -29,6 +31,8 @@ We show the additional results:
 * `CliffordAlgebra.toBaseChange_involute`: the effect of base-changing an involution.
 * `CliffordAlgebra.toBaseChange_reverse`: the effect of base-changing a reversal.
 -/
+
+@[expose] public section
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]

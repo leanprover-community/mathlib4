@@ -3,24 +3,26 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
-# Vector valued measures
+# Vector-valued measures
 
-This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
-`M` such that it maps the empty set and non-measurable sets to zero. In the case
+This file defines vector-valued measures, which are σ-additive functions from a set to an
+additive monoid `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
 Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`
 (defined in `MeasureTheory/Measure/Complex`).
 
 ## Main definitions
 
-* `MeasureTheory.VectorMeasure` is a vector valued, σ-additive function that maps the empty
-  and non-measurable set to zero.
+* `MeasureTheory.VectorMeasure` is a vector-valued, σ-additive function that maps the empty
+  and non-measurable sets to zero.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
 
@@ -42,6 +44,8 @@ since this provides summability.
 vector measure, signed measure, complex measure
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -53,7 +57,7 @@ namespace MeasureTheory
 variable {α β : Type*} {m : MeasurableSpace α}
 
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
-an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
+an additive monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
     [TopologicalSpace M] where
   /-- The measure of sets -/
@@ -778,8 +782,7 @@ theorem restrict_le_restrict_subset {i j : Set α} (hi₁ : MeasurableSet i) (hi
     subset_le_of_restrict_le_restrict v w hi₁ hi₂ (Set.Subset.trans hk₂ hij)
 
 theorem le_restrict_empty : v ≤[∅] w := by
-  intro j _
-  rw [restrict_empty, restrict_empty]
+  simp
 
 theorem le_restrict_univ_iff_le : v ≤[Set.univ] w ↔ v ≤ w := by
   simp
@@ -910,7 +913,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
   [AddLeftMono M] [ContinuousAdd M]
 
 instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
-  ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
+  ⟨fun _ _ _ h i hi => by dsimp; grw [h i hi]⟩
 
 end
 
@@ -1195,9 +1198,7 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
     s.toMeasureOfLEZero i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
       (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi))⟩ := by
-  erw [toMeasureOfZeroLE_apply]
-  · simp
-  · assumption
+  simp [toMeasureOfLEZero, toMeasureOfZeroLE_apply _ _ _ hj₁]
 
 theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)
     (hj₁ : MeasurableSet j) :

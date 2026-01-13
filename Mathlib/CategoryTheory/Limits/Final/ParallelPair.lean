@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
 /-!
 
 # Conditions for `parallelPair` to be initial
@@ -16,9 +18,11 @@ parallel morphisms out of `X` factor through the parallel pair `f`, `g`
 (`h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z), ∃ (a : Y ⟶ Z), i = f ≫ a ∧ j = g ≫ a`).
 -/
 
+public section
+
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open WalkingParallelPair WalkingParallelPairHom CostructuredArrow
 

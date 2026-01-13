@@ -3,12 +3,18 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Submonoid
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Finite places of number fields
@@ -26,14 +32,60 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
   unfolded.
 * `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
   `K` is different from 1 for at most finitely many `v`.
+*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
+   discrete valuation rings.
 
 ## Tags
 number field, places, finite places
 -/
 
-open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
+@[expose] public section
+
+open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt WithZero
 
 open scoped WithZero NNReal
+
+section DVR
+
+variable (A : Type*) [CommRing A] [IsDedekindDomain A]
+    (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    (v : HeightOneSpectrum A) (hv : Finite (A ⧸ v.asIdeal))
+
+instance : IsPrincipalIdealRing (v.valuation K).integer := by
+  rw [(Valuation.integer.integers (v.valuation K)).isPrincipalIdealRing_iff_not_denselyOrdered,
+    WithZero.denselyOrdered_set_iff_subsingleton]
+  simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
+
+-- TODO: make this inferred from `IsRankOneDiscrete`
+instance : IsDiscreteValuationRing (v.valuation K).integer where
+  not_a_field' := by
+    simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
+      Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    use π
+    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, - exp_neg,
+      ← (v.valuation K).map_eq_zero_iff, hπ]
+
+instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
+  unfold HeightOneSpectrum.adicCompletionIntegers
+  rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
+    WithZero.denselyOrdered_set_iff_subsingleton]
+  simpa using Valued.v.range_nontrivial
+
+-- TODO: make this inferred from `IsRankOneDiscrete`, or
+-- develop the API for a completion of a base `IsDVR` ring
+instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
+  not_a_field' := by
+    unfold HeightOneSpectrum.adicCompletionIntegers
+    simp only [ne_eq, Ideal.ext_iff, Valuation.mem_maximalIdeal_iff, Ideal.mem_bot, Subtype.ext_iff,
+      ZeroMemClass.coe_zero, Subtype.forall, Valuation.mem_valuationSubring_iff, not_forall,
+      exists_prop]
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    use π
+    simp [hπ, ← exp_zero, - exp_neg,
+          ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
+
+end DVR
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
@@ -49,30 +101,20 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
     exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
-  omega
-
-@[deprecated (since := "2025-02-28")] alias one_lt_norm := one_lt_absNorm
+  lia
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
-
-@[deprecated (since := "2025-02-28")] alias one_lt_norm_nnreal := one_lt_absNorm_nnreal
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
   ne_zero_of_lt (one_lt_absNorm_nnreal v)
 
-@[deprecated (since := "2025-02-28")] alias norm_ne_zero := absNorm_ne_zero
-
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
 
-@[deprecated (since := "2025-02-28")] alias vadicAbv := adicAbv
-
 theorem adicAbv_def {x : K} : adicAbv v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
-
-@[deprecated (since := "2025-02-28")] alias vadicAbv_def := adicAbv_def
 
 /-- The `v`-adic absolute value is nonarchimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv v) :=
@@ -91,8 +133,6 @@ open RingOfIntegers.HeightOneSpectrum
 noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicCompletion K v :=
   UniformSpace.Completion.coeRingHom
 
-@[deprecated (since := "2025-02-28")] alias embedding := FinitePlace.embedding
-
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
 noncomputable instance instRankOneValuedAdicCompletion :
@@ -101,7 +141,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
     map_one' := rfl
-    map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
+    map_mul' := map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by
@@ -130,8 +170,16 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv v x := rfl
 
-@[deprecated (since := "2025-03-01")]
-  alias toNNReal_Valued_eq_vadicAbv := toNNReal_valued_eq_adicAbv
+/-- A predicate singling out finite places among the absolute values on a number field `K`. -/
+def IsFinitePlace (w : AbsoluteValue K ℝ) : Prop :=
+  ∃ v : IsDedekindDomain.HeightOneSpectrum (𝓞 K), place (FinitePlace.embedding v) = w
+
+lemma FinitePlace.isFinitePlace (v : FinitePlace K) : IsFinitePlace v.val := by
+  simp [IsFinitePlace, v.prop]
+
+lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
+    IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
+  ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
@@ -155,22 +203,13 @@ theorem FinitePlace.norm_def_int (x : 𝓞 (WithVal (v.valuation K))) :
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
     adicAbv v (x + y) ≤ (adicAbv v x) ⊔ (adicAbv v y) := isNonarchimedean_adicAbv v x y
 
-@[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
-  RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max
-
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one (n : ℕ) : adicAbv v n ≤ 1 :=
   (isNonarchimedean_adicAbv v).apply_natCast_le_one_of_isNonarchimedean
 
-@[deprecated (since := "2025-02-28")]
-  alias vadicAbv_natCast_le_one := RingOfIntegers.HeightOneSpectrum.adicAbv_natCast_le_one
-
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one (n : ℤ) : adicAbv v n ≤ 1 :=
   (isNonarchimedean_adicAbv v).apply_intCast_le_one_of_isNonarchimedean
-
-@[deprecated (since := "2025-02-28")]
-  alias vadicAbv_intCast_le_one := RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one
 
 open FinitePlace
 
@@ -179,27 +218,17 @@ theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedd
   rw [norm_def]
   exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
 
-@[deprecated (since := "2025-02-28")] alias norm_le_one := FinitePlace.norm_le_one
-
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def]
   exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
 
-@[deprecated (since := "2025-05-23")]
-alias FinitePlace.norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_notMem
-
-@[deprecated (since := "2025-02-28")]
-  alias norm_eq_one_iff_not_mem := FinitePlace.norm_eq_one_iff_not_mem
-
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_def]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
-
-@[deprecated (since := "2025-02-28")] alias norm_lt_one_iff_mem := FinitePlace.norm_lt_one_iff_mem
 
 end FinitePlace
 
@@ -208,7 +237,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext <| congr_fun h)
+  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
 
 instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
   map_mul w := w.1.map_mul
@@ -221,7 +250,7 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
 @[simp]
 theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
-@[deprecated (since := "2025-02-28")] alias apply := mk_apply
+lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
 
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
@@ -294,6 +323,18 @@ theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
   contrapose!
   simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
 
+protected
+lemma add_le (v : FinitePlace K) (x y : K) :
+    v (x + y) ≤ max (v x) (v y) := by
+  obtain ⟨w, hw⟩ := v.prop
+  have H x : v x = RingOfIntegers.HeightOneSpectrum.adicAbv w x := by
+    rw [show v x = v.val x from rfl]
+    grind only [place_apply, norm_def]
+  simpa only [H] using RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
+
+instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
+  map_add_le_max v a b := FinitePlace.add_le v a b
+
 end FinitePlace
 
 end NumberField
@@ -307,11 +348,7 @@ open NumberField.FinitePlace NumberField.RingOfIntegers
 open scoped NumberField
 
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
-    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
-  have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
-    exact (Equiv.apply_symm_apply _ v).symm
-  convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 (WithVal (v.valuation K))}

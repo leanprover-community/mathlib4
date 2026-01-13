@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Unique factorization and multiplicity
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -60,7 +64,9 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     ↑n ≤ emultiplicity a b ↔ replicate n (normalize a) ≤ normalizedFactors b := by
   rw [← pow_dvd_iff_le_emultiplicity]
   revert b
-  induction' n with n ih; · simp
+  induction n with
+  | zero => simp
+  | succ n ih => ?_
   intro b hb
   constructor
   · rintro ⟨c, rfl⟩

@@ -3,8 +3,10 @@ Copyright (c) 2021 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 -/
-import Mathlib.Computability.NFA
-import Mathlib.Data.List.ReduceOption
+module
+
+public import Mathlib.Computability.NFA
+public import Mathlib.Data.List.ReduceOption
 
 /-!
 # Epsilon Nondeterministic Finite Automata
@@ -16,6 +18,8 @@ which can be followed without reading a character.
 Since this definition allows for automata with infinite states, a `Fintype` instance must be
 supplied for true `εNFA`'s.
 -/
+
+@[expose] public section
 
 
 open Set

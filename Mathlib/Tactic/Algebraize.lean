@@ -3,8 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle Sönne, Adam Topaz
 -/
+module
 
-import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Tower
+public meta import Mathlib.Tactic.Attr.Core
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 
@@ -39,8 +42,8 @@ specified declaration should be one of the following:
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
-need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
-not have any other explicit arguments.
+need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
+cannot have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
 it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
 is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
@@ -70,6 +73,8 @@ class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R �
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.
 -/
+
+public meta section
 
 open Lean Elab Tactic Term Meta
 
@@ -196,16 +201,16 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
           -- This should be the type `Algebra.Property A B`
           let tp ← instantiateMVars tp'
           if ← isDefEqGuarded decl.type tp then return (decl.toExpr, tp)
-          else return .none
+          else return none
         /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
         In this case, we assume that the `RingHom` property is the last argument of the lemma or
         constructor (and that this is all we need to supply explicitly). -/
         else
-          try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return .none
+          try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return none
           let val ← instantiateMVars tp'
           let tp ← inferType val -- This should be the type `Algebra.Property A B`.
           return (val, tp)
-      let .some (val,tp) ← getValType | return
+      let some (val, tp) ← getValType | return
       /- Find all arguments to `Algebra.Property A B` or `Module.Property A B` which are
         of the form `RingHom.toAlgebra f`, `RingHom.toModule f`
         or `Algebra.toModule (RingHom.toAlgebra f)`. -/

@@ -3,16 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Bicones
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Bicones
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 /-!
 # Representably flat functors
 
@@ -20,7 +22,8 @@ We define representably flat functors as functors such that the category of stru
 over `X` is cofiltered for each `X`. This concept is also known as flat functors as in [Elephant]
 Remark C2.3.7, and this name is suggested by Mike Shulman in
 https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
-confusion with other notions of flatness.
+confusion with other notions of flatness (e.g. see the notion of flat type-valued
+functor in the file `Mathlib/CategoryTheory/Functor/TypeValuedFlat.lean`).
 
 This definition is equivalent to left exact functors (functors that preserves finite limits) when
 `C` has all finite limits.
@@ -41,6 +44,8 @@ This definition is equivalent to left exact functors (functors that preserves fi
   does.
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃

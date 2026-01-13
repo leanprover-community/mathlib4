@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Equidecompositions
@@ -49,6 +51,8 @@ We take this as our definition as it is easier to work with. It is implemented a
   using partitions.
 
 -/
+
+@[expose] public section
 
 variable {X G : Type*} {A B C : Set X}
 
@@ -148,7 +152,7 @@ variable {X} {G}
 open scoped Classical in
 theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) :
-    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S)  := by
+    IsDecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S) := by
   intro _ ⟨aA, aB⟩
   rcases hf _ aA with ⟨γ, γ_mem, hγ⟩
   rcases hg _ aB with ⟨δ, δ_mem, hδ⟩
@@ -158,7 +162,7 @@ theorem IsDecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
 open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
-    IsDecompOn (g ∘ f) A (T * S)  := by
+    IsDecompOn (g ∘ f) A (T * S) := by
   rw [left_eq_inter.mpr h]
   exact hg.comp' hf
 

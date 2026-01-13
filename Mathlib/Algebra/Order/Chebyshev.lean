@@ -3,11 +3,13 @@ Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monovary
-import Mathlib.Algebra.Order.Rearrangement
-import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Order.Monovary
+public import Mathlib.Algebra.Order.Rearrangement
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Chebyshev's sum inequality
@@ -36,6 +38,8 @@ The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is no
 file because it is easily deducible from the `Monovary` API.
 -/
 
+public section
+
 
 open Equiv Equiv.Perm Finset Function OrderDual
 
@@ -47,7 +51,7 @@ variable {ι α β : Type*}
 section SMul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
   [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
+  [Module α β] [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their

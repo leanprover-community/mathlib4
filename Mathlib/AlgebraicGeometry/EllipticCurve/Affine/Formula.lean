@@ -3,7 +3,9 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in affine coordinates
@@ -54,6 +56,8 @@ coordinates will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/P
 
 elliptic curve, affine, negation, doubling, addition, group law
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -117,8 +121,6 @@ lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY
   rw [negY, sub_sub, negPolynomial]
   eval_simp
 
-@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
-
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
   rw [equation_iff] at h₁ h₂
@@ -134,16 +136,10 @@ lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y :
   congr! 1
   ring1
 
-@[deprecated (since := "2025-02-01")] alias equation_neg_of := equation_neg
-@[deprecated (since := "2025-02-01")] alias equation_neg_iff := equation_neg
-
 lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
   rw [nonsingular_iff, equation_neg, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
     not_congr <| and_congr_left fun h => by rw [← h]
-
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
 
 /-! ## Slope formulae in affine coordinates -/
 
@@ -201,8 +197,6 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
   congr 1
   rw [negY, evalEval_polynomialY]
   ring1
-
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
 end slope
 
@@ -266,6 +260,8 @@ section slope
 
 variable [DecidableEq F]
 
+-- Non-terminal simps, used to be field_simp
+set_option linter.flexible false in
 lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.addPolynomial x₁ y₁ (W.slope x₁ x₂ y₁ y₂) =
       -((X - C x₁) * (X - C x₂) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
@@ -276,24 +272,18 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [equation_iff] at h₁ h₂
     rw [slope_of_Y_ne rfl hy]
     rw [negY, ← sub_ne_zero] at hy
+    replace hy : y₁ - (-y₁ - x₁ * W.a₁ - W.a₃) ≠ 0 := by convert hy using 1; ring
     ext
     · rfl
     · simp only [addX]
       ring1
-    · field_simp [hy]
+    · simp [field]
       ring1
-    · linear_combination (norm := (field_simp [hy]; ring1)) -h₁
+    · linear_combination (norm := (simp [field]; ring1)) -h₁
   · rw [equation_iff] at h₁ h₂
     rw [slope_of_X_ne hx]
-    rw [← sub_eq_zero] at hx
-    ext
-    · rfl
-    · simp only [addX]
-      ring1
-    · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) h₂ - h₁
-    · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) x₂ * h₁ - x₁ * h₂
+    simp only [addX]
+    grind
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : C (W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
@@ -363,22 +353,28 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   (nonsingular_neg ..).mpr <| nonsingular_negAdd h₁ h₂ hxy
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 /-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
 where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
       (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
   simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
-  field_simp [sub_ne_zero.mpr hx]
+  simp [field]
   ring1
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
 assuming that `P₁ + P₂ + P₃ = O`. -/
 lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
     let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
-  field_simp [sub_ne_zero.mpr hx]
+  simp [field, sub_ne_zero.mpr hx]
   ring1
 
 /-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,

@@ -3,9 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Integrability of Special Functions
@@ -13,6 +15,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 This file establishes basic facts about the interval integrability of special functions, including
 powers and the logarithm.
 -/
+
+public section
 
 open Interval MeasureTheory Real Set
 
@@ -47,7 +51,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     have hderiv : ∀ x ∈ Ioo 0 c, HasDerivAt (fun x : ℝ => x ^ (r + 1) / (r + 1)) (x ^ r) x := by
       intro x hx
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
-      field_simp [(by linarith : r + 1 ≠ 0)]
+      simp [(by linarith : r + 1 ≠ 0)]
     apply integrableOn_deriv_of_nonneg _ hderiv
     · intro x hx; apply rpow_nonneg hx.1.le
     · refine (continuousOn_id.rpow_const ?_).div_const _; intro x _; right; linarith
@@ -58,7 +62,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     rw [intervalIntegrable_iff] at m ⊢
     refine m.congr_fun ?_ measurableSet_Ioc; intro x hx
     rw [uIoc_of_le (by linarith : 0 ≤ -c)] at hx
-    simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
+    simp only [Pi.smul_apply, smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/
@@ -256,6 +260,6 @@ theorem intervalIntegrable_one_div_one_add_sq :
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :
     IntervalIntegrable (fun x : ℝ => (↑1 + x ^ 2)⁻¹) μ a b := by
-  field_simp [mod_cast intervalIntegrable_one_div_one_add_sq]
+  simp [← one_div, intervalIntegrable_one_div_one_add_sq]
 
 end intervalIntegral

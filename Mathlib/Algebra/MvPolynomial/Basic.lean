@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Regular.Pow
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Regular.Pow
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Multivariate polynomials
@@ -62,6 +64,8 @@ the polynomial being represented.
 polynomial, multivariate polynomial, multivariable polynomial
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -152,7 +156,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
   rfl
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  AddMonoidAlgebra.mul_def
+  AddMonoidAlgebra.mul_def ..
 
 /-- `C a` is the constant polynomial with value `a` -/
 def C : R →+* MvPolynomial σ R :=
@@ -279,12 +283,12 @@ theorem X_inj [Nontrivial R] (m n : σ) : X m = (X n : MvPolynomial σ R) ↔ m 
   X_injective.eq_iff
 
 theorem monomial_pow : monomial s a ^ e = monomial (e • s) (a ^ e) :=
-  AddMonoidAlgebra.single_pow e
+  AddMonoidAlgebra.single_pow ..
 
 @[simp]
 theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
     monomial s a * monomial s' b = monomial (s + s') (a * b) :=
-  AddMonoidAlgebra.single_mul_single
+  AddMonoidAlgebra.single_mul_single ..
 
 variable (σ R)
 
@@ -402,9 +406,6 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
     motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add
 
-@[deprecated (since := "2025-03-11")]
-alias induction_on''' := monomial_add_induction_on
-
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
@@ -508,6 +509,10 @@ theorem support_monomial [h : Decidable (a = 0)] :
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
 
+lemma support_C (c : R) [h : Decidable (c = 0)] :
+    (C (σ := σ) c).support = if c = 0 then ∅ else {0} :=
+  support_monomial
+
 theorem support_monomial_subset : (monomial s a).support ⊆ {s} :=
   support_single_subset
 
@@ -542,14 +547,12 @@ section Coeff
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
 
-@[simp]
+@[simp, grind =]
 theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.support ↔ p.coeff m ≠ 0 := by
   simp [support, coeff]
 
 theorem notMem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 :=
   by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
     p.sum b = ∑ m ∈ p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
@@ -582,7 +585,7 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 
 @[simp]
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
-  single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
+  single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
 @[simp]
 theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
@@ -666,12 +669,12 @@ theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ)
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux p _ _ _ _ fun _a _ => add_left_inj _
+  AddMonoidAlgebra.mul_single_apply_aux fun _a _ => add_left_inj _
 
 @[simp]
 theorem coeff_monomial_mul (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux p _ _ _ _ fun _a _ => add_right_inj _
+  AddMonoidAlgebra.single_mul_apply_aux fun _a _ => add_right_inj _
 
 @[simp]
 theorem coeff_mul_X (m) (s : σ) (p : MvPolynomial σ R) :
@@ -728,7 +731,6 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   classical
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
-    congr with t
     rw [tsub_add_cancel_of_le h]
   · contrapose! h
     rw [← mem_support_iff] at h
@@ -781,6 +783,36 @@ lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
+
+theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
+    (ha : IsRegular a) :
+    IsRegular (monomial m a) := by
+  rw [← isLeftRegular_iff_isRegular]
+  intro p q h
+  ext d
+  have h' := congr_arg (coeff (m + d)) h
+  simp only [coeff_monomial_mul] at h'
+  rw [← ha.left.eq_iff, h']
+
+@[simp]
+theorem monomial_one_mul_cancel_left_iff {m : σ →₀ ℕ} :
+    monomial m 1 * p = monomial m 1 * q ↔ p = q :=
+  isRegular_one.monomial.left.eq_iff
+
+@[simp]
+theorem X_mul_cancel_left_iff {i : σ} :
+    X i * p = X i * q ↔ p = q :=
+  monomial_one_mul_cancel_left_iff
+
+@[simp]
+theorem monomial_one_mul_cancel_right_iff {m : σ →₀ ℕ} :
+    p * monomial m 1 = q * monomial m 1 ↔ p = q :=
+  isRegular_one.monomial.right.eq_iff
+
+@[simp]
+theorem X_mul_cancel_right_iff {i : σ} :
+    p * X i = q * X i ↔ p = q :=
+  monomial_one_mul_cancel_right_iff
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
@@ -851,8 +883,6 @@ lemma zero_notMem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
   intro hz
   obtain ⟨n, hnsupp, hn⟩ := mem_coeffs_iff.mp hz
   exact (mem_support_iff.mp hnsupp) hn.symm
-
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_coeffs := zero_notMem_coeffs
 
 lemma coeffs_C [DecidableEq R] (r : R) : (C (σ := σ) r).coeffs = if r = 0 then ∅ else {r} := by
   classical
@@ -960,13 +990,13 @@ variable [Module R S] {M N : Submodule R S} {p : MvPolynomial σ S} {s : σ} {i 
   {n : ℕ}
 
 variable (σ M) in
-/-- The `R`-submodule of multivariate polynomials whose coefficients lie in a `R`-submodule `M`. -/
+/-- The `R`-submodule of multivariate polynomials whose coefficients lie in an `R`-submodule `M`. -/
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}
-  add_mem' := by simp+contextual [add_mem]
+  add_mem' := by simp +contextual [add_mem]
   zero_mem' := by simp
-  smul_mem' := by simp+contextual [Submodule.smul_mem]
+  smul_mem' := by simp +contextual [Submodule.smul_mem]
 
 lemma mem_coeffsIn : p ∈ coeffsIn σ M ↔ ∀ i, p.coeff i ∈ M := .rfl
 

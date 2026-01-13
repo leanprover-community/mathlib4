@@ -3,18 +3,22 @@ Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Subtraction of measures
 
 In this file we define `μ - ν` to be the least measure `τ` such that `μ ≤ τ + ν`.
-It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
+It is equivalent to `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
 Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -23,7 +27,7 @@ namespace MeasureTheory
 namespace Measure
 
 /-- The measure `μ - ν` is defined to be the least measure `τ` such that `μ ≤ τ + ν`.
-It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
+It is equivalent to `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
 Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and

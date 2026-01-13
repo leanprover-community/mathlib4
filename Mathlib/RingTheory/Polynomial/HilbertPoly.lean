@@ -3,13 +3,15 @@ Copyright (c) 2024 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Hilbert polynomials
@@ -36,6 +38,8 @@ if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer work
 
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
+
+@[expose] public section
 
 open Nat PowerSeries
 
@@ -89,7 +93,7 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
   _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
   _ = (n - k + d).choose d := by
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
-    field_simp [ascFactorial_eq_factorial_mul_choose]
+    simp [field, ascFactorial_eq_factorial_mul_choose]
 
 variable {F}
 

@@ -3,17 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Hom
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs  -- shake: keep (`example` dependency)
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
 
-Let `A` be a (non unital, non associative) algebra. The centroid of `A` is the set of linear maps
+Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
 $$
@@ -42,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -599,7 +603,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=

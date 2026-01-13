@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.Probability.Martingale.Upcrossing
+module
+
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.Probability.Martingale.Upcrossing
 
 /-!
 
@@ -40,6 +42,8 @@ theorems.
   L¹ to `g`.
 
 -/
+
+public section
 
 
 open TopologicalSpace Filter MeasureTheory.Filtration
@@ -103,7 +107,7 @@ submartingale converges to its `limitProcess` almost everywhere.
 -/
 
 
-/-- If a stochastic process has bounded upcrossing from below `a` to above `b`,
+/-- If a stochastic process has a finite number of upcrossings from below `a` to above `b`,
 then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
@@ -168,9 +172,9 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
-      · by_cases hnonneg : 0 ≤ f n ω - a
+      · by_cases! hnonneg : 0 ≤ f n ω - a
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
-        · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
+        · rw [posPart_eq_zero.2 hnonneg.le]
           exact norm_nonneg _
       · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
@@ -232,9 +236,6 @@ theorem Submartingale.memLp_limitProcess {p : ℝ≥0∞} (hf : Submartingale f 
   memLp_limitProcess_of_eLpNorm_bdd
     (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd
 
-@[deprecated (since := "2025-02-21")]
-alias Submartingale.memℒp_limitProcess := Submartingale.memLp_limitProcess
-
 end AeConvergence
 
 section L1Convergence
@@ -264,7 +265,7 @@ equivalence is provided by `MeasureTheory.uniformIntegrable_iff`.
 (b) follows since given $n$, we have for all $m \ge n$,
 $$
   \|f_n - \mathbb{E}[g \mid \mathcal{F}_n]\|_1 =
-    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|\|f_m - g\|_1.
+    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|f_m - g\|_1.
 $$
 Thus, taking $m \to \infty$ provides the almost everywhere equality.
 
@@ -276,12 +277,12 @@ $\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
 $\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
 inequality, we have for all $n$,
 $$
-  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb|g| < \delta,
+  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb{E}|h| < \delta,
 $$
 we have for sufficiently large $\lambda$, for all $n$,
 $$
   \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
-    \mathbb|g|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
+    \mathbb{E}|h|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
 $$
 implying $(f_n)_n$ is uniformly integrable. Now, to prove $f_n \to h$ almost everywhere and in
 L¹, it suffices to show that $h = g$ almost everywhere where $g$ is the almost everywhere and L¹
@@ -291,7 +292,7 @@ $$
   \mathbb{E}g\mathbf{1}_s = \mathbb{E}[\mathbb{E}[g \mid \mathcal{F}_n]\mathbf{1}_s] =
     \mathbb{E}[\mathbb{E}[h \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}h\mathbf{1}_s
 $$
-where $\mathbb{E}[g \mid \mathcal{F}_n = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
+where $\mathbb{E}[g \mid \mathcal{F}_n] = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
 by part (b); the equality also holds for all $s \in \mathcal{F}_\infty$ by Dynkin's theorem.
 Thus, as both $h$ and $g$ are $\mathcal{F}_\infty$-measurable, $h = g$ almost everywhere as
 required.
@@ -343,7 +344,7 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
 
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
 adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
-expectation of its limiting process wrt. `ℱ n`. -/
+expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ|ℱ n] :=
   let ⟨_, hR⟩ := hbdd.2.2

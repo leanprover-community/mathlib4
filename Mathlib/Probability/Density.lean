@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Probability density function
@@ -49,10 +51,12 @@ it exists for all random variables. However, to define this, we will need Fourie
 which we currently do not have.
 -/
 
+@[expose] public section
+
 
 open scoped MeasureTheory NNReal ENNReal
 
-open TopologicalSpace MeasureTheory.Measure
+open TopologicalSpace MeasureTheory Measure ProbabilityTheory
 
 noncomputable section
 
@@ -92,7 +96,7 @@ instance HasPDF.haveLebesgueDecomposition [HasPDF X ℙ μ] : (map X ℙ).HaveLe
 
 theorem HasPDF.absolutelyContinuous [HasPDF X ℙ μ] : map X ℙ ≪ μ := HasPDF.absolutelyContinuous'
 
-/-- A random variable that `HasPDF` is quasi-measure preserving. -/
+/-- A random variable that `HasPDF` is quasi-measure-preserving. -/
 theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
     [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
   { measurable := h
@@ -146,7 +150,7 @@ theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : 
     have := pdf_of_not_haveLebesgueDecomposition hpdf
     filter_upwards using congrFun this
 
-@[measurability]
+@[fun_prop]
 theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := by
   exact measurable_rnDeriv _ _
@@ -293,8 +297,6 @@ end Real
 
 section TwoVariables
 
-open ProbabilityTheory
-
 variable {F : Type*} [MeasurableSpace F] {ν : Measure F} {X : Ω → E} {Y : Ω → F}
 
 /-- Random variables are independent iff their joint density is a product of marginal densities. -/
@@ -321,3 +323,44 @@ end TwoVariables
 end pdf
 
 end MeasureTheory
+
+section Group
+
+namespace ProbabilityTheory
+
+variable {Ω G : Type*} {mΩ : MeasurableSpace Ω} {ℙ : Measure Ω} [Group G] {mG : MeasurableSpace G}
+  [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure G} [IsMulLeftInvariant μ] {X Y : Ω → G}
+
+@[to_additive]
+theorem IndepFun.mul_hasPDF' [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ) :
+    HasPDF (X * Y) ℙ μ := by
+  have : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
+  have : AEMeasurable Y ℙ := HasPDF.aemeasurable' μ
+  rw [hasPDF_iff_of_aemeasurable (by fun_prop),
+    hXY.map_mul_eq_map_mconv_map₀' (by fun_prop) (by fun_prop) σX σY]
+  refine ⟨?_, mconv_absolutelyContinuous HasPDF.absolutelyContinuous⟩
+  apply HaveLebesgueDecomposition.mconv <;> exact HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem IndepFun.mul_hasPDF [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ] [IsFiniteMeasure ℙ]
+  (hXY : IndepFun X Y ℙ) : HasPDF (X * Y) ℙ μ := by
+  apply hXY.mul_hasPDF' <;> apply IsFiniteMeasure.toSigmaFinite
+
+@[to_additive]
+theorem IndepFun.pdf_mul_eq_mlconvolution_pdf' [SigmaFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ) :
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
+  apply rnDeriv_mconv' <;> exact HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem IndepFun.pdf_mul_eq_mlconvolution_pdf [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    [IsFiniteMeasure ℙ] (hXY : IndepFun X Y ℙ) :
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀ (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ)]
+  apply rnDeriv_mconv <;> exact HasPDF.absolutelyContinuous
+
+end ProbabilityTheory
+
+end Group

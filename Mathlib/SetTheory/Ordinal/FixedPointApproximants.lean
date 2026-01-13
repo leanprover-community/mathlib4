@@ -3,7 +3,9 @@ Copyright (c) 2024 Ira Fesefeldt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ira Fesefeldt
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Ordinal Approximants for the Fixed points on complete lattices
@@ -36,6 +38,8 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 
 fixed point, complete lattice, monotone function, ordinals, approximation
 -/
+
+@[expose] public section
 
 namespace Cardinal
 
@@ -76,9 +80,8 @@ decreasing_by exact h
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   intro a b h
   rw [lfpApprox, lfpApprox]
-  refine sSup_le_sSup ?h
-  apply sup_le_sup_right
-  simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
+  gcongr sSup (?_ ∪ {x})
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
   intro a' h'
   use a'
@@ -156,12 +159,12 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply And.intro (le_lfpApprox f x)
     intro a' ha'b
-    by_cases haa : a' < a
+    by_cases! haa : a' < a
     · rw [← lfpApprox_add_one f x h_init]
       apply lfpApprox_monotone
       simp only [Ordinal.add_one_eq_succ, succ_le_iff]
       exact haa
-    · rw [IH a' ha'b (le_of_not_gt haa), h]
+    · rw [IH a' ha'b haa, h]
   · exact lfpApprox_monotone f x h_ab
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality

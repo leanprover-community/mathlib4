@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
@@ -15,6 +17,8 @@ We construct the power functions `x ^ y` where
 
 We also prove basic properties of these functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -44,6 +48,8 @@ theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ)
 theorem rpow_zero (x : ℝ≥0) : x ^ (0 : ℝ) = 1 :=
   NNReal.eq <| Real.rpow_zero _
 
+theorem rpow_zero_pos (x : ℝ≥0) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
+
 @[simp]
 theorem rpow_eq_zero_iff {x : ℝ≥0} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   rw [← NNReal.coe_inj, coe_rpow, ← NNReal.coe_eq_zero]
@@ -68,7 +74,7 @@ lemma rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
 
 @[simp, norm_cast]
 lemma rpow_intCast (x : ℝ≥0) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
+  cases n <;> simp only [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 @[simp]
@@ -155,10 +161,14 @@ lemma rpow_one_sub' (h : 1 - y ≠ 0) (x : ℝ≥0) : x ^ (1 - y) = x / x ^ y :=
   rw [rpow_sub' h, rpow_one]
 
 theorem rpow_inv_rpow_self {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ (1 / y) = x := by
-  field_simp [← rpow_mul]
+  rw [← rpow_mul]
+  field_simp
+  simp
 
 theorem rpow_self_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ (1 / y)) ^ y = x := by
-  field_simp [← rpow_mul]
+  rw [← rpow_mul]
+  field_simp
+  simp
 
 theorem inv_rpow (x : ℝ≥0) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ :=
   NNReal.eq <| Real.inv_rpow x.2 y
@@ -231,7 +241,7 @@ theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
 theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
     (hs : ∀ i ∈ s, (0 : ℝ) ≤ f i) (r : ℝ) :
     (s.map (f · ^ r)).prod = (s.map f).prod ^ r := by
-  induction' s using Quotient.inductionOn with l
+  obtain ⟨l⟩ := s
   simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
@@ -260,7 +270,7 @@ theorem le_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻�
 theorem rpow_inv_le_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   rw [← rpow_le_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz.ne']
 
-theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^z < y := by
+theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
   simp only [← not_le, rpow_inv_le_iff hz]
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
@@ -451,6 +461,8 @@ theorem rpow_zero {x : ℝ≥0∞} : x ^ (0 : ℝ) = 1 := by
   cases x <;>
     · dsimp only [(· ^ ·), Pow.pow, rpow]
       simp
+
+theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
 theorem top_rpow_def (y : ℝ) : (⊤ : ℝ≥0∞) ^ y = if 0 < y then ⊤ else if y = 0 then 1 else 0 :=
   rfl
@@ -646,7 +658,7 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
+  cases n <;> simp only [Int.ofNat_eq_natCast, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
@@ -781,6 +793,7 @@ theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ �
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
 
+@[gcongr]
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
     x ^ y < x ^ z := by
   lift x to ℝ≥0 using hx'
@@ -805,6 +818,8 @@ theorem rpow_lt_rpow_of_exponent_gt {x : ℝ≥0∞} {y z : ℝ} (hx0 : 0 < x) (
   simp only [coe_lt_one_iff, coe_pos] at hx0 hx1
   simp [← coe_rpow_of_ne_zero (ne_of_gt hx0), NNReal.rpow_lt_rpow_of_exponent_gt hx0 hx1 hyz]
 
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 theorem rpow_le_rpow_of_exponent_ge {x : ℝ≥0∞} {y z : ℝ} (hx1 : x ≤ 1) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx1 coe_lt_top)
@@ -1057,3 +1072,62 @@ end ENNReal
 -- end Tactic
 
 -- end Tactics
+
+/-! ### Positivity extension -/
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive.
+This is the `NNReal` analogue of `evalRpow` for `Real`. -/
+@[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
+meta def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(NNReal.rpow_zero_pos $a))
+  | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa =>
+        pure (.positive q(NNReal.rpow_pos $pa))
+    | _ => pure (.nonnegative q(zero_le $e))
+  | _, _, _ => throwError "not NNReal.rpow"
+
+private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
+  let mvar ← mkFreshExprMVar q($x ≠ (⊤ : ℝ≥0∞))
+  let save ← saveState
+  let (goals, _) ← Elab.runTactic mvar.mvarId! <|← `(tactic| finiteness)
+  if goals.isEmpty then
+    pure <| some <|← instantiateMVars mvar
+  else
+    restoreState save
+    pure none
+
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive.
+This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
+@[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
+meta def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(ENNReal.rpow_zero_pos $a))
+  | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    let rb ← catchNone <| core q(inferInstance) q(inferInstance) b
+    assertInstancesCommute
+    match ra, rb with
+    | .positive pa, .positive pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
+    | .positive pa, .nonnegative pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
+    | .positive pa, _ =>
+        let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le $e)
+        pure <| .positive q(ENNReal.rpow_pos $pa $ha)
+    | _, _ => pure <| .nonnegative q(zero_le $e)
+  | _, _, _ => throwError "not ENNReal.rpow"
+
+end Mathlib.Meta.Positivity

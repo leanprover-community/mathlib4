@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Sheaves.Limits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Sheaves.Limits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # `PresheafedSpace C` has colimits.
@@ -15,7 +17,7 @@ If `C` has limits, then the category `PresheafedSpace C` has colimits,
 and the forgetful functor to `TopCat` preserves these colimits.
 
 When restricted to a diagram where the underlying continuous maps are open embeddings,
-this says that we can glue presheaved spaces.
+this says that we can glue presheafed spaces.
 
 Given a diagram `F : J ⥤ PresheafedSpace C`,
 we first build the colimit of the underlying topological spaces,
@@ -30,6 +32,8 @@ because this is the way `PresheafedSpace C` is set up.)
 
 The limit of this diagram then constitutes the colimit presheaf.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -47,9 +51,7 @@ namespace PresheafedSpace
 
 attribute [local simp] eqToHom_map
 
--- Porting note: we used to have:
--- local attribute [tidy] tactic.auto_cases_opens
--- We would replace this by:
+-- We could enable the following attribute:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
@@ -153,14 +155,8 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         ext1
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · ext ⟨U, hU⟩
-          dsimp [-Presheaf.comp_app]
-          rw [PresheafedSpace.id_c_app, map_id]
-          erw [id_comp]
-          rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
-            ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
-            NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
-          simp }
+        · ext ⟨⟩
+          simp [← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op)] }
 
 variable [HasLimitsOfShape Jᵒᵖ C]
 
@@ -220,13 +216,12 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
 
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the original proof is just
+  -- `ext <;> dsimp [desc, descCApp] <;> simpa`,
+  -- but this has to be expanded a bit
   ext U
   · simp [desc]
-  · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
-    -- but this has to be expanded a bit
-    rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
-    dsimp [desc, descCApp]
-    simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
+  · simp only [op_obj, desc, descCApp, Presheaf.comp_app, comp_c_app, colimitCocone_ι_app_c, assoc]
     rw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc]
     simp
 
@@ -262,20 +257,19 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
-instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
+instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
   ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
     · rfl
-    · intro j
-      simp⟩
+    · simp⟩
 
-/-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
+/-- When `C` has limits, the category of presheafed spaces with values in `C` itself has colimits.
 -/
 instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
-/-- The underlying topological space of a colimit of presheaved spaces is
+/-- The underlying topological space of a colimit of presheafed spaces is
 the colimit of the underlying topological spaces.
 -/
 instance forget_preservesColimits [HasLimits C] :

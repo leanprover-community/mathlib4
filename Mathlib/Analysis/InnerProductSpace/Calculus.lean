@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Analysis.NormedSpace.HomeomorphBall
-import Mathlib.Analysis.Calculus.ContDiff.WithLp
-import Mathlib.Analysis.Calculus.FDeriv.WithLp
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
 /-!
 # Calculus in inner product spaces
@@ -25,6 +27,8 @@ and from the equivalence of norms in finite dimensions.
 
 The last part of the file should be generalized to `PiLp`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -197,6 +201,13 @@ theorem hasStrictFDerivAt_norm_sq (x : F) :
   ext y
   simp [two_smul, real_inner_comm]
 
+@[simp]
+theorem fderiv_norm_sq_apply (x : F) : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) x = 2 • innerSL ℝ x :=
+  (hasStrictFDerivAt_norm_sq x).hasFDerivAt.fderiv
+
+theorem fderiv_norm_sq : fderiv ℝ (fun (x : F) ↦ ‖x‖ ^ 2) = 2 • (innerSL ℝ (E := F)) := by
+  ext1; simp
+
 theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt f f' x) :
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
@@ -221,11 +232,11 @@ include 𝕜
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
-  ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp x hf
+  ((contDiffAt_id.norm_sq 𝕜).differentiableAt one_ne_zero).comp x hf
 
 theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
     DifferentiableAt ℝ (fun y => ‖f y‖) x :=
-  ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
+  ((contDiffAt_norm 𝕜 h0).differentiableAt one_ne_zero).comp x hf
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
@@ -243,11 +254,11 @@ theorem Differentiable.dist (hf : Differentiable ℝ f) (hg : Differentiable ℝ
 
 theorem DifferentiableWithinAt.norm_sq (hf : DifferentiableWithinAt ℝ f s x) :
     DifferentiableWithinAt ℝ (fun y => ‖f y‖ ^ 2) s x :=
-  ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp_differentiableWithinAt x hf
+  ((contDiffAt_id.norm_sq 𝕜).differentiableAt one_ne_zero).comp_differentiableWithinAt x hf
 
 theorem DifferentiableWithinAt.norm (hf : DifferentiableWithinAt ℝ f s x) (h0 : f x ≠ 0) :
     DifferentiableWithinAt ℝ (fun y => ‖f y‖) s x :=
-  ((contDiffAt_id.norm 𝕜 h0).differentiableAt le_rfl).comp_differentiableWithinAt x hf
+  ((contDiffAt_id.norm 𝕜 h0).differentiableAt one_ne_zero).comp_differentiableWithinAt x hf
 
 theorem DifferentiableWithinAt.dist (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (hne : f x ≠ g x) :
@@ -275,8 +286,12 @@ section PiLike
 
 open ContinuousLinearMap
 
-variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
+variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
+
+section finite
+
+variable [Finite ι]
 
 theorem differentiableWithinAt_euclidean :
     DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y :=
@@ -303,6 +318,12 @@ theorem hasFDerivWithinAt_euclidean :
       ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
   hasFDerivWithinAt_piLp _
 
+end finite
+
+section fintype
+
+variable [Fintype ι]
+
 theorem contDiffWithinAt_euclidean {n : WithTop ℕ∞} :
     ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y :=
   contDiffWithinAt_piLp _
@@ -318,6 +339,8 @@ theorem contDiffOn_euclidean {n : WithTop ℕ∞} :
 theorem contDiff_euclidean {n : WithTop ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i :=
   contDiff_piLp _
 
+end fintype
+
 end PiLike
 
 section DiffeomorphUnitBall
@@ -326,13 +349,13 @@ open Metric hiding mem_nhds_iff
 
 variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
+theorem OpenPartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (√(1 + ‖x‖ ^ 2 : ℝ))⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
   refine ContDiff.inv ?_ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
-theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
+theorem OpenPartialHomeomorph.contDiffOn_univUnitBall_symm :
     ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
   suffices ContDiffAt ℝ n (fun y : E => (√(1 - ‖y‖ ^ 2 : ℝ))⁻¹) y from this.smul contDiffAt_id
@@ -344,9 +367,9 @@ theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
-  PartialHomeomorph.contDiff_univUnitBall
+  OpenPartialHomeomorph.contDiff_univUnitBall
 
-namespace PartialHomeomorph
+namespace OpenPartialHomeomorph
 
 variable {c : E} {r : ℝ}
 
@@ -366,9 +389,9 @@ theorem contDiffOn_univBall_symm :
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
     rw [← unitBallBall_source c r h, ← unitBallBall_target c r h]
-    apply PartialHomeomorph.symm_mapsTo
+    apply OpenPartialHomeomorph.symm_mapsTo
   · exact contDiffOn_id.sub contDiffOn_const
 
-end PartialHomeomorph
+end OpenPartialHomeomorph
 
 end DiffeomorphUnitBall

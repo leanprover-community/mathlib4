@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Properties of objects which hold for a zero object
@@ -15,6 +17,8 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 `P` may not necessarily be closed under isomorphisms.)
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -75,7 +79,7 @@ instance [P.ContainsZero] : P.isoClosure.ContainsZero where
 end ObjectProperty
 
 /-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
-satisfies by those `X : C` such that `IsZero (F.obj X)`. -/
+satisfied by those `X : C` such that `IsZero (F.obj X)`. -/
 abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
   ObjectProperty.inverseImage IsZero F
 

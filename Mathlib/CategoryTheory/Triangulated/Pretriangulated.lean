@@ -3,9 +3,11 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Triangulated.TriangleShift
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 /-!
 # Pretriangulated Categories
@@ -20,6 +22,8 @@ but not necessarily additive categories, as is assumed in some sources.
 
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -85,15 +89,13 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
--- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
-notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
+notation:60 "distTriang " C:60 => @distinguishedTriangles C _ _ _ _ _ _
 
 variable {C}
 
 lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
-    (T₁ ∈ distTriang C) ↔ T₂ ∈ distTriang C :=
+    T₁ ∈ distTriang C ↔ T₂ ∈ distTriang C :=
   ⟨fun hT₁ => isomorphic_distinguished _ hT₁ _ e.symm,
     fun hT₂ => isomorphic_distinguished _ hT₂ _ e⟩
 
@@ -116,7 +118,7 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
 ```
 the composition `f ≫ g = 0`. -/
 @[reassoc, stacks 0146]
-theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
+theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ distTriang C) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl
@@ -393,13 +395,20 @@ lemma shift_distinguished (n : ℤ) :
   have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
-  obtain (n|n) := n
+  obtain (n | n) := n
   · induction n with
-    | zero =>  exact H_zero
+    | zero => exact H_zero
     | succ n hn => exact H_add hn H_one rfl
   · induction n with
     | zero => exact H_neg_one
     | succ n hn => exact H_add hn H_neg_one rfl
+
+omit hT in
+lemma shift_distinguished_iff (n : ℤ) :
+    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
+  ⟨fun hT ↦ isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
+      ((shiftEquiv (Triangle C) n).unitIso.app T),
+    fun hT ↦ shift_distinguished T hT n⟩
 
 end Triangle
 
@@ -417,6 +426,9 @@ instance : SplitMonoCategory C where
       rw [Triangle.mor₁_eq_zero_of_mono₂ _ hT hf, zero_comp])
     exact ⟨r, hr.symm⟩
 
+/-- If the first and third components of a morphism of distinguished triangles are
+isomorphisms, the second component is as well. This can be thought of as a
+pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
   have : Mono φ.hom₂ := by
@@ -449,11 +461,17 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     dsimp
     rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 
+/-- If the first and second components of a morphism of distinguished triangles are
+isomorphisms, the third component is as well. This can be thought of as a
+pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
   isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_distTriang _ hT)
     (rot_of_distTriang _ hT') h₂ (by dsimp; infer_instance)
 
+/-- If the second and third components of a morphism of distinguished triangles are
+isomorphisms, the first component is as well. This can be thought of as a
+pretriangulated category theoretical version of the five lemma. -/
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=
   isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_distTriang _ hT)
@@ -609,7 +627,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [← φ'.comm₃_assoc]
       rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
     let b := fun j => (ha'' j).choose
-    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb : ∀ j, _ = b j ≫ _ := fun j => (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
       Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by

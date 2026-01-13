@@ -3,16 +3,20 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Growth in the quotient and intersection with a subgroup
 
-For a group `G` and a subgroup `H ≤ G`, this file upper and lower bounds the growth of a finset by
-its growth in `H` and `G ⧸ H`.
+For a group `G` and a subgroup `H ≤ G`, this file gives upper and lower bounds on the growth of a
+finset by its growth in `H` and `G ⧸ H`.
 -/
+
+public section
 
 open Finset Function
 open scoped Pointwise

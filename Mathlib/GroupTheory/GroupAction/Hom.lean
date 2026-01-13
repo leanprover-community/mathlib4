@@ -3,12 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Hom.CompTypeclasses
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.Algebra.Group.Hom.CompTypeclasses
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Equivariant homomorphisms
@@ -54,6 +55,8 @@ instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 
 -/
 
+@[expose] public section
+
 assert_not_exists Submonoid
 
 section MulActionHom
@@ -84,8 +87,6 @@ structure MulActionHom where
   /-- The proposition that the function commutes with the actions. -/
   protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
-/- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
-see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
@@ -329,20 +330,16 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁) = MulActionHom.id M := by
-  rw [MulActionHom.ext_iff]
-  intro x
-  simp only [comp_apply, id_apply]
-  exact h₁ x
+  ext
+  simpa using h₁.eq _
 
 @[to_additive]
 theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
-  rw [MulActionHom.ext_iff]
-  intro x
-  simp only [comp_apply, id_apply]
-  exact h₂ x
+  ext
+  simpa using h₂.eq _
 
 /-- If actions of `M` and `N` on `α` commute,
   then for `c : M`, `(c • · : α → α)` is an `N`-action homomorphism. -/
@@ -567,8 +564,6 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 /-- Reinterpret an equivariant additive monoid homomorphism as an equivariant function. -/
 add_decl_doc DistribMulActionHom.toMulActionHom
 
-/- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
-see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «DistribMulActionHomLocal≺»)
   A " →ₑ+[" φ:25 "] " B:0 => DistribMulActionHom φ A B
@@ -782,8 +777,6 @@ add_decl_doc MulSemiringActionHom.toRingHom
 /-- Reinterpret an equivariant ring homomorphism as an equivariant additive monoid homomorphism. -/
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 
-/- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
-see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomLocal≺»)
   R " →ₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
@@ -804,7 +797,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
-the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
+the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.
 -/
 abbrev MulSemiringActionHomClass
     (F : Type*)

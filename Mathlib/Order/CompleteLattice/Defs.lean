@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -39,6 +41,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -158,6 +162,13 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
+
+-- Shortcut instance to ensure that the path
+-- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
+-- as it tricks `#min_imports` into believing `Order.CompletePartialOrder` is a necessary import.
+-- See note [lower instance priority]
+instance (priority := 100) CompleteLattice.toPartialOrder' [CompleteLattice α] : PartialOrder α :=
+  inferInstance
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides

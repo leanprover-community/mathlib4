@@ -3,10 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Integral representations of `rpow`
@@ -18,7 +20,8 @@ the integrand `rpowIntegrand₀₁ p t x := t ^ p * (t⁻¹ - (t + x)⁻¹)`.
 This representation is useful for showing that `rpow` is operator monotone and operator concave
 in this range; that is, `cfc rpow` is monotone/concave. The integrand can be shown to be
 operator monotone and concave through direct means, and this integral lifts these properties
-to `rpow`.
+to `rpow`. These results can be found in
+`Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order`.
 
 ## Notes
 
@@ -33,12 +36,9 @@ relevant in applications, and would needlessly complicate the proof.
   `x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ`
 + `CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁`: the corresponding statement where
   `x ^ p` is defined via the CFC.
-+ `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
-+ `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
 
 ## TODO
 
-+ Show operator concavity of `rpow` over `Icc 0 1`
 + Give analogous representations for the ranges `Ioo (-1) 0` and `Ioo 1 2`.
 
 ## References
@@ -46,6 +46,8 @@ relevant in applications, and would needlessly complicate the proof.
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 open scoped NNReal Topology
@@ -82,9 +84,9 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     calc _ = (t : ℝ) ^ p * (t⁻¹ - (t + x)⁻¹) := rfl
       _ = (t : ℝ) ^ p * ((t + x - t) / (t * (t + x))) := by
           simp only [inv_eq_one_div]
-          rw [div_sub_div _ _ (by omega) (by omega)]
+          rw [div_sub_div _ _ (by lia) (by lia)]
           simp
-      _ = t ^ p / t * x / (t + x) := by field_simp
+      _ = t ^ p / t * x / (t + x) := by simp [field]
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm
   case pos =>
     simp only [mem_Ioo] at hp
@@ -113,14 +115,14 @@ lemma rpowIntegrand₀₁_apply_mul (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 
     simp [hx_zero, Real.zero_rpow (by linarith : p - 1 ≠ 0)]
 
 lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 ≤ x) :
-    rpowIntegrand₀₁ p (x * t) x * x  = (rpowIntegrand₀₁ p t 1) * x ^ p := by
+    rpowIntegrand₀₁ p (x * t) x * x = (rpowIntegrand₀₁ p t 1) * x ^ p := by
   simp only [rpowIntegrand₀₁_apply_mul hp ht hx, mul_assoc]
   congr
   simpa using Eq.symm <| Real.rpow_add' hx (by aesop : (p - 1) + 1 ≠ 0)
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (Ici 0).EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
+      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -128,7 +130,7 @@ lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
   have h₀ : ContinuousOn (· ^ (p - 1) : ℝ → ℝ) (Ioi 0) := .rpow_const (by fun_prop) <|
     fun t ht => .inl ht.ne'
-  fun_prop (disch := intros; simp_all; positivity)
+  fun_prop (disch := grind -abstractProof)
 
 lemma aestronglyMeasurable_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     AEStronglyMeasurable (rpowIntegrand₀₁ p · x) (volume.restrict (Ioi 0)) :=
@@ -202,11 +204,10 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
     (Ici 0).EqOn (rpowIntegrand₀₁ p t)
       (fun x => t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) := by
   intro x hx
-  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by field_simp [rpowIntegrand₀₁]
+  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by simp [field, rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
-          have : t ≠ 0 := ne_of_gt ht
-          rw [Real.rpow_sub_one this, div_eq_mul_inv, mul_assoc]
-          field_simp [this]
+          rw [Real.rpow_sub_one ht.ne']
+          ring
     _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
@@ -297,7 +298,7 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
           simp only [mem_Ioo] at hp
           exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
         · exact integrableOn_rpowIntegrand₀₁_Ioi_one hp zero_le_one
-        · exact fun t ht =>  rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
+        · exact fun t ht => rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
   _ ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_set (integrableOn_rpowIntegrand₀₁_Ioi hp zero_le_one) ?_ ?_
         · refine ae_restrict_of_forall_mem measurableSet_Ioi fun t ht => ?_
@@ -315,7 +316,7 @@ lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     x ^ p = (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₀₁ p t x := by
-  rcases eq_or_lt_of_le' hx with hx_zero|_
+  rcases eq_or_lt_of_le' hx with hx_zero | _
   case inl =>
     simp only [mem_Ioo] at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]
@@ -335,14 +336,12 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
       property := by
         rw [inv_nonneg]
         exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
-  let μ : Measure ℝ := C • volume
-  refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
-  · unfold μ IntegrableOn
+  refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
+  · unfold IntegrableOn
     rw [Measure.restrict_smul]
     exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
-  · unfold μ
-    rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    rfl
+  · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
+      NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
 end Real
 
@@ -444,74 +443,6 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
     _ = cfcₙ (rpowIntegrand₀₁ p t) b := by
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
 
-/-- This is an intermediate result; use the more general `CFC.monotone_nnrpow` instead. -/
-private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
-    MonotoneOn (fun a : A => a ^ p) (Ici 0) := by
-  obtain ⟨μ, hμ⟩ := exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ A hp
-  have h₃' : (Ici 0).EqOn (fun a : A => a ^ p)
-      (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
-    fun a ha => (hμ a ha).2
-  refine MonotoneOn.congr ?_ h₃'.symm
-  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
-  filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
-  exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
-
-/-- `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`. -/
-lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
-    Monotone (fun a : A => a ^ p) := by
-  intro a b hab
-  by_cases ha : 0 ≤ a
-  · have hb : 0 ≤ b := ha.trans hab
-    have hIcc : Icc (0 : ℝ≥0) 1 = Ioo 0 1 ∪ {0} ∪ {1} := by ext; simp
-    rw [hIcc] at hp
-    obtain (hp|hp)|hp := hp
-    · exact monotoneOn_nnrpow_Ioo hp ha hb hab
-    · simp_all [mem_singleton_iff]
-    · simp_all [mem_singleton_iff, nnrpow_one a, nnrpow_one b]
-  · have : a ^ p = 0 := cfcₙ_apply_of_not_predicate a ha
-    simp [this]
-
-/-- `CFC.sqrt` is operator monotone. -/
-lemma monotone_sqrt : Monotone (sqrt : A → A) := by
-  intro a b hab
-  rw [CFC.sqrt_eq_nnrpow a, CFC.sqrt_eq_nnrpow b]
-  refine (monotone_nnrpow (A := A) ?_) hab
-  constructor <;> norm_num
-
-@[gcongr]
-lemma nnrpow_le_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
-    a ^ p ≤ b ^ p := monotone_nnrpow hp hab
-
-@[gcongr]
-lemma sqrt_le_sqrt (a b : A) (hab : a ≤ b) : sqrt a ≤ sqrt b :=
-  monotone_sqrt hab
-
 end NonUnitalCStarAlgebra
-
-section UnitalCStarAlgebra
-
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
-/-- `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`. -/
-lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
-  let q : ℝ≥0 := ⟨p, hp.1⟩
-  change Monotone (fun a : A => a ^ (q : ℝ))
-  by_cases hq : q > 0
-  · simp_rw [← CFC.nnrpow_eq_rpow hq]
-    exact monotone_nnrpow hp
-  · have hq : q = 0 := by simpa using hq
-    simp [hq]
-    intro a b hab
-    by_cases ha : 0 ≤ a
-    · have hb : 0 ≤ b := ha.trans hab
-      simp [CFC.rpow_zero a, CFC.rpow_zero b]
-    · have : a ^ (0 : ℝ) = 0 := cfc_apply_of_not_predicate a ha
-      simp [this]
-
-@[gcongr]
-lemma rpow_le_rpow {p : ℝ} (hp : p ∈ Icc 0 1) {a b : A} (hab : a ≤ b) :
-    a ^ p ≤ b ^ p := monotone_rpow hp hab
-
-end UnitalCStarAlgebra
 
 end CFC

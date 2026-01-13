@@ -3,14 +3,16 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.Ring.TransferInstance
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.Data.ZMod.Defs
-import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.RingTheory.FreeCommRing
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinalities of free constructions
@@ -21,6 +23,8 @@ and are thus infinite, and specifically countable over countable generators.
 Combined with the ring `Fin n` for the finite cases, this lets us show that there is a `CommRing` of
 any cardinality.
 -/
+
+@[expose] public section
 
 universe u
 variable (α : Type u)
@@ -78,7 +82,8 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
   classical
   apply le_antisymm
   · apply (mk_le_of_injective (FreeGroup.toWord_injective (α := α))).trans_eq
-    simp [Cardinal.mk_list_eq_max_mk_aleph0]
+    simp only [mk_list_eq_max_mk_aleph0, mk_prod, lift_uzero, mk_fintype, Fintype.card_bool,
+      Nat.cast_ofNat, lift_ofNat]
     obtain hα | hα := lt_or_ge #α ℵ₀
     · simp only [hα.le, max_eq_right, max_eq_right_iff]
       exact (mul_lt_aleph0 hα (nat_lt_aleph0 2)).le
@@ -112,7 +117,7 @@ See also `Infinite.nonempty_field`. -/
 instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α
-    have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
+    have : NeZero (Fintype.card α) := ⟨by simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
     exact ⟨open scoped Fin.CommRing in e.commRing⟩
