@@ -400,9 +400,9 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
 theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
-    (hf' : f.degree ≠ 0) : NoZeroSMulDivisors R (AdjoinRoot f) :=
+    (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
+  isTorsionFree_iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
 
 end Prime
 

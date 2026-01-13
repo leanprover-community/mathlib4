@@ -39,7 +39,7 @@ bijection and that the residual degree and ramification index are preserved by t
 
 @[expose] public section
 
-open Algebra IsLocalRing Ideal Localization.AtPrime
+open Algebra Module IsLocalRing Ideal Localization.AtPrime
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
   (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ]
@@ -175,8 +175,8 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   ext x
   exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
-theorem ramificationIdx_map_eq_ramificationIdx [NoZeroSMulDivisors R S] [NoZeroSMulDivisors R Rₚ]
-    [NoZeroSMulDivisors R Sₚ] [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ]
+theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] [IsTorsionFree R Rₚ]
+    [IsTorsionFree R Sₚ] [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ]
     [IsDedekindDomain S] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
     (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ) (P.map (algebraMap S Sₚ)) =
       p.ramificationIdx (algebraMap R S) P := by
@@ -207,7 +207,7 @@ namespace IsDedekindDomain
 
 open IsLocalization AtPrime
 
-variable [IsDedekindDomain S] [NoZeroSMulDivisors R S] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
+variable [IsDomain R] [IsDedekindDomain S] [IsTorsionFree R S] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
   [IsScalarTower R Rₚ Sₚ]
 
 /--

@@ -785,7 +785,8 @@ end div
 
 section primesOver
 
-variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [NoZeroSMulDivisors S R]
+variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
+  [Module.IsTorsionFree S R]
 
 open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 

@@ -475,6 +475,10 @@ end FaithfulSMul
 namespace Module
 variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
 
+instance (priority := 100) IsTorsionFree.to_faithfulSMul [Nontrivial A] [IsTorsionFree R A] :
+    FaithfulSMul R A where
+  eq_of_smul_eq_smul h := smul_left_injective _ one_ne_zero <| h 1
+
 lemma isTorsionFree_iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 

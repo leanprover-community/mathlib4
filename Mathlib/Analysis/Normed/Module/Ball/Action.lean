@@ -177,7 +177,7 @@ variable [CharZero 𝕜]
 
 include 𝕜 in
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
-  have : IsAddTorsionFree E := .of_noZeroSMulDivisors 𝕜 E
+  have : IsAddTorsionFree E := .of_isTorsionFree 𝕜 E
   fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

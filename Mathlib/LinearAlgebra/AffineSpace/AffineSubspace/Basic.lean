@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Affine spaces
 
@@ -869,12 +871,14 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
     not_nonempty_iff_eq_empty]
 
-lemma affineSpan_pair_parallel_iff_exists_unit_smul' [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+lemma affineSpan_pair_parallel_iff_exists_unit_smul' [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₁ -ᵥ p₁) = q₂ -ᵥ p₂ := by
   rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
     vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton]
 
-lemma affineSpan_pair_parallel_iff_exists_unit_smul [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+lemma affineSpan_pair_parallel_iff_exists_unit_smul [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
     line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
   rw [affineSpan_pair_parallel_iff_exists_unit_smul']
   exact ⟨fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩, fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩⟩

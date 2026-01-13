@@ -168,11 +168,11 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
 
-theorem Module.Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
-    (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
+theorem Module.Basis.algebraMap_injective {ι : Type*} (b : Basis ι R S) :
+    Function.Injective (algebraMap R S) :=
+  have : IsTorsionFree R S := b.isTorsionFree
   FaithfulSMul.algebraMap_injective R S
 
 end Ring

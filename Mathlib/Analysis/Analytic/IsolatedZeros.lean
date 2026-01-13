@@ -40,7 +40,7 @@ in this setup.
 
 public section
 
-open Filter Function Nat FormalMultilinearSeries EMetric Set
+open Filter Function Module Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
 
@@ -273,12 +273,12 @@ section Mul
 ### Vanishing of products of analytic functions
 -/
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
   {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [IsTorsionFree A B]
     {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
@@ -302,9 +302,8 @@ lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
-    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
-    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+lemma eq_zero_or_eq_zero_of_mul_eq_zero {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U)
+    (hg : AnalyticOnNhd 𝕜 g U) (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
   eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
 
