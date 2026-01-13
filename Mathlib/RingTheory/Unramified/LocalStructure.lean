@@ -111,7 +111,7 @@ theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux
   have : IsUnramifiedAt P.ResidueField Q' := .residueField P Q _ (Q'.over_def Q)
   have : Function.Surjective (aeval (R := P.ResidueField) ((1 : P.ResidueField) ⊗ₜ[R] x)) := by
     rw [← AlgHom.range_eq_top, ← adjoin_singleton_eq_range_aeval]
-    simpa using Algebra.TensorProduct.adjoin_one_tmul_image_eq_top (S := P.ResidueField) _ hp₂
+    simpa using Algebra.TensorProduct.adjoin_one_tmul_image_eq_top (A := P.ResidueField) _ hp₂
   convert Algebra.IsUnramifiedAt.not_minpoly_sq_dvd (A := P.Fiber S) Q' (1 ⊗ₜ x) _ hp₁ this
   rw [← minpoly.algHom_eq _
     (IsScalarTower.toAlgHom P.ResidueField Q.ResidueField Q'.ResidueField).injective]
