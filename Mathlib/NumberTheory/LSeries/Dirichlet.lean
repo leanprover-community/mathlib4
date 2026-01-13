@@ -326,6 +326,8 @@ lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :
 lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0 :=
   LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero_of_one_lt_re hs
 
+section ComplexOrderLemmas
+
 open scoped ComplexOrder
 
 /-- The Riemann zeta function is positive in `ComplexOrder` for real arguments greater than 1.
@@ -345,6 +347,8 @@ lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).
 lemma riemannZeta_im_eq_zero_of_one_lt {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 := by
   have hz : 0 < riemannZeta x := riemannZeta_pos_of_one_lt hx
   exact (Complex.pos_iff.mp hz).2.symm
+
+end ComplexOrderLemmas
 
 end zeta
 
