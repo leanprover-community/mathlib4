@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.List.Forall2
-public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates

@@ -92,7 +92,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
+instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiag :=
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
@@ -197,7 +197,7 @@ theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.F
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 
-theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
+theorem Finite.toFinset_offDiag {s : Set α} (hs : s.Finite) :
     hs.offDiag.toFinset = hs.toFinset.offDiag :=
   Finset.ext <| by simp
 
