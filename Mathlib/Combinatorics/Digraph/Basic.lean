@@ -79,14 +79,6 @@ def mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
 instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
 
-
-  -- Fintype.ofBijective Digraph.mk' <| by
-  --    classical
-  --    refine ⟨Embedding.injective _, ?_⟩
-
-open Finset Set in
-instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Set V) := inferInstanceAs Set.fintype
-
 /--
 The complete digraph on a type `V` (denoted by `⊤`)
 is the digraph whose vertices are all adjacent.
@@ -324,20 +316,30 @@ def sup {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph :=
       · apply H₁_sub.right hH₁
       · apply H₂_sub.right hH₂
 
+@[push_cast]
+lemma sup_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
+  (sup H₁ H₂).val = (H₁.val) ⊔ (H₂.val) := by
+  obtain ⟨H₁, _, _⟩ := H₁
+  obtain ⟨H₂, _, _⟩ := H₂
+  simp [sup]
+
+
+
 def top {G : Digraph V} : G.SpanningSubgraph := ⟨G, by simp⟩
 
 def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
   constructor
   case val => exact {
     verts := H.val.verts
-    Adj v w := G.Adj v w ∧ ¬ H.val.Adj v w ∧ v ∈ H.val.verts ∧ w ∈ H.val.verts
+    Adj v w := G.Adj v w ∧ ¬ H.val.Adj v w
   }
   case property =>
     simp_all only [H.property, and_true]
     unfold instLE LE.le Digraph.IsSubgraph
     simp only [subset_refl, and_imp, true_and]
-    intro v w G_adj H_adj _ _
+    intro v w G_adj H_adj
     assumption
+
 
 def inf {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
   constructor
@@ -355,6 +357,13 @@ def inf {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph :=
     · simp only [min, SemilatticeInf.inf, Lattice.inf]
       rw [H₁_verts, H₂_verts]
       simp only [Set.inter_self]
+
+@[push_cast]
+lemma inf_of_val {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) :
+  (inf H₁ H₂).val = (H₁.val) ⊓ (H₂.val) := by
+  obtain ⟨H₁, _, _⟩ := H₁
+  obtain ⟨H₂, _, _⟩ := H₂
+  simp [inf]
 
 
 def bot {G : Digraph V} : G.SpanningSubgraph where
@@ -441,7 +450,7 @@ open Classical in
 def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts := G.verts
-    Adj v w := if (∃ H, H ∈ ℋ) then ∀ H ∈ ℋ, Adj H.val v w else False
+    Adj v w := if (∃ H, H ∈ ℋ) then ∀ H ∈ ℋ, Adj H.val v w else G.Adj v w
     left_mem_verts_of_adj := by
       split_ifs
       case pos hnonempty =>
@@ -451,9 +460,8 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         apply H_sub.right at h_univ
         apply G.left_mem_verts_of_adj h_univ
       case neg _ =>
-        intro _ _ hfalse
-        exfalso
-        assumption
+        intro v w hadj
+        apply G.left_mem_verts_of_adj hadj
 
     right_mem_verts_of_adj := by
       split_ifs
@@ -464,9 +472,8 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         apply H_sub.right at h_univ
         apply G.right_mem_verts_of_adj h_univ
       case neg _ =>
-        intro _ _ hfalse
-        exfalso
-        assumption
+        intro v w adj
+        apply G.right_mem_verts_of_adj adj
   }
   property := by
     constructor
@@ -481,9 +488,7 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
           apply H_sub.right at h_univ
           assumption
         case neg h =>
-          intro _ _ hfalse
-          exfalso
-          assumption
+          tauto
     · simp
 
 
@@ -508,13 +513,14 @@ lemma sSup_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
 
 lemma top_le_sup_compl {G : Digraph V} : ∀ (H : G.SpanningSubgraph), top ≤ sup H (compl H) := by
   intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
-  simp_all only [top, sup, compl, max, SemilatticeSup.sup, Set.union_self, ge_iff_le]
   constructor
   · intro v v_in_G
     grind
   · intro v w top_adj
-    
-    sorry
+    simp [top] at top_adj
+    push_cast
+    simp only [compl, sup_adj]
+    tauto
 
 lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
   ∀ H ∈ ℋ, sInf ℋ ≤ H := by
@@ -523,7 +529,13 @@ lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
   · simp only [sInf, Subtype.exists, Subtype.forall, forall_and_index]
     rw [H_verts_eq]
   · intro v w adj
-    simp_all [sInf]
+    simp_all only [sInf, Subtype.exists, Subtype.forall, forall_and_index]
+    split_ifs at adj
+    case pos hnonempty =>
+      sorry
+    case neg hnonempty =>
+      
+      sorry
 
 lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H ≤ H') → H ≤ sInf ℋ := by
@@ -539,23 +551,25 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
       specialize h_sub H' H'_sub_G H'verts H'mem
       apply h_sub.right at h_adj
       assumption
-    case neg =>
-      sorry
+    case neg hnonempty =>
+      apply H_sub.right at h_adj
+      assumption
 
 
 lemma le_sup_inf {G : Digraph V} : ∀ (H₁ H₂ H₃ : G.SpanningSubgraph),
-  inf (sup H₁ H₂) (sup H₁ H₃) ≤ sup H₁ (inf H₂ H₃) := by
-  intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩
-    ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
+  (inf (sup H₁ H₂) (sup H₁ H₃))≤ (sup H₁ (inf H₂ H₃)) := by
+  intro ⟨H₁, ⟨H₁_sub_verts, H₁_sub_adj⟩, H₁_verts_eq⟩ ⟨H₂, ⟨H₂_sub_verts, H₂_sub_adj⟩, H₂_verts_eq⟩
     ⟨H₃, ⟨H₃_sub_verts, H₃_sub_adj⟩, H₃_verts_eq⟩
-  simp only [inf, min, SemilatticeInf.inf, Lattice.inf, sup, max, SemilatticeSup.sup]
-  simp_all only [Set.inter_self, Set.union_self]
   constructor
   · grind
-  · intro v w h
-    simp_all only
+  · intro v w h_inf_sup_adj
+    push_cast
+    push_cast at h_inf_sup_adj
+    simp_all only [subset_refl, inf_adj, sup_adj]
+    tauto
 
-    sorry
+
+
 lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   inf H (compl H) ≤ bot := by
   intro ⟨H, ⟨H_sub_verts, H_sub_adj⟩, H_verts⟩
@@ -564,7 +578,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
   constructor
   · simp only [subset_refl]
   · simp only [imp_false, not_and]
-    intro v w h _ hcontra _
+    intro v w h _ hcontra
     exfalso
     exact hcontra h
 
