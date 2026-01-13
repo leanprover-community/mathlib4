@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNRat.Order
-public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
