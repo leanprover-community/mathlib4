@@ -67,6 +67,19 @@ theorem RCLike.sqrt_def (a : 𝕜) :
   rw [Complex.cpow_inv_two_im_eq_neg_sqrt (by simpa)]
   simp [h]
 
+theorem RCLike.sqrt_def' (a : 𝕜) :
+    letI b : ℂ := (re a + im a * Complex.I).sqrt
+    sqrt a = b.re + b.im * (I : 𝕜) := by
+  rw [sqrt]
+  split_ifs with h
+  · simp
+  have : (I : 𝕜) = 0 := by grind [I_eq_zero_or_im_I_eq_one]
+  simp_all only [Complex.sqrt, Complex.cpow_inv_two_re]
+  simp only [show im a = 0 by rw [← re_add_im a]; simp [this]]
+  by_cases! ha' : 0 ≤ re a
+  · simp [abs_of_nonneg ha', ← two_mul]
+  simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
+
 @[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
 @[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
 
