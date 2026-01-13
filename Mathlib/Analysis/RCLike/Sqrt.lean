@@ -37,18 +37,6 @@ noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
   if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
   else √(re a)
 
-theorem RCLike.re_sqrt (a : 𝕜) : re (sqrt a) = √((‖a‖ + re a) / 2) := by
-  rw [sqrt]
-  split_ifs with h
-  · convert Complex.cpow_inv_two_re (complexRingEquiv h a)
-    · simp
-    · simpa [eq_comm] using norm_to_complex h a
-    simp
-  rw [← show re a = a by grind [I_eq_zero_or_im_I_eq_one, re_add_im]]
-  by_cases! ha' : 0 ≤ re a
-  · simp [abs_of_nonneg ha']
-  simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
-
 theorem RCLike.sqrt_def (a : 𝕜) :
     letI b : ℂ := (re a + im a * Complex.I).sqrt
     sqrt a = b.re + b.im * (I : 𝕜) := by
