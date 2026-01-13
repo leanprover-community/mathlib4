@@ -26,7 +26,6 @@ For specializing to ring multiplication, use `ringConvolution` which is given by
 
 Then index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
 Coefficient ring requires `[CommSemiring R]` for bilinearity of `LinearMap.mul`.
-Example: `FreeMonoid α ≃ List α` enables convolution on lists.
 
 `@[to_additive]` generates multiplicative and additive versions from a single definition.
 The `mul/add` distinction refers to the index monoid `M`: multiplicative sums over
