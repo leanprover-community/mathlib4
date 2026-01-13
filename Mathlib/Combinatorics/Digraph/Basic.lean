@@ -534,7 +534,7 @@ lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
     case pos hnonempty =>
       sorry
     case neg hnonempty =>
-      
+
       sorry
 
 lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
