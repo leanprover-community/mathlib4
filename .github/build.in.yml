@@ -44,6 +44,11 @@ jobs:
       run: # note that .pr-branch/.lake must be created in a step below before we use this
         shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
+      - name: experiment
+        shell: bash
+        run: |
+           echo "Hello, world!"
+           hostname | xargs echo
       - name: job info
         env:
           WORKFLOW: ${{ github.workflow }}
