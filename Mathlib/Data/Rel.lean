@@ -330,6 +330,10 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 @[deprecated (since := "2025-07-06")]
 alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
 
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
+
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
 to elements of `S`. Other generalization of `Function.preimage`. -/
