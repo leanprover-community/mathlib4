@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
