@@ -233,8 +233,8 @@ theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔
 
 /-- See also `Submodule.smul_iSup`. -/
 theorem smul_iSup' (a : α) {ι : Sort*} (f : ι → Submodule R M) :
-    a • ⨆ i, f i = ⨆ i, a • f i := by
-  apply map_iSup
+    a • ⨆ i, f i = ⨆ i, a • f i :=
+  map_iSup _ _
 
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
