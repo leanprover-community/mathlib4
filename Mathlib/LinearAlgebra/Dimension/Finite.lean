@@ -121,7 +121,7 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R M] {n : ℕ} (h : Module.ran
   nontriviality R
   obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   have := mk_lt_aleph0_iff.mp <|
-    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt <| nat_lt_aleph0 n
+    b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt nat_lt_aleph0
   exact Module.Finite.of_basis b
 
 theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1) :
@@ -197,11 +197,11 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
   rcases hn.eq_or_lt with h | h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
       (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
-    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
+    have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0)
     cases nonempty_fintype s
     refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
-    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
+    have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 

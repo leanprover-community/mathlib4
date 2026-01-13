@@ -454,8 +454,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
 -- TODO: generalize to Nontrivial S
 theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
-  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by
-    simpa using Cardinal.nat_lt_aleph0 _
+  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
 namespace Algebra.IsAlgebraic
 
