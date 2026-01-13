@@ -345,34 +345,55 @@ end DistribLattice
 
 namespace Disjoint
 
-variable {a b c : α}
+variable {a b c : α} [Lattice α] [IsModularLattice α]
 
-theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
-    [IsModularLattice α] (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
-    Disjoint a (b ⊔ c) := by
+theorem disjoint_sup_right_of_disjoint_sup_left [OrderBot α]
+    (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) : Disjoint a (b ⊔ c) := by
   rw [disjoint_iff_inf_le, ← h.eq_bot, sup_comm]
   apply le_inf inf_le_left
   apply (inf_le_inf_right (c ⊔ b) le_sup_right).trans
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
 
-theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
-    [IsModularLattice α] (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
-    Disjoint (a ⊔ b) c := by
+theorem disjoint_sup_left_of_disjoint_sup_right [OrderBot α]
+    (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) : Disjoint (a ⊔ b) c := by
   rw [disjoint_comm, sup_comm]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
 
-theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
-    (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) :
-    IsCompl a (b ⊔ c) :=
+theorem isCompl_sup_right_of_isCompl_sup_left [BoundedOrder α]
+    (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) : IsCompl a (b ⊔ c) :=
   ⟨h.disjoint_sup_right_of_disjoint_sup_left hcomp.disjoint, codisjoint_assoc.mp hcomp.codisjoint⟩
 
-theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [IsModularLattice α]
-    (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) :
-    IsCompl (a ⊔ b) c :=
+theorem isCompl_sup_left_of_isCompl_sup_right [BoundedOrder α]
+    (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) : IsCompl (a ⊔ b) c :=
   ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩
 
 end Disjoint
+
+namespace Codisjoint
+
+variable {a b c : α} [Lattice α] [IsModularLattice α]
+
+theorem codisjoint_inf_right_of_codisjoint_inf_left [OrderTop α]
+    (h : Codisjoint a b) (hsup : Codisjoint (a ⊓ b) c) : Codisjoint a (b ⊓ c) := by
+  rw [← disjoint_toDual_iff] at *
+  exact Disjoint.disjoint_sup_right_of_disjoint_sup_left h hsup
+
+theorem codisjoint_inf_left_of_codisjoint_inf_right [OrderTop α]
+    (h : Codisjoint b c) (hsup : Codisjoint a (b ⊓ c)) : Codisjoint (a ⊓ b) c := by
+  rw [← disjoint_toDual_iff] at *
+  exact Disjoint.disjoint_sup_left_of_disjoint_sup_right h hsup
+
+theorem isCompl_inf_right_of_isCompl_inf_left [BoundedOrder α]
+    (h : Codisjoint a b) (hcomp : IsCompl (a ⊓ b) c) : IsCompl a (b ⊓ c) :=
+  ⟨disjoint_assoc.mp hcomp.disjoint, h.codisjoint_inf_right_of_codisjoint_inf_left hcomp.codisjoint⟩
+
+theorem isCompl_inf_left_of_isCompl_inf_right [BoundedOrder α]
+    (h : Codisjoint b c) (hcomp : IsCompl a (b ⊓ c)) : IsCompl (a ⊓ b) c :=
+  ⟨disjoint_assoc.mpr hcomp.disjoint,
+    h.codisjoint_inf_left_of_codisjoint_inf_right hcomp.codisjoint⟩
+
+end Codisjoint
 
 lemma Set.Iic.isCompl_inf_inf_of_isCompl_of_le [Lattice α] [BoundedOrder α] [IsModularLattice α]
     {a b c : α} (h₁ : IsCompl b c) (h₂ : b ≤ a) :
