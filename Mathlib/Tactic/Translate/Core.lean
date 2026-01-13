@@ -219,11 +219,12 @@ def findTranslation? (env : Environment) (t : TranslateData) : Name → Option N
 check if the name can be translated as a recursor of a translated name.
 
 TODO?: Remove this function and tag the recursors directly. -/
-def findTranslationRec? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
+def findAnyTranslation? (env : Environment) (t : TranslateData) (n : Name) : Option Name :=
   findTranslation? env t n <|> do
     if let .str pre s := n then
       if let some pre' := findTranslation? env t pre then
-        if Lean.isRecCore env n || Lean.isAuxRecursor env n then
+        if s matches "ext" | "ext_iff" | "casesOn" | "rec" | "recOn" | "noConfusion"
+          | "noConfusionType" then
           return .str pre' s
     failure
 
@@ -257,7 +258,7 @@ where
   /-- Insert only one direction of a translation. -/
   insertTranslationAux (t : TranslateData) (src tgt : Name)
       (argInfo : ArgInfo) : CoreM Unit := do
-    if let some tgt' := findTranslationRec? (← getEnv) t src then
+    if let some tgt' := findAnyTranslation? (← getEnv) t src then
       -- After `insert_to_additive_translation`, we may end up adding same translation again.
       -- So in that case, don't log a warning.
       if tgt != tgt' then
@@ -453,7 +454,7 @@ where /-- Implementation of `applyReplacementFun`. -/
                   However, we will still recurse into all the non-numeral arguments."
               let args := numeralArgs.foldl (·.modify · changeNumeral) args
               return mkAppN f (← args.mapM r)
-      let some n₁ := findTranslationRec? env t n₀ | return mkAppN f (← args.mapM r)
+      let some n₁ := findAnyTranslation? env t n₀ | return mkAppN f (← args.mapM r)
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
