@@ -325,7 +325,7 @@ partial def collectAtoms (s : Syntax) : Array String :=
     (s.getArgs.map collectAtoms).flatten
 
 /-- Extracts the module name and modifiers from an import syntax node.
-Returns (module_id, isPublic, isMeta, isAll) -/
+Returns `(module_id, isPublic, isMeta, isAll)`. -/
 def importInfo (importStx : Syntax) : Option (Syntax × Bool × Bool × Bool) := do
   guard (importStx.isOfKind `Lean.Parser.Module.import)
   let args := importStx.getArgs
@@ -374,11 +374,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
   let fm ← getFileMap
-  let md := (getMainModuleDoc (← getEnv)).toArray
+  let mdDocs := (getMainModuleDoc (← getEnv)).toArray
+  let versoDocs := (getVersoModuleDocs (← getEnv)).snippets
   -- The end of the first module doc-string, or the end of the file if there is none.
-  let firstDocModPos := match md[0]? with
+  -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
+  -- so we get the end pos for both types of docstrings and take their minimum as the first.
+  let firstMDDocModPos := match mdDocs[0]? with
                           | none     => fm.positions.back!
                           | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstVersoDocModPos := match versoDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
   unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.
