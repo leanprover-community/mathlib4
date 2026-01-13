@@ -444,8 +444,6 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
     left_mem_verts_of_adj := by
       intro v w h
       apply G.left_mem_verts_of_adj h.right
-
-
     right_mem_verts_of_adj := by
       intro v w h
       apply G.right_mem_verts_of_adj h.right
@@ -458,7 +456,6 @@ def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         intro v w h
         tauto
     · simp
-
 
 lemma le_sSup {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph), ∀ H ∈ ℋ, H ≤ sSup ℋ := by
   intro ℋ ⟨H, ⟨H_sub, H_verts⟩⟩ H_mem
