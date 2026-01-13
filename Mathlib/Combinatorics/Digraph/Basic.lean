@@ -450,45 +450,23 @@ open Classical in
 def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts := G.verts
-    Adj v w := if (∃ H, H ∈ ℋ) then ∀ H ∈ ℋ, Adj H.val v w else G.Adj v w
+    Adj v w := (∀ H ∈ ℋ, Adj H.val v w) ∧ G.Adj v w
     left_mem_verts_of_adj := by
-      split_ifs
-      case pos hnonempty =>
-        obtain ⟨⟨H, ⟨H_sub, H_verts_eq⟩⟩, H_mem⟩ := hnonempty
-        intro v w h_univ
-        specialize h_univ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
-        apply H_sub.right at h_univ
-        apply G.left_mem_verts_of_adj h_univ
-      case neg _ =>
-        intro v w hadj
-        apply G.left_mem_verts_of_adj hadj
+      intro v w h
+      apply G.left_mem_verts_of_adj h.right
+
 
     right_mem_verts_of_adj := by
-      split_ifs
-      case pos hnonempty =>
-        obtain ⟨⟨H, ⟨H_sub, H_verts_eq⟩⟩, H_mem⟩ := hnonempty
-        intro v w h_univ
-        specialize h_univ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
-        apply H_sub.right at h_univ
-        apply G.right_mem_verts_of_adj h_univ
-      case neg _ =>
-        intro v w adj
-        apply G.right_mem_verts_of_adj adj
+      intro v w h
+      apply G.right_mem_verts_of_adj h.right
   }
   property := by
     constructor
     · constructor
       · simp
       · simp only [Subtype.forall, forall_and_index]
-        split_ifs
-        case pos h =>
-          obtain ⟨⟨H, ⟨H_sub, H_verts⟩⟩, H_mem⟩ := h
-          intro v w h_univ
-          specialize h_univ H H_sub H_verts H_mem
-          apply H_sub.right at h_univ
-          assumption
-        case neg h =>
-          tauto
+        intro v w h
+        tauto
     · simp
 
 
@@ -526,16 +504,11 @@ lemma sInf_le {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph),
   ∀ H ∈ ℋ, sInf ℋ ≤ H := by
   intro ℋ ⟨H, ⟨H_sub, H_verts_eq⟩⟩ H_mem
   constructor
-  · simp only [sInf, Subtype.exists, Subtype.forall, forall_and_index]
+  · simp only [sInf, Subtype.forall, forall_and_index]
     rw [H_verts_eq]
   · intro v w adj
-    simp_all only [sInf, Subtype.exists, Subtype.forall, forall_and_index]
-    split_ifs at adj
-    case pos hnonempty =>
-      sorry
-    case neg hnonempty =>
+    simp_all only [sInf, Subtype.forall, forall_and_index]
 
-      sorry
 
 lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   (H : G.SpanningSubgraph), (∀ H' ∈ ℋ, H ≤ H') → H ≤ sInf ℋ := by
@@ -543,16 +516,13 @@ lemma le_sInf {G : Digraph V} : ∀ (ℋ : Set G.SpanningSubgraph)
   constructor
   · simp_all [sInf]
   · intro v w h_adj
-    simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf, Subtype.exists]
-    split_ifs
-    case pos hnonempty =>
-      obtain ⟨H₁, H₁_mem⟩ := hnonempty
-      intro H' H'_sub_G H'verts H'mem
-      specialize h_sub H' H'_sub_G H'verts H'mem
+    simp_all only [Subtype.forall, Subtype.mk_le_mk, forall_and_index, sInf]
+    constructor
+    · intro H' H'_sub_G H'_verts_eq H'_mem
+      specialize h_sub H' H'_sub_G H'_verts_eq H'_mem
       apply h_sub.right at h_adj
       assumption
-    case neg hnonempty =>
-      apply H_sub.right at h_adj
+    · apply H_sub.right at h_adj
       assumption
 
 
@@ -583,7 +553,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
     exact hcontra h
 
 
-noncomputable instance (G : Digraph V) : BooleanAlgebra
+noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
   (G.SpanningSubgraph) where
   sup := sup
   le_sup_left := le_sup_left
@@ -601,13 +571,12 @@ noncomputable instance (G : Digraph V) : BooleanAlgebra
   top_le_sup_compl := top_le_sup_compl
   le_sup_inf := le_sup_inf
   inf_compl_le_bot := inf_compl_le_bot
-  -- sSup := sSup
-  -- sInf := sInf
-  -- le_sSup := le_sSup
-  -- sSup_le := sSup_le
-
-  -- sInf_le := sInf_le
-  -- le_sInf := le_sInf
+  sSup := sSup
+  sInf := sInf
+  le_sSup := le_sSup
+  sSup_le := sSup_le
+  sInf_le := sInf_le
+  le_sInf := le_sInf
 
 
 
