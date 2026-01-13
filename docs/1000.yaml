@@ -4065,6 +4065,7 @@ Q17098075:
 
 Q17098298:
   title: Jacobson density theorem
+  decl: jacobson_density
 
 Q17098379:
   title: Kaplansky's theorem on quadratic forms
