@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 
