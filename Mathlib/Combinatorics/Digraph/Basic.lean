@@ -274,7 +274,7 @@ The type of spanning subgraphs of a digraph `G`
 abbrev SpanningSubgraph (G : Digraph V) := {H : Digraph V // H ≤ G ∧ H.verts = G.verts}
 
 /--
-The join/union of two Digraphs i.e.`G₁ ⊔ G₂`
+The join/union of two Digraphs i.e. `G₁ ⊔ G₂`
 -/
 def sup {G : Digraph V} (H₁ H₂ : G.SpanningSubgraph) : G.SpanningSubgraph := by
   obtain ⟨H₁, H₁_sub, H₁_verts_eq⟩ := H₁
