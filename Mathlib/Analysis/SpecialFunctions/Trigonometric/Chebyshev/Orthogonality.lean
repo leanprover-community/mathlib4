@@ -120,13 +120,13 @@ theorem integral_chebMeasT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
 
 theorem integral_T_real_zero :
     ∫ x, (T ℝ 0).eval x ∂chebMeasT = π := by
-  rw [integral_chebMeasT_eq_integral_cos_of_continuous (T ℝ 0).continuousOn]; simp
+  rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]; simp
 
 theorem integral_T_real_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
     ∫ x, (T ℝ n).eval x ∂chebMeasT = 0 := by
   have hn' : (n : ℝ) ≠ 0 := Int.cast_ne_zero.mpr hn
   suffices ∫ θ in 0..n * π, cos θ = 0 by
-    rw [integral_chebMeasT_eq_integral_cos_of_continuous (T ℝ n).continuousOn]
+    rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]
     simp_rw [T_real_cos]
     rwa [integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn), smul_eq_zero_iff_right (by aesop),
       mul_zero]
@@ -150,8 +150,8 @@ theorem integral_T_real_mul_T_real (n m : ℤ) :
     rw [MeasureTheory.integral_const_mul] at this
     grind
   simp_rw [T_mul_T, eval_add]
-  rw [MeasureTheory.integral_add (integrable_chebMeasT (T ℝ _).continuousOn)
-    (integrable_chebMeasT (T ℝ _).continuousOn)]
+  rw [MeasureTheory.integral_add
+    (integrable_chebMeasT (by fun_prop)) (integrable_chebMeasT (by fun_prop))]
 
 theorem integral_T_real_mul_T_real_of_ne {n m : ℕ} (h : n ≠ m) :
     ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂chebMeasT = 0 := by
