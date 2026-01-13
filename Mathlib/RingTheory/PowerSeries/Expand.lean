@@ -60,11 +60,12 @@ theorem expand_monomial (d : ℕ) (r : R) :
     expand p hp (monomial d r) = monomial (p * d) r := by
   simp [expand, monomial, MvPowerSeries.expand_monomial]
 
-theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (PowerSeries R) := by
-  simp [expand, MvPowerSeries.expand_one]
-
 @[simp]
-theorem expand_one_apply (f : PowerSeries R) : expand 1 one_ne_zero f = f := by simp [expand]
+theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (PowerSeries R) := by
+  simp [expand]
+
+theorem expand_one_apply (f : PowerSeries R) : expand 1 one_ne_zero f = f := by
+  rw [expand_one, AlgHom.id_apply]
 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : PowerSeries R) :
