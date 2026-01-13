@@ -89,8 +89,8 @@ protected def completeDigraph (V : Type*) : Digraph V where
 
 /--
 The empty digraph on a type `V` (denoted by `⊥`)
-is the digraph such that no pairs of vertices are adjacent.
-Note that `⊥` is called the empty digraph because it has no edges.
+is the digraph such that there are no vertices and therefore no pairs of vertices are adjacent.
+Note that `⊥` is called the empty digraph because it has no edges and no vertices.
 -/
 protected def emptyDigraph (V : Type*) : Digraph V where
   verts := ∅
