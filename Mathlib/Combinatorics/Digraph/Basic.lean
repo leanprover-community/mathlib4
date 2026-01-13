@@ -109,11 +109,6 @@ def completeBipartite (V W : Type*) : Digraph (Sum V W) where
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
--- Note `adj_injective` is no longer true
--- theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := by
---   intro G₁ G₂ h
---   ext
-
 @[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj  ↔ G = H :=
   Digraph.ext_iff.symm
 
