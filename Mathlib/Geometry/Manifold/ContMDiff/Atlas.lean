@@ -9,10 +9,18 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
-## Smoothness of charts and local structomorphisms
+# Smoothness of charts and local structomorphisms
 
 We show that the model with corners, charts, extended charts and their inverses are `C^n`,
 and that local structomorphisms are `C^n` with `C^n` inverses.
+
+## Implementation notes
+
+This file uses the name `writtenInExtend` (in analogy to `writtenInExtChart`) to refer to a
+composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ` and `φ` extended by the
+appropriate models with corners. This is not a definition, so technically deviating from the naming
+convention.
+
 -/
 
 @[expose] public section
@@ -295,19 +303,11 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : OpenPartialHomeomorph M 
 
 end IsLocalStructomorph
 
-open Set Filter Function
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {H G : Type*} [TopologicalSpace H] [TopologicalSpace G]
-  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {n : WithTop ℕ∞}
   [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
   {φ : OpenPartialHomeomorph M H} {ψ : OpenPartialHomeomorph N G}
-
--- There is no definition `writtenInExtend`, but we already use some made-up names in this file.
 
 /-- This is a smooth analogue of `OpenPartialHomeomorph.continuousWithinAt_writtenInExtend_iff`. -/
 theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
