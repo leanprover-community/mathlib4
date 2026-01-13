@@ -65,11 +65,11 @@ lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
 
 @[mono]
 lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → SimpleGraph V) :=
-  fun H₁ H₂ h₁ v w h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁ _ _) (@h₁ _ _)⟩
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁.2 _ _) (@h₁.2 _ _)⟩
 
 @[mono]
 lemma toSimpleGraphStrict_mono : Monotone (toSimpleGraphStrict : _ → SimpleGraph V) :=
-  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁ h₂.2.1, h₁ h₂.2.2⟩
+  fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁.2 h₂.2.1, h₁.2 h₂.2.2⟩
 
 @[simp]
 lemma toSimpleGraphInclusive_top : (⊤ : Digraph V).toSimpleGraphInclusive = ⊤ := by
