@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct
-
+∨
+⊗
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
 
@@ -34,7 +35,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * `PiTensorProduct.mapLMultilinear`: The continuous multilinear map from
   `Πᵢ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
   `f` to `PiTensorProduct.mapL f`.
-* `PiTensorProduct.injectiveSeminorm`: A dual definition of the projective seminor.
+* `PiTensorProduct.injectiveSeminorm`: A "dual" definition of the projective seminorm.
 
 ## Main results
 
@@ -45,14 +46,10 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 * `PiTensorProduct.injectiveSeminorm_eq_projectiveSeminorm`: The dual definition
-   agrees with the primal definitoin
+   agrees with the primal definition
 
 ## TODO
 
-* If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
-  `⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-  depends on PR https://github.com/leanprover-community/mathlib4/pull/11156.
-  It should probably go in a separate file.
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 -/
 
@@ -425,7 +422,7 @@ lemma projectiveSeminorn_mem_dualSeminorms : projectiveSeminorm ∈ {p | ∃ (G 
   grw [norm_tprodL_le, mul_one] at this
   simpa
 
-theorem injectiveSeminorm'_apply (x : ⨂[𝕜] i, E i) :
+theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))

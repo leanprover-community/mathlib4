@@ -30,19 +30,21 @@ https://www.ams.org/bookstore/pspdf/mbk-52-prev.pdf
 
 ## Main definitions
 
-* `leastCrossnorm`: For `x : ⨂ Eᵢ`, `leastCrossnorm x` is the norm of the multilinear map
-  that sends a family `fᵢ : StrongDual Eᵢ` to `(⨂ fᵢ) x`.
-* `dualDistribL`: A continuous version of `PiTensorProduct.dualDistrib`
+* `PiTensorProduct.leastCrossnorm`: For `x : ⨂ Eᵢ`, `leastCrossnorm x` is the
+  norm of the multilinear map that sends a family `fᵢ : StrongDual Eᵢ` to `(⨂ fᵢ) x`.
+* `PiTensorProduct.dualDistribL`: A continuous version of `PiTensorProduct.dualDistrib`.
 
 ## Main results
 
-* `le_leastCrossnorm`: `‖dualDistribL (⨂ fᵢ) x‖` lower-bounds `(leastCrossnorm x) * (∏ ‖fᵢ‖)`
-* `leastCrossnorm_le_bound`: If `‖dualDistribL (⨂ fᵢ) x‖ ≤ M * (∏ ‖fᵢ‖))` for all families
-  `fᵢ : StrongDual Eᵢ`, then `leastCrossnorm x ≤ M`
-* `projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective seminorm satisfies the
-  multiplicativity property `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if, for each `mᵢ`, there is an `fᵢ` in the dual unit
-  ball such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`. [This fits into ProjectiveSeminorm.lean; included here pending
-  comments on the proposed refactoring of that file.]
+* `PiTensorProduct.le_leastCrossnorm`: `‖dualDistribL (⨂ fᵢ) x‖` lower-bounds
+  `(leastCrossnorm x) * (∏ ‖fᵢ‖)`.
+* `PiTensorProduct.leastCrossnorm_le_bound`: If `‖dualDistribL (⨂ fᵢ) x‖ ≤ M * (∏ ‖fᵢ‖))`
+  for all families `fᵢ : StrongDual Eᵢ`, then `leastCrossnorm x ≤ M`.
+* `PiTensorProduct.projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective
+  seminorm satisfies the multiplicativity property `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if, for
+  each `mᵢ`, there is an `fᵢ` in the dual unit ball such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`.
+  [This fits into ProjectiveSeminorm.lean; included here pending comments on the
+  proposed refactoring of that file.]
 
 ## Implementation notes
 
