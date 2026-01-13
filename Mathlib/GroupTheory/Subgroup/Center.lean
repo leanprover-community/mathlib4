@@ -80,7 +80,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   exact mul_comm y x
 
 /-- A group is commutative if the center is the whole group -/
-@[to_additive]
+@[to_additive /-- An additive group is commutative if the center is the whole group -/ ]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by

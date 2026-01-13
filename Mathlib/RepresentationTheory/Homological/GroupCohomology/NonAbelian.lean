@@ -59,6 +59,7 @@ attribute [local simp] Equiv.apply_ofInjective_symm
 
 variable (G : Type u) [Monoid G]
 
+/-- The addsubgroup of `A` consisting of elements invariant under `G`-action. -/
 def H0 (A : Type*) [AddGroup A] [DistribMulAction G A] : AddSubgroup A where
   carrier := setOf fun v => ∀ g : G, g • v = v
   add_mem' := by simp +contextual
@@ -74,6 +75,7 @@ variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
 variable (G) in
 lemma mem_iff (a : A) : a ∈ H0 G A ↔ ∀ g : G, g • a = a := by rfl
 
+/-- `f : A →+[G] B` induces a homomorphism `H0 G A →+ H0 G B`. -/
 def map : H0 G A →+ H0 G B :=
   f.toAddMonoidHom.restrict (H0 G A) |>.codRestrict (H0 G B) <|
     (fun ⟨a, ha⟩ ↦ fun g ↦ (by simpa using congr(f $(ha g))))
@@ -100,6 +102,7 @@ theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
 
 end H0
 
+/-- The non-Abelian version of `groupCohomology.cocycles₁`. -/
 def Z1 (A : Type*) [AddGroup A] [DistribMulAction G A] :=
   { f : G → A | ∀ g h : G, f (g * h) = f g + g • f h}
 
@@ -120,6 +123,7 @@ variable (G A) in
 variable (G A) in
 @[simp] lemma zero_coe : (0 : Z1 G A) = (0 : G → A) := rfl
 
+/-- The cohomologous relationship for `f g : G → A`. -/
 def cohomologous (f g : G → A) : Prop :=
   ∃ a : A, ∀ h : G, f h = - a + g h + (h • a)
 
@@ -153,6 +157,7 @@ theorem mem_of_cohomologous (f : G → A) (f' : Z1 G A) (hfg : Z1.cohomologous f
   obtain ⟨a, ha⟩ := hfg
   simp [ha, f'.2 g h, add_assoc, mul_smul]
 
+/-- `f : A →+[G] B` induces a map `Z1 G A → Z1 G B`. -/
 def map : Z1 G A → Z1 G B := fun z ↦ ⟨f ∘ z, fun g h => by simp [z.prop g h, map_smul]⟩
 
 @[simp] lemma map_zero : Z1.map f 0 = 0 := Subtype.ext <| funext fun _ ↦ (by simp [Z1.map])
@@ -169,6 +174,7 @@ lemma map_cohomologous (z1 z2 : Z1 G A) (h : z1 ≈ z2) : Z1.map f z1 ≈ Z1.map
 
 end Z1
 
+/-- We define `H1 G A` as the quotient of `Z1 G A` by the equivalence relation `Z1.cohomologous`. -/
 def H1 (A : Type*) [AddGroup A] [DistribMulAction G A] := Quotient (Z1.setoid G A)
 
 namespace H1
@@ -178,6 +184,7 @@ variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
   (f : A →+[G] B) (g : B →+[G] C)
 
 variable (G A) in
+/-- The map from `Z1 G A` to `H1 G A`. -/
 def mk (a : Z1 G A) : H1 G A := ⟦a⟧
 
 lemma mk_eq_iff (a b : Z1 G A) : mk G A a = mk G A b ↔ Z1.cohomologous a b := Quotient.eq_iff_equiv
@@ -191,6 +198,7 @@ instance : Inhabited (H1 G A) := ⟨0⟩
 variable (G A) in
 lemma zero_def : (0 : H1 G A) = mk G A 0 := rfl
 
+/-- `Z1.map` preserves `Z1.cohomologous`, so it defines a map on the quotients. -/
 def map : H1 G A → H1 G B := Quotient.map (Z1.map f) (Z1.map_cohomologous f)
 
 variable (G A) in
@@ -246,9 +254,13 @@ include hf in
 lemma mem_z1_of_comp_eq (b : B) (x : G → A) (hx : ∀ g : G, f (x g) = - b + g • b) :
     x ∈ Z1 G A := fun g h ↦ hf <| by simp [hx, add_assoc, mul_smul]
 
+/-- If `x : G → A` satisfy `∀ g : G, f (x g) = - b + g • b` (corresponding to `f ∘ x = d₀₁ B b`
+in the commutative case), then we can write `x` as a cocycle (element in `Z1 G A`).
+Stated for readability of `δ₀_apply`. -/
 abbrev z1MkOfCompEq (b : B) (x : G → A) (hx : ∀ g : G, f (x g) = - b + g • b) : Z1 G A :=
   ⟨x, mem_z1_of_comp_eq hf b x hx⟩
 
+/-- Auxiliary function used for constructing the connection map `δ₀`. -/
 noncomputable def δ₀_aux : g ⁻¹' (H0 G C) → Z1 G A := fun b ↦ ⟨
     fun s ↦ (Equiv.ofInjective _ hf).symm ⟨-b + s • b, (hfg _).mp <| by simp [b.2 s]⟩,
     mem_z1_of_comp_eq hf b.1 _ (fun g ↦ by simp)
@@ -262,6 +274,8 @@ lemma δ₀_aux_zero : δ₀_aux hf hfg ⟨0, by simp⟩ = 0 := by
 lemma apply_δ₀_aux (b : g ⁻¹' (H0 G C)) : ∀ g : G, f ((δ₀_aux hf hfg b) g) = - b + g • b := by
   simp [δ₀_aux]
 
+/-- For a short exact sequence `0 → A →f B →g C → 0` preserving `G`-action, we have the connection
+map `δ₀ : H0 G C → H1 G A`. -/
 noncomputable def δ₀ : H0 G C → H1 G A :=
   Function.extend (Set.restrictPreimage (H0 G C) g) ((H1.mk G A) ∘ (δ₀_aux hf hfg)) 0
 
@@ -281,6 +295,8 @@ lemma δ₀_apply (c : H0 G C) (b : B) (hb : g b = c) (x : G → A)
   (δ₀_apply_eq_mk_δ₀_aux hf hfg c b hb).trans <| congrArg _ <| Subtype.ext <|
   funext fun s ↦ hf (by simp [δ₀_aux, hx])
 
+/-- A version of `δ₀_apply` where `x` has type `Z1 G A` instead of `G → A`, so that
+`z1MkOfCompEq` is not needed in the theorem statement. -/
 lemma δ₀_apply' (c : H0 G C) (b : B) (hb : g b = c) (x : Z1 G A)
     (hx : ∀ g : G, f (x g) = - b + g • b) : δ₀ hf hfg c = H1.mk G A x := δ₀_apply hf hfg c b hb x hx
 
@@ -335,10 +351,14 @@ lemma mem_cocycles₂_of_comp_eq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G 
   have := AddSubgroup.mem_center_iff.mp this (b x)
   simp [sub_eq_add_neg, hx, mul_smul, ← add_assoc, this.symm, mul_assoc]
 
+/-- If `x : G × G → A` satisfy `∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)` (corresponding
+to `f ∘ x = d₁₂ B b` in the commutative case), then we can write `x` as a cocycle.
+Stated for readability of `δ₁_apply`. -/
 abbrev cocycles₂MkOfCompEq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : cocycles₂ A := ⟨x,
   mem_cocycles₂_of_comp_eq hf hfg hA b hb x hx⟩
 
+/-- Auxiliary function used for constructing the connection map `δ₁`. -/
 noncomputable def δ₁_aux : (g ∘ ·) ⁻¹' (Z1 G C) → cocycles₂ A := fun b ↦ ⟨
   fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b.1 st.1) + st.1 • (b.1 st.2) - b.1 (st.1 * st.2),
     (hfg _).mp (by simpa [← sub_eq_zero] using (b.2 st.1 st.2).symm)⟩,
@@ -364,6 +384,9 @@ lemma apply_δ₁_aux' (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
   ext ⟨g, h⟩
   simp
 
+/-- For a short exact sequence `0 → A →f B →g C → 0` preserving `G`-action, if `A` is commutative
+(here we assume `A` has type `Rep k G`), and the image of `A` under `f` is contained in the center
+of `B`, then we have the connection map `δ₁ : H1 G C → H2 A`. -/
 noncomputable def δ₁ : H1 G C → H2 A :=
   (Function.extend ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·)))
     (H2π A ∘ (δ₁_aux hf hfg hA)) 0)
@@ -414,6 +437,8 @@ lemma δ₁_apply (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : G × G → 
   funext fun ⟨g, h⟩ ↦ hf (by simp [δ₁_aux, hx])
 
 include hg in
+/-- A version of `δ₁_apply` where `x` has type `cocycles₂ A` instead of `G × G → A`, so that
+`cocycles₂MkOfCompEq` is not needed in the theorem statement. -/
 lemma δ₁_apply' (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : cocycles₂ A)
     (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
     δ₁ hf hfg hA (H1.mk G C c) = H2π A x := δ₁_apply hf hg hfg hA c b hb x hx
@@ -473,7 +498,8 @@ theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
   rfl
 
 /-- Bijection between `Z1 G A` and `cocycles₁ A`. -/
-@[simps!] def Z1EquivCocycles₁ : Z1 G A ≃ cocycles₁ A where
+@[simps!]
+def Z1EquivCocycles₁ : Z1 G A ≃ cocycles₁ A where
   toFun := fun f ↦ ⟨f.val, by
     refine funext fun ⟨g, h⟩ ↦ Eq.trans ?_ (sub_eq_zero.mpr (f.2 g h).symm)
     simp [← Rep.smul_eq_ρ_apply]
@@ -485,6 +511,8 @@ theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
   left_inv f := Subtype.ext rfl
   right_inv f := Subtype.ext rfl
 
+/-- The bijection `Z1EquivCocycles₁` between `Z1 G A` and `cocycles₁ A` preserves the cohomologous
+relationship, so it gives a bijection between the quotients. -/
 noncomputable def H1Iso_aux :
     H1 G A ≃ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
   Quotient.congr (Z1EquivCocycles₁ A) (fun a b ↦ by
@@ -498,6 +526,8 @@ noncomputable def H1Iso_aux :
       refine sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr this))
     )
 
+/-- Combining `H1Iso_aux` with `groupCohomology.H1Iso`, we have the bijection between
+`groupCohomology.H1 A` and `H1 G A`. -/
 noncomputable nonrec def H1Iso : groupCohomology.H1 A ≃ H1 G A :=
   ((H1Iso A).toLinearEquiv.toEquiv).trans (H1Iso_aux A).symm
 
@@ -523,12 +553,6 @@ theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
   simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply B,
     H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply A]
   rfl
-
-lemma Rep.exact_iff_exact (X : ShortComplex (Rep k G)) :
-    X.Exact ↔ Function.Exact (X.f : X.X₁ →+[G] X.X₂) (X.g : X.X₂ →+[G] X.X₃) := by
-  convert (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact
-    (X.map (forget₂ (Rep k G) (ModuleCat k))))
-  exact (ShortComplex.exact_map_iff_of_faithful X (forget₂ (Rep k G) (ModuleCat k))).symm
 
 variable {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
 
