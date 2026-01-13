@@ -369,7 +369,7 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     rw [I_sq]
     ring
 
-@[simp] theorem _root_.RCLike.complexRingEquiv_toAddMonoidHom {𝕜 : Type*} [RCLike 𝕜]
+@[simp] theorem _root_.RCLike.toAdddMonoidHom_complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) :
     (RCLike.complexRingEquiv h).toAddMonoidHom = RCLike.map 𝕜 ℂ := rfl
 
