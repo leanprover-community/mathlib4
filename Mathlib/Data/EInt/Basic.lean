@@ -60,8 +60,7 @@ protected def rec : ∀ a : EInt, motive a
 end
 
 @[simp]
-lemma coe_le_coe_iff (a b : ℤ) :
-    (a : EInt) ≤ b ↔ a ≤ b :=
+lemma coe_le_coe_iff {a b : ℤ} : (a : EInt) ≤ b ↔ a ≤ b :=
   coe_strictMono.le_iff_le
 
 @[simp]
