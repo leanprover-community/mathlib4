@@ -367,7 +367,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("zeroLePart", "PosPart"),
   ("leZeroPart", "NegPart"),
   ("isScalarTower", "VAddAssocClass"),
-  ("RelPrime", "AddRelPrime"),
+  ("relPrime", "AddRelPrime"),
   ("isOfFinOrder", "IsOfFinAddOrder"),
   ("isCentralScalar", "IsCentralVAdd"),
   ("function_addSemiconj", "Function_semiconj"),
