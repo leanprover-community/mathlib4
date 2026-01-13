@@ -290,6 +290,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
         E'''` among local instances, and `E'' →SL[id']
         E'''` is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] `E'' →SL[id'] E'''` is a space of continuous (semi-)linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       Coefficients `ℝ` and `RealCopy` of `E'' →SL[id'] E'''` are not reducibly definitionally equal
 [Elab.DiffGeo.MDiff] ❌️ RealInterval

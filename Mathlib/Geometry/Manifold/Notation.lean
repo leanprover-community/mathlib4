@@ -242,8 +242,7 @@ the codomain of the continuous linear maps (otherwise none). -/
 def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
   match_expr e with
     | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      -- TODO: make the error below more understandable, by including something like this line!
-      -- trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
       if ← withReducible <| isDefEq k S then
         -- TODO: check if σ is actually the identity!
         return some (k, E, F)
@@ -475,8 +474,9 @@ where
         match ← isCLMReduciblyDefeqCoefficients α with
         | none => throwError "`{α}` is not a space of continuous linear maps either"
         | some (k, V, W) =>
-          -- TODO: think about the right transparency level!
-          if (← isDefEq V W) then
+          -- If `V` and `W` are not reducibly def-eq, the normed algebra instance should not fire:
+          -- so it suffices to check at reducible transparency.
+          if ← withReducible <| isDefEq V W then
             trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
             let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
               trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
@@ -542,7 +542,7 @@ where
             match_expr lhs with
             | Module.finrank R F _ _ _ =>
               -- We use reducible transparency to allow using a type synonym: this should not
-              -- be unfolded. XXX double-check this!
+              -- be unfolded.
               if (← withReducible (pureIsDefEq R q(ℝ))) && (← withReducible (pureIsDefEq E F)) then
                 trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E` via `{_inst}`"
                 -- Try to unify the rhs with an expression m + 1, for a natural number m.
