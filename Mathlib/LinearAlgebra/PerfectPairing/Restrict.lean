@@ -23,7 +23,7 @@ We provide API for restricting perfect pairings to submodules and for restrictin
 
 -/
 
-@[expose] public section
+public section
 
 open Function Module Set
 open Submodule (span subset_span)
