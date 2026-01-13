@@ -561,10 +561,14 @@ fun {α} [Add α] a => Add.add a
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
 
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+@[simp, to_additive none]
+theorem test1' : 5 = 5 := rfl
+
 /-! Test that we can't write `to_additive self (attr := ..)`. -/
 
 /--
-error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+error: invalid `(attr := ...)` after `self` or `none`, as there is no other declaration for the attributes.
 Instead, you can write the attributes in the usual way.
 -/
 #guard_msgs in
@@ -808,3 +812,13 @@ set_option pp.proofs true in
 /-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
 #guard_msgs in
 #check abstractAdd
+
+-- We give a warning if an existing translation is overwritten:
+/--
+warning: `abstractMul` was already translated to `abstractAdd` instead of `someOtherTranslation`.
+Unless the original translation was wrong, please remove this `to_additive` attribute.
+
+Note: This linter can be disabled with `set_option linter.translateOverwrite false`
+-/
+#guard_msgs in
+attribute [to_additive someOtherTranslation] abstractMul
