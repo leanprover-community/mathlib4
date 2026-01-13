@@ -24,7 +24,7 @@ Uses a bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, followin
 For specializing to ring multiplication, use `ringConvolution` which is given by
 `convolution (LinearMap.mul R R)`.
 
-Index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
+Then index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
 Coefficient ring requires `[CommSemiring R]` for bilinearity of `LinearMap.mul`.
 Example: `FreeMonoid α ≃ List α` enables convolution on lists.
 
