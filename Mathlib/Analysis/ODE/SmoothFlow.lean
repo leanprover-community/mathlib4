@@ -59,6 +59,52 @@ lemma integralFun_def {n : ℕ} {g : E → E [×n]→L[ℝ] E} {tmin tmax : ℝ}
       fun t : Icc tmin tmax ↦ ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ) :=
   rfl
 
+/--
+The integrand is continuous in the integration variable.
+-/
+lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
+    Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) := by
+  -- projected α is continuous
+  have hφ : Continuous (compProj t₀ α) := by
+    simpa using (continuous_compProj (t₀ := t₀) (α := α))
+
+  -- projected α lands in u everywhere
+  have hφ_mem : ∀ τ, compProj t₀ α τ ∈ u := by
+    intro τ
+    -- `projIcc ... τ ∈ univ`, then apply `hα`
+    simpa [compProj] using
+      (hα (by
+        trivial :
+          projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) τ ∈ (Set.univ : Set (Icc tmin tmax))))
+
+  -- continuity of τ ↦ g (compProj t₀ α τ)
+  have hgφ : Continuous fun τ => g (compProj t₀ α τ) := by
+    refine continuous_iff_continuousAt.2 ?_
+    intro τ
+    have hx : compProj t₀ α τ ∈ u := hφ_mem τ
+    have hnhds : u ∈ 𝓝 (compProj t₀ α τ) := hu.mem_nhds hx
+    exact (hg.continuousAt hnhds).comp hφ.continuousAt
+
+  -- continuity of τ ↦ (j ↦ compProj t₀ (m' j) τ)
+  have hvec : Continuous (fun τ => (fun j => compProj t₀ (dα j) τ)) := by
+    refine continuous_pi ?_
+    intro j
+    simpa using (continuous_compProj (t₀ := t₀) (α := dα j))
+
+  -- evaluation map (M, v) ↦ M v is continuous
+  have happ :
+      Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2) := by
+    simpa using
+      (continuous_eval :
+        Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2))
+
+  have hpair : Continuous (fun τ => (g (compProj t₀ α τ), (fun j => compProj t₀ (dα j) τ))) := by
+    simpa using (hgφ.prodMk hvec)
+
+  simpa using happ.comp hpair
+
 variable [CompleteSpace E]
 
 -- consider new lemma for `MapsTo α univ u ↔ range α ⊆ u`
@@ -66,73 +112,188 @@ lemma continuous_integralFun {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
     Continuous (integralFun g t₀ α dα) := by
-  classical
+  apply Continuous.comp
+    (g := fun t ↦ ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) _
+    continuous_subtype_val
+  rw [continuous_iff_continuousAt]
+  exact fun t ↦ ((continuous_integrand hg hu t₀ hα dα).integral_hasStrictDerivAt t₀ t).continuousAt
 
-  -- abbreviate the projected curves
-  let ϕ : ℝ → E := compProj t₀ α
-  let ψ : Fin n → ℝ → E := fun i => compProj t₀ (dα i)
-
-  have hϕ : Continuous ϕ := by
-    simpa [ϕ] using (continuous_compProj (t₀ := t₀) (α := α))
-
-  have hψ : ∀ i, Continuous (ψ i) := by
-    intro i
-    simpa [ψ] using (continuous_compProj (t₀ := t₀) (α := dα i))
-
-  -- `ϕ τ ∈ u` for all `τ`, using `hα` and the fact `projIcc ... τ ∈ Icc`
-  have hϕ_mem : ∀ τ, ϕ τ ∈ u := by
-    intro τ
-    simpa [ϕ, compProj] using
-      (hα (by
-        trivial :
-          projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) τ ∈ (Set.univ : Set (Icc tmin tmax))))
-
-  -- continuity of τ ↦ g (ϕ τ)
-  have hgϕ : Continuous fun τ => g (ϕ τ) := by
-    refine continuous_iff_continuousAt.2 ?_
-    intro τ
-    have hx : ϕ τ ∈ u := hϕ_mem τ
-    have hnhds : u ∈ 𝓝 (ϕ τ) := hu.mem_nhds hx
-    exact (hg.continuousAt hnhds).comp hϕ.continuousAt
-
-  -- continuity of τ ↦ (i ↦ ψ i τ)
-  have hvec : Continuous fun τ => (fun i => ψ i τ) := by
-    refine continuous_pi ?_
-    intro i
-    simpa [ψ] using (hψ i)
-
-  -- evaluation map (m, v) ↦ m v is continuous for continuous multilinear maps
-  have happ :
-      Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2) := by
-    simpa using
-      (ContinuousEval.continuous_eval :
-        Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2))
-
-  -- integrand is continuous
-  have hf : Continuous (fun τ => g (ϕ τ) (fun i => ψ i τ)) := by
-    have hpair : Continuous (fun τ => (g (ϕ τ), (fun i => ψ i τ))) :=
-      hgϕ.prodMk hvec
-    simpa using happ.comp hpair
-
-  -- continuity of t ↦ ∫ τ in t₀..t, f τ as a real-variable function
-  have hIntReal :
-      Continuous (fun t : ℝ =>
-        ∫ τ in (t₀ : ℝ)..t, g (ϕ τ) (fun i => ψ i τ)) := by
-    refine continuous_iff_continuousAt.2 ?_
-    intro t
-    -- strict derivative ⇒ continuous
-    exact (hf.integral_hasStrictDerivAt (t₀ : ℝ) t).continuousAt
-
-  -- restrict to t : Icc tmin tmax
-  simpa [integralFun, ϕ, ψ] using hIntReal.comp continuous_subtype_val
-
+/--
+The integral as a function from continuous curves to continuous curves, enabling us to take
+derivatives with respect to the curve
+-/
 def integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) where
   toFun := integralFun g t₀ α dα
   continuous_toFun := continuous_integralFun hg hu t₀ hα dα
 
+lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {hu : IsOpen u} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
+    {hα : MapsTo α univ u} {m : Fin n → C(Icc tmin tmax, E)} {i : Fin n}
+    {x y : C(Icc tmin tmax, E)} :
+    integralCM hg hu t₀ hα (update m i (x + y)) =
+      integralCM hg hu t₀ hα (update m i x) + integralCM hg hu t₀ hα (update m i y) := by
+  ext t
+  -- unfold the bundled maps, reduce to a statement about integrals
+  rw [ContinuousMap.add_apply]
 
+  -- abbreviations for the three integrands
+  let fxy : ℝ → E :=
+    fun τ =>
+      g (compProj t₀ α τ) (fun j => compProj t₀ (update m i (x + y) j) τ)
+  let fx : ℝ → E :=
+    fun τ =>
+      g (compProj t₀ α τ) (fun j => compProj t₀ (update m i x j) τ)
+  let fy : ℝ → E :=
+    fun τ =>
+      g (compProj t₀ α τ) (fun j => compProj t₀ (update m i y j) τ)
+
+  have hfx_cont : Continuous fx := by
+    simpa [fx] using continuous_integrand hg hu t₀ hα (update m i x)
+  have hfy_cont : Continuous fy := by
+    simpa [fy] using continuous_integrand hg hu t₀ hα (update m i y)
+
+  have hfx_int : IntervalIntegrable fx volume (t₀ : ℝ) (t : ℝ) :=
+    (continuous_integrand hg hu t₀ hα (update m i x)).intervalIntegrable t₀ t
+  have hfy_int : IntervalIntegrable fy volume (t₀ : ℝ) (t : ℝ) :=
+    (continuous_integrand hg hu t₀ hα (update m i y)).intervalIntegrable t₀ t
+
+  -- pointwise additivity of the integrand in the i-th slot
+  have h_point : ∀ τ, fxy τ = fx τ + fy τ := by
+    intro τ
+    -- base vector in E^n at time τ
+    let v : Fin n → E := fun j => compProj t₀ (m j) τ
+
+    have harg_xy :
+        (fun j => compProj t₀ (update m i (x + y) j) τ) =
+          Function.update v i (compProj t₀ (x + y) τ) := by
+      funext j
+      by_cases hji : j = i
+      · subst hji; simp [v]
+      · simp [v, hji]
+
+    have harg_x :
+        (fun j => compProj t₀ (update m i x j) τ) =
+          Function.update v i (compProj t₀ x τ) := by
+      funext j
+      by_cases hji : j = i
+      · subst hji; simp [v]
+      · simp [v, hji]
+
+    have harg_y :
+        (fun j => compProj t₀ (update m i y j) τ) =
+          Function.update v i (compProj t₀ y τ) := by
+      funext j
+      by_cases hji : j = i
+      · subst hji; simp [v]
+      · simp [v, hji]
+
+    have hcomp_add : compProj t₀ (x + y) τ = compProj t₀ x τ + compProj t₀ y τ := by
+      simp [compProj]
+
+    -- now use multilinearity of `g (compProj t₀ α τ)` in the i-th coordinate
+    have hmul :
+        g (compProj t₀ α τ) (Function.update v i (compProj t₀ (x + y) τ)) =
+          g (compProj t₀ α τ) (Function.update v i (compProj t₀ x τ)) +
+          g (compProj t₀ α τ) (Function.update v i (compProj t₀ y τ)) := by
+      -- `map_update_add` lives on `MultilinearMap`, so go via `toMultilinearMap`
+      simpa [hcomp_add] using
+        ((g (compProj t₀ α τ)).toMultilinearMap.map_update_add
+          (m := v) (i := i) (x := compProj t₀ x τ) (y := compProj t₀ y τ))
+
+    -- rewrite back to the original `fun j => compProj ...`
+    simpa [fxy, fx, fy, harg_xy, harg_x, harg_y] using hmul
+
+  -- finish by rewriting the integrand, then using `integral_add`
+  calc
+    ∫ τ in (t₀ : ℝ)..(t : ℝ), fxy τ
+        = ∫ τ in (t₀ : ℝ)..(t : ℝ), (fx τ + fy τ) := by
+            refine intervalIntegral.integral_congr ?_
+            intro τ hτ
+            exact h_point τ
+    _ = (∫ τ in (t₀ : ℝ)..(t : ℝ), fx τ) + (∫ τ in (t₀ : ℝ)..(t : ℝ), fy τ) := by
+          simpa using (intervalIntegral.integral_add hfx_int hfy_int)
+
+lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {hu : IsOpen u} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
+    {hα : MapsTo α univ u} {m : Fin n → C(Icc tmin tmax, E)} {i : Fin n} {c : ℝ}
+    {x : C(Icc tmin tmax, E)} :
+    integralCM hg hu t₀ hα (update m i (c • x)) = c • integralCM hg hu t₀ hα (update m i x) := by
+  ext t
+  -- unfold the bundled map and reduce to an interval integral identity
+  simp [integralCM, integralFun]
+
+  -- abbreviate the two integrands
+  let fcx : ℝ → E :=
+    fun τ =>
+      g (compProj t₀ α τ) (fun j => compProj t₀ (update m i (c • x) j) τ)
+  let fx : ℝ → E :=
+    fun τ =>
+      g (compProj t₀ α τ) (fun j => compProj t₀ (update m i x j) τ)
+
+  -- (You likely already have a lemma / helper from the previous proof.)
+  -- We need intervalIntegrable fx to use `integral_smul`.
+  -- One convenient way: prove `Continuous fx` as in your `update_add` proof, then:
+  have hx_int : IntervalIntegrable fx volume t₀ t :=
+    (continuous_integrand hg hu t₀ hα (update m i x)).intervalIntegrable t₀ t
+
+  -- pointwise: fcx τ = c • fx τ (multilinearity in slot i)
+  have h_point : ∀ τ, fcx τ = c • fx τ := by
+    intro τ
+    let v : Fin n → E := fun j => compProj t₀ (m j) τ
+
+    have harg_cx :
+        (fun j => compProj t₀ (update m i (c • x) j) τ) =
+          Function.update v i (compProj t₀ (c • x) τ) := by
+      funext j
+      by_cases hji : j = i
+      · subst hji; simp [v]
+      · simp [v, hji]
+
+    have harg_x :
+        (fun j => compProj t₀ (update m i x j) τ) =
+          Function.update v i (compProj t₀ x τ) := by
+      funext j
+      by_cases hji : j = i
+      · subst hji; simp [v]
+      · simp [v, hji]
+
+    have hcomp_smul : compProj t₀ (c • x) τ = c • compProj t₀ x τ := by
+      simp [compProj]
+
+    -- multilinearity in the i-th coordinate
+    have hmul :
+        g (compProj t₀ α τ) (Function.update v i (compProj t₀ (c • x) τ)) =
+          c • g (compProj t₀ α τ) (Function.update v i (compProj t₀ x τ)) := by
+      -- `map_update_smul` is on `MultilinearMap`, so go via `toMultilinearMap`
+      simpa [hcomp_smul] using
+        ((g (compProj t₀ α τ)).toMultilinearMap.map_update_smul
+          (m := v) (i := i) (c := c) (x := compProj t₀ x τ))
+
+    simpa [fcx, fx, harg_cx, harg_x] using hmul
+
+  -- now integrate: ∫ fcx = ∫ (c•fx) = c • ∫ fx
+  calc
+    ∫ τ in (t₀ : ℝ)..(t : ℝ), fcx τ
+        = ∫ τ in (t₀ : ℝ)..(t : ℝ), (c • fx τ) := by
+            refine intervalIntegral.integral_congr ?_
+            intro τ hτ
+            simpa using h_point τ
+    _ = c • ∫ τ in (t₀ : ℝ)..(t : ℝ), fx τ := by
+          simpa using (intervalIntegral.integral_smul c hx_int)
+
+lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : MapsTo α univ u) : Continuous (integralCM hg hu t₀ hα) := sorry
+
+def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : MapsTo α univ u) : C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
+  toFun := integralCM hg hu t₀ hα
+  map_update_add' := sorry
+  map_update_smul' := sorry
+  cont := sorry
 
 end
 
