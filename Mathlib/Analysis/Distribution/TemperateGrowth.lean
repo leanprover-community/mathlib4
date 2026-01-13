@@ -20,7 +20,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {𝕜 R D E F G H : Type*}
+variable {ι 𝕜 R D E F G H : Type*}
 
 namespace Function
 
@@ -110,7 +110,7 @@ lemma HasTemperateGrowth.zero :
   simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
   positivity
 
-@[fun_prop]
+@[fun_prop, simp]
 lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
@@ -199,6 +199,16 @@ theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   convert hf.add hg.neg using 1
   grind
 
+@[fun_prop]
+theorem HasTemperateGrowth.sum {f : ι → E → F} {s : Finset ι}
+    (hf : ∀ i ∈ s, (f i).HasTemperateGrowth) : (∑ i ∈ s, f i ·).HasTemperateGrowth := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s has ih =>
+    obtain ⟨hf, h⟩ := by simpa using hf
+    simpa [has] using hf.add (ih h)
+
 end Addition
 
 section Multiplication
@@ -262,7 +272,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero => simpa using HasTemperateGrowth.const 1
+  | zero => simpa only [pow_zero] using HasTemperateGrowth.const 1
   | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
@@ -272,10 +282,27 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
-    simpa [this] using .const _
+    simp [this]
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
+@[fun_prop]
+theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
+  (Complex.ofRealCLM).hasTemperateGrowth
+
+variable (𝕜) in
+@[fun_prop]
+theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
+  (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
+
 variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+
+@[fun_prop]
+theorem hasTemperateGrowth_inner_left (c : H) : (inner ℝ · c).HasTemperateGrowth :=
+  ((innerSL ℝ).flip c).hasTemperateGrowth
+
+@[fun_prop]
+theorem hasTemperateGrowth_inner_right (c : H) : (inner ℝ c ·).HasTemperateGrowth :=
+  (innerSL ℝ c).hasTemperateGrowth
 
 variable (H) in
 @[fun_prop]

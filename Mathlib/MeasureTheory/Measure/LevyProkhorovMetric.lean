@@ -248,7 +248,7 @@ lemma levyProkhorovDist_le_of_forall_le
   intro ε B ε_gt ε_lt_top B_mble
   have ε_gt' : δ < ε.toReal := by
     refine (ofReal_lt_ofReal_iff ?_).mp ?_
-    · exact ENNReal.toReal_pos (ne_zero_of_lt ε_gt) ε_lt_top.ne
+    · exact ENNReal.toReal_pos ε_gt.bot_lt.ne' ε_lt_top.ne
     · simpa [ofReal_toReal_eq_iff.mpr ε_lt_top.ne] using ε_gt
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
