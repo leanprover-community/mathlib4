@@ -125,7 +125,7 @@ Normalizes an expression, given initial data:
 * `cfg`: the configuration options
 * `wellBehavedDischarge` : MUST be set to `false` IF `eval` accesses local declarations with
   index >= `Context.lctxInitIndices`.
-  Reason: it would cause `simp` to cache results to aggressively.
+  Reason: it would cause `simp` to cache results too aggressively.
 * `eval`: a normalization operation which will be run recursively, potentially dependent on a known
   atom ordering
 * `simp`: a cleanup operation which will be used to post-process expressions
