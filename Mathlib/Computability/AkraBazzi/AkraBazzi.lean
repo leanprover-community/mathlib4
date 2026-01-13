@@ -444,7 +444,7 @@ This final section proves the Akra-Bazzi theorem.
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
     T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
-  refine isBigO_of_recurrence_of_eventually_pos ?_ ?_ ?_
+  refine isBigO_nat_atTop_of_recurrence_of_eventually_pos ?_ ?_ ?_
   · exact Eventually.of_forall fun h => R.T_nonneg _
   · filter_upwards [R.eventually_asympBound_pos, eventually_one_sub_smoothingFn_pos] with n hn hn₂
     positivity
@@ -550,7 +550,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
     (fun (n : ℕ) => (1 + ε n) * asympBound g a b n) =O[atTop] T := by
-  refine isBigO_of_recurrence_of_eventually_pos ?_ ?_ ?_
+  refine isBigO_nat_atTop_of_recurrence_of_eventually_pos ?_ ?_ ?_
   · filter_upwards [R.eventually_asympBound_pos, eventually_one_add_smoothingFn_pos] with n hn hn₂
     positivity
   · exact Eventually.of_forall fun h => R.T_pos _
