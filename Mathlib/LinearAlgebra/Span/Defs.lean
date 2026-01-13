@@ -287,11 +287,8 @@ theorem span_inter_le (s t : Set M) : span R (s ∩ t) ≤ span R s ⊓ span R t
 theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
   (Submodule.gi R M).l_inf_u S S'
 
-theorem span_sInf_le (s : Set (Set M)) : span R (⋂₀ s) ≤ sInf (span R '' s) := by
-  refine le_sInf ?_
-  intro S hS
-  obtain ⟨_, hTs, rfl⟩ := hS
-  exact span_mono (sInter_subset_of_mem hTs)
+theorem span_sInf_le (s : Set (Set M)) : span R (⋂₀ s) ≤ sInf (span R '' s) :=
+  le_sInf fun _ ⟨_, hTs, h⟩ ↦ h ▸ span_mono (sInter_subset_of_mem hTs)
 
 theorem span_sInf (s : Set (Submodule R M)) : span R (sInf s : Submodule R M) = sInf s :=
   span_eq (sInf s)
@@ -307,17 +304,10 @@ theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
 theorem span_union' (S S' : Submodule R M) : span R (S ∪ S') = S ⊔ S' :=
   (Submodule.gi R M).l_sup_u S S'
 
-theorem span_sSup (s : Set (Set M)) :
-    span R (⋃₀ s) = sSup (span R '' s) := by
-  apply le_antisymm
-  · rw [span_le]
-    intro x hx
-    obtain ⟨t, hts, hxt⟩ := hx
-    exact le_sSup (mem_image_of_mem (span R) hts) (subset_span hxt)
-  · refine sSup_le ?_
-    intro P hP
-    rcases hP with ⟨t, ht, rfl⟩
-    exact span_mono (subset_sUnion_of_mem ht)
+theorem span_sSup (s : Set (Set M)) : span R (⋃₀ s) = sSup (span R '' s) := by
+  refine le_antisymm ?_ (sSup_le fun P ⟨t, ht, h⟩ ↦ h ▸ span_mono (subset_sUnion_of_mem ht))
+  rw [span_le]
+  exact fun x ⟨t, hts, hxt⟩ ↦ le_sSup (mem_image_of_mem (span R) hts) (subset_span hxt)
 
 theorem span_sSup' (s : Set (Submodule R M)) :
     span R (sSup s : Submodule R M) = sSup s := Submodule.span_eq (sSup s)
