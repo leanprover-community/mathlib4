@@ -59,8 +59,7 @@ theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
     [Module R V] {f : V →ₗ[R] V} {a : R}
     (hf : ∀ x, f x = a • x) :
     f ∈ center (End R V) := by
-  simp only [mem_center_iff, isMulCentral_iff, mul_assoc,
-    implies_true, and_self, and_true, commute_iff_eq]
+  simp only [Semigroup.mem_center_iff]
   intro g
   ext x
   simp [hf]
