@@ -94,7 +94,7 @@ theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 theorem exist_hasStandardEtaleSurjectionAt_of_exists_adjoin_singleton_eq_top_aux₂
-    [Algebra.EssFiniteType R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime]
+    (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime]
     [Q.LiesOver P] [Algebra.IsUnramifiedAt R Q] (x : S) (p : R[X])
     (hp₁ : Ideal.span {p.map (algebraMap R P.ResidueField)} =
       RingHom.ker (aeval ((1 : P.ResidueField) ⊗ₜ[R] x)).toRingHom)
