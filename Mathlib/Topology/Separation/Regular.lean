@@ -675,7 +675,7 @@ theorem t5Space_iff_forall_isOpen_t4Space :
       toT1Space :=
         have := h univ isOpen_univ
         t1Space_of_injective_of_continuous
-          (fun _ _ => congrArg Subtype.val) (continuous_id.subtype_mk mem_univ)}
+          (fun _ _ => congrArg Subtype.val) (continuous_id.subtype_mk mem_univ) }
 
 /--
 A space is `T5Space` iff it is hereditarily `T4Space`.
