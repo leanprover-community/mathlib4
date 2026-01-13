@@ -394,7 +394,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
   -- Finish by rewriting the uncurried map in terms of `integralCM`.
   simpa [integralCM, integralCM, integralFun] using huncurry
 
-def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+def integralCMLMAux {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) : C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
   toFun := integralCM hg hu t₀ hα
@@ -402,6 +402,17 @@ def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : Cont
   map_update_add' dα i α₁ α₂ := by convert integralCM_update_add hg hu t₀ hα dα i α₁ α₂
   map_update_smul' dα i c α₁ := by convert integralCM_update_smul hg hu t₀ hα dα i c α₁
   cont := continuous_integralCM ..
+
+open Classical in
+def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) :=
+  if hα : MapsTo α univ u then integralCMLMAux hg hu t₀ hα else 0
+
+lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
+    ContinuousOn (integralCMLM hg hu t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
+  sorry
 
 end
 
