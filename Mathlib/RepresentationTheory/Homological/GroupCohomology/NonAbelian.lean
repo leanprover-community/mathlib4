@@ -114,9 +114,6 @@ instance inhabited : Inhabited (Z1 G A) := ⟨0⟩
 
 instance coeFun : CoeFun (Z1 G A) (fun _ ↦ G → A) := ⟨fun f ↦ f.val⟩
 
-@[simp]
-lemma coe_apply (f : Z1 G A) (g : G) : f g = f.val g := rfl
-
 variable (G A) in
 @[simp] lemma zero_apply (g : G) : (0 : Z1 G A) g = 0 := rfl
 
