@@ -397,6 +397,10 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
+@[simp] lemma pairwiseDisjoint_singleton_iff_injOn {f : ι → α} :
+    s.PairwiseDisjoint (fun i ↦ ({f i} : Set α)) ↔ s.InjOn f := by
+  simp [PairwiseDisjoint, InjOn, Set.Pairwise, not_imp_not]
+
 end Set
 
 lemma exists_ne_mem_inter_of_not_pairwise_disjoint
@@ -420,3 +424,11 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
     (∀ a, {i | a ∈ f i}.Subsingleton) ↔ Pairwise (Disjoint on f) :=
   ⟨fun h _ _ hij ↦ disjoint_left.2 fun a hi hj ↦ hij (h a hi hj),
    fun h _ _ hx _ hy ↦ by_contra fun hne ↦ disjoint_left.1 (h hne) hx hy⟩
+
+/-- Simp normal form of `pairwise_ne_iff_injective`. -/
+@[simp] lemma pairwise_not_eq_iff_injective {f : ι → α} :
+    Pairwise (fun i j ↦ ¬ f i = f j) ↔ f.Injective := by
+  simp [Pairwise, Function.Injective, not_imp_not]
+
+lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
+  simp
