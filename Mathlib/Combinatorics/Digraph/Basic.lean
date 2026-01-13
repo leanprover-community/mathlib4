@@ -94,8 +94,8 @@ is the digraph such that no pairs of vertices are adjacent.
 Note that `⊥` is called the empty digraph because it has no edges.
 -/
 protected def emptyDigraph (V : Type*) : Digraph V where
-  Adj _ _ := False
   verts := ∅
+  Adj _ _ := False
 
 /--
 Two vertices are adjacent in the complete bipartite digraph on two vertex types
