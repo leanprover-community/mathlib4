@@ -3457,7 +3457,6 @@ public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
-public import Mathlib.Data.EInt.Basic
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators
@@ -5676,6 +5675,7 @@ public import Mathlib.Order.WellFounded
 public import Mathlib.Order.WellFoundedSet
 public import Mathlib.Order.WellQuasiOrder
 public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.Zorn
 public import Mathlib.Order.ZornAtoms
 public import Mathlib.Probability.BorelCantelli
