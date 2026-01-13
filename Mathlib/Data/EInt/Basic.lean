@@ -5,7 +5,7 @@ Authors: Joël Riou, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBotTop
 
 /-!
 # The extended integers
@@ -18,18 +18,19 @@ implemented as `WithBot (WithTop ℤ)`.
 @[expose] public section
 
 /-- The type of extended integers `[-∞, ∞]`, constructed as `WithBot (WithTop ℤ)`. -/
-def EInt := WithBot (WithTop ℤ)
+abbrev EInt := WithBotTop ℤ --WithBot (WithTop ℤ)
 
+/-
 /-- The canonical inclusion from integers to e-integers. Registered as a coercion. -/
 @[coe] def Int.toEInt : ℤ → EInt := WithBot.some ∘ WithTop.some
 
 namespace EInt
 
-instance : LinearOrder EInt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
-
-instance : OrderBot EInt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
-
-instance : OrderTop EInt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
+--instance : LinearOrder EInt := inferInstanceAs (LinearOrder (WithBot (WithTop ℤ)))
+--
+--instance : OrderBot EInt := inferInstanceAs (OrderBot (WithBot (WithTop ℤ)))
+--
+--instance : OrderTop EInt := inferInstanceAs (OrderTop (WithBot (WithTop ℤ)))
 
 instance : Coe ℤ EInt := ⟨Int.toEInt⟩
 
@@ -74,4 +75,4 @@ lemma coe_lt_coe_iff {a b : ℤ} :
 @[simp] lemma top_ne_bot : (⊤ : EInt) ≠ ⊥ := by rintro ⟨⟩
 @[simp] lemma bot_ne_top : (⊤ : EInt) ≠ ⊥ := by rintro ⟨⟩
 
-end EInt
+end EInt-/

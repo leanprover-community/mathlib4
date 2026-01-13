@@ -389,7 +389,7 @@ instance : Y.HasSpectralSequence mkDataE₂CohomologicalNat where
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₁_of_isFirstQuadrant
     dsimp
-    simp only [EInt.coe_le_coe_iff]
+    simp only [WithBotTop.coe_le_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)
@@ -399,7 +399,7 @@ instance : Y.HasSpectralSequence mkDataE₂CohomologicalNat where
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₂_of_isFirstQuadrant
     dsimp
-    simp only [EInt.coe_lt_coe_iff, Int.sub_lt_sub_right_iff]
+    simp only [WithBotTop.coe_lt_coe_iff]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q - 1 + r by lia)
@@ -436,7 +436,7 @@ instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₂_of_isThirdQuadrant
     dsimp
-    simp only [EInt.coe_le_coe_iff]
+    simp only [WithBotTop.coe_le_coe]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p - r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + r - 1 by lia)
@@ -446,7 +446,7 @@ instance : Y.HasSpectralSequence mkDataE₂HomologicalNat where
     rintro r _ rfl hr ⟨p, q⟩ hpq n rfl
     apply isZero₁_of_isThirdQuadrant
     dsimp
-    simp only [EInt.coe_lt_coe_iff]
+    simp only [WithBotTop.coe_lt_coe_iff]
     by_contra!
     obtain ⟨p', hp'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ p + r by lia)
     obtain ⟨q', hq'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ q + 1 - r by lia)

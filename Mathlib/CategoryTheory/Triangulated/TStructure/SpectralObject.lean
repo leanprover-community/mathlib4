@@ -123,7 +123,7 @@ noncomputable def triangleω₁δObjIso (X : C) :
       rw [← homOfLE_comp hbc le_top, Functor.map_comp, NatTrans.comp_app,
         NatTrans.naturality]
       congr 1
-      induction c with
+      induction c using WithBotTop.rec with
       | bot => simp
       | coe c => simp [truncLT_map_truncLTι_app]
       | top => simp
