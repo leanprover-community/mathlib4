@@ -412,6 +412,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
 public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
@@ -908,6 +909,7 @@ public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.Group.PartialSups
 public import Mathlib.Algebra.Order.Group.PiLex
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Algebra.Order.Group.Pointwise.CanonicallyOrdered
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Group.PosPart
