@@ -265,6 +265,10 @@ proof_wanted E₈_det : E₈.det = 1
 def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
   Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
 
+instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
+  inferInstanceAs <|
+    DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
+
 @[simp] theorem _root_.Matrix.isSimplyLaced_transpose {ι : Type*} (A : Matrix ι ι ℤ) :
     A.transpose.IsSimplyLaced ↔ A.IsSimplyLaced := by
   rw [IsSimplyLaced, IsSimplyLaced, Pairwise, Pairwise, forall_comm]
@@ -288,6 +292,13 @@ theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ :=
 
 theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ :=
   fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₈] at h ⊢
+
+/-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
+off-diagonal entries that are neither 0 nor -1. -/
+
+theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
+
+theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 
 end Properties
 
