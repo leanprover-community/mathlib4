@@ -265,4 +265,16 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R]
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
 
+open Pointwise in
+lemma smul_range_single_one (σ : Type*) (n : ℕ) :
+    n • Set.range (single · 1) = degree (σ := σ) ⁻¹' {n} := by
+  induction n with
+  | zero => aesop (add simp degree_eq_zero_iff)
+  | succ n IH =>
+    simp only [succ_nsmul, IH, Set.ext_iff, Set.mem_add]
+    refine fun f ↦ ⟨by aesop, fun H ↦ ?_⟩
+    obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
+    have := le_iff_exists_add'.mp (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
+    aesop
+
 end Finsupp
