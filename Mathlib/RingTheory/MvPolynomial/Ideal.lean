@@ -1,13 +1,17 @@
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
+Authors: Eric Wieser, Bingyu Xia, Andrew Wang
 -/
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -18,6 +22,7 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
+* `MvPolynomial.mem_pow_idealOfVars_iff`
 -/
 
 public section
@@ -53,6 +58,82 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   rw [Set.image_image] at this
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
+
+section idealOfVars
+
+open Finset Finsupp
+
+variable (σ R) in
+/-- The ideal spanned by all variables. -/
+def idealOfVars : Ideal (MvPolynomial σ R) := .span (Set.range X)
+
+lemma idealOfVars_eq_restrictSupportIdeal :
+    idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
+  apply le_antisymm
+  · simp [idealOfVars, Ideal.span_le, Set.range_subset_iff, restrictSupportIdeal, X]
+  · change restrictSupport _ _ ≤ (idealOfVars σ R).restrictScalars R
+    rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
+    intro x hx
+    obtain ⟨i, hi⟩ : x.support.Nonempty := by aesop
+    obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
+    simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
+
+open Pointwise in
+theorem pow_idealOfVars (n : ℕ) :
+    idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
+  rw [idealOfVars_eq_restrictSupportIdeal]
+  apply Submodule.restrictScalars_injective R
+  by_cases hn : n = 0
+  · simp [hn, show Set.Ici 0 = Set.univ by ext; simp, Ideal.one_eq_top]
+  rw [Submodule.restrictScalars_pow hn]
+  refine (restrictSupport_nsmul ..).symm.trans (congr_arg (restrictSupport R) ?_)
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.one_le_cast_iff_ne_zero.mpr hn)
+  clear hn; induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [succ_nsmul, ih]
+    refine Set.Subset.antisymm (Set.Subset.trans (Set.preimage_add_preimage_subset _)
+      (Set.preimage_mono (Set.Ici_add_Ici_subset ..))) ?_
+    simp only [Set.subset_def, Set.mem_preimage, Set.mem_Ici, Set.mem_add]
+    intro x x_deg
+    obtain ⟨i, i_in⟩ := support_nonempty_iff (f := x).mpr (by grind only [= map_zero])
+    have : single i 1 ≤ x := by
+      classical
+      rw [le_def]; intro j
+      rw [single_apply]; split_ifs with h
+      · rwa [← h, Nat.one_le_iff_ne_zero, ← Finsupp.mem_support_iff]
+      simp
+    obtain ⟨z, hz⟩ := exists_add_of_le this
+    rw [add_comm, hz, map_add, degree_single, Nat.add_le_add_iff_left] at x_deg
+    exact ⟨z, x_deg, ⟨single i 1, by simp, by rw [hz, add_comm]⟩⟩
+
+/-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
+theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
+    .span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
+  rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
+    Set.image_pow_eq_image_finsupp_prod]
+  simp [monomial_eq]
+
+theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ x.sum (fun _ => id) := by
+  rw [pow_idealOfVars]
+  simp [restrictSupportIdeal, mem_restrictSupport_iff, Set.subset_def, sum, degree]
+
+theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff]
+
+theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
+    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
+  classical
+  grind only [mem_pow_idealOfVars_iff, mem_support_iff, coeff_monomial]
+
+theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
+  by_cases h : r = 0
+  · simp [h]
+  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
+
+end idealOfVars
 
 end MvPolynomial
 
