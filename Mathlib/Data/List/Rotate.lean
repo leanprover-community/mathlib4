@@ -459,7 +459,8 @@ theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f :
   rw [map_rotate]
   use n
 
-lemma isRotated_cons_concat : a :: l ~r l.concat a := by simpa using isRotated_append (l := [a])
+lemma isRotated_cons_append_singleton : a :: l ~r l ++ [a] := by
+  simpa using isRotated_append (l := [a])
 
 theorem IsRotated.cons_getLast_dropLast
     (L : List α) (hL : L ≠ []) : L.getLast hL :: L.dropLast ~r L := by
