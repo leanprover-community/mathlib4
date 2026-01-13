@@ -119,7 +119,7 @@ theorem maxTensorProduct_lid_rTensor_mem_dual_dual (hz : z ∈ maxTensorProduct 
     TensorProduct.lid R H (φ.rTensor H z) ∈
       dual (dualPairing R H) (dual (dualPairing R H).flip C₂) := by
   intro ψ hψ
-  rw [dualPairing_apply, ← dualDistrib_lid_rTensor, mem_maxTensorProduct] at *
+  rw [dualPairing_apply, ← dualDistrib_eq_lid_rTensor, mem_maxTensorProduct] at *
   exact hz φ hφ ψ hψ
 
 /-- Evaluating the right factor of `z ∈ maxTensorProduct C₁ C₂` at `ψ ∈ C₂*`
@@ -129,7 +129,7 @@ theorem maxTensorProduct_rid_lTensor_mem_dual_dual (hz : z ∈ maxTensorProduct 
     TensorProduct.rid R G (ψ.lTensor G z) ∈ dual (dualPairing R G)
       (dual (dualPairing R G).flip C₁) := by
   intro φ hφ
-  rw [dualPairing_apply, ← dualDistrib_rid_lTensor, mem_maxTensorProduct] at *
+  rw [dualPairing_apply, ← dualDistrib_eq_rid_lTensor, mem_maxTensorProduct] at *
   exact hz φ hφ ψ hψ
 
 /-- The minimal tensor product is commutative. -/
