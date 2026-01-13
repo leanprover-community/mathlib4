@@ -547,7 +547,7 @@ theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
     IsClosedEmbedding fun x : 𝕜 => x • c :=
-  LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 E hc)
+  LinearMap.isClosedEmbedding_of_injective (LinearMap.ker_toSpanSingleton 𝕜 hc)
 
 -- `smul` is a closed map in the first argument.
 theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => x • c := by

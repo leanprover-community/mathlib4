@@ -530,7 +530,7 @@ noncomputable instance _root_.Module.End.instDivisionRing
 instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Module.End R M) M :=
   isSimpleModule_iff_toSpanSingleton_surjective.mpr <| .intro ‹_› fun v hv w ↦
     have ⟨f, eq⟩ := IsSemisimpleModule.extension_property _
-      (ker_eq_bot.mp (ker_toSpanSingleton R M hv)) (toSpanSingleton R M w)
+      (ker_eq_bot.mp (ker_toSpanSingleton R hv)) (toSpanSingleton R M w)
     ⟨f, by simpa using congr($eq 1)⟩
 
 end LinearMap
