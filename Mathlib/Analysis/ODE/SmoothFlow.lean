@@ -394,6 +394,10 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
   -- Finish by rewriting the uncurried map in terms of `integralCM`.
   simpa [integralCM, integralCM, integralFun] using huncurry
 
+/--
+The integral as a continuous multilinear map on the space of continuous curves, which will allow us
+to relate it to `iteratedFDeriv`
+-/
 def integralCMLMAux {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) : C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
@@ -404,6 +408,9 @@ def integralCMLMAux {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : C
   cont := continuous_integralCM ..
 
 open Classical in
+/--
+The integral as a continuous multilinear map as a global function on the space of continuous curves,
+using the junk value pattern -/
 def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) :=
