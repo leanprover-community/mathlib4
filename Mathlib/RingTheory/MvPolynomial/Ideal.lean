@@ -1,16 +1,13 @@
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Bingyu Xia, Andrew Yang
+Authors: Eric Wieser
 -/
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Order.BourbakiWitt
-public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -21,7 +18,6 @@ Notably this contains results about monomial ideals.
 
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
-* `MvPolynomial.mem_pow_idealOfVars_iff`
 
 -/
 
@@ -58,157 +54,6 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   rw [Set.image_image] at this
   refine this.trans ?_
   simp [Nat.one_le_iff_ne_zero]
-
-section idealOfVars
-
-open Finset Finsupp
-
-lemma restrictSupport_eq_span (s : Set (σ →₀ ℕ)) :
-    restrictSupport R s = .span _ ((monomial · 1) '' s) := Finsupp.supported_eq_span_single ..
-
-lemma mem_restrictSupport_iff {s : Set (σ →₀ ℕ)} {r : MvPolynomial σ R} :
-    r ∈ restrictSupport R s ↔ ↑r.support ⊆ s := .rfl
-
-@[simp]
-lemma monomial_mem_restrictSupport {s : Set (σ →₀ ℕ)} {m} {r : R} :
-    monomial m r ∈ restrictSupport R s ↔ m ∈ s ∨ r = 0 := by
-  classical
-  by_cases r = 0 <;> simp [mem_restrictSupport_iff, support_monomial, *]
-
-open Pointwise in
-lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
-    restrictSupport R (s + t) = restrictSupport R s * restrictSupport R t := by
-  apply le_antisymm
-  · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff, Set.add_subset_iff]
-    intro x hx y hy
-    simp [show monomial (x + y) (1 : R) = monomial x 1 * monomial y 1 by simp, -monomial_mul,
-      *, Submodule.mul_mem_mul]
-  · rw [restrictSupport_eq_span, restrictSupport_eq_span, Submodule.span_mul_span,
-      Submodule.span_le, Set.mul_subset_iff]
-    simp +contextual [Set.add_mem_add]
-
-open Pointwise in
-@[simp] lemma restrictSupport_zero : restrictSupport R (0 : Set (σ →₀ ℕ)) = 1 := by
-  classical
-  apply le_antisymm
-  · rw [restrictSupport_eq_span, Submodule.span_le, Set.image_subset_iff]
-    simpa using ⟨1, by simp⟩
-  · rintro _ ⟨x, rfl⟩
-    simp [mem_restrictSupport_iff, Set.subset_def, coeff_one]
-
-@[simp]
-lemma restrictSupport_univ : restrictSupport R (.univ : Set (σ →₀ ℕ)) = ⊤ := by
-  ext; simp [mem_restrictSupport_iff]
-
-open Pointwise in
-lemma restrictSupport_nsmul (n : ℕ) (s : Set (σ →₀ ℕ)) :
-    restrictSupport R (n • s) = restrictSupport R s ^ n := by
-  induction n <;> simp [add_smul, restrictSupport_add, *, pow_succ]
-
-/-- The ideal of `MvPolynomial σ R` defined by `restrictSupport R s` when `s` is an upper set. -/
-def restrictSupportIdeal
-    (s : Set (σ →₀ ℕ)) (hs : IsUpperSet s) : Ideal (MvPolynomial σ R) where
-  __ := restrictSupport R s
-  smul_mem' x y hy m (hm : m ∈ (x * y).support) := by
-    classical
-    simp only [mem_support_iff, coeff_mul, ne_eq] at hm
-    obtain ⟨⟨i, j⟩, hij, e⟩ := Finset.exists_ne_zero_of_sum_ne_zero hm
-    refine hs (by simp_all [eq_comm]) (hy (show j ∈ y.support by aesop))
-
-@[simp]
-lemma restrictScalars_restrictSupportIdeal (s : Set (σ →₀ ℕ)) (hs) :
-  (restrictSupportIdeal (R := R) s hs).restrictScalars R = restrictSupport R s := by rfl
-
-variable (σ R) in
-/-- The ideal spanned by all of the variables. -/
-def idealOfVars : Ideal (MvPolynomial σ R) := .span (Set.range X)
-
-/-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
-theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    .span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
-  classical
-  by_cases h' : Subsingleton R
-  · exact Subsingleton.allEq ..
-  rw [not_subsingleton_iff_nontrivial] at h'
-  rw [idealOfVars, Ideal.span, Submodule.span_pow]
-  congr; ext p
-  simp only [Set.mem_pow_iff_prod, Set.mem_range, Set.mem_image, Set.mem_setOf_eq]
-  refine ⟨fun ⟨f, h, hf⟩ => ?_, fun ⟨x, x_sum, hx⟩ => ?_⟩
-  · choose i hi using h
-    use ∑ j, single (i j) 1; constructor
-    · simp [← Finsupp.sum_finset_sum_index]
-    simp only [← hf, ← hi, monomial_sum_index, C_1, one_mul]
-    rfl
-  let l := x.toMultiset.toList
-  have hl : n = l.length := by
-    rw [Multiset.length_toList, card_toMultiset, x_sum]
-  use fun i => X (l.get (Fin.cast hl i))
-  simp only [List.get_eq_getElem, exists_apply_eq_apply, implies_true, true_and]
-  rw [← Fintype.prod_equiv (finCongr (Eq.symm hl)) (fun i ↦ X l[i]) _ (by simp)]
-  simp only [Fin.getElem_fin, Fin.prod_univ_fun_getElem, Multiset.prod_map_toList, toMultiset_map,
-    prod_toMultiset, l]
-  rw [prod, mapDomain_support_of_injective X_injective, ← hx, monomial_eq, C_1, one_mul, prod,
-    prod_image (by simp)]
-  refine prod_congr rfl (fun _ _ => ?_)
-  rw [mapDomain_apply X_injective]
-
-theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
-    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ x.sum (fun _ => id) := by
-  classical
-  constructor
-  · rw [pow_idealOfVars_eq_span]
-    refine Submodule.span_induction (fun u u_in x hx ↦ ?_) ?_ (fun _ _ _ _ _ _ _ h ↦ ?_)
-      (fun r p p_in h x hx ↦ ?_)
-    · simp only [Set.mem_image, Set.mem_setOf_eq] at u_in
-      rcases u_in with ⟨v, v_sum, hv⟩
-      simp only [← hv, mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff,
-        Classical.not_imp] at hx
-      rw [← hx.left, v_sum]
-    · simp
-    · apply support_add at h
-      grind only [= mem_union]
-    rw [smul_eq_mul] at hx
-    obtain ⟨u, u_in, v, v_in, huv⟩ := mem_add.mp (support_mul _ _ hx)
-    rw [← huv, sum_add_index' (by simp) (by simp)]
-    grind only
-  intro h; rw [as_sum p]
-  refine Ideal.sum_mem _ (fun x x_in ↦ ?_)
-  rw [pow_idealOfVars_eq_span, mem_ideal_span_monomial_image]
-  simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff, Classical.not_imp,
-    Set.mem_setOf_eq, and_imp, forall_eq']
-  intro; specialize h x x_in
-  clear * - h; revert n
-  induction x using Finsupp.induction with
-  | zero => simp_all
-  | single_add a b f a_nIn b_ne ih =>
-    intro n hn
-    rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq] at hn
-    by_cases h' : n < b
-    · use single a n; constructor
-      · simp
-      simp only [single_le_iff, Finsupp.coe_add, Pi.add_apply, single_eq_same]
-      lia
-    obtain ⟨y, y_sum, hy⟩ := ih (n - b) (by lia)
-    use single a b + y; constructor
-    · rw [sum_add_index' (by simp) (by simp), sum_single_index (by simp), id_eq, y_sum]
-      lia
-    simpa
-
-theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
-    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
-  grind only [mem_pow_idealOfVars_iff, mem_support_iff]
-
-theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
-    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
-  classical
-  grind only [mem_pow_idealOfVars_iff, mem_support_iff, coeff_monomial]
-
-theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0 ∨ n = 0 := by
-  by_cases h : r = 0
-  · simp [h]
-  simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
-
-end idealOfVars
 
 end MvPolynomial
 
