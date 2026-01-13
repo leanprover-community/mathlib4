@@ -322,8 +322,8 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
-    (P : Ideal R) [P.IsPrime] :
+instance nonempty_primesOver [IsDomain R] [Nontrivial S] [Algebra.IsIntegral R S]
+    [Module.IsTorsionFree R S] (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
   exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
@@ -413,7 +413,7 @@ theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : 
   primesOver.isMaximal ⟨P, hP⟩
 
 variable (A B) in
-lemma primesOver_bot [NoZeroSMulDivisors A B] [Nontrivial A] [IsDomain B] :
+lemma primesOver_bot [Module.IsTorsionFree A B] [IsDomain A] [IsDomain B] :
     primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩

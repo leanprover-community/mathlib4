@@ -126,6 +126,14 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
 
+@[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ dom_empty)⟩
+
+@[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ cod_empty)⟩
+
 @[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
 @[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
 
