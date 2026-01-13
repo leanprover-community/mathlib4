@@ -433,7 +433,6 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     simp at this
   · obtain ⟨i1, i2⟩ := this
     rw [i1, i2]
-    obtain ⟨f, al⟩ := s'
     dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']

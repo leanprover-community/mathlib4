@@ -46,13 +46,13 @@ this definition. -/
 def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
     (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
   obj G :=
-    { obj c := Functor.whiskeringLeft₂ _|>.obj F.op|>.obj
-        (tensorRight c ⋙ G)|>.obj MonoidalClosed.internalHom
-      map {c c'} f := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
-        (Functor.whiskerRight (curriedTensor C|>.flip.map f) G)|>.app
+    { obj c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.obj
+        (tensorRight c ⋙ G) |>.obj MonoidalClosed.internalHom
+      map {c c'} f := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
+        (Functor.whiskerRight (curriedTensor C |>.flip.map f) G) |>.app
           MonoidalClosed.internalHom }
   map {G G'} η :=
-    { app c := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
+    { app c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
         (Functor.whiskerLeft _ η) |>.app MonoidalClosed.internalHom
       naturality {c c'} f := by
         ext j k
@@ -103,11 +103,11 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
   app c := Wedge.IsLimit.lift (ℌ'.isLimitWedge c)
     (fun j ↦ (ℌ.π c j) ≫
       (dayConvolutionInternalHomDiagramFunctor
-        F|>.map f|>.app c|>.app (op j)|>.app j))
+        F |>.map f |>.app c |>.app (op j) |>.app j))
     (fun ⦃j j'⦄ φ ↦ by
       have := congrArg (fun t ↦ t.app j') <|
         dayConvolutionInternalHomDiagramFunctor
-          F|>.map f|>.app c|>.naturality φ.op
+          F |>.map f |>.app c |>.naturality φ.op
       dsimp at this ⊢
       rw [Category.assoc, ← (ihom (F.obj j)).map_comp, ← f.naturality,
         Functor.map_comp, reassoc_of% ℌ.hπ]
@@ -118,13 +118,13 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     dsimp
     simp only [Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
       Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c'),
-      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c) ]
+      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c)]
     simp [← Functor.map_comp]
 
 @[reassoc (attr := simp)]
@@ -212,10 +212,10 @@ def coev_app : G ⟶ H where
       dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj, Multifork.ofι_pt,
       Wedge.mk_ι, Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H.obj c') (ℌ.π c') (ℌ.hπ c'),
       Wedge.IsLimit.lift_ι_assoc, Wedge.IsLimit.lift_ι]
     have := DayConvolution.unit_naturality F G (𝟙 j) f

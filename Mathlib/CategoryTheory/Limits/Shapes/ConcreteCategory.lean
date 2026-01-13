@@ -196,7 +196,7 @@ variable {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
 /-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
-the elements in `pullback f₁ f₁` can be identified to compatible tuples of
+the elements in `pullback f₁ f₂` can be identified to compatible tuples of
 elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
