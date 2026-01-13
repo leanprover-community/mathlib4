@@ -202,7 +202,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       · simp [hA.nonempty.ne_empty] at hKA
       · rw [Finset.coe_singleton, singleton_smul, sq] at hKA
         use x
-    have hx' : x ⁻¹ • (A * A) ⊆ A := by rwa [← subset_smul_set_iff]
+    have hx' : x⁻¹ • (A * A) ⊆ A := by rwa [← subset_smul_set_iff]
     have hx_inv : x⁻¹ ∈ A := by
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hA.one_mem hA.one_mem))
     have hx_sq : x * x ∈ A := by

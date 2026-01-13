@@ -78,7 +78,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   map_add_le_max' := by
     intros
     split_ifs
-    any_goals simp_all [- exp_neg]
+    any_goals simp_all [-exp_neg]
     rw [← min_le_iff]
     exact padicValRat.min_le_padicValRat_add ‹_›
 

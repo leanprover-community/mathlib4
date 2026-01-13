@@ -1181,7 +1181,7 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
 @[simps]
 noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  norm_map' z := by rw [← re_add_im z]; simp [-re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific

@@ -320,7 +320,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
         (by simp [← op_comp]) (by simp [← op_comp]) (by simp)
   invFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f.op f.op
     pushout.condition (by rw [← unop_comp, ← unop_comp, pushout.condition]) rfl h) _
-      (pullbackIsoUnopPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+      (pullbackIsoUnopPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -336,7 +336,7 @@ def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
   invFun h :=
     Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f.unop f.unop pushout.condition
       (by rw [← op_comp, ← op_comp, pushout.condition]) rfl h) _
-        (pullbackIsoOpPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+        (pullbackIsoOpPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 

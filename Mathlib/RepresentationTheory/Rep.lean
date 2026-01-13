@@ -714,8 +714,8 @@ variable {A B C}
 instance : MonoidalClosed (Rep k G) where
   closed A :=
     { rightAdj := Rep.ihom A
-      adj := Adjunction.mkOfHomEquiv (
-      { homEquiv := Rep.homEquiv A
+      adj := Adjunction.mkOfHomEquiv ({
+        homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext
           (ModuleCat.hom_ext (TensorProduct.ext' fun _ _ => rfl))
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext (ModuleCat.hom_ext (LinearMap.ext

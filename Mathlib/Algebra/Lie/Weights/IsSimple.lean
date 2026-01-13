@@ -250,7 +250,7 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
       induction hm using LieSubmodule.iSup_induction' with
       | mem α m_α hm_α => exact invtSubmoduleToLieIdeal_aux q hq χ x_χ m_α hx_χ α.1 α.2.1 α.2.2 hm_α
       | zero =>
-        simp only [ Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
+        simp only [Submodule.carrier_eq_coe, lie_zero, SetLike.mem_coe, zero_mem]
       | add m₁ m₂ _ _ ih₁ ih₂ =>
         simp only [lie_add, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
         exact add_mem ih₁ ih₂

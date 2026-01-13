@@ -422,7 +422,7 @@ private def widePullbackShapeEquivObj {J : Type*} :
   invFun
   | .of x => .some <| Discrete.as x
   | .star => .none
-  left_inv  x := by cases x <;> simp
+  left_inv x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in

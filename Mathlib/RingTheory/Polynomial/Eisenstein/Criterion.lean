@@ -156,7 +156,7 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
         apply mul_mem_mul
         · rw [mem_ker, ← coeff_map, hr, coeff_zero]
         · rw [mem_ker, ← coeff_map, hs, coeff_zero]
-      simp [- Polynomial.map_mul, coeff_mul, h]
+      simp [-Polynomial.map_mul, coeff_mul, h]
     -- It remains to prove the equality `f %ₘ q = (r * s) %ₘ q`, which is straightforward
     rw [h_eq, hg, hh]
     simp only [add_mul, mul_add, map_add, ← modByMonicHom_apply]
