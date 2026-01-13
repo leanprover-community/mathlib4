@@ -135,15 +135,12 @@ theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Ass
 theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
 
-theorem normalize_apply (x : α) : normalize x = NormalizationMonoid.out (.mk x) :=
-  rfl
-
 @[simp]
 theorem normalize_zero {α} [MonoidWithZero α] [NormalizationMonoid α] : normalize (0 : α) = 0 := by
   have ⟨u, h⟩ := associated_normalize (0 : α)
   simpa using h.symm
 
-@[simp] theorem normalize_one : normalize (1 : α) = 1 := NormalizationMonoid.out_one
+@[simp] theorem normalize_one : normalize (1 : α) = 1 := Associates.out_one
 
 theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by
   rw [normalize, Associates.mk_eq_one.mpr u.isUnit, Associates.out_one]
@@ -215,7 +212,7 @@ end MonoidWithZero
 
 end NormalizationMonoid
 
-namespace StrongNormalizationMonoid
+section StrongNormalizationMonoid
 
 variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
 
@@ -224,7 +221,7 @@ theorem normUnit_one : normUnit (1 : α) = 1 :=
   normUnit_coe_units 1
 
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
-protected def normalize : α →*₀ α where
+protected def StrongNormalizationMonoid.normalize : α →*₀ α where
   toFun x := x * normUnit x
   map_zero' := by
     simp only [normUnit_zero]
@@ -282,11 +279,15 @@ theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associa
   Quotient.inductionOn b <| by
     simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
 
+theorem out_mul' (a b : Associates α) : Associated (a * b).out (a.out * b.out) :=
+  Quotient.inductionOn₂ a b fun _ _ ↦ normalize_associated_iff.mpr <|
+    .mul_mul (associated_normalize _) (associated_normalize _)
+
 end Associates
 
 theorem Associates.out_mul {α} [CommMonoidWithZero α] [StrongNormalizationMonoid α]
     (a b : Associates α) : (a * b).out = a.out * b.out :=
-  Quotient.inductionOn₂ a b fun _ _ => by
+  Quotient.inductionOn₂ a b fun _ _ ↦ by
     simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk]
     apply StrongNormalizationMonoid.normalize.map_mul
 
@@ -1336,8 +1337,7 @@ instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
 @[simp]
 theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by simp [normUnit, h0]
 
-theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by
-  simp [StrongNormalizationMonoid.normalize_apply, h0]
+theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp [normalize_apply, h0]
 
 end CommGroupWithZero
 
