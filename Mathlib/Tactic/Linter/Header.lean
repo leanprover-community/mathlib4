@@ -371,8 +371,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test files for the linter itself.
-  unless inMathlib? ||
-    mainModule ∈ headerTestFiles do return
+  unless inMathlib? || headerTestFiles.contains mainModule do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
