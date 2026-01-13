@@ -44,8 +44,7 @@ theorem RCLike.sqrt_eq_ite (a : 𝕜) :
   split_ifs with h
   · simp
   have : (I : 𝕜) = 0 := by grind [I_eq_zero_or_im_I_eq_one]
-  simp_all only [Complex.sqrt, Complex.cpow_inv_two_re]
-  simp only [show im a = 0 by rw [← re_add_im a]; simp [this]]
+  simp_all only [Complex.sqrt, Complex.cpow_inv_two_re, im_eq_zero this]
   by_cases! ha' : 0 ≤ re a
   · simp [abs_of_nonneg ha', ← two_mul]
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
@@ -53,10 +52,9 @@ theorem RCLike.sqrt_eq_ite (a : 𝕜) :
 theorem RCLike.sqrt_eq_re_add_ite (a : 𝕜) :
     sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
   rw [sqrt, Complex.sqrt_eq_re_add_ite]
-  have : (I : 𝕜) = 0 → im a = 0 := by rw [← re_add_im a]; simp_all
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · rw [← re_add_im a]
-    simp [h, this h]
+    simp [h, im_eq_zero]
   aesop
 
 @[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
