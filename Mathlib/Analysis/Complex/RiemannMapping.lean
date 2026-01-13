@@ -499,28 +499,6 @@ theorem exists_branch_nthRoot {X : Type*} [TopologicalSpace X] [LocPathConnected
 
 namespace UnitDisc
 
-instance : Pow UnitDisc ℕ+ where
-  pow z n := ⟨z ^ (n : ℕ), by simp [pow_lt_one_iff_of_nonneg, z.norm_lt_one]⟩
-
-@[simp, norm_cast]
-theorem coe_pow (z : 𝔻) (n : ℕ+) : ((z ^ n : 𝔻) : ℂ) = z ^ (n : ℕ) := rfl
-
-@[fun_prop]
-theorem isEmbedding_coe : Topology.IsEmbedding ((↑) : 𝔻 → ℂ) := .subtypeVal
-
-@[fun_prop]
-theorem continuous_coe : Continuous ((↑) : 𝔻 → ℂ) := isEmbedding_coe.continuous
-
-@[fun_prop]
-theorem continuous_pow (n : ℕ+) : Continuous (· ^ n : 𝔻 → 𝔻) := by
-  simp only [isEmbedding_coe.continuous_iff, Function.comp_def, coe_pow]
-  fun_prop
-
-@[simp]
-theorem pow_eq_zero {z : 𝔻} {n : ℕ+} : z ^ n = 0 ↔ z = 0 := by
-  rw [← coe_inj, coe_pow]
-  simp
-
 protected theorem exists_branch_nthRoot {X : Type*} [TopologicalSpace X] [LocPathConnectedSpace X]
     {U : Set X} (hUc : IsSimplyConnected U) (hUo : IsOpen U) {g : X → UnitDisc}
     (hgc : ContinuousOn g U) (hU₀ : 0 ∉ g '' U) (n : ℕ+) :
