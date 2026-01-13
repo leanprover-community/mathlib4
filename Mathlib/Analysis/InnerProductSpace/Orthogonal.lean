@@ -109,10 +109,12 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
   simpa using mem_orthogonal _ _
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
-instance isClosed_orthogonal : IsClosed Kᗮ.carrier := by
+theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp
+
+instance [CompleteSpace E] : CompleteSpace Kᗮ := K.isClosed_orthogonal.completeSpace_coe
 
 lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
