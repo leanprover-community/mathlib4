@@ -43,7 +43,7 @@ variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
   (f : A →+[G] B) (g : B →+[G] C)
 
 variable (G) in
-@[simp] lemma mem_iff (a : A) : a ∈ H0 G A ↔ ∀ g : G, g • a = a := by rfl
+lemma mem_iff (a : A) : a ∈ H0 G A ↔ ∀ g : G, g • a = a := by rfl
 
 def map : H0 G A →+ H0 G B :=
   f.toAddMonoidHom.restrict (H0 G A) |>.codRestrict (H0 G B) <|
@@ -61,15 +61,18 @@ theorem map_injective_of_injective (hf : Function.Injective f) :
     Function.Injective (H0.map f) := fun _ _ h ↦ Subtype.ext (hf (congrArg Subtype.val h))
 
 theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
-    Function.Exact (H0.map f) (H0.map g) :=
-  fun y ↦ ⟨fun h ↦ ⟨⟨(Equiv.ofInjective f hf).symm ⟨y, (hfg _).mp congr(Subtype.val $h)⟩,
-    fun g ↦ hf (by simpa [map_smul] using y.2 g)⟩, Subtype.ext (Equiv.apply_ofInjective_symm _ _)⟩,
-      fun ⟨x, hx⟩ ↦ Subtype.ext ((hfg _).mpr ⟨x.1, congr(Subtype.val $hx)⟩)⟩
+    Function.Exact (H0.map f) (H0.map g) := by
+  refine fun b ↦ ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨a, ha⟩ := (hfg b).mp congr(Subtype.val $h)
+    refine ⟨⟨a, (mem_iff G a).mpr fun g ↦ hf ?_⟩, Subtype.ext ha⟩
+    simpa [ha] using b.2 g
+  · rintro ⟨x, rfl⟩
+    exact Subtype.ext (by simpa using hfg (f x))
 
 end H0
 
 def Z1 (A : Type*) [AddGroup A] [DistribMulAction G A] :=
-  { f : G → A // ∀ g h : G, f (g * h) = f g + g • f h}
+  { f : G → A | ∀ g h : G, f (g * h) = f g + g • f h}
 
 namespace Z1
 
@@ -82,6 +85,9 @@ instance inhabited : Inhabited (Z1 G A) := ⟨0⟩
 
 instance coeFun : CoeFun (Z1 G A) (fun _ ↦ G → A) := ⟨fun f ↦ f.val⟩
 
+@[simp]
+lemma coe_apply (f : Z1 G A) (g : G) : f g = f.val g := rfl
+
 variable (G A) in
 @[simp] lemma zero_apply (g : G) : (0 : Z1 G A) g = 0 := rfl
 
@@ -89,7 +95,7 @@ variable (G A) in
 @[simp] lemma zero_coe : (0 : Z1 G A) = (0 : G → A) := rfl
 
 def cohomologous (f g : G → A) : Prop :=
-  ∃ a : A, ∀ h : G, g h = - a + f h + (h • a)
+  ∃ a : A, ∀ h : G, f h = - a + g h + (h • a)
 
 lemma cohomologous.refl (f : G → A) : Z1.cohomologous f f := ⟨0, fun h ↦ by simp⟩
 
@@ -101,7 +107,7 @@ lemma cohomologous.trans {f g h : G → A} (hfg : Z1.cohomologous f g) (hgh : Z1
     Z1.cohomologous f h := by
   obtain ⟨a, ha⟩ := hfg
   obtain ⟨b, hb⟩ := hgh
-  exact ⟨a + b, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
+  exact ⟨b + a, fun h ↦ by simp [← add_assoc, ha h, hb h]⟩
 
 variable (G A) in @[simps]
 instance setoid : Setoid (Z1 G A) where
@@ -117,16 +123,16 @@ theorem equiv_iff_cohomologous (f : Z1 G A) (g : Z1 G A) : f ≈ g ↔ Z1.cohomo
 
 theorem mem_of_cohomologous (f : G → A) (f' : Z1 G A) (hfg : Z1.cohomologous f f') :
     ∀ g h : G, f (g * h) = f g + g • f h := by
-  obtain ⟨a, ha⟩ := hfg.symm
-  simp [ha, f'.2, add_assoc, mul_smul]
+  intro g h
+  obtain ⟨a, ha⟩ := hfg
+  simp [ha, f'.2 g h, add_assoc, mul_smul]
 
-def map : Z1 G A → Z1 G B := fun z ↦ ⟨f ∘ z, fun g h => by simp [z.prop, map_smul]⟩
+def map : Z1 G A → Z1 G B := fun z ↦ ⟨f ∘ z, fun g h => by simp [z.prop g h, map_smul]⟩
 
 @[simp] lemma map_zero : Z1.map f 0 = 0 := Subtype.ext <| funext fun _ ↦ (by simp [Z1.map])
 
-@[simp] lemma map_zero_apply (x : Z1 G A) : Z1.map (0 : A →+[G] B) x = 0 := by
-  apply Subtype.ext
-  simp [Z1.map]
+@[simp] lemma map_zero_apply (x : Z1 G A) : Z1.map (0 : A →+[G] B) x = 0 := Subtype.ext
+  (by simp [Z1.map])
 
 @[simp] lemma map_apply (z : Z1 G A) (x : G) : (Z1.map f z) x = f (z x) := rfl
 
@@ -145,14 +151,21 @@ variable {G} {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
   [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
   (f : A →+[G] B) (g : B →+[G] C)
 
-instance : Zero (H1 G A) := ⟨⟦0⟧⟩
+variable (G A) in
+def mk (a : Z1 G A) : H1 G A := ⟦a⟧
+
+lemma mk_eq_iff (a b : Z1 G A) : mk G A a = mk G A b ↔ Z1.cohomologous a b := Quotient.eq_iff_equiv
+
+variable (G A) in
+lemma mk_surjective : Function.Surjective (mk G A) := Quotient.mk_surjective
+
+instance : Zero (H1 G A) := ⟨mk G A 0⟩
 instance : Inhabited (H1 G A) := ⟨0⟩
 
 variable (G A) in
-lemma zero_def : (0 : H1 G A) = ⟦0⟧ := rfl
+lemma zero_def : (0 : H1 G A) = mk G A 0 := rfl
 
-def map : H1 G A → H1 G B :=
-  Quotient.map (Z1.map f) (Z1.map_cohomologous f)
+def map : H1 G A → H1 G B := Quotient.map (Z1.map f) (Z1.map_cohomologous f)
 
 variable (G A) in
 theorem map_id : H1.map (.id _) = @id (H1 G A) := funext fun a ↦ by
@@ -160,11 +173,11 @@ theorem map_id : H1.map (.id _) = @id (H1 G A) := funext fun a ↦ by
   refine Quotient.eq.mpr ⟨0, fun _ ↦ by simp⟩
 
 @[simp]
-theorem map_eq (x : Z1 G A) : H1.map f ⟦x⟧ = ⟦Z1.map f x⟧ := by simp [H1.map]
+theorem map_mk (x : Z1 G A) : H1.map f (mk G A x) = mk G B (Z1.map f x) := by simp [map, mk]
 
 @[simp]
 theorem map_zero : H1.map f 0 = 0 := by
-  simp only [H1.map, zero_def, Quotient.map_mk]
+  simp only [zero_def, map_mk]
   exact congrArg _ <| Subtype.ext (funext fun x ↦ f.map_zero)
 
 @[simp]
@@ -182,140 +195,237 @@ theorem map_comp_apply (x : H1 G A) : H1.map (g.comp f) x = (H1.map g) ((H1.map 
 theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g)
     (hg : Function.Surjective g) : Function.Exact (H1.map f) (H1.map g) := by
   refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ ?_⟩
-  · induction y using Quotient.inductionOn with | h b =>
+  · obtain ⟨b, rfl⟩ := mk_surjective G B y
     obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
     obtain ⟨x, rfl⟩ := hg x
-    simp only [Z1.zero_apply, ← map_neg, Z1.map_apply, ← map_add, ← map_smul] at hx
+    have hx (h : G) : 0 = g (x + b h - h • x) := by
+      simpa using congr((g x) + $(hx h) - (h • g x)).symm
     choose a ha using fun (h : G) ↦ (hfg _).mp (hx h).symm
-    refine ⟨Quotient.mk _ (⟨a, fun g h ↦ hf ?_⟩ : Z1 G A), Quotient.eq.mpr ?_⟩
+    refine ⟨mk G A (⟨a, fun g h ↦ hf ?_⟩ : Z1 G A), (mk_eq_iff _ _).mpr ?_⟩
     · simp only [map_add, map_smul]
-      exact b.mem_of_cohomologous (f ∘ a) (.symm ⟨x, ha⟩) g h
-    · exact .symm ⟨x, by simpa using ha⟩
+      exact Z1.mem_of_cohomologous (f ∘ a) b ⟨-x, by simp [ha, sub_eq_add_neg]⟩ g h
+    · exact ⟨-x, by simpa [sub_eq_add_neg] using ha⟩
   · rw [← map_comp_apply, ((g.comp f).ext (g := 0) hfg.apply_apply_eq_zero), zero_map_apply]
 
 end H1
 
-section connectHom₀₁
+section connectHom₀
 
 variable {G : Type u} [Group G] {A B C : Type*} [AddGroup A] [AddGroup B] [AddGroup C]
     [DistribMulAction G A] [DistribMulAction G B] [DistribMulAction G C]
     {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
     (hfg : Function.Exact f g)
 
-@[simps]
-noncomputable def δ₀₁_aux (b : B) (c : H0 G C) (hb : g b = c) : Z1 G A := ⟨fun s ↦
-  (Equiv.ofInjective f hf).symm ⟨-b + s • b, ((hfg _).mp (by simp [hb, c.prop s]))⟩,
-    fun g h ↦ hf (by simp [mul_smul, ← add_assoc])⟩
+include hf in
+lemma mem_z1_of_comp_eq (b : B) (x : G → A) (hx : ∀ g : G, f (x g) = - b + g • b) :
+    x ∈ Z1 G A := fun g h ↦ hf <| by simp [hx, add_assoc, mul_smul]
 
-theorem δ₀₁_aux_well_defined_1 (b b' : B) (c : H0 G C) (hb : g b = c) (hb' : g b' = c) :
-    Z1.cohomologous (δ₀₁_aux hf hfg b c hb) (δ₀₁_aux hf hfg b' c hb') :=
-  ⟨(Equiv.ofInjective f hf).symm ⟨- b + b', (hfg _).mp (by rw [map_add, map_neg, hb, hb',
-    neg_add_cancel])⟩, fun h ↦ hf (by simp [δ₀₁_aux, ← add_assoc])⟩
+abbrev z1MkOfCompEq (b : B) (x : G → A) (hx : ∀ g : G, f (x g) = - b + g • b) : Z1 G A :=
+  ⟨x, mem_z1_of_comp_eq hf b x hx⟩
 
-noncomputable def δ₀₁ : H0 G C → H1 G A := fun x ↦
-    ⟦δ₀₁_aux hf hfg (hg x).choose x (hg x).choose_spec⟧
+noncomputable def δ₀_aux : g ⁻¹' (H0 G C) → Z1 G A := fun b ↦ ⟨
+    fun s ↦ (Equiv.ofInjective _ hf).symm ⟨-b + s • b, (hfg _).mp <| by simp [b.2 s]⟩,
+    mem_z1_of_comp_eq hf b.1 _ (fun g ↦ by simp)
+  ⟩
 
-theorem δ₀₁_eq_of_map (b : B) (c : H0 G C) (hb : g b = c) :
-    δ₀₁ hf hg hfg c = ⟦δ₀₁_aux hf hfg b c hb⟧ :=
-  Quotient.eq_iff_equiv.mpr (δ₀₁_aux_well_defined_1 ..)
+lemma δ₀_aux_zero : δ₀_aux hf hfg ⟨0, by simp⟩ = 0 := by
+  refine Subtype.ext (funext fun x ↦ hf ?_)
+  simp [δ₀_aux]
 
-theorem δ₀₁_zero : δ₀₁ hf hg hfg 0 = 0 :=
-  (δ₀₁_eq_of_map hf hg hfg 0 0 (map_zero _)).trans (congrArg _ <| Subtype.ext <|
-    funext fun x ↦ hf <| by simp [δ₀₁_aux])
+@[simp]
+lemma apply_δ₀_aux (b : g ⁻¹' (H0 G C)) : ∀ g : G, f ((δ₀_aux hf hfg b) g) = - b + g • b := by
+  simp [δ₀_aux]
 
-theorem exact_H0_map_δ₀₁ : Function.Exact (H0.map g) (δ₀₁ hf hg hfg) := by
-  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ (δ₀₁_eq_of_map (hb := congr(Subtype.val $hx)) ..).trans
-    <| congrArg _ <| Subtype.ext <| funext <| fun s ↦ hf (by simp [δ₀₁_aux, x.2 s])⟩
-  obtain ⟨b, hb⟩ := hg y
-  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp ((δ₀₁_eq_of_map (hb := hb) ..).symm.trans h)
-  refine ⟨⟨b + f x, fun h ↦ (neg_add_eq_zero.mp ?_).symm⟩,
-    Subtype.ext (by simpa [H0.map, hfg.apply_apply_eq_zero])⟩
-  simpa [δ₀₁_aux, ← add_assoc] using congr(f $(hx h)).symm
+noncomputable def δ₀ : H0 G C → H1 G A :=
+  Function.extend (Set.restrictPreimage (H0 G C) g) ((H1.mk G A) ∘ (δ₀_aux hf hfg)) 0
 
-theorem exact_δ₀₁_H1_map : Function.Exact (δ₀₁ hf hg hfg) (H1.map f) := by
-  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ hx ▸ Quotient.eq_iff_equiv.mpr
-    ⟨- (hg x).choose, fun h ↦ by simp⟩⟩
-  induction y using Quotient.inductionOn
-  simp only [H1.map, Quotient.map_mk] at h
-  obtain ⟨x, hx⟩ := Quotient.eq_iff_equiv.mp h
-  refine ⟨⟨g (-x), fun h ↦ (add_neg_eq_zero.mp ?_).symm⟩, (δ₀₁_eq_of_map hf hg hfg _ _ rfl).trans
-    <| congrArg _ <| Subtype.ext <| funext fun h ↦ hf ?_⟩
-  · simpa [hfg.apply_apply_eq_zero] using congr(g $(hx h)).symm
-  · simp only [map_neg, δ₀₁_aux_coe, neg_neg, smul_neg, Equiv.apply_ofInjective_symm]
-    refine eq_sub_iff_add_eq.mp (neg_add_eq_zero.mp ?_)
-    simpa [add_assoc] using (hx h).symm
+lemma mk_comp_δ₀_aux_factorsThrough :
+    Function.FactorsThrough ((H1.mk G A) ∘ (δ₀_aux hf hfg)) (Set.restrictPreimage (H0 G C) g) := by
+  intro ⟨b1, hb1⟩ ⟨b2, hb2⟩ heq
+  obtain ⟨x, hx⟩ : ∃ x : A, f x = -b2 + b1 := (hfg _).mp (by simpa [neg_add_eq_zero] using heq.symm)
+  exact (H1.mk_eq_iff _ _).mpr ⟨x, fun h ↦ hf (by simp [δ₀_aux, hx, add_assoc])⟩
 
-end connectHom₀₁
+lemma δ₀_apply_eq_mk_δ₀_aux (c : H0 G C) (b : B) (hb : g b = c) :
+    δ₀ hf hfg c = H1.mk G A (δ₀_aux hf hfg ⟨b, (hb ▸ c.2 : g b ∈ (H0 G C))⟩) := by
+  convert mk_comp_δ₀_aux_factorsThrough hf hfg |>.extend_apply ..
+  exact Subtype.ext (by simpa using hb.symm)
 
-section connectHom₁₂
+lemma δ₀_apply (c : H0 G C) (b : B) (hb : g b = c) (x : G → A)
+    (hx : ∀ g : G, f (x g) = - b + g • b) : δ₀ hf hfg c = H1.mk G A (z1MkOfCompEq hf b x hx) :=
+  (δ₀_apply_eq_mk_δ₀_aux hf hfg c b hb).trans <| congrArg _ <| Subtype.ext <|
+  funext fun s ↦ hf (by simp [δ₀_aux, hx])
+
+lemma δ₀_apply' (c : H0 G C) (b : B) (hb : g b = c) (x : Z1 G A)
+    (hx : ∀ g : G, f (x g) = - b + g • b) : δ₀ hf hfg c = H1.mk G A x := δ₀_apply hf hfg c b hb x hx
+
+include hg in
+theorem exact_H0_map_δ₀ : Function.Exact (H0.map g) (δ₀ hf hfg) := by
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
+  · obtain ⟨b, hb⟩ := Set.restrictPreimage_surjective _ hg y
+    obtain ⟨x, hx⟩ : Z1.cohomologous (δ₀_aux hf hfg b) 0 := by
+      refine (H1.mk_eq_iff (G := G) (A := A) _ 0).mp ?_
+      rw [← δ₀_apply_eq_mk_δ₀_aux _ _ y b.1 (congr(Subtype.val $hb)), h, H1.zero_def]
+    replace hx := by simpa [δ₀_aux] using fun h : G ↦ congr(f $(hx h))
+    refine ⟨⟨b - f x, fun h ↦ ?_⟩, Subtype.ext <| by simp [← hb, (hfg _)]⟩
+    simpa [sub_eq_add_neg, add_assoc] using congr(b + ($(hx h) - h • (f x)))
+  · rw [δ₀_apply_eq_mk_δ₀_aux hf hfg y x.1 congr(Subtype.val $hx), H1.zero_def]
+    exact congrArg _ <| Subtype.ext <| funext fun s ↦ hf
+      (by simpa [δ₀_aux, neg_add_eq_zero] using (x.2 s).symm)
+
+include hg in
+theorem exact_δ₀_H1_map : Function.Exact (δ₀ hf hfg) (H1.map f) := by
+  refine fun y ↦ ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
+  · obtain ⟨y, rfl⟩ := H1.mk_surjective _ _ y
+    obtain ⟨x, hx⟩ := (H1.mk_eq_iff ..).mp <| h.trans (H1.zero_def ..)
+    have : g x ∈ H0 G C := fun s ↦ by
+      have := by simpa [hfg.apply_apply_eq_zero] using congr(g $(hx s))
+      exact (neg_add_eq_zero.mp this.symm).symm
+    rw [← δ₀_apply' hf hfg ⟨g x, this⟩ x (by simp) y (by simpa using hx)]
+    exact Set.mem_range_self _
+  · obtain ⟨b, hb⟩ := hg x
+    simp only [← hx, δ₀_apply_eq_mk_δ₀_aux hf hfg x b hb, H1.map_mk, H1.zero_def, H1.mk_eq_iff,
+      Z1.zero_coe]
+    exact ⟨b, by simp [δ₀_aux]⟩
+
+end connectHom₀
+
+section connectHom₁
 
 variable {G : Type u} [Group G] {k : Type u} [CommRing k] {A : Rep k G}
   {B C : Type*} [AddGroup B] [AddGroup C] [DistribMulAction G B] [DistribMulAction G C]
   {f : A →+[G] B} {g : B →+[G] C} (hf : Function.Injective f) (hg : Function.Surjective g)
   (hfg : Function.Exact f g) (hA : f.toAddMonoidHom.range ≤ AddSubgroup.center B)
 
-noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x)) :
-    groupCohomology.cocycles₂ A := by
-  refine ⟨fun st ↦ (Equiv.ofInjective f hf).symm
-    ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2), (hfg _).mp (by simp [← hbc, c.prop])⟩, ?_⟩
+include hf hfg hA in
+lemma mem_cocycles₂_of_comp_eq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
+    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : x ∈ cocycles₂ A := by
   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
   rw [← Rep.smul_eq_ρ_apply, sub_add_eq_add_sub]
   change _ = f 0
+  have : g (b (y * z)) = g (b y) + y • g (b z) := hb y z
   have : (x • b y + x • y • b z + -(x • b (y * z))) ∈ AddSubgroup.center B :=
-    (hA ((hfg _).mp (by simp [← hbc, c.prop, ← add_assoc]) : _ ∈ f.range))
+    (hA ((hfg _).mp (by simp [this, add_assoc]) : _ ∈ f.range))
   have := AddSubgroup.mem_center_iff.mp this (b x)
-  simp [sub_eq_add_neg, mul_smul, ← add_assoc, this.symm, mul_assoc]
+  simp [sub_eq_add_neg, hx, mul_smul, ← add_assoc, this.symm, mul_assoc]
 
-theorem δ₁₂_aux_well_defined_1 (b b' : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
-    (hbc' : ∀ (x : G), c x = g (b' x)) :
-    ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c hbc') : (ModuleCat.of k (G × G → A))) ∈
-    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
-  obtain a := fun h ↦ (hfg _).mp (show g (b h - b' h) = 0 by simp [← hbc h, ← hbc' h])
-  choose a ha using a
-  refine ⟨a, funext fun ⟨h, h'⟩ ↦ hf (sub_eq_zero.mp ?_)⟩
-  simp only [d₁₂_hom_apply, sub_eq_add_neg, map_add, δ₁₂_aux, cocycles₂.coe_mk, Pi.sub_apply,
-    Equiv.apply_ofInjective_symm, neg_add_rev, ← map_neg, neg_neg, ← add_assoc]
-  have h1 : f (h • a h') + f (-a (h * h')) + f (a h) + b' h + h • b' h' + -b' (h * h') =
-    f (h • a h') + f (a h) + b' h + h • b' h' + -b' (h * h') + f (-a (h * h')) := by
-    conv_lhs =>
-      simp only [add_assoc]
-      rw [← AddSubgroup.mem_center_iff.mp (hA (⟨-a (h * h'), rfl⟩ : f _ ∈ f.range))]
-    simp only [add_assoc]
-  have h2 : f (h • a h') + f (a h) + b' h = f (a h) + b' h + f (h • a h') := by
-    conv_rhs => rw [AddSubgroup.mem_center_iff.mp (hA (⟨h • a h', rfl⟩ : f _ ∈ f.range))]
-    rw [add_assoc]
-  rw [← Rep.smul_eq_ρ_apply, h1, h2]
-  simp [ha, sub_eq_add_neg, neg_add_rev, add_assoc]
+abbrev cocycles₂MkOfCompEq (b : G → B) (hb : g ∘ b ∈ Z1 G C) (x : G × G → A)
+    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) : cocycles₂ A := ⟨x,
+  mem_cocycles₂_of_comp_eq hf hfg hA b hb x hx⟩
+
+noncomputable def δ₁_aux : (g ∘ ·) ⁻¹' (Z1 G C) → cocycles₂ A := fun b ↦ ⟨
+  fun st ↦ (Equiv.ofInjective f hf).symm ⟨(b.1 st.1) + st.1 • (b.1 st.2) - b.1 (st.1 * st.2),
+    (hfg _).mp (by simpa [← sub_eq_zero] using (b.2 st.1 st.2).symm)⟩,
+  mem_cocycles₂_of_comp_eq hf hfg hA b.1 b.2 _ (by simp)
+⟩
+
+lemma Z1_mem_preimage_Z1 (b : Z1 G B) : g ∘ b ∈ Z1 G C :=
+  fun h h' ↦ by simpa using congr(g $(b.2 h h'))
+
+lemma δ₁_aux_zero : δ₁_aux hf hfg hA ⟨0, by simp [Z1]⟩ = 0 := by
+  refine cocycles₂_ext fun g h ↦ hf ?_
+  simp only [δ₁_aux, Pi.zero_apply, smul_zero, add_zero, sub_self, cocycles₂.coe_mk,
+    Equiv.apply_ofInjective_symm]
+  exact f.map_zero.symm
+
+@[simp]
+lemma apply_δ₁_aux (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
+    ∀ g h : G, f ((δ₁_aux hf hfg hA b) ⟨g, h⟩) = b.1 g + g • b.1 h - b.1 (g * h) := by
+  simp [δ₁_aux]
+
+lemma apply_δ₁_aux' (b : (g ∘ ·) ⁻¹' (Z1 G C)) :
+    f ∘ (δ₁_aux hf hfg hA b) = fun g ↦ b.1 g.1 + g.1 • b.1 g.2 - b.1 (g.1 * g.2) := by
+  ext ⟨g, h⟩
+  simp
+
+noncomputable def δ₁ : H1 G C → H2 A :=
+  (Function.extend ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·)))
+    (H2π A ∘ (δ₁_aux hf hfg hA)) 0)
 
 include hg in
-theorem δ₁₂_aux_well_defined_2 (b b' : G → B) (c c' : Z1 G C) (hbc : ∀ (x : G), c x = g (b x))
-    (hbc' : ∀ (x : G), c' x = g (b' x)) (hcc' : Z1.cohomologous c c') :
-    ((δ₁₂_aux hf hfg hA b c hbc) - (δ₁₂_aux hf hfg hA b' c' hbc') : (ModuleCat.of k (G × G → A))) ∈
-    (LinearMap.range (ModuleCat.Hom.hom (d₁₂ A)) : Set (ModuleCat.of k (G × G → A))) := by
-  obtain ⟨t, ht⟩ := hcc'
-  obtain ⟨t', rfl⟩ := hg t
-  let b'' : G → B := fun h ↦ (-t' + b h + h • t')
-  have hbc'' : ∀ (x : G), c' x = g (b'' x) := by simpa [b'', ← hbc]
-  rw [← sub_add_sub_cancel _ (δ₁₂_aux hf hfg hA b'' c' hbc'').1 _]
-  refine Submodule.add_mem _ ⟨fun _ ↦ 0, funext fun ⟨h, h'⟩ ↦ hf ?_⟩ (δ₁₂_aux_well_defined_1 ..)
-  have : b h + h • b h' + -b (h * h') + -t' = -t' + (b h + h • b h' + -b (h * h')) :=
-    (AddSubgroup.mem_center_iff.mp (hA ((hfg _).mp (by simp [← hbc, c.prop, add_assoc]))) _).symm
-  simp [δ₁₂_aux, b'', sub_eq_add_neg, neg_add_rev, ← add_assoc, mul_smul, this]
+lemma mk_comp_δ₁_aux_factorsThrough :
+    Function.FactorsThrough (H2π A ∘ (δ₁_aux hf hfg hA))
+    ((H1.mk G C) ∘ (Set.restrictPreimage (Z1 G C) (g ∘ ·))):= by
+  intro ⟨b1, hb1⟩ ⟨b2, hb2⟩ heq
+  obtain ⟨x, heq⟩ := by
+    simpa only [Function.comp_apply, Set.restrictPreimage_mk, H1.mk_eq_iff] using heq
+  obtain ⟨x, rfl⟩ := hg x
+  replace heq : ∀ (h : G), g (b1 h - h • x - b2 h + x) = 0 := fun h ↦ by
+    simpa using congr($(heq h) - h • g x - (g (b2 h)) + g x)
+  choose a ha using fun h ↦ (hfg _).mp (heq h)
+  replace ha (h : G) : b1 h = (f (a h)) - x + (b2 h) + h • x := by
+    simpa using congr($(ha h) - x + b2 h + h • x).symm
+  simp only [Function.comp_apply, δ₁_aux, H2π_eq_iff (A := A), coboundaries₂, d₁₂,
+    ← Rep.smul_eq_ρ_apply, ModuleCat.hom_ofHom, cocycles₂.coe_mk, LinearMap.mem_range,
+    LinearMap.coe_mk, AddHom.coe_mk, ← hf.comp_left.eq_iff, map_comp_sub]
+  refine ⟨a, funext fun ⟨h1, h2⟩ ↦ ?_⟩
+  have : b2 h1 + h1 • b2 h2 - b2 (h1 * h2) ∈ AddSubgroup.center B := by
+    refine hA ((hfg _).mp ?_)
+    simpa [sub_eq_zero] using (hb2 h1 h2).symm
+  have : -x + b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) = b2 h1 + h1 • b2 h2 + -b2 (h1 * h2) + -x := by
+    simpa [sub_eq_add_neg, ← add_assoc] using AddSubgroup.mem_center_iff.mp this (-x)
+  have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
+    AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
+  simp only [sub_eq_add_neg, Function.comp_apply, map_add, ← f_comm (a h1), ← add_assoc, ha,
+    smul_add, ← map_smul, smul_neg, mul_smul, neg_add_rev, neg_neg, ← map_neg, add_neg_cancel_right,
+    Pi.sub_apply, Equiv.apply_ofInjective_symm]
+  simp only [← add_assoc, ← f_comm (h1 • a h2)]
+  simp only [← add_assoc, ← f_comm (-a (h1 * h2))]
+  simp only [add_assoc, add_right_inj, left_eq_add]
+  simp [← add_assoc, this]
 
-noncomputable def δ₁₂ : H1 G C → groupCohomology.H2 A := by
-  refine (H2Iso A).symm.hom ∘ Quotient.lift (Submodule.Quotient.mk ∘
-    (fun c ↦ ((δ₁₂_aux hf hfg hA (fun x ↦ (hg (c x)).choose) c
-      (fun x ↦ (hg (c x)).choose_spec.symm)))))
-        (fun c c' (hcc' : Z1.cohomologous c c') ↦ ?_)
-  obtain ⟨a, ha⟩ := δ₁₂_aux_well_defined_2 hf hg hfg hA (fun x ↦ (hg (c x)).choose)
-    (fun x ↦ (hg (c' x)).choose) c c' (fun x ↦ (hg (c x)).choose_spec.symm)
-      (fun x ↦ (hg (c' x)).choose_spec.symm) hcc'
-  exact (Submodule.Quotient.eq _).mpr (Exists.intro a (Subtype.ext ha))
+include hg in
+lemma δ₁_mk_eq_H2π_δ₁_aux (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) :
+    δ₁ hf hfg hA (H1.mk G C c) = H2π A (δ₁_aux hf hfg hA ⟨b, ((hb ▸ c.2) : g ∘ b ∈ _)⟩) := by
+  convert mk_comp_δ₁_aux_factorsThrough hf hg hfg hA |>.extend_apply ..
+  exact congrArg _ <| Subtype.ext hb.symm
 
-theorem exact_H1_map_δ₁₂ : Function.Exact (H1.map g) (δ₁₂ hf hg hfg hA) := sorry
+include hg in
+lemma δ₁_apply (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : G × G → A)
+    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
+    δ₁ hf hfg hA (H1.mk G C c) = H2π A (cocycles₂MkOfCompEq hf hfg hA b (hb ▸ c.2) x hx) :=
+  (δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb).trans <| congrArg _ <| Subtype.ext <|
+  funext fun ⟨g, h⟩ ↦ hf (by simp [δ₁_aux, hx])
 
-end connectHom₁₂
+include hg in
+lemma δ₁_apply' (c : Z1 G C) (b : G → B) (hb : g ∘ b = c) (x : cocycles₂ A)
+    (hx : ∀ g h : G, f (x ⟨g, h⟩) = b g + g • b h - b (g * h)) :
+    δ₁ hf hfg hA (H1.mk G C c) = H2π A x := δ₁_apply hf hg hfg hA c b hb x hx
+
+include hg in
+theorem exact_H1_map_δ₁₂ : Function.Exact (H1.map g) (δ₁ hf hfg hA) := by
+  refine fun c ↦ ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨c, rfl⟩ := H1.mk_surjective G C c
+    obtain ⟨b, hb⟩ := hg.comp_left c
+    rw [δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA c b hb] at h
+    obtain ⟨a, ha⟩ := (H2π_eq_zero_iff _).mp h
+    replace ha := fun (g : G × G) ↦ congr((f ∘ $ha) g)
+    simp only [Function.comp_apply, d₁₂_hom_apply, ← Rep.smul_eq_ρ_apply, map_add, map_sub,
+      map_smul, Prod.forall, apply_δ₁_aux] at ha
+    refine ⟨H1.mk G B ⟨fun g ↦ b g - f (a g), fun g h ↦ sub_eq_zero.mp ?_⟩, ?_⟩
+    · convert (sub_eq_zero.mpr (ha g h)) using 1
+      have f_comm (a : A) (b' : B) : f a + b' = b' + f a :=
+        AddSubgroup.mem_center_iff.mp (hA ⟨a, rfl⟩) _ |>.symm
+      simp only [sub_eq_add_neg, smul_add, neg_add_rev, neg_neg, ← add_assoc, ← smul_neg, ← map_neg,
+      ← map_smul, ← map_add f, add_left_inj]
+      simp only [f_comm _ (b (g * h)), add_assoc, add_right_inj, ← map_add f]
+      simp only [f_comm _ (g • -b h), ← add_assoc _ (g • -b h) _, add_assoc, add_right_inj,
+        ← map_add f]
+      exact congrArg _ (by abel)
+    · simp only [H1.map_mk]
+      refine congrArg _ <| Subtype.ext <| funext fun h ↦ ?_
+      simpa [hfg.apply_apply_eq_zero] using congr($hb h)
+  · rintro ⟨b, rfl⟩
+    obtain ⟨b, rfl⟩ := H1.mk_surjective G B b
+    rw [H1.map_mk, δ₁_mk_eq_H2π_δ₁_aux hf hg hfg hA (Z1.map g b) b (funext fun x ↦ rfl)]
+    have : δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ = 0 := by
+      refine Subtype.ext <| funext fun h ↦ hf ?_
+      simp only [cocycles₂.val_eq_coe, apply_δ₁_aux hf hfg hA ⟨b, Z1_mem_preimage_Z1 b⟩ h.1 h.2,
+        b.2 h.1 h.2, sub_self]
+      exact f.map_zero.symm
+    simp [this]
+
+end connectHom₁
 
 section compatibility
 
@@ -336,8 +446,8 @@ theorem H0Iso_map {A B : Rep k G} (f : A ⟶ B) :
   rw [congr($(groupCohomology.map_id_comp_H0Iso_hom f) x)]
   rfl
 
-@[simps?!]
-def Z1EquivCocycle₁ : Z1 G A ≃ (groupCohomology.cocycles₁ A) where
+/-- Bijection between `Z1 G A` and `cocycles₁ A`. -/
+@[simps!] def Z1EquivCocycles₁ : Z1 G A ≃ cocycles₁ A where
   toFun := fun f ↦ ⟨f.val, by
     refine funext fun ⟨g, h⟩ ↦ Eq.trans ?_ (sub_eq_zero.mpr (f.2 g h).symm)
     simp [← Rep.smul_eq_ρ_apply]
@@ -349,45 +459,95 @@ def Z1EquivCocycle₁ : Z1 G A ≃ (groupCohomology.cocycles₁ A) where
   left_inv f := Subtype.ext rfl
   right_inv f := Subtype.ext rfl
 
-noncomputable def H1Iso_aux (A : Rep k G) :
+noncomputable def H1Iso_aux :
     H1 G A ≃ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  Quotient.congr (Z1EquivCocycle₁ A) (fun a b ↦ by
-    simp only [Z1.setoid_r, Submodule.quotientRel_def, LinearMap.mem_range, Subtype.ext_iff,
-      LinearMap.codRestrict_apply, AddSubgroupClass.coe_sub]
-    refine ⟨fun ⟨g, hg⟩ ↦ ⟨-g, ?_⟩, fun ⟨g, hg⟩ ↦ ⟨-g, ?_⟩⟩
-    · sorry
-    · sorry
+  Quotient.congr (Z1EquivCocycles₁ A) (fun a b ↦ by
+    simp only [Z1.setoid_r, shortComplexH1, LinearMap.codRestrict, QuotientAddGroup.leftRel_apply,
+      Submodule.mem_toAddSubgroup, LinearMap.mem_range, LinearMap.coe_mk, AddHom.coe_mk,
+      Subtype.ext_iff, cocycles₁.val_eq_coe, funext_iff, d₀₁_hom_apply]
+    refine ⟨fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩, fun ⟨g, hg⟩ ↦ ⟨-g, fun h ↦ ?_⟩⟩
+    · change h • (-g) - -g = -a h + b h
+      exact sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr (hg h)))
+    · have : h • g - g = -a h + b h := hg h
+      refine sub_eq_zero.mp (Eq.trans (by simp; abel) (sub_eq_zero.mpr this))
     )
 
-open ConcreteCategory MorphismProperty in
--- cocycle first, CategoryTheory.ConcreteCategory.surjective_eq_epimorphisms
-noncomputable nonrec def H1Iso (A : Rep k G) : groupCohomology.H1 A ≃ H1 G A :=
+noncomputable nonrec def H1Iso : groupCohomology.H1 A ≃ H1 G A :=
   ((H1Iso A).toLinearEquiv.toEquiv).trans (H1Iso_aux A).symm
 
+lemma H1Iso_mk_eq_H1π_Z1EquivCocycles₁ :
+    (H1Iso A).symm ∘ (H1.mk G A) = (H1π A) ∘ (Z1EquivCocycles₁ A) := rfl
+
+lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm :
+    (H1Iso A) ∘ (H1π A) = (H1.mk G A) ∘ (Z1EquivCocycles₁ A).symm := by
+  simpa [← Function.comp_assoc] using
+    congr((H1Iso A) ∘ $(H1Iso_mk_eq_H1π_Z1EquivCocycles₁ A) ∘ (Z1EquivCocycles₁ A).symm).symm
+
+lemma H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply (x : cocycles₁ A) :
+    (H1Iso A) ((H1π A) x) = (H1.mk G A) ((Z1EquivCocycles₁ A).symm x) :=
+  congr($(H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm A) x)
+
 theorem H1Iso_zero : H1Iso A 0 = 0 := by
-  sorry
+  simp [H1Iso]
+  rfl
 
 theorem H1Iso_map {A B : Rep k G} (f : A ⟶ B) :
-    H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := sorry
+    H1Iso B ∘ (groupCohomology.map (.id G) f 1) = (H1.map f) ∘ H1Iso A := by
+  refine funext fun x ↦ H1_induction_on x fun x ↦ ?_
+  simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply B,
+    H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply A]
+  rfl
+
+lemma Rep.exact_iff_exact (X : ShortComplex (Rep k G)) :
+    X.Exact ↔ Function.Exact (X.f : X.X₁ →+[G] X.X₂) (X.g : X.X₂ →+[G] X.X₃) := by
+  convert (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact
+    (X.map (forget₂ (Rep k G) (ModuleCat k))))
+  exact (ShortComplex.exact_map_iff_of_faithful X (forget₂ (Rep k G) (ModuleCat k))).symm
 
 variable {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
 
-lemma _root_.CategoryTheory.ShortComplex.ShortExact.f_injective (hX : X.ShortExact) :
-    Function.Injective (X.f : X.X₁ →+[G] X.X₂) := sorry
+theorem δ₀_H0Iso_eq_H1Iso_δ :
+    (δ₀ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.exact)) ∘
+    (H0Iso X.X₃) = (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := by
+  have hf := (Rep.mono_iff_injective _).mp hX.mono_f
+  have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
+  have hfg := (Rep.exact_iff_exact _).mp hX.exact
+  refine funext fun x ↦ H0_induction_on _ x fun c ↦ ?_
+  simp only [H0Iso, Function.comp_apply]
+  conv =>
+    enter [1, 3]
+    change (groupCohomology.H0Iso X.X₃).hom _
+    simp only [Iso.inv_hom_id_apply]
+  obtain ⟨b, hb⟩ := hg c
+  have hb' : b ∈ X.g.hom ⁻¹' (H0 G X.X₃) := by simp [hb]
+  rw [groupCohomology.δ₀_apply hX c b hb (δ₀_aux hf hfg ⟨b, hb'⟩) ?_]
+  · rw [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply]
+    exact δ₀_apply' hf hfg c b hb _ fun g ↦ by simp
+  · ext g
+    simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₀_aux hf hfg ⟨b, hb'⟩, ← Rep.smul_eq_ρ_apply,
+      add_comm, sub_eq_add_neg]
 
-lemma _root_.CategoryTheory.ShortComplex.ShortExact.g_surjective (hX : X.ShortExact) :
-    Function.Surjective (X.g : X.X₂ →+[G] X.X₃) := sorry
-
-lemma _root_.CategoryTheory.ShortComplex.ShortExact.f_g_exact (hX : X.ShortExact) :
-    Function.Exact (X.f : X.X₁ →+[G] X.X₂) (X.g : X.X₂ →+[G] X.X₃) := sorry
-
-theorem δ₀₁_H0Iso_eq_H1Iso_δ :
-    (δ₀₁ hX.f_injective hX.g_surjective hX.f_g_exact) ∘ (H0Iso X.X₃) =
-    (H1Iso X.X₁) ∘ (groupCohomology.δ hX 0 1 rfl) := sorry
-
-theorem δ₁₂_H1Iso_eq_δ :
-    (δ₁₂ hX.f_injective hX.g_surjective hX.f_g_exact (by simp [AddCommGroup.center_eq_top])) ∘
-      (H1Iso X.X₃) = (groupCohomology.δ hX 1 2 rfl) := sorry
+theorem δ₁_H1Iso_eq_δ :
+    (δ₁ ((Rep.mono_iff_injective _).mp hX.mono_f) ((Rep.exact_iff_exact _).mp hX.1)
+    (by simp [AddCommGroup.center_eq_top])) ∘ (H1Iso X.X₃) = groupCohomology.δ hX 1 2 rfl := by
+  have hf := (Rep.mono_iff_injective _).mp hX.mono_f
+  have hg := (Rep.epi_iff_surjective _).mp hX.epi_g
+  have hfg := (Rep.exact_iff_exact _).mp hX.exact
+  have hA : (X.f : X.X₁ →+[G] X.X₂).toAddMonoidHom.range ≤ AddSubgroup.center X.X₂ := by
+    simp [AddCommGroup.center_eq_top]
+  refine funext fun x ↦ H1_induction_on x fun c ↦ ?_
+  simp [H1Iso_H1π_eq_mk_Z1EquivCocycles₁_symm_apply X.X₃]
+  obtain ⟨b, hb⟩ := hg.comp_left c
+  have hb' : b ∈ (X.g ∘ ·) ⁻¹' (Z1 G X.X₃) := by
+    simp [show X.g ∘ b = c from hb]
+    have := (mem_cocycles₁_iff c).mp c.2
+    exact fun g h ↦ by simpa [add_comm] using this g h
+  rw [groupCohomology.δ₁_apply hX c b hb (δ₁_aux hf hfg hA ⟨b, hb'⟩)]
+  · refine δ₁_apply hf hg hfg hA ((Z1EquivCocycles₁ X.X₃).symm c) b ?_ _ fun g h ↦ by simp
+    simpa [← Rep.toDistribMulActionHom_eq_hom]
+  · ext ⟨g, h⟩
+    simp [← Rep.toDistribMulActionHom_eq_hom, apply_δ₁_aux, ← Rep.smul_eq_ρ_apply,
+      add_comm, add_sub_assoc]
 
 end compatibility
 

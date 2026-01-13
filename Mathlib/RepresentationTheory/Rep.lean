@@ -71,6 +71,9 @@ def Hom.toDistribMulActionHom {V W : Rep k G} (f : V ⟶ W) : V →+[G] W where
 
 instance {V W : Rep k G} : Coe (V ⟶ W) (V →+[G] W) := ⟨Hom.toDistribMulActionHom⟩
 
+lemma toDistribMulActionHom_eq_hom {V W : Rep k G} (f : V ⟶ W) :
+    ((f : V →+[G] W) : V → W) = f.hom := rfl
+
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
