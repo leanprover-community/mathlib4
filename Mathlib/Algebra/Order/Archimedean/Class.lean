@@ -379,6 +379,40 @@ theorem mk_left_le_mk_div (hab : mk a ≤ mk b) : mk a ≤ mk (a / b) := by
 theorem mk_right_le_mk_div (hba : mk b ≤ mk a) : mk b ≤ mk (a / b) := by
   simpa [div_eq_mul_inv, hba] using mk_right_le_mk_mul (a := a) (b := b⁻¹)
 
+@[to_additive (attr := simp)]
+theorem mk_left_le_mk_mul_iff : mk a ≤ mk (a * b) ↔ mk a ≤ mk b where
+  mp h := by simpa using mk_left_le_mk_div h
+  mpr := mk_left_le_mk_mul
+
+@[to_additive (attr := simp)]
+theorem mk_right_le_mk_mul_iff : mk b ≤ mk (a * b) ↔ mk b ≤ mk a := by
+  rw [mul_comm, mk_left_le_mk_mul_iff]
+
+@[to_additive (attr := simp)]
+theorem mk_left_le_mk_div_iff : mk a ≤ mk (a / b) ↔ mk a ≤ mk b where
+  mp h := by simpa using mk_left_le_mk_div h
+  mpr := mk_left_le_mk_div
+
+@[to_additive (attr := simp)]
+theorem mk_right_le_mk_div_iff : mk b ≤ mk (a / b) ↔ mk b ≤ mk a := by
+  rw [mk_div_comm, mk_left_le_mk_div_iff]
+
+@[to_additive (attr := simp)]
+theorem mk_mul_lt_mk_left_iff : mk (a * b) < mk a ↔ mk b < mk a :=
+  le_iff_le_iff_lt_iff_lt.1 mk_left_le_mk_mul_iff
+
+@[to_additive (attr := simp)]
+theorem mk_mul_lt_mk_right_iff : mk (a * b) < mk b ↔ mk a < mk b :=
+  le_iff_le_iff_lt_iff_lt.1 mk_right_le_mk_mul_iff
+
+@[to_additive (attr := simp)]
+theorem mk_div_lt_mk_left_iff : mk (a / b) < mk a ↔ mk b < mk a :=
+  le_iff_le_iff_lt_iff_lt.1 mk_left_le_mk_div_iff
+
+@[to_additive (attr := simp)]
+theorem mk_div_lt_mk_right_iff : mk (a / b) < mk b ↔ mk a < mk b :=
+  le_iff_le_iff_lt_iff_lt.1 mk_right_le_mk_div_iff
+
 @[to_additive]
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
   refine le_antisymm (mk_le_mk.mpr ⟨2, ?_⟩) (mk_left_le_mk_mul h.le)
