@@ -21,6 +21,8 @@ composition `ψ.extend J ∘ f ∘ φ.extend I` of `f : M → N` with charts `ψ
 appropriate models with corners. This is not a definition, so technically deviating from the naming
 convention.
 
+`isLocalStructomorphOn` is another made-up name.
+
 -/
 
 @[expose] public section
