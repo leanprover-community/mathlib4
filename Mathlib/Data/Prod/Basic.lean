@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
-public import Aesop
 public import Mathlib.Tactic.Inhabit
 public import Batteries.Tactic.Trans
 
@@ -24,7 +23,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
-lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by grind
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
