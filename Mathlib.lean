@@ -4194,6 +4194,7 @@ public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.FieldTheory.RatFunc.Degree
+public import Mathlib.FieldTheory.RatFunc.Luroth
 public import Mathlib.FieldTheory.Relrank
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.FieldTheory.SeparableClosure
