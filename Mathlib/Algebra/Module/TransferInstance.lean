@@ -63,6 +63,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
       simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 
+set_option linter.style.whitespace false in -- false positive around extract_lets
 variable (R) in
 /-- Transfer `Module.IsTorsionFree` across an `Equiv` -/
 protected lemma moduleIsTorsionFree (e : α ≃ β) [AddCommMonoid β] [Module R β]
