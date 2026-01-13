@@ -167,8 +167,11 @@ lemma FG.of_restrictScalars [SMul R A] [IsScalarTower R A M] (S : Submodule A M)
 
 lemma Finite.fg_restrictScalars [Module R A] [Module.Finite R A] [IsScalarTower R A M]
     (S : Submodule A M) (hS : S.FG) : (S.restrictScalars R).FG := by
+  let M := S.restrictScalars R
+  have h : Module.Finite R M ↔ M.FG := Module.finite_def.trans M.fg_top
+  rw [← h]
   -- rw [← Module.Finite.iff_fg] at *
-  -- exact Module.Finite.trans R s
+  -- exact Module.Finite.trans R S
   sorry
 
 @[simp]
