@@ -445,8 +445,6 @@ def sSup {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph whe
         exact H_adj
     · simp only
 
-
-open Classical in
 def sInf {G : Digraph V} (ℋ : Set G.SpanningSubgraph) : G.SpanningSubgraph where
   val := {
     verts := G.verts
@@ -553,7 +551,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
     exact hcontra h
 
 
-noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
+instance (G : Digraph V) : CompleteBooleanAlgebra
   (G.SpanningSubgraph) where
   sup := sup
   le_sup_left := le_sup_left
