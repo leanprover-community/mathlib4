@@ -35,7 +35,6 @@ theorem coe_injective : Function.Injective (WithBotTop.coe : ι → _) := by rin
 @[simp] lemma coe_ne_bot (a : ι) : (a : WithBotTop ι) ≠ ⊥ := by rintro ⟨⟩
 @[simp] lemma coe_ne_top (a : ι) : (a : WithBotTop ι) ≠ ⊤ := by rintro ⟨⟩
 @[simp] lemma top_ne_bot : (⊤ : WithBotTop ι) ≠ ⊥ := by rintro ⟨⟩
-@[simp] lemma bot_ne_top : (⊤ : WithBotTop ι) ≠ ⊥ := by rintro ⟨⟩
 
 section
 
