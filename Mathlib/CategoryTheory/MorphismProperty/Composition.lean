@@ -361,6 +361,14 @@ instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
 
 instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
 
+instance : (⊤ : MorphismProperty C).HasOfPostcompProperty W where
+  of_postcomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasOfPrecompProperty W where
+  of_precomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasTwoOutOfThreeProperty where
+
 end
 
 section
