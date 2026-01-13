@@ -77,27 +77,6 @@ theorem _root_.Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f
     {ι : Type*} (s : Finset ι) (g : ι → Ideal S) : (s.inf g).comap f = s.inf (comap f ∘ g) := by
   exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
 
-theorem _root_.IsLocalization.comap_map_of_isPrimary_disjoint
-    {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-    [CommSemiring S] [Algebra R S] [IsLocalization M S]
-    (I : Ideal R) (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
-    Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
-  have key : Disjoint (M : Set R) I.radical := by
-    contrapose! hM
-    rw [Set.not_disjoint_iff] at hM ⊢
-    obtain ⟨a, ha, k, hk⟩ := hM
-    exact ⟨a ^ k, pow_mem ha k, hk⟩
-  refine le_antisymm (fun a ha ↦ ?_) Ideal.le_comap_map
-  rw [mem_comap, IsLocalization.mem_map_algebraMap_iff M S] at ha
-  obtain ⟨⟨b, s⟩, h⟩ := ha
-  replace h : algebraMap R S (s * a) = algebraMap R S b := by
-    simpa only [← map_mul, mul_comm] using h
-  obtain ⟨c, hc⟩ := (IsLocalization.eq_iff_exists M S).1 h
-  have : a * (c * s : M) ∈ I := by
-    rw [mul_comm, Submonoid.coe_mul, mul_assoc, hc]
-    exact I.mul_mem_left c b.2
-  exact ((isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
-
 @[simp]
 theorem _root_.Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] :
     (I.primeCompl : Set R) = (I : Set R)ᶜ := rfl

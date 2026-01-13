@@ -19,15 +19,6 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 @[expose] public section
 
-open Pointwise
--- import Mathlib.Algebra.Module.Submodule.Pointwise
-@[simp]
-theorem Submodule.smul_iSup' {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-    {ι : Sort*} (f : ι → Submodule R M) (r : R) :
-    r • ⨆ i, f i = ⨆ i, r • f i := by
-  refine le_antisymm ?_ (iSup_le fun i ↦ smul_le_smul_left r (le_iSup f i))
-  refine map_le_iff_le_comap.mpr (iSup_le fun i ↦ map_le_iff_le_comap.mp (le_iSup (r • f ·) i))
-
 namespace Submodule
 
 open Pointwise
@@ -104,7 +95,7 @@ theorem colon_sup : N.colon (P ⊔ Q) = N.colon P ⊓ N.colon Q := by
 @[simp]
 theorem colon_iSup {ι : Sort*} (f : ι → Submodule R M) :
     N.colon (⨆ i, f i) = ⨅ i, N.colon (f i) := by
-  simp [Submodule.ext_iff, mem_colon_def]
+  simp [Submodule.ext_iff, mem_colon_def, smul_iSup']
 
 @[simp]
 theorem colon_finset_sup {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
