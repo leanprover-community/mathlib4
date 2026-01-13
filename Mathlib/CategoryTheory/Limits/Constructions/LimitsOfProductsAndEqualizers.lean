@@ -174,7 +174,6 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · intro f
       dsimp [P, Q, t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
-      apply congrArg G.map
       dsimp
     · apply Fork.ofι (G.map i)
       rw [← G.map_comp, ← G.map_comp]

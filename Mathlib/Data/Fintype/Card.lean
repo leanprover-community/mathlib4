@@ -410,8 +410,7 @@ theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.ca
     (univ : Finset α) = {x} := by
   symm
   apply eq_of_subset_of_card_le (subset_univ {x})
-  apply le_of_eq
-  simp [h, Finset.card_univ]
+  simp [h]
 
 namespace Finite
 
