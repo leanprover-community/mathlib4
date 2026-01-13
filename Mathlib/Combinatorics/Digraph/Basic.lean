@@ -153,8 +153,8 @@ instance hasCompl : HasCompl (Digraph V) where
     Adj v w := v ∈ G.verts ∧ w ∈ G.verts ∧ ¬G.Adj v w
   }
 
-@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hmem : v ∈ G.verts ∧ w ∈ G.verts)
-  : Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hmem.1, hmem.2, h⟩⟩
+@[simp] theorem compl_adj (G : Digraph V) (v w : V) (hmem : v ∈ G.verts ∧ w ∈ G.verts) :
+  Gᶜ.Adj v w ↔ ¬G.Adj v w := ⟨fun h => h.2.2, fun h => ⟨hmem.1, hmem.2, h⟩⟩
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
