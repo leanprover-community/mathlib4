@@ -13,8 +13,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
@@ -951,7 +950,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
       `Unit` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
-      `Unit` is not the set of units of a normed algebra
+      `Unit` is not a set of units, in particular not of a complete normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex unit circle

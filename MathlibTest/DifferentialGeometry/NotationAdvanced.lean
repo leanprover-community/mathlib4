@@ -303,7 +303,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
       `E'' →SL[id'] E'''` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not the set of units of a normed algebra
+      `E'' →SL[id'] E'''` is not a set of units, in particular not of a complete normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not the complex unit circle
@@ -500,7 +500,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
       `↑(Set.Icc x y)` is not the complex upper half plane
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
-      `↑(Set.Icc x y)` is not the set of units of a normed algebra
+      `↑(Set.Icc x y)` is not a set of units, in particular not of a complete normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex unit circle
@@ -659,6 +659,13 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace 
 /-- info: MDifferentiable 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, 𝕜) f : Prop -/
 #guard_msgs in
 variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
+#check MDiff f
+
+variable {α : Type*} [Monoid α] [Ring α]
+
+/-- error: Could not find a model with corners for `αˣ` -/
+#guard_msgs in
+variable {f : αˣ → 𝕜} in
 #check MDiff f
 
 end units

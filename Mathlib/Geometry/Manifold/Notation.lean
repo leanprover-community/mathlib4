@@ -448,8 +448,9 @@ where
       -- If `α` is a normed `𝕜`-algebra for some `𝕜`, we know a model with corners.
       -- We need to gather `𝕜` from the context: try to find a `NormedAlgebra` or `NormedSpace`
       -- instance in the local context.
-      -- TODO: this feels somewhat brittle (can there be other instances in context?),
-      -- at least emit a nice error message if this fails
+      -- Note: this is somewhat brittle, and will need to be updated if other instance are made.
+      -- A more robust solution would involve running typeclass inference,
+      -- hence could potentially be slow.
       let searchNormedAlgebra := ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
@@ -479,7 +480,7 @@ where
           if (← isDefEq V W) then
             trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
             let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-              trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+              trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
               match_expr type with
               | NormedSpace k R _ _ =>
                 -- We use reducible transparency to allow using a type synonym: this should not
@@ -499,7 +500,7 @@ where
           else
             throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
               co-domain `{W}` being not definitionally equal"
-    | _ => throwError "`{e}` is not the set of units of a normed algebra"
+    | _ => throwError "`{e}` is not a set of units, in particular not of a complete normed algebra"
   /-- Attempt to find a model with corners on the complex unit circle -/
   fromCircle : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `Circle`.
@@ -548,7 +549,8 @@ where
                 trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E` via `{_inst}`"
                 -- Try to unify the rhs with an expression m + 1, for a natural number m.
                 -- If we find one, that's the dimension of our model with corners.
-                -- TODO: the following code fails!
+                -- Always returning the finrank - 1 would be undesirable, for instance since natural
+                -- number subtraction is badly behaved.
                 have rhs : Q(ℕ) := rhs
                 match rhs with
                 | ~q($n + 1) =>
@@ -560,7 +562,6 @@ where
               else
                 trace[Elab.DiffGeo.MDiff] "found a fact about finrank, \
                   but not about `finrank ℝ E`: continue the search"
-                -- TODO: also test this message!
                 return none
             | _ => return none
           | _ => return none
