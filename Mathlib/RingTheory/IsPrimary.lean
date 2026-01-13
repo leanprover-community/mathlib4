@@ -90,6 +90,10 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : 
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
+lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
+    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+  h.2 hrm
+
 end CommSemiring
 
 section CommRing

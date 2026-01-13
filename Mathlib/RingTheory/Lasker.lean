@@ -261,6 +261,7 @@ theorem _root_.Ideal.IsPrime.eq_of_inf_eq
   subst hs
   exact (hp.inf_le'.mp le_rfl).imp (fun a ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
 
+-- todo: see if `IsPrimary.mem_or_mem` can help golf
 theorem _root_.Submodule.IsPrimary.foobar {R M : Type*} [CommSemiring R] [AddCommMonoid M]
     [Module R M] {I : Submodule R M} (hI : I.IsPrimary) : (I.colon ⊤).radical.IsPrime := by
   rw [Ideal.isPrime_iff]
@@ -339,8 +340,6 @@ lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
 
 namespace Submodule
 
-#check LocalizedModule.mkLinearMap
-
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddCommMonoid M]
     [Module R M]
@@ -371,28 +370,40 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
   have key1 : ∀ q ∈ s, (h.map_submodule S f q).comap f = q := by
     intro q hq
     refine le_antisymm ?_ ?_
-    · -- uses disjointness somehow
-      sorry
+    · intro x hx
+      simp only [mem_comap, IsLocalizedModule.mem_map_submodule_iff, Submodule.mem_map] at hx
+      obtain ⟨a, b, hb, ha⟩ := hx
+      rw [← LinearMap.map_smul_of_tower] at ha
+      obtain ⟨c, hc⟩ := h.eq_iff_exists.mp ha
+      have key : (c * a) • x ∈ q := by rw [mul_smul, ← hc]; exact q.smul_mem c hb
+      apply ((ht.primary (hs hq)).mem_or_mem key).resolve_right
+      exact key0 q hq (c * a).2
     · rw [← map_le_iff_le_comap]
-      intro x hx
-      rw [IsLocalizedModule.map_submodule, restrictScalars_mem]
-      have key := @Submodule.subset_span (Localization S) (LocalizedModule S M) _ _ _ (q.map f)
-      simp only [Set.subset_def] at key
-      specialize key x hx
-      simp only [SetLike.mem_coe] at key
-      convert key <;> sorry
+      let _ : Module (Localization S) (LocalizedModule S M) := h.module S f
+      exact subset_span
   have key2 : ∀ q ∈ t \ s, (h.map_submodule S f q).comap f = ⊤ := by
     intro q hq
-    rw [comap_eq_top_iff]
+    rw [eq_top_iff']
+    intro x
+    -- simp only [mem_comap, IsLocalizedModule.mem_map_submodule_iff, mem_map]
     contrapose! hq
-    rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint M] at hq
     rw [Finset.mem_sdiff, not_and_not_right]
     intro hqt
-    rw [← Set.subset_compl_iff_disjoint_left] at hq
-    simp only [M, Submonoid.coe_iInf, Set.compl_iInter, coe_primeCompl, compl_compl] at hq
-    obtain ⟨r, hrs, h⟩ :=
-      (subset_union_prime ⊥ ⊥ fun q hq _ _ ↦ isPrime_radical (ht.primary (hs hq))).mp hq
-    exact downward_closed q hqt r hrs (radical_le_radical_iff.mpr h)
+    suffices ((q.colon ⊤) : Set R) ⊆ ⋃ r ∈ s, (r.colon ⊤).radical by
+      obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
+        ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).foobar).mp this
+      exact downward_closed q hqt r hrs (Ideal.radical_le_radical_iff.mpr h)
+    contrapose! hq
+    rw [Set.not_subset_iff_exists_mem_notMem] at hq
+    obtain ⟨y, hy1, hy2⟩ := hq
+    replace hy2 : y ∈ S := by simpa [S] using hy2
+    rw [mem_comap, IsLocalizedModule.mem_map_submodule_iff]
+    use ⟨y, hy2⟩
+    rw [← LinearMap.map_smul_of_tower, Submonoid.mk_smul]
+    apply mem_map_of_mem
+    apply hy1
+    apply Set.smul_mem_smul_set
+    exact mem_top
   rw [Finset.inf_congr rfl key2, Finset.inf_congr rfl key1]
   simp [Finset.inf_eq_iInf]
 
