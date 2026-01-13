@@ -140,6 +140,8 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 
+section RestrictScalars
+
 theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     [AddCommMonoid M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
     (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
@@ -148,8 +150,10 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   use X
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 
-lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M]
-    [SMul R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+variable (R : Type*) {A M : Type*} [Semiring R] [Semiring A]
+  [AddCommMonoid M] [Module R M] [Module A M]
+
+lemma FG.of_restrictScalars [SMul R A] [IsScalarTower R A M] (S : Submodule A M)
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
   refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
@@ -158,6 +162,19 @@ lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M
     rwa [Submodule.span_le]
   · rw [← e]
     exact Submodule.span_le_restrictScalars _ _ _
+
+lemma Finite.fg_restrictScalars [Module R A] [Module.Finite R A] [IsScalarTower R A M]
+    (S : Submodule A M) (hS : S.FG) : (S.restrictScalars R).FG := by
+  -- rw [← Module.Finite.iff_fg] at *
+  -- exact Module.Finite.trans R s
+  sorry
+
+@[simp]
+lemma restrictedScalars_fg_iff [Module R A] [Module.Finite R A] [IsScalarTower R A M]
+    {S : Submodule A M} : (S.restrictScalars R).FG ↔ S.FG :=
+  ⟨FG.of_restrictScalars R S, Finite.fg_restrictScalars R S⟩
+
+end RestrictScalars
 
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
