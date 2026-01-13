@@ -41,6 +41,12 @@ nonzero, we have
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
+
+Sometimes Landau notation may be embedded in more complex expressions, such as
+$f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
+
+  `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
+
 -/
 
 @[expose] public section
