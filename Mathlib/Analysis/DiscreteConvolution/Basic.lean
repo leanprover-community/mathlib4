@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 # Discrete Convolution
 
 Discrete convolution over monoids: `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`
-where `mulFiber x = {(a, b) | a * b = x}`.
+where `mulFiber x = {(a, b) | a * b = x}`. Additive monoids are also supported.
 
 ## Design
 
