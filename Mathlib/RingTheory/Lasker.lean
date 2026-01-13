@@ -173,11 +173,10 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
 
-theorem _root_.Ideal.IsPrime.eq_of_inf_eq
-    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : Ideal.IsPrime P)
-    (hs : s.inf f = P) : ∃ i ∈ s, f i = P := by
-  subst hs
-  exact (hp.inf_le'.mp le_rfl).imp (fun a ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
+theorem _root_.Ideal.eq_inf_of_isPrime_inf
+    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} (hp : Ideal.IsPrime (s.inf f)) :
+    ∃ i ∈ s, f i = s.inf f :=
+  (hp.inf_le'.mp le_rfl).imp (fun _ ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
 
 -- todo: see if `IsPrimary.mem_or_mem` can help golf
 theorem _root_.Submodule.IsPrimary.foobar {R M : Type*} [CommSemiring R] [AddCommMonoid M]
@@ -238,7 +237,8 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
   · obtain ⟨hp, x, rfl⟩ := hp
     have key : (I.ann x).radical = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon ⊤).radical) := by
       rw [key2, Finset.inf_congr rfl (key3 x), Finset.inf_ite, Finset.inf_top, top_inf_eq]
-    obtain ⟨q, hq1, hq2⟩ := IsPrime.eq_of_inf_eq hp key.symm
+    rw [key] at hp ⊢
+    obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
     exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
 
 end Submodule
