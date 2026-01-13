@@ -906,7 +906,7 @@ This is `Linear.compAlternatingMap` as an isomorphism,
 and the alternating version of `LinearEquiv.multilinearMapCongrRight`. -/
 @[simps!]
 def LinearEquiv.alternatingMapCongrRight (e : N'' ≃ₗ[R'] N₂'') :
-    M''[⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
+    M'' [⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
   toFun f := e.compAlternatingMap f
   invFun f := e.symm.compAlternatingMap f
   map_add' _ _ := by ext; simp
