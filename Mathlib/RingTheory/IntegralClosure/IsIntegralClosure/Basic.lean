@@ -22,7 +22,7 @@ We prove basic properties of `IsIntegralClosure`.
 
 @[expose] public section
 
-open Polynomial Submodule
+open Module Polynomial Submodule
 
 section inv
 
@@ -356,6 +356,12 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
+
+lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsTorsionFree R A := by
+  refine
+    Function.Injective.moduleIsTorsionFree _ (IsIntegralClosure.algebraMap_injective A R B)
+      fun _ _ => ?_
+  simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
