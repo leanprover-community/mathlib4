@@ -220,9 +220,9 @@ lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
       (c₂ - c₁) * signedDist v p q := by
   simp only [AffineMap.apply_lineMap, ContinuousAffineMap.apply_lineMap,
     ContinuousAffineMap.lineMap_apply', signedDist_self]
-  simp only [AffineMap.lineMap_apply, vsub_eq_sub, sub_zero, smul_eq_mul, vadd_eq_add, add_zero,
-    zero_sub, signedDist_anticomm, add_sub_cancel_left, sub_mul]
-  rw [← signedDist_anticomm v p, mul_neg, sub_eq_add_neg]
+  simp only [AffineMap.lineMap_apply_module', sub_zero, smul_eq_mul, add_zero, zero_sub,
+    signedDist_anticomm, add_sub_cancel_left]
+  rw [← signedDist_anticomm v p, mul_neg, ← neg_mul, ← add_mul, sub_eq_add_neg]
 
 lemma signedDist_lineMap_left (c : ℝ) :
     signedDist v (AffineMap.lineMap p q c) p = -c * signedDist v p q := by
