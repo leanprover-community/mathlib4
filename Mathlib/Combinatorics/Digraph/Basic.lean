@@ -108,7 +108,7 @@ def completeBipartite (V W : Type*) : Digraph (Sum V W) where
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
-@[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj  ↔ G = H :=
+@[simp] theorem adj_inj {G H : Digraph V} : verts G = verts H ∧ G.Adj = H.Adj ↔ G = H :=
   Digraph.ext_iff.symm
 
 section Order
