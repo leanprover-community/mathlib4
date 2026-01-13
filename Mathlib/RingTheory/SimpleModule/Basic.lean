@@ -564,7 +564,7 @@ variable [IsSemisimpleModule R M]
 
 -- Statement and proof follow [Lorenz2008], Chapter 28, F20.
 theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
-    ∃ r : R, ∀ m ∈ s, f m = r • m := by
+    ∃ r : R, ∀ m ∈ s, f m = r • m :=
   let x := Finsupp.equivFunOnFinite.symm (·.1 : s → M)
   have ⟨_, h⟩ := exists_isCompl (R ∙ x)
   let p := projection h
@@ -572,9 +572,10 @@ theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
   have : f (p • x) = f x := congr(f $(projection_apply_left h ⟨x, mem_span_singleton_self x⟩))
   have : f x ∈ R ∙ x := by rw [← this, map_smul, End.smul_def]; apply projection_apply_mem
   have ⟨r, hr⟩ := mem_span_singleton.mp this
-  exact ⟨r, fun m hm ↦ by simpa [x] using congr($hr ⟨m, hm⟩).symm⟩
+  ⟨r, fun m hm ↦ by simpa [x] using congr($hr ⟨m, hm⟩).symm⟩
 
-protected theorem Module.Finite.jacobson_density [Module.Finite (End R M) M] :
+/-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
+protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
     Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by
   have ⟨s, hs⟩ := Module.Finite.fg_top (R := End R M) (M := M)
   intro f
