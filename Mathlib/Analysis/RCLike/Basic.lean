@@ -790,7 +790,7 @@ namespace RCLike
 @[simp] theorem map_to_real : map K ℝ = re := by
   ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
 
-@[simp] theorem map_real_to (x : ℝ) : map ℝ K x = x := by simp [im, re]
+@[simp] theorem map_apply_real (x : ℝ) : map ℝ K x = x := by simp [im, re]
 
 section Order
 
