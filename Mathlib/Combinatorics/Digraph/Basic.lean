@@ -315,7 +315,7 @@ The top subgraph `⊤`
 def top {G : Digraph V} : G.SpanningSubgraph := ⟨G, by simp⟩
 
 /--
-The complement of a spanning subgraph `H` of `G` w.r.t to `G`
+The complement of a spanning subgraph `H` of `G` with respect to `G`
 -/
 def compl {G : Digraph V} (H : G.SpanningSubgraph) : G.SpanningSubgraph := by
   constructor
