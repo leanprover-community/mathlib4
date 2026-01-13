@@ -21,22 +21,23 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
 class my_has_pow (α : Type u) (β : Type v) where
-  (pow : α → β → α)
+  pow : α → β → α
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
 class my_has_scalar (M : Type u) (α : Type v) where
-  (smul : M → α → α)
+  smul : M → α → α
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
-error: Cannot apply attribute @[to_additive] to 'Test.my_has_pow.pow': it is already translated to 'Test.my_has_scalar.smul'. ⏎
-If you need to set the `reorder` or `relevant_arg` option, this is still possible with the ⏎
-`@[to_additive (reorder := ...)]` or `@[to_additive (relevant_arg := ...)]` syntax.
+error: `to_additive` validation failed: expected
+  {α : Type u} → {β : Type v} → [self : my_has_scalar β α] → α → β → α
+but 'Test.my_has_scalar.smul' has type
+  {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive] my_has_pow.pow
+attribute [to_additive existing] my_has_pow.pow
 /--
 error: `to_additive` validation failed: expected
   {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
@@ -44,8 +45,8 @@ but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive (reorder := α β)] my_has_pow.pow
-attribute [to_additive (reorder := α β, 4 5)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -811,3 +812,13 @@ set_option pp.proofs true in
 /-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
 #guard_msgs in
 #check abstractAdd
+
+-- We give a warning if an existing translation is overwritten:
+/--
+warning: `abstractMul` was already translated to `abstractAdd` instead of `someOtherTranslation`.
+Unless the original translation was wrong, please remove this `to_additive` attribute.
+
+Note: This linter can be disabled with `set_option linter.translateOverwrite false`
+-/
+#guard_msgs in
+attribute [to_additive someOtherTranslation] abstractMul
