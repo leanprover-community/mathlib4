@@ -149,18 +149,19 @@ theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
     (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by
   let : Module (Localization p) N := IsLocalizedModule.module p f
   have : IsScalarTower R (Localization p) N := IsLocalizedModule.isScalarTower_module p f
-  have h1 := Submodule.localized'_iSup (Localization p) p f g
-  have h2 := congr_arg (restrictScalars R) h1
-  simp only [restrictScalars_localized', restrictScalars_iSup] at h2
-  exact h2
+  simpa using congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
 
 /-- `localized₀` as a `FrameHom`. -/
-noncomputable def localized₀_frameHom :
-    FrameHom (Submodule R M) (Submodule R N) where
+noncomputable def localized₀_frameHom : FrameHom (Submodule R M) (Submodule R N) where
   toFun := localized₀ p f
   map_inf' := localized₀_inf p f
   map_top' := localized₀_top p f
   map_sSup' s := by rw [sSup_eq_iSup', localized₀_iSup, sSup_image']
+
+@[simp]
+lemma IsLocalizedModule.localized₀_frameHom_apply :
+    localized₀_frameHom p f M' = M'.localized₀ p f :=
+  rfl
 
 /-- `localized'` as a `FrameHom`. -/
 noncomputable def localized'_frameHom :
@@ -169,6 +170,11 @@ noncomputable def localized'_frameHom :
   map_inf' := localized'_inf S p f
   map_top' := localized'_top S p f
   map_sSup' s := by rw [sSup_eq_iSup', localized'_iSup, sSup_image']
+
+@[simp]
+lemma IsLocalizedModule.localized'_frameHom_apply :
+    localized'_frameHom S p f M' = M'.localized' S p f :=
+  rfl
 
 @[simp]
 lemma localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by
