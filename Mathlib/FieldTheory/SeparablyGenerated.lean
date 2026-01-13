@@ -5,14 +5,13 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 -/
 module
 
+public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.Data.Set.Subset
 public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
-public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Polynomial.GaussLemma
-public import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
 
@@ -111,7 +110,7 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
   · refine (map_eq_zero_iff _ (rename_injective _ Subtype.val_injective)).not.mpr fun H ↦ ?_
     let e := (Equiv.optionSubtypeNe i).symm
     have : coeff _ (F₀.coeff _) = _ :=
-      optionEquivLeft_coeff_coeff _ _ (σ.equivMapDomain e) (renameEquiv k e F)
+      optionEquivLeft_coeff_some_coeff_none _ _ (σ.equivMapDomain e) (renameEquiv k e F)
     dsimp only [F₀] at this
     rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _
       e.injective, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,

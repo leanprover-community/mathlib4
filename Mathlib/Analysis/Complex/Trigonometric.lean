@@ -416,6 +416,14 @@ theorem tan_mul_cos {x : ℂ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
 
 @[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  inv_div ..
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  inv_div ..
+
+@[simp]
 theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
 
 theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj, ← map_div₀, tan]
@@ -601,6 +609,14 @@ nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
 
 theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
+
+@[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  ofReal_injective <| by simp
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  ofReal_injective <| by simp
 
 @[simp]
 theorem tan_zero : tan 0 = 0 := by simp [tan]
@@ -794,6 +810,22 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
   lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+
+theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem abs_tanh_lt_one (x : ℝ) : |tanh x| < 1 :=
+  abs_lt.mpr ⟨neg_one_lt_tanh x, tanh_lt_one x⟩
+
+theorem tanh_sq_lt_one (x : ℝ) : (tanh x) ^ 2 < 1 :=
+  (sq_lt_one_iff_abs_lt_one (tanh x)).mpr (abs_tanh_lt_one x)
 
 end Real
 

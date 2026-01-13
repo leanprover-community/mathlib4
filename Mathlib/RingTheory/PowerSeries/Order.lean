@@ -143,7 +143,7 @@ theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
       have eq_aux : d.degree = d () := Finset.sum_eq_single _ (by simp) (by simp)
       exact (PowerSeries.coeff_def rfl (R := R)) ▸ (eq_aux ▸ this)
   · refine le_order φ (MvPowerSeries.order φ) fun i hi => by
-      rw [←Finsupp.degree_single () i] at hi
+      rw [← Finsupp.degree_single () i] at hi
       exact MvPowerSeries.coeff_of_lt_order hi
 
 /-- The order of the sum of two formal power series
@@ -455,6 +455,19 @@ theorem divXPowOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontr
   map_prod divXPowOrderHom φ s
 
 end NoZeroDivisors
+
+section Ring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+@[simp]
+theorem order_toSubring : (p.toSubring T hp).order = p.order := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine le_order _ _ fun d hd => by simp [coeff_of_lt_order d hd, ← coeff_toSubring p T hp]
+  · exact le_order _ _ fun d hd => by
+      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order d hd)
+
+end Ring
 
 end PowerSeries
 

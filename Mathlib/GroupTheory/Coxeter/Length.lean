@@ -66,10 +66,13 @@ local prefix:100 "π " => cs.wordProd
 
 /-! ### Length -/
 
+set_option backward.privateInPublic true in
 private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/

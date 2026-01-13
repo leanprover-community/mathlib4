@@ -96,6 +96,12 @@ instance (priority := 50) smul : SMul R s :=
     SMulCommClass T R s where
   smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
+@[to_additive] instance (priority := 50) [IsLeftCancelSMul R M] : IsLeftCancelSMul R s where
+  left_cancel' x _ _ eq := Subtype.ext <| IsLeftCancelSMul.left_cancel x _ _ congr($eq)
+
+@[to_additive] instance (priority := 50) [IsCancelSMul R M] : IsCancelSMul R s where
+  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.1 congr($eq)
+
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 @[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]

@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Int.CharZero
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
+
 /-!
 # Further basic results about `Algebra`.
 
@@ -25,7 +27,7 @@ This file could usefully be split further.
 
 universe u v w u₁ v₁
 
-open Function
+open Function Module
 
 namespace Algebra
 
@@ -221,9 +223,6 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
       apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
       simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
-@[deprecated (since := "2025-04-28")]
-alias End_algebraMap_isUnit_inv_apply_eq_iff := End.algebraMap_isUnit_inv_apply_eq_iff
-
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
@@ -232,9 +231,6 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     H.symm ▸ by
       apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
       simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
-
-@[deprecated (since := "2025-04-28")]
-alias End_algebraMap_isUnit_inv_apply_eq_iff' := End.algebraMap_isUnit_inv_apply_eq_iff'
 
 end
 
@@ -350,7 +346,7 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
 theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   FaithfulSMul.algebraMap_eq_zero_iff _ _
 
-@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+@[deprecated coe_eq_zero_iff (since := "2025-10-21")]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   coe_eq_zero_iff _ _ _
 
@@ -408,6 +404,10 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
+lemma isSMulRegular_algebraMap_iff {r : R} :
+    IsSMulRegular M (algebraMap R A r) ↔ IsSMulRegular M r :=
+  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul A r)
+
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
 theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M]
@@ -447,6 +447,42 @@ theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a
   smul_comm _ _ _
 
 end IsScalarTower
+
+section FaithfulSMul
+variable (R S A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [FaithfulSMul R A]
+
+lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
+  (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
+
+lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
+  (FaithfulSMul.algebraMap_injective R A).isDomain
+
+lemma Module.IsTorsionFree.of_faithfulSMul [Semiring S] [Module S R] [Module S A]
+    [IsScalarTower S R A] [IsTorsionFree S A] : IsTorsionFree S R :=
+  (FaithfulSMul.algebraMap_injective R A).moduleIsTorsionFree _
+    (by simp [Algebra.algebraMap_eq_smul_one])
+
+lemma Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsDomain A] [AddCommMonoid M]
+    [Module A M] [Module R M] [IsTorsionFree A M] [IsScalarTower R A M] : IsTorsionFree R M :=
+  .comap (algebraMap R A) (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero) (by simp)
+
+-- see Note [lower instance priority]
+instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsDomain A] :
+    IsTorsionFree R A := .trans_faithfulSMul R A A
+
+end FaithfulSMul
+
+namespace Module
+variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+
+lemma isTorsionFree_iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+lemma isTorsionFree_iff_algebraMap_injective [IsDomain A] :
+    IsTorsionFree R A ↔ Injective (algebraMap R A) := by
+  rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
+
+end Module
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
 to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`

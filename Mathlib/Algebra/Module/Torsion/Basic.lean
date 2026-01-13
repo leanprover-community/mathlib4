@@ -72,6 +72,8 @@ Torsion, submodule, module, quotient
 
 @[expose] public section
 
+open Module
+
 namespace Ideal
 
 section TorsionOf
@@ -557,22 +559,22 @@ def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
   (isTorsionBySet_annihilator R M).module
 
 theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
-    IsTorsionBy R (M⧸N) r ↔ ∀ x, r • x ∈ N :=
+    IsTorsionBy R (M ⧸ N) r ↔ ∀ x, r • x ∈ N :=
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
     Submodule.Quotient.mk_eq_zero N
 
 theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
-    (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
+    (h : IsTorsionBy R M r) : IsTorsionBy R (M ⧸ N) r :=
   (isTorsionBy_quotient_iff N r).mpr fun x => @h x ▸ N.zero_mem
 
 theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
-    IsTorsionBySet R (M⧸N) s ↔ ∀ x, ∀ r ∈ s, r • x ∈ N :=
+    IsTorsionBySet R (M ⧸ N) s ↔ ∀ x, ∀ r ∈ s, r • x ∈ N :=
   Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
     Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
       Submodule.Quotient.mk_eq_zero N
 
 theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
-    (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
+    (h : IsTorsionBySet R M s) : IsTorsionBySet R (M ⧸ N) s :=
   (isTorsionBySet_quotient_iff N s).mpr fun x r h' => @h x ⟨r, h'⟩ ▸ N.zero_mem
 
 variable (M I) (s : Set R) (r : R)
@@ -580,12 +582,12 @@ variable (M I) (s : Set R) (r : R)
 open Pointwise Submodule
 
 lemma isTorsionBySet_quotient_set_smul :
-    IsTorsionBySet R (M⧸s • (⊤ : Submodule R M)) s :=
+    IsTorsionBySet R (M ⧸ s • (⊤ : Submodule R M)) s :=
   (isTorsionBySet_quotient_iff _ _).mpr fun _ _ h =>
     mem_set_smul_of_mem_mem h mem_top
 
 lemma isTorsionBySet_quotient_ideal_smul :
-    IsTorsionBySet R (M⧸I • (⊤ : Submodule R M)) I :=
+    IsTorsionBySet R (M ⧸ I • (⊤ : Submodule R M)) I :=
   (isTorsionBySet_quotient_iff _ _).mpr fun _ _ h => smul_mem_smul h ⟨⟩
 
 instance [I.IsTwoSided] : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
@@ -606,7 +608,7 @@ variable (M) [CommRing R] [AddCommGroup M] [Module R M] (s : Set R) (r : R)
 open Pointwise
 
 lemma isTorsionBy_quotient_element_smul :
-    IsTorsionBy R (M⧸r • (⊤ : Submodule R M)) r :=
+    IsTorsionBy R (M ⧸ r • (⊤ : Submodule R M)) r :=
   (isTorsionBy_quotient_iff _ _).mpr (Submodule.smul_mem_pointwise_smul · r ⊤ ⟨⟩)
 
 instance : Module (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
@@ -730,7 +732,7 @@ theorem torsion_isTorsion : Module.IsTorsion R (torsion R M) :=
 end Torsion'
 
 section Torsion
-
+section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M)
@@ -788,6 +790,17 @@ lemma torsion_int {G} [AddCommGroup G] :
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
+end CommSemiring
+
+section CommRing
+variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+
+/-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
+lemma isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
+  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
+  grind
+
+end CommRing
 end Torsion
 
 namespace QuotientTorsion

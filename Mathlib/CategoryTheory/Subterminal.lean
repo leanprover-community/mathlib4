@@ -134,8 +134,8 @@ instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   ObjectProperty.faithful_ι _
 
-instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
-  ⟨fun f g => Y.2 f g⟩
+instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) where
+  allEq _ _ := ObjectProperty.hom_ext _ (Y.2 _ _)
 
 /--
 The category of subterminal objects is equivalent to the category of monomorphisms to the terminal
@@ -145,13 +145,13 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩) }
+      map := fun f => MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩) }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => f.1 }
+      map := fun f => ObjectProperty.homMk f.hom.1 }
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
   counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
   functor_unitIso_comp := by subsingleton

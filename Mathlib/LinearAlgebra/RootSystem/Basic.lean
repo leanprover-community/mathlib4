@@ -49,6 +49,7 @@ variable (p : M →ₗ[R] N →ₗ[R] R) (root : ι ↪ M) (coroot : ι ↪ N) (
     (range root) (range root))
 include h
 
+set_option backward.privateInPublic true in
 private theorem exist_eq_reflection_of_mapsTo :
     ∃ k, root k = (preReflection (root i) (p.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
@@ -56,6 +57,7 @@ private theorem exist_eq_reflection_of_mapsTo :
 variable (hp : ∀ i, p (root i) (coroot i) = 2)
 include hp
 
+set_option backward.privateInPublic true in
 private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i
       (exist_eq_reflection_of_mapsTo p root coroot i j h).choose h).choose = j := by
@@ -64,6 +66,8 @@ private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i j h).choose_spec]
   apply involutive_preReflection (x := root i) (hp i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
 protected def equiv_of_mapsTo :
@@ -255,7 +259,7 @@ def mk'' :
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
+    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
 
 @[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
 

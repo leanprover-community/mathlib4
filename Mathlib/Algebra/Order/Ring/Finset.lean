@@ -13,7 +13,7 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 # `Finset.sup` and ring operations
 -/
 
-@[expose] public section
+public section
 
 open Finset
 

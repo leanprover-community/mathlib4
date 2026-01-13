@@ -59,7 +59,7 @@ See the Vitali-Carathéodory theorem,
 in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 

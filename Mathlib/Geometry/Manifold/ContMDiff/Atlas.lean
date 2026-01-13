@@ -25,7 +25,7 @@ convention.
 
 -/
 
-@[expose] public section
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Manifold ContDiff

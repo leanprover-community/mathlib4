@@ -188,9 +188,6 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   simp only [Basis.repr_self, map_zero, Pi.zero_apply, Finsupp.single_apply] at hi
   grind
 
-@[deprecated (since := "2025-05-23")]
-alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
-
 /--
 Given a submersive presentation of `S` as `R`-algebra, any indexing type `κ` complementary to
 the `σ` in `ι` indexes a basis of `Ω[S⁄R]`.
