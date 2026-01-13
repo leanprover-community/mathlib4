@@ -25,8 +25,9 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
 * `MulChar.mulCharEquiv`: the `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M`
   and `Mˣ` where `R` is a domain with enough roots of unity.
 
-* `MulChar.subgroupOrderIsoSubgroupMulChar`: the order reversing bijection that sends a
-  subgroup of `MulChar M R` to its dual subgroup in `MulChar (MulChar M R) R)`.
+* `MulChar.subgroupOrderIsoSubgroupMulChar`: The order reversing bijection that sends a
+  subgroup of `Mˣ` to its dual subgroup in `MulChar M R` where `R` is a domain with enough
+  roots of unity.
 
 -/
 
@@ -117,43 +118,31 @@ theorem apply_mulCharEquiv (χ : MulChar M R) (η : MulChar (MulChar M R) R) :
     χ (mulCharEquiv M R η) = η χ := by
   rw [← mulCharEquiv_symm_apply_apply (mulCharEquiv M R η) χ, MulEquiv.symm_apply_apply]
 
-variable (M R)
-
+variable (M R) in
 /--
-The order reversing bijection that sends a subgroup of the group of `R`-valued multiplicative
-characters `MulChar M R` to its dual subgroup in `MulChar (MulChar M R) R)` where
-`M` is a finite commutative monoid and `R` is a domain with enough roots of unity.
+The order reversing bijection that sends a subgroup of `Mˣ` to its dual subgroup in
+`MulChar M R` where `M` is a finite commutative monoid and `R` is a domain with enough
+roots of unity.
 -/
-def subgroupOrderIsoSubgroupMulChar :
-    Subgroup (MulChar M R) ≃o (Subgroup (MulChar (MulChar M R) R))ᵒᵈ :=
-  haveI : HasEnoughRootsOfUnity R (Monoid.exponent (MulChar M R)) := by
-    rwa [Monoid.exponent_eq_of_mulEquiv mulEquivToUnitHom,
-      Monoid.exponent_eq_of_mulEquiv
-        (CommGroup.monoidHom_mulEquiv_of_hasEnoughRootsOfUnity Mˣ R).some]
-  (CommGroup.subgroupOrderIsoSubgroupMonoidHom (MulChar M R) R).trans <|
-   toUnits.monoidHomCongrLeft.mapSubgroup.dual.trans mulEquivToUnitHom.symm.mapSubgroup.dual
+def subgroupOrderIsoSubgroupMulChar : Subgroup Mˣ ≃o (Subgroup (MulChar M R))ᵒᵈ :=
+  (CommGroup.subgroupOrderIsoSubgroupMonoidHom Mˣ R).trans mulEquivToUnitHom.symm.mapSubgroup.dual
 
 @[simp]
-theorem mem_subgroupOrderIsoSubgroupMulChar_iff (Y : Subgroup (MulChar M R))
-    (η : MulChar (MulChar M R) R) :
-    η ∈ (subgroupOrderIsoSubgroupMulChar M R Y).ofDual ↔ ∀ χ ∈ Y, η χ = 1 := by
+theorem mem_subgroupOrderIsoSubgroupMulChar_iff {H : Subgroup Mˣ} {χ : MulChar M R} :
+    χ ∈ (subgroupOrderIsoSubgroupMulChar M R H).ofDual ↔ ∀ m ∈ H, χ m = 1 := by
   simp only [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
-    OrderDual.ofDual_toDual]
-  rw [← OrderIso.trans_apply, MulEquiv.mapSubgroup_trans_apply, MulEquiv.coe_mapSubgroup,
-    Subgroup.mem_map_equiv]
-  simp [Units.ext_iff]
+    MulEquiv.coe_mapSubgroup, OrderDual.ofDual_toDual, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
+    mulEquivToUnitHom_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_iff, Units.ext_iff,
+    coe_equivToUnitHom, Units.val_one]
 
 @[simp]
-theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff (E : Subgroup (MulChar (MulChar M R) R))
-    (χ : MulChar M R) :
-    χ ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual E) ↔ ∀ η ∈ E, η χ = 1 := by
+theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff {X : Subgroup (MulChar M R)} {m : Mˣ} :
+    m ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual X) ↔ ∀ χ ∈ X, χ m = 1 := by
   simp only [subgroupOrderIsoSubgroupMulChar, OrderIso.symm_trans_apply, OrderIso.dual_symm_apply,
     MulEquiv.symm_mapSubgroup, MulEquiv.symm_symm, OrderDual.ofDual_toDual,
-    MulEquiv.mapSubgroup_apply, MulEquiv.symm_monoidHomCongrLeft,
-    CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff, Subgroup.mem_map, MonoidHom.coe_coe,
-    mulEquivToUnitHom_apply, MulEquiv.monoidHomCongrLeft_apply, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, MonoidHom.coe_comp, Function.comp_apply]
-  -- The two `simps` cannot be merged otherwise it becomes an `∞`-loop
+    MulEquiv.mapSubgroup_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff,
+    Subgroup.mem_map, MonoidHom.coe_coe, mulEquivToUnitHom_apply, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
   simp [Units.ext_iff]
 
 end IsDomain
