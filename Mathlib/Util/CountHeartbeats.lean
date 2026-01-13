@@ -3,9 +3,11 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Util.Heartbeats
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Meta.Tactic.TryThis
 
 /-!
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
@@ -18,6 +20,8 @@ theorem foo : 42 = 6 * 7 := rfl
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.
 -/
+
+public meta section
 
 
 open Lean Elab Command Meta Linter

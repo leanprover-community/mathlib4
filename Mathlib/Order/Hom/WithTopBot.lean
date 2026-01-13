@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Order.WithBot
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -15,6 +17,8 @@ isomorphisms) and lattice homomorphisms, and properties about the results.
 Some definitions cause a possibly unbounded lattice homomorphism to become bounded,
 so they change the type of the homomorphism.
 -/
+
+@[expose] public section
 
 
 variable {α β γ : Type*}
@@ -381,7 +385,7 @@ namespace LatticeHom
 variable [Lattice α] [Lattice β] [Lattice γ]
 
 /-- Adjoins a `⊤` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 protected def withTop (f : LatticeHom α β) : LatticeHom (WithTop α) (WithTop β) :=
   { f.toInfHom.withTop with toSupHom := f.toSupHom.withTop }
 
@@ -446,12 +450,12 @@ theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   ext; simp
 
 /-- Adjoins a `⊥` to the codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :=
   { f.toSupHom.withTop', f.toInfHom.withTop' with }
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 

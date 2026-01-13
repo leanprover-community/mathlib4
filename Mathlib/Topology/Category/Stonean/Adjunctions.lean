@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Stonean.Basic
-import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.Topology.Compactification.StoneCech
+module
+
+public import Mathlib.Topology.Category.Stonean.Basic
+public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Adjunctions involving the category of Stonean spaces
@@ -14,6 +16,8 @@ This file constructs the left adjoint `typeToStonean` to the forgetful functor f
 to sets, using the Stone-Cech compactification. This allows to conclude that the monomorphisms in
 `Stonean` are precisely the injective maps (see `Stonean.mono_iff_injective`).
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,24 +3,26 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.PUnit
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of `R`-modules
 
-If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-modules with carrier
-in the universe `v`. We  show that it is preadditive and show that being an isomorphism and
+If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-semimodules with carrier
+in the universe `v`. We show that it is preadditive and show that being an isomorphism and
 monomorphism are equivalent to being a linear equivalence and an injective linear map respectively.
 
 ## Implementation details
 
-To construct an object in the category of `R`-modules from a type `M` with an instance of the
+To construct an object in the category of `R`-semimodules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
 The roundtrip `↑(of R M)` is definitionally equal to `M` itself (when `M` is a type with `Module`
 instance), and so is `of R ↑M` (when `M : SemimoduleCat R M`).
@@ -34,6 +36,8 @@ Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a 
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits WalkingParallelPair
 
@@ -41,7 +45,8 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
-/-- The category of R-modules and their morphisms.
+set_option backward.privateInPublic true in
+/-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
 impose here that the `ℕ`-multiplication field from the module structure is defeq to the one coming
@@ -63,6 +68,8 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
@@ -83,7 +90,7 @@ structure Hom (M N : SemimoduleCat.{v} R) where
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-instance moduleCategory : Category.{v, max (v+1) u} (SemimoduleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v + 1) u} (SemimoduleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
@@ -218,13 +225,6 @@ instance : Inhabited (SemimoduleCat R) :=
 
 variable {R}
 
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-module. -/
-@[deprecated Iso.refl (since := "2025-05-15")]
-def ofSelfIso (M : SemimoduleCat R) : SemimoduleCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
-
 theorem isZero_of_subsingleton (M : SemimoduleCat R) [Subsingleton M] : IsZero M where
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
@@ -297,10 +297,9 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance : SMul ℕ (M ⟶ N) where
-  smul n f := ⟨n • f.hom⟩
-
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+-- There is no `ℤ`-smul operation on a general semimodule!
+@[deprecated (since := "2026-01-06")]
+alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -450,12 +449,8 @@ def ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
 
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
-def Hom.hom₂ {M N P : SemimoduleCat.{u} R}
-    -- We write `Hom` instead of `M ⟶ (of R (N ⟶ P))`, otherwise dot notation breaks
-    -- since it is expecting the type of `f` to be `SemimoduleCat.Hom`, not `Quiver.Hom`.
-    (f : Hom M (of R (N ⟶ P))) :
-    M →ₗ[R] N →ₗ[R] P :=
-  Hom.hom (by convert (f ≫ ofHom homLinearEquiv.toLinearMap))
+def Hom.hom₂ {M N P : SemimoduleCat.{u} R} (f : M ⟶ (of R (N ⟶ P))) : M →ₗ[R] N →ₗ[R] P :=
+  (f ≫ ofHom homLinearEquiv.toLinearMap).hom
 
 @[simp] lemma Hom.hom₂_ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     (ofHom₂ f).hom₂ = f := rfl

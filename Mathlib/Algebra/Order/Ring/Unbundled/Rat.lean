@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # The rational numbers possess a linear order
@@ -21,6 +23,8 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
@@ -138,7 +142,8 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
 theorem abs_def' (q : ℚ) :
     |q| = ⟨|q.num|, q.den, q.den_ne_zero, q.num.abs_eq_natAbs ▸ q.reduced⟩ := by
   refine ext ?_ ?_ <;>
-    simp [Int.abs_eq_natAbs, abs_def, ← Rat.mk_eq_divInt q.num.natAbs _ q.den_ne_zero q.reduced]
+    simp [Int.abs_eq_natAbs, abs_def,
+      ← Rat.mk_eq_divInt (num := q.num.natAbs) (nz := q.den_ne_zero) (c := q.reduced)]
 
 @[simp]
 theorem num_abs_eq_abs_num (q : ℚ) : |q|.num = |q.num| := by

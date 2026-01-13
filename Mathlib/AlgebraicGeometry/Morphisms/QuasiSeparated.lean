@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Sheaves.CommRingCat
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+public import Mathlib.Topology.QuasiSeparated
+public import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!
 # Quasi-separated morphisms
@@ -28,6 +30,8 @@ and is stable under compositions and base-changes.
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -155,6 +159,12 @@ theorem quasiSeparatedSpace_of_quasiSeparated (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
+lemma Scheme.Hom.isQuasiSeparated_preimage [QuasiSeparated f] {U : Opens Y}
+    (hU : IsQuasiSeparated (U : Set Y)) : IsQuasiSeparated (f ⁻¹ᵁ U : Set X) := by
+  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.2).mp hU
+  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).2).mpr
+    (quasiSeparatedSpace_of_quasiSeparated (f ∣_ U))
+
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
   (quasiSeparatedSpace_congr X.isoSpec.hom.homeomorph).2 PrimeSpectrum.instQuasiSeparatedSpace
 
@@ -253,7 +263,7 @@ alias quasiCompact_over_affine_iff := quasiCompact_iff_compactSpace
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
-  have := (hU.isLocalization_basicOpen f).2
+  have := (hU.isLocalization_basicOpen f).1.2
   obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
   use n, y
   simpa [mul_comm x] using d.symm
@@ -389,7 +399,7 @@ This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. 
 theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.1)
     (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) :
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
-  constructor
+  constructor; constructor
   · rintro ⟨_, n, rfl⟩
     simp only [map_pow, RingHom.algebraMap_toAlgebra]
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)

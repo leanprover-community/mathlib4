@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!
 # Inverse function theorem - the easy half
@@ -20,6 +22,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, inverse function
 -/
+
+public section
 
 
 universe u v
@@ -105,8 +109,7 @@ either because it has derivative zero or because it isn't differentiable at this
 theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y = c) :
     derivWithin f s x = 0 := by
   by_cases hf : DifferentiableWithinAt 𝕜 f s x
-  · contrapose h
-    rw [not_frequently]
+  · contrapose! h
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 

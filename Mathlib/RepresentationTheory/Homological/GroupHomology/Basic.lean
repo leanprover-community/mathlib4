@@ -3,11 +3,13 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.RepresentationTheory.Coinvariants
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.CategoryTheory.Abelian.LeftDerived
+module
+
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.CategoryTheory.Abelian.LeftDerived
 
 /-!
 # The group homology of a `k`-linear `G`-representation
@@ -51,9 +53,8 @@ To talk about homology in low degree, the file
 
 Group homology is typically stated for `G`-modules, or equivalently modules over the group ring
 `ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
-Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
-possible scalar action diamonds.
+Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep` definition.
+We avoid using instances `Module k[G] A` so that we do not run into possible scalar action diamonds.
 
 Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
 categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define
@@ -68,6 +69,8 @@ for commutative rings.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -108,12 +111,6 @@ abbrev torIso (A : Rep k G) {B : Rep k G} (P : ProjectiveResolution B) (n : ℕ)
 lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
     IsZero (((Tor k G (n + 1)).obj X).obj Y) :=
   Functor.isZero_leftDerived_obj_projective_succ ..
-
-/-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
-`P` is the bar resolution of `k` as a trivial representation. -/
-@[deprecated "Use `(barComplex k G).coinvariantsTensorObj A` instead." (since := "2025-06-17")]
-abbrev coinvariantsTensorBarResolution [DecidableEq G] :=
-  (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
 
 end Rep
 end Tor

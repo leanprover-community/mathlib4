@@ -3,15 +3,17 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.HahnSeries.PowerSeries
-import Mathlib.RingTheory.HahnSeries.Summable
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.HahnSeries.PowerSeries
+public import Mathlib.RingTheory.HahnSeries.Summable
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 
 /-!
@@ -65,9 +67,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 ## Implementation details
 
-* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ R`, the definition of the
+* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ`, the definition of the
   coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go
-  back-and-forth from `X : R⸨X⸩` to `single 1 1 : HahnSeries ℤ R`.
+  back-and-forth from `X : R⸨X⸩` to `single 1 1 : R⟦ℤ⟧`.
 * To prove the isomorphism between the `X`-adic completion of `RatFunc K` and `K⸨X⸩` we construct
   two completions of `RatFunc K`: the first (`LaurentSeries.ratfuncAdicComplPkg`) is its abstract
   uniform completion; the second (`LaurentSeries.LaurentSeriesPkg`) is simply `K⸨X⸩`, once we prove
@@ -83,6 +85,8 @@ type with a zero. They are denoted `R⸨X⸩`.
   to `K⟦X⟧`.
 
 -/
+
+@[expose] public section
 universe u
 
 open scoped PowerSeries
@@ -94,8 +98,7 @@ noncomputable section
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
-abbrev LaurentSeries (R : Type u) [Zero R] :=
-  HahnSeries ℤ R
+abbrev LaurentSeries (R : Type u) [Zero R] := R⟦ℤ⟧
 
 variable {R : Type*}
 
@@ -141,7 +144,7 @@ theorem hasseDeriv_single_add (k : ℕ) (n : ℤ) (x : V) :
   dsimp only [hasseDeriv_coeff]
   by_cases h : m = n
   · simp [h]
-  · simp [h, show m + k ≠ n + k by cutsat]
+  · simp [h, show m + k ≠ n + k by lia]
 
 @[simp]
 theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
@@ -223,8 +226,8 @@ theorem powerSeriesPart_eq_zero (x : R⸨X⸩) : x.powerSeriesPart = 0 ↔ x = 0
     simp only [ne_eq]
     intro h
     rw [PowerSeries.ext_iff, not_forall]
-    refine ⟨0, ?_⟩
-    simp [coeff_order_ne_zero h]
+    use 0
+    simpa
   · rintro rfl
     simp
 
@@ -242,7 +245,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose! h
       simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
-      cutsat
+      lia
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
@@ -274,9 +277,9 @@ instance of_powerSeries_localization [CommRing R] :
     · simp
     · dsimp; rw [ofPowerSeries_X_pow]
   surj z := by
-    by_cases h : 0 ≤ z.order
+    by_cases! h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
-      simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
+      simp only [map_one, mul_one, map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
     · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩
@@ -284,7 +287,7 @@ instance of_powerSeries_localization [CommRing R] :
       rw [mul_comm _ z]
       refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
-      exact le_of_not_ge h
+      exact h.le
   exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
     rintro rfl
@@ -331,7 +334,7 @@ theorem coeff_coe (i : ℤ) :
     ((f : R⟦X⟧) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
+  · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
@@ -380,12 +383,9 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
 
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
-  induction n with
-  | zero => simp
-  | succ n h_ind =>
-    rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
-      add_comm]
+  simp
 
+@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
 theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
     single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
   apply eq_inv_of_mul_eq_one_right
@@ -396,7 +396,8 @@ theorem single_zpow (n : ℤ) :
   match n with
   | (n : ℕ) => apply single_one_eq_pow
   | -(n + 1 : ℕ) =>
-    rw [← Nat.cast_one, ← inv_one, single_inv _ one_ne_zero, zpow_neg, ← Nat.cast_one, Nat.cast_one,
+    rw [← Nat.cast_one, ← inv_one, ← HahnSeries.inv_single, zpow_neg,
+      ← Nat.cast_one, Nat.cast_one,
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 theorem algebraMap_apply_div :
@@ -495,7 +496,8 @@ theorem valuation_X_pow (s : ℕ) :
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) = exp (-(s : ℤ)) := by
   obtain s | s := s
-  · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow]
+  · rw [Int.ofNat_eq_natCast, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
+      valuation_X_pow]
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
@@ -523,23 +525,21 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
 theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
     (H : Valued.v f ≤ exp (-D)) : n < D → f.coeff n = 0 := by
   intro hnd
-  by_cases h_n_ord : n < f.order
+  by_cases! h_n_ord : n < f.order
   · exact coeff_eq_zero_of_lt_order h_n_ord
-  rw [not_lt] at h_n_ord
   set F := powerSeriesPart f with hF
-  by_cases ord_nonpos : f.order ≤ 0
+  by_cases! ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (neg_le_iff_add_nonneg.mp (hs ▸ h_n_ord))
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by cutsat)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by lia)
     rw [eq_add_neg_of_add_eq hm, add_comm, ← hs, ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rw [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, exp_add, map_mul,
       ← ofPowerSeries_X_pow s, PowerSeries.coe_pow, valuation_X_pow K s]
     gcongr
-  · rw [not_le] at ord_nonpos
-    obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
-    obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by omega)
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by cutsat)
+  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
+    obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by lia)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by lia)
     rw [(sub_eq_iff_eq_add).mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
       ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
@@ -552,37 +552,36 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     Valued.v f ≤ exp (-D : ℤ) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
   let F := powerSeriesPart f
-  by_cases ord_nonpos : f.order ≤ 0
+  by_cases! ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, neg_neg, mul_comm,
       ← le_mul_inv_iff₀, exp_neg, ← mul_inv, ← exp_add, ← exp_neg]
-    · by_cases hDs : D + s ≤ 0
+    · by_cases! hDs : D + s ≤ 0
       · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
         rwa [← log_le_iff_le_exp one_ne_zero, le_neg, log_one, neg_zero]
-      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
+      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le hDs.le
         rw [hd]
         apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
         intro n hn
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f
-        cutsat
+        lia
     · simp [ne_eq, zero_lt_iff]
-  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
-      <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
+  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat <| neg_nonpos_of_nonneg ord_nonpos.le
     rw [neg_inj] at hs
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
       ← le_mul_inv_iff₀, ← exp_neg, ← exp_add, neg_neg]
-    · by_cases hDs : D - s ≤ 0
+    · by_cases! hDs : D - s ≤ 0
       · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
         rw [← log_le_iff_le_exp one_ne_zero, log_one]
-        cutsat
-      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
+        lia
+      · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le hDs.le
         rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
         apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
         intro n hn
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f (s + n)
-        cutsat
+        lia
     · simp [ne_eq, zero_lt_iff]
 
 theorem valuation_le_iff_coeff_lt_log_eq_zero {D : ℤᵐ⁰} (hD : D ≠ 0) {f : K⸨X⸩} :
@@ -611,7 +610,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
   rw [valuation_le_iff_coeff_lt_log_eq_zero _ one_ne_zero, log_one, neg_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
-  · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
+  · simp only [Int.ofNat_eq_natCast, coeff_coe_powerSeries, coeff_mk]
   on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
   on_goal 2 => rintro ⟨F, rfl⟩ _ _
   all_goals
@@ -620,7 +619,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
       Set.mem_range, not_exists, reduceCtorEq]
     intro
   · simp only [not_false_eq_true]
-  · cutsat
+  · lia
 
 end LaurentSeries
 
@@ -658,7 +657,7 @@ theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : �
   le_of_eq <| DiscreteUniformity.eq_pure_cauchyConst
     (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
 
-/- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
+/- For every Cauchy filter of Laurent series, there is some `N` such that the `n`-th coefficient
 vanishes for all `n ≤ N` and almost all series in the filter. This is an auxiliary lemma used
 to construct the limit of the Cauchy filter as a Laurent series, ensuring that the support of the
 limit is `PWO`.
@@ -743,8 +742,8 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     simp only [Set.mem_Iio, Set.mem_Icc, Set.subset_iInter_iff]
     intro i hi x hx
     simp only [Set.mem_inter_iff, Set.mem_iInter, and_imp] at hx
-    by_cases H : i < ℓ
-    exacts [hx.1 _ H, hx.2 _ (le_of_not_gt H) <| le_of_lt <| lt_max_of_lt_right hi]
+    by_cases! H : i < ℓ
+    exacts [hx.1 _ H, hx.2 _ H <| le_of_lt <| lt_max_of_lt_right hi]
   suffices (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) ∈ ℱ by
     exact ℱ.sets_of_superset this <| intersec₂.trans intersec₁
   /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
@@ -795,10 +794,10 @@ open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero RatFu
 
 theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by
-  by_cases h_neg : 1 < η
+  by_cases! h_neg : 1 < η
   · use 0
     simpa using (intValuation_le_one (PowerSeries.idealX K) F).trans_lt h_neg
-  · rw [not_lt, ← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ← coe_unzero η.ne_zero,
+  · rw [← Units.val_le_val, Units.val_one, ← WithZero.coe_one, ← coe_unzero η.ne_zero,
       coe_le_coe, ← Multiplicative.toAdd_le, toAdd_one] at h_neg
     obtain ⟨d, hd⟩ := Int.exists_eq_neg_ofNat h_neg
     use F.trunc (d + 1)
@@ -823,7 +822,7 @@ that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`. -/
 theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF
-  by_cases ord_nonpos : f.order < 0
+  by_cases! ord_nonpos : f.order < 0
   · set η : ℤᵐ⁰ˣ := Units.mk0 (exp f.order) coe_ne_zero
       with hη
     obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt F (η * γ)
@@ -844,7 +843,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
       rwa [← Units.val_mul]
     · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,
         single_eq_zero_iff, one_ne_zero, not_false_iff]
-  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
+  · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg ord_nonpos)
     obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt (PowerSeries.X ^ s * F) γ
     use P
     rw [← X_order_mul_powerSeriesPart (neg_inj.1 hs).symm, ← RatFunc.coe_coe,

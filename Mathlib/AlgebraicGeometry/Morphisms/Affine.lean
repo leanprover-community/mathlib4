@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 
 /-!
 
@@ -27,6 +29,8 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -155,7 +159,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
-      have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
+      have : ∀ i : S, IsAffineOpen (f ⁻¹ᵁ Y.basicOpen i.1) := hS'
       simpa [Scheme.preimage_basicOpen] using this
   eq_targetAffineLocally' := by
     ext X Y f
@@ -194,6 +198,25 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
     IsAffine (pullback f g) :=
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
+
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
+    IsAffineHom (coprod.desc f g) := by
+  refine ⟨fun W hW ↦ ?_⟩
+  have : IsAffine (f ⁻¹ᵁ W).toScheme := hW.preimage f
+  have : IsAffine (g ⁻¹ᵁ W).toScheme := hW.preimage g
+  let i : (f ⁻¹ᵁ W).toScheme ⨿ (g ⁻¹ᵁ W).toScheme ⟶ U ⨿ V := coprod.map (f ⁻¹ᵁ W).ι (g ⁻¹ᵁ W).ι
+  convert isAffineOpen_opensRange i
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨(x | x), rfl⟩ := (coprodMk U V).surjective x
+    · replace hx : f x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inl ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+    · replace hx : g x ∈ W := by simpa [← Scheme.Hom.comp_apply] using hx
+      exact ⟨coprodMk _ _ (.inr ⟨x, hx⟩), by simp [i, ← Scheme.Hom.comp_apply]⟩
+  · rintro _ ⟨x, rfl⟩
+    obtain ⟨(⟨x, hx⟩ | ⟨x, hx⟩), rfl⟩ := (coprodMk _ _).surjective x
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
+    · simpa [← Scheme.Hom.comp_apply, i] using hx
 
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]

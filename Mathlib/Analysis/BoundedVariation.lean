@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Calculus.Monotone
-import Mathlib.Topology.EMetricSpace.BoundedVariation
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Almost everywhere differentiability of functions with locally bounded variation
@@ -28,6 +30,8 @@ are also differentiable almost everywhere.
 We also give several variations around these results.
 
 -/
+
+public section
 
 open scoped NNReal Topology
 open Set MeasureTheory Filter

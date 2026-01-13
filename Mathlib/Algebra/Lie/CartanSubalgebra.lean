@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
+module
+
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Cartan subalgebras
@@ -22,6 +24,8 @@ The standard example is the set of diagonal matrices in the Lie algebra of matri
 
 lie subalgebra, normalizer, idealizer, cartan subalgebra
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂

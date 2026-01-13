@@ -3,13 +3,17 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.List.InsertIdx
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
+
+public section
 
 variable {α β γ : Type*}
 
@@ -37,9 +41,6 @@ theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
       refine IH hx.right ?_ ?_ h
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
-
-@[deprecated (since := "2025-05-23")]
-alias injOn_insertIdx_index_of_not_mem := injOn_insertIdx_index_of_notMem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
@@ -83,8 +84,7 @@ section MapAccumr
 theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
     mapAccumr f as s = List.foldr (fun a s =>
                                     let r := f a s.1
-                                    (r.1, r.2 :: s.2)
-                                  ) (s, []) as
+                                    (r.1, r.2 :: s.2)) (s, []) as
   | [], _ => rfl
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
@@ -93,8 +93,7 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
     ∀ (as : List α) (bs : List β) (s : σ),
     mapAccumr₂ f as bs s = foldr (fun ab s =>
                               let r := f ab.1 ab.2 s.1
-                              (r.1, r.2 :: s.2)
-                            ) (s, []) (as.zip bs)
+                              (r.1, r.2 :: s.2)) (s, []) (as.zip bs)
   | [], [], _ => rfl
   | _ :: _, [], _ => rfl
   | [], _ :: _, _ => rfl

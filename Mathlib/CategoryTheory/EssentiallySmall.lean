@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Logic.UnivLE
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Logic.UnivLE
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.
@@ -22,6 +24,8 @@ A category is `w`-locally small if every hom type is `w`-small.
 The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u u'
@@ -102,6 +106,10 @@ theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Ca
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] [LocallySmall.{w'} C] :
+    LocallySmall.{w'} (SmallModel.{w} C) :=
+  (locallySmall_congr (equivSmallModel.{w} C)).1 inferInstance
 
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where
@@ -186,14 +194,14 @@ instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
 
 instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
   subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
-  eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
+  eq_of_hom f := IsDiscrete.eq_of_hom (C := T) ((equivShrink _).symm f)
 
 end ShrinkHoms
 
 namespace Shrink
 
 noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
-  InducedCategory.category (equivShrink C).symm
+  inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
@@ -221,11 +229,10 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
-    letI : Category S := InducedCategory.category (e'.trans e).symm
-    refine ⟨⟨S, this, ⟨?_⟩⟩⟩
-    refine (ShrinkHoms.equivalence C).trans <|
-      (skeletonEquivalence (ShrinkHoms C)).symm.trans
-        ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
+    exact ⟨⟨InducedCategory _ (e'.trans e).symm, inferInstance,
+      ⟨(ShrinkHoms.equivalence C).trans
+      ((skeletonEquivalence (ShrinkHoms C)).symm.trans
+      (inducedFunctor _).asEquivalence.symm)⟩⟩⟩
 
 instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
@@ -290,5 +297,10 @@ instance [Small.{w} C] [LocallySmall.{w} C]
   · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
     rw [Arrow.mk_eq_mk_iff] at this
     tauto
+
+instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
+    LocallySmall.{w} (C ⥤ A) where
+  hom_small P Q :=
+    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
 
 end CategoryTheory

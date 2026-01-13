@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.PFun
-import Mathlib.Computability.PostTuringMachine
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.PFun
+public import Mathlib.Computability.PostTuringMachine
 
 /-!
 # Turing machines
@@ -58,6 +60,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -333,7 +337,7 @@ theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
     L.nth n k = S.reverse[n]? := by
   rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk,
-    List.getI_eq_iget_getElem?, List.getElem?_map]
+    List.getI_eq_getElem?_getD, List.getElem?_map]
   cases S.reverse[n]? <;> rfl
 
 variable (K : Type*)
@@ -700,7 +704,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
   rw [(_ : TM1.init _ = _)]
   · refine ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ ?_⟩
     refine ListBlank.ext fun i ↦ ?_
-    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map_map]
+    rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))
       = fun a => (proj k').f (update (β := fun k => Option (Γ k)) default k (some a)) := rfl
     rw [this, List.getElem?_map, proj, PointedMap.mk_val]
@@ -708,9 +712,9 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
     by_cases h : k' = k
     · subst k'
       simp only [Function.update_self]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, ← List.map_reverse, List.getElem?_map]
     · simp only [Function.update_of_ne h]
-      rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
+      rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
     congr <;> cases L.reverse <;> try rfl

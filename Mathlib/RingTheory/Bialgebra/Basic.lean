@@ -3,8 +3,10 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Kevin Buzzard
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebras
@@ -31,8 +33,8 @@ Note that this design decision is also compatible with that of `Coalgebra`. The 
 docstring for these convoluted fields attempts to explain what is going on.
 
 The constructor `Bialgebra.ofAlgHom` is dual to the default constructor: For `R` is a commutative
-semiring and `A` a `R`-algebra, it consumes the counit and comultiplication as algebra homomorphisms
-that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
+semiring and `A` an `R`-algebra, it consumes the counit and comultiplication as algebra
+homomorphisms that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
 
 ## References
 
@@ -42,6 +44,8 @@ that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
 
 bialgebra
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -165,6 +169,8 @@ end CommSemiring
 namespace Bialgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+@[simp] lemma counitAlgHom_self : counitAlgHom R R = .id R R := rfl
 
 /-- If `R` is a commutative semiring and `A` is an `R`-algebra,
 then `Bialgebra.ofAlgHom` consumes the counit and comultiplication

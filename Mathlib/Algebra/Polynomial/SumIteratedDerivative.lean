@@ -3,11 +3,13 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Sum of iterated derivatives
@@ -34,6 +36,8 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
   `Polynomial.sumIDeriv`
 
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Nat
@@ -71,7 +75,7 @@ theorem sumIDeriv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
 theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIDeriv p = ∑ i ∈ range (n + 1), derivative^[i] p := by
   dsimp [sumIDeriv]
-  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ, hn]) _ (by simp)
+  exact Finsupp.sum_of_support_subset _ (by simp [hn]) _ (by simp)
 
 @[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by

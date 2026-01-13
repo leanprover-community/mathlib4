@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -31,6 +33,8 @@ stones towards proving that the canonical functor
 ## TODOs:
 - Show that every `P_δ` admits a unique normal form.
 -/
+
+@[expose] public section
 
 namespace SimplexCategoryGenRel
 
@@ -112,22 +116,24 @@ alias tail := IsAdmissible.of_cons
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 
-theorem pairwise {m L} (hL : IsAdmissible m L) : L.Pairwise (· < ·) :=
-  hL.isChain.pairwise
+theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
+  hL.isChain.sortedLT
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
+
+@[deprecated (since := "2025-10-16")]
 alias sorted := pairwise
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 @[grind →]
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.pairwise
+    ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.sortedLT.pairwise
 
 @[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
   (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
 
-/-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
+/-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
 def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
@@ -226,7 +232,7 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
@@ -253,8 +259,8 @@ lemma simplicialEvalσ_of_isAdmissible
       simp only [Fin.predAbove, a₀]
       split_ifs with h₁ h₂ h₂
       · rfl
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
       · rfl
     have := h_rec _ _ hL.of_cons (by grind) hj
     have ha₀ : Fin.ofNat (m₂ + 1) a = a₀ := by ext; simpa [a₀] using hL.head.prop

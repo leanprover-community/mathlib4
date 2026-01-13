@@ -3,13 +3,15 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Use
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.Tactic.NormNum.DivMod
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Use
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -83,6 +85,8 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 coxeter system, coxeter group
 
 -/
+
+@[expose] public section
 
 open Function Set List
 
@@ -298,9 +302,11 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
+set_option backward.privateInPublic true in
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
+set_option backward.privateInPublic true in
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     Gˣ where
   val := f i
@@ -314,6 +320,8 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
@@ -348,7 +356,6 @@ theorem simple_determines_coxeterSystem :
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
-  intro i
   nth_rw 2 [h]
   simp [simple]
 
@@ -421,9 +428,9 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
      (alternatingWord i j p)[k + 1]'(by simp [h]) =
-     (alternatingWord j i p)[k]'(by simp; cutsat) := by
-  rw [getElem_alternatingWord i j p (k + 1) (by cutsat),
-    getElem_alternatingWord j i p k (by cutsat)]
+     (alternatingWord j i p)[k]'(by simp; lia) := by
+  rw [getElem_alternatingWord i j p (k + 1) (by lia),
+    getElem_alternatingWord j i p k (by lia)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
@@ -438,26 +445,26 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
     | zero =>
       simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
     | succ k h' =>
-      have hk : k < 2 * p := by omega
+      have hk : k < 2 * p := by lia
       apply h' at hk
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; cutsat), alternatingWord_succ, ← hk]
+        rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, ← hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
-        simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
-        rw [← List.take_concat_get (by simp; cutsat), alternatingWord_succ, hk]
+        simp only [Odd.add_one (by simpa using h_even), ↓reduceIte]
+        rw [← List.take_concat_get (by simp; lia), alternatingWord_succ, hk]
         apply congr_arg
-        rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
+        rw [getElem_alternatingWord i j (2 * p) k (by lia)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
     List.take (k + 1) (alternatingWord i j (2 * p)) =
     i :: (List.take k (alternatingWord j i (2 * p))) := by
-  rw [listTake_alternatingWord j i p k (by cutsat), listTake_alternatingWord i j p (k + 1) h]
+  rw [listTake_alternatingWord j i p k (by lia), listTake_alternatingWord i j p (k + 1) h]
   by_cases h_even : Even k
   · simp [Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
   · simp [(by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),

@@ -3,12 +3,14 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Control.Basic
-import Mathlib.Tactic.Linarith.Verification
-import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Util.ElabWithoutMVars
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -73,7 +75,7 @@ There are two oracles that can be used in `linarith` so far.
   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
-  This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
+  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
   problem. The problem is then solved by a standard Simplex Algorithm. We use
   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
   terminates.
@@ -130,6 +132,8 @@ The components of `linarith` are spread between a number of files for the sake o
 
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
+
+public meta section
 
 open Lean Elab Parser Tactic Meta
 open Batteries
@@ -511,6 +515,18 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
+private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
+    (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
+  if _h : i < hs.length then
+    let rest := hs.eraseIdx i
+    st.restore
+    try
+      let _ ← Linarith.linarith true rest cfg g
+      minimize cfg st g rest i
+    catch _ => minimize cfg st g hs (i+1)
+  else
+    return hs
+
 elab_rules : tactic
   | `(tactic| linarith?%$tk $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) =>
       withMainContext do
@@ -526,17 +542,7 @@ elab_rules : tactic
             throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
             if cfg.minimize then
-              let rec minimize (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
-                if _h : i < hs.length then
-                  let rest := hs.eraseIdx i
-                  st.restore
-                  try
-                    let _ ← Linarith.linarith true rest cfg g
-                    minimize rest i
-                  catch _ => minimize hs (i+1)
-                else
-                  return hs
-              minimize used₀ 0
+              minimize cfg st g used₀ 0
             else
               pure used₀
           st.restore

@@ -3,7 +3,9 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Group and ring filter bases
@@ -32,6 +34,8 @@ Given a group `G` and a ring `R`:
 
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
+
+@[expose] public section
 
 
 open Filter Set TopologicalSpace Function

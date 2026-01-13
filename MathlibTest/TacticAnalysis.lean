@@ -1,19 +1,39 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 import Mathlib.Tactic.AdaptationNote
-import Lean.PremiseSelection
+import Lean.LibrarySuggestions
 
 section terminalReplacement
 
 section omega
 
-set_option linter.tacticAnalysis.omegaToCutsat true
+set_option linter.tacticAnalysis.omegaToLia true
 
-/-- warning: `cutsat` can replace `omega` -/
+/-- warning: `lia` can replace `omega` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   omega
 
 end omega
+
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def foo : Mathlib.TacticAnalysis.Config :=
+  Mathlib.TacticAnalysis.terminalReplacement "simp" "simp only" ``Lean.Parser.Tactic.simp
+    (fun _ _ _ => `(tactic| simp only))
+    (reportSuccess := true) (reportFailure := true)
+
+/--
+warning: `simp only` left unsolved goals where `simp` succeeded.
+Original tactic:
+  simp
+Replacement tactic:
+  simp only
+Unsolved goals:
+  [⊢ (List.map (fun x => x + 1) [1, 2, 3]).sum = 9 ]
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : List.sum ([1,2,3].map fun x ↦ x + 1) = 9 := by
+  simp
 
 end terminalReplacement
 
@@ -50,6 +70,53 @@ example : Fact (x = z) where
   out := by
     rw [xy]
     rw [yz]
+
+-- Tactics inside `have ... := by ...` should be analyzed.
+-- Previously these were missed because `have ... := by ...` is parsed as one node.
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  have _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
+-- Same for `let ... := by ...`
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  let _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
+universe u
+
+def a : PUnit.{u} := ⟨⟩
+def b : PUnit.{u} := ⟨⟩
+def c : PUnit.{u} := ⟨⟩
+theorem ab : a = b := rfl
+theorem bc : b = c := rfl
+
+/--
+warning: Try this: rw [ab.{u}, bc.{u}]
+-/
+#guard_msgs in
+example : a.{u} = c := by
+  rw [ab.{u}]
+  rw [bc.{u}]
+
+theorem xyz (h : x = z → y = z) : x = y := by rw [h yz]; rfl
+
+-- The next example tripped up `rwMerge` because `rw [xyz fun h => ?_, ← h, xy]` gives
+-- an unknown identifier `h`.
+example : x = y := by
+  rw [xyz fun h => ?_]
+  rw [← h, xy]
 
 end rwMerge
 
@@ -165,9 +232,21 @@ example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
 
+-- Intros separated by an intervening tactic should NOT be merged.
+-- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
+#guard_msgs in
+example : True → ∀ n > 0, True := by
+  intro h
+  have := 0
+  intro n hn
+  trivial
+
 end introMerge
 
 section tryAtEachStep
+
+-- Disable timing in tests to avoid non-deterministic output
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
 
 section
 set_option linter.tacticAnalysis.tryAtEachStepGrind true
@@ -178,7 +257,7 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
-info: `skip` can be replaced with `grind`
+info: `skip` (+1 later steps) can be replaced with `grind`
 ---
 info: `rfl` can be replaced with `grind`
 ---
@@ -198,17 +277,34 @@ section
 def P (_ : Nat) := True
 theorem p : P 37 := trivial
 
-set_premise_selector fun _ _ => pure #[{ name := `p, score := 1.0 }]
-
--- FIXME: remove this one `grind +premises` lands.
-macro_rules | `(tactic| grind +premises) => `(tactic| grind [p])
+set_library_suggestions fun _ _ => pure #[{ name := `p, score := 1.0 }]
 
 example : P 37 := by
-  grind +premises
+  grind +suggestions
 
-set_option linter.tacticAnalysis.tryAtEachStepGrindPremises true
+/--
+info: Try this:
+  [apply] simp_all only [p]
+-/
+#guard_msgs in
+example : P 37 := by
+  simp_all? +suggestions
 
-/-- info: `trivial` can be replaced with `grind +premises✝` -/
+set_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions true in
+-- FIXME: why is the dagger here?
+/-- info: `trivial` can be replaced with `grind +suggestions✝` -/
+#guard_msgs in
+example : P 37 := by
+  trivial
+
+set_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions true in
+-- FIXME: why is the dagger here?
+/--
+info: Try this:
+  [apply] simp_all +suggestions✝ only [p]
+---
+info: `trivial` can be replaced with `simp_all? +suggestions✝`
+-/
 #guard_msgs in
 example : P 37 := by
   trivial
@@ -217,9 +313,63 @@ end
 
 end tryAtEachStep
 
+section selfReplacements
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+-- With selfReplacements true (default), grind replacing grind is reported
+/-- info: `grind` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+section
+set_option linter.tacticAnalysis.tryAtEachStep.selfReplacements false
+
+-- With selfReplacements false, grind replacing grind is NOT reported
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+-- Non-self replacements are still reported when selfReplacements is false
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+end
+
+end selfReplacements
+
+section laterSteps
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+set_option linter.unusedTactic false
+
+-- Test that later steps are counted correctly
+/--
+info: `skip` (+3 later steps) can be replaced with `grind`
+---
+info: `skip` (+2 later steps) can be replaced with `grind`
+---
+info: `skip` (+1 later steps) can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  skip
+  skip
+  rfl
+
+end laterSteps
+
 section grindReplacement
 
-set_option linter.tacticAnalysis.regressions.omegaToCutsat true
+set_option linter.tacticAnalysis.regressions.omegaToLia true
 
 -- We should not complain about `omega` (and others) failing in a `try` context.
 example : x = y := by
@@ -231,7 +381,7 @@ example : x = y := by
   try
     symm
     symm
-    omega
+    lia
   rfl
 
 set_option linter.unusedVariables false in
@@ -249,7 +399,27 @@ example : x = y := by
   any_goals
     symm
     symm
-    omega
+    lia
   rfl
 
 end grindReplacement
+
+section unknownTactic
+
+-- Test that tryAtEachStepFromStrings gracefully handles unknown tactics
+-- (e.g., trying to run `aesop` before Aesop is imported)
+
+register_option linter.tacticAnalysis.unknownTacticTest : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.unknownTacticTest]
+def unknownTacticTest :=
+  Mathlib.TacticAnalysis.tryAtEachStepFromStrings "nonexistent" "nonexistent_tactic_xyz"
+
+-- This should not crash - the unknown tactic should be silently skipped
+set_option linter.tacticAnalysis.unknownTacticTest true in
+#guard_msgs in
+example : 1 + 1 = 2 := by rfl
+
+end unknownTactic

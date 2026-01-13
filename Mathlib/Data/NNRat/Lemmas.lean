@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Tactic.Zify
+module
+
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Tactic.Zify
 
 /-!
 # Field and action structures on the nonnegative rationals
@@ -15,6 +17,8 @@ import Mathlib.Tactic.Zify
 This file provides additional results about `NNRat` that cannot live in earlier files due to import
 cycles.
 -/
+
+@[expose] public section
 
 open Function
 open scoped NNRat
@@ -25,7 +29,7 @@ variable {α : Type*} {q : ℚ≥0}
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
     ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
-  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
+  map_indicator coeHom _ _ _
 
 end NNRat
 

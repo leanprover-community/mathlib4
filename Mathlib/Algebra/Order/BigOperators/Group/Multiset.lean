@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -15,6 +17,8 @@ import Mathlib.Data.Multiset.Fold
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -164,5 +168,20 @@ lemma prod_min_le [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
 lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero.le abs_add_le s
+
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β] (m : Multiset α) (f : α → β)
+
+lemma apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
+    f m.prod ≤ (m.map f).sum := by
+  induction m using Quotient.inductionOn with
+  | h l => simp [l.apply_prod_le_sum_map _ h_one h_mul]
+
+lemma sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
+    (m.map f).sum ≤ f m.prod :=
+  m.apply_prod_le_sum_map (β := βᵒᵈ) f h_one h_mul
+
+end ProdSum
 
 end Multiset

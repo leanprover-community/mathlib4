@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Maps.Basic
 
 /-!
 # Homeomorphisms
@@ -12,7 +14,7 @@ import Mathlib.Topology.Maps.Basic
 This file defines homeomorphisms between two topological spaces. They are bijections with both
 directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Homeomorph X Y`: The type of homeomorphisms from `X` to `Y`.
   This type can be denoted using the following notation: `X ≃ₜ Y`.
@@ -30,6 +32,8 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter
 
@@ -186,10 +190,10 @@ theorem self_comp_symm (h : X ≃ₜ Y) : h ∘ h.symm = id :=
 theorem range_coe (h : X ≃ₜ Y) : range h = univ := by simp
 
 theorem image_symm (h : X ≃ₜ Y) : image h.symm = preimage h :=
-  funext h.symm.toEquiv.image_eq_preimage
+  funext h.symm.toEquiv.image_eq_preimage_symm
 
 theorem preimage_symm (h : X ≃ₜ Y) : preimage h.symm = image h :=
-  (funext h.toEquiv.image_eq_preimage).symm
+  (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
 theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
@@ -199,8 +203,8 @@ theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
 theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
-theorem image_eq_preimage (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=
-  h.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=
+  h.toEquiv.image_eq_preimage_symm s
 
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
@@ -324,6 +328,11 @@ theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 
+theorem isClosed_setOf_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
+    (ht : IsClopen {y | q y}) : IsClosed { x : X | p x ↔ q (f x) } := by
+  simpa [iff_def] using (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
+    (isClosed_imp (f.isOpen_preimage.2 ht.2) hs.1)
+
 end Homeomorph
 
 namespace Equiv
@@ -334,7 +343,7 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
   continuous_toFun := continuous_def.2 fun _ ↦ (he _).2
-  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
+  continuous_invFun := continuous_def.2 fun s ↦ by simpa using (he (e.symm ⁻¹' s)).1
 
 @[deprecated (since := "2025-10-09")] alias toHomeomorph_toEquiv := toEquiv_toHomeomorph
 
@@ -398,6 +407,12 @@ theorem toHomeomorphOfContinuousClosed_symm_apply
     (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
 
+/-- Any bijection between discrete spaces is a homeomorphism. -/
+def toHomeomorphOfDiscrete
+    [TopologicalSpace X] [DiscreteTopology X]
+    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+  e.toHomeomorph (by simp)
+
 end Equiv
 
 /-- `HomeomorphClass F A B` states that `F` is a type of homeomorphisms. -/
@@ -428,7 +443,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
-  map_continuous  f := map_continuous f
+  map_continuous f := map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun

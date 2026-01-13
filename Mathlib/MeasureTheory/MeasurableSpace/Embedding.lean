@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.Tactic.FunProp
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -34,6 +36,8 @@ We prove a multitude of elementary lemmas about these, and one more substantial 
 
 measurable equivalence, measurable embedding
 -/
+
+@[expose] public section
 
 
 open Set Function Equiv MeasureTheory
@@ -130,7 +134,7 @@ lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
     (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
   convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
-  simp [image_preimage_eq_range_inter, ← union_inter_distrib_right,univ_subset_iff.1 h]
+  simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
@@ -190,7 +194,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 
@@ -291,13 +295,13 @@ protected theorem injective (e : α ≃ᵐ β) : Injective e :=
 theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
   e.toEquiv.symm_preimage_preimage s
 
-theorem image_eq_preimage (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
-lemma preimage_symm (e : α ≃ᵐ β) (s : Set α) : e.symm ⁻¹' s = e '' s := (image_eq_preimage _ _).symm
+lemma preimage_symm (e : α ≃ᵐ β) (s : Set α) : e.symm ⁻¹' s = e '' s :=
+  (image_eq_preimage_symm ..).symm
 
-lemma image_symm (e : α ≃ᵐ β) (s : Set β) : e.symm '' s = e ⁻¹' s := by
-  rw [← symm_symm e, preimage_symm, symm_symm]
+lemma image_symm (e : α ≃ᵐ β) (s : Set β) : e.symm '' s = e ⁻¹' s := image_symm_eq_preimage ..
 
 lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
     s = e '' t ↔ e.symm '' s = t := by
@@ -318,8 +322,8 @@ theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
     e.measurable h⟩
 
 @[simp]
-theorem measurableSet_image (e : α ≃ᵐ β) :
-    MeasurableSet (e '' s) ↔ MeasurableSet s := by rw [image_eq_preimage, measurableSet_preimage]
+theorem measurableSet_image (e : α ≃ᵐ β) : MeasurableSet (e '' s) ↔ MeasurableSet s := by
+  rw [image_eq_preimage_symm, measurableSet_preimage]
 
 @[simp] theorem map_eq (e : α ≃ᵐ β) : MeasurableSpace.map e ‹_› = ‹_› :=
   e.measurable.le_map.antisymm' fun _s ↦ e.measurableSet_preimage.1
@@ -642,6 +646,16 @@ def ofInvolutive (f : α → α) (hf : Involutive f) (hf' : Measurable f) : α �
 @[simp] theorem ofInvolutive_symm (f : α → α) (hf : Involutive f) (hf' : Measurable f) :
     (ofInvolutive f hf hf').symm = ofInvolutive f hf hf' := rfl
 
+/-- `setOf` as a `MeasurableEquiv`. -/
+@[simps]
+protected def setOf {α : Type*} : (α → Prop) ≃ᵐ Set α where
+  toFun p := {a | p a}
+  invFun s a := a ∈ s
+  measurable_toFun := measurable_id
+  measurable_invFun := measurable_id
+
+@[simp, norm_cast] lemma coe_setOf {α : Type*} : ⇑MeasurableEquiv.setOf = setOf (α := α) := rfl
+
 end MeasurableEquiv
 
 namespace MeasurableEmbedding
@@ -761,7 +775,7 @@ def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
   open Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
   open Classical in

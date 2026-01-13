@@ -3,12 +3,16 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Tactic.NormNum.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 ## `norm_num` plugin for `^`.
 -/
+
+public meta section
 
 assert_not_exists RelIso
 
@@ -204,13 +208,12 @@ def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» �
     let qc := mkRat zc dc.natLit!
     return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
 
-attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
-  let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
+  let ⟨nb, pb⟩ ← deriveNat b q(Nat.instAddMonoidWithOne)
   let sα ← inferSemiring α
   let ra ← derive a
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))

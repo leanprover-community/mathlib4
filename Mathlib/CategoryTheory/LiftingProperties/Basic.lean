@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach, Joël Riou
 -/
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.CategoryTheory.Retract
+module
+
+public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Retract
 
 /-!
 # Lifting properties
@@ -18,10 +20,12 @@ shows basic properties of this notion.
 ## Tags
 lifting property
 
-@TODO :
+## TODO
 1) direct/inverse images, adjunctions
 
 -/
+
+@[expose] public section
 
 
 universe v
@@ -30,7 +34,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
+variable {C : Type*} [Category* C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
   (p' : Y ⟶ Y')
 
 /-- `HasLiftingProperty i p` means that `i` has the left lifting

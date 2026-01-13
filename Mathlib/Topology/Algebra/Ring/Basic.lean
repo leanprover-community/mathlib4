@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.GroupTopology
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -25,6 +27,8 @@ of topological (semi)rings.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -383,6 +387,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
+set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
@@ -392,6 +397,8 @@ private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
 

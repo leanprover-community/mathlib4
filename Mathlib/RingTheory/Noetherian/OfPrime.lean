@@ -3,9 +3,11 @@ Copyright (c) 2025 Anthony Fernandes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Fernandes, Marc Robin
 -/
-import Mathlib.RingTheory.Ideal.Oka
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.RingTheory.Ideal.Oka
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Noetherian rings and prime ideals
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Ideal.BigOperators
 
 - [cohen1950]: *Commutative rings with restricted minimum condition*, I. S. Cohen, Theorem 2
 -/
+
+public section
 
 variable {R : Type*} [CommRing R]
 

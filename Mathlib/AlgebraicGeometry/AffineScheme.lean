@@ -3,14 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.Topology.Sheaves.CommRingCat
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.RingTheory.Localization.InvSubmonoid
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.Topology.Sheaves.CommRingCat
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Affine schemes
@@ -33,6 +35,8 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -77,7 +81,7 @@ theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (
 
 @[reassoc (attr := simp)]
 lemma Scheme.toSpecΓ_isoSpec_inv (X : Scheme.{u}) [IsAffine X] :
-    X.toSpecΓ ≫ X.isoSpec.inv  = 𝟙 _ :=
+    X.toSpecΓ ≫ X.isoSpec.inv = 𝟙 _ :=
   X.isoSpec.hom_inv_id
 
 @[reassoc (attr := simp)]
@@ -99,7 +103,7 @@ def AffineScheme.of (X : Scheme) [h : IsAffine X] : AffineScheme :=
 /-- Type check a morphism of schemes as a morphism in `AffineScheme`. -/
 def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
-  f
+  InducedCategory.homMk f
 
 @[simp]
 theorem essImage_Spec {X : Scheme} : Scheme.Spec.essImage X ↔ IsAffine X :=
@@ -358,6 +362,12 @@ lemma Scheme.Opens.toSpecΓ_naturality {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens
   simp only [toSpecΓ, topIso, Functor.op_obj, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv,
     eqToHom_op, Hom.app_eq_appLE, Category.assoc, ← Spec.map_comp, Hom.appLE_map,
     toSpecΓ_naturality_assoc, TopologicalSpace.Opens.map_top, morphismRestrict_appLE, Hom.map_appLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.toSpecΓ_SpecMap_appLE
+    {X Y : Scheme} (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (hUV) :
+    V.toSpecΓ ≫ Spec.map (f.appLE U V hUV) = f.resLE U V hUV ≫ U.toSpecΓ := by
+  simp [Hom.appLE, Hom.resLE]
 
 namespace IsAffineOpen
 
@@ -994,6 +1004,22 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
   rw [iSup_range', SetLike.mem_coe, Opens.mem_iSup]
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 
+/-- If `φ` is a monomorphism in `CommRingCat`, it is not in general true that `Spec φ` is epi.
+(`ℤ ⊆ ℤ[1/2]` but `Spec ℤ[1/2] ⟶ Spec ℤ` is not epi, since epi open immersions are isomorphisms)
+But if the range of `f g : Spec R ⟶ X` are contained in an common affine open `U`, one can still
+cancel `Spec.map φ ≫ f = Spec.map φ ≫ g` to get `f = g`. -/
+lemma eq_of_SpecMap_comp_eq_of_isAffineOpen {R S : CommRingCat} {X : Scheme}
+    (φ : R ⟶ S) (hφ : Function.Injective φ)
+    {f g : Spec R ⟶ X} (U : X.Opens) (hU : IsAffineOpen U) (hUf : f ⁻¹ᵁ U = ⊤) (hUg : g ⁻¹ᵁ U = ⊤)
+    (H : Spec.map φ ≫ f = Spec.map φ ≫ g) : f = g := by
+  have : Mono φ := ConcreteCategory.mono_of_injective _ hφ
+  rw [← IsOpenImmersion.lift_fac U.ι f (by simpa [Set.range_subset_iff] using fun x hx ↦ hUf.ge hx),
+    ← IsOpenImmersion.lift_fac U.ι g (by simpa [Set.range_subset_iff] using fun x hx ↦ hUg.ge hx)]
+  congr 1
+  rw [← cancel_mono hU.isoSpec.hom, ← Spec.homEquiv.injective.eq_iff,
+    ← cancel_mono φ, ← Spec.map_injective.eq_iff]
+  simp [← cancel_mono U.ι, H]
+
 section ZeroLocus
 
 namespace Scheme
@@ -1014,8 +1040,7 @@ lemma isoSpec_image_zeroLocus [IsAffine X]
     (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
   rw [← X.toSpecΓ_preimage_zeroLocus]
-  erw [Set.image_preimage_eq]
-  exact (bijective_of_isIso X.isoSpec.hom.base).surjective
+  simp [Scheme.isoSpec, Set.image_preimage_eq (h := (bijective_of_isIso _).surjective)]
 
 lemma toSpecΓ_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
     X.toSpecΓ '' X.zeroLocus s = PrimeSpectrum.zeroLocus s :=

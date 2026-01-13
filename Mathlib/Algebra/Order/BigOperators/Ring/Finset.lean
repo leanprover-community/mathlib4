@@ -3,11 +3,13 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
+public import Mathlib.Tactic.Ring
 
 /-!
 # Big operators on a finset in ordered rings
@@ -18,6 +20,8 @@ rings.
 In particular, this file contains the standard form of the Cauchy-Schwarz inequality, as well as
 some of its immediate consequences.
 -/
+
+public section
 
 variable {ι R S : Type*}
 
@@ -258,7 +262,7 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
-private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
+alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
@@ -271,7 +275,7 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.pro
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
-def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque

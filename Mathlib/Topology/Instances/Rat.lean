@@ -3,18 +3,22 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Data.NNRat.Order
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Nat
 
 /-!
 # Topology on the rational numbers
 
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 open Filter Metric Set Topology
 
@@ -106,11 +110,11 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 

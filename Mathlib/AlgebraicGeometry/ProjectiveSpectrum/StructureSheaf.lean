@@ -3,16 +3,18 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+public import Mathlib.Topology.Sheaves.LocalPredicate
+public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
-In `Mathlib/AlgebraicGeometry/Topology.lean`, we have given a topology on `ProjectiveSpectrum 𝒜`; in
-this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
+In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a topology on
+`ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
 - `A` is a commutative ring;
@@ -44,6 +46,8 @@ Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
 
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

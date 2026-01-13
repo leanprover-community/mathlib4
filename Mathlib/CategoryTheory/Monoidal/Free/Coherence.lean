@@ -3,8 +3,10 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -32,6 +34,8 @@ is thin.
   proof of normalization for monoids][beylin1996]
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -232,7 +236,7 @@ theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y
   clear n f
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
-  | whiskerLeft  _ _ ih => funext; apply congr_fun ih
+  | whiskerLeft _ _ ih => funext; apply congr_fun ih
   | whiskerRight _ _ ih => funext; apply congr_arg₂ _ rfl (congr_fun ih _)
   | @tensor W X Y Z _ _ ih₁ ih₂ =>
       funext n

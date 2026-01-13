@@ -3,9 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.
@@ -13,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 `AddCommGroup` also has zero morphisms. For definitional reasons, we infer this from preadditivity
 rather than from the existence of a zero object.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -36,11 +39,14 @@ theorem isZero_of_subsingleton (G : GrpCat) [Subsingleton G] : IsZero G := by
 instance : HasZeroObject GrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-@[to_additive AddGrpCat.hasZeroMorphisms]
-instance : HasZeroMorphisms GrpCat where
-  zero _ _ := ⟨ofHom 1⟩
-  comp_zero := by rfl_cat
-  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
+@[to_additive]
+lemma subsingleton_of_isZero {G : GrpCat} (h : Limits.IsZero G) :
+    Subsingleton G :=
+  (h.iso (isZero_of_subsingleton <| .of PUnit)).groupIsoToMulEquiv.subsingleton
+
+@[to_additive]
+lemma isZero_iff_subsingleton {G : GrpCat} : Limits.IsZero G ↔ Subsingleton G :=
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
 
 end GrpCat
 
@@ -59,10 +65,13 @@ theorem isZero_of_subsingleton (G : CommGrpCat) [Subsingleton G] : IsZero G := b
 instance : HasZeroObject CommGrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-@[to_additive AddCommGrpCat.hasZeroMorphisms]
-instance : HasZeroMorphisms CommGrpCat where
-  zero _ _ := ⟨ofHom 1⟩
-  comp_zero := by rfl_cat
-  zero_comp _ _ _ f := hom_ext (MonoidHom.ext fun x ↦ MonoidHom.map_one (Hom.hom f))
+@[to_additive]
+lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
+    Subsingleton G :=
+  (h.iso (isZero_of_subsingleton <| .of PUnit)).commGroupIsoToMulEquiv.subsingleton
+
+@[to_additive]
+lemma isZero_iff_subsingleton {G : CommGrpCat} : Limits.IsZero G ↔ Subsingleton G :=
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
 
 end CommGrpCat

@@ -3,11 +3,13 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Subgroup.Even
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Even
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums of squares
@@ -25,8 +27,11 @@ We introduce a predicate for sums of squares in a ring.
   with multiplication.
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The property of being a sum of squares is defined inductively by:
 `0 : R` is a sum of squares and if `s : R` is a sum of squares,
@@ -37,6 +42,7 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                                    : IsSumSq 0
   | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
 theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
     {motive : (s : R) → (h : IsSumSq s) → Prop}
@@ -201,6 +207,7 @@ theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R
     (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSq R) (by simpa)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
 sums of squares are non-negative.

@@ -3,7 +3,9 @@ Copyright (c) 2020 Mathieu Guay-Paquet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mathieu Guay-Paquet
 -/
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.Order.Ideal
 
 /-!
 # Order filters
@@ -29,6 +31,8 @@ Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 pfilter, filter, ideal, dual
 
 -/
+
+@[expose] public section
 
 open OrderDual
 

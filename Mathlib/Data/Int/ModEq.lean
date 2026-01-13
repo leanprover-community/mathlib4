@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 
@@ -18,6 +20,8 @@ which is defined to be `a % n = b % n` for integers `a b n`.
 modeq, congruence, mod, MOD, modulo, integers
 
 -/
+
+@[expose] public section
 
 
 namespace Int
@@ -42,7 +46,7 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -90,7 +94,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by cutsat : -b - -a = -(b - a)), Int.dvd_neg]
+  simp only [modEq_iff_dvd, (by lia : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -112,7 +116,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; cutsat
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; lia
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -122,7 +126,7 @@ protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by cutsat
+  have : d - c = b + d - (a + c) - (b - a) := by lia
   modEq_iff_dvd.2 <| by
     rw [this]
     exact Int.dvd_sub h₂.dvd h₁.dvd
@@ -164,7 +168,7 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction m with
-  | zero => rfl
+  | zero => simp
   | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by

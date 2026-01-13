@@ -3,10 +3,12 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Convex.Deriv
-import Mathlib.Analysis.Convex.Piecewise
-import Mathlib.Analysis.Convex.Jensen
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Convex.Deriv
+public import Mathlib.Analysis.Convex.Piecewise
+public import Mathlib.Analysis.Convex.Jensen
 
 /-!
 # Pochhammer polynomials
@@ -27,6 +29,8 @@ This file proves analysis theorems for Pochhammer polynomials.
 * `descPochhammer_eval_div_factorial_le_sum_choose` is a special case of **Jensen's inequality**
   for `Nat.choose`.
 -/
+
+public section
 
 
 section DescPochhammer

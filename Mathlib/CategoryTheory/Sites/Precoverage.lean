@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ These two are defined in later files. For precoverages, we define stability cond
 
 -/
 
+@[expose] public section
+
 universe w w' v u
 
 namespace CategoryTheory
@@ -39,7 +43,7 @@ namespace CategoryTheory
 /-- A precoverage is a collection of *covering* presieves on every object `X : C`.
 See `CategoryTheory.Coverage` and `CategoryTheory.Pretopology` for common extensions of this. -/
 @[ext]
-structure Precoverage (C : Type*) [Category C] where
+structure Precoverage (C : Type*) [Category* C] where
   /-- The collection of covering presieves for an object `X`. -/
   coverings : ∀ (X : C), Set (Presieve X)
 
@@ -205,7 +209,7 @@ instance (J K : Precoverage C) [IsStableUnderSup J] [IsStableUnderSup K] :
 
 section Functoriality
 
-variable {D : Type*} [Category D] {F : C ⥤ D}
+variable {D : Type*} [Category* D] {F : C ⥤ D}
 
 variable {J K : Precoverage D}
 

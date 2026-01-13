@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Sum
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Sum
 
 /-!
 # Big operators
@@ -13,7 +15,9 @@ import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
--- TODO: assert_not_exists AddCommMonoidWithOne
+public section
+
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
@@ -61,12 +65,6 @@ theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 
   by_cases hm : a ∈ s
   · simp_rw [insert_eq_of_mem hm]
   · rw [prod_insert hm, h hm, one_mul]
-
-@[deprecated (since := "2025-05-23")]
-alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
@@ -145,7 +143,7 @@ theorem prod_filter_mul_prod_filter_not
     (s : Finset ι) (p : ι → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] (f : ι → M) :
     (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, f x = ∏ x ∈ s, f x := by
   have := Classical.decEq ι
-  rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
+  rw [← prod_union (disjoint_filter_filter_not s s p), filter_union_filter_not_eq]
 
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset ι) (p : ι → Prop) [DecidablePred p]
@@ -201,12 +199,6 @@ theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
-
-@[deprecated (since := "2025-06-11")]
-alias sum_disj_sum := sum_disjSum
-
-@[to_additive existing, deprecated (since := "2025-06-11")]
-alias prod_disj_sum := prod_disjSum
 
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
@@ -352,6 +344,11 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
 
+@[to_additive (attr := simp)]
+lemma prod_ite_mem_eq [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
+    (∏ i, if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
+  rw [← Finset.prod_filter]; congr; aesop
+
 @[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
@@ -483,7 +480,8 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
-@[to_additive]
+/-- Also see `Finset.prod_ite_mem_eq` -/
+@[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
 theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
   rw [univ_eq_attach, ← Finset.prod_attach s]
   congr with ⟨x, hx⟩
@@ -512,10 +510,8 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
-  classical
-    rw [← prod_filter_ne_one] at h
-    rcases nonempty_of_prod_ne_one h with ⟨x, hx⟩
-    exact ⟨x, (mem_filter.1 hx).1, by simpa using (mem_filter.1 hx).2⟩
+  contrapose! h
+  exact prod_eq_one h
 
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :

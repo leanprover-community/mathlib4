@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The successor case in the induction for Nöbeling's theorem
@@ -74,6 +76,8 @@ The main results in the section `GoodProducts` are as follows:
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -538,7 +542,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     simp only [map_finsuppSum]
     apply Finsupp.sum_congr
     intro q hq
-    rw [LinearMap.map_smul]
+    rw [map_smul]
     rw [Finsupp.mem_supported] at hmmem
     have hx'' : q < l.val.Tail := hmmem hq
     have : ∃ (p : Products I), p.val ≠ [] ∧ p.val.head! = term I ho ∧ q = p.Tail :=
@@ -567,7 +571,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   apply Submodule.add_mem
   · apply Submodule.finsuppSum_mem
     intro q _
-    rw [LinearMap.map_smul]
+    rw [map_smul]
     apply Submodule.smul_mem
     apply Submodule.subset_span
     dsimp only [eval]

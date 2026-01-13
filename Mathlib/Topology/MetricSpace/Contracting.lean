@@ -3,10 +3,12 @@ Copyright (c) 2019 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Dynamics.FixedPoints.Topology
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Dynamics.FixedPoints.Topology
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Contracting maps
@@ -27,6 +29,8 @@ of convergence, and some properties of the map sending a contracting map to its 
 
 contracting map, fixed point, Banach fixed point theorem
 -/
+
+@[expose] public section
 
 open NNReal Topology ENNReal Filter Function
 
@@ -281,14 +285,14 @@ theorem dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 
 
 /-- A posteriori estimates on the convergence of iterates to the fixed point. -/
 theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
-    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := by
+    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := by
   rw [iterate_succ']
   apply hf.dist_fixedPoint_le
 
 theorem apriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
   calc
-    _ ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
+    _ ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
     _ ≤ _ := by
       gcongr; exacts [hf.one_sub_K_pos.le, hf.toLipschitzWith.dist_iterate_succ_le_geometric x n]
 

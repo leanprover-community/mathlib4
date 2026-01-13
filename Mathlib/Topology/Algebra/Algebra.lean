@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Topological (sub)algebras
@@ -20,12 +22,15 @@ The topological closure of a subalgebra is still a subalgebra, which as an algeb
 topological algebra.
 
 In this file we define continuous algebra homomorphisms, as algebra homomorphisms between
-topological (semi-)rings which are continuous. The set of continuous algebra homomorphisms between
-the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
+topological (semi-)rings which are continuous. The type `ContinuousAlgHom R A B` of continuous
+algebra homomorphisms between the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 
-TODO: add continuous algebra isomorphisms.
+See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
+the topological `R`-algebras `A` and `B`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -68,11 +73,18 @@ def algebraMapCLM : R →L[R] A :=
     toFun := algebraMap R A
     cont := continuous_algebraMap R A }
 
-theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
+theorem coe_algebraMapCLM : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
 
-theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
+theorem toLinearMap_algebraMapCLM : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
+
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_toLinearMap := toLinearMap_algebraMapCLM
+@[deprecated (since := "2025-12-05")] alias algebraMapCLM_coe := coe_algebraMapCLM
+
+lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
+    toSpanSingleton R (M₁ := A) 1 = algebraMapCLM R A := by
+  ext; simp
 
 end
 
@@ -118,23 +130,23 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective'  f g h  := by
+  coe_injective' f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
 
 instance : AlgHomClass (A →A[R] B) R A B where
-  map_mul f x y    := map_mul f.toAlgHom x y
-  map_one f        := map_one f.toAlgHom
-  map_add f        := map_add f.toAlgHom
-  map_zero f       := map_zero f.toAlgHom
-  commutes f r     := f.toAlgHom.commutes r
+  map_mul f x y := map_mul f.toAlgHom x y
+  map_one f     := map_one f.toAlgHom
+  map_add f     := map_add f.toAlgHom
+  map_zero f    := map_zero f.toAlgHom
+  commutes f r  := f.toAlgHom.commutes r
 
 @[simp]
 theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 
 @[simp, norm_cast]
-theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g :=   by
+theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]; exact Eq.congr_right rfl
 
 @[simp]
@@ -221,6 +233,11 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
   ext fun x => eqOn_closure_adjoin h (hs x)
 
+/-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
+def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where toLinearMap := e.toAlgHom.toLinearMap
+
+@[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
+
 variable [IsTopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
@@ -282,14 +299,14 @@ theorem one_def : (1 : A →A[R] A) = ContinuousAlgHom.id R A := rfl
 theorem id_apply (x : A) : ContinuousAlgHom.id R A x = x := rfl
 
 @[simp, norm_cast]
-theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A:= rfl
+theorem coe_id : ((ContinuousAlgHom.id R A) : A →ₐ[R] A) = AlgHom.id R A := rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(ContinuousAlgHom.id R A ) = _root_.id := rfl
+theorem coe_id' : ⇑(ContinuousAlgHom.id R A) = _root_.id := rfl
 
 @[simp, norm_cast]
 theorem coe_eq_id {f : A →A[R] A} :
-    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A:= by
+    (f : A →ₐ[R] A) = AlgHom.id R A ↔ f = ContinuousAlgHom.id R A := by
   rw [← coe_id, coe_inj]
 
 @[simp]
@@ -449,8 +466,8 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
 /-- `ContinuousAlgHom.prod` as an `Equiv`. -/
 @[simps apply]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
-  toFun f     := f.1.prod f.2
-  invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
+  toFun f  := f.1.prod f.2
+  invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
 
 end prod
 
@@ -478,11 +495,11 @@ theorem coe_codRestrict_apply (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x,
 /-- Restrict the codomain of a continuous algebra homomorphism `f` to `f.range`. -/
 @[reducible]
 def rangeRestrict (f : A →A[R] B) :=
-  f.codRestrict (@AlgHom.range R A B  _ _ _ _ _ f) (@AlgHom.mem_range_self R A B  _ _ _ _ _ f)
+  f.codRestrict (@AlgHom.range R A B _ _ _ _ _ f) (@AlgHom.mem_range_self R A B _ _ _ _ _ f)
 
 @[simp]
 theorem coe_rangeRestrict (f : A →A[R] B) :
-    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B  _ _ _ _ _ f)) =
+    (f.rangeRestrict : A →ₐ[R] (@AlgHom.range R A B _ _ _ _ _ f)) =
       (f : A →ₐ[R] B).rangeRestrict :=
   rfl
 

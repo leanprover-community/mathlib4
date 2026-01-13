@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.RingTheory.Algebraic.MvPolynomial
-import Mathlib.RingTheory.AlgebraicIndependent.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 
 /-!
 # Algebraic Independence
@@ -20,6 +22,8 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 transcendence
 
 -/
+
+public section
 
 noncomputable section
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.Sort
+module
+
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.Sort
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list
@@ -20,10 +22,12 @@ Given a list `l`,
   if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
-* if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted
+* if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
 
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -63,10 +67,12 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
     Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, idxOf_lt_length_iff.2 (h a)⟩
-  left_inv i := by simp [List.idxOf_getElem, nd]
+  left_inv i := by simp [nd]
   right_inv a := by simp
 
 end Nodup
+
+section Sorted
 
 /-- Alternative phrasing of `List.Nodup.getEquivOfForallMemList` using `List.count`. -/
 @[simps!]
@@ -75,31 +81,39 @@ def getEquivOfForallCountEqOne [DecidableEq α] (l : List α) (h : ∀ x, l.coun
   Nodup.getEquivOfForallMemList _ (List.nodup_iff_count_eq_one.mpr fun _ _ ↦ h _)
     fun _ ↦ List.count_pos_iff.mp <| h _ ▸ Nat.one_pos
 
-namespace Sorted
-
 variable [Preorder α] {l : List α}
 
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
-
-theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
+@[deprecated (since := "2025-10-11")]
+alias Sorted.get_mono := SortedLE.monotone_get
+@[deprecated (since := "2025-10-11")]
+alias Sorted.get_strictMono := SortedLT.strictMono_get
 
 variable [DecidableEq α]
 
 /-- If `l` is a list sorted w.r.t. `(<)`, then `List.get` defines an order isomorphism between
 `Fin (length l)` and the set of elements of `l`. -/
-def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l } where
-  toEquiv := H.nodup.getEquiv l
-  map_rel_iff' := H.get_strictMono.le_iff_le
+def SortedLT.getIso (l : List α) (H : SortedLT l) : Fin (length l) ≃o { x // x ∈ l } where
+  toEquiv := H.pairwise.nodup.getEquiv l
+  map_rel_iff' := H.strictMono_get.le_iff_le
 
-variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
+@[deprecated (since := "2025-10-11")]
+alias Sorted.getIso := SortedLT.getIso
+
+variable (H : SortedLT l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
-theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
+theorem SortedLT.coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
+theorem SortedLT.coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.coe_getIso_apply := SortedLT.coe_getIso_apply
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.coe_getIso_symm_apply := SortedLT.coe_getIso_symm_apply
 
 end Sorted
 
@@ -190,17 +204,10 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · cutsat
+      · lia
       · exact absurd (h.trans hj) hi
       · simpa using h
-    · intro i
-      simp only [OrderEmbedding.coe_ofStrictMono]
-      split_ifs with hi
-      · specialize hf ⟨i, hi⟩
-        simp_all
-      · rw [getElem?_eq_none_iff.mpr, getElem?_eq_none_iff.mpr]
-        · simp
-        · simpa using hi
+    · grind
 
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.

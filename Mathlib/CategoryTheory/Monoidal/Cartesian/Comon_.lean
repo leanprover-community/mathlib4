@@ -3,8 +3,10 @@ Copyright (c) 2023 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # Comonoid objects in a Cartesian monoidal category.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits ComonObj
 
@@ -44,14 +48,10 @@ variable {C}
 
 @[simp] theorem counit_eq_toUnit (A : C) [ComonObj A] : ε[A] = toUnit _ := by ext
 
-@[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
-
 @[simp] theorem comul_eq_lift (A : C) [ComonObj A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
   ext
   · simpa using comul_counit A =≫ fst _ _
   · simpa using counit_comul A =≫ snd _ _
-
-@[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 
 /--
 Every comonoid object in a Cartesian monoidal category is equivalent to

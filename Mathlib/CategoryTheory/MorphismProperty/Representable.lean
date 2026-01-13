@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
+module
 
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
@@ -77,6 +78,8 @@ as possible is phrased internally to `C`.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -581,7 +584,7 @@ lemma of_diag {X : D} (h : F.relativelyRepresentable (Limits.diag X))
     (h prodMap).choose_spec.choose_spec.choose_spec.isLimit'.some.conePointUniqueUpToIso <|
     pasteHorizIsPullback rfl (IsPullback.of_vert_isIso_mono (snd := pullback.congrHom
       (terminal.comp_from g) (terminal.comp_from g') ≪≫ (prodIsoPullback _ _).symm ≪≫
-      (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm|>.hom)
+      (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm |>.hom)
     ⟨by cat_disch⟩).isLimit'.some left
   exact ⟨_, ⟨_, ⟨_, IsPullback.of_iso_pullback (fst := pbRepr.hom ≫ pullback.fst g g')
     (snd := F.map (Functor.preimage F (pbRepr.hom ≫ pullback.snd g g')))

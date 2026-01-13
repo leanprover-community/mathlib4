@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.ProductMeasure
+module
+
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.ProductMeasure
 
 /-!
 # Independence of an infinite family of random variables
@@ -22,6 +24,8 @@ There are several possible measurability assumptions:
 Although the first two options are equivalent, the last two are not if the index set is not
 countable.
 -/
+
+public section
 
 open MeasureTheory Measure ProbabilityTheory
 
@@ -49,7 +53,7 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i �
       exact fun i ↦ mX.eval i
     any_goals fun_prop
     · exact mX
-    · exact .univ_pi fun i ↦ ht i i.2
+    · exact .univ_pi fun i ↦ ht i
   mpr h := by
     have _ i := isProbabilityMeasure_map (mX.eval i)
     rw [iIndepFun_iff_finset]

@@ -3,9 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Rat.Floor
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Rat.Floor
+public meta import Mathlib.Data.Rat.Floor
 
 /-!
 # Floor Function for Non-negative Rational Numbers
@@ -20,6 +23,8 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 
 nnrat, rationals, ℚ≥0, floor
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -126,7 +131,7 @@ theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing
 open Lean in
 /-- `norm_num` extension for `Nat.ceil` -/
 @[norm_num ⌈_⌉₊]
-def evalNatCeil : NormNumExt where eval {u αZ} e := do
+meta def evalNatCeil : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with

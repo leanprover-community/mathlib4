@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.BilinearForm.DualLattice
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Integral closure of Dedekind domains
@@ -32,6 +34,8 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped nonZeroDivisors Polynomial
@@ -120,7 +124,6 @@ then `L` has a basis over `A` consisting of integral elements. -/
 theorem FiniteDimensional.exists_is_basis_integral :
     ∃ (s : Finset L) (b : Basis s K L), ∀ x, IsIntegral A (b x) := by
   letI := Classical.decEq L
-  letI : IsNoetherian K L := IsNoetherian.iff_fg.2 inferInstance
   let s' := IsNoetherian.finsetBasisIndex K L
   let bs' := IsNoetherian.finsetBasis K L
   obtain ⟨y, hy, his'⟩ := exists_integral_multiples A K (Finset.univ.image bs')

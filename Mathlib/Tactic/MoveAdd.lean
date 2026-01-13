@@ -3,9 +3,14 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public meta import Mathlib.Lean.Meta
+public meta import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
@@ -99,6 +104,8 @@ Once that is done, it tries to replace the initial goal with the permuted one by
 Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
 This will be the content of a later PR.
 -/
+
+public meta section
 
 open Lean Expr
 

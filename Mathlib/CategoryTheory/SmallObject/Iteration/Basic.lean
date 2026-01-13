@@ -3,15 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -44,7 +46,7 @@ all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
 obtained in the file `SmallObject.Iteration.Nonempty`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` will done in the
+and of its colimit `Φ.iteration J : C` will be done in the
 file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
@@ -63,6 +65,8 @@ Reid Barton in 2018 towards the model category structure on
 topological spaces.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -115,7 +119,7 @@ end
 
 variable (C) in
 /-- A successor structure on a category consists of the
-data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
+data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ succ X`
 (which does not need to be natural), and a zeroth object `X₀`.
 -/
 structure SuccStruct where

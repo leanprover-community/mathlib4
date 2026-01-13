@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Degree.Operations
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Degree and support of univariate polynomials
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
 * `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
+
+public section
 
 noncomputable section
 

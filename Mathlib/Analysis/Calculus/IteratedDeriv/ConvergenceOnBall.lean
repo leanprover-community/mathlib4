@@ -3,10 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Taylor series converges to function on whole ball
@@ -14,6 +16,8 @@ import Mathlib.Analysis.RCLike.Basic
 In this file we prove that if a function `f` is analytic on the ball of convergence of its Taylor
 series, then the series converges to `f` on this ball.
 -/
+
+public section
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : 𝕜 → 𝕜} {x : 𝕜}
 

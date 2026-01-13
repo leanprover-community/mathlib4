@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
-import Mathlib.CategoryTheory.Abelian.Images
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Every NonPreadditiveAbelian category is preadditive
@@ -39,7 +41,7 @@ categories, and will be used there.
 The construction is non-trivial and it is quite remarkable that this abelian group structure can
 be constructed purely from the existence of a few limits and colimits. Even more remarkably,
 since abelian categories admit exactly one preadditive structure (see
-`subsingletonPreadditiveOfHasBinaryBiproducts`), the construction manages to exactly
+`subsingleton_preadditive_of_hasBinaryBiproducts`), the construction manages to exactly
 reconstruct any natural preadditive structure the category may have.
 
 ## References
@@ -47,6 +49,8 @@ reconstruct any natural preadditive structure the category may have.
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

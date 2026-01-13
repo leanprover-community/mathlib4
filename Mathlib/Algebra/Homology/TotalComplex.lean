@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Homology.ComplexShapeSigns
-import Mathlib.Algebra.Homology.HomologicalBicomplex
-import Mathlib.Algebra.Module.Basic
+module
+
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Homology.ComplexShapeSigns
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.Algebra.Module.Basic
 
 /-!
 # The total complex of a bicomplex
@@ -25,13 +27,15 @@ differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Preadditive
 
 namespace HomologicalComplex₂
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
   (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂]

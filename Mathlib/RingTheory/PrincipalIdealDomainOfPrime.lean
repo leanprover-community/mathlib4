@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.Oka
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.Ideal.Oka
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Principal ideal domains and prime ideals
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 - `IsPrincipalIdealRing.of_prime`: a ring where all prime ideals are principal is a principal ideal
   ring.
 -/
+
+public section
 
 variable {R : Type*} [CommSemiring R]
 

@@ -3,11 +3,14 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform
@@ -21,7 +24,7 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   and positivity of `T`.
 * `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ used in
   the inductive estimates, along with monotonicity, differentiability, and asymptotic properties.
-* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1`
+* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
   and supporting analytical lemmas such as continuity and injectivity of the defining sum.
 * `AkraBazziRecurrence.sumTransform`: the transformation that turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)` and its eventual comparison with multiples of `g n`.
@@ -37,6 +40,8 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -350,16 +355,16 @@ lemma differentiableAt_one_add_smoothingFn {x : ℝ} (hx : 1 < x) :
 lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + ε z) (Set.Ioi 1) :=
   fun _ hx => (differentiableAt_one_add_smoothingFn hx).differentiableWithinAt
 
-lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
-  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  change deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
-  rw [deriv_fun_div] <;> aesop
+lemma deriv_smoothingFn {x : ℝ} : deriv ε x = -x⁻¹ / (log x ^ 2) := by
+  unfold smoothingFn
+  simp_rw [one_div]
+  apply deriv_inv_log
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
   calc deriv ε
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      rw [deriv_smoothingFn hx]
+      filter_upwards with x
+      rw [deriv_smoothingFn]
     _ = fun x => (-x * log x ^ 2)⁻¹ := by
       simp_rw [neg_div, div_eq_mul_inv, ← mul_inv, neg_inv, neg_mul]
     _ =o[atTop] fun x => (x * 1)⁻¹ := by
@@ -378,8 +383,8 @@ lemma eventually_deriv_one_sub_smoothingFn :
     _ =ᶠ[atTop] -(deriv ε) := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_sub] <;> aesop
     _ =ᶠ[atTop] fun x => x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx, neg_div]
+      filter_upwards with x
+      simp [deriv_smoothingFn, neg_div]
 
 lemma eventually_deriv_one_add_smoothingFn :
     deriv (fun x => 1 + ε x) =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) :=
@@ -387,8 +392,8 @@ lemma eventually_deriv_one_add_smoothingFn :
     _ =ᶠ[atTop] deriv ε := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_add] <;> aesop
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx]
+      filter_upwards with x
+      simp [deriv_smoothingFn]
 
 lemma isLittleO_deriv_one_sub_smoothingFn :
     deriv (fun x => 1 - ε x) =o[atTop] fun (x : ℝ) => x⁻¹ :=
@@ -603,10 +608,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
           gcongr with u hu
           rw [Finset.mem_Ico] at hu
-          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
+          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
           refine hn₂ u ?_
           rw [Set.mem_Icc]
-          refine ⟨?_, by norm_cast; cutsat⟩
+          refine ⟨?_, by norm_cast; lia⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
                     _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -635,12 +640,12 @@ lemma eventually_atTop_sumTransform_le :
       _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; cutsat⟩
+        refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u     := by exact_mod_cast hu'.1
+                  _ ≤ u := by exact_mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         rw [Finset.mem_Ico] at hu
@@ -657,7 +662,7 @@ lemma eventually_atTop_sumTransform_le :
         congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≤ n ^ (p a b) * n * (c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr; simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
-      _ = c₂ * (n^((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
+      _ = c₂ * (n ^ ((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
         rw [← Real.rpow_add_one (by positivity) (p a b)]; ring
       _ = c₂ * g n := by rw [div_self (by positivity), mul_one]
       _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_left _ _
@@ -678,16 +683,16 @@ lemma eventually_atTop_sumTransform_ge :
   cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
-      _ = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))    := rfl
-      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
+      _ = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := rfl
+      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; cutsat⟩
+        refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u     := by exact_mod_cast hu'.1
+                  _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr with u hu
         · rw [Finset.mem_Ico] at hu
@@ -712,18 +717,18 @@ lemma eventually_atTop_sumTransform_ge :
         gcongr; exact min_le_left _ _
   | inr hp => -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
-        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u^((p a b) + 1))        := by rfl
+        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; cutsat⟩
+        refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
-        gcongr n^(p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
+        gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         · rw [Finset.mem_Ico] at hu
           have := calc 0 < r i n := hrpos_i
                       _ ≤ u := hu.1

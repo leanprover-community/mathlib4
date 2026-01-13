@@ -105,14 +105,14 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
         ((hasDerivAt_id' x).fun_mul
           ((((hasDerivAt_id' x).fun_pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
       using 1
-    · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
-      have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
+    · have h₁ : (r : ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
+      have h : sqrt ((r : ℝ) ^ 2 - x ^ 2) ^ 3 =
+          ((r : ℝ) ^ 2 - x ^ 2) * sqrt ((r : ℝ) ^ 2 - x ^ 2) := by
         rw [pow_three, ← mul_assoc, mul_self_sqrt (by positivity)]
       simp [f]
       field_simp
       simp (disch := positivity)
-      field_simp
-      ring_nf
+      field
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
         -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']

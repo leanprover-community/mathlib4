@@ -3,11 +3,13 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Batteries.Data.List.Count
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations
@@ -35,6 +37,8 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
+
+@[expose] public section
 
 open Nat Finset List Finsupp
 
@@ -99,6 +103,10 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : ℕ, a.factorization p = b.factorization p) : a = b :=
   eq_of_perm_primeFactorsList ha hb
     (by simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h)
+
+theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : a.factorization = b.factorization) : a = b :=
+  eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
 
 
 /-- Every nonzero natural number has a unique prime factorization -/
@@ -168,7 +176,6 @@ Generalises `factorization_mul`, which is the special case where `#S = 2` and `g
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
-    ext p
     refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
@@ -210,7 +217,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by lia), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 

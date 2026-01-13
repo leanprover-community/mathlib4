@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem
@@ -19,6 +21,8 @@ are formalized in `Differentiable.apply_eq_apply_of_bounded`,
 The proof is based on the Cauchy integral formula for the derivative of an analytic function, see
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
+
+public section
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 
@@ -41,7 +45,7 @@ theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c 
     {f : ℂ → F} (n : ℕ) (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
     (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
-  have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n  * R) := by
+  have hp (z) (hz : ‖z - c‖ = R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n * R) := by
     simpa [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul] using
       (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
   have hq : iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ •
@@ -68,7 +72,7 @@ private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : �
 open disc of radius `R > 0`, is continuous on its closure, and its values on the boundary circle
 of this disc are bounded from above by `C`, then the norm of its derivative at the center is at
 most `C / R`. Note that this theorem does not require the completeness of the codomain of `f`. In
-constrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
+contrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
@@ -125,6 +129,7 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, f = const E c :=
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
 (i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
 theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 /-!
 # A construction by Gabriel and Zisman
@@ -26,6 +28,8 @@ by Gabriel and Zisman.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Simplicial Opposite
 
@@ -143,7 +147,7 @@ lemma map'_map' {p : ℕ} (f : Fin (n + 1) →o Fin (m + 1))
 lemma map'_succAboveOrderEmb {n : ℕ} (i : Fin (n + 2)) (x : Fin (n + 3)) :
     map' i.succAboveOrderEmb.toOrderHom x = i.predAbove x := by
   obtain ⟨x, rfl⟩ | rfl := x.eq_castSucc_or_eq_last
-  · by_cases hx : x ≤ i
+  · by_cases! hx : x ≤ i
     · rw [Fin.predAbove_of_le_castSucc _ _ (by simpa), Fin.castPred_castSucc]
       obtain ⟨x, rfl⟩ | rfl := x.eq_castSucc_or_eq_last
       · simp only [map'_eq_castSucc_iff, OrderEmbedding.toOrderHom_coe,
@@ -158,18 +162,16 @@ lemma map'_succAboveOrderEmb {n : ℕ} (i : Fin (n + 2)) (x : Fin (n + 3)) :
             Fin.castSucc_lt_castSucc_iff]
       · obtain rfl : i = Fin.last _ := Fin.last_le_iff.1 hx
         simp [map'_eq_last_iff]
-    · simp only [not_le] at hx
-      obtain ⟨x, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hx)
+    · obtain ⟨x, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hx)
       rw [Fin.predAbove_of_castSucc_lt _ _ (by simpa [Fin.le_castSucc_iff]),
         Fin.pred_castSucc_succ, map'_eq_castSucc_iff]
       simp only [Fin.succAbove_of_lt_succ _ _ hx,
         OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply,
         le_refl, Fin.castSucc_lt_castSucc_iff, true_and]
       intro j hj
-      by_cases h : j.castSucc < i
+      by_cases! h : j.castSucc < i
       · simpa [Fin.succAbove_of_castSucc_lt _ _ h] using hj.le
-      · simp only [not_lt] at h
-        rwa [Fin.succAbove_of_le_castSucc _ _ h, Fin.succ_lt_succ_iff]
+      · rwa [Fin.succAbove_of_le_castSucc _ _ h, Fin.succ_lt_succ_iff]
   · simp
 
 @[simp]
@@ -177,33 +179,29 @@ lemma map'_predAbove {n : ℕ} (i : Fin (n + 1)) (x : Fin (n + 2)) :
     map' { toFun := i.predAbove, monotone' := Fin.predAbove_right_monotone i } x =
       i.succ.castSucc.succAbove x := by
   obtain ⟨x, rfl⟩ | rfl := x.eq_castSucc_or_eq_last
-  · by_cases hi : i.succ ≤ x.castSucc
+  · by_cases! hi : i < x
     · rw [Fin.succAbove_of_le_castSucc _ _ (by simpa), Fin.succ_castSucc, map'_eq_castSucc_iff]
       simp only [OrderHom.coe_mk, Fin.castSucc_le_castSucc_iff, Fin.castSucc_lt_castSucc_iff]
       constructor
-      · rw [Fin.succ_le_castSucc_iff] at hi
-        rw [Fin.predAbove_of_castSucc_lt _ _
+      · rw [Fin.predAbove_of_castSucc_lt _ _
           (by simpa only [Fin.castSucc_lt_succ_iff] using hi.le), Fin.pred_succ]
       · intro j hj
-        by_cases h : i.castSucc < j
+        by_cases! h : i.castSucc < j
         · rwa [Fin.predAbove_of_castSucc_lt _ _ h, ← Fin.succ_lt_succ_iff,
             Fin.succ_pred]
-        · simp only [not_lt] at h
-          rw [Fin.predAbove_of_le_castSucc _ _ h, ← Fin.castSucc_lt_castSucc_iff,
+        · rw [Fin.predAbove_of_le_castSucc _ _ h, ← Fin.castSucc_lt_castSucc_iff,
             Fin.castSucc_castPred]
           exact lt_of_le_of_lt h hi
-    · simp only [Fin.succ_le_castSucc_iff, not_lt] at hi
-      rw [Fin.succAbove_of_castSucc_lt _ _ (by simpa), map'_eq_castSucc_iff]
+    · rw [Fin.succAbove_of_castSucc_lt _ _ (by simpa), map'_eq_castSucc_iff]
       simp only [OrderHom.coe_mk, Fin.castSucc_le_castSucc_iff, Fin.castSucc_lt_castSucc_iff]
       constructor
       · simp only [i.predAbove_of_le_castSucc x.castSucc (by simpa),
           Fin.castPred_castSucc, le_refl]
       · intro j hj
-        by_cases h : i.castSucc < j
+        by_cases! h : i.castSucc < j
         · rw [Fin.predAbove_of_castSucc_lt _ _ h, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
           exact hj.trans x.castSucc_lt_succ
-        · simp only [not_lt] at h
-          rwa [Fin.predAbove_of_le_castSucc _ _ h, ← Fin.castSucc_lt_castSucc_iff,
+        · rwa [Fin.predAbove_of_le_castSucc _ _ h, ← Fin.castSucc_lt_castSucc_iff,
             Fin.castSucc_castPred]
   · simp [map'_last]
 

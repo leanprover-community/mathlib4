@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
 # Unique factorization and normalization
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
   by normalizing them.
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -108,8 +112,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
           _ = p * b := hb
           _ ~ᵤ Multiset.prod (p ::ₘ normalizedFactors b) := by
             rw [Multiset.prod_cons]
-            exact (prod_normalizedFactors hb0).symm.mul_left _
-          )
+            exact (prod_normalizedFactors hb0).symm.mul_left _)
   Multiset.exists_mem_of_rel_of_mem this (by simp)
 
 theorem exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
@@ -216,9 +219,6 @@ theorem zero_notMem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors 
 
 theorem ne_zero_of_mem_normalizedFactors {x a : α} (hx : x ∈ normalizedFactors a) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx <| zero_notMem_normalizedFactors a
-
-@[deprecated (since := "2025-05-23")]
-alias zero_not_mem_normalizedFactors := zero_notMem_normalizedFactors
 
 theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
   by_cases hcases : a = 0

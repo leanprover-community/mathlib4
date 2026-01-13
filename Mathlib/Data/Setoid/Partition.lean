@@ -3,9 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
+module
 
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Equivalence relations: partitions
@@ -32,6 +33,8 @@ usable.
 
 setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalence class
 -/
+
+@[expose] public section
 
 
 namespace Setoid
@@ -90,8 +93,6 @@ theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r�
 /-- The empty set is not an equivalence class. -/
 theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
   Set.notMem_empty y <| hy.symm ▸ r.refl' y
-
-@[deprecated (since := "2025-05-23")] alias empty_not_mem_classes := empty_notMem_classes
 
 /-- Equivalence classes partition the type. -/
 theorem classes_eqv_classes {r : Setoid α} (a) : ∃! b ∈ r.classes, a ∈ b :=
@@ -242,7 +243,6 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
 instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
-  le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _

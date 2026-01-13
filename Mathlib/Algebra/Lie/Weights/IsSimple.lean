@@ -3,8 +3,10 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Simple Lie algebras
@@ -18,6 +20,8 @@ We show the irreducibility of root systems of simple Lie algebras.
 ## Main results
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
+
+@[expose] public section
 
 namespace LieAlgebra.IsKilling
 
@@ -93,7 +97,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
-    ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+    ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.toLinear, h_plus_ne_bot⟩
@@ -102,7 +106,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index α hα₀
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -115,7 +119,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index (-α) (Weight.IsNonZero.neg hα₀)
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -126,7 +130,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
   have h_pairing_zero : S.pairing i j = 0 := by
-    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S
     · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
     · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
     · intro ⟨idx, hidx⟩
@@ -255,6 +259,23 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     | add x₁ x₂ _ _ ih₁ ih₂ =>
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
+
+@[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    (invtSubmoduleToLieIdeal q hq).toSubmodule =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+  rfl
+
+open LieSubmodule in
+@[simp] lemma invtSubmoduleToLieIdeal_top :
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
+  simp_rw [← toSubmodule_inj, coe_invtSubmoduleToLieIdeal_eq_iSup, iSup_toSubmodule,
+    top_toSubmodule, iSup_toSubmodule_eq_top, eq_top_iff, ← cartan_sup_iSup_rootSpace_eq_top H,
+    iSup_subtype, Submodule.mem_top, true_and, sup_le_iff, iSup_le_iff, sl2SubmoduleOfRoot_eq_sup]
+  refine ⟨?_, fun α hα ↦ le_iSup₂_of_le α hα <| le_sup_of_le_left <| le_sup_of_le_left <| le_refl _⟩
+  suffices H.toLieSubmodule ≤ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α from
+    this.trans <| iSup₂_mono fun α hα ↦ le_sup_right
+  simp
 
 section IsSimple
 
@@ -416,8 +437,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
-    eq_top_of_invtSubmodule_ne_bot
+  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| eq_top_of_invtSubmodule_ne_bot
 
 end IsSimple
 

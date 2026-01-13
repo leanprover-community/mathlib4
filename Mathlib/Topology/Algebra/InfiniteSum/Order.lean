@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!
 # Infinite sum or product in an order
 
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
+
+public section
 
 open Finset Filter Function
 
@@ -284,6 +288,13 @@ theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMo
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
+theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+    [TopologicalSpace α]
+    [OrderTopology α] {f : ι → α} (i : α) (h₀ : ∀ i, f i ≤ 1)
+    (hf : IsGLB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
+  tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one h₀) hf
+
+@[to_additive]
 theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
     [CanonicallyOrderedMul α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
@@ -358,7 +369,7 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
 requires more assumptions. -/
 @[positivity tsum _]
-def evalTsum : PositivityExt where eval {u α} zα pα e := do
+meta def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do

@@ -3,12 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Ring.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Pulling back ordered rings along injective maps
 -/
+
+public section
 
 variable {R S : Type*}
 

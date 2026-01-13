@@ -3,7 +3,9 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
@@ -28,6 +30,8 @@ Introduces notations
 * `σ ◫ τ` for horizontal compositions.
 
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 
@@ -93,8 +97,8 @@ end
 
 /-- The diagram
 ```
-   F(f)      F(g)      F(h)
-F X ----> F Y ----> F U ----> F U
+    F(f)      F(g)      F(h)
+F X ----> F Y ----> F U ----> F V
  |         |         |         |
  | α(X)    | α(Y)    | α(U)    | α(V)
  v         v         v         v

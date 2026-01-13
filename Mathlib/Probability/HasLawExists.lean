@@ -3,8 +3,10 @@ Copyright (c) 2025 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.Probability.HasLaw
-import Mathlib.Probability.Independence.InfinitePi
+module
+
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Independence.InfinitePi
 
 /-!
 # Existence of Random Variables
@@ -12,6 +14,8 @@ import Mathlib.Probability.Independence.InfinitePi
 This file contains lemmas that state the existence of random variables with given distributions
 and a given dependency structure (currently only mutual independence is considered).
 -/
+
+public section
 
 open MeasureTheory Measure
 

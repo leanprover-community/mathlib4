@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.SimpleGraph.Density
-import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Order.Partition.Equipartition
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Density
+public import Mathlib.Data.Nat.Cast.Order.Field
+public import Mathlib.Order.Partition.Equipartition
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions
@@ -38,6 +40,8 @@ greater than `(1 - ε)`.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -283,7 +287,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ _ := ?_
   · gcongr with UV hUV
     obtain ⟨U, V⟩ := UV
-    simp [mk_mem_sparsePairs, ← card_interedges_div_card] at hUV
+    simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
+      Rat.cast_natCast, Rat.cast_mul] at hUV
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
     exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.1).card_pos)
       (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.2.1).card_pos)

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
@@ -19,6 +21,8 @@ import Mathlib.Order.Lattice
   exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
   prime characteristic `p`)
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset OrderHom
 
@@ -63,8 +67,8 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     _ = ↑(k % p) := by simp [this]
 
 lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
-  wlog hle : a ≤ b
-  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  wlog! hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ hle.le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
   rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
   constructor
@@ -284,10 +288,7 @@ lemma false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
   exact false_of_nontrivial_of_subsingleton R
 
 lemma ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
-  intro h
-  apply zero_ne_one' R
-  symm
-  rw [← Nat.cast_one, ringChar.spec, h]
+  simpa using not_subsingleton R
 
 lemma nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nontrivial R :=
   ⟨⟨(1 : ℕ), 0, fun h =>

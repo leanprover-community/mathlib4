@@ -3,14 +3,18 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-! # Fundamental theorem of calculus for `C^1` functions
 
 We give versions of the second fundamental theorem of calculus under the strong assumption
 that the function is `C^1` on the interval. This is restrictive, but satisfied in many situations.
 -/
+
+public section
 
 noncomputable section
 
@@ -34,7 +38,7 @@ theorem integral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b)) (hab
   apply integral_eq_sub_of_hasDerivAt_of_le hab h.continuousOn
   · intro x hx
     apply DifferentiableAt.hasDerivAt
-    apply ((h x ⟨hx.1.le, hx.2.le⟩).differentiableWithinAt le_rfl).differentiableAt
+    apply ((h x ⟨hx.1.le, hx.2.le⟩).differentiableWithinAt one_ne_zero).differentiableAt
     exact Icc_mem_nhds hx.1 hx.2
   · have := (h.derivWithin (m := 0) (uniqueDiffOn_Icc h'ab) (by simp)).continuousOn
     apply (this.intervalIntegrable_of_Icc (μ := volume) hab).congr_ae
@@ -96,8 +100,9 @@ theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
   rw [← restrict_Ioo_eq_restrict_Icc]
   filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
   rw [fderiv_comp_deriv]; rotate_left
-  · exact (g.contDiff.differentiable le_rfl).differentiableAt
-  · exact ((h x ⟨hx.1.le, hx.2.le⟩).contDiffAt (Icc_mem_nhds hx.1 hx.2)).differentiableAt le_rfl
+  · exact (g.contDiff.differentiable one_ne_zero).differentiableAt
+  · exact (h x ⟨hx.1.le, hx.2.le⟩).contDiffAt (Icc_mem_nhds hx.1 hx.2)
+      |>.differentiableAt one_ne_zero
   have : fderiv ℝ g (f x) = g.toContinuousLinearMap := g.toContinuousLinearMap.fderiv
   simp [this]
 

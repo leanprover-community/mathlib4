@@ -3,12 +3,14 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Full monoidal subcategories
@@ -24,6 +26,8 @@ braided/symmetric structure.
 ## TODO
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -74,12 +78,12 @@ variable (P : ObjectProperty C) [P.IsMonoidal]
 @[simps]
 instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  whiskerLeft X _ _ f := X.1 ◁ f
-  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ₘ g
+  whiskerLeft X _ _ f := ObjectProperty.homMk (X.1 ◁ f.hom)
+  whiskerRight f Y := ObjectProperty.homMk (f.hom ▷ Y.1)
+  tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
+  leftUnitor X := P.isoMk (λ_ X.1)
   rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
@@ -176,19 +180,10 @@ variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-    { rightAdj := P.lift (P.ι ⋙ ihom X.1)
-        fun Y => P.prop_ihom X.2 Y.2
+    { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)
       adj :=
-        { unit :=
-          { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun _ _ f => ihom.coev_naturality X.1 f }
-          counit :=
-          { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun _ _ f => ihom.ev_naturality X.1 f }
-          left_triangle_components := fun X ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle_components := fun Y ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
+        { unit := { app Y := ObjectProperty.homMk ((ihom.coev X.1).app Y.1) }
+          counit := { app Y := ObjectProperty.homMk ((ihom.ev X.1).app Y.1) } } }
 
 @[simp]
 theorem ihom_obj (X Y : P.FullSubcategory) :
@@ -196,9 +191,11 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
   rfl
 
 @[simp]
-theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
-    (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
+theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
+    (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
+
+@[deprecated (since := "2025-12-18")] alias ihom_map := ihom_map_hom
 
 end Closed
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -101,7 +103,7 @@ The following is the second equivalent characterization of linear disjointness:
   their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
 
-  These results are stated using bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a not bundled
+  These results are stated using a bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a non-bundled
   version (i.e. `a : S` with `ha : a ∈ M ⊓ N`), you may use `LinearIndependent.of_comp` and
   `FinVec.map_eq` (in `Mathlib/Data/Fin/Tuple/Reflection.lean`),
   see the following code snippet:
@@ -126,6 +128,8 @@ assuming `S` is commutative.
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped TensorProduct
@@ -194,14 +198,13 @@ namespace LinearDisjoint
 
 /-- Linear disjointness is preserved by injective algebra homomorphisms. -/
 theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
-    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
-    (M.map f).LinearDisjoint (N.map f) := by
+    (f : S →ₐ[R] T) (hf : Function.Injective f) :
+    (M.map (f : S →ₗ[R] T)).LinearDisjoint (N.map (f : S →ₗ[R] T)) := by
   rw [linearDisjoint_iff] at H ⊢
-  have : _ ∘ₗ
-    (TensorProduct.congr (M.equivMapOfInjective f hf) (N.equivMapOfInjective f hf)).toLinearMap
-      = _ := M.mulMap_map_comp_eq N f
-  replace H : Function.Injective ((f : S →ₗ[R] T) ∘ₗ mulMap M N) := hf.comp H
-  simpa only [← this, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] using H
+  have := hf.comp H
+  rw [← coe_mulMap_comp_eq] at this
+  refine this.of_comp_right ?_
+  apply TensorProduct.map_surjective <;> exact LinearMap.submoduleMap_surjective _ _
 
 variable (M N)
 
@@ -337,10 +340,8 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (m : Basis ι R M)
-    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
-  exact of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N :=
+  of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
@@ -358,10 +359,8 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (n : Basis ι R N)
-    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ M) := Finsupp.instAddCommGroup
-  exact of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N :=
+  of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any family of

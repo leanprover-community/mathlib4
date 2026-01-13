@@ -3,8 +3,10 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Slope
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Some properties of the interval integral of `fun x ↦ slope f x (x + c)`, given a constant `c : ℝ`
@@ -21,6 +23,8 @@ at most `f (b + c) - f a`.
 ## Tags
 interval integrable, interval integral, monotone, slope
 -/
+
+public section
 
 open MeasureTheory Set
 

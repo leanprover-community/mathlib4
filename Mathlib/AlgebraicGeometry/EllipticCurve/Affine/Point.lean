@@ -3,10 +3,12 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-import Mathlib.LinearAlgebra.FreeModule.Norm
-import Mathlib.RingTheory.ClassGroup
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
+public import Mathlib.LinearAlgebra.FreeModule.Norm
+public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Nonsingular points and the group law in affine coordinates
@@ -61,6 +63,8 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 
 elliptic curve, affine, point, group law, class group
 -/
+
+@[expose] public section
 
 open FractionalIdeal (coeIdeal_mul)
 
@@ -126,7 +130,7 @@ lemma basis_apply (n : Fin 2) :
   classical
   nontriviality R
   rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
-    PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.coe_cast]
+    PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
 lemma basis_zero : CoordinateRing.basis W' 0 = 1 := by
@@ -272,6 +276,8 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
@@ -366,6 +372,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_simp
     ring1
 
+set_option backward.proofsInPublic true in
 /-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=

@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Adjoints commute with shifts
@@ -43,13 +45,15 @@ statements for the commutation isomorphisms for `G`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
 namespace Adjunction
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddMonoid A] [HasShift C A] [HasShift D A]
 
 namespace CommShift
@@ -227,7 +231,7 @@ namespace CommShift
 
 
 /-- Constructor for `Adjunction.CommShift`. -/
-lemma mk' (h : NatTrans.CommShift adj.unit A) :
+lemma mk' (_ : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
   commShift_counit := ⟨fun a ↦ by
     ext
@@ -235,9 +239,7 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_comp_hom_app, Functor.whiskerRight_app, assoc, Functor.whiskerLeft_app,
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
-    simpa only [NatTrans.comp_app,
-      Functor.commShiftIso_id_hom_app, Functor.whiskerRight_app, id_comp,
-      Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
+    simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
 
 variable [adj.CommShift A]
 
@@ -250,7 +252,7 @@ instance instId : (Adjunction.id (C := C)).CommShift A where
   commShift_unit :=
     inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
 
-variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
+variable {E : Type*} [Category* E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
   [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
 
 /-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
@@ -290,7 +292,7 @@ end Adjunction
 
 namespace Adjunction
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
   {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddGroup A] [HasShift C A] [HasShift D A]
 
 namespace RightAdjointCommShift
@@ -370,15 +372,15 @@ open RightAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
 the unique compatible `CommShift` structure on `G`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
-  iso a := iso adj a
-  zero := by
+  commShiftIso a := iso adj a
+  commShiftIso_zero := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso 0) _ _
       (compatibilityUnit_iso adj 0) ?_
     rw [F.commShiftIso_zero]
     exact CommShift.compatibilityUnit_isoZero adj
-  add a b := by
+  commShiftIso_add a b := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso (a + b)) _ _
       (compatibilityUnit_iso adj (a + b)) ?_
     rw [F.commShiftIso_add]
@@ -454,15 +456,15 @@ open LeftAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this constructs
 the unique compatible `CommShift` structure on `F`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def leftAdjointCommShift [G.CommShift A] : F.CommShift A where
-  iso a := iso adj a
-  zero := by
+  commShiftIso a := iso adj a
+  commShiftIso_zero := by
     refine CommShift.compatibilityUnit_unique_left adj _ _ (G.commShiftIso 0)
       (compatibilityUnit_iso adj 0) ?_
     rw [G.commShiftIso_zero]
     exact CommShift.compatibilityUnit_isoZero adj
-  add a b := by
+  commShiftIso_add a b := by
     refine CommShift.compatibilityUnit_unique_left adj _ _ (G.commShiftIso (a + b))
       (compatibilityUnit_iso adj (a + b)) ?_
     rw [G.commShiftIso_add]
@@ -483,7 +485,7 @@ end Adjunction
 
 namespace Equivalence
 
-variable {C D : Type*} [Category C] [Category D] (E : C ≌ D)
+variable {C D : Type*} [Category* C] [Category* D] (E : C ≌ D)
 
 section
 
@@ -548,11 +550,11 @@ lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
   have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
   inferInstanceAs (E.symm.symm.CommShift A)
 
-variable {F : Type*} [Category F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
+variable {F : Type*} [Category* F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
     [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose forward functors are compatible with shifts,
 so is `(E.trans E').functor`.
 -/
 instance : (E.trans E').functor.CommShift A := by
@@ -560,7 +562,7 @@ instance : (E.trans E').functor.CommShift A := by
   infer_instance
 
 /--
-If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+If `E : C ≌ D` and `E' : D ≌ F` are equivalences whose inverse functors are compatible with shifts,
 so is `(E.trans E').inverse`.
 -/
 instance : (E.trans E').inverse.CommShift A := by

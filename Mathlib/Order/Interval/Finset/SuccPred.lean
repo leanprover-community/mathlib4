@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.Interval.Set.SuccPred
+module
+
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Interval.Set.SuccPred
 
 /-!
 # Finset intervals in a successor-predecessor order
@@ -22,6 +24,8 @@ Please keep in sync with:
 
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 

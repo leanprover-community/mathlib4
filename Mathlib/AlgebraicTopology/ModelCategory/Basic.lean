@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 /-!
 # Model categories
@@ -30,6 +32,8 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 * https://ncatlab.org/nlab/show/model+category
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -72,7 +76,7 @@ variable [ModelCategory C]
 
 instance : MorphismProperty.IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C) :=
   MorphismProperty.IsWeakFactorizationSystem.mk' _ _ (fun {A B X Y} i p hi hp ↦ by
-    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i|>.mp hi
+    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i |>.mp hi
     rw [← fibration_iff] at hp
     infer_instance)
 

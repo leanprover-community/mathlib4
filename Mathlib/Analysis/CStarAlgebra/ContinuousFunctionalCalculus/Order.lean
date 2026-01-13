@@ -3,12 +3,13 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -35,6 +36,8 @@ the spectral order.
 
 continuous functional calculus, normal, selfadjoint
 -/
+
+@[expose] public section
 
 open scoped NNReal CStarAlgebra
 
@@ -151,15 +154,14 @@ variable [PartialOrder A] [StarOrderedRing A]
 
 lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     a ≤ algebraMap ℝ A ‖a‖ := by
-  by_cases nontriv : Nontrivial A
+  by_cases! nontriv : Nontrivial A
   · refine le_algebraMap_of_spectrum_le fun r hr => ?_
     calc r ≤ ‖r‖ := Real.le_norm_self r
       _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
-  · push_neg at nontriv
-    simp
+  · simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
-    - (algebraMap ℝ A ‖a‖) ≤ a := by
+    -(algebraMap ℝ A ‖a‖) ≤ a := by
   rw [neg_le, ← norm_neg]
   exact ha.neg.le_algebraMap_norm_self
 
@@ -434,7 +436,7 @@ theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc
     ‖a‖₊ ≤ ‖b‖₊ :=
   norm_le_norm_of_nonneg_of_le ha hab
 
-lemma conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+lemma star_left_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
     rw [← Unitization.inr_le_iff _ _ (by aesop) ((IsSelfAdjoint.all _).smul (.star_mul_self a))]
@@ -442,15 +444,18 @@ lemma conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
   intro a b hb
   calc
     star a * b * a ≤ star a * (algebraMap ℝ A⁺¹ ‖b‖) * a :=
-      conjugate_le_conjugate hb.le_algebraMap_norm_self _
+      star_left_conjugate_le_conjugate hb.le_algebraMap_norm_self _
     _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
 
-lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+@[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul :=
+  star_left_conjugate_le_norm_smul
+
+lemma star_right_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     a * b * star a ≤ ‖b‖ • (a * star a) := by
-  have h₁ : a * b * star a = star (star a) * b * star a := by simp
-  have h₂ : a * star a = star (star a) * star a := by simp
-  simp only [h₁, h₂]
-  exact conjugate_le_norm_smul
+  simpa using star_left_conjugate_le_norm_smul (a := star a)
+
+@[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul' :=
+  star_right_conjugate_le_norm_smul
 
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
@@ -486,7 +491,7 @@ lemma inr_mem_Icc_iff_nnnorm_le {x : A} :
 lemma preimage_inr_Icc_zero_one :
     ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
   ext
-  simp [- mem_Icc, inr_mem_Icc_iff_norm_le]
+  simp [-mem_Icc, inr_mem_Icc_iff_norm_le]
 
 end Icc
 

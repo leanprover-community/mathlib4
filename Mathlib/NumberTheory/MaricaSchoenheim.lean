@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.FourFunctions
-import Mathlib.Data.Nat.Squarefree
+module
+
+public import Mathlib.Combinatorics.SetFamily.FourFunctions
+public import Mathlib.Data.Nat.Squarefree
 
 /-!
 # The Marica-Schönheim special case of Graham's conjecture
@@ -17,6 +19,8 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+
+@[expose] public section
 
 open Finset
 open scoped FinsetFamily

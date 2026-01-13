@@ -3,7 +3,9 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Kernels and cokernels in `C` and `Cᵒᵖ`
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 We construct kernels and cokernels in the opposite categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

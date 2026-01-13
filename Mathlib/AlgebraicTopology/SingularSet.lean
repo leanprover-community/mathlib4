@@ -3,25 +3,27 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.AlgebraicTopology.TopologicalSimplex
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Category.TopCat.ULift
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.TopologicalSimplex
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
 
 The *singular simplicial set* `TopCat.toSSet.obj X` of a topological space `X`
-has `n`-simplices which identify to continuous maps `stdSimplex ℝ (Fin (n + 1) → X`,
-where `stdSimplex ℝ (Fin (n + 1) → X` is the standard topological `n`-simplex,
-which is defined as the subtype of `Fin (n + 1) → ℝ` consists of functions `f`
+has `n`-simplices which identify to continuous maps `stdSimplex ℝ (Fin (n + 1)) → X`,
+where `stdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex,
+defined as the subtype of `Fin (n + 1) → ℝ` consisting of functions `f`
 such that `0 ≤ f i` for all `i` and `∑ i, f i = 1`.
 
-The *geometric realization* functor `SSet.toTop.obj` is left adjoint to `TopCat.toSSet`.
+The *geometric realization* functor `SSet.toTop` is left adjoint to `TopCat.toSSet`.
 It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
-# Main definitions
+## Main definitions
 
 * `TopCat.toSSet : TopCat ⥤ SSet` is the functor
   assigning the singular simplicial set to a topological space.
@@ -36,6 +38,8 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory
@@ -45,8 +49,8 @@ open CategoryTheory
 Let `X : TopCat.{u}` be a topological space.
 Then the singular simplicial set of `X`
 has as `n`-simplices the continuous maps `ULift.{u} (stdSimplex ℝ (Fin (n + 1))) → X`.
-Here, `stdSimplex ℝ (Fin (n + 1)` is the standard topological `n`-simplex,
-defined as `{ f : Fin (n + 1) → ℝ // ∀ i, 0 ≤ f i ∧ ∑ i, f i = 1 }` with its subspace topology. -/
+Here, `stdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex,
+defined as `{ f : Fin (n + 1) → ℝ // (∀ i, 0 ≤ f i) ∧ ∑ i, f i = 1 }` with its subspace topology. -/
 noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.toTop.{u}
 

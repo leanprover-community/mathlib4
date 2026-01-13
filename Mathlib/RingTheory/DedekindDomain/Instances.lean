@@ -3,9 +3,11 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.DedekindDomain.PID
-import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.RingTheory.DedekindDomain.PID
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains
@@ -25,6 +27,8 @@ cannot be instances (since Lean has no way of guessing the submonoid). Having th
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
 
 -/
+
+@[expose] public section
 
 open nonZeroDivisors IsLocalization Algebra IsFractionRing IsScalarTower
 
@@ -188,6 +192,10 @@ instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
   NoZeroSMulDivisors_of_isLocalization S T Sₚ Tₚ <|
     algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
       Ideal.primeCompl_le_nonZeroDivisors P
+
+instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
+  Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
+    isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
 
 variable [NoZeroSMulDivisors R T]
 

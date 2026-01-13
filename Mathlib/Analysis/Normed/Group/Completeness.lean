@@ -3,9 +3,10 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Completeness of normed groups
@@ -29,6 +30,8 @@ series.
 CompleteSpace, CauchySeq
 -/
 
+public section
+
 open scoped Topology
 open Filter Finset
 
@@ -37,9 +40,9 @@ section Metric
 variable {α : Type*} [PseudoMetricSpace α]
 
 lemma Metric.exists_subseq_summable_dist_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) :
-    ∃ f : ℕ → ℕ, StrictMono f ∧ Summable fun i => dist (u (f (i+1))) (u (f i)) := by
+    ∃ f : ℕ → ℕ, StrictMono f ∧ Summable fun i => dist (u (f (i + 1))) (u (f i)) := by
   obtain ⟨f, hf₁, hf₂⟩ := Metric.exists_subseq_bounded_of_cauchySeq u hu
-    (fun n => (1 / (2 : ℝ))^n) (fun n => by positivity)
+    (fun n => (1 / (2 : ℝ)) ^ n) (fun n => by positivity)
   refine ⟨f, hf₁, ?_⟩
   refine Summable.of_nonneg_of_le (fun n => by positivity) ?_ summable_geometric_two
   exact fun n => le_of_lt <| hf₂ n (f (n + 1)) <| hf₁.monotone (Nat.le_add_right n 1)

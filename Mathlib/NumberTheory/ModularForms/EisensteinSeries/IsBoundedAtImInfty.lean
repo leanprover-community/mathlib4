@@ -3,11 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
 # Boundedness of Eisenstein series
@@ -24,6 +25,8 @@ it suffices to prove this for `z ∈ verticalStrip N z.im`.
 We can then, first observe that the slash action just changes our `a` to `(a ᵥ* A)` and
 we then use our bounds for Eisenstein series in these vertical strips to get the result.
 -/
+
+public section
 
 noncomputable section
 

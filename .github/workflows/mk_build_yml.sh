@@ -32,7 +32,6 @@ on:
       - 'staging.tmp*'
       - 'trying.tmp*'
       - 'staging*.tmp'
-      - 'nolints'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
   merge_group:

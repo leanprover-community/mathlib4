@@ -3,14 +3,18 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Semiconj.Units
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Conjugacy of group elements
 
 See also `MulAut.conj` and `Quandle.conj`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Multiset MulAction
 
@@ -164,7 +168,7 @@ theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
   obtain ⟨a, rfl⟩ := hf b
   exact ⟨ConjClasses.mk a, rfl⟩
 
-library_note2 «slow-failing instance priority» /--
+library_note «slow-failing instance priority» /--
 Certain instances trigger further searches when they are considered as candidate instances;
 these instances should be assigned a priority lower than the default of 1000 (for example, 900).
 

@@ -3,9 +3,12 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Util.CompileInductive
 
 deprecated_module
 "for `[LinearOrderedSemifield]`, use `[Semifield K] [LinearOrder K] [IsStrictOrderedRing K]` \

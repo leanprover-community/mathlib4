@@ -3,8 +3,10 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Order.Bounds.Lattice
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Order.Bounds.Lattice
 
 /-!
 # Scott continuity on product spaces
@@ -16,6 +18,8 @@ import Mathlib.Order.Bounds.Lattice
 - `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
 
 -/
+
+public section
 
 open Set
 

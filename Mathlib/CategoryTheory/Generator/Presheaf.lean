@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Generators in the category of presheaves
@@ -15,6 +16,8 @@ has a separator (and suitable coproducts), then the category of
 presheaves `Cᵒᵖ ⥤ A` also has a separator.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -57,9 +60,8 @@ lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}
 lemma freeYonedaHomEquiv_symm_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A} (α : M ⟶ F.obj (op X))
     (f : F ⟶ G) :
     freeYonedaHomEquiv.symm α ≫ f = freeYonedaHomEquiv.symm (α ≫ f.app (op X)) := by
-  obtain ⟨β, rfl⟩ := freeYonedaHomEquiv.surjective α
   apply freeYonedaHomEquiv.injective
-  simp only [Equiv.symm_apply_apply, freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
+  simp only [freeYonedaHomEquiv_comp, Equiv.apply_symm_apply]
 
 variable (C)
 

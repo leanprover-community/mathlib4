@@ -4,11 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous linear maps on products and Pi types
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -80,10 +84,9 @@ theorem coe_inr : (inr R M₁ M₂ : M₂ →ₗ[R] M₁ × M₂) = LinearMap.in
 lemma comp_inl_add_comp_inr (L : M₁ × M₂ →L[R] M₃) (v : M₁ × M₂) :
     L.comp (.inl R M₁ M₂) v.1 + L.comp (.inr R M₁ M₂) v.2 = L v := by simp [← map_add]
 
-@[simp]
 theorem ker_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
-    ker (f.prod g) = ker f ⊓ ker g :=
-  LinearMap.ker_prod (f : M₁ →ₗ[R] M₂) (g : M₁ →ₗ[R] M₃)
+    ker (f.prod g : M₁ →ₗ[R] M₂ × M₃) = ker (f : M₁ →ₗ[R] M₂) ⊓ ker (g : M₁ →ₗ[R] M₃) := by
+  simp
 
 variable (R M₁ M₂)
 
@@ -128,6 +131,11 @@ theorem fst_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
 theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (snd R M₂ M₃).comp (f.prod g) = g :=
   ext fun _x => rfl
+
+@[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘L inl R M₁ M₂ = .id R M₁ := rfl
+@[simp] theorem fst_comp_inr : fst R M₁ M₂ ∘L inr R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inl : snd R M₁ M₂ ∘L inl R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inr : snd R M₁ M₂ ∘L inr R M₁ M₂ = .id R M₂ := rfl
 
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
@@ -200,7 +208,8 @@ theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
 @[simp]
 theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘L f) = f := rfl
 
-theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
+theorem iInf_ker_proj :
+    (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i).toLinearMap : Submodule R (∀ i, φ i)) = ⊥ :=
   LinearMap.iInf_ker_proj
 
 variable (R φ)
@@ -235,12 +244,12 @@ variable {R : Type*} [Ring R]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
   {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
 
-theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : ker f ⊔ ker g = ⊤) :
-    range (f.prod g) = (range f).prod (range g) :=
+theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : f.ker ⊔ g.ker = ⊤) :
+    (f.prod g).range = f.range.prod g.range :=
   LinearMap.range_prod_eq h
 
 theorem ker_prod_ker_le_ker_coprod (f : M →L[R] M₃) (g : M₂ →L[R] M₃) :
-    (LinearMap.ker f).prod (LinearMap.ker g) ≤ LinearMap.ker (f.coprod g) :=
+    f.ker.prod g.ker ≤ (f.coprod g).ker :=
   LinearMap.ker_prod_ker_le_ker_coprod f.toLinearMap g.toLinearMap
 
 end Ring
@@ -303,7 +312,7 @@ def coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) : M₁ × M₂ →L[R
     (f₁ + g₁).coprod (f₂ + g₂) = f₁.coprod f₂ + g₁.coprod g₂ := by ext <;> simp
 
 lemma range_coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
-    range (f₁.coprod f₂) = range f₁ ⊔ range f₂ := LinearMap.range_coprod ..
+    (f₁.coprod f₂).range = f₁.range ⊔ f₂.range := LinearMap.range_coprod ..
 
 lemma comp_fst_add_comp_snd (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
     f₁.comp (.fst _ _ _) + f₂.comp (.snd _ _ _) = f₁.coprod f₂ := rfl
@@ -349,8 +358,8 @@ variable [AddCommGroup M] [Module R M] [ContinuousAdd M] [AddCommMonoid M₁] [M
   [AddCommGroup M₂] [Module R M₂]
 
 lemma ker_coprod_of_disjoint_range {f₁ : M₁ →L[R] M} {f₂ : M₂ →L[R] M}
-    (hf : Disjoint (range f₁) (range f₂)) :
-    LinearMap.ker (f₁.coprod f₂) = (LinearMap.ker f₁).prod (LinearMap.ker f₂) :=
+    (hf : Disjoint f₁.range f₂.range) :
+    (f₁.coprod f₂).ker = f₁.ker.prod f₂.ker :=
   LinearMap.ker_coprod_of_disjoint_range f₁.toLinearMap f₂.toLinearMap hf
 
 end AddCommGroup

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Objects that are limits of objects satisfying a certain property
@@ -35,14 +37,17 @@ that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
-universe w v' u' v u
+@[expose] public section
+
+universe w v'' v' u'' u' v u
 
 namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
+  {J' : Type u''} [Category.{v''} J']
 
 /-- The property of objects that are *equal* to `limit F` for some
 functor `F : J ⥤ C` where all `F.obj j` satisfy `P`. -/
@@ -88,6 +93,23 @@ def ofLE {X : C} (h : P.LimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q)
     Q.LimitOfShape J X where
   toLimitPresentation := h.toLimitPresentation
   prop_diag_obj j := hPQ _ (h.prop_diag_obj j)
+
+/-- Change the index category for `ObjectProperty.LimitOfShape`. -/
+@[simps toLimitPresentation]
+noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Initial] :
+    P.LimitOfShape J' X where
+  toLimitPresentation := h.toLimitPresentation.reindex G
+  prop_diag_obj _ := h.prop_diag_obj _
+
+/-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
+of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
+@[simps]
+def toStructuredArrow
+    {X : C} (p : P.LimitOfShape J X) :
+    J ⥤ StructuredArrow X P.ι where
+  obj j := StructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.π.app j)
+  map f := StructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
+    (by simpa using (p.π.naturality f).symm)
 
 end LimitOfShape
 
@@ -183,6 +205,29 @@ lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
   P.prop_of_isLimit (limit.isLimit F) hF
 
 end
+
+variable {J} in
+lemma limitsOfShape_le_of_initial (G : J ⥤ J') [G.Initial] :
+    P.limitsOfShape J' ≤ P.limitsOfShape J :=
+  fun _h ⟨h⟩ ↦ ⟨h.reindex G⟩
+
+variable {J} in
+lemma limitsOfShape_congr (e : J ≌ J') :
+    P.limitsOfShape J = P.limitsOfShape J' :=
+  le_antisymm (P.limitsOfShape_le_of_initial e.inverse)
+    (P.limitsOfShape_le_of_initial e.functor)
+
+variable {J} in
+lemma isClosedUnderLimitsOfShape_iff_of_equivalence (e : J ≌ J') :
+    P.IsClosedUnderLimitsOfShape J ↔
+      P.IsClosedUnderLimitsOfShape J' := by
+  simp only [isClosedUnderLimitsOfShape_iff, P.limitsOfShape_congr e]
+
+variable {P J} in
+lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')
+    [P.IsClosedUnderLimitsOfShape J] :
+    P.IsClosedUnderLimitsOfShape J' := by
+  rwa [← P.isClosedUnderLimitsOfShape_iff_of_equivalence e]
 
 end ObjectProperty
 

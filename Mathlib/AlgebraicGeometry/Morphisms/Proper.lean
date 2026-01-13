@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.Morphisms.Finite
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
 
@@ -21,6 +23,8 @@ Note that we don't require quasi-compact, since this is implied by universally c
   then `Γ(X, ⊤)` is finite dimensional over `K`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

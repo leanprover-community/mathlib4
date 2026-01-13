@@ -3,9 +3,11 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.SetTheory.Game.Ordinal
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.SetTheory.Game.Ordinal
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Surreal.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -50,6 +52,8 @@ One can also map all the ordinals into the surreals!
 * [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -229,12 +233,12 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
-      · exact add_lt_add_right (ox.1 ix jx) _
+      · exact add_lt_add_left (ox.1 ix jx) _
       · exact (add_lf_add_of_lf_of_le (lf_mk _ _ ix) (oy.le_moveRight jy)).lt
           ((ox.moveLeft ix).add oy) (ox.add (oy.moveRight jy))
       · exact (add_lf_add_of_lf_of_le (mk_lf _ _ jx) (oy.moveLeft_le iy)).lt
           (ox.add (oy.moveLeft iy)) ((ox.moveRight jx).add oy)
-      · exact add_lt_add_left (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
+      · exact add_lt_add_right (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
       constructor
       · rintro (ix | iy)
         · exact (ox.moveLeft ix).add oy
@@ -349,8 +353,6 @@ instance addCommGroup : AddCommGroup Surreal where
   zsmul := zsmulRec
 
 instance partialOrder : PartialOrder Surreal where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
   le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
   lt_iff_le_not_ge := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_ge PGame

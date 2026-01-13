@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Independence of functions implies that the measure is a probability measure
@@ -13,6 +15,8 @@ If a nonzero function belongs to `ℒ^p` (in particular if it is integrable) and
 of another function, then the space is a probability space.
 
 -/
+
+public section
 
 open Filter ProbabilityTheory
 

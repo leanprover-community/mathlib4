@@ -3,13 +3,17 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Polynomial.Resultant.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 
 
 /-!
 # The discriminant of a matrix
 -/
+
+@[expose] public section
 
 open Polynomial
 

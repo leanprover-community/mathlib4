@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations of sets in a group with zero
@@ -16,6 +18,8 @@ This file proves properties of pointwise operations of sets in a group with zero
 set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+public section
 
 assert_not_exists MulAction IsOrderedMonoid Ring
 

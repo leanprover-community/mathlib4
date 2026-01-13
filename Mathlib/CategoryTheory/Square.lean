@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # The category of commutative squares
@@ -30,6 +32,8 @@ or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -117,7 +121,7 @@ lemma hom_ext {sq₁ sq₂ : Square C} {f g : sq₁ ⟶ sq₂}
     (h₃ : f.τ₃ = g.τ₃) (h₄ : f.τ₄ = g.τ₄) : f = g :=
   Hom.ext h₁ h₂ h₃ h₄
 
-/-- Constructor for isomorphisms in `Square c` -/
+/-- Constructor for isomorphisms in `Square C` -/
 def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq₁.X₂ ≅ sq₂.X₂)
     (e₃ : sq₁.X₃ ≅ sq₂.X₃) (e₄ : sq₁.X₄ ≅ sq₂.X₄)
     (comm₁₂ : sq₁.f₁₂ ≫ e₂.hom = e₁.hom ≫ sq₂.f₁₂)

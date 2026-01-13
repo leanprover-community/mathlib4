@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Monotone convergence theorem and addition of Lebesgue integrals
@@ -15,6 +17,8 @@ several variants of this theorem, then uses it to show that the Lebesgue integra
 (assuming one of the functions is at least `AEMeasurable`) and respects multiplication by
 a constant.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -395,7 +399,7 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
   simp only [(mul_assoc _ _ _).symm, rinv'] at this
-  simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
+  simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_right this r
 
 theorem lintegral_mul_const (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a, f a * r ∂μ = (∫⁻ a, f a ∂μ) * r := by simp_rw [mul_comm, lintegral_const_mul r hf]

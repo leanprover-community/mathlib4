@@ -3,22 +3,43 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.SummableUniformlyOn
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+module
+
+public import Mathlib.Analysis.Complex.SummableUniformlyOn
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 /-!
-# Einstein series q-expansions
+# Eisenstein series q-expansions
 
-We give some identities for q-expansions of Eisenstein series that will be used in describing their
-q-expansions.
+We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular, we prove
+`EisensteinSeries.q_expansion_bernoulli` which says that for even `k` with `3 ≤ k`
+Eisenstein series can we written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
+`q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of the `(k-1)`-th powers of the divisors of `n`.
+We need `k` to be even so that the Eisenstein series are non-zero and we require `k ≥ 3` so that
+the series converges absolutely.
+
+The proof relies on the identity
+`∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
+differentiating the expansion of `π cot(πz)` in terms of exponentials. Since our Eisenstein series
+are defined as sums over coprime integer pairs, we also need to relate these to sums over all pairs
+of integers, which is done in `tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries`. This then
+gives the q-expansion with a Riemann zeta factor, which we simplify using the formula for
+`ζ(k)` in terms of Bernoulli numbers to get the final result.
 
 -/
 
-open Set Metric TopologicalSpace Function Filter Complex EisensteinSeries
+public section
+
+open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
+  ModularForm EisensteinSeries
+
+open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma
 
 open _root_.UpperHalfPlane hiding I
-
-open scoped Topology Real Nat Complex Pointwise
 
 local notation "ℍₒ" => upperHalfPlaneSet
 
@@ -48,7 +69,7 @@ private lemma aux_IsBigO_mul (k l : ℕ) (p : ℝ) {f : ℕ → ℂ}
   ring
 
 open BoundedContinuousFunction in
-/-- The infinte sum of `k`-th iterated derivative of the complex exponential multiplied by a
+/-- The infinite sum of `k`-th iterated derivative of the complex exponential multiplied by a
 function that grows polynomially is absolutely and uniformly convergent. -/
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) :
@@ -181,3 +202,96 @@ theorem EisensteinSeries.qExpansion_identity_pnat {k : ℕ} (hk : 1 ≤ k) (z : 
   · simp [show k ≠ 0 by grind]
   · apply (summable_pow_mul_cexp k 1 z).congr
     simp
+
+lemma summable_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
+    Summable (eisSummand k · z) :=
+  summable_norm_iff.mp <| summable_norm_eisSummand (Int.toNat_le.mp hk) z
+
+lemma summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
+    Summable fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z := by
+  refine (finTwoArrowEquiv ℤ).summable_iff.mp <| (summable_eisSummand hk z).congr (fun v ↦ ?_)
+  simp [show ![v 0, v 1] = v from List.ofFn_inj.mp rfl]
+
+lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+    ∑' v, eisSummand k v z = 2 * riemannZeta k + 2 * ((-2 * π * I) ^ k / (k - 1)!) *
+    ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
+  rw [← (finTwoArrowEquiv ℤ).symm.tsum_eq, finTwoArrowEquiv_symm_apply,
+    Summable.tsum_prod (summable_prod_eisSummand hk z),
+    tsum_int_eq_zero_add_two_mul_tsum_pnat (fun n ↦ ?h₁)
+      (by simpa using (summable_prod_eisSummand hk z).prod)]
+  case h₁ =>
+    nth_rewrite 1 [← tsum_comp_neg]
+    exact tsum_congr fun y ↦ by simp [eisSummand, ← neg_add _ (y : ℂ), -neg_add_rev, hk2.neg_pow]
+  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.2⟩
+  simp_rw [show k - 1 + 1 = k by grind, one_div] at H
+  simp only [coe_mk_subtype, neg_mul] at H
+  rw [nsmul_eq_mul, mul_assoc]
+  congr
+  · simp [eisSummand, two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by grind) hk2]
+  · suffices ∑' (m : ℕ+) (n : ℕ+), (n : ℕ) ^ (k - 1) * cexp (2 * π * I * (m * z)) ^ (n : ℕ) =
+        ∑' (m : ℕ+) (n : ℕ+), (n : ℕ) ^ (k - 1) * cexp (2 * π * I * z) ^ (m * n : ℕ) by
+      simp [eisSummand, H, tsum_mul_left,
+        ← tsum_prod_pow_eq_tsum_sigma (k - 1) (norm_exp_two_pi_I_lt_one z), this]
+    simp_rw [← Complex.exp_nat_mul]
+    exact tsum_congr₂ (fun m n ↦ by push_cast; ring_nf)
+
+lemma eisSummand_of_gammaSet_eq_divIntMap (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) :
+    eisSummand k v z = ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
+  simp_rw [eisSummand]
+  nth_rw 1 2 [gammaSet_eq_gcd_mul_divIntMap v.2]
+  simp [← mul_inv, ← mul_zpow, mul_add, mul_assoc]
+
+lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
+    ∑' v : Fin 2 → ℤ, eisSummand k v z = riemannZeta k * eisensteinSeries (N := 1) 0 k z := by
+  have hk1 : 1 < k := by grind
+  have hk2 : 3 ≤ (k : ℤ) := mod_cast hk
+  simp_rw [← gammaSetDivGcdSigmaEquiv.symm.tsum_eq, gammaSetDivGcdSigmaEquiv_symm_eq]
+  rw [eisensteinSeries, Summable.tsum_sigma ?hsumm, zeta_nat_eq_tsum_of_gt_one hk1,
+    tsum_mul_tsum_of_summable_norm (by simp [hk1]) ((summable_norm_eisSummand hk2 z).subtype _)]
+  case hsumm =>
+    exact gammaSetDivGcdSigmaEquiv.symm.summable_iff.mpr (summable_norm_eisSummand hk2 z).of_norm
+      |>.congr <| by simp
+  simp_rw [one_div]
+  rw [Summable.tsum_prod' ?h₁ fun b ↦ ?h₂]
+  case h₁ =>
+    exact summable_mul_of_summable_norm (f := fun (n : ℕ) ↦ ((n : ℂ) ^ k)⁻¹)
+      (g := fun (v : gammaSet 1 1 0) ↦ eisSummand k v z) (by simp [hk1])
+      ((summable_norm_eisSummand hk2 z).subtype _)
+  case h₂ =>
+    simpa using ((summable_norm_eisSummand hk2 z).subtype _).of_norm.mul_left (a := ((b : ℂ) ^ k)⁻¹)
+  refine tsum_congr fun b ↦ ?_
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp [show ((0 : ℂ) ^ k)⁻¹ = 0 by aesop, eisSummand_of_gammaSet_eq_divIntMap]
+  · have : NeZero b := ⟨hb⟩
+    simpa [eisSummand_of_gammaSet_eq_divIntMap k z, tsum_mul_left, hb]
+      using (gammaSetDivGcdEquiv b).tsum_eq (eisSummand k · z)
+
+/-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
+lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+    E hk z = 1 + (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! *
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
+  have : eisensteinSeries_MF (Int.toNat_le.mp hk) 0 z = eisensteinSeries_SIF (N := 1) 0 k z := rfl
+  rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z, eisensteinSeries]
+  have HE1 := tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow hk hk2 z
+  have HE2 := tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries hk z
+  have z2 : riemannZeta k ≠ 0 := riemannZeta_ne_zero_of_one_lt_re <| by norm_cast; grind
+  simp [eisSummand, eisensteinSeries, ← inv_mul_eq_iff_eq_mul₀ z2] at HE1 HE2 ⊢
+  grind
+
+private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) :
+    (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! = -(2 * k / bernoulli k) := by
+  have h2 : k = 2 * (k / 2 - 1 + 1) := by grind
+  set m := k / 2 - 1
+  rw [h2, Nat.cast_mul 2 (m + 1), Nat.cast_two, riemannZeta_two_mul_nat (show m + 1 ≠ 0 by grind),
+    show (2 * (m + 1))! = 2 * (m + 1) * (2 * m + 1)! by grind [Nat.factorial_succ],
+    show 2 * (m + 1) - 1 = 2 * m + 1 by grind, mul_pow, mul_pow, pow_mul I, I_sq]
+  norm_cast
+  simp [field]
+  grind
+
+/-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
+lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
+    E hk z = 1 - (2 * k / bernoulli k) *
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
+  convert q_expansion_riemannZeta hk hk2 z using 1
+  rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]

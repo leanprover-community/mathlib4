@@ -3,8 +3,9 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Batteries.Data.RBMap.Basic
-import Mathlib.Data.Tree.Basic
+module
+
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree and RBMaps
@@ -21,12 +22,12 @@ Implement a `Traversable` instance for `Tree`.
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
 
+public section
+
 namespace Tree
 
 universe u
 
 variable {α : Type u}
-
-open Batteries (RBNode)
 
 end Tree

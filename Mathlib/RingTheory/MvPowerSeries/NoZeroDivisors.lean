@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.RingTheory.MvPowerSeries.LexOrder
-import Mathlib.RingTheory.MvPowerSeries.Order
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.LexOrder
+public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -33,6 +34,8 @@ The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 (McCoy theorem) holds for power series over a Noetherian ring,
 but not in general. See [Fields1971]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -158,7 +161,7 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
       have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
         simp only [ne_eq, mul_eq_zero]
         intro H
-        rcases H with  H | H <;>
+        rcases H with H | H <;>
         · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
           simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
           rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]

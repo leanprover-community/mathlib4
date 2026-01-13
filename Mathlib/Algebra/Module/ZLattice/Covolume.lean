@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.BoxIntegral.UnitPartition
-import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+module
+
+public import Mathlib.Analysis.BoxIntegral.UnitPartition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Covolume of ℤ-lattices
@@ -52,6 +54,8 @@ general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace ZLattice
@@ -76,21 +80,25 @@ variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 
+set_option backward.privateInPublic true in
 theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
     covolume L μ = μ.real F := by
   have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
   have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
   exact congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
 
+set_option backward.privateInPublic true in
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     measureReal_ne_zero_iff (ne_of_lt _)]
   · exact measure_fundamentalDomain_ne_zero _
   · exact Bornology.IsBounded.measure_lt_top (fundamentalDomain_isBounded _)
 
+set_option backward.privateInPublic true in
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
+set_option backward.privateInPublic true in
 theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
     [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
     {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
@@ -103,6 +111,7 @@ theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [F
   congr!
   ext; simp
 
+set_option backward.privateInPublic true in
 theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
     (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * μ.real (fundamentalDomain b₀) := by
@@ -181,9 +190,9 @@ alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :
     volume ((b.ofZLatticeBasis ℝ L).equivFun '' s) = volume s / ENNReal.ofReal (covolume L) := by
-  rw [LinearEquiv.image_eq_preimage, Measure.addHaar_preimage_linearEquiv, LinearEquiv.symm_symm,
-    covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul, ENNReal.ofReal_inv_of_pos
-    (abs_pos.mpr (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
+  rw [LinearEquiv.image_eq_preimage_symm, Measure.addHaar_preimage_linearEquiv,
+    LinearEquiv.symm_symm, covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul,
+    ENNReal.ofReal_inv_of_pos (abs_pos.2 (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
 
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
@@ -199,7 +208,7 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ((stdOrthonormalBasis ℝ E).reindex e).repr.toContinuousLinearEquiv.symm
   have hf : MeasurePreserving f :=
     ((stdOrthonormalBasis ℝ E).reindex e).measurePreserving_repr_symm.comp
-      (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
+      (PiLp.volume_preserving_toLp ι)
   rw [← hf.measure_preimage hs, ← (covolume_comap L volume volume hf),
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,
@@ -233,7 +242,7 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
       exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀
-      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe,
+      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← map_smul, SetLike.mem_coe,
       Basis.mem_span_iff_repr_mem, Pi.basisFun_repr, implies_true]
   · rw [← NormedSpace.isVonNBounded_iff ℝ] at hs₁ ⊢
     exact Bornology.IsVonNBounded.image hs₁ ((b.ofZLatticeBasis ℝ).equivFunL : E →L[ℝ] ι → ℝ)
@@ -299,7 +308,7 @@ private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {�
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
-  rw [LinearEquiv.image_eq_preimage, LinearEquiv.image_eq_preimage]
+  rw [LinearEquiv.image_eq_preimage_symm, LinearEquiv.image_eq_preimage_symm]
   exact (Homeomorph.preimage_frontier b.equivFunL.toHomeomorph.symm s).symm
 
 variable {ι : Type*} [Fintype ι]

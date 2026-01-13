@@ -3,14 +3,18 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.Data.Complex.Basic
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Data.Complex.Basic
 
 /-!
 # The cardinality of the complex numbers
 
 This file shows that the complex numbers have cardinality continuum, i.e. `#ℂ = 𝔠`.
 -/
+
+public section
 
 open Cardinal Set
 

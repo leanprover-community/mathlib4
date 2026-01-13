@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Algebra.Unitization
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Unitization
 
 /-!
 # Quasiregularity and quasispectrum
@@ -58,6 +60,8 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 + `Unitization.quasispectrum_eq_spectrum_inr`: the quasispectrum of `a` in a non-unital `R`-algebra
   `A` is precisely the spectrum of `a` in `Unitization R A` (via the coercion `Unitization.inr`).
 -/
+
+@[expose] public section
 
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.
 If `R` is a non-unital semiring, then `PreQuasiregular R` is equipped with the monoid structure
@@ -276,7 +280,7 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B
     forall_exists_index]
   refine fun hx this ↦ ⟨hx, ?_⟩
   rw [Units.smul_def, ← smul_one_smul S] at this ⊢
-  simpa [- smul_assoc] using this.map φ
+  simpa [-smul_assoc] using this.map φ
 
 /-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
 `quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
@@ -513,10 +517,10 @@ protected lemma comp {R₁ R₂ R₃ A : Type*} [Semifield R₁] [Field R₂] [F
     QuasispectrumRestricts a e where
   left_inv := by
     convert hfge ▸ hf.left_inv.comp hg.left_inv
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
   rightInvOn := by
     convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
-    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+    congrm (⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end NonUnital
 
@@ -566,7 +570,7 @@ theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
 
 lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
     (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
-  rightInvOn :=  by
+  rightInvOn := by
     rw [quasispectrum_eq_spectrum_union_zero, ← h, ← quasispectrum_eq_spectrum_union_zero]
     exact QuasispectrumRestricts.rightInvOn ha
   left_inv := ha.left_inv

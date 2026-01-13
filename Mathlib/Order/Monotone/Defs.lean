@@ -3,11 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Coe
+public import Mathlib.Util.AssertExists
 
 /-!
 # Monotonicity
@@ -41,6 +43,8 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instLinearOrder Int.instLinearOrder
 
@@ -314,17 +318,21 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
-theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
+theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
-  intro x y hf
-  rcases lt_trichotomy x y with (hxy | rfl | hxy)
-  · exact absurd hf <| h _ _ hxy
-  · rfl
-  · exact absurd hf.symm <| h _ _ hxy
+  grind [Injective]
 
+@[deprecated (since := "2025-12-23")]
+alias injective_of_lt_imp_ne := Function.Injective.of_lt_imp_ne
+
+theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
+    (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
+  fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
+
+@[deprecated Injective.of_eq_imp_le (since := "2025-12-23")]
 theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
     (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
+  .of_eq_imp_le (h ·.le)
 
 /-! ### Monotonicity under composition -/
 

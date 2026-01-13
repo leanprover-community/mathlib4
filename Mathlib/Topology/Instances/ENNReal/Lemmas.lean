@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Tactic.Bound
-import Mathlib.Topology.Order.LiminfLimsup
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.ENNReal.BigOperators
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -92,7 +96,7 @@ theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
     (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
   filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
-  rwa [← ENNReal.toReal_eq_toReal hfx hgx]
+  rwa [← ENNReal.toReal_eq_toReal_iff' hfx hgx]
 
 theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun _a ha =>
   ContinuousAt.continuousWithinAt (tendsto_toNNReal ha)
@@ -282,8 +286,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
-      simp
+      gcongr <;> simp [*]
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -502,16 +505,14 @@ section Liminf
 
 theorem exists_frequently_lt_of_liminf_ne_top {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h r] with i hi using hi.trans (le_abs_self (x i))
 
 theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h (-r)] with i hi using (le_neg.1 hi).trans (neg_le_abs _)
@@ -832,6 +833,11 @@ theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : �
   lift x to ℝ≥0 using hx
   simp [tendsto_coe]
 
+theorem tendsto_toReal_zero_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞}
+    (hf : ∀ i, f i ≠ ∞ := by finiteness) :
+    Tendsto (fun n ↦ (f n).toReal) fi (𝓝 0) ↔ Tendsto f fi (𝓝 0) := by
+  rw [← ENNReal.toReal_zero, tendsto_toReal_iff hf ENNReal.zero_ne_top]
+
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
     (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by
   rw [NNReal.summable_coe]
@@ -1069,6 +1075,22 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
     ENNReal.ofReal (∑' n, f n) = ∑' n, ENNReal.ofReal (f n) := by
   simp_rw [ENNReal.ofReal, ENNReal.tsum_coe_eq (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
 
+section tprod
+
+theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    Multipliable f :=
+  ⟨_, _root_.hasProd_of_isGLB_of_le_one _ h₀ (isGLB_sInf _)⟩
+
+theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
+
+theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+    ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=
+  (hasProd_iInf_prod h₀).tprod_eq
+
+end tprod
+
 section
 
 variable [EMetricSpace β]
@@ -1113,13 +1135,13 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
   constructor
   · intro hs
     /- `s` is Cauchy sequence. Let `b n` be the diameter of the set `s '' Set.Ici n`. -/
-    refine ⟨fun N => EMetric.diam (s '' Ici N), fun n m N hn hm => ?_, ?_⟩
+    refine ⟨fun N => Metric.ediam (s '' Ici N), fun n m N hn hm => ?_, ?_⟩
     -- Prove that it bounds the distances of points in the Cauchy sequence
-    · exact EMetric.edist_le_diam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
+    · exact Metric.edist_le_ediam_of_mem (mem_image_of_mem _ hn) (mem_image_of_mem _ hm)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     · refine ENNReal.tendsto_nhds_zero.2 fun ε ε0 => ?_
       rcases hs ε ε0 with ⟨N, hN⟩
-      refine (eventually_ge_atTop N).mono fun n hn => EMetric.diam_le ?_
+      refine (eventually_ge_atTop N).mono fun n hn => Metric.ediam_le ?_
       rintro _ ⟨k, hk, rfl⟩ _ ⟨l, hl, rfl⟩
       exact (hN _ (hn.trans hk) _ (hn.trans hl)).le
   · rintro ⟨b, ⟨b_bound, b_lim⟩⟩ ε εpos
@@ -1187,15 +1209,17 @@ theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closed
   isClosed_le (continuous_id.edist continuous_const) continuous_const
 
 @[simp]
-theorem EMetric.diam_closure (s : Set α) : diam (closure s) = diam s := by
-  refine le_antisymm (diam_le fun x hx y hy => ?_) (diam_mono subset_closure)
-  have : edist x y ∈ closure (Iic (diam s)) :=
-    map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_diam_of_mem hx hy
+theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
+  refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
+  have : edist x y ∈ closure (Iic (ediam s)) :=
+    map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
+
+@[deprecated (since := "2026-01-04")] alias EMetric.diam_closure := Metric.ediam_closure
 
 @[simp]
 theorem Metric.diam_closure {α : Type*} [PseudoMetricSpace α] (s : Set α) :
-    Metric.diam (closure s) = diam s := by simp only [Metric.diam, EMetric.diam_closure]
+    Metric.diam (closure s) = diam s := by simp only [Metric.diam, Metric.ediam_closure]
 
 theorem isClosed_setOf_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0)
     (s : Set α) : IsClosed { f : α → β | LipschitzOnWith K f s } := by
@@ -1207,12 +1231,24 @@ theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMet
     IsClosed { f : α → β | LipschitzWith K f } := by
   simp only [← lipschitzOnWith_univ, isClosed_setOf_lipschitzOnWith]
 
+protected lemma LipschitzOnWith.closure [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K f (closure s) := by
+  have := ENNReal.continuous_const_mul (ENNReal.coe_ne_top (r := K))
+  refine fun x hx ↦ le_on_closure (fun y hy ↦ le_on_closure (fun x hx ↦ hf hx hy) ?_ ?_ hx) ?_ ?_
+  all_goals fun_prop
+
+lemma lipschitzOnWith_closure_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
+    (hcont : ContinuousOn f (closure s)) :
+    LipschitzOnWith K f (closure s) ↔ LipschitzOnWith K f s :=
+  ⟨fun hf ↦ hf.mono subset_closure, LipschitzOnWith.closure hcont⟩
+
 namespace Real
 
-/-- For a bounded set `s : Set ℝ`, its `EMetric.diam` is equal to `sSup s - sInf s` reinterpreted as
+/-- For a bounded set `s : Set ℝ`, its `ediam` is equal to `sSup s - sInf s` reinterpreted as
 `ℝ≥0∞`. -/
 theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
-    EMetric.diam s = ENNReal.ofReal (sSup s - sInf s) := by
+    Metric.ediam s = ENNReal.ofReal (sSup s - sInf s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => ?_) ?_
@@ -1229,26 +1265,26 @@ theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup
   exact sub_nonneg.2 (Real.sInf_le_sSup s h.bddBelow h.bddAbove)
 
 @[simp]
-theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
+theorem ediam_Ioo (a b : ℝ) : Metric.ediam (Ioo a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_gt b a with (h | h)
   · simp [h]
   · rw [Real.ediam_eq (isBounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 
 @[simp]
-theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
+theorem ediam_Icc (a b : ℝ) : Metric.ediam (Icc a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_gt a b with (h | h)
   · rw [Real.ediam_eq (isBounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 
 @[simp]
-theorem ediam_Ico (a b : ℝ) : EMetric.diam (Ico a b) = ENNReal.ofReal (b - a) :=
-  le_antisymm (ediam_Icc a b ▸ diam_mono Ico_subset_Icc_self)
-    (ediam_Ioo a b ▸ diam_mono Ioo_subset_Ico_self)
+theorem ediam_Ico (a b : ℝ) : Metric.ediam (Ico a b) = ENNReal.ofReal (b - a) :=
+  le_antisymm (ediam_Icc a b ▸ ediam_mono Ico_subset_Icc_self)
+    (ediam_Ioo a b ▸ ediam_mono Ioo_subset_Ico_self)
 
 @[simp]
-theorem ediam_Ioc (a b : ℝ) : EMetric.diam (Ioc a b) = ENNReal.ofReal (b - a) :=
-  le_antisymm (ediam_Icc a b ▸ diam_mono Ioc_subset_Icc_self)
-    (ediam_Ioo a b ▸ diam_mono Ioo_subset_Ioc_self)
+theorem ediam_Ioc (a b : ℝ) : Metric.ediam (Ioc a b) = ENNReal.ofReal (b - a) :=
+  le_antisymm (ediam_Icc a b ▸ ediam_mono Ioc_subset_Icc_self)
+    (ediam_Ioo a b ▸ ediam_mono Ioo_subset_Ioc_self)
 
 theorem diam_Icc {a b : ℝ} (h : a ≤ b) : Metric.diam (Icc a b) = b - a := by
   simp [Metric.diam, ENNReal.toReal_ofReal (sub_nonneg.2 h)]
@@ -1296,7 +1332,7 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
     simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+  exact (ENNReal.toReal_eq_toReal_iff' obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by

@@ -3,9 +3,12 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Num.ZNum
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Num.ZNum
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Primality for binary natural numbers
@@ -22,6 +25,8 @@ to construct primality and non-primality proofs more efficiently than kernel com
 Nevertheless, sometimes proof by computational reflection requires natural number computations, and
 `Num` implements algorithms directly on binary natural numbers for this purpose.
 -/
+
+@[expose] public section
 
 
 namespace PosNum
@@ -95,7 +100,7 @@ instance decidablePrime : DecidablePred PosNum.Prime
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans ?_)
         · simp only [cast_bit1]
           have := to_nat_pos n
-          omega
+          lia
         rw [← minFac_to_nat, to_nat_inj]; rfl
 
 end PosNum

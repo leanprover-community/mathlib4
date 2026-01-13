@@ -3,9 +3,11 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Azumaya Algebras
@@ -26,6 +28,8 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 Azumaya algebra, central simple algebra, noncommutative algebra
 -/
+
+@[expose] public section
 
 variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 

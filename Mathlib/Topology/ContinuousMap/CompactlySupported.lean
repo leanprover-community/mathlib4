@@ -3,9 +3,11 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Topology.Algebra.Order.Support
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+module
+
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Topology.Algebra.Order.Support
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
 # Compactly supported continuous functions
@@ -24,6 +26,8 @@ When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapE
 gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*} [TopologicalSpace α]
 
@@ -147,6 +151,15 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
+
+/-- A compactly supported continuous function gives rise to a bounded continuous function. -/
+@[simps] def toBoundedContinuousFunction {β : Type*} [PseudoMetricSpace β] [Zero β]
+    (f : C_c(α, β)) : BoundedContinuousFunction α β where
+  toFun := f
+  map_bounded' := by
+    have : IsCompact (Set.range f) := f.hasCompactSupport.isCompact_range f.continuous
+    rcases Metric.isBounded_iff.1 this.isBounded with ⟨C, hC⟩
+    exact ⟨C, by grind⟩
 
 end Basics
 
@@ -500,19 +513,19 @@ instance [Lattice β] [TopologicalLattice β] [Zero β] :
 
 instance instMulLeftMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulLeftMono β] :
     MulLeftMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right (hg₁₂ x) _⟩
 
 instance instMulRightMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulRightMono β] :
     MulRightMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left (hg₁₂ x) _⟩
 
 instance instAddLeftMono [PartialOrder β] [AddZeroClass β] [ContinuousAdd β] [AddLeftMono β] :
     AddLeftMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => add_le_add_left (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => add_le_add_right (hg₁₂ x) _⟩
 
 instance instAddRightMono [PartialOrder β] [AddZeroClass β] [ContinuousAdd β] [AddRightMono β] :
     AddRightMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => add_le_add_right (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => add_le_add_left (hg₁₂ x) _⟩
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`
 
@@ -672,8 +685,8 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
   · ext x
     simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
 
-/-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
-continuous `ℝ≥0`-valued function. -/
+/-- The nonnegative part of a continuous compactly supported `ℝ`-valued function as a
+continuous compactly supported `ℝ≥0`-valued function. -/
 noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
   toFun := Real.toNNReal.comp f.toFun
   continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
@@ -793,7 +806,7 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
         obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g
         rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal),
           ← sub_self (Λ h).toReal, sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
-          ← LinearMap.map_add, ← LinearMap.map_add, hh.1, add_comm (-g) (-f), hh.2]
+          ← map_add, ← map_add, hh.1, add_comm (-g) (-f), hh.2]
         simp only [map_add, NNReal.coe_add]
         ring
       map_smul' a f := by

@@ -3,10 +3,13 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -14,6 +17,8 @@ import Mathlib.Topology.MetricSpace.Pseudo.Defs
 Further results about pseudo-metric spaces.
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology
@@ -157,15 +162,15 @@ variable {s : Set α}
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is an open ball
 centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_ball_inter_eq_singleton_of_mem_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_ball_inter_eq_singleton_of_mem_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.ball x ε ∩ s = {x} :=
-  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is a closed ball
 of positive radius centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_closedBall_inter_eq_singleton_of_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_closedBall_inter_eq_singleton_of_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.closedBall x ε ∩ s = {x} :=
-  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 end Metric
 
@@ -199,8 +204,11 @@ end Real
 namespace Topology
 
 /-- The preimage of a separable set by an inducing map is separable. -/
-protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected lemma IsInducing.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
+  letI : UniformSpace α := TopologicalSpace.pseudoMetrizableSpaceUniformity α
+  have := pseudoMetrizableSpaceUniformity_countably_generated
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
   have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
@@ -208,14 +216,16 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+protected theorem IsEmbedding.isSeparable_preimage {α : Type*} [TopologicalSpace α]
+    [PseudoMetrizableSpace α] {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
 
 end Topology
 
 /-- A compact set is separable. -/
-theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
+theorem IsCompact.isSeparable {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
   .of_subtype s
 
@@ -264,7 +274,8 @@ lemma exists_finite_cover_balls_of_isCompact_closure (hs : IsCompact (closure s)
 end Compact
 
 /-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
-theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+theorem ContinuousOn.isSeparable_image {α : Type*} [TopologicalSpace α] [PseudoMetrizableSpace α]
+    [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict

@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Nat.Factorial.Cast
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Factorial.Cast
 
 /-!
 # Cast of binomial coefficients
@@ -14,6 +16,8 @@ import Mathlib.Data.Nat.Factorial.Cast
 This file allows calculating the binomial coefficient `a.choose b` as an element of a division ring
 of characteristic `0`.
 -/
+
+public section
 
 
 open Nat

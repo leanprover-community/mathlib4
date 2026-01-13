@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 In this file we prove a few facts like “`-s` is bounded above iff `s` is bounded below”
 (`bddAbove_neg`).
 -/
+
+public section
 
 open Function Set
 open scoped Pointwise

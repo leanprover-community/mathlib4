@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.LinearAlgebra.Finsupp.Span
+module
+
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Lie submodules of a Lie algebra
@@ -24,6 +26,8 @@ use it to define various important operations, notably the Lie span of a subset 
 
 lie algebra, lie submodule, lie ideal, lattice structure
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -57,7 +61,7 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
 instance instSMulMemClass : SMulMemClass (LieSubmodule R L M) R M where
-  smul_mem {s} c _ h := s.smul_mem'  c h
+  smul_mem {s} c _ h := s.smul_mem' c h
 
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
@@ -348,7 +352,7 @@ theorem coe_iInf {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 @[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
-theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
+theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
 
 instance : Max (LieSubmodule R L M) where
@@ -402,7 +406,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
   rw [iSup, sSup_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
 
-/-- The set of Lie submodules of a Lie module form a complete lattice. -/
+/-- The Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
       sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
@@ -457,8 +461,6 @@ variable {N N'}
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
 
 instance : Add (LieSubmodule R L M) where add := max
-
-instance : Zero (LieSubmodule R L M) where zero := ⊥
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add_assoc := sup_assoc
@@ -526,12 +528,11 @@ instance [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
   (nontrivial_iff R L M).mpr ‹_›
 
 theorem nontrivial_iff_ne_bot {N : LieSubmodule R L M} : Nontrivial N ↔ N ≠ ⊥ := by
-  constructor <;> contrapose!
-  · rintro rfl
-    by_contra! h; rcases h with
-      ⟨⟨m₁, h₁ : m₁ ∈ (⊥ : LieSubmodule R L M)⟩, ⟨m₂, h₂ : m₂ ∈ (⊥ : LieSubmodule R L M)⟩, h₁₂⟩
+  constructor
+  · rintro ⟨⟨m₁, h₁⟩, ⟨m₂, h₂⟩, h₁₂⟩ rfl
     simp [(LieSubmodule.mem_bot _).mp h₁, (LieSubmodule.mem_bot _).mp h₂] at h₁₂
-  · rw [LieSubmodule.eq_bot_iff]
+  · contrapose!
+    rw [LieSubmodule.eq_bot_iff]
     rintro ⟨h⟩ m hm
     simpa using h ⟨m, hm⟩ ⟨_, N.zero_mem⟩
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.UniformSpace.Ultra.Basic
-import Mathlib.Topology.UniformSpace.Ultra.Constructions
+module
+
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.UniformSpace.Ultra.Basic
+public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
 # Completions of ultrametric (nonarchimedean) uniform spaces
@@ -16,6 +18,8 @@ import Mathlib.Topology.UniformSpace.Ultra.Constructions
   iff the underlying space has a nonarchimedean uniformity.
 
 -/
+
+@[expose] public section
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 
@@ -38,6 +42,7 @@ instance CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans
 @[deprecated (since := "2025-10-17")]
 alias IsTransitiveRel.cauchyFilter_gen := CauchyFilter.isTrans_gen
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
   apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
@@ -49,6 +54,7 @@ instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
   ⟨fun _ ↦ CauchyFilter.isUniformInducing_pureCauchy.isUltraUniformity,
    fun _ ↦ inferInstance⟩
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.separationQuotient [IsUltraUniformity X] :
     IsUltraUniformity (SeparationQuotient X) := by
   have := IsUltraUniformity.hasBasis.map

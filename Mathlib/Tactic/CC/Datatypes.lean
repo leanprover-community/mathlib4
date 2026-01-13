@@ -3,10 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Batteries.Classes.Order
-import Mathlib.Lean.Meta.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Data.Ordering.Basic
+module
+
+public meta import Batteries.Classes.Order
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Mathlib.Data.Ordering.Basic
+public import Batteries.Classes.Order
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Basic
 
 /-!
 # Datatypes for `cc`
@@ -18,6 +22,8 @@ We split them into their own file.
 
 This file is ported from C++ code, so many declarations lack documents.
 -/
+
+public meta section
 
 universe u
 

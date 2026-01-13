@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 /-!
 # Bilinear form
@@ -29,6 +31,8 @@ In this file we use the following type variables:
 bilinear form, bilin form, BilinearForm, matrix, basis
 
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 open Module
@@ -260,7 +264,7 @@ theorem BilinForm.toMatrix_compRight (B : BilinForm R₁ M₁) (f : M₁ →ₗ[
 @[simp]
 theorem BilinForm.toMatrix_mul_basis_toMatrix (c : Basis o R₁ M₁) (B : BilinForm R₁ M₁) :
     (b.toMatrix c)ᵀ * BilinForm.toMatrix b B * b.toMatrix c = BilinForm.toMatrix c B :=
-  LinearMap.toMatrix₂_mul_basis_toMatrix _ _ _  _ B
+  LinearMap.toMatrix₂_mul_basis_toMatrix _ _ _ _ B
 
 theorem BilinForm.mul_toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix o n R₁) (N : Matrix n o R₁) :
     M * BilinForm.toMatrix b B * N =
@@ -273,7 +277,7 @@ theorem BilinForm.mul_toMatrix (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
 
 theorem BilinForm.toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
     BilinForm.toMatrix b B * M = BilinForm.toMatrix b (B.compRight (Matrix.toLin b b M)) :=
-  LinearMap.toMatrix₂_mul _ _ _  B _
+  LinearMap.toMatrix₂_mul _ _ _ B _
 
 theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) := by

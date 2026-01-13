@@ -3,14 +3,18 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Preserving images
 
-In this file, we show that if a functor preserves span and cospan, then it preserves images.
+In this file, we show that if a functor preserves spans and cospans, then it preserves images.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -32,7 +36,7 @@ variable (L : A ⥤ B)
 variable [∀ {X Y Z : A} (f : X ⟶ Z) (g : Y ⟶ Z), PreservesLimit (cospan f g) L]
 variable [∀ {X Y Z : A} (f : X ⟶ Y) (g : X ⟶ Z), PreservesColimit (span f g) L]
 
-/-- If a functor preserves span and cospan, then it preserves images.
+/-- If a functor preserves limit spans and colimit cospans, then it preserves images.
 -/
 @[simps!]
 def iso {X Y : A} (f : X ⟶ Y) : image (L.map f) ≅ L.obj (image f) :=

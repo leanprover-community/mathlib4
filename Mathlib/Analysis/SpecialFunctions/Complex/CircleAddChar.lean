@@ -3,10 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
-import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+public import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Additive characters valued in the unit circle
@@ -18,6 +20,8 @@ This file defines additive characters, valued in the unit circle, from either
 These results are separate from `Analysis.SpecialFunctions.Complex.Circle` in order to reduce
 the imports of that file.
 -/
+
+@[expose] public section
 
 open Complex Function
 
@@ -119,8 +123,7 @@ numbers -/
 noncomputable def rootsOfUnityCircleEquiv : rootsOfUnity n Circle ≃* rootsOfUnity n ℂ where
   __ := (rootsOfUnityUnitsMulEquiv ℂ n).toMonoidHom.comp (restrictRootsOfUnity Circle.toUnits n)
   invFun z := ⟨(rootsOfUnitytoCircle n).toHomUnits z, by
-    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← MonoidHom.map_pow,
-      ← (rootsOfUnitytoCircle n).map_one]
+    rw [mem_rootsOfUnity', MonoidHom.coe_toHomUnits, ← map_pow, ← (rootsOfUnitytoCircle n).map_one]
     congr
     aesop⟩
   left_inv _ := by aesop

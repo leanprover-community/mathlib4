@@ -3,19 +3,24 @@ Copyright (c) 2024 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # Deriving `RigidCategory` instance for braided and left/right rigid categories.
 -/
 
+@[expose] public section
+
 open CategoryTheory Category BraidedCategory MonoidalCategory
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
+variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
 
 namespace CategoryTheory.BraidedCategory
 
+set_option backward.privateInPublic true in
 /-- coevaluation_evaluation' field of `ExactPairing Y X` in a braided category -/
 private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
     X ◁ (η_ X Y ≫ (β_ Y X).inv) ≫ (α_ X Y X).inv ≫ ((β_ X Y).hom ≫ ε_ X Y) ▷ X
@@ -42,6 +47,7 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_right, ← braiding_inv_naturality_right]
       simp [monoidalComp]
 
+set_option backward.privateInPublic true in
 /-- evaluation_coevaluation' field of `ExactPairing Y X` in a braided category -/
 private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
     (η_ X Y ≫ (β_ Y X).inv) ▷ Y ≫ (α_ Y X Y).hom ≫ Y ◁ ((β_ X Y).hom ≫ ε_ X Y) =
@@ -67,6 +73,8 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_left, ← braiding_inv_naturality_left]
       simp [monoidalComp]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `X` and `Y` forms an exact pairing in a braided category, then so does `Y` and `X`
 by composing the coevaluation and evaluation morphisms with associators. -/
 def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where

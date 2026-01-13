@@ -3,11 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
@@ -25,7 +27,7 @@ reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 
 ## Alternative approaches
 
-The are at least three ways to construct a Lie algebra from a root system:
+There are at least three ways to construct a Lie algebra from a root system:
 1. As a quotient of a free Lie algebra, using the Serre relations
 2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
 3. The Geck construction
@@ -46,6 +48,8 @@ There seems to be no known construction of a Lie algebra from a root system with
 a base: https://mathoverflow.net/questions/495434/
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

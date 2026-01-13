@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semirings
@@ -19,6 +21,8 @@ This file contains basic results on the natural-valued floor and ceiling functio
 
 rounding, floor, ceil
 -/
+
+public section
 
 assert_not_exists Finset
 
@@ -143,6 +147,20 @@ theorem preimage_floor_zero : (floor : R → ℕ) ⁻¹' {0} = Iio 1 :=
 theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (floor : R → ℕ) ⁻¹' {n} = Ico (n : R) (n + 1) :=
   ext fun _ => floor_eq_iff' hn
+
+theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
+  rcases le_total a 0 with ha | ha
+  · rw [floor_of_nonpos, floor_of_nonpos ha]
+    · simp
+    apply mul_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [le_div_iff_mul_le (zero_lt_of_ne_zero hn), le_floor_iff (mul_nonneg ha (cast_nonneg' n)),
+    le_floor_iff ha, cast_mul, mul_le_mul_iff_of_pos_right (cast_pos'.mpr (zero_lt_of_ne_zero hn))]
+
+theorem cast_mul_floor_div_cancel {R : Type*} [CommSemiring R] [LinearOrder R]
+    [IsStrictOrderedRing R] [FloorSemiring R] {n : ℕ} (hn : n ≠ 0) (a : R) :
+    ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
+  rw [mul_comm, mul_cast_floor_div_cancel hn]
 
 end floor
 
@@ -318,7 +336,8 @@ theorem floor_sub_ofNat [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : �
 
 theorem ceil_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
-    rw [← not_lt, ← not_lt, not_iff_not, lt_ceil]
+    contrapose!
+    rw [lt_ceil]
     obtain hb | hb := le_or_gt n b
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_comm n, add_comm (n : R), add_lt_add_iff_right, add_lt_add_iff_right,

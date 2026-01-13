@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # `Finset`s are a Boolean algebra
@@ -18,6 +20,8 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -49,7 +53,7 @@ theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 
 theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
-  rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
+  contrapose!; exact univ_nonempty_iff
 
 theorem univ_nontrivial_iff :
     (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
@@ -109,8 +113,6 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
 theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=

@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Functorial constructions of ideal sheaves
@@ -18,6 +20,8 @@ We define the pullback and pushforward of ideal sheaves in this file.
   The Galois connection between pullback and pushforward.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -114,7 +118,9 @@ variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : 
 /-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
-set_option linter.style.commandStart false
+section
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -123,7 +129,8 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
-set_option linter.style.commandStart true
+
+end
 
 end gc
 

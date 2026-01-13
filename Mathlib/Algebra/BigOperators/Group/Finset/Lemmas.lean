@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Notation.Support
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Notation.Support
 
 /-!
 # Miscellaneous lemmas on big operators
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Notation.Support
 The lemmas in this file have been moved out of
 `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean` to reduce its imports.
 -/
+
+public section
 
 variable {ι κ M N β : Type*}
 

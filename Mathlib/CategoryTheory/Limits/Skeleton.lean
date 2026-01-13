@@ -3,8 +3,10 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Skeletal
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # (Co)limits of the skeleton of a category
@@ -18,6 +20,8 @@ case that `HasLimits C` iff `HasLimits (ThinSkeleton C)`, as the homs live in di
 If this is something we really want, we should consider changing the category instance of
 `ThinSkeleton C`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

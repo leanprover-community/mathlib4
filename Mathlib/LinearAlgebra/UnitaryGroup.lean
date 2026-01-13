@@ -3,11 +3,13 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Matrix.Reflection
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Matrix.Reflection
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # The Unitary Group
@@ -37,6 +39,8 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 matrix group, group, unitary group, orthogonal group
 
 -/
+
+@[expose] public section
 
 
 universe u v

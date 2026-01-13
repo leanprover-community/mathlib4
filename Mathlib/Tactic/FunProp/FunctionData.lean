@@ -3,16 +3,21 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Qq
+module
 
-import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.ToBatteries
+
+public meta import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Std.Do
 
 /-!
 ## `funProp` data structure holding information about a function
 
 `FunctionData` holds data about function in the form `fun x => f x₁ ... xₙ`.
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta

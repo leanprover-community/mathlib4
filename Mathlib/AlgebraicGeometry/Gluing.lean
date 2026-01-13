@@ -3,9 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.LocallyDirected
-import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.LocallyDirected
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 
 /-!
 # Gluing Schemes
@@ -44,10 +47,12 @@ which is a special case where the conditions are easier to check.
 
 ## Implementation details
 
-All the hard work is done in `AlgebraicGeometry/PresheafedSpace/Gluing.lean` where we glue
-presheafed spaces, sheafed spaces, and locally ringed spaces.
+All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluing.lean` where we
+glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -128,8 +133,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.f j).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
-      ContinuousMap.coe_comp, Set.range_comp]
+  · simp only [LocallyRingedSpace.comp_toHom, PresheafedSpace.comp_base,
+      TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
     exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
@@ -218,7 +223,10 @@ theorem ι_isoCarrier_inv (i : D.J) :
     PresheafedSpace.forget_map,
     PresheafedSpace.forget_map, ← PresheafedSpace.comp_base, ← Category.assoc,
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
-  erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
+  dsimp
+  rw [← Category.assoc, ← PresheafedSpace.comp_base,
+    ← InducedCategory.comp_hom, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i,
+    ← PresheafedSpace.comp_base]
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
   rw [D.ι_isoLocallyRingedSpace_inv i]
 
@@ -440,7 +448,7 @@ theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h _
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.X x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.f x) (𝒰.f y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.I₀) : 𝒰.f x ≫ 𝒰.glueMorphisms f hf = f x := by
@@ -449,7 +457,7 @@ theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.
     PreZeroHypercover.pullback₁_X, ulift_X, ulift_f, PreZeroHypercover.pullback₁_f]
   simp_rw [pullback.condition_assoc, ← ulift_f, ← ι_fromGlued, Category.assoc, glueMorphisms,
     IsIso.hom_inv_id_assoc, ulift_f, hf]
-  erw [Multicoequalizer.π_desc]
+  simp [CategoryTheory.GlueData.ι]
 
 end Cover
 
@@ -462,6 +470,16 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
       rw [presieve₀_mem_precoverage_iff]
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
+
+-- TODO: generalize to covers in subcanonical topologies
+open pullback in
+attribute [local simp] condition condition_assoc in
+instance : (MorphismProperty.isomorphisms Scheme).IsLocalAtTarget zariskiPrecoverage :=
+  .mk_of_isStableUnderBaseChange fun {X Y} f (𝒰 : Y.OpenCover) (H : ∀ i, IsIso _) ↦
+    ⟨𝒰.glueMorphisms (fun i ↦ inv (snd f (𝒰.f i)) ≫ fst _ _) fun i j ↦ by
+    rw [← cancel_epi ((pullbackRightPullbackFstIso _ _ _).hom ≫ map (fst f (𝒰.f i) ≫ f)
+      (𝒰.f j) (𝒰.f i) (𝒰.f j) (snd _ _) (𝟙 _) (𝟙 _) (by simp) (by simp))]
+    simp, Cover.hom_ext (𝒰.pullback₁ f) _ _ fun i ↦ by simp, Cover.hom_ext 𝒰 _ _ fun i ↦ by simp⟩
 
 /-!
 
@@ -665,17 +683,16 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     F.map f ≫ (glueData F).ι j = (glueData F).ι i := by
   have : IsIso (V F ↓i ↓j).ι := by
     have : V F ↓i ↓j = ⊤ :=
-      top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 i, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
+      top_le_iff.mp (le_iSup_of_le ⟨_, 𝟙 _, f⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
     exact this ▸ (topIso _).isIso_hom
   have : t F ↓i ↓j ≫ (V F ↓j ↓i).ι ≫ _ = (V F ↓i ↓j).ι ≫ _ :=
     (glueData F).glue_condition i j
   simp only [t, IsOpenImmersion.lift_fac_assoc] at this
   rw [← cancel_epi (V F ↓i ↓j).ι, ← this, ← Category.assoc,
-    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 i) f),
+    ← (Iso.eq_inv_comp _).mp (homOfLE_tAux F ↓i ↓j (𝟙 _) f),
     ← Category.assoc, ← Category.assoc, Category.assoc]
   convert Category.id_comp _
-  rw [← cancel_mono (Opens.ι _)]
-  simp [V, InducedCategory.category, Shrink.instCategoryShrink]
+  simp [← cancel_mono (Opens.ι _), V]
 
 /-- (Implementation detail)
 The cocone associated to a locally directed diagram.

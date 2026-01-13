@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Interval.Basic
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic
@@ -17,6 +19,8 @@ This file defines arithmetic operations on intervals and prove their correctness
 full precision operations. The essentials of float operations can be found
 in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -534,10 +538,10 @@ instance subtractionCommMonoid {α : Type u}
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
     sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (neg_neg _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+    neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
     neg_add_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (neg_add_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -550,10 +554,10 @@ instance subtractionCommMonoid {α : Type u}
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
     div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (inv_inv _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+    inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
     mul_inv_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (mul_inv_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -658,7 +662,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
-def evalNonemptyIntervalLength : PositivityExt where
+meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
@@ -668,7 +672,7 @@ def evalNonemptyIntervalLength : PositivityExt where
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
-def evalIntervalLength : PositivityExt where
+meta def evalIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)

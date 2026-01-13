@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -29,6 +31,8 @@ surjection `P →ₐ[R] R`.
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -311,7 +315,7 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_zero := fun r ↦ ext (smul_zero (P.σ r))
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
+    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
@@ -368,6 +372,24 @@ lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
     Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
+lemma Cotangent.mk_eq_mk_iff_sub_mem (x y : P.ker) :
+    mk x = mk y ↔ x.val - y.val ∈ P.ker ^ 2 := by
+  simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
+
+variable (P) in
+lemma Cotangent.ker_mk : LinearMap.ker (mk (P := P)) = P.ker • ⊤ := by
+  ext ⟨x, hx⟩
+  simp [LinearMap.mem_ker, mk_eq_zero_iff, Submodule.mem_smul_top_iff, sq]
+
+lemma Cotangent.span_eq_top_of_span_eq_ker {ι : Type*} (s : ι → P.Ring)
+    (hs : Ideal.span (Set.range s) = P.ker) :
+    Submodule.span S (.range (fun i ↦ mk ⟨s i, hs.le (Ideal.subset_span ⟨i, rfl⟩)⟩)) = ⊤ := by
+  rw [Ideal.span, ← Submodule.span_range_subtype_eq_top_iff] at hs
+  · apply Submodule.span_eq_top_of_span_eq_top (R := P.Ring)
+    rw [← Function.comp_def, Set.range_comp, ← Submodule.map_span, hs, Submodule.map_top,
+      LinearMap.range_eq_top_of_surjective _ mk_surjective]
+  · simp [← hs, Ideal.mem_span_range_self]
+
 variable {P'}
 variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
@@ -421,6 +443,31 @@ lemma Cotangent.finite (hP : P.ker.FG) :
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _
+
+variable (P) in
+/-- The cotangent is isomorphic to `S ⊗[P] I`. -/
+noncomputable def cotangentEquiv : S ⊗[P.Ring] P.ker ≃ₗ[S] P.Cotangent := by
+  refine .ofBijective (Cotangent.mk.liftBaseChange _) ⟨?_, ?_⟩
+  · refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
+    obtain ⟨x, rfl⟩ := TensorProduct.mk_surjective P.Ring P.ker S P.algebraMap_surjective x
+    simp only [mk_apply, LinearMap.liftBaseChange_tmul, one_smul, Cotangent.mk_eq_zero_iff,
+      pow_two] at hx ⊢
+    refine Submodule.smul_induction_on' (p := fun x (hx : x ∈ P.ker * P.ker) ↦
+      (1 : S) ⊗ₜ[P.Ring] (⟨x, Ideal.mul_le_right hx⟩ : P.ker) = 0) (hx := hx) ?_ ?_
+    · intro r hr s hs
+      trans (r • 1) ⊗ₜ[P.Ring] ⟨s, hs⟩
+      · rw [smul_tmul]; rfl
+      · simp_all [Algebra.smul_def]
+    · intro a ha b hb ha' hb'
+      convert congr($ha' + $hb')
+      rw [← tmul_add]
+      rfl
+  · intro x
+    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
+    exact ⟨1 ⊗ₜ x, by simp⟩
+
+@[simp]
+lemma contangentEquiv_tmul (s : S) (x : P.ker) : P.cotangentEquiv (s ⊗ₜ x) = s • .mk x := rfl
 
 end Cotangent
 

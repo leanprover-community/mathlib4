@@ -3,8 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # Expressions for monoidal categories
@@ -14,6 +17,8 @@ or `Mor` terms. The converted expressions are used in the coherence tactics and 
 widgets.
 
 -/
+
+public meta section
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory

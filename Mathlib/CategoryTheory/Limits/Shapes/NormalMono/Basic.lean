@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
@@ -22,6 +24,8 @@ every monomorphism or epimorphism is normal, and deduce that these categories ar
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,11 +72,13 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
 end
 
 /-- Every normal monomorphism is a regular monomorphism. -/
-instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono f] : RegularMono f :=
+def NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono f] : RegularMono f :=
   { I with
     left := I.g
     right := 0
     w := by simpa using I.w }
+
+instance (priority := 100) (f : X ⟶ Y) [I : NormalMono f] : IsRegularMono f := ⟨⟨I.regularMono⟩⟩
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
 a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
@@ -95,7 +101,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
       simp only [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
-    letI gr := regularOfIsPullbackSndOfRegular comm t
+    letI gr := regularOfIsPullbackSndOfRegular hn.regularMono comm t
     have q := (HasZeroMorphisms.comp_zero k hn.Z).symm
     convert gr.isLimit
 
@@ -128,9 +134,9 @@ def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMon
 
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
     IsRegularMonoCategory C where
-  regularMonoOfMono f _ := ⟨by
+  regularMonoOfMono f _ := by
     haveI := normalMonoOfMono f
-    infer_instance⟩
+    infer_instance
 
 end
 
@@ -164,11 +170,13 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
 end
 
 /-- Every normal epimorphism is a regular epimorphism. -/
-instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] : RegularEpi f :=
+def NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] : RegularEpi f :=
   { I with
     left := I.g
     right := 0
     w := by simpa using I.w }
+
+instance (priority := 100) (f : X ⟶ Y) [I : NormalEpi f] : IsRegularEpi f := ⟨⟨I.regularEpi⟩⟩
 
 /-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
 induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
@@ -187,11 +195,11 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) : gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by
-    letI hn := regularOfIsPushoutSndOfRegular comm t
+    letI hn := regularOfIsPushoutSndOfRegular gn.regularEpi comm t
     have q := (@zero_comp _ _ _ gn.W _ _ f).symm
     convert hn.isColimit
 
@@ -266,8 +274,8 @@ def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :
 
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
     IsRegularEpiCategory C where
-  regularEpiOfEpi f _ := ⟨by
+  regularEpiOfEpi f _ := by
     haveI := normalEpiOfEpi f
-    infer_instance⟩
+    infer_instance
 
 end CategoryTheory

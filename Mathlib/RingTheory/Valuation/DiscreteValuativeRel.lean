@@ -3,10 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.RingTheory.Valuation.RankOne
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
 
@@ -17,6 +18,8 @@ Discrete valuative relations have a maximal element less than one in the value g
 In the rank-one case, this is equivalent to the value group being isomorphic to `ℤᵐ⁰`.
 
 -/
+
+public section
 
 namespace ValuativeRel
 
@@ -31,7 +34,7 @@ lemma nonempty_orderIso_withZeroMul_int_iff :
   · rintro ⟨e⟩
     let x := e.symm (exp (-1))
     have hx0 : x ≠ 0 := by simp [x]
-    have hx1 : x < 1 := by simp [- exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
+    have hx1 : x < 1 := by simp [-exp_neg, x, ← lt_map_inv_iff, ← exp_zero]
     refine ⟨⟨x, hx1, fun y hy ↦ ?_⟩, ⟨x, hx0, hx1.ne⟩, .comap e.toMonoidHom e.strictMono⟩
     rcases eq_or_ne y 0 with rfl | hy0
     · simp

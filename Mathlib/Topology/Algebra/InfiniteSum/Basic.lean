@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Lee
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Order.Filter.AtTopBot.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -18,6 +20,8 @@ keep the basic file of definitions as short as possible.
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -38,6 +42,10 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
+@[to_additive (attr := nontriviality)]
+theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
+  convert hasProd_one
+
 @[to_additive]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
@@ -45,6 +53,10 @@ theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
 @[to_additive]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
+
+@[to_additive (attr := nontriviality)]
+theorem Multipliable.of_subsingleton_cod [Subsingleton α] : Multipliable f L :=
+  HasProd.of_subsingleton_cod.multipliable
 
 /-- See `multipliable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
@@ -438,7 +450,7 @@ theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
     (hfg : ∀ b c, f b c = g b c) : ∏'[L] b, ∏'[M] c, f b c = ∏'[L] b, ∏'[M] c, g b c :=
   tprod_congr fun b ↦ tprod_congr fun c ↦ hfg b c
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem tprod_fintype [L.LeAtTop] [Fintype β] (f : β → α) : ∏'[L] b, f b = ∏ b, f b := by
   apply tprod_eq_prod; simp
 
@@ -474,18 +486,18 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
   · simp
   · intro b' hb'; simp [hb']
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
+    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
+  simp [prod_attach]
 
-@[to_additive (attr := simp)]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
-  rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
+@[to_additive]
+theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}

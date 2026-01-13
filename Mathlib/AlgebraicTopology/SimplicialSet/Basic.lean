@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets
@@ -19,6 +21,8 @@ but this would be unnecessarily confusing given the existing notion of a simplic
 homotopy type theory.)
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -111,7 +115,7 @@ lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
   NatTrans.ext (funext w)
 
 /-- Further truncation of truncated simplicial sets. -/
-abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
+abbrev trunc (n m : ℕ) (h : m ≤ n := by lia) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
 

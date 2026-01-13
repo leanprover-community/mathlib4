@@ -3,10 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -45,6 +47,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -767,7 +771,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
 
 theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
-  have := Set.preimage_equiv_eq_image_symm s f.toEquiv
+  have := f.toEquiv.image_symm_eq_preimage s
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s (f.symm : N →* G) f.symm.surjective]
 
 lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
@@ -923,3 +927,15 @@ def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
 
 @[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
     [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+
+@[simp]
+lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia G).subgroupOf H = I.inertia H :=
+  rfl
+
+@[simp]
+lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+  rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]

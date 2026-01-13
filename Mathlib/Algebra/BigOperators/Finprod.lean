@@ -3,14 +3,16 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Notation.FiniteSupport
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Notation.FiniteSupport
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Finite products and sums over types and sets
@@ -72,6 +74,8 @@ We did not add `IsFinite (X : Type) : Prop`, because it is simply `Nonempty (Fin
 
 finsum, finprod, finite sum, finite product
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -259,6 +263,12 @@ theorem one_le_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedMo
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 
+/-- A version of `one_le_finprod'` for `PosMulMono` in place of `MulLeftMono`. -/
+lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneClass M]
+    [PosMulMono M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+    1 ≤ ∏ᶠ i, f i :=
+  finprod_induction _ le_rfl (fun _ _ ↦ one_le_mul_of_one_le_of_one_le) hf
+
 @[to_additive]
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
@@ -341,7 +351,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
     ∏ᶠ i, f i = ∏ i ∈ s, f i := by
   have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f := by
     rw [mulSupport_comp_eq_preimage]
-    exact (Equiv.plift.symm.image_eq_preimage _).symm
+    exact (Equiv.plift.symm.image_eq_preimage_symm _).symm
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
     exact image_mono h
@@ -353,6 +363,11 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
 theorem finprod_eq_prod_of_mulSupport_toFinset_subset (f : α → M) (hf : (mulSupport f).Finite)
     {s : Finset α} (h : hf.toFinset ⊆ s) : ∏ᶠ i, f i = ∏ i ∈ s, f i :=
   finprod_eq_prod_of_mulSupport_subset _ fun _ hx => h <| hf.mem_toFinset.2 hx
+
+@[to_additive]
+theorem finprod_eq_prod_of_mulSupport_subset_of_finite (f : α → M) {s : Set α}
+    (h : mulSupport f ⊆ s) (hs : s.Finite) : ∏ᶠ i, f i = ∏ i ∈ hs.toFinset, f i :=
+  finprod_eq_prod_of_mulSupport_subset f <| by rwa [Set.Finite.coe_toFinset]
 
 @[to_additive]
 theorem finprod_eq_finset_prod_of_mulSupport_subset (f : α → M) {s : Finset α}
@@ -373,6 +388,19 @@ theorem finprod_def (f : α → M) [Decidable (mulSupport f).Finite] :
 @[to_additive]
 theorem finprod_of_infinite_mulSupport {f : α → M} (hf : (mulSupport f).Infinite) :
     ∏ᶠ i, f i = 1 := by classical rw [finprod_def, dif_neg hf]
+
+@[to_additive]
+theorem finite_mulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i ≠ 1) :
+    (mulSupport f).Finite :=
+  not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
+
+theorem finite_support_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
+    (h : ∑ᶠ i, f i = 1) : (support f).Finite := by
+  cases subsingleton_or_nontrivial R
+  · simp_rw [Subsingleton.support_eq, finite_empty]
+  · apply finite_support_of_finsum_ne_zero
+    rw [h]
+    exact one_ne_zero
 
 @[to_additive]
 theorem finprod_eq_prod (f : α → M) (hf : (mulSupport f).Finite) :
@@ -503,14 +531,28 @@ theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by
   simp +contextual [h]
 
-@[to_additive finsum_pos']
-theorem one_lt_finprod' {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+@[to_additive finsum_cond_pos]
+theorem one_lt_finprod_cond {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
+    {f : ι → M} {p : ι → Prop} (h : ∀ i, p i → 1 ≤ f i) (h' : ∃ i, p i ∧ 1 < f i)
+    (hf : (mulSupport f ∩ {i | p i}).Finite) : 1 < ∏ᶠ (i) (_ : p i), f i := by
+  rw [finprod_cond_eq_prod_of_cond_iff (t := hf.toFinset)]
+  · apply Finset.one_lt_prod'
+    · simp +contextual [h]
+    · aesop
+  · simp +contextual
+
+@[to_additive finsum_pos]
+theorem one_lt_finprod {M : Type*} [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M]
     {f : ι → M}
     (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
-  rcases h' with ⟨i, hi⟩
-  rw [finprod_eq_prod _ hf]
-  refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
-  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
+  rw [← finprod_mem_univ]
+  apply one_lt_finprod_cond <;> simpa
+
+@[deprecated (since := "2026-01-03")]
+alias finsum_pos' := finsum_pos
+
+@[to_additive existing finsum_pos', deprecated (since := "2026-01-03")]
+alias one_lt_finprod' := one_lt_finprod
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
@@ -590,6 +632,12 @@ theorem finprod_mem_mul_distrib (hs : s.Finite) :
 theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : (mulSupport f).Finite) :
     g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   g.map_finprod_plift f <| hf.preimage Equiv.plift.injective.injOn
+
+@[to_additive]
+theorem map_finprod {G : Type*} [FunLike G M N] [MonoidHomClass G M N] (g : G)
+    (hf : (Function.mulSupport f).Finite) :
+    g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
+  (g : M →* N).map_finprod hf
 
 @[to_additive]
 theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n = ∏ᶠ i, f i ^ n :=
@@ -759,12 +807,6 @@ theorem finprod_mem_insert_of_eq_one_if_notMem (h : a ∉ s → f a = 1) :
   refine finprod_mem_inter_mulSupport_eq' _ _ _ fun x hx => ⟨?_, Or.inr⟩
   rintro (rfl | hxs)
   exacts [not_imp_comm.1 h hx, hxs]
-
-@[deprecated (since := "2025-05-23")]
-alias finsum_mem_insert_of_eq_zero_if_not_mem := finsum_mem_insert_of_eq_zero_if_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias finprod_mem_insert_of_eq_one_if_not_mem := finprod_mem_insert_of_eq_one_if_notMem
 
 /-- If `f a = 1`, then the product of `f i` over `i ∈ insert a s` equals the product of `f i` over
 `i ∈ s`. -/
@@ -1049,6 +1091,18 @@ theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
 theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s, (mulSupport (f a)).Finite) :
     (∏ a ∈ s, ∏ᶠ b : β, f a b) = ∏ᶠ b : β, ∏ a ∈ s, f a b :=
   (finprod_prod_comm s (fun b a => f a b) h).symm
+
+@[to_additive]
+theorem finprod_prod_filter [DecidableEq α] (f : β → α) (s : Finset β) (g : β → M) :
+    ∏ᶠ x, ∏ y ∈ s with f y = x, g y = ∏ k ∈ s, g k := by
+  rw [finprod_eq_finset_prod_of_mulSupport_subset]
+  · rw [Finset.prod_image']
+    exact fun _ _ ↦ rfl
+  · intro x hx
+    rw [mem_mulSupport] at hx
+    obtain ⟨a, h, -⟩ := Finset.exists_ne_one_of_prod_ne_one hx
+    simp only [Finset.mem_filter, Finset.coe_image, mem_image, SetLike.mem_coe] at h ⊢
+    exact ⟨a, h⟩
 
 /--
 For functions with finite support, multiplication commutes with finsums. See `mul_finsum` for a

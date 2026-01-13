@@ -3,9 +3,11 @@ Copyright (c) 2022 Paul A. Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -28,6 +30,8 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 convex, convex body
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise Topology NNReal
@@ -83,7 +87,7 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by simp]
+  rw [show 0 = (1 / 2 : ℝ) • x + (1 / 2 : ℝ) • (-x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 
@@ -171,9 +175,12 @@ variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] (K L : ConvexBody V)
 protected theorem isBounded : Bornology.IsBounded (K : Set V) :=
   K.isCompact.isBounded
 
-theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K : Set V) L ≠ ⊤ := by
-  apply_rules [Metric.hausdorffEdist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
+theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : Set V) L ≠ ⊤ := by
+  apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_ne_top := hausdorffEDist_ne_top
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
@@ -181,16 +188,19 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
-  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
+  dist_triangle _ _ _ := Metric.hausdorffDist_triangle hausdorffEDist_ne_top
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
   rfl
 
 @[simp, norm_cast]
-theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L := by
+theorem hausdorffEDist_coe : Metric.hausdorffEDist (K : Set V) L = edist K L := by
   rw [edist_dist]
-  exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
+  exact (ENNReal.ofReal_toReal hausdorffEDist_ne_top).symm
+
+@[deprecated (since := "2026-01-08")]
+alias hausdorffEdist_coe := hausdorffEDist_coe
 
 open Filter
 
@@ -227,7 +237,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where
   eq_of_dist_eq_zero {K L} hd := ConvexBody.ext <|
-    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEdist_ne_top).1 hd
+    (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEDist_ne_top).1 hd
 
 end NormedAddCommGroup
 

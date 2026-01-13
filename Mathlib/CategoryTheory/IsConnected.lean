@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Connected category
@@ -40,6 +42,8 @@ We also prove the result that the functor given by `(X × -)` preserves any
 connected limit. That is, any limit of shape `J` where `J` is a connected
 category is preserved by the functor `(X × -)`. This appears in `CategoryTheory.Limits.Connected`.
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -79,6 +83,7 @@ variable {K : Type u₂} [Category.{v₂} K]
 
 namespace IsPreconnected.IsoConstantAux
 
+set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
 private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Discrete J where
   obj j := have := Nonempty.intro j
@@ -86,6 +91,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   map {j _} f := have := Nonempty.intro j
     ⟨⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩⟩
 
+set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
@@ -93,6 +99,8 @@ private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
 
 end IsPreconnected.IsoConstantAux
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
 the constant functor with value `F.obj j` (for any choice of `j`).
 -/
@@ -383,7 +391,7 @@ lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
 lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzag a b) : a.as = b.as := by
   induction h with
   | refl => rfl
-  | tail _ h eq  => exact eq.trans (eq_of_zag _ h)
+  | tail _ h eq => exact eq.trans (eq_of_zag _ h)
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
 theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
@@ -413,7 +421,7 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
   | refl => rfl
   | tail _ hj ih =>
     rw [ih]
-    rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
+    rcases hj with (⟨⟨hj⟩⟩ | ⟨⟨hj⟩⟩)
     exacts [hF hj, (hF hj).symm]
 
 /-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.

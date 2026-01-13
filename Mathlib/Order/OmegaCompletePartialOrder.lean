@@ -3,13 +3,15 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Ira Fesefeldt
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.Iterate
-import Mathlib.Order.Part
-import Mathlib.Order.Preorder.Chain
-import Mathlib.Order.ScottContinuity
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Order.Iterate
+public import Mathlib.Order.Part
+public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.ScottContinuity
 
 /-!
 # Omega Complete Partial Orders
@@ -53,6 +55,8 @@ supremum helps define the meaning of recursive procedures.
 * [Recursive definitions of partial functions and their computations][cadiou1972]
 * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 

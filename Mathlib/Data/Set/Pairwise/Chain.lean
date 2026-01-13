@@ -3,14 +3,18 @@ Copyright (c) 2025 Jasper Mulder-Sohn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent, Jasper Mulder-Sohn
 -/
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Pairwise results for chains
 
 In this file `Pairwise` results are applied to chains of sets.
 -/
+
+public section
 
 open Set
 

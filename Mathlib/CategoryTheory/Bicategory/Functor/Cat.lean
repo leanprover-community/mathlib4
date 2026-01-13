@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctors to Cat
@@ -12,6 +14,8 @@ In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
 
 -/
+
+public section
 
 universe w v v' u u'
 
@@ -33,13 +37,15 @@ variable (f : b₀ ⟶ b₀) (hf : f = 𝟙 b₀) (a : X ⟶ Y)
 
 @[reassoc]
 lemma mapId'_hom_naturality :
-    (F.map f).map a ≫ (F.mapId' f hf).hom.app Y = (F.mapId' f hf).hom.app X ≫ a :=
-  (F.mapId' f hf).hom.naturality a
+    (F.map f).toFunctor.map a ≫ (F.mapId' f hf).hom.toNatTrans.app Y =
+    (F.mapId' f hf).hom.toNatTrans.app X ≫ a :=
+  (F.mapId' f hf).hom.toNatTrans.naturality a
 
 @[reassoc]
 lemma mapId'_inv_naturality :
-    (F.mapId' f hf).inv.app X ≫ (F.map f).map a = a ≫ (F.mapId' f hf).inv.app Y :=
-  ((F.mapId' f hf).inv.naturality a).symm
+    (F.mapId' f hf).inv.toNatTrans.app X ≫ (F.map f).toFunctor.map a =
+    a ≫ (F.mapId' f hf).inv.toNatTrans.app Y :=
+  ((F.mapId' f hf).inv.toNatTrans.naturality a).symm
 
 end
 
@@ -50,29 +56,32 @@ variable (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
 
 @[reassoc]
 lemma mapComp'_hom_naturality :
-    (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
-    (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
-  (F.mapComp' f g fg hfg).hom.naturality a
+    (F.map fg).toFunctor.map a ≫ (F.mapComp' f g fg hfg).hom.toNatTrans.app Y =
+    (F.mapComp' f g fg hfg).hom.toNatTrans.app X ≫ (F.map g).toFunctor.map
+      ((F.map f).toFunctor.map a) :=
+  (F.mapComp' f g fg hfg).hom.toNatTrans.naturality a
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma mapComp'_inv_naturality :
-    (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
-    (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=
-  (F.mapComp' f g fg hfg).inv.naturality a
+    (F.map g).toFunctor.map ((F.map f).toFunctor.map a) ≫
+    (F.mapComp' f g fg hfg).inv.toNatTrans.app Y =
+    (F.mapComp' f g fg hfg).inv.toNatTrans.app X ≫ (F.map fg).toFunctor.map a :=
+  (F.mapComp' f g fg hfg).inv.toNatTrans.naturality a
 
 @[reassoc]
 lemma mapComp'_naturality_1 :
-    (F.mapComp' f g fg hfg).inv.app X ≫
-      (F.map fg).map a ≫ (F.mapComp' f g fg hfg).hom.app Y =
-    (F.map g).map ((F.map f).map a) :=
-  NatIso.naturality_1 (F.mapComp' f g fg hfg) a
+    (F.mapComp' f g fg hfg).inv.toNatTrans.app X ≫
+      (F.map fg).toFunctor.map a ≫ (F.mapComp' f g fg hfg).hom.toNatTrans.app Y =
+    (F.map g).toFunctor.map ((F.map f).toFunctor.map a) :=
+  NatIso.naturality_1 (Cat.Hom.toNatIso (F.mapComp' f g fg hfg)) a
 
 @[reassoc]
 lemma mapComp'_naturality_2 :
-    (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) ≫
-      (F.mapComp' f g fg hfg).inv.app Y =
-    (F.map fg).map a :=
-  NatIso.naturality_2 (F.mapComp' f g fg hfg) a
+    (F.mapComp' f g fg hfg).hom.toNatTrans.app X ≫
+      (F.map g).toFunctor.map ((F.map f).toFunctor.map a) ≫
+        (F.mapComp' f g fg hfg).inv.toNatTrans.app Y =
+    (F.map fg).toFunctor.map a :=
+  NatIso.naturality_2 (Cat.Hom.toNatIso (F.mapComp' f g fg hfg)) a
 
 end
 

@@ -3,9 +3,12 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Tactic.Bound.Init
-import Qq
-import Aesop
+module
+
+public meta import Aesop
+public import Aesop
+public import Mathlib.Tactic.Bound.Init
+public import Qq
 
 /-!
 # The `bound` attribute
@@ -14,6 +17,8 @@ Any lemma tagged with `@[bound]` is registered as an apply rule for the `bound` 
 converting it to either `norm apply` or `safe apply <priority>`.  The classification is based
 on the number and types of the lemma's hypotheses.
 -/
+
+public meta section
 
 open Lean (MetaM)
 open Qq

@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.EssSurj
-import Mathlib.CategoryTheory.Action.Continuous
-import Mathlib.Topology.Category.FinTopCat
+module
+
+public import Mathlib.CategoryTheory.Galois.EssSurj
+public import Mathlib.CategoryTheory.Action.Continuous
+public import Mathlib.Topology.Category.FinTopCat
 
 /-!
 # Fiber functors induce an equivalence of categories
@@ -15,6 +17,8 @@ Let `C` be a Galois category with fiber functor `F`.
 In this file we conclude that the induced functor from `C` to the category of finite,
 discrete `Aut F`-sets is an equivalence of categories.
 -/
+
+@[expose] public section
 
 universe u₂ u₁ w
 
@@ -59,17 +63,15 @@ instance : (functorToContAction F).EssSurj := by
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)
+          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)).trans <|
+          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents

@@ -3,15 +3,22 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
-import Qq
+module
+
+public meta import Qq
+public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
+public meta import Aesop
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Util.AtomM
 
 /-!
 # Facts collection for the `order` Tactic
 
 This file implements the collection of facts for the `order` tactic.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 
@@ -45,32 +52,35 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"#{res} := #{lhs} ⊓ #{rhs}"
   | .isSup lhs rhs res => s!"#{res} := #{lhs} ⊔ #{rhs}"
 
-/-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
-pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
-indices, and `facts` stores `AtomicFact`s about them. -/
-abbrev CollectFactsState := Std.HashMap Expr <| DiscrTree (Nat × Expr) × Array AtomicFact
+/-- State for `CollectFactsM`. It contains a map that maps a type to atomic facts collected for
+this type. -/
+abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
-abbrev CollectFactsM := StateT CollectFactsState MetaM
+abbrev CollectFactsM := StateT CollectFactsState AtomM
 
-/-- Adds `fact` to the state. -/
+/-- Adds `type` to the state. It checks if the type has already been added up to
+`reducible_and_instances` transparency. Returns the type that is added to the state and
+defenitionally equal (but may be not syntactically equal) to `type`. -/
+def addType {u : Level} (type : Q(Type u)) : CollectFactsM Q(Type u) := do
+  match ← (← get).keys.findM? (withReducibleAndInstances <| isDefEq type ·) with
+  | none =>
+    modify fun res => res.insert type #[]
+    pure type
+  | some t => pure t
+
+/-- Adds `fact` to the state. Assumes that `type` is already added by `addType`. -/
 def addFact (type : Expr) (fact : AtomicFact) : CollectFactsM Unit :=
-  modify fun res => res.modify type fun (atomToIdx, facts) =>
-    (atomToIdx, facts.push fact)
+  modify fun res => res.modify type fun facts => facts.push fact
 
 /-- Updates the state with the atom `x`. If `x` is `⊤` or `⊥`, adds the corresponding fact. If `x`
 is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and `z`.
-Similarly for `⊓`. -/
+Similarly for `⊓`. Assumes that `type` is already added by `addType`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
-  modify fun res => res.insertIfNew type (.empty, #[])
-  let (atomToIdx, facts) := (← get).get! type
-  match ← (← atomToIdx.getUnify x).findM? fun (_, e) => isDefEq x e with
-  | some (idx, _) => return idx
-  | none =>
-    let idx := atomToIdx.size
-    let atomToIdx ← atomToIdx.insert x (idx, x)
-    modify fun res => res.insert type (atomToIdx, facts)
-    match x with
+  match ← AtomM.containsThenAddQ x with
+  | (true, idx, _) => return idx
+  | (false, idx, ⟨x', _⟩) =>
+    match x' with
     | ~q((@OrderTop.toTop _ $instLE $instTop).top) =>
       addFact type (.isTop idx)
     | ~q((@OrderBot.toBot _ $instLE $instBot).bot) =>
@@ -86,7 +96,7 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
     | _ => pure ()
     return idx
 
--- The linter claims `u` is unused, but it used on the next line.
+-- TODO: The linter claims `u` is unused, but it used on the next line.
 set_option linter.unusedVariables false in
 /-- Implementation for `collectFacts` in `CollectFactsM` monad. -/
 partial def collectFactsImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
@@ -114,29 +124,35 @@ where
     match type with
     | ~q(@Eq ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .eq xIdx yIdx expr
     | ~q(@LE.le $α $inst $x $y) =>
+      let α ← addType α
       let xIdx ← addAtom α x
       let yIdx ← addAtom α y
       addFact α <| .le xIdx yIdx expr
     | ~q(@LT.lt $α $inst $x $y) =>
+      let α ← addType α
       let xIdx ← addAtom α x
       let yIdx ← addAtom α y
       addFact α <| .lt xIdx yIdx expr
     | ~q(@Ne ($α : Type _) $x $y) =>
       if (← synthInstance? (q(Preorder $α))).isSome then
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .ne xIdx yIdx expr
     | ~q(Not $p) =>
       match p with
       | ~q(@LE.le $α $inst $x $y) =>
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .nle xIdx yIdx expr
       | ~q(@LT.lt $α $inst $x $y) =>
+        let α ← addType α
         let xIdx ← addAtom α x
         let yIdx ← addAtom α y
         addFact α <| .nlt xIdx yIdx expr
@@ -152,15 +168,10 @@ where
 passed to the tactic using square brackets. If `only?` is true, we collect facts only from `hyps`
 and `negGoal`, otherwise we also use the local context.
 
-For each occurring type `α`, the returned map contains a pair `(idxToAtom, facts)`,
-where the map `idxToAtom` converts indices to found atomic expressions of type `α`,
-and `facts` contains all collected `AtomicFact`s about them. -/
+For each occurring type `α`, the returned map contains an array containing all collected
+`AtomicFact`s about atoms of type `α`. -/
 def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
-    MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := do
-  let res := (← (collectFactsImp only? hyps negGoal).run ∅).snd
-  return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
-      acc.insert value.fst value.snd
-    (idxToAtom, facts)
+    AtomM <| Std.HashMap Expr <| Array AtomicFact := do
+  return (← (collectFactsImp only? hyps negGoal).run ∅).snd
 
 end Mathlib.Tactic.Order

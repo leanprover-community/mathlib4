@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
-import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
-import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
 /-!
 # Existence of the iteration of a successor structure
@@ -15,6 +17,8 @@ that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -26,7 +30,7 @@ namespace SuccStruct
 
 open Category Limits
 
-variable {C : Type*} [Category C] (Φ : SuccStruct C)
+variable {C : Type*} [Category* C] (Φ : SuccStruct C)
   {J : Type u} [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape J C]
 
@@ -38,7 +42,7 @@ def mkOfBot : Φ.Iteration (⊥ : J) where
   F := (Functor.const _).obj Φ.X₀
   obj_bot := rfl
   arrowSucc_eq _ h := by simp at h
-  arrowMap_limit  _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
+  arrowMap_limit _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
 
 variable {Φ}
 

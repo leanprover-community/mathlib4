@@ -3,10 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.Basic
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Complex.Basic
 
 /-!
 # Inner product spaces
@@ -61,6 +63,8 @@ inner product space, Hilbert space, norm
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -140,16 +144,10 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left x y r : inner (r • x) y = conj r * inner x y
 
-@[deprecated (since := "2025-04-22")]
-alias PreInnerProductSpace.Core.conj_symm := PreInnerProductSpace.Core.conj_inner_symm
-
-@[deprecated (since := "2025-04-22")]
-alias PreInnerProductSpace.Core.inner_nonneg := PreInnerProductSpace.Core.re_inner_nonneg
-
 attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
-require this assumptions are put under section `InnerProductSpace.Core`. -/
+require these assumptions are put under section `InnerProductSpace.Core`. -/
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
@@ -234,7 +232,7 @@ theorem inner_add_left (x y z : F) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   c.add_left _ _ _
 
 theorem inner_add_right (x y z : F) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
-  rw [← inner_conj_symm, inner_add_left, RingHom.map_add]; simp only [inner_conj_symm]
+  rw [← inner_conj_symm, inner_add_left, map_add]; simp only [inner_conj_symm]
 
 theorem ofReal_normSq_eq_inner_self (x : F) : (normSqF x : 𝕜) = ⟪x, x⟫ := by
   rw [ext_iff]
@@ -249,14 +247,14 @@ theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
   rw [← inner_conj_symm, inner_smul_left]
-  simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
+  simp only [conj_conj, inner_conj_symm, map_mul]
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left]
-  simp only [zero_mul, RingHom.map_zero]
+  simp only [zero_mul, map_zero]
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
-  rw [← inner_conj_symm, inner_zero_left]; simp only [RingHom.map_zero]
+  rw [← inner_conj_symm, inner_zero_left]; simp only [map_zero]
 
 theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
   rintro rfl
@@ -279,7 +277,7 @@ theorem inner_neg_left (x y : F) : ⟪-x, y⟫ = -⟪x, y⟫ := by
   simp
 
 theorem inner_neg_right (x y : F) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [RingHom.map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
 
 theorem inner_sub_left (x y z : F) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
   simp [sub_eq_add_neg, inner_add_left, inner_neg_left]
@@ -321,8 +319,8 @@ lemma cauchy_schwarz_aux' (x y : F) (t : ℝ) : 0 ≤ normSqF x * t * t + 2 * re
       simp only [map_add]
   _ = normSq x * t * t + re (⟪x, y⟫ * t) + re (⟪y, x⟫ * t) + re ⟪y, y⟫ := by rw
     [re_inner_smul_ofReal_smul_self, inner_smul_ofReal_left, inner_smul_ofReal_right]
-  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x,y⟫ _,
-    RCLike.re_ofReal_mul, mul_comm t _, mul_comm ⟪y,x⟫ _, RCLike.re_ofReal_mul, mul_comm t _]
+  _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + re ⟪y, y⟫ := by rw [mul_comm ⟪x, y⟫ _,
+    RCLike.re_ofReal_mul, mul_comm t _, mul_comm ⟪y, x⟫ _, RCLike.re_ofReal_mul, mul_comm t _]
   _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪y, x⟫ * t + normSq y := by rw [← normSq]
   _ = normSq x * t * t + re ⟪x, y⟫ * t + re ⟪x, y⟫ * t + normSq y := by rw [inner_re_symm]
   _ = normSq x * t * t + 2 * re ⟪x, y⟫ * t + normSq y := by ring
@@ -376,8 +374,6 @@ attribute [local instance] toNorm
 
 theorem norm_eq_sqrt_re_inner (x : F) : ‖x‖ = √(re ⟪x, x⟫) := rfl
 
-@[deprecated (since := "2025-04-22")] alias norm_eq_sqrt_inner := norm_eq_sqrt_re_inner
-
 theorem inner_self_eq_norm_mul_norm (x : F) : re ⟪x, x⟫ = ‖x‖ * ‖x‖ := by
   rw [norm_eq_sqrt_re_inner, ← sqrt_mul inner_self_nonneg, sqrt_mul_self inner_self_nonneg]
 
@@ -418,8 +414,6 @@ def toNormedSpace : NormedSpace 𝕜 F where
       ofReal_re]
     · simp [sqrt_normSq_eq_norm]
     · positivity
-
-@[deprecated (since := "2025-06-03")] alias toSeminormedSpace := toNormedSpace
 
 omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
@@ -513,7 +507,7 @@ lemma topology_eq
     ext v
     simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
     change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
-    conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
+    conv_lhs => rw [show (1 : ℝ) = √1 by simp]
     rw [sqrt_lt_sqrt_iff]
     exact InnerProductSpace.Core.inner_self_nonneg
   rw [withSeminorms_iff_mem_nhds_isVonNBounded, this]

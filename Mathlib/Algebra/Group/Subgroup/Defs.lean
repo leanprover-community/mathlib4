@@ -3,17 +3,19 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Data.Set.Inclusion
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Data.Set.Inclusion
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Subgroups
 
 This file defines multiplicative and additive subgroups as an extension of submonoids, in a bundled
-form (unbundled subgroups are in `Deprecated/Subgroups.lean`).
+form.
 
 Special thanks goes to Amelia Livingston and Yury Kudryashov for their help and inspiration.
 
@@ -49,6 +51,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso IsOrderedMonoid Multiset MonoidWithZero
 
@@ -311,8 +315,8 @@ namespace Subgroup
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
   coe_injective' p q h := by
-    obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
-    obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
+    obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
+    obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
@@ -720,3 +724,14 @@ lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a �
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
 
 end Subgroup
+
+@[to_additive]
+theorem Set.injOn_iff_map_eq_one {F G H S : Type*} [Group G] [Group H]
+    [FunLike F G H] [MonoidHomClass F G H] (f : F)
+    [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S G] (s : S) :
+    Set.InjOn f s ↔ ∀ a ∈ s, f a = 1 → a = 1 where
+  mp h a ha ha' := by
+    refine h ha (one_mem s) ?_
+    rwa [map_one]
+  mpr h x hx y hy hxy := by
+    refine mul_inv_eq_one.1 <| h _ (mul_mem ?_ (inv_mem ?_)) ?_ <;> simp_all

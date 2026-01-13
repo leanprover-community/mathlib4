@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.Multiset.Basic
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.Multiset.Basic
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -17,6 +19,8 @@ This file concerns `Multiset.dedup` and `List.dedup` as a way to create `Finset`
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -57,7 +61,7 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
     (h : l.toFinset = l'.toFinset) : l = l' := by
   simpa [← toFinset_eq hl, ← toFinset_eq hl'] using h
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 

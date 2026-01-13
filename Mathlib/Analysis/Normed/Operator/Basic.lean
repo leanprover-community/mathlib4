@@ -3,12 +3,15 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Operator norm on the space of continuous linear maps
@@ -24,11 +27,17 @@ file `NormedSpace.lean`.
 Note that most of statements that apply to semilinear maps only hold when the ring homomorphism
 is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
+## Main Results
+* `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
+  spaces is surjective if and only if it contains a ball.
+
 -/
+
+@[expose] public section
 
 suppress_compilation
 
-open Bornology
+open Bornology Metric
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
@@ -36,8 +45,6 @@ open scoped NNReal Topology Uniformity
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
-
-open Metric ContinuousLinearMap
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
   [SeminormedAddCommGroup G]
@@ -48,11 +55,48 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
 
 variable [FunLike 𝓕 E F]
 
+section
+
+variable [SemilinearMapClass 𝓕 σ₁₂ E F]
+
+theorem ball_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
+    (hr : 0 < r) : ball 0 r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  absorbent_ball (by simpa) |>.subset_range_iff_surjective (f := (f : E →ₛₗ[σ₁₂] F))
+
+theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+    (hr : 0 < r) : ball x r ⊆ Set.range f ↔ (⇑f).Surjective := by
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  rw [← ball_zero_subset_range_iff_surjective hr, ← LinearMap.coe_coe]
+  simp_rw [← LinearMap.coe_range, Set.subset_def, SetLike.mem_coe] at h ⊢
+  intro _ _
+  rw [← Submodule.add_mem_iff_left (f : E →ₛₗ[σ₁₂] F).range (h _ <| mem_ball_self hr)]
+  apply h
+  simp_all
+
+theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} (x : F) {r : ℝ}
+    (hr : 0 < r) : closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
+    by simp_all⟩
+
+variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
+{τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
+
+theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
+    (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x hr.le,
+    convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
+  exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
+
+end
+
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
-theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
-    (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
+theorem norm_image_of_norm_eq_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f)
+    {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
   rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
   exact hx.map hf
+
+@[deprecated (since := "2025-11-15")] alias norm_image_of_norm_zero := norm_image_of_norm_eq_zero
 
 section
 
@@ -165,7 +209,7 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   opNorm_le_bound f hMp fun x =>
     (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
+      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.2 h, le_refl]
 
 
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
@@ -234,7 +278,6 @@ theorem unit_le_opNorm : ‖x‖ ≤ 1 → ‖f x‖ ≤ ‖f‖ :=
 theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx
-
 
 theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C)
     (hf : ∀ x ∈ ball (0 : E) ε, ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
@@ -307,6 +350,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
   refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
@@ -327,6 +371,8 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 

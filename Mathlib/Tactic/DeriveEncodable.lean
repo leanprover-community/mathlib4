@@ -3,12 +3,14 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Meta.Transform
-import Lean.Meta.Inductive
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.Deriving.Util
+module
+
+public meta import Lean.Meta.Transform
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.Deriving.Util  -- shake: keep (???)
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
+meta import Aesop.BuiltinRules
 
 /-!
 # `Encodable` deriving handler
@@ -18,6 +20,8 @@ Adds a deriving handler for the `Encodable` class.
 The resulting `Encodable` instance should be considered to be opaque.
 The specific encoding used is an implementation detail.
 -/
+
+public section
 
 namespace Mathlib.Deriving.Encodable
 open Lean Parser.Term Elab Deriving Meta
@@ -32,7 +36,7 @@ inductive S : Type where
   | nat (n : ℕ)
   | cons (a b : S)
 ```
-We start by constructing a equivalence `S ≃ ℕ` using the `Nat.pair` function.
+We start by constructing an equivalence `S ≃ ℕ` using the `Nat.pair` function.
 
 Here is an example of how this module constructs an encoding.
 
@@ -85,7 +89,7 @@ private lemma nat_unpair_lt_2 {n : ℕ} (h : (Nat.unpair n).1 ≠ 0) : (Nat.unpa
   unfold Nat.pair
   have := Nat.le_mul_self a
   have := Nat.le_mul_self b
-  split <;> omega
+  split <;> lia
 
 private def S.decode (n : ℕ) : S :=
   let p := Nat.unpair n
@@ -93,7 +97,7 @@ private def S.decode (n : ℕ) : S :=
     S.nat p.2
   else
     have : p.1 ≤ n := Nat.unpair_left_le n
-    have := Nat.unpair_lt (by cutsat : 1 ≤ n)
+    have := Nat.unpair_lt (by lia : 1 ≤ n)
     have := nat_unpair_lt_2 h
     S.cons (S.decode (p.1 - 1)) (S.decode p.2)
 
@@ -123,10 +127,12 @@ private def S_equiv : S ≃ ℕ where
       · exact nat_unpair_lt_2 h
       · obtain _ | n' := n
         · exact False.elim (h rfl)
-        · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
-          omega
+        · have := Nat.unpair_lt (by lia : 1 ≤ n' + 1)
+          lia
 
-instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+
+public meta section
 
 /-!
 ### Implementation
@@ -362,5 +368,7 @@ def mkEncodableInstance (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler ``Encodable mkEncodableInstance
   registerTraceClass `Mathlib.Deriving.Encodable
+
+end
 
 end Mathlib.Deriving.Encodable
