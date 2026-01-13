@@ -912,7 +912,7 @@ theorem contDiffWithinAt_fst {s : Set (E × F)} {p : E × F} :
 /-- Postcomposing `f` with `Prod.fst` is `C^n` at `x` -/
 @[fun_prop]
 theorem ContDiffWithinAt.fst {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
-    ContDiffWithinAt 𝕜 n (fun x => (f x).1) (s) x :=
+    ContDiffWithinAt 𝕜 n (fun x => (f x).1) s x :=
   contDiffWithinAt_fst.comp x hf (mapsTo_image f s)
 
 /-- The second projection in a product is `C^∞`. -/
@@ -953,7 +953,7 @@ theorem contDiffAt_snd {p : E × F} : ContDiffAt 𝕜 n (Prod.snd : E × F → F
 /-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
 @[fun_prop]
 theorem ContDiffWithinAt.snd {f : E → F × G} {x : E} (hf : ContDiffWithinAt 𝕜 n f s x) :
-    ContDiffWithinAt 𝕜 n (fun x => (f x).2) (s) x :=
+    ContDiffWithinAt 𝕜 n (fun x => (f x).2) s x :=
   contDiffWithinAt_snd.comp x hf (mapsTo_image f s)
 
 /-- Postcomposing `f` with `Prod.snd` is `C^n` at `x` -/
