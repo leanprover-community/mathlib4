@@ -245,6 +245,11 @@ theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
 theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
   rw [← @ofReal_pow, @ofReal_im_ax]
 
+@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →+ 𝕜' where
+  toFun x := re x + im x * (I : 𝕜')
+  map_add' _ _ := by simp only [map_add, add_mul]; ring
+  map_zero' := by simp
+
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]

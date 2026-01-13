@@ -369,6 +369,10 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     rw [I_sq]
     ring
 
+@[simp] theorem _root_.RCLike.complexRingEquiv_toAddMonoidHom {𝕜 : Type*} [RCLike 𝕜]
+    (h : RCLike.im (RCLike.I : 𝕜) = 1) :
+    (RCLike.complexRingEquiv h).toAddMonoidHom = RCLike.map 𝕜 ℂ := rfl
+
 open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
     0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := by

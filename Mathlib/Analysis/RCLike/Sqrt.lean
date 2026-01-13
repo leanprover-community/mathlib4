@@ -33,9 +33,7 @@ theorem Complex.sqrt_eq_re_add_ite (a : ℂ) :
     ← cpow_inv_two_im_eq_neg_sqrt h]
 
 /-- The square root on `RCLike`. -/
-noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 :=
-  letI b : ℂ := (re a + im a * Complex.I).sqrt
-  b.re + b.im * (I : 𝕜)
+noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := RCLike.map ℂ 𝕜 (map 𝕜 ℂ a).sqrt
 
 theorem RCLike.sqrt_eq_ite (a : 𝕜) :
     sqrt a = if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
@@ -44,7 +42,8 @@ theorem RCLike.sqrt_eq_ite (a : 𝕜) :
   split_ifs with h
   · simp
   have : (I : 𝕜) = 0 := by grind [I_eq_zero_or_im_I_eq_one]
-  simp_all only [Complex.sqrt, Complex.cpow_inv_two_re, im_eq_zero this]
+  simp_all only [Complex.sqrt, im_eq_zero this, map_apply, add_zero, re_to_complex, im_to_complex,
+    mul_zero, algebraMap.coe_inj, Complex.cpow_inv_two_re]
   by_cases! ha' : 0 ≤ re a
   · simp [abs_of_nonneg ha', ← two_mul]
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
