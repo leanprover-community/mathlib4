@@ -725,6 +725,12 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
 
 end Module
 
+/-- Interpolating between affine maps with lineMap` commutes with evaluation. -/
+@[simp]
+lemma lineMap_apply' [SMulCommClass k k V2] (f g : P1 →ᵃ[k] P2) (c : k)
+    (p : P1) : lineMap f g c p = lineMap (f p) (g p) c := by
+  simp [AffineMap.lineMap_apply]
+
 section Pi
 
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
