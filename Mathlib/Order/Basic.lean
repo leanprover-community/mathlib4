@@ -1203,8 +1203,7 @@ instance Prop.partialOrder : PartialOrder Prop where
 
 end «Prop»
 
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and
-`@Std.Total α (≤)`.
+/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
 
 **Do not use this**: instead, build a `LinearOrder` instance directly. -/
 @[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
@@ -1218,7 +1217,7 @@ instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
 
 set_option linter.deprecated false in
 @[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
-noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [@Std.Total α (· ≤ ·)] :
+noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
