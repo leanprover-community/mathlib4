@@ -351,6 +351,13 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
       else
         importsSoFar := importsSoFar.push info
 
+/--
+The set of files outside the `Mathlib` package to run the header style linter on,
+because they are files that test the linter.
+-/
+def headerTestFiles : NameSet := .ofList
+  [`MathlibTest.Header, `MathlibTest.HeaderFail, `MathlibTest.VersoHeader, `MathlibTest.DirectoryDependencyLinter.Test]
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
@@ -365,7 +372,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test files for the linter itself.
   unless inMathlib? ||
-    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+    mainModule ∈ headerTestFiles do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
