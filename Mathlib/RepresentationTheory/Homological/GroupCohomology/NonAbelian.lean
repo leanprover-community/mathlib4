@@ -3,8 +3,10 @@ Copyright (c) 2025 Jiedong Jiang, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Jingting Wang
 -/
-import Mathlib.CategoryTheory.Action.Limits
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+module
+
+public import Mathlib.CategoryTheory.Action.Limits
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Non-abelian group cohomology
@@ -17,6 +19,8 @@ Let `G` be a group acting on another (not necessarily abelian) group `A`, in thi
 ## Reference
 
 -/
+
+@[expose] public section
 
 universe u
 
