@@ -328,15 +328,23 @@ lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s
 
 open scoped ComplexOrder
 
-/-- The Riemann zeta function is positive for real arguments greater than 1. -/
+/-- The Riemann zeta function is positive in `ComplexOrder` for real arguments greater than 1.
+This means it is a positive real number:
+both `(riemannZeta x).re > 0` and `(riemannZeta x).im = 0`. -/
 lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
-  rw [← LSeries_one_eq_riemannZeta (by simp [hx] : 1 < (x : ℂ).re)]
-  exact LSeries.positive (fun _ ↦ by simp) (by simp)
-    (by rw [LSeries.abscissaOfAbsConv_one]; exact_mod_cast hx)
+  have hx' : 1 < (x : ℂ).re := by simpa using hx
+  rw [← LSeries_one_eq_riemannZeta hx']
+  refine LSeries.positive (fun _ ↦ by simp) (by simp) ?_
+  simpa [LSeries.abscissaOfAbsConv_one] using (by exact_mod_cast hx : (1 : EReal) < x)
+
+/-- The real part of the Riemann zeta function is positive for real arguments greater than 1. -/
+lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).re :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).1
 
 /-- The Riemann zeta function is real-valued for real arguments greater than 1. -/
-lemma riemannZeta_ofReal_im {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 :=
-  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).2.symm
+lemma riemannZeta_im_eq_zero_of_one_lt {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 := by
+  have hz : 0 < riemannZeta x := riemannZeta_pos_of_one_lt hx
+  exact (Complex.pos_iff.mp hz).2.symm
 
 end zeta
 
