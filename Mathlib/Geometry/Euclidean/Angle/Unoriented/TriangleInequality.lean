@@ -53,7 +53,7 @@ lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [*]
-  by_cases h₂ : x = - y
+  by_cases h₂ : x = -y
   · simp [*]
   rw [real_inner_self_eq_norm_sq, hx]
   have H1 : ‖x - ⟪y, x⟫ • y‖ ≠ 0 := by
@@ -172,7 +172,7 @@ lemma angle_expression_of_angle_eq_angle_sum :
   ring_nf at H6
   have Hw : Real.sin (angle x y) * Real.sin (angle y z) ≠ 0 := by
     grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
-  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = - 1 := by
+  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = -1 := by
     grind
   have H9 : ortho y x ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear, angle_comm]

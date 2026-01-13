@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Int.CharZero
 import Mathlib.Tactic.Qify
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 example (a b : ℕ) : (a : ℚ) ≤ b ↔ a ≤ b := by qify
 example (a b : ℕ) : (a : ℚ) < b ↔ a < b := by qify

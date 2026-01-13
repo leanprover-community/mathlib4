@@ -62,7 +62,7 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (mop c₃) (mop c₂) (mop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a left action of `Cᴹᵒᵖ` on `D` from a right action of `C` on `D` via
 the formula `mop c ⊙ₗ d = d ⊙ᵣ c`. -/
@@ -87,7 +87,7 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
       MonoidalRightAction.actionHomRight_inv_hom_assoc] using
       (d ⊴ᵣ (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv) ≫=
         MonoidalRightAction.actionHom_associator
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 
@@ -276,7 +276,7 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (mop c₃) (mop c₂) (mop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (mop c₃) (mop c₂) (mop c₁) d|>.symm
+          (mop c₃) (mop c₂) (mop c₁) d |>.symm
 
 /-- Define a right action of `Cᴹᵒᵖ` on `D` from a left action of `C` on `D` via
 the formula `d ⊙ᵣ mop c = c ⊙ₗ d`. -/
@@ -299,7 +299,7 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
       MonoidalLeftAction.inv_hom_actionHomLeft_assoc] using
       (α_ (unmop c₃) (unmop c₂) (unmop c₁)).inv ⊵ₗ d ≫=
         MonoidalLeftAction.associator_actionHom
-          (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
+          (unmop c₃) (unmop c₂) (unmop c₁) d |>.symm
 
 section
 

@@ -611,7 +611,7 @@ Distribution calculus:
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:
     definition: 'TemperedDistribution'
-    derivation of tempered distributions: ''
+    derivation of tempered distributions: 'TemperedDistribution.instLineDeriv'
     multiplication by a function $C^\infty$ of slow growth: 'TemperedDistribution.smulLeftCLM'
     $L^2$ functions and Riesz representation: ''
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'

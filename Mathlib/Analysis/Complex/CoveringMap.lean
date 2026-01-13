@@ -5,10 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-public import Mathlib.RingTheory.RootsOfUnity.Complex
-public import Mathlib.Topology.Covering.AddCircle
+public import Mathlib.Topology.Covering.Quotient
 
 /-!
 # Covering maps involving the complex plane

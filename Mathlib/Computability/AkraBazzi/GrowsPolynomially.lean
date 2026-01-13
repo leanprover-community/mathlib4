@@ -109,11 +109,11 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
     | succ k ih =>
       intro z hxz hz
       simp only [Nat.cast_add, Nat.cast_one] at *
-      have hx' : x ≤ (2 : ℝ)^(-(k : ℤ) - 1) * x₀ := by
+      have hx' : x ≤ (2 : ℝ) ^ (-(k : ℤ) - 1) * x₀ := by
         calc x ≤ z := hxz
           _ ≤ _ := by simp only [neg_add, ← sub_eq_add_neg] at hz; exact hz.2
-      specialize hx ((2 : ℝ)^(-(k : ℤ) - 1) * x₀) hx' z
-      specialize ih ((2 : ℝ)^(-(k : ℤ) - 1) * x₀) hx' ?ineq
+      specialize hx ((2 : ℝ) ^ (-(k : ℤ) - 1) * x₀) hx' z
+      specialize ih ((2 : ℝ) ^ (-(k : ℤ) - 1) * x₀) hx' ?ineq
       case ineq =>
         rw [Set.left_mem_Icc]
         gcongr
