@@ -33,7 +33,7 @@ See note [foundational algebra order theory].
 
 @[expose] public section
 
-library_note2 «foundational algebra order theory» /--
+library_note «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in

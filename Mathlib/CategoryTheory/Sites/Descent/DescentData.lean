@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 In this file, given a pseudofunctor `F` from `LocallyDiscrete Cᵒᵖ` to `Cat`,
 and a family of maps `f i : X i ⟶ S` in the category `C`,
 we define the category `F.DescentData f` of objects over the `X i`
-equipped with a descent data relative to the morphisms `f i : X i ⟶ S`.
+equipped with descent data relative to the morphisms `f i : X i ⟶ S`.
 
 We show that up to an equivalence, the category `F.DescentData f` is unchanged
 when we replace `S` by an isomorphic object, or the family `f i : X i ⟶ S`
@@ -228,7 +228,7 @@ def pullFunctorObj (D : F.DescentData f) :
 
 variable (F)
 
-/-- Given family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
+/-- Given a family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
 commutative diagrams `p' j ≫ f (α j) = f' j ≫ p`, this is the
 induced functor `F.DescentData f ⥤ F.DescentData f'`. (Up to a (unique) isomorphism,
 this functor only depends on `f` and `f'`, see `pullFunctorIso`.) -/
@@ -585,7 +585,7 @@ lemma IsPrestackFor.isSheafFor'
 variable {J : GrothendieckTopology C}
 
 /-- If `F` is a prestack for a Grothendieck topology `J`, and `f` is a covering
-family of morphims, then the functor `F.toDescentData f` is fully faithful. -/
+family of morphisms, then the functor `F.toDescentData f` is fully faithful. -/
 noncomputable def fullyFaithfulToDescentData [F.IsPrestack J] (hf : Sieve.ofArrows _ f ∈ J S) :
     (F.toDescentData f).FullyFaithful :=
   Nonempty.some (by
