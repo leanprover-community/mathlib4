@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Field.Periodic
 public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 
@@ -145,3 +147,21 @@ theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α}
 end Function
 
 end Periodic
+
+section Monotone
+
+variable {ι : Type*} [Preorder ι] [Nonempty ι]
+
+/-- A monotone, bounded above function `f : ι → ℝ` has the finite limit `iSup f`. -/
+theorem Real.tendsto_ciSup_of_bddAbove_monotone {f : ι → ℝ}
+    (h_bdd : BddAbove (range f)) (h_mon : Monotone f) :
+    Tendsto f atTop (𝓝 (iSup f)) :=
+  tendsto_atTop_isLUB h_mon <| Real.isLUB_sSup (range_nonempty f) h_bdd
+
+/-- An antitone, bounded below function `f : ι → ℝ` has the finite limit `iInf f`. -/
+theorem Real.tendsto_ciInf_of_bddBelow_antitone {f : ι → ℝ}
+    (h_bdd : BddBelow (range f)) (h_ant : Antitone f) :
+    Tendsto f atTop (𝓝 (iInf f)) :=
+  tendsto_atTop_isGLB h_ant <| Real.isGLB_sInf (range_nonempty f) h_bdd
+
+end Monotone
