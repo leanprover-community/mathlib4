@@ -999,11 +999,11 @@ theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
 
 theorem Set.BijOn.iSup_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
     (hf : Set.BijOn f s t) : ⨆ x ∈ s, g (f x) = ⨆ y ∈ t, g y := by
-  rw [← sSup_image, ← sSup_image, ← Function.comp_def, s.image_comp g f, hf.image_eq]
+  rw [← hf.image_eq, iSup_image]
 
 theorem Set.BijOn.iInf_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
     (hf : Set.BijOn f s t) : ⨅ x ∈ s, g (f x) = ⨅ y ∈ t, g y := by
-  rw [← sInf_image, ← sInf_image, ← Function.comp_def, s.image_comp g f, hf.image_eq]
+  rw [← hf.image_eq, iInf_image]
 
 theorem Set.BijOn.iSup_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
     (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨆ x ∈ s, f x = ⨆ y ∈ t, g y := by
