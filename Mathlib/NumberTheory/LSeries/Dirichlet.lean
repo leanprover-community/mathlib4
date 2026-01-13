@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Bounds
 public import Mathlib.NumberTheory.LSeries.Convolution
 public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.Positivity
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.SumPrimeReciprocals
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
@@ -324,6 +325,18 @@ lemma LSeries_one_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : L 1 s ≠ 0 :
 /-- The Riemann Zeta Function does not vanish on the half-plane `re s > 1`. -/
 lemma riemannZeta_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : riemannZeta s ≠ 0 :=
   LSeries_one_eq_riemannZeta hs ▸ LSeries_one_ne_zero_of_one_lt_re hs
+
+open scoped ComplexOrder
+
+/-- The Riemann zeta function is positive for real arguments greater than 1. -/
+lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
+  rw [← LSeries_one_eq_riemannZeta (by simp [hx] : 1 < (x : ℂ).re)]
+  exact LSeries.positive (fun _ ↦ by simp) (by simp)
+    (by rw [LSeries.abscissaOfAbsConv_one]; exact_mod_cast hx)
+
+/-- The Riemann zeta function is real-valued for real arguments greater than 1. -/
+lemma riemannZeta_ofReal_im {x : ℝ} (hx : 1 < x) : (riemannZeta x).im = 0 :=
+  (Complex.pos_iff.mp (riemannZeta_pos_of_one_lt hx)).2.symm
 
 end zeta
 
