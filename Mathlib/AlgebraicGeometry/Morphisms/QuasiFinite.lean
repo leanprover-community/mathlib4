@@ -85,8 +85,7 @@ lemma Scheme.Hom.quasiFiniteAt_of_memQuasiFiniteLocus
   let e := IsLocalization.algEquiv (V.2.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
     (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (V.2.primeIdealOf ⟨x, hxV⟩).asIdeal)
   rw [Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
-  convert (RingHom.QuasiFinite.of_surjective (f := e.toRingHom) e.surjective).comp
-    (hx.comp H)
+  convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
   rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
     IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V)]

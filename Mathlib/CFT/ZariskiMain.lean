@@ -176,9 +176,8 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
       LocallyOfFiniteType.finiteType_of_affine_subset ⟨_, hU⟩ ⟨_, hr⟩ _
     rw [← H', CommRingCat.hom_comp, RingHom.finiteType_respectsIso.cancel_right_isIso] at this
     rw [← H', CommRingCat.hom_comp, RingHom.QuasiFinite.respectsIso.cancel_right_isIso]
-    have inst := (hU.preimage f.fromNormalization).isLocalization_basicOpen
-    refine RingHom.QuasiFinite.of_isIntegral_of_finiteType
-      (IsIntegralHom.isIntegral_app f.fromNormalization _ hU) this r rfl
+    exact .of_isIntegral_of_finiteType (IsIntegralHom.isIntegral_app f.fromNormalization _ hU)
+      ⟨r, (hU.preimage f.fromNormalization).isLocalization_basicOpen _⟩ this
   have hxU : f x ∈ U := by
     convert show _ ∈ U from (normalization f).basicOpen_le _ hxV
     rw [← Scheme.Hom.comp_apply, f.toNormalization_fromNormalization]

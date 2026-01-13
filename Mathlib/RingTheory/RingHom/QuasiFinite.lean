@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.QuasiFinite
+public import Mathlib.RingTheory.RingHom.OpenImmersion
 
 /-!
 
@@ -126,12 +127,8 @@ lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := b
 lemma QuasiFinite.stableUnderComposition : StableUnderComposition QuasiFinite :=
   fun _ _ _ _ _ _ _ _ hf hg ↦ comp hg hf
 
-lemma QuasiFinite.of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.QuasiFinite := by
-  algebraize [f]
-  exact .of_surjective_algHom (Algebra.ofId R S) hf
-
 lemma QuasiFinite.respectsIso : RespectsIso QuasiFinite :=
-  stableUnderComposition.respectsIso fun e ↦ .of_surjective (f := e.toRingHom) e.surjective
+  stableUnderComposition.respectsIso fun e ↦ .of_finite e.finite
 
 lemma QuasiFinite.isStableUnderBaseChange : IsStableUnderBaseChange QuasiFinite := by
   refine .mk respectsIso ?_
@@ -191,53 +188,12 @@ lemma QuasiFinite.propertyIsLocal : PropertyIsLocal QuasiFinite where
 open TensorProduct in
 /-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra,
 then `T` is quasi-finite over `R` -/
-lemma Algebra.QuasiFinite.of_isIntegral_of_finiteType
-    {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    [Algebra S T] [IsScalarTower R S T] [Algebra.IsIntegral R S] [Algebra.FiniteType R T]
-    (s : S) [IsLocalization.Away s T] : Algebra.QuasiFinite R T := by
-  let A := Algebra.adjoin R {s}
-  let sA : A := ⟨s, Algebra.subset_adjoin (by simp)⟩
-  let f : Localization.Away sA →+* T := IsLocalization.Away.lift sA (g := algebraMap _ _)
-    (IsLocalization.Away.algebraMap_isUnit s)
-  let := f.toAlgebra
-  let : Algebra A (Localization.Away sA) := OreLocalization.instAlgebra
-  let : SMul A (Localization.Away sA) := Algebra.toSMul
-  let : MulAction A (Localization.Away sA) := Algebra.toModule.toDistribMulAction.toMulAction
-  have : IsScalarTower R A (Localization.Away sA) := OreLocalization.instIsScalarTower
-  have : IsScalarTower A (Localization.Away sA) T :=
-    .of_algebraMap_eq (by simp [f, RingHom.algebraMap_toAlgebra, A])
-  have : IsScalarTower R (Localization.Away sA) T := .to₁₃₄ R A (Localization.Away sA) T
-  have : Algebra.IsIntegral (Localization.Away sA) T := by
-    refine ⟨fun x ↦ ?_⟩
-    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) x
-    have : _root_.IsIntegral (Localization.Away sA) (algebraMap S T x) :=
-      (Algebra.IsIntegral.isIntegral (R := R) x).algebraMap.tower_top
-    convert this.smul (Localization.Away.invSelf sA ^ n)
-    rw [IsLocalization.mk'_eq_iff_eq_mul]
-    simp only [map_pow, Algebra.smul_mul_assoc]
-    trans (sA • Localization.Away.invSelf sA) ^ n • (algebraMap S T x)
-    · simp [Algebra.smul_def, -map_pow, Localization.Away.invSelf, Localization.mk_eq_mk']
-    · simp only [Algebra.smul_def, map_pow, map_mul, mul_pow,
-        ← IsScalarTower.algebraMap_apply, Subalgebra.algebraMap_def, sA]
-      ring
-  have : Module.Finite (Localization.Away sA) T :=
-    have : Algebra.FiniteType (Localization.Away sA) T := .of_restrictScalars_finiteType R _ _
-    Algebra.IsIntegral.finite
-  have : Module.Finite R A :=
-    Algebra.finite_adjoin_simple_of_isIntegral (Algebra.IsIntegral.isIntegral _)
-  have : Algebra.QuasiFinite R (Localization.Away sA) := .of_isLocalization (.powers sA)
-  exact .trans _ (Localization.Away sA) _
-
-open TensorProduct in
-/-- If `T` is both a finite type `R`-algebra, and the localization of an integral `R`-algebra,
-then `T` is quasi-finite over `R` -/
 lemma QuasiFinite.of_isIntegral_of_finiteType
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] {f : R →+* S} (hf : f.IsIntegral)
-    {g : R →+* T} (hg : g.FiniteType)
-    [Algebra S T] (s : S) [IsLocalization.Away s T] (H : (algebraMap S T).comp f = g) :
-    g.QuasiFinite := by
-  algebraize [f, g]
-  have : IsScalarTower R S T := .of_algebraMap_eq' H.symm
+    {g : S →+* T} (hg : g.IsStandardOpenImmersion) (hg : (g.comp f).FiniteType) :
+    (g.comp f).QuasiFinite := by
+  algebraize [f, g, g.comp f]
+  obtain ⟨s, hs⟩ := Algebra.IsStandardOpenImmersion.exists_away S T
   exact Algebra.QuasiFinite.of_isIntegral_of_finiteType s
 
 end RingHom
