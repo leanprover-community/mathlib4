@@ -19,12 +19,13 @@ import Mathlib.Topology.Algebra.Polynomial
 /-!
 # Chebyshev polynomials over the reals: orthogonality
 
-Chebyshev T polynomials are orthogonal with respect to `1 / √ (1 - x ^ 2)`.
+Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 
 ## Main statements
 
-* integrable_T_real_mul_T: `T_n (x) * T_m (x) * (1 / √ (1 - x ^ 2))` is integrable.
-* integral_T_real_mul_T_real_of_ne: if `n ≠ m` then the integral equals `0`.
+* integrable_chebMeasT: continuous functions are integrable with respect to Lebesgue measure
+  scaled by `√(1 - x ^ 2)⁻¹` and restricted to `(-1, 1]`.
+* integral_T_real_mul_T_real_of_ne: if `n ≠ m` then the integral of `T_n * T_m` equals `0`.
 * integral_T_real_mul_self_zero: if `n = m = 0` then the integral equals `π`.
 * integral_T_real_mul_self_of_ne_zero: if `n = m ≠ 0` then the integral equals `π / 2`.
 
@@ -33,60 +34,102 @@ public section
 
 namespace Polynomial.Chebyshev
 
-open Real intervalIntegral
+open Real intervalIntegral MeasureTheory
+
+/-- Lebesgue measure scaled by √(1 - x ^ 2)⁻¹. -/
+noncomputable def chebMeasT : Measure ℝ :=
+  (volume.withDensity
+    fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
+
+theorem integral_chebMeasT (f : ℝ → ℝ) :
+    ∫ x, f x ∂chebMeasT = ∫ x in -1..1, (f x) * √(1 - x ^ 2)⁻¹ := by
+  rw [integral_of_le (by norm_num), chebMeasT,
+    restrict_withDensity (by measurability),
+    integral_withDensity_eq_integral_smul (by measurability)]
+  congr! 2 with x hx
+  simp [NNReal.smul_def, mul_comm]
 
 theorem intervalIntegrable_sqrt_one_sub_sq_inv :
-    IntervalIntegrable (fun x ↦ √(1 - x ^ 2)⁻¹) MeasureTheory.volume (-1) 1 := by
+    IntervalIntegrable (fun x ↦ √(1 - x ^ 2)⁻¹) volume (-1) 1 := by
   rw [intervalIntegrable_iff]
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
-theorem integral_T_real (n : ℤ) :
-    ∫ x in -1..1, (T ℝ n).eval x * (1 / √(1 - x ^ 2)) = ∫ θ in 0..π, cos (n * θ) := calc
-  ∫ x in -1..1, (T ℝ n).eval x * (1 / √(1 - x ^ 2)) =
-    ∫ x in 1..-1, (T ℝ n).eval x * -(1 / √(1 - x ^ 2)) := by
-    rw [integral_symm, ← integral_neg]
+theorem integrable_chebMeasT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
+    Integrable f chebMeasT := by
+  replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
+  have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
+  rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
+  rw [chebMeasT, restrict_withDensity (by measurability),
+    integrable_withDensity_iff (by measurability) (by simp)]
+  unfold IntegrableOn at this
+  convert this
+
+/-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `Set.Icc 0 π` to
+`Set.Icc (-1) 1`. -/
+@[simps, expose]
+noncomputable def Real.cosPartialEquiv : PartialEquiv ℝ ℝ where
+  toFun θ := cos θ
+  invFun x := arccos x
+  source := Set.Icc 0 π
+  target := Set.Icc (-1) 1
+  map_source' x hx := by simpa [← abs_le] using abs_cos_le_one x
+  map_target' θ hθ := ⟨Real.arccos_nonneg θ, Real.arccos_le_pi θ⟩
+  left_inv' θ hθ := arccos_cos (by aesop) (by aesop)
+  right_inv' x hx := cos_arccos (by aesop) (by aesop)
+
+@[simp]
+lemma arccos_image_Icc : arccos '' Set.Icc (-1) 1 = Set.Icc 0 π := by
+  simpa using Real.cosPartialEquiv.symm.image_source_eq_target
+
+open Set in
+theorem integral_chebMeasT_eq_integral_cos {f : ℝ → ℝ}
+    (hf₁ : ContinuousOn (fun θ ↦ f (cos θ)) (Ioo 0 π))
+    (hf₂ : IntegrableOn (fun x ↦ f (cos x)) (Icc 0 π))
+    (hf₃ : IntegrableOn (fun x ↦ f x * √(1 - x ^ 2)⁻¹) (Icc (-1) 1)) :
+    ∫ x, f x ∂chebMeasT = ∫ θ in 0..π, f (cos θ) := calc
+  ∫ x, f x ∂chebMeasT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := integral_chebMeasT f
+  _ = ∫ x in 1..-1, f x * -(√(1 - x ^ 2)⁻¹) := by
+    rw [integral_symm, ← intervalIntegral.integral_neg]
     simp
-  _ = ∫ θ in (arccos 1)..(arccos (-1)), (T ℝ n).eval (cos θ) := by
-    have h : arccos '' Set.uIcc 1 (-1) = Set.Icc 0 π := by
-      refine Set.ext fun θ => ⟨fun hθ => ?_, fun hθ => ⟨cos θ, ⟨?_, ?_⟩⟩⟩
-      · grind only [= Set.mem_image, = Set.mem_Icc, !arccos_nonneg, !arccos_le_pi]
-      · simp [cos_le_one, neg_one_le_cos]
-      · exact arccos_cos (Set.mem_Icc.mp hθ).1 (Set.mem_Icc.mp hθ).2
-    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √ (1 - x ^ 2)))]
+  _ = ∫ θ in (arccos 1)..(arccos (-1)), f (cos θ) := by
+    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √ (1 - x ^ 2))) (by fun_prop)
+      (fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop)).hasDerivWithinAt)]
     · simp_rw [Function.comp_apply]
-      exact integral_congr <| fun x hx => by rw [cos_arccos (by aesop) (by aesop)]
-    · exact continuous_arccos.continuousOn
-    · exact fun x hx => (hasDerivAt_arccos (x := x) (by aesop) (by aesop)).hasDerivWithinAt
-    · apply Continuous.continuousOn; continuity
-    · rw [h]
-      refine MeasureTheory.IntegrableOn.of_bound (C := 1) (by simp) (by measurability) ?_
-      refine MeasureTheory.ae_restrict_of_forall_mem measurableSet_Icc (fun x hx => ?_)
-      simpa [T_real_cos] using abs_cos_le_one _
-    · refine ⟨by measurability, ?_⟩
-      apply MeasureTheory.HasFiniteIntegral.mono (g := fun x => (1 / √(1 - x ^ 2)))
-      · suffices MeasureTheory.IntegrableOn (fun x ↦ (1 / √(1 - x ^ 2))) (Set.Icc (-1) 1) by
-          rw [Set.uIcc_of_ge (by norm_num)]; exact this.2
-        rw [integrableOn_Icc_iff_integrableOn_Ioc]
-        refine integrableOn_deriv_of_nonneg (g := -arccos)
-          continuous_arccos.neg.continuousOn (fun x hx => ?_) (by simp)
-        convert (@hasDerivAt_arccos x (by aesop) (by aesop)).neg using 1
-        simp
-      · refine MeasureTheory.ae_restrict_of_forall_mem measurableSet_Icc (fun x hx => ?_)
-        simp_rw [T_real_cos, norm_mul, norm_eq_abs]
-        dsimp; grw [abs_cos_le_one]; simp
-  _ = ∫ θ in 0..π, cos (n * θ) := by simp
+      exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]
+    · simpa using hf₁.mono <| by simpa using Real.strictAntiOn_arccos.image_Ioo_subset
+    · simpa
+    · refine IntegrableOn.congr_fun
+        (by simpa only [neg_le_self_iff, zero_le_one, uIcc_of_ge] using hf₃.neg)
+        (fun x hx ↦ ?_) (by simp)
+      simp only [sqrt_inv, Pi.neg_apply, Function.comp_apply, one_div, mul_neg,
+        cos_arccos (x := x) (by aesop) (by aesop)]
+  _ = ∫ θ in 0..π, f (cos θ) := by simp
+
+-- we provide this version for convenience.
+open Set in
+theorem integral_chebMeasT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
+    (hf : ContinuousOn f (Icc (-1) 1)) :
+    ∫ x, f x ∂chebMeasT = ∫ θ in 0..π, f (cos θ) := by
+  have : ContinuousOn (fun θ ↦ f (cos θ)) (Icc 0 π) := by
+    refine hf.comp_continuous (by fun_prop) ?_ |>.continuousOn
+    simpa [← abs_le] using abs_cos_le_one
+  refine integral_chebMeasT_eq_integral_cos (this.mono Ioo_subset_Icc_self) this.integrableOn_Icc ?_
+  simpa using Iff.mp intervalIntegrable_iff' <|
+    intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul <| by simpa
 
 theorem integral_T_real_zero :
-    ∫ x in -1..1, (T ℝ 0).eval x * (1 / √(1 - x ^ 2)) = π := by
-  rw [integral_T_real 0]; simp
+    ∫ x, (T ℝ 0).eval x ∂chebMeasT = π := by
+  rw [integral_chebMeasT_eq_integral_cos_of_continuous (T ℝ 0).continuousOn]; simp
 
 theorem integral_T_real_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
-    ∫ x in -1..1, (T ℝ n).eval x * (1 / √(1 - x ^ 2)) = 0 := by
+    ∫ x, (T ℝ n).eval x ∂chebMeasT = 0 := by
   have hn' : (n : ℝ) ≠ 0 := Int.cast_ne_zero.mpr hn
   suffices ∫ θ in 0..n * π, cos θ = 0 by
-    rwa [integral_T_real n, integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn),
-      smul_eq_zero_iff_right (by aesop), mul_zero]
+    rw [integral_chebMeasT_eq_integral_cos_of_continuous (T ℝ n).continuousOn]
+    simp_rw [T_real_cos]
+    rwa [integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn), smul_eq_zero_iff_right (by aesop),
+      mul_zero]
   trans ∫ θ in 0..n * π, (deriv sin) θ
   · refine integral_congr <| fun x hx => (congrFun deriv_sin x).symm
   by_cases! 0 ≤ n
@@ -96,38 +139,33 @@ theorem integral_T_real_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
     · simp
     exact mul_nonpos_of_nonpos_of_nonneg (Int.cast_nonpos.mpr <| le_of_lt hn) pi_nonneg
 
-theorem integrable_T_real_mul_T (n m : ℤ) :
-    IntervalIntegrable (fun x => (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)))
-    MeasureTheory.volume (-1) 1 := by
-  simp_rw [← eval_mul]
-  apply integrable_poly_T
-
 theorem integral_T_real_mul_T_real (n m : ℤ) :
-    ∫ x in -1..1, (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)) =
-    ((∫ x in -1..1, (T ℝ (n + m)).eval x * (1 / √(1 - x ^ 2))) +
-     (∫ x in -1..1, (T ℝ (n - m)).eval x * (1 / √(1 - x ^ 2)))) / 2 := by
-  suffices ∫ x in -1..1, (2 * T ℝ n * T ℝ m).eval x * (1 / √(1 - x ^ 2)) =
-      (∫ x in -1..1, (T ℝ (n + m)).eval x * (1 / √(1 - x ^ 2))) +
-      (∫ x in -1..1, (T ℝ (n - m)).eval x * (1 / √(1 - x ^ 2))) by
+    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂chebMeasT =
+    ((∫ x, (T ℝ (n + m)).eval x ∂chebMeasT) +
+     (∫ x, (T ℝ (n - m)).eval x ∂chebMeasT)) / 2 := by
+  suffices ∫ x, (2 * T ℝ n * T ℝ m).eval x ∂chebMeasT =
+      (∫ x, (T ℝ (n + m)).eval x ∂chebMeasT) +
+      (∫ x, (T ℝ (n - m)).eval x ∂chebMeasT) by
     simp_rw [eval_mul, eval_ofNat, mul_assoc] at this
-    rw [integral_const_mul] at this
+    rw [MeasureTheory.integral_const_mul] at this
     grind
-  simp_rw [T_mul_T, eval_add, add_mul]
-  rw [integral_add (integrable_poly_T _) (integrable_poly_T _)]
+  simp_rw [T_mul_T, eval_add]
+  rw [MeasureTheory.integral_add (integrable_chebMeasT (T ℝ _).continuousOn)
+    (integrable_chebMeasT (T ℝ _).continuousOn)]
 
 theorem integral_T_real_mul_T_real_of_ne {n m : ℕ} (h : n ≠ m) :
-    ∫ x in -1..1, (T ℝ n).eval x * (T ℝ m).eval x * (1 / √(1 - x ^ 2)) = 0 := by
+    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂chebMeasT = 0 := by
   rw [integral_T_real_mul_T_real, integral_T_real_of_ne_zero (by grind),
     integral_T_real_of_ne_zero (by grind)]
   simp
 
 theorem integral_T_real_mul_self_zero :
-    ∫ x in -1..1, (T ℝ 0).eval x * (T ℝ 0).eval x * (1 / √(1 - x ^ 2)) = π := by
+    ∫ x, (T ℝ 0).eval x * (T ℝ 0).eval x ∂chebMeasT = π := by
   simp_rw [← eval_mul, show (T ℝ 0) * (T ℝ 0) = T ℝ 0 by simp]
   exact integral_T_real_zero
 
 theorem integral_T_real_mul_self_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
-    ∫ x in -1..1, (T ℝ n).eval x * (T ℝ n).eval x * (1 / √(1 - x ^ 2)) = π / 2 := by
+    ∫ x, (T ℝ n).eval x * (T ℝ n).eval x ∂chebMeasT = π / 2 := by
   rw [integral_T_real_mul_T_real, integral_T_real_of_ne_zero (by grind), sub_self,
     integral_T_real_zero, zero_add]
 
