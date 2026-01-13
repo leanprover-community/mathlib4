@@ -1235,6 +1235,18 @@ lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
   infer_instance
 
+section Ring.KrullDimLE
+
+theorem primeSpectrum_eq_of_KrullDimLEOne [IsDomain R] [hd : Ring.KrullDimLE 1 R]
+    (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ := by
+  rw [or_iff_not_imp_left]
+  intro hne
+  rw [Ring.krullDimLE_one_iff_of_isPrime_bot] at hd
+  simp [PrimeSpectrum.ext_iff, IsLocalRing.eq_maximalIdeal
+    (hd _ (by simpa [PrimeSpectrum.ext_iff] using hne) x.isPrime)]
+
+end Ring.KrullDimLE
+
 end IsLocalRing
 
 section KrullDimension
