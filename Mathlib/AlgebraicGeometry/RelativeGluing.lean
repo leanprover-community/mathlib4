@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Cover.Directed
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Directed
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 
 /-!
 # Relative gluing
@@ -13,6 +15,8 @@ In this file we show a relative gluing lemma (see https://stacks.math.columbia.e
 If `{Uᵢ}` is a locally directed open cover of `S` and we have a compatible family of `Xᵢ` over `Uᵢ`,
 the `Xᵢ` glue to a morphism `f : X ⟶ S` such that `Xᵢ ≅ f⁻¹ Uᵢ`.
 -/
+
+@[expose] public section
 
 universe u
 
