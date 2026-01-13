@@ -61,8 +61,7 @@ attribute [aesop unsafe] left_mem_verts_of_adj right_mem_verts_of_adj
 
 /--
 Constructor for digraphs using a Boolean function.
-This is useful for creating a digraph with a decidable `Adj` relation,
-and it's used in the construction of the `Fintype (Digraph V)` instance.
+This is useful for creating a digraph with a decidable `Adj` relation.
 -/
 @[simps]
 def mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
