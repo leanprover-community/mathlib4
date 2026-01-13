@@ -35,14 +35,11 @@ namespace Polynomial.Chebyshev
 
 open Real intervalIntegral
 
-theorem integrable_poly_T (P : ℝ[X]) :
-    IntervalIntegrable (fun x => P.eval x * (1 / √(1 - x ^ 2))) MeasureTheory.volume (-1) 1 := by
-  refine IntervalIntegrable.continuousOn_mul ?_ P.continuous.continuousOn
+theorem intervalIntegrable_sqrt_one_sub_sq_inv :
+    IntervalIntegrable (fun x ↦ √(1 - x ^ 2)⁻¹) MeasureTheory.volume (-1) 1 := by
   rw [intervalIntegrable_iff]
-  refine integrableOn_deriv_of_nonneg (g := -arccos)
-    continuous_arccos.neg.continuousOn (fun x hx => ?_) (by simp)
-  · convert (@hasDerivAt_arccos x (by aesop) (by aesop)).neg using 1
-    simp
+  refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
+  simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
 theorem integral_T_real (n : ℤ) :
     ∫ x in -1..1, (T ℝ n).eval x * (1 / √(1 - x ^ 2)) = ∫ θ in 0..π, cos (n * θ) := calc
