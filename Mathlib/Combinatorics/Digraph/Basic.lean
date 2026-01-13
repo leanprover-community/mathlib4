@@ -583,7 +583,7 @@ lemma inf_compl_le_bot {G : Digraph V} : ∀ (H : G.SpanningSubgraph),
     exact hcontra h
 
 
-noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
+noncomputable instance (G : Digraph V) : BooleanAlgebra
   (G.SpanningSubgraph) where
   sup := sup
   le_sup_left := le_sup_left
@@ -598,15 +598,17 @@ noncomputable instance (G : Digraph V) : CompleteBooleanAlgebra
   bot := bot
   bot_le := bot_le
   compl := compl
-  sSup := sSup
-  sInf := sInf
-  le_sSup := le_sSup
-  sSup_le := sSup_le
   top_le_sup_compl := top_le_sup_compl
-  sInf_le := sInf_le
-  le_sInf := le_sInf
   le_sup_inf := le_sup_inf
   inf_compl_le_bot := inf_compl_le_bot
+  -- sSup := sSup
+  -- sInf := sInf
+  -- le_sSup := le_sSup
+  -- sSup_le := sSup_le
+
+  -- sInf_le := sInf_le
+  -- le_sInf := le_sInf
+
 
 
 instance Top : Top (Digraph V) where
@@ -666,9 +668,8 @@ instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
 
-instance Compl.adjDecidable {G : Digraph V} [DecidablePred G.verts]: DecidableRel (Gᶜ.Adj) := sorry
-
---  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
+instance Compl.adjDecidable {G : Digraph V} [DecidablePred G.verts]: DecidableRel (Gᶜ.Adj) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w ∧ v ∈ G.verts ∧ w ∈ G.verts
 
 
 
