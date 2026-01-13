@@ -499,6 +499,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
+        timeout-minutes: 30
         run: |
           cd pr-branch
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
