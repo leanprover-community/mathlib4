@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
 public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.QuasiFinite
+public import Mathlib.RingTheory.ZariskisMainTheorem
 
 /-! # Algebraic ZMT -/
 
@@ -299,78 +300,7 @@ nonrec lemma not_quasiFiniteAt_of_stronglyTranscendental [IsReduced S] [Faithful
       (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective) _ ?_
     refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
     simpa [← RingHom.ker_eq_comap_bot]
-
-variable (R) in
-def ZariskiMainProperty (p : Ideal S) [p.IsPrime] : Prop :=
-  ∃ r : integralClosure R S, r.1 ∉ p ∧ Function.Bijective
-    (IsLocalization.Away.map (Localization.Away r)
-      (Localization.Away ((integralClosure R S).val r)) (integralClosure R S).val.toRingHom r)
-
-lemma zariskiMainProperty_iff {p : Ideal S} [p.IsPrime] :
-    ZariskiMainProperty R p ↔ ∃ r ∉ p, IsIntegral R r ∧ ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
-  simp only [ZariskiMainProperty, Subtype.exists, ← exists_prop, @exists_comm (_ ∉ p)]
-  refine exists₃_congr fun r hr hrp ↦ ?_
-  rw [Function.Bijective, and_iff_right
-    (by exact IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective)]
-  trans ∀ a n, ∃ b, IsIntegral R b ∧ ∃ m k, r ^ (k + n) * b = r ^ (k + m) * a
-  · simp [(IsLocalization.mk'_surjective (R := integralClosure R S) (.powers ⟨r, hr⟩)).exists,
-      (IsLocalization.mk'_surjective (.powers r)).forall, mul_assoc, pow_add,
-      IsLocalization.Away.map, IsLocalization.map_mk', Submonoid.mem_powers_iff,
-      Subtype.ext_iff, IsLocalization.mk'_eq_iff_eq, -map_mul, mem_integralClosure_iff, hr.pow,
-      IsLocalization.eq_iff_exists (.powers r), Subalgebra.val, Function.Surjective]
-  refine forall_congr' fun s ↦ ⟨fun H ↦ ?_,  ?_⟩
-  · obtain ⟨b, hb, m, k, e⟩ := H 0
-    exact ⟨k + m, e ▸ .mul (.pow hr _) hb⟩
-  · rintro ⟨m, hm⟩ n
-    exact ⟨_, hm, n + m, 0, by ring⟩
-
-lemma zariskiMainProperty_iff' {p : Ideal S} [p.IsPrime] :
-    ZariskiMainProperty R p ↔ ∃ r ∉ p, ∀ x, ∃ m, IsIntegral R (r ^ m * x) := by
-  refine zariskiMainProperty_iff.trans (exists_congr fun r ↦ and_congr_right fun hrp ↦
-    and_iff_right_of_imp fun H ↦ ?_)
-  obtain ⟨n, hn⟩ := H r
-  rw [← pow_succ] at hn
-  exact (IsIntegral.pow_iff (by simp)).mp hn
-
-lemma zariskiMainProperty_iff_exists_localized_eq_top {p : Ideal S} [p.IsPrime] :
-    ZariskiMainProperty R p ↔ ∃ r ∉ p, ∃ h : IsIntegral R r,
-      (integralClosure R S).localized (.powers r) (by simpa [Submonoid.powers_le]) = ⊤ := by
-  simp [zariskiMainProperty_iff, ← top_le_iff, SetLike.le_def,
-    Submonoid.mem_powers_iff, mem_integralClosure_iff]
-
-lemma ZariskiMainProperty.restrictScalars [Algebra S T] [IsScalarTower R S T]
-    [Algebra.IsIntegral R S] {p : Ideal T} [p.IsPrime] (H : ZariskiMainProperty S p) :
-    ZariskiMainProperty R p := by
-  rw [zariskiMainProperty_iff'] at H ⊢
-  obtain ⟨r, hrp, H⟩ := H
-  exact ⟨r, hrp, fun x ↦ ⟨_, isIntegral_trans _ (H x).choose_spec⟩⟩
-
-lemma ZariskiMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal T) [p.IsPrime]
-    (h₁ : ZariskiMainProperty R (p.under S))
-    (h₂ : ∃ r ∉ p.under S, (⊥ : Subalgebra S T).localized (.powers (algebraMap _ _ r))
-      (by simp [Submonoid.powers_le]) = ⊤) :
-    ZariskiMainProperty R p := by
-  rw [zariskiMainProperty_iff] at h₁
-  rw [zariskiMainProperty_iff']
-  obtain ⟨s, hsp, hs, Hs⟩ := h₁
-  obtain ⟨t, htp, Ht⟩ := h₂
-  obtain ⟨m, hm⟩ := Hs t
-  refine ⟨algebraMap _ _ (s ^ (m + 1) * t), ?_, fun x ↦ ?_⟩
-  · simpa using ‹p.IsPrime›.mul_notMem
-      (mt ((inferInstanceAs (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
-  obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
-  obtain ⟨k, hk⟩ := Hs a
-  refine ⟨k + n, ?_⟩
-  convert_to IsIntegral R (algebraMap S T ((s ^ ((m + 1) * n) * (s ^ m * t) ^ k * (s ^ k * a))))
-  · simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId] at ha
-    simp only [map_pow, map_mul, ha, pow_add, mul_pow]
-    ring
-  · exact .algebraMap (.mul ((hs.pow _).mul (hm.pow _)) hk)
-
-lemma ZariskiMainProperty.of_isIntegral (p : Ideal S) [p.IsPrime] [Algebra.IsIntegral R S] :
-    ZariskiMainProperty R p :=
-  zariskiMainProperty_iff'.mpr ⟨1, p.primeCompl.one_mem,
-    fun _ ↦ ⟨0, Algebra.IsIntegral.isIntegral _⟩⟩
+namespace Algebra
 
 section FixedUniverse
 -- since the lemmas in this section are subsumed by <insert lemma name> anyways.
@@ -379,9 +309,9 @@ universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
-lemma ZariskiMainProperty.of_adjoin_eq_top
+lemma ZariskisMainProperty.of_adjoin_eq_top
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p]
-    (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskiMainProperty R p := by
+    (x : S) (hx : Algebra.adjoin R {x} = ⊤) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
   · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
@@ -417,14 +347,14 @@ lemma ZariskiMainProperty.of_adjoin_eq_top
       · convert p.mul_mem_right x Hfp
         simpa [Algebra.smul_def] using ha
       · simp
-  · refine zariskiMainProperty_iff_exists_localized_eq_top.mpr ⟨_, Hfp, isIntegral_algebraMap, ?_⟩
+  · refine zariskisMainProperty_iff_exists_saturation_eq_top.mpr ⟨_, Hfp, isIntegral_algebraMap, ?_⟩
     rw [← top_le_iff, ← hx]
     refine Algebra.adjoin_singleton_le ⟨_, ⟨1, rfl⟩, ?_⟩
     simpa [Algebra.smul_def] using isIntegral_leadingCoeff_smul f x hf
 
-lemma ZariskiMainProperty.of_algHom_polynomial
+lemma ZariskisMainProperty.of_algHom_polynomial
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p]
-    (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskiMainProperty R p := by
+    (f : R[X] →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   wlog H : integralClosure R S = ⊥
   · letI inst : Algebra (integralClosure R S) (Localization.AtPrime p) :=
       OreLocalization.instAlgebra
@@ -459,7 +389,7 @@ lemma ZariskiMainProperty.of_algHom_polynomial
       simpa [← RingHom.ker_eq_comap_bot]
   obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp this
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
-  refine ZariskiMainProperty.trans (S := f.range) _ ?_ ?_
+  refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.QuasiFiniteAt R (p.under f.range) := by
       let e : Localization.AtPrime (p.under f.range) ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _)
@@ -473,9 +403,9 @@ lemma ZariskiMainProperty.of_algHom_polynomial
     simpa [Algebra.mem_bot] using hx s
 
 open scoped Pointwise in
-lemma ZariskiMainProperty.of_algHom_mvPolynomial
+lemma ZariskisMainProperty.of_algHom_mvPolynomial
     (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] {n : ℕ}
-    (f : MvPolynomial (Fin n) R →ₐ[R] S) (hf : f.Finite) : ZariskiMainProperty R p := by
+    (f : MvPolynomial (Fin n) R →ₐ[R] S) (hf : f.Finite) : ZariskisMainProperty R p := by
   classical
   induction n generalizing R S with
   | zero =>
@@ -493,9 +423,9 @@ lemma ZariskiMainProperty.of_algHom_mvPolynomial
       ⟨f'.toRingHom, fun _ ↦ rfl⟩
     have : Algebra.QuasiFiniteAt (MvPolynomial (Fin n) R) p := by
       exact .of_restrictScalars R _ _
-    have := ZariskiMainProperty.of_algHom_polynomial p f''
+    have := ZariskisMainProperty.of_algHom_polynomial p f''
       (RingHom.Finite.comp hf (MvPolynomial.finSuccEquiv R n).symm.toRingEquiv.finite)
-    choose r hrp hr m hm using zariskiMainProperty_iff.mp this
+    choose r hrp hr m hm using zariskisMainProperty_iff.mp this
     obtain ⟨⟨s, hs⟩⟩ : Algebra.FiniteType R S := by
       rw [← RingHom.finiteType_algebraMap, ← f.comp_algebraMap]
       exact RingHom.FiniteType.comp hf.finiteType (RingHom.finiteType_algebraMap.mpr inferInstance)
@@ -552,28 +482,28 @@ lemma ZariskiMainProperty.of_algHom_mvPolynomial
 
 end FixedUniverse
 
-lemma ZariskiMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommRing R]
+lemma ZariskisMainProperty.of_finiteType.{u, v} {R : Type u} {S : Type v} [CommRing R]
     [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskiMainProperty R p := by
+    (p : Ideal S) [p.IsPrime] [Algebra.QuasiFiniteAt R p] : ZariskisMainProperty R p := by
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp ‹_›
   have : Small.{u} S := small_of_surjective hf
-  have := ZariskiMainProperty.of_algHom_mvPolynomial (p.comap (Shrink.algEquiv R S).toRingHom)
+  have := ZariskisMainProperty.of_algHom_mvPolynomial (p.comap (Shrink.algEquiv R S).toRingHom)
     ((Shrink.algEquiv R S).symm.toAlgHom.comp f)
     (.of_surjective _ <| (Shrink.algEquiv R S).symm.surjective.comp hf)
-  rw [zariskiMainProperty_iff'] at this ⊢
+  rw [zariskisMainProperty_iff'] at this ⊢
   obtain ⟨r, hr, H⟩ := this
   refine ⟨Shrink.algEquiv R S r, hr, fun x ↦ ?_⟩
   obtain ⟨m, hm⟩ := H ((Shrink.algEquiv R S).symm x)
   exact ⟨m, by simpa [-Shrink.algEquiv_apply, -Shrink.algEquiv_symm_apply]
     using hm.map (Shrink.algEquiv R S).toAlgHom⟩
 
-lemma ZariskiMainProperty.exists_foobar {R S : Type*} [CommRing R]
+lemma ZariskisMainProperty.exists_foobar {R S : Type*} [CommRing R]
     [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (p : Ideal S) [p.IsPrime] (H : ZariskiMainProperty R p) :
+    (p : Ideal S) [p.IsPrime] (H : ZariskisMainProperty R p) :
     ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
       r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
   obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
-  choose r hrp hr m hm using zariskiMainProperty_iff.mp H
+  choose r hrp hr m hm using zariskisMainProperty_iff.mp H
   let t := insert r { r ^ m x * x | x ∈ s }
   let r' : Algebra.adjoin R t := ⟨r, Algebra.subset_adjoin (by simp [t])⟩
   refine ⟨Algebra.adjoin R t, fg_adjoin_of_finite ?_ ?_, ?_⟩
@@ -604,3 +534,43 @@ lemma ZariskiMainProperty.exists_foobar {R S : Type*} [CommRing R]
   simp [Localization.Away.invSelf, Localization.awayMap, ← Algebra.smul_def,
     IsLocalization.Away.map, IsLocalization.map_mk', Localization.mk_eq_mk',
     ← IsLocalization.mk'_pow]
+
+lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
+    (p : Ideal S) [p.IsPrime] (H : ZariskisMainProperty R p) :
+    ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
+      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
+  obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
+  choose r hrp hr m hm using zariskisMainProperty_iff.mp H
+  let t := insert r { r ^ m x * x | x ∈ s }
+  let r' : Algebra.adjoin R t := ⟨r, Algebra.subset_adjoin (by simp [t])⟩
+  refine ⟨Algebra.adjoin R t, fg_adjoin_of_finite ?_ ?_, ?_⟩
+  · simp only [t, Set.finite_insert]
+    exact s.finite_toSet.image (fun x ↦ r ^ m x * x)
+  · rintro a (rfl | ⟨x, hx, rfl⟩); exacts [hr, hm _]
+  refine ⟨r', hrp,
+    IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
+  have : (IsScalarTower.toAlgHom R S _).range ≤
+      (Localization.awayMapₐ (Algebra.adjoin R t).val r').range := by
+    rw [← Algebra.map_top, ← hs, Subalgebra.map_le, Algebra.adjoin_le_iff]
+    intro x hx
+    suffices ∃ a ∈ Algebra.adjoin R t, ∃ n, r ^ n ∈ Algebra.adjoin R t ∧
+        ∃ k, r ^ k * a = r ^ k * (x * r ^ n) by
+      simpa [(IsLocalization.mk'_surjective (.powers r')).exists,
+        (IsLocalization.mk'_surjective (.powers r)).forall, Localization.awayMapₐ,
+        IsLocalization.Away.map, IsLocalization.map_mk', Submonoid.mem_powers_iff,
+        Subtype.ext_iff, IsLocalization.mk'_eq_iff_eq_mul, ← map_mul, ← map_pow,
+        IsLocalization.eq_iff_exists (.powers r), Subalgebra.val]
+    exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
+      m x, pow_mem r'.2 _, 1, rfl⟩
+  intro x
+  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+    (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
+  obtain ⟨y, hy : Localization.awayMap _ _ _ = _⟩ := this ⟨x, rfl⟩
+  refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩
+  simp only [map_mul, map_pow, hy]
+  simp [Localization.Away.invSelf, Localization.awayMap, ← Algebra.smul_def,
+    IsLocalization.Away.map, IsLocalization.map_mk', Localization.mk_eq_mk',
+    ← IsLocalization.mk'_pow]
+
+end Algebra

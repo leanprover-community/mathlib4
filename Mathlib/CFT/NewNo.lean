@@ -203,7 +203,7 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
       ∀ (q' : Ideal (integralClosure R S)), q'.IsPrime →
         q' ≠ q.under _ → q'.LiesOver p → ⟨s, hs⟩ ∈ q' := by
   obtain ⟨s₁, hs₁q, hs₁⟩ := exists_notMem_forall_mem_of_ne_of_liesOver (R := R) p q
-  obtain ⟨s₂, hs₂q, hs₂⟩ := ZariskiMainProperty.of_finiteType (R := R) q
+  obtain ⟨s₂, hs₂q, hs₂⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨s₃, hs₃⟩ := hs₂.2 (algebraMap _ _ s₁)
   obtain ⟨s₃, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
   obtain ⟨m, hm⟩ : ∃ m, ↑s₂ ^ m * ↑s₃ = ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) := by
@@ -235,10 +235,11 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
         AlgHom.comp_algebraMap, q's.over_def q'])
     (inferInstanceAs ((q's.comap ((e.symm.toAlgHom.comp
       (IsScalarTower.toAlgHom _ _ _)).restrictScalars R)).LiesOver _))
-  have : e.symm (algebraMap S (Localization.Away ((integralClosure R S).val s₂)) s₁) ∈ q's := by
+  have : e.symm (algebraMap S (Localization.Away
+      ((integralClosure R S).val.toRingHom s₂)) s₁) ∈ q's := by
     simpa using this
   rw [← hs₃, ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ (s₂ ^ n))] at this
-  · dsimp [IsLocalization.Away.map] at this
+  · dsimp [Localization.awayMap, IsLocalization.Away.map] at this
     rw [IsLocalization.map_mk', ← e.symm.commutes, ← map_mul,
       IsScalarTower.algebraMap_eq _ S _] at this
     replace this : e.symm ((algebraMap _ (Localization.Away s₂.1)) s₃) ∈ q's := by
@@ -492,7 +493,7 @@ lemma exists_etale_isIdempotentElem_forall_liesOver_eq.{u, v}
       ∀ P'' : Ideal (R' ⊗[R] S), P''.IsPrime → P''.LiesOver P → e ∉ P'' → P'' = P' := by
   obtain ⟨R', _, _, _, P, _, _, e, he, e₀, he₀, he₀e, P', _, _, hP'q, heP', hpP, H, H'⟩ :=
     exists_etale_isIdempotentElem_forall_liesOver_eq_aux p q
-  obtain ⟨g, hgq, hg⟩ := ZariskiMainProperty.of_finiteType (R := R) q
+  obtain ⟨g, hgq, hg⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   have : Algebra.IsIntegral R' (Localization.Away e₀) :=
     .of_surjective (IsScalarTower.toAlgHom R' (R' ⊗[R] (integralClosure R S)) _)
       (IsLocalization.Away.algebraMap_surjective_of_isIdempotentElem e₀ he₀)

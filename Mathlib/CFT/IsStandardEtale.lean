@@ -590,44 +590,6 @@ lemma Algebra.IsUnramifiedAt.exist_hasStandardEtaleSurjectionAt_of_finite
     ((Localization.awayMapₐ (IsScalarTower.toAlgHom _ _ S) (f * r)).comp φ)
     ((H _ (by simp)).surjective.comp hP)⟩
 
-lemma ZariskiMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (p : Ideal S) [p.IsPrime] (H : ZariskiMainProperty R p) :
-    ∃ S' : Subalgebra R S, S'.toSubmodule.FG ∧ ∃ r : S',
-      r.1 ∉ p ∧ Function.Bijective (Localization.awayMap S'.val.toRingHom r) := by
-  obtain ⟨s, hs⟩ := Algebra.FiniteType.out (R := R) (A := S)
-  choose r hrp hr m hm using zariskiMainProperty_iff.mp H
-  let t := insert r { r ^ m x * x | x ∈ s }
-  let r' : Algebra.adjoin R t := ⟨r, Algebra.subset_adjoin (by simp [t])⟩
-  refine ⟨Algebra.adjoin R t, fg_adjoin_of_finite ?_ ?_, ?_⟩
-  · simp only [t, Set.finite_insert]
-    exact s.finite_toSet.image (fun x ↦ r ^ m x * x)
-  · rintro a (rfl | ⟨x, hx, rfl⟩); exacts [hr, hm _]
-  refine ⟨r', hrp,
-    IsLocalization.map_injective_of_injective _ _ _ Subtype.val_injective, ?_⟩
-  have : (IsScalarTower.toAlgHom R S _).range ≤
-      (Localization.awayMapₐ (Algebra.adjoin R t).val r').range := by
-    rw [← Algebra.map_top, ← hs, Subalgebra.map_le, Algebra.adjoin_le_iff]
-    intro x hx
-    suffices ∃ a ∈ Algebra.adjoin R t, ∃ n, r ^ n ∈ Algebra.adjoin R t ∧
-        ∃ k, r ^ k * a = r ^ k * (x * r ^ n) by
-      simpa [(IsLocalization.mk'_surjective (.powers r')).exists,
-        (IsLocalization.mk'_surjective (.powers r)).forall, Localization.awayMapₐ,
-        IsLocalization.Away.map, IsLocalization.map_mk', Submonoid.mem_powers_iff,
-        Subtype.ext_iff, IsLocalization.mk'_eq_iff_eq_mul, ← map_mul, ← map_pow,
-        IsLocalization.eq_iff_exists (.powers r), Subalgebra.val]
-    exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
-      m x, pow_mem r'.2 _, 1, rfl⟩
-  intro x
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
-    (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
-  obtain ⟨y, hy : Localization.awayMap _ _ _ = _⟩ := this ⟨x, rfl⟩
-  refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩
-  simp only [map_mul, map_pow, hy]
-  simp [Localization.Away.invSelf, Localization.awayMap, ← Algebra.smul_def,
-    IsLocalization.Away.map, IsLocalization.map_mk', Localization.mk_eq_mk',
-    ← IsLocalization.mk'_pow]
-
 attribute [local instance high] Module.Free.of_divisionRing in
 set_option synthInstance.maxHeartbeats 0 in
 lemma Algebra.QuasiFinite.of_formallyUnramified
@@ -691,7 +653,7 @@ lemma Algebra.Unramified.exist_hasStandardEtaleSurjectionAt
     {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
     (Q : Ideal S) [Q.IsPrime] [Algebra.Unramified R S] :
     ∃ f ∉ Q, HasStandardEtaleSurjectionAt R f := by
-  obtain ⟨S', hS', r, hrQ, hr⟩ := ZariskiMainProperty.of_finiteType (R := R) Q
+  obtain ⟨S', hS', r, hrQ, hr⟩ := ZariskisMainProperty.of_finiteType (R := R) Q
     |>.exists_fg_and_exists_notMem_and_awayMap_bijective
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
   have : Algebra.FormallyUnramified R (Localization.Away r) :=
