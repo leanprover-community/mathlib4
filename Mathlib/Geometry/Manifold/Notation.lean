@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
-public import Mathlib.Analysis.InnerProductSpace.Defs -- temporary
 /-!
 # Elaborators for differential geometry
 
@@ -521,9 +520,8 @@ where
       let searchIPSpace := findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
-          -- TODO do this!
-          match_expr type with
-          | InnerProductSpace k E _ _ =>
+          match type with
+          | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
             -- We use reducible transparency to allow using a type synonym: this should not
             -- be unfolded.
             if ← withReducible (pureIsDefEq E α) then
