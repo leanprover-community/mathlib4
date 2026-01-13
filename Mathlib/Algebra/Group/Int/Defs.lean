@@ -40,12 +40,12 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_zero := Int.add_zero
   zero_add := Int.zero_add
   neg_add_cancel := Int.add_left_neg
-  nsmul := (·*·)
+  nsmul := (· * ·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
     show (n + 1 : ℤ) * x = n * x + x
     by rw [Int.add_mul, Int.one_mul]
-  zsmul := (·*·)
+  zsmul := (· * ·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
     simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
@@ -66,7 +66,8 @@ These also prevent non-computable instances like `Int.instNormedCommRing` being 
 these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+section
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℤ        := by infer_instance
@@ -76,6 +77,8 @@ instance instSemigroup        : Semigroup ℤ        := by infer_instance
 instance instAddGroup         : AddGroup ℤ         := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℤ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
+
+end
 
 -- This lemma is higher priority than later `_root_.nsmul_eq_mul` so that the `simpNF` is happy
 @[simp high] protected lemma nsmul_eq_mul (n : ℕ) (a : ℤ) : n • a = n * a := rfl
