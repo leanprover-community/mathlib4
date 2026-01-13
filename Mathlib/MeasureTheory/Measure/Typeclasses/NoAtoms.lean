@@ -83,15 +83,15 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
   union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 
-/-- If a set has positive measure under an atomless measure, then it has an accumulation point.
+/- 
+If a set has positive measure under an atomless measure, then it has an accumulation point.
 -/
-theorem exists_accPt_of_noAtoms {X : Type*} [PseudoEMetricSpace X] [MeasurableSpace X]
-    {μ : Measure X} [NoAtoms μ] {E : Set X} (h_sep : IsSeparable E) (hE : 0 < μ E) :
+theorem exists_accPt_of_noAtoms {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+    {μ : Measure X} [NoAtoms μ] {E : Set X} [SeparableSpace E] (hE : 0 < μ E) :
     ∃ x, AccPt x (𝓟 E) := by
   by_contra! h
-  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x hx => h x
-  exact hE.ne' <| (separableSpace_iff_countable.mp h_sep.separableSpace
-    |> E.countable_coe_iff.mp).measure_zero μ
+  haveI : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
+  exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
 
 section
 
