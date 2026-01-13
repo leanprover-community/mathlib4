@@ -5,12 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Exact
-public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
@@ -54,7 +49,7 @@ theorem ann_eq_top : I.ann m = ⊤ ↔ m ∈ I := by
   rw [eq_top_iff_one, mem_ann_iff, one_smul]
 
 theorem colon_top_le : I.colon ⊤ ≤ I.ann m :=
-  fun r hr ↦ mem_colon.mp hr m mem_top
+  fun _ hr ↦ mem_colon.mp hr m mem_top
 
 end Semiring
 
@@ -65,7 +60,7 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 theorem IsPrimary.radical_ann_of_notMem (hI : I.IsPrimary) (hm : m ∉ I) :
     (I.ann m).radical = (I.colon ⊤).radical :=
-  le_antisymm (radical_le_radical_iff.mpr fun y hy ↦ (hI.2 hy).resolve_left hm)
+  le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦ (hI.2 hy).resolve_left hm)
     (radical_mono (colon_top_le I m))
 
 end CommSemiring
