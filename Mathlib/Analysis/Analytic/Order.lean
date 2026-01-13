@@ -332,7 +332,7 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
     · simpa [analyticOrderAt_eq_zero.mpr (.inr hfz)] using ⟨0, by simp, by simpa⟩
     have : analyticOrderAt (deriv f) z₀ + 1 = analyticOrderAt f z₀ := by
       simpa [hfz] using hf.analyticOrderAt_deriv_add_one
-    simp [← this, ENat.add_le_add_iff_right, IH hf.deriv, iteratedDeriv_succ',
+    simp [← this, IH hf.deriv, iteratedDeriv_succ',
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
 end NormedSpace
