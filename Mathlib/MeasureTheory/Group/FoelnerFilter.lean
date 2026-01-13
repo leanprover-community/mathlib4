@@ -10,15 +10,16 @@ public import Mathlib.MeasureTheory.Group.Action
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
-# Følner filters - definitions and properties
+# Følner sequences and filters - definitions and properties
 
-This file defines Følner filters for measurable spaces acted on by a group.
+This file defines Følner sequences and filters for measurable spaces acted on by a group.
 
 ## Definitions
 
-* `IsFoelner G μ l F` : A Følner sequence with respect to some group `G` acting on
-  a measure space `X` is a sequence of sets `F` such that:
-  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+* `IsFoelner G μ l F` : Consider a group `G` acting on a measure space `X`.
+  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action, the measure `μ`,
+  and a filter `l` on the indexing type `ι`, if:
+  1. Eventually, as `i` tends to `l`, the set `F i` is measurable with finite non-zero measure,
   2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
 
 * `IsFoelner.mean μ u F s` : The limit along an ultrafilter `u` of the density of a set `s`
@@ -28,16 +29,18 @@ This file defines Følner filters for measurable spaces acted on by a group.
   measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s` over measurable
   sets of finite non-zero measure.
 
+* `IsAddFoelner G μ l F`: the analog of `IsFoelner G μ l F` for an additive group action
+
 ## Main results
 
 * `IsFoelner.amenable` : If there exists a non-trivial Følner filter with respect to some
-  group `G` acting on a measure space `X`, then it exists a `G`-invariant finitely additive
+  group `G` acting on a measure space `X`, then there exists a `G`-invariant finitely additive
   probability measure on `X`.
 
 * `isFoelner_iff_tendsto` : A sequence of sets is Følner if and only if it tends to the
   maximal Følner filter.
   The attribute "maximal" of the latter comes from the direct implication of this theorem :
-  if `IsFoelner G μ l F` then the push-forward filter `(l.map F) ≤ maxFoelner G μ`.
+  if `IsFoelner G μ l F` then the push-forward filter `map F l ≤ maxFoelner G μ`.
 
 * `amenable_of_maxFoelner_neBot` : If the maximal Følner filter is non-trivial,
   then there exists a `G`-invariant finitely additive probability measure on `X`.
@@ -45,7 +48,7 @@ This file defines Følner filters for measurable spaces acted on by a group.
 ## Temporary design adaptations
 
 * In the current version, we refer to the amenability of the action of a group on a measure space
-  (e.g. in `IsFoelner.amenable` and `amenable_of_maxFoelner_ne_bot`), even though a definition of
+  (e.g. in `IsFoelner.amenable` and `amenable_of_maxFoelner_neBot`), even though a definition of
   amenability has not yet been given in Mathlib.
   This is because there are different notions of amenability for groups and for group actions,
   and a Mathlib definition should be provided at the greatest level of generality, on which there
@@ -68,10 +71,11 @@ variable {ι : Type*} {l : Filter ι} {u : Ultrafilter ι} {F : ι → Set X}
 
 variable (G : Type*) {X : Type*} [MeasurableSpace X] (μ : Measure X) [AddGroup G] [AddAction G X]
          {ι : Type*} (l : Filter ι) (F : ι → Set X) in
-/-- A Følner sequence with respect to some additive group `G` acting on a measure space `X`
-    is a sequence of sets `F` such that:
-    1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-    2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`. -/
+/-- Consider an additive group `G` acting on a measure space `X`.
+  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
+  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+  2. For all `g : G`, `μ ((g +ᵥ F i) ∆ F i) / μ (F i)` tends to `0`. -/
 @[mk_iff]
 structure IsAddFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -80,10 +84,11 @@ structure IsAddFoelner : Prop where
   tendsto_meas_vadd_symmDiff (g : G) : Tendsto (fun i ↦ μ ((g +ᵥ F i) ∆ F i) / μ (F i)) l (𝓝 0)
 
 variable (G μ l F) in
-/-- A Følner sequence with respect to some group `G` acting on a measure space `X`
-    is a sequence of sets `F` such that:
-    1. Each `s` in `l` is eventually measurable with finite non-zero measure,
-    2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
+/-- Consider a group `G` acting on a measure space `X`.
+  A sequence of sets `F : ι → Set X` is **Følner** with respect to the `G`-action,
+  the measure `μ`, and a filter `l` on the indexing type `ι`, if:
+  1. Each `s` in `l` is eventually measurable with finite non-zero measure,
+  2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`. -/
 @[mk_iff]
 structure IsFoelner : Prop where
   eventually_measurableSet : ∀ᶠ i in l, MeasurableSet (F i)
@@ -112,6 +117,15 @@ theorem mono {l' : Filter ι} (hfoel : IsFoelner G μ l F) (hle : l' ≤ l) :
   eventually_meas_ne_zero := hfoel.eventually_meas_ne_zero.filter_mono hle
   eventually_meas_ne_top := hfoel.eventually_meas_ne_top.filter_mono hle
   tendsto_meas_smul_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_smul_symmDiff g) hle
+
+@[to_additive]
+theorem comp_tendsto {ι' : Type*} {l' : Filter ι'} {φ : ι' → ι} (hfoel : IsFoelner G μ l F)
+    (htendsto : Tendsto φ l' l) :
+    IsFoelner G μ l' (F ∘ φ) where
+  eventually_measurableSet := htendsto.eventually hfoel.eventually_measurableSet
+  eventually_meas_ne_zero := htendsto.eventually hfoel.eventually_meas_ne_zero
+  eventually_meas_ne_top := htendsto.eventually hfoel.eventually_meas_ne_top
+  tendsto_meas_smul_symmDiff (g : G) := (hfoel.tendsto_meas_smul_symmDiff g).comp htendsto
 
 variable (μ u F) in
 /-- The limit along an ultrafilter of the density of a set with respect to a sequence in `X`. -/
@@ -176,11 +190,11 @@ theorem mean_smul_eq_mean [SMulInvariantMeasure G X μ]
   simpa using hfoel.mean_smul_eq_mean_smul g 1 s
 
 /-- If there exists a non-trivial Følner filter with respect to some group `G` acting on a measure
-    space `X`, then it exists a `G`-invariant finitely additive probability measure on `X`. -/
+    space `X`, then there exists a `G`-invariant finitely additive probability measure on `X`. -/
 @[to_additive
 /-- If there exists a non-trivial Følner filter with respect to some additive group
-    `G` acting on a measure space `X`, then it exists a `G`-invariant finitely additive probability
-    measure on `X`. -/]
+    `G` acting on a measure space `X`, then there exists a `G`-invariant finitely additive
+    probability measure on `X`. -/]
 theorem amenable [SMulInvariantMeasure G X μ] [NeBot l] (hfoel : IsFoelner G μ l F) :
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
