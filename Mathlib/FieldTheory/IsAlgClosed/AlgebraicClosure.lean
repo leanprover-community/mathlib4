@@ -70,7 +70,8 @@ def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
     (f.1.map (algebraMap k (SplittingField (∏ f ∈ s, f.1)))).Splits :=
-  (splits_prod_iff _ fun j _ ↦ j.2.ne_zero).1 (SplittingField.splits _) _ hf
+  (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
+    (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
 
 open Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
@@ -91,8 +92,8 @@ theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
   rw [Finset.prod_coe_sort (f := fun x : _ × ℕ ↦ X - C x.1), (Multiset.toEnumFinset _)
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,
     Multiset.map_toEnumFinset_fst, map_map, AlgHom.comp_algebraMap]
-  conv in map _ _ => rw [eq_prod_roots_of_splits (Monics.splits_finsetProd h)]
-  rw [f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
+  conv in map _ _ => rw [Splits.eq_prod_roots (Monics.splits_finsetProd h)]
+  rw [leadingCoeff_map, f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
 
 variable (k)
 

@@ -122,8 +122,8 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   -- Check that this indeed equals the sum
   · calc
       (((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) : ℕ) : α) =
-          ((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) ) := by
-        have :((a (n + 1)) : α) ≠ 0 := ne_of_gt <| a_pos (n + 1) <| Nat.le_succ (n + 1)
+          ((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1)) := by
+        have : ((a (n + 1)) : α) ≠ 0 := ne_of_gt <| a_pos (n + 1) <| Nat.le_succ (n + 1)
         simp only [← Nat.cast_add, ← Nat.cast_div ha this, ← Nat.cast_mul, ← Nat.cast_sub ha₀,
             ← Nat.cast_div han this]
         rw [Nat.cast_sub (Nat.div_le_of_le_mul _)]

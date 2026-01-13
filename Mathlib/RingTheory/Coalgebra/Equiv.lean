@@ -10,8 +10,8 @@ public import Mathlib.RingTheory.Coalgebra.Hom
 /-!
 # Isomorphisms of `R`-coalgebras
 
-This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the early parts of
-`Mathlib/Algebra/Module/Equiv.lean`.
+This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the basic API of
+`Mathlib/Algebra/Module/Equiv/Defs.lean`.
 
 ## Main definitions
 
@@ -260,7 +260,7 @@ theorem trans_toCoalgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
     (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
   __ := f

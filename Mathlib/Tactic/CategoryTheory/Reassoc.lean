@@ -6,10 +6,10 @@ Authors: Kim Morrison, Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Functor.Basic
-public meta import Mathlib.CategoryTheory.Functor.Basic
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Util.AddRelatedDecl
+public meta import Aesop
 
 /-!
 # The `reassoc` attribute
@@ -38,7 +38,7 @@ open Mathlib.Tactic
 namespace CategoryTheory
 
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
-theorem eq_whisker' {C : Type*} [Category C]
+theorem eq_whisker' {C : Type*} [Category* C]
     {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 
@@ -85,7 +85,7 @@ but not `F_assoc` (this is sometimes useful).
 This attribute also works for lemmas of shape `∀ .., f = g` where `f g : X ≅ Y` are
 isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
-syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" optAttrArg : attr
 
 /--
 IO ref for reassociation handlers `reassoc` attribute, so that it can be extended
@@ -136,10 +136,10 @@ initialize registerBuiltinAttribute {
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| reassoc $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun value levels => do
+    addRelatedDecl src "" "_assoc" ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
         let pf ← reassocExpr' value
         pure (pf, levels)

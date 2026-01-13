@@ -292,15 +292,10 @@ we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : #s = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
-  map_update_add' v i x y := by
-    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
-    simp
-  map_update_smul' v i c x := by
-    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
-    simp
+  map_update_add' := by
+    simp [dite_comp_equiv_update (s.orderIsoOfFin hk).symm]
+  map_update_smul' := by
+    simp [dite_comp_equiv_update (s.orderIsoOfFin hk).symm]
 
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the additivity of a
@@ -472,7 +467,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   by_cases! Ai_singleton : ∀ i, #(A i) ≤ 1
   · have Ai_card : ∀ i, #(A i) = 1 := by
       intro i
-      have pos : #(A i) ≠ 0 := by simp [Finset.card_eq_zero, Ai_empty i]
+      have pos : #(A i) ≠ 0 := by rw [Finset.card_ne_zero]; exact Ai_empty i
       have : #(A i) ≤ 1 := Ai_singleton i
       exact le_antisymm this (Nat.succ_le_of_lt (_root_.pos_iff_ne_zero.mpr pos))
     have :
@@ -754,7 +749,7 @@ lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁
     (x y : (i : ι) → M₁ i) :
     f.linearDeriv x y = ∑ i, f (update x i (y i)) := by
   unfold linearDeriv
-  simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
+  simp only [LinearMap.coe_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, toLinearMap_apply]
 
 end Semiring
@@ -1081,7 +1076,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     intro _ f i f₁ f₂
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
-        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+        (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
     convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j

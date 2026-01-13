@@ -11,6 +11,7 @@ public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices
@@ -49,6 +50,8 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
+
+instance (priority := low) [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)
@@ -608,6 +611,10 @@ theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 
+protected lemma _root_.Matrix.map_pow {α β : Type*} [Semiring α] [Semiring β]
+    (M : Matrix m m α) (f : α →+* β) (a : ℕ) : (M ^ a).map f = (M.map f) ^ a :=
+  f.mapMatrix.map_pow M a
+
 end RingHom
 
 namespace RingEquiv
@@ -642,7 +649,7 @@ open MulOpposite in
 For any ring `R`, we have ring isomorphism `Matₙₓₙ(Rᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
 -/
 @[simps apply symm_apply]
-def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
+def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
   left_inv _ := by aesop
@@ -651,6 +658,19 @@ def mopMatrix : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   map_add' _ _ := by aesop
 
 end RingEquiv
+
+instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+  isDedekindFiniteMonoid n := let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
+    .of_injective f RingEquiv.mopMatrix.injective
+
+open MulOpposite in
+theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
+    IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
+  mp _ :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
+               fun _ _ ↦ by ext; simp [mul_apply]
+  .of_injective f (map_injective (op_injective.comp op_injective))⟩
+  mpr _ := inferInstance
 
 namespace AlgHom
 

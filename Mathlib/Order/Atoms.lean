@@ -12,6 +12,7 @@ public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -232,8 +233,8 @@ theorem isCoatom_iff [OrderTop A] {K : A} :
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
-  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
-  push_neg
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
+  contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, and_comm, implies_true]

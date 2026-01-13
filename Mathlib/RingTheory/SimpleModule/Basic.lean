@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Data.Finite.Card
-public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Isomorphisms
@@ -77,7 +76,8 @@ instance (priority := low) [Subsingleton R] : IsSemisimpleRing R :=
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S where
-  __ := (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
+  __ := have := RingHomInvPair.of_ringEquiv e; have := this.symm
+    (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing_iff (e : R ≃+* S) : IsSemisimpleRing R ↔ IsSemisimpleRing S :=
@@ -301,8 +301,10 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr e.symm
 
 instance (priority := low) [Module.Finite R M] : IsNoetherian R M where
-  noetherian m := have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
-    Module.Finite.iff_fg.mp (Module.Finite.equiv e.symm)
+  noetherian m :=
+    have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
+    letI := Module.Finite.equiv e.symm
+    .of_finite
 
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
@@ -464,7 +466,7 @@ theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Idea
     ∃ e : R, IsIdempotentElem e ∧ I = .span {e} := by
   obtain ⟨J, h⟩ := exists_isCompl I
   obtain ⟨f, idem, rfl⟩ := I.isIdempotentElemEquiv.symm (I.isComplEquivProj ⟨J, h⟩)
-  exact ⟨f 1, LinearMap.isIdempotentElem_apply_one_iff.mpr idem, by
+  exact ⟨f 1, LinearMap.isIdempotentElem_map_one_iff.mpr idem, by
     rw [LinearMap.range_eq_map, ← Ideal.span_one, ← Ideal.submodule_span_eq, LinearMap.map_span,
       Set.image_one, Ideal.submodule_span_eq]⟩
 
@@ -528,7 +530,7 @@ noncomputable instance _root_.Module.End.instDivisionRing
 instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Module.End R M) M :=
   isSimpleModule_iff_toSpanSingleton_surjective.mpr <| .intro ‹_› fun v hv w ↦
     have ⟨f, eq⟩ := IsSemisimpleModule.extension_property _
-      (ker_eq_bot.mp (ker_toSpanSingleton R M hv)) (toSpanSingleton R M w)
+      (ker_eq_bot.mp (ker_toSpanSingleton R hv)) (toSpanSingleton R M w)
     ⟨f, by simpa using congr($eq 1)⟩
 
 end LinearMap

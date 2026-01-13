@@ -55,7 +55,7 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
 * `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
                  continuous. Use `compMeasurable` if `g` is only measurable (this requires the

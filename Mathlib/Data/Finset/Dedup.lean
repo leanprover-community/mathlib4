@@ -61,7 +61,7 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
     (h : l.toFinset = l'.toFinset) : l = l' := by
   simpa [← toFinset_eq hl, ← toFinset_eq hl'] using h
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 

@@ -307,7 +307,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]
-    · cutsat
+    · lia
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/

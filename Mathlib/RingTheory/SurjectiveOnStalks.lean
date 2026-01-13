@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Ring Homomorphisms surjective on stalks
@@ -100,6 +100,10 @@ lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
     let ⟨r, hr⟩ := h s
     ⟨r, 1, 1, by simpa [← Ideal.eq_top_iff_one], by simpa [← Ideal.eq_top_iff_one], by simp [hr]⟩
 
+lemma _root_.RingEquiv.surjectiveOnStalks (e : R ≃+* S) :
+    e.toRingHom.SurjectiveOnStalks :=
+  RingHom.surjectiveOnStalks_of_surjective e.surjective
+
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :
     SurjectiveOnStalks (g.comp f) := by
   intro I hI
@@ -177,6 +181,40 @@ lemma SurjectiveOnStalks.baseChange
       RingHomCompTriple.comp_apply, Algebra.smul_mul_assoc, Algebra.TensorProduct.tmul_mul_tmul,
       one_mul, mul_one, id_apply, ← e]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc]
+
+lemma SurjectiveOnStalks.baseChange' [Algebra R T] [Algebra R S]
+    (hf : (algebraMap R S).SurjectiveOnStalks) :
+    (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := T)).SurjectiveOnStalks := by
+  convert (surjectiveOnStalks_of_surjective (Algebra.TensorProduct.comm R T S).surjective).comp
+    (hf.baseChange (S := T))
+
+-- Subsumed by `RingHom.SurjectiveOnStalks.tensorProductMap`.
+private lemma SurjectiveOnStalks.tensorProductMap_id
+    {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']
+    {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
+    (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
+  letI := f.toRingHom.toAlgebra
+  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
+  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
+  convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp
+    Algebra.TensorProduct.includeRight).SurjectiveOnStalks
+  · congr; ext; simp
+  exact (Algebra.TensorProduct.cancelBaseChange R S S S' T).toRingEquiv.surjectiveOnStalks.comp
+    Hf.baseChange'
+
+lemma SurjectiveOnStalks.tensorProductMap
+    {S' T' : Type*} [CommRing S'] [CommRing T']
+    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
+    {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
+    (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
+  convert RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
+    RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
+  congr
+  ext <;> simp
 
 lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
     f.SurjectiveOnStalks ↔ Function.Surjective f := by

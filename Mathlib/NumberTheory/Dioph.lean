@@ -192,7 +192,7 @@ instance : CommRing (Poly α) where
   mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
   mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
   left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
-  right_distrib _ _ _ :=  by ext; simp only [add_apply, mul_apply]; apply add_mul
+  right_distrib _ _ _ := by ext; simp only [add_apply, mul_apply]; apply add_mul
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
@@ -571,7 +571,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              cutsat⟩
+              lia⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

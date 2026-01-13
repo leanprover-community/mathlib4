@@ -23,7 +23,7 @@ the main conditional expectation file.
 
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Filter

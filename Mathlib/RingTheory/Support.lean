@@ -54,15 +54,10 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-@[deprecated (since := "2025-05-23")] alias Module.not_mem_support_iff := Module.notMem_support_iff
-
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
-
-@[deprecated (since := "2025-05-23")]
-alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
