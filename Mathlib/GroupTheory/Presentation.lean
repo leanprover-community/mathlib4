@@ -196,6 +196,11 @@ namespace Tietze
 
 variable {G : Type*} [Group G] {ι : Type*}
 
+-- Local aliases to keep the added generator clearly distinguished.
+local notation "ι'" => Option ι
+local notation "newGen" => (none : ι')
+local notation "old" => Option.some
+
 /-!
 ### Equal normal closures give isomorphic presented groups
 -/
@@ -312,6 +317,269 @@ noncomputable def remove_relator_equiv
   simpa using
     (Presentation.equivPresentedGroups (G := G) (P := P)
       (Q := removeRelator (G := G) (ι := ι) P r hr))
+
+/-!
+### Helper Lemmas
+-/
+
+/--
+A technical lemma for Tietze (3):
+If we map `none` to `w` and `some i` to `some i`, the kernel is exactly the normal closure
+of the defining relation `none * w⁻¹`.
+-/
+theorem ker_lift_option_eq_normalClosure_defined {w : FreeGroup ι} :
+    (FreeGroup.lift (Option.rec w (FreeGroup.of)) : FreeGroup ι' →* FreeGroup ι).ker =
+    Subgroup.normalClosure {FreeGroup.of newGen * (FreeGroup.map old w)⁻¹} := by
+  -- Notation for the map and the relator.
+  let ρ : FreeGroup ι' →* FreeGroup ι :=
+    FreeGroup.lift (Option.rec w FreeGroup.of)
+  let r : FreeGroup ι' :=
+    FreeGroup.of newGen * (FreeGroup.map old w)⁻¹
+  -- `r` is killed by `ρ`.
+  have hr : ρ r = 1 := by
+    have hmap : ρ (FreeGroup.map old w) = w := by
+      -- `ρ ∘ map some = id`.
+      have hcomp : ρ.comp (FreeGroup.map old) = MonoidHom.id _ := by
+        ext i; simp [ρ]
+      have hmap' := congrArg (fun f => f w) hcomp
+      simpa [MonoidHom.comp_apply] using hmap'
+    simp [r, ρ, hmap]
+  -- One inclusion: the kernel is a normal subgroup containing `r`.
+  have h_sub : Subgroup.normalClosure ({r} : Set (FreeGroup ι')) ≤ ρ.ker :=
+    Subgroup.normalClosure_le_normal (s := {r}) (N := ρ.ker) (by
+      intro x hx
+      rcases Set.mem_singleton_iff.mp hx with rfl
+      simp [MonoidHom.mem_ker, hr])
+  -- Factor through the quotient by the normal closure of `r`.
+  let R : Subgroup (FreeGroup ι') :=
+    Subgroup.normalClosure ({r} : Set (FreeGroup ι'))
+  let q : FreeGroup ι' →* _ := QuotientGroup.mk' R
+  have hq : q.ker = R := QuotientGroup.ker_mk' _
+  let ρ' : FreeGroup ι' ⧸ R →* FreeGroup ι :=
+    QuotientGroup.lift R ρ (by
+      intro x hx
+      exact h_sub hx)
+  -- A section sending `i` to `some i`.
+  let σ : FreeGroup ι →* FreeGroup ι' ⧸ R :=
+    q.comp (FreeGroup.map old)
+  have hρσ : ρ'.comp σ = MonoidHom.id _ := by
+    ext i
+    simp [ρ', σ, ρ, q]
+  -- Also `σ` is a left inverse of `ρ'` (it fixes the generators in the quotient).
+  have hσρ : (σ.comp ρ').comp q = q := by
+    ext i
+    cases i with
+    | some i =>
+        simp [σ, ρ', q, ρ]
+    | none =>
+        -- In the quotient, `of none = map some w`.
+        have hrel : q (FreeGroup.of newGen) = q (FreeGroup.map old w) := by
+          -- `((map some w)⁻¹) * r⁻¹ * (map some w)` lies in `R`.
+          have hrR : r ∈ R := Subgroup.subset_normalClosure (by simp [r])
+          have hrR_inv : r⁻¹ ∈ R := Subgroup.inv_mem _ hrR
+          have hconj :
+              (FreeGroup.map old w)⁻¹ * r⁻¹ * (FreeGroup.map old w) ∈ R := by
+            -- normality of `R` gives closure under conjugation
+            simpa using
+              (inferInstance : Subgroup.Normal R).conj_mem
+                (n := r⁻¹) hrR_inv (FreeGroup.map old w)⁻¹
+          have hconj' :
+              (FreeGroup.of newGen)⁻¹ * FreeGroup.map old w ∈ R := by
+            have : (FreeGroup.map old w)⁻¹ * r⁻¹ * (FreeGroup.map old w)
+                = (FreeGroup.of newGen)⁻¹ * FreeGroup.map old w := by
+              simp [r]
+            simpa [this] using hconj
+          -- equality in the quotient
+          apply QuotientGroup.eq.mpr
+          simpa using hconj'
+        simp [σ, ρ', q, ρ, hrel]
+  -- Use surjectivity of `q` to conclude `σ ∘ ρ' = id`.
+  have hσρ' : σ.comp ρ' = MonoidHom.id _ := by
+    -- Two homs out of the quotient are equal if they agree after precomposing with `q`.
+    refine MonoidHom.ext ?_
+    intro x
+    rcases Quot.exists_rep x with ⟨y, rfl⟩
+    simpa [MonoidHom.comp_apply] using congrArg (fun f => f y) hσρ
+  -- `ρ'` is injective, hence has trivial kernel.
+  have hkerρ' : ρ'.ker = ⊥ := by
+    have hlinv : Function.LeftInverse σ ρ' := by
+      intro x
+      have := congrArg (fun f => f x) hσρ'
+      simpa [MonoidHom.comp_apply] using this
+    exact (ρ'.ker_eq_bot_iff).2 hlinv.injective
+  -- Pull back the trivial kernel along `q`.
+  refine le_antisymm ?_ h_sub
+  intro x hx
+  have hx' : q x ∈ ρ'.ker := by
+    -- `ρ x = 1` implies `ρ' (q x) = 1`.
+    simpa [ρ', MonoidHom.mem_ker, MonoidHom.comp_apply] using hx
+  have : q x = 1 := by
+    simpa [hkerρ', Subgroup.mem_bot] using hx'
+  -- If `q x = 1`, then `x ∈ ker q = R`.
+  have hxR : x ∈ q.ker := by simpa [MonoidHom.mem_ker] using this
+  simpa [hq, R] using hxR
+
+/-!
+### (3) Add a generator
+-/
+
+/--
+Tietze (3): Add a new generator `none` and a defining relation `none = w`.
+-/
+def addGenerator (P : Presentation G ι) (w : FreeGroup ι) :
+    Presentation G ι' where
+  val := Option.rec (FreeGroup.lift P.val w) P.val
+  closure_range_val := by
+    -- The range of `P.val` embeds via `Option.some`, so its closure is still `⊤`.
+    have hsubset :
+        Set.range P.val ⊆ Set.range (Option.rec (FreeGroup.lift P.val w) P.val) := by
+      intro g hg
+      rcases hg with ⟨i, rfl⟩
+      exact ⟨some i, rfl⟩
+    have hmono := Subgroup.closure_mono hsubset
+    simpa [P.closure_range_val] using hmono
+  rels := (FreeGroup.map old) '' P.rels ∪
+          {FreeGroup.of newGen * (FreeGroup.map old w)⁻¹}
+  ker_eq_normalClosure := by
+    -- abbreviations
+    let φ : FreeGroup ι →* G := FreeGroup.lift P.val
+    let ψ : FreeGroup ι' →* G :=
+      FreeGroup.lift (Option.rec (φ w) P.val)
+    let ρ : FreeGroup ι' →* FreeGroup ι :=
+      FreeGroup.lift (Option.rec w FreeGroup.of)
+    let s : FreeGroup ι →* FreeGroup ι' := FreeGroup.map old
+    have hcomp : ψ = φ.comp ρ := by
+      ext t ; cases t <;> simp [ψ, φ, ρ]
+    have hcompρ : ρ.comp s = MonoidHom.id _ := by
+      ext i; simp [ρ, s]
+    have hψs : ψ.comp s = φ := by
+      ext i; simp [ψ, φ, s]
+    have hkerρ :
+        ρ.ker =
+          Subgroup.normalClosure
+            ({FreeGroup.of newGen * (s w)⁻¹} :
+              Set (FreeGroup ι')) :=
+      ker_lift_option_eq_normalClosure_defined (ι := ι) (w := w)
+    let relsNew :
+        Set (FreeGroup ι') :=
+      s '' P.rels ∪ {FreeGroup.of newGen * (s w)⁻¹}
+    -- First inclusion: `ker ψ ≤ normalClosure relsNew`
+    refine le_antisymm ?_ ?_
+    · intro x hx
+      have hxψ : ψ x = 1 := by simpa [MonoidHom.mem_ker] using hx
+      have hxρ : ρ x ∈ Subgroup.normalClosure P.rels := by
+        have hφ : φ (ρ x) = 1 := by simpa [hcomp] using hxψ
+        have : ρ x ∈ φ.ker := by simpa [MonoidHom.mem_ker] using hφ
+        simpa [φ, P.ker_eq_normalClosure] using this
+      -- map old relators
+      have hmap_le :
+          (Subgroup.normalClosure P.rels).map s ≤
+            Subgroup.normalClosure (s '' P.rels) := by
+        refine Subgroup.map_le_iff_le_comap.mpr ?_
+        refine Subgroup.normalClosure_le_normal ?_
+        intro r hr
+        change s r ∈ Subgroup.normalClosure (s '' P.rels)
+        exact Subgroup.subset_normalClosure (Set.mem_image_of_mem _ hr)
+      have hx_old :
+          s (ρ x) ∈ Subgroup.normalClosure (s '' P.rels) := by
+        have hxρmap :
+            s (ρ x) ∈ (Subgroup.normalClosure P.rels).map s :=
+          ⟨ρ x, hxρ, rfl⟩
+        exact hmap_le hxρmap
+      -- new relator from kernel of `ρ`
+      have hx_rel :
+          x * (s (ρ x))⁻¹ ∈
+            Subgroup.normalClosure ({FreeGroup.of newGen * (s w)⁻¹} :
+              Set (FreeGroup ι')) := by
+        have hxkerρ : x * (s (ρ x))⁻¹ ∈ ρ.ker := by
+          have hmap : ρ (s (ρ x)) = ρ x := by
+            have := congrArg (fun f => f (ρ x)) hcompρ
+            simpa [MonoidHom.comp_apply] using this
+          have : ρ (x * (s (ρ x))⁻¹) = (1 : FreeGroup ι) := by
+            simp [MonoidHom.map_mul, hmap]
+          simpa [MonoidHom.mem_ker] using this
+        simpa [hkerρ] using hxkerρ
+      -- assemble memberships in the target normal closure
+      have hx_old' : s (ρ x) ∈ Subgroup.normalClosure relsNew :=
+        Subgroup.normalClosure_mono (by intro r hr; exact Or.inl hr) hx_old
+      have hx_rel' :
+          x * (s (ρ x))⁻¹ ∈ Subgroup.normalClosure relsNew :=
+        Subgroup.normalClosure_mono (by intro r hr; exact Or.inr hr) hx_rel
+      have hx_eq : x = x * (s (ρ x))⁻¹ * s (ρ x) := by
+        have : (s (ρ x))⁻¹ * s (ρ x) = (1 : FreeGroup ι') := by simp
+        calc
+          x = x * 1 := by simp
+          _ = x * ((s (ρ x))⁻¹ * s (ρ x)) := by simp [this]
+          _ = x * (s (ρ x))⁻¹ * s (ρ x) := by simp [mul_assoc]
+      have hxN :
+          x * (s (ρ x))⁻¹ * s (ρ x) ∈ Subgroup.normalClosure relsNew :=
+        Subgroup.mul_mem _ hx_rel' hx_old'
+      have hxN' : x ∈ Subgroup.normalClosure relsNew := by
+        refine hx_eq ▸ ?_
+        simpa using hxN
+      exact hxN'
+    · -- Reverse inclusion: relators map to `1`, and the kernel is normal.
+      refine
+        Subgroup.normalClosure_le_normal
+          (s := relsNew) (N := ψ.ker) ?_
+      intro r hr
+      rcases hr with hr | hr
+      · -- old relators
+        rcases hr with ⟨u, hu, rfl⟩
+        have hφu : φ u = 1 := by
+          have : u ∈ φ.ker := by
+            have : u ∈ Subgroup.normalClosure P.rels :=
+              Subgroup.subset_normalClosure hu
+            simpa [φ, P.ker_eq_normalClosure] using this
+          simpa [MonoidHom.mem_ker] using this
+        have hcomp' := congrArg (fun f => f u) hψs
+        have hψu : ψ (s u) = 1 := hcomp'.trans hφu
+        simpa [MonoidHom.mem_ker] using hψu
+      · -- defining relator
+        rcases Set.mem_singleton_iff.mp hr with rfl
+        have hψnone : ψ (FreeGroup.of newGen) = φ w := by simp [ψ, φ]
+        have hψsw : ψ (s w) = φ w := by
+          have hcomp' := congrArg (fun f => f w) hψs
+          simpa [MonoidHom.comp_apply] using hcomp'
+        have : ψ (FreeGroup.of newGen * (s w)⁻¹) = 1 := by
+          calc
+            ψ (FreeGroup.of newGen * (s w)⁻¹)
+                = ψ (FreeGroup.of newGen) * (ψ (s w))⁻¹ := by
+                  simp [MonoidHom.map_mul, MonoidHom.map_inv]
+            _ = φ w * (φ w)⁻¹ := by
+                  simp [hψnone, hψsw]
+            _ = 1 := by simp
+        simpa [MonoidHom.mem_ker] using this
+
+noncomputable def addGeneratorEquiv (P : Presentation G ι) (w : FreeGroup ι) :
+    P.presentedGroup ≃* (addGenerator P w).presentedGroup :=
+  Presentation.equivPresentedGroups P (addGenerator P w)
+
+/-!
+### (4) Remove a generator
+-/
+
+/-- Helper for Tietze (4): substitute `none` with `w`. -/
+def substitute (w : FreeGroup ι) : FreeGroup ι' →* FreeGroup ι :=
+  FreeGroup.lift (Option.rec w FreeGroup.of)
+
+/--
+Tietze (4): Remove a generator `none` if `none = w` is a relation.
+-/
+def removeGenerator (P : Presentation G ι') (w : FreeGroup ι)
+    (h_rel : FreeGroup.of newGen * (FreeGroup.map old w)⁻¹ ∈ P.rels) :
+    Presentation G ι where
+  val := P.val ∘ old
+  closure_range_val := by
+    sorry
+  rels := (substitute w) '' P.rels
+  ker_eq_normalClosure := by
+    sorry
+
+noncomputable def removeGeneratorEquiv (P : Presentation G ι') (w : FreeGroup ι)
+    (h_rel : FreeGroup.of newGen * (FreeGroup.map old w)⁻¹ ∈ P.rels) :
+    P.presentedGroup ≃* (removeGenerator P w h_rel).presentedGroup :=
+  Presentation.equivPresentedGroups P (removeGenerator P w h_rel)
 
 end Tietze
 
