@@ -465,7 +465,6 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
-@[simp]
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   tendsto_inv_iff
