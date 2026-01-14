@@ -18,11 +18,11 @@ in the file `Mathlib/CategoryTheory/Abelian/Refinements.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   (K : HomologicalComplex C c)
 
 namespace HomologicalComplex

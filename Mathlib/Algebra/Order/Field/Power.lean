@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Positivity.Core
 # Lemmas about powers in ordered fields.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

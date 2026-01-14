@@ -26,7 +26,7 @@ We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 namespace CategoryTheory.Functor
 
-variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
   (G : B ⥤ D) (F : A ⥤ B) (L : A ⥤ C)
 
 noncomputable section
