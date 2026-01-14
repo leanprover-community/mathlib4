@@ -14,25 +14,25 @@ public import Mathlib.Topology.Algebra.Polynomial
 ## Main statements
 
 This file proves that a polynomial has a fixed sign beyond its largest root.
+
+## TODO
+
+Generalize to real-closed fields.
 -/
 
 public section
 
-open Filter Finset Asymptotics
-
-open Asymptotics Polynomial Topology
+open Real Polynomial
 
 namespace Polynomial
 
-variable {𝕜 : Type*} [NormedField 𝕜] {P : 𝕜[X]} {x : 𝕜}
-  [ConditionallyCompleteLinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
-
+variable {P : ℝ[X]} {x : ℝ}
 section PolynomialSign
 
 theorem zero_lt_of_roots_lt_of_leadingCoeff_pos
     (hroots : ∀ y, P.IsRoot y → y < x) (hlc : 0 < P.leadingCoeff) : 0 < P.eval x := by
   wlog! hdeg : 0 < P.degree
-  · rwa [eq_C_leadingCoeff_of_degree_le_zero hdeg, eval_C]
+  · rwa [eq_C_of_degree_le_zero hdeg, ← natDegree_eq_zero_iff_degree_le_zero.mpr hdeg, eval_C]
   contrapose! hroots
   obtain ⟨z, hz⟩ := ((P.tendsto_atTop_of_leadingCoeff_nonneg
     hdeg hlc.le).eventually_gt_atTop 0).exists_forall_of_atTop
