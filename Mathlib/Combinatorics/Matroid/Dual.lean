@@ -100,7 +100,7 @@ section dual
       exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
     by_contra hdj'
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
-    obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
+    obtain (heB'' | ⟨-, heX⟩) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
   subset_ground := by tauto
