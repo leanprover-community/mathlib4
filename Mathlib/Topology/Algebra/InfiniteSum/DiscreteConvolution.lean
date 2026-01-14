@@ -546,66 +546,82 @@ end CompleteUniformRingConvolutionAssoc
 
 end Associativity
 
-/-! ### HasAntidiagonal Bridge
+/-! ### HasMulAntidiagonal / HasAntidiagonal Bridge
 
-For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), the additive fiber `addFiber x` is finite
-and equals `Finset.antidiagonal x`. The `tsum` in `addConvolution` reduces to `Finset.sum`. -/
+For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, the fiber is finite
+and equals the (multiplicative or additive) antidiagonal. The `tsum` reduces to `Finset.sum`.
 
-section Antidiagonal
+The multiplicative versions use `Finset.mulAntidiagonal`, and the additive versions
+(generated via `@[to_additive]`) use `Finset.antidiagonal`. -/
 
-variable [AddMonoid M] [Finset.HasAntidiagonal M]
+section MulAntidiagonal
 
-/-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/
-theorem addFiber_eq_antidiagonal (x : M) : addFiber x = ↑(Finset.antidiagonal x) := by
+variable [Monoid M] [Finset.HasMulAntidiagonal M]
+
+/-- For types with `HasMulAntidiagonal`, the multiplicative fiber equals the mulAntidiagonal. -/
+@[to_additive addFiber_eq_antidiagonal
+  /-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/]
+theorem mulFiber_eq_mulAntidiagonal (x : M) : mulFiber x = ↑(Finset.mulAntidiagonal x) := by
   ext ⟨a, b⟩
-  simp only [Finset.mem_coe, Finset.mem_antidiagonal, mem_addFiber]
+  simp only [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
 
-/-- The additive fiber is finite when `HasAntidiagonal` is available. -/
-theorem addFiber_finite (x : M) : (addFiber x).Finite := by
-  rw [addFiber_eq_antidiagonal]
-  exact (Finset.antidiagonal x).finite_toSet
+/-- The multiplicative fiber is finite when `HasMulAntidiagonal` is available. -/
+@[to_additive /-- The additive fiber is finite when `HasAntidiagonal` is available. -/]
+theorem mulFiber_finite (x : M) : (mulFiber x).Finite := by
+  rw [mulFiber_eq_mulAntidiagonal]
+  exact (Finset.mulAntidiagonal x).finite_toSet
 
 variable {S : Type*} [CommSemiring S]
 variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
 variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
 variable [TopologicalSpace F]
 
-/-- For `HasAntidiagonal` types, additive convolution equals a finite sum over the antidiagonal. -/
-theorem addConvolution_eq_sum_antidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
-    (x : M) : (f ⋆₊[L] g) x = ∑ ab ∈ Finset.antidiagonal x, L (f ab.1) (g ab.2) := by
-  simp only [addConvolution_apply]
-  rw [← (Finset.antidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
-  exact (Equiv.setCongr (addFiber_eq_antidiagonal x)).tsum_eq
+/-- For `HasMulAntidiagonal` types, convolution equals a finite sum over the mulAntidiagonal. -/
+@[to_additive (dont_translate := S) addConvolution_eq_sum_antidiagonal
+  /-- For `HasAntidiagonal` types, additive convolution equals a finite sum
+  over the antidiagonal. -/]
+theorem convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
+    (x : M) : (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
+  simp only [convolution_apply]
+  rw [← (Finset.mulAntidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
+  exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => (L (f ab.1.1)) (g ab.1.2))
 
 variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
-/-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+/-- For `HasMulAntidiagonal` types, ring convolution equals a finite sum over the mulAntidiagonal.
 This version uses `LinearMap.mul R R` and requires `[CommSemiring R]`. -/
-theorem addMulConvolution_eq_sum_antidiagonal (f g : M → R) (x : M) :
-    (f ⋆₊ₘ g) x = ∑ ab ∈ Finset.antidiagonal x, f ab.1 * g ab.2 :=
-  addConvolution_eq_sum_antidiagonal (LinearMap.mul R R) f g x
+@[to_additive (dont_translate := R) addMulConvolution_eq_sum_antidiagonal
+  /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+  This version uses `LinearMap.mul R R` and requires `[CommSemiring R]`. -/]
+theorem mulConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
+    (f ⋆ₘ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
+  convolution_eq_sum_mulAntidiagonal (LinearMap.mul R R) f g x
 
-end Antidiagonal
+end MulAntidiagonal
 
-/-! ### HasAntidiagonal Ring Convolution
+/-! ### HasMulAntidiagonal / HasAntidiagonal Ring Convolution
 
-For `HasAntidiagonal` types, ring convolution with `[Semiring R]` (using `LinearMap.mul ℕ R`)
-reduces to `Finset.sum`. This provides the bridge to `CauchyProduct` and enables
-associativity with **no hypotheses** - the "fully automated" version for finite types. -/
+For types with finite antidiagonals, ring convolution with `[Semiring R]`
+(using `LinearMap.mul ℕ R`) reduces to `Finset.sum`. This provides the bridge to
+`CauchyProduct` and enables associativity with **no hypotheses** -
+the "fully automated" version for finite types. -/
 
-section AntidiagonalRing
+section MulAntidiagonalRing
 
-variable [AddMonoid M] [Finset.HasAntidiagonal M]
+variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+/-- For `HasMulAntidiagonal` types, ring convolution equals a finite sum over the mulAntidiagonal.
 This version uses `LinearMap.mul ℕ R` and only requires `[Semiring R]`. -/
-theorem addRingConvolution_eq_sum_antidiagonal (f g : M → R) (x : M) :
-    (f ⋆₊ₘ g) x = ∑ ab ∈ Finset.antidiagonal x, f ab.1 * g ab.2 :=
-  addConvolution_eq_sum_antidiagonal (LinearMap.mul ℕ R) f g x
+@[to_additive (dont_translate := R) addRingConvolution_eq_sum_antidiagonal
+  /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+  This version uses `LinearMap.mul ℕ R` and only requires `[Semiring R]`. -/]
+theorem ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
+    (f ⋆ₘ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
+  convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
-end AntidiagonalRing
+end MulAntidiagonalRing
 
 /-! ### CauchyProduct Bridge
 For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), `addRingConvolution` equals
