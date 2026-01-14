@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.Support
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 
@@ -87,13 +88,14 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 @[to_additive]
-instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
-    HasMemOrInvMem (oneLE H) where
+instance oneLE.isMulSpanning {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
+    (oneLE H).IsMulSpanning where
   mem_or_inv_mem := by simpa using le_total 1
 
-@[deprecated (since := "2025-08-21")] alias oneLE.isMaxMulCone := oneLE.hasMemOrInvMem
+@[deprecated (since := "2026-01-14")] alias oneLE.hasMemOrInvMem := oneLE.isMulSpanning
+@[deprecated (since := "2025-08-21")] alias oneLE.isMaxMulCone := oneLE.isMulSpanning
 @[deprecated (since := "2025-08-21")] alias _root_.AddGroupCone.nonneg.isMaxCone :=
-  AddGroupCone.nonneg.hasMemOrNegMem
+  AddGroupCone.nonneg.isSpanning
 
 end GroupCone
 
@@ -116,7 +118,7 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
 @[to_additive /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
 abbrev LinearOrder.mkOfGroupCone
-    [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
+    [GroupConeClass S G] [C.IsMulSpanning] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
@@ -129,3 +131,49 @@ lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
   { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+
+variable (G : Type*) [CommGroup G]
+
+-- TODO : downstream to `Mathlib.Algebra.Order.Monoid.Submonoid` or further
+
+@[to_additive]
+instance [PartialOrder G] [IsOrderedMonoid G] : (Submonoid.oneLE G).IsMulPointed where
+  eq_one_of_mem_of_inv_mem := by simp_all [ge_antisymm_iff]
+
+@[to_additive]
+instance [LinearOrder G] [IsOrderedMonoid G] : (Submonoid.oneLE G).IsMulSpanning where
+  mem_or_inv_mem := by simpa using le_total (1 : G)
+
+variable {G} (M : Submonoid G) [M.IsMulPointed]
+
+/-- Construct a partial order by designating a submonoid with zero support in an abelian group. -/
+@[to_additive
+/-- Construct a partial order by designating a submonoid with zero support in an abelian group. -/]
+abbrev PartialOrder.mkOfSubmonoid : PartialOrder G where
+  le a b := b / a ∈ M
+  le_refl a := by simp [one_mem]
+  le_trans a b c nab nbc := by simpa using mul_mem nbc nab
+  le_antisymm a b nab nba := by
+    simpa [div_eq_one, eq_comm] using M.eq_one_of_mem_of_inv_mem nab (by simpa using nba)
+
+variable {M} in
+@[to_additive (attr := simp)]
+theorem PartialOrder.mkOfSubmonoid_le_iff {a b : G} :
+    (mkOfSubmonoid M).le a b ↔ b / a ∈ M := .rfl
+
+@[to_additive]
+theorem IsOrderedMonoid.mkOfSubmonoid :
+    letI _ := PartialOrder.mkOfSubmonoid M
+    IsOrderedMonoid G :=
+  letI _ := PartialOrder.mkOfSubmonoid M
+  { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+
+/-- Construct a linear order by designating
+    a maximal submonoid with zero support in an abelian group. -/
+@[to_additive
+/-- Construct a linear order by designating
+    a maximal submonoid with zero support in an abelian group. -/]
+abbrev LinearOrder.mkOfSubmonoid [M.IsMulSpanning] [DecidablePred (· ∈ M)] : LinearOrder G where
+  __ := PartialOrder.mkOfSubmonoid M
+  le_total a b := by simpa using M.mem_or_inv_mem (b / a)
+  toDecidableLE _ := _
