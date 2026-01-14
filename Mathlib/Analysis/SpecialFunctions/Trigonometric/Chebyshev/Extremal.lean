@@ -164,9 +164,10 @@ private noncomputable def leadingCoeffC (n i : ℕ) :=
 private theorem coeff_eq_sum_node {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
     sumNodes n (leadingCoeffC n) P = P.coeff n := by
   simp_rw [sumNodes, leadingCoeffC]
-  have : P.degree + 1 ≤ (Finset.range (n + 1)).card := by
+  have : P.degree < (Finset.range (n + 1)).card := by
     rw [Finset.card_range]
     grw [hP]
+    norm_cast
     simp
   convert (Lagrange.coeff_eq_sum (strictAntiOn_node n).injOn this).symm using 2
   · exact Eq.symm (Nat.range_succ_eq_Iic n)
