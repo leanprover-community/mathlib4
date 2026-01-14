@@ -111,7 +111,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
   simpa using mem_orthogonal _ _
 
 /-- The orthogonal complement of any submodule `K` is closed. -/
-instance isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
+theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp only [coe_iInf]
@@ -491,9 +491,7 @@ theorem bot_orthogonal_eq_top : (⊥ : ClosedSubmodule 𝕜 E)ᗮ = ⊤ := by ex
 @[simp]
 theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   refine
-    ⟨?_, by
-      rintro rfl
-      exact bot_orthogonal_eq_top⟩
+    ⟨?_, by rintro rfl; exact bot_orthogonal_eq_top⟩
   intro h
   have : K ⊓ Kᗮ = ⊥ := K.orthogonal_disjoint.eq_bot
   rwa [h, inf_comm, top_inf_eq] at this
@@ -508,8 +506,7 @@ lemma orthogonal_closure (K : Submodule 𝕜 E) : (K.closure : Submodule 𝕜 E)
 /-- The orthogonal complement of the closure of a submodule (as a `ClosedSubmodule`) is equal to
 the orthogonal complement. -/
 lemma orthogonal_closure' (K : Submodule 𝕜 E) : K.closureᗮ = ⟨Kᗮ, K.isClosed_orthogonal⟩ := by
-  ext x
-  simp
+  ext x; simp
 
 /-- The orthogonal complement of the closure of a submodule (as a `ClosedSubmodule`) is equal to
 the closure of the orthogonal complement. -/
