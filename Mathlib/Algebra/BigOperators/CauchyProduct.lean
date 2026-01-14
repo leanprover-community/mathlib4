@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Mathlib Contributors. All rights reserved.
+Copyright (c) 2025 Fengyang Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: [Author names]
+Authors: Fengyang Wang
 -/
 module
 
