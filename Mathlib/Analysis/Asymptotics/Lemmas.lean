@@ -675,7 +675,7 @@ lemma isLittleO_mul_iff_isLittleO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l,
   rw [isLittleO_iff_forall_isBigOWith, isLittleO_iff_forall_isBigOWith]
   simp [isBigOWith_mul_iff_isBigOWith_div hf]
 
-lemma isBigO_nat_atTop_of_recurrence {f : ℕ → E''} {g : ℕ → F''}
+lemma isBigO_nat_atTop_induction {f : ℕ → E''} {g : ℕ → F''}
     (h : ∀ᶠ n in atTop, g n = 0 → f n = 0)
     (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
       (∀ m ∈ Finset.Ico n₀ n, ‖f m‖ ≤ C * ‖g m‖) → ‖f n‖ ≤ C * ‖g n‖) :
@@ -706,12 +706,12 @@ lemma isBigO_nat_atTop_of_recurrence {f : ℕ → E''} {g : ℕ → F''}
       grind
     · grind
 
-lemma isBigO_nat_atTop_of_induction_of_eventually_pos {f g : ℕ → ℝ}
+lemma isBigO_nat_atTop_induction_of_eventually_pos {f g : ℕ → ℝ}
     (hf : ∀ᶠ n in atTop, 0 ≤ f n) (hg : ∀ᶠ n in atTop, 0 < g n)
     (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
       (∀ m ∈ Finset.Ico n₀ n, f m ≤ C * g m) → f n ≤ C * g n) :
     f =O[atTop] g := by
-  refine isBigO_nat_atTop_of_recurrence ?hzero ?hrec
+  refine isBigO_nat_atTop_induction ?hzero ?hrec
   case hzero => filter_upwards [hf, hg]; grind
   case hrec =>
     filter_upwards [eventually_forall_ge_atTop.mpr hg, eventually_forall_ge_atTop.mpr hf, hrec]
