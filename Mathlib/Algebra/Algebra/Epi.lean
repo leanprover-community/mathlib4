@@ -29,7 +29,7 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 protected class IsEpi : Prop where
   injective_lift_mul : Injective <| lift <| LinearMap.mul R A
 
-/-- See also `CommRingCat.epi_iff_tmul_eq_tmul`. -/
+/-- See also `CommRingCat.epi_iff_epi`. -/
 lemma isEpi_iff_forall_one_tmul_eq :
     Algebra.IsEpi R A ↔ ∀ a : A, 1 ⊗ₜ[R] a = a ⊗ₜ[R] 1 := by
   refine ⟨fun h a ↦ IsEpi.injective_lift_mul <| by simp, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
@@ -49,6 +49,13 @@ lemma isEpi_iff_forall_one_tmul_eq :
   obtain ⟨b, rfl⟩ := h' y
   aesop
 
+/-- See also `Algebra.isEpi_iff_surjective_algebraMap_of_finite`. -/
+lemma isEpi_of_surjective_algebraMap (h : Surjective (algebraMap R A)) :
+    Algebra.IsEpi R A := by
+  refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun a ↦ ?_
+  obtain ⟨r, rfl⟩ := h a
+  rw [algebraMap_eq_smul_one, smul_tmul]
+
 end Semiring
 
 -- TODO Generalise to any localization
@@ -67,10 +74,11 @@ instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFrac
 
 section Ring
 
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A] [Algebra.IsEpi R A]
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
-lemma _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite [Module.Finite R A] :
-    Surjective (algebraMap R A) := by
+lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
+    Algebra.IsEpi R A ↔ Surjective (algebraMap R A) := by
+  refine ⟨fun h ↦ ?_, isEpi_of_surjective_algebraMap R A⟩
   let R' := (Algebra.linearMap R A).range
   rcases subsingleton_or_nontrivial (A ⧸ R') with h | _
   · rwa [Submodule.Quotient.subsingleton_iff, LinearMap.range_eq_top] at h
@@ -90,6 +98,10 @@ lemma _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite [Module.Finite R A] :
       have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R A)⟩
       rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
   cases false_of_nontrivial_of_subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R'))
+
+@[deprecated (since := "2026-01-13")]
+alias _root_.RingHom.surjective_of_tmul_eq_tmul_of_finite :=
+  isEpi_iff_surjective_algebraMap_of_finite
 
 end Ring
 

@@ -47,7 +47,7 @@ lemma RingHom.surjective_of_epi_of_finite {R S : CommRingCat} (f : R ⟶ S) [Epi
     (h₂ : RingHom.Finite f.hom) : Function.Surjective f := by
   algebraize [f.hom]
   have : Algebra.IsEpi R S := CommRingCat.epi_iff_epi.mp <| inferInstanceAs (Epi f)
-  exact RingHom.surjective_of_tmul_eq_tmul_of_finite
+  rwa [Algebra.isEpi_iff_surjective_algebraMap_of_finite] at this
 
 lemma RingHom.surjective_iff_epi_and_finite {R S : CommRingCat} {f : R ⟶ S} :
     Function.Surjective f ↔ Epi f ∧ RingHom.Finite f.hom where
