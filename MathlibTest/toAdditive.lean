@@ -286,7 +286,7 @@ end instances
 lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
   rw [npowRec]
 
-set_option linter.translateRedundant false  in
+set_option linter.translateRedundant false in
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
 lemma optiontest (x : Option α) : x.elim none some = x := by
@@ -572,6 +572,12 @@ Note: This linter can be disabled with `set_option linter.translateRedundant fal
 theorem test1 : 5 = 5 := rfl
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+/--
+warning: `to_additive` did not change the type of theorem `test1'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[simp, to_additive none]
 theorem test1' : 5 = 5 := rfl
 
