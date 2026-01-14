@@ -370,6 +370,4 @@ theorem of_has_biproduct₂ [HasBinaryBiproduct X Y] :
   convert of_is_biproduct₂ (BinaryBiproduct.isBilimit X Y)
 
 end BicartesianSq
-
-
 end CategoryTheory
