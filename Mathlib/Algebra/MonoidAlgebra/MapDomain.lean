@@ -276,6 +276,23 @@ lemma mapRangeRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRangeRingEquiv M (e₁.trans e₂) =
       (mapRangeRingEquiv M e₁).trans (mapRangeRingEquiv M e₂) := by ext; simp
 
+variable [DecidableEq M] [DecidableEq N]
+
+/-- Nested monoid algebras can be taken in an arbitrary order. -/
+@[to_additive (dont_translate := R)
+/-- Nested additive monoid algebras can be taken in an arbitrary order. -/]
+def commRingEquiv : R[M][N] ≃+* R[N][M] :=
+  curryRingEquiv.symm.trans <| .trans (mapDomainRingEquiv _ <| .prodComm ..) curryRingEquiv
+
+@[to_additive (attr := simp)]
+lemma symm_commRingEquiv : (commRingEquiv : R[M][N] ≃+* R[N][M]).symm = commRingEquiv := rfl
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
+    commRingEquiv (single m <| single n r) = single n (single m r) := by
+  simp [commRingEquiv, MonoidAlgebra, curryRingEquiv, curryAddEquiv, mapDomainRingEquiv,
+    mapDomainRingHom, EquivLike.toEquiv]
+
 end MonoidAlgebra
 
 /-!

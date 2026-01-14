@@ -189,7 +189,6 @@ lemma isCardinalPresentable_of_equivalence
       (Equiv.ulift.trans ((e.toAdjunction.homEquiv X Z).trans Equiv.ulift.symm)).toIso) (by
         intro _ _ f
         ext ⟨g⟩
-        apply Equiv.ulift.injective
         simp [Adjunction.homEquiv_unit])
   exact preservesColimit_of_natIso Y iso.symm
 
