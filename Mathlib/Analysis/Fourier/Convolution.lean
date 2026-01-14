@@ -184,6 +184,10 @@ theorem fourier_convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢
 theorem convolution_flip (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
     convolution B.flip g f = convolution B f g := rfl
 
+/-- The convolution is continuous in the left argument.
+
+Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
+coincide. -/
 @[fun_prop]
 theorem convolution_continuous_left (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : 𝓢(E, F₂)) :
     Continuous (convolution B · g) := (convolution B.flip g).continuous

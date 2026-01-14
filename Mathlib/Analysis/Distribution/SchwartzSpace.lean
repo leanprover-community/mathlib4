@@ -763,6 +763,10 @@ theorem pairing_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : �
 theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : 𝓢(D, F)) (x : D) :
     pairing B f g x = B (f x) (g x) := rfl
 
+/-- The pairing is continuous in the left argument.
+
+Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
+coincide. -/
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
     Continuous (pairing B · g) := (pairing B.flip g).continuous
 
