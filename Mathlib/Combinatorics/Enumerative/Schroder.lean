@@ -74,7 +74,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
     have : k < n + 1 := by simp at hk; lia
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
 
-/-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder n, 1 ≤ n` -/
+/-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder n` -/
 def smallSchroder : ℕ → ℕ
   | 0 => 1
   | n => largeSchroder n / 2
@@ -96,39 +96,38 @@ lemma two_mul_smallSchroder (hn : 0 < n) : 2 * smallSchroder n = largeSchroder n
 theorem smallSchroder_succ (n : ℕ) :
     smallSchroder (n + 1) =
       smallSchroder n + 2 * ∑ i < n, smallSchroder i * smallSchroder (n - i) := by
-  by_cases hn : n = 0
-  · subst hn
-    simp_all only [zero_add, smallSchroder_one,
-      smallSchroder_zero, isMin_iff_eq_bot, Nat.bot_eq_zero,
-      IsMin.finsetIio_eq, zero_tsub, mul_one, sum_empty, mul_zero, add_zero]
-  · have hnn : 0 < n := by omega
-    suffices 2 * smallSchroder (n + 1) =
-        2 * smallSchroder n + 4 * ∑ i < n, smallSchroder i * smallSchroder (n - i) by linarith
-    have h_sum : 4 * ∑ i < n, smallSchroder i * smallSchroder (n - i) =
-        ∑ i ≤ n, largeSchroder i * largeSchroder (n - i) := by
-      rw [mul_sum, Iio_eq_Ico, Iic_eq_Icc, Nat.bot_eq_zero, sum_eq_sum_Ico_succ_bot (by omega)]
-      have : ∑ k ∈ Ico (0 + 1) n, 4 * (k.smallSchroder * (n - k).smallSchroder) =
-          ∑ k ∈ Ico 1 n, largeSchroder k * largeSchroder (n - k) := by
-        apply sum_congr rfl; intros k hk; simp only [zero_add, mem_Ico] at hk
-        have : 4 * (k.smallSchroder * (n - k).smallSchroder) =
-          (2 * k.smallSchroder) * (2 * (n - k).smallSchroder) := by linarith
-        rw [this, two_mul_smallSchroder (by omega), two_mul_smallSchroder (by omega)]
-      rw [this, smallSchroder_zero, tsub_zero, one_mul, ← add_sum_Ico_eq_sum_Icc (by omega)]
-      have Ico_bot : largeSchroder 0 * n.largeSchroder + ∑ k ∈ Ico 1 n,
-        k.largeSchroder * (n - k).largeSchroder  =
-          ∑ k ∈ Ico 0 n, k.largeSchroder * (n - k).largeSchroder  := by
-        rw [sum_eq_sum_Ico_succ_bot hnn]
-        simp only [largeSchroder_zero, one_mul, tsub_zero,
-          zero_add]
-      have : 4 * smallSchroder n = 2 * (2 * smallSchroder n) := by linarith
-      rw [this, two_mul_smallSchroder (by omega), two_mul, add_assoc]
-      have : n.largeSchroder + ∑ k ∈ Ico 1 n, k.largeSchroder * (n - k).largeSchroder =
-          ∑ k ∈ Ico 1 n, k.largeSchroder * (n - k).largeSchroder +
-            largeSchroder 0 * n.largeSchroder := by
-        simp only [largeSchroder_zero, one_mul, add_comm]
-      rw [this]
-      simp_all only [zero_add, Ico_zero_eq_range, largeSchroder_zero, one_mul, tsub_self, mul_one]
-    rw [two_mul_smallSchroder (by omega), two_mul_smallSchroder (by omega),
-      largeSchroder_succ, h_sum, Iic_eq_Icc, Nat.bot_eq_zero]
+  obtain _ | n := n
+  · simp only [zero_add, smallSchroder_one, smallSchroder_zero, isMin_iff_eq_bot, bot_eq_zero,
+    IsMin.finsetIio_eq, zero_tsub, mul_one, sum_empty, mul_zero, add_zero]
+  · refine Nat.mul_left_cancel zero_lt_two ?_
+    calc
+          2 * smallSchroder (n + 2)
+      _ = largeSchroder (n + 1) + ∑ i ≤ n + 1,
+        largeSchroder i * largeSchroder (n + 1 - i) := by
+          rw [two_mul_smallSchroder (by omega), largeSchroder_succ, Iic_eq_Icc, bot_eq_zero]
+      _ = 3 * largeSchroder (n + 1) + ∑ i ∈ Icc 1 n ,
+        largeSchroder i * largeSchroder (n + 1 - i) := by
+          rw [Iic_eq_Icc, bot_eq_zero, ← Ico_succ_right_eq_Icc, succ_eq_succ, succ_eq_add_one,
+            sum_eq_sum_Ico_succ_bot (by omega), ← sum_Ico_add_eq_sum_Ico_add_one (by omega)]
+          simp_all only [largeSchroder_zero, tsub_zero, one_mul, zero_add, tsub_self, mul_one]
+          rw [add_comm, add_right_comm, ← two_mul, ← add_assoc, add_right_comm]
+          congr 1; lia
+      _ = 6 * smallSchroder (n + 1) + 4 * ∑ i ∈ Icc 1 n,
+        smallSchroder i * smallSchroder (n + 1 - i) := by
+          rw [show 6 * smallSchroder (n + 1) = 3 * (2 * smallSchroder (n + 1)) by lia,
+            two_mul_smallSchroder (by omega)]
+          congr
+          rw [mul_sum]
+          apply sum_congr rfl; intros k hk; simp only [mem_Icc] at hk
+          rw [← two_mul_smallSchroder (by omega), ← two_mul_smallSchroder (by omega)]
+          lia
+      _ = _ := by
+        have h : ∑ i ∈ Icc 1 n, i.smallSchroder * (n + 1 - i).smallSchroder + smallSchroder (n + 1)
+          = ∑ i ∈ Iio (n + 1), i.smallSchroder * (n + 1 - i).smallSchroder := by
+            rw [Iio_eq_Ico, bot_eq_zero, sum_eq_sum_Ico_succ_bot (by omega)]
+            simp only [smallSchroder_zero, tsub_zero, one_mul, zero_add, add_comm]
+            congr
+        rw [← h]
+        lia
 
 end Nat
