@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
-public import Aesop
 public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
 
 /-!
 # Extra facts about `Prod`
@@ -23,7 +23,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
-lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by grind
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
@@ -155,6 +155,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] : Std.Re
 instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z

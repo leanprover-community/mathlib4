@@ -185,8 +185,8 @@ instance [IsNoetherian R M] (N : LieSubmodule R L M) : IsNoetherian R N :=
 instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
   inferInstanceAs <| IsArtinian R N.toSubmodule
 
-instance [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R N :=
-  inferInstanceAs <| NoZeroSMulDivisors R N.toSubmodule
+instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
+  inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
 
 variable [LieAlgebra R L] [LieModule R L M]
 

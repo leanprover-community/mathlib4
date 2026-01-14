@@ -8,11 +8,11 @@ module
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.Spread
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -582,22 +582,22 @@ theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
 
 end OrderDual
 
-/-! ### `HasCompl` -/
+/-! ### `Compl` -/
 
 
-instance Prop.hasCompl : HasCompl Prop :=
+instance Prop.instCompl : Compl Prop :=
   ⟨Not⟩
 
-instance Pi.hasCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
+instance Pi.instCompl [∀ i, Compl (π i)] : Compl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
 @[push ←]
-theorem Pi.compl_def [∀ i, HasCompl (π i)] (x : ∀ i, π i) :
+theorem Pi.compl_def [∀ i, Compl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 
 @[simp]
-theorem Pi.compl_apply [∀ i, HasCompl (π i)] (x : ∀ i, π i) (i : ι) :
+theorem Pi.compl_apply [∀ i, Compl (π i)] (x : ∀ i, π i) (i : ι) :
     xᶜ i = (x i)ᶜ :=
   rfl
 
