@@ -117,8 +117,8 @@ instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
-instance : NoZeroSMulDivisors (𝓞 K) K :=
-  inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
+instance : IsTorsionFree (𝓞 K) K :=
+  inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
@@ -371,11 +371,10 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
+instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
+  isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
-instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
+instance : IsTorsionFree (𝓞 K) L := .trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
