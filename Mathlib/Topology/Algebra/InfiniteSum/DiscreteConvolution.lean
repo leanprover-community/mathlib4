@@ -493,8 +493,8 @@ end RingConvolutionAssoc
 section TopologicalRingConvolutionAssoc
 
 variable {R : Type*}
-variable [Ring R] [UniformSpace R] [IsUniformAddGroup R]
-variable [IsTopologicalSemiring R] [T2Space R] [CompleteSpace R]
+variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalSemiring R]
+variable [T2Space R] [CompleteSpace R]
 
 /-- Ring convolution associativity for topological rings at a point.
 Derives `hFiberL`/`hFiberR` from `hTriple`; requires inner convolution summabilities. -/
