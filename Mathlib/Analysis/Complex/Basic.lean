@@ -369,15 +369,16 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     rw [I_sq]
     ring
 
-@[simp] theorem _root_.RCLike.toAdddMonoidHom_complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
-    (h : RCLike.im (RCLike.I : 𝕜) = 1) :
-    (RCLike.complexRingEquiv h : 𝕜 →+ ℂ) = RCLike.map 𝕜 ℂ := rfl
+open scoped ComplexOrder in
+theorem _root_.RCLike.map_nonneg_iff {𝕜 𝕜' : Type*} [RCLike 𝕜] [RCLike 𝕜']
+    (h : RCLike.im (RCLike.I : 𝕜') = 1) {a : 𝕜} :
+    0 ≤ RCLike.map 𝕜 𝕜' a ↔ 0 ≤ a := by
+  rw [RCLike.nonneg_iff, RCLike.nonneg_iff (K := 𝕜)]
+  simp [h]
 
 open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
-    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := by
-  rw [nonneg_iff, RCLike.nonneg_iff (K := 𝕜)]
-  simp [eq_comm]
+    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff rfl
 
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
@@ -390,6 +391,10 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
       RCLike.normSq_apply]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h
+
+@[simp] theorem _root_.RCLike.toContinuousLinearMap_complexLinearIsometryEquiv
+    {𝕜 : Type*} [RCLike 𝕜] (h : RCLike.im (RCLike.I : 𝕜) = 1) :
+    (RCLike.complexLinearIsometryEquiv h : 𝕜 →L[ℝ] ℂ) = RCLike.map 𝕜 ℂ := rfl
 
 @[simp] theorem _root_.RCLike.norm_to_complex {𝕜 : Type*} [RCLike 𝕜] (a : 𝕜) :
     ‖RCLike.re a + RCLike.im a * Complex.I‖ = ‖a‖ := by

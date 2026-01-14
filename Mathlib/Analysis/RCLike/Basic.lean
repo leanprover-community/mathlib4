@@ -245,14 +245,6 @@ theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
 theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
   rw [← @ofReal_pow, @ofReal_im_ax]
 
-/-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
-@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →+ 𝕜' where
-  toFun x := re x + im x * (I : 𝕜')
-  map_add' _ _ := by simp only [map_add, add_mul]; ring
-  map_zero' := by simp
-
-@[simp] theorem map_same_eq_id : map K K = .id K := by ext; simp
-
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]
@@ -787,11 +779,6 @@ end Instances
 
 namespace RCLike
 
-@[simp] theorem map_to_real : map K ℝ = re := by
-  ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
-
-theorem map_apply_real (x : ℝ) : map ℝ K x = x := by simp [im, re]
-
 section Order
 
 open scoped ComplexOrder
@@ -1072,6 +1059,22 @@ theorem imCLM_apply : ((imCLM : StrongDual ℝ K) : K → ℝ) = im :=
 @[continuity, fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
+
+/-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
+@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
+  toFun x := re x + im x * (I : 𝕜')
+  map_add' _ _ := by simp only [map_add, add_mul]; ring
+  map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
+  cont := by
+    refine .add (.comp ?_ reCLM.continuous) (.mul (.comp ?_ imCLM.continuous) continuous_const)
+    all_goals refine AddMonoidHomClass.continuous_of_bound _ 1 fun x ↦ by simp
+
+@[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
+
+@[simp] theorem map_to_real : map K ℝ = reCLM := by
+  ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
+
+theorem map_apply_real (x : ℝ) : map ℝ K x = x := by simp [im, re]
 
 /-- Conjugate as an `ℝ`-algebra equivalence -/
 def conjAe : K ≃ₐ[ℝ] K :=
