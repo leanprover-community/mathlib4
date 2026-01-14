@@ -456,7 +456,7 @@ theorem interpolate_poly_eq_self
 
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
-    P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+    P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
   rw (occs := [1]) [eq_interpolate (f := P) hvs]
   · rw [interpolate_apply, finset_sum_coeff]
     congr! with i hi
