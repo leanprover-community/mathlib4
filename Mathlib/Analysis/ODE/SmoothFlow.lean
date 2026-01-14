@@ -40,9 +40,11 @@ lemma continuous_compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc t
     Continuous (compProj t₀ α) :=
   α.continuous.comp continuous_projIcc
 
-lemma compProj_mapsTo {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    {u : Set E} (hα : MapsTo α univ u) (τ : ℝ) : compProj t₀ α τ ∈ u :=
-  hα trivial
+lemma ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace F] {g : E → F}
+    {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+    Continuous (fun τ ↦ g (compProj t₀ α τ)) :=
+  hg.comp_continuous (continuous_compProj t₀ α) (fun _ ↦ hα trivial)
 
 variable [NormedSpace ℝ E]
 
@@ -69,14 +71,9 @@ The integrand is continuous in the integration variable.
 lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
-    Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) := by
-  -- continuity of τ ↦ g (compProj t₀ α τ)
-  have hgφ : Continuous fun τ => g (compProj t₀ α τ) :=
-    hg.comp_continuous (continuous_compProj t₀ α) (compProj_mapsTo t₀ hα)
-  -- continuity of τ ↦ (j ↦ compProj t₀ (dα j) τ)
-  have hvec : Continuous (fun τ => (fun j => compProj t₀ (dα j) τ)) :=
-    continuous_pi fun j => continuous_compProj t₀ (dα j)
-  exact continuous_eval.comp (hgφ.prodMk hvec)
+    Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) :=
+  continuous_eval.comp ((ContinuousOn.continuous_comp_compProj hg t₀ hα).prodMk
+    (continuous_pi fun j => continuous_compProj t₀ (dα j)))
 
 variable [CompleteSpace E]
 
@@ -309,18 +306,8 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     -- We'll prove it via a parametric-interval-integral lemma.
 
     -- First, show τ ↦ g (compProj t₀ α τ) is continuous (only depends on τ).
-    have hg_comp :
-        Continuous (fun τ : ℝ => g (compProj t₀ α τ)) := by
-      -- show MapsTo (compProj t₀ α) univ u using hα
-      have hmap : ∀ (x : ℝ), compProj t₀ α x ∈ u := by
-        intro τ
-        rw [compProj]
-        apply hα
-        trivial
-      have hcont :
-          ContinuousOn (fun τ : ℝ => g (compProj t₀ α τ)) Set.univ :=
-        hg.comp_continuous (continuous_compProj (t₀ := t₀) (α := α)) hmap |>.continuousOn
-      simpa [Continuous, Set.restrict] using hcont
+    have hg_comp : Continuous (fun τ : ℝ => g (compProj t₀ α τ)) :=
+      ContinuousOn.continuous_comp_compProj hg t₀ hα
 
     -- Next: joint continuity of the integrand (dα, τ) ↦ g(compProj α τ) (…evaluations of dα…)
     have hIntegrand :
