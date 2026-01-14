@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Field.Periodic
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
@@ -128,25 +127,6 @@ lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
 -/
 
 end
-
-section Periodic
-
-namespace Function
-
-/-- A continuous, periodic function has compact range. -/
-theorem Periodic.compact_of_continuous [TopologicalSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : c ≠ 0) (hf : Continuous f) : IsCompact (range f) := by
-  rw [← hp.image_uIcc hc 0]
-  exact isCompact_uIcc.image hf
-
-/-- A continuous, periodic function is bounded. -/
-theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ}
-    (hp : Periodic f c) (hc : c ≠ 0) (hf : Continuous f) : IsBounded (range f) :=
-  (hp.compact_of_continuous hc hf).isBounded
-
-end Function
-
-end Periodic
 
 section Monotone
 

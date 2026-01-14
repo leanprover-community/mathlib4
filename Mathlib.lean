@@ -7172,6 +7172,7 @@ public import Mathlib.Topology.Instances.PNat
 public import Mathlib.Topology.Instances.Rat
 public import Mathlib.Topology.Instances.RatLemmas
 public import Mathlib.Topology.Instances.Real.Lemmas
+public import Mathlib.Topology.Instances.Real.Periodic
 public import Mathlib.Topology.Instances.RealVectorSpace
 public import Mathlib.Topology.Instances.Shrink
 public import Mathlib.Topology.Instances.Sign
