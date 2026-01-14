@@ -84,12 +84,7 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
   have hwx : ∀ i, ∑ j ∈ fsx i, wx i j = 1 := by
     intro i
     simp_rw [← hw i, fsx, wx]
-    by_cases hi : (i : ι) ∈ fs i
-    · rw [Finset.insert_eq_of_mem hi]
-      exact Finset.sum_congr rfl (fun j hj ↦ (by simp [hj]))
-    · simp only [hi, not_false_eq_true, Finset.sum_insert, SetLike.mem_coe,
-        Set.indicator_of_notMem, zero_add]
-      exact Finset.sum_congr rfl (fun j hj ↦ (by simp [hj]))
+    by_cases hi : (i : ι) ∈ fs i <;> simpa [hi] using Finset.sum_congr rfl (by aesop)
   have hp'x : ∀ i : s, p' ∈ line[k, p i, (fsx i).affineCombination k p (wx i)] := by
     intro i
     convert hp' i using 4
@@ -102,10 +97,7 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
   convert hr j using 2
   simp only [Set.indicator_apply, Set.mem_diff, SetLike.mem_coe, Set.mem_singleton_iff,
     Finset.coe_insert, Set.insert_diff_of_mem, fsx, wx]
-  by_cases hji : j = i
-  · simp [hji]
-  · simp only [hji, not_false_eq_true, and_true, left_eq_ite_iff, ite_eq_right_iff]
-    exact fun hnm hm ↦ False.elim (hnm hm)
+  grind
 
 /-- A version of **Ceva's theorem** for a finite indexed affinely independent family of points:
 consider some lines, each through one of the points and an affine combination of the points, and
