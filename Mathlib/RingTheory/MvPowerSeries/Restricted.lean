@@ -26,11 +26,11 @@ open scoped Topology Pointwise
 /-- A multivariate power series over a normed ring `R` is restricted for a
   tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the cofinite filter. -/
 def IsRestricted {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) (f : MvPowerSeries σ R) :=
-  Tendsto (fun (t : σ →₀ ℕ) ↦ (norm (coeff t f)) * ∏ i ∈ t.support, c i ^ t i) Filter.cofinite (𝓝 0)
+  Tendsto (fun (t : σ →₀ ℕ) ↦ ‖coeff t f‖ * t.prod (c · ^ ·)) cofinite (𝓝 0)
 
 lemma isRestricted_iff_abs {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ)
     (f : MvPowerSeries σ R) : IsRestricted c f ↔ IsRestricted |c| f := by
-  simp [IsRestricted, NormedAddCommGroup.tendsto_nhds_zero]
+  simp [IsRestricted, NormedAddCommGroup.tendsto_nhds_zero, Finsupp.prod]
 
 lemma zero {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) :
     IsRestricted c (0 : MvPowerSeries σ R) := by
@@ -39,20 +39,13 @@ lemma zero {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) :
 /-- The set of `‖coeff t f‖ * ∏ i : t.support, c i ^ t i` for a given power series `f`
   and tuple `c`. -/
 def convergenceSet {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) (f : MvPowerSeries σ R) :
-  Set ℝ := {‖(coeff t) f‖ * ∏ i : t.support, c i ^ t i | t : (σ →₀ ℕ)}
+  Set ℝ := {‖coeff t f‖ * t.prod (c · ^ ·) | t : σ →₀ ℕ}
 
 lemma monomial {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) (n : σ →₀ ℕ) (a : R) :
     IsRestricted c (monomial n a) := by
-  letI := Classical.typeDecidableEq σ
-  simp_rw [IsRestricted, coeff_monomial]
-  refine tendsto_nhds_of_eventually_eq ?_
-  simp only [mul_eq_zero, norm_eq_zero, ite_eq_right_iff,
-    eventually_cofinite, not_or, Classical.not_imp]
-  have : {x | (x = n ∧ ¬a = 0) ∧ ¬∏ i ∈ x.support, c i ^ x i = 0} ⊆ {x | x = n} := by
-    simp only [Set.setOf_eq_eq_singleton, Set.subset_singleton_iff, Set.mem_setOf_eq, and_imp,
-      forall_eq, implies_true]
-  refine Set.Finite.subset ?_ this
-  aesop
+  classical
+  refine tendsto_nhds_of_eventually_eq (Set.Subsingleton.finite ?_)
+  aesop (add simp [Set.Subsingleton, coeff_monomial])
 
 lemma one {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) :
     IsRestricted c (1 : MvPowerSeries σ R) := by
@@ -65,52 +58,23 @@ lemma C {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) (a : R) :
 lemma add {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) {f g : MvPowerSeries σ R}
     (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f + g) := by
   rw [isRestricted_iff_abs, IsRestricted] at *
-  have := hf.add hg
-  simp only [Pi.abs_apply, add_zero] at this
-  have h0 : Tendsto (fun x : σ →₀ ℕ => 0) cofinite (nhds (0 : ℝ)) := by
-    rw [NormedAddCommGroup.tendsto_nhds_zero]
-    aesop
-  apply Filter.Tendsto.squeeze h0 this
-  <;> refine Pi.le_def.mpr ?_
-  <;> intro n
-  · refine mul_nonneg (norm_nonneg _) ?_
-    have : ∀ i ∈ n.support, 0 ≤ |c| i ^ n i := by
-      aesop
-    exact Finset.prod_nonneg fun i a ↦ this i a
-  · simp only [map_add]
-    have : ‖(coeff n) f + (coeff n) g‖ * ∏ i ∈ n.support, |c| i ^ n i ≤
-        (‖(coeff n) f‖ + ‖coeff n g‖)  * ∏ i ∈ n.support, |c| i ^ n i := by
-      refine mul_le_mul_of_nonneg (norm_add_le _ _) (by rfl) (by simp) ?_
-      have : ∀ i ∈ n.support, 0 ≤ |c| i ^ n i := by
-        aesop
-      exact Finset.prod_nonneg fun i a ↦ this i a
-    simpa only [add_mul] using this
+  refine tendsto_const_nhds.squeeze (add_zero (0 : ℝ) ▸ hf.add hg) (fun n ↦ ?_) fun n ↦ ?_
+  · dsimp [Finsupp.prod]; positivity -- TODO: add positivity extension for Finsupp.prod
+  rw [← add_mul]
+  exact mul_le_mul_of_nonneg_right (norm_add_le ..) (by dsimp [Finsupp.prod]; positivity)
 
 lemma neg {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) {f : MvPowerSeries σ R}
-    (hf : IsRestricted c f) : IsRestricted c (- f) := by
+    (hf : IsRestricted c f) : IsRestricted c (-f) := by
   rw [isRestricted_iff_abs, IsRestricted] at *
-  simpa using hf
+  simpa [IsRestricted] using hf
 
 lemma smul {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) {f : MvPowerSeries σ R}
     (hf : IsRestricted c f) (r : R) : IsRestricted c (r • f) := by
   rw [isRestricted_iff_abs, IsRestricted] at *
-  have : Tendsto (fun t ↦ ‖r‖ * ‖(coeff t) f‖ * ∏ i ∈ t.support, |c| i ^ t i) cofinite (𝓝 0) := by
-    have := Filter.Tendsto.const_mul ‖r‖ hf
-    grind
-  have h0 : Tendsto (fun x : σ →₀ ℕ => 0) cofinite (nhds (0 : ℝ)) := by
-    rw [NormedAddCommGroup.tendsto_nhds_zero]
-    aesop
-  apply Filter.Tendsto.squeeze h0 this
-  <;> refine Pi.le_def.mpr ?_
-  <;> intro n
-  · refine mul_nonneg (norm_nonneg _) ?_
-    have : ∀ i ∈ n.support, 0 ≤ |c| i ^ n i := by
-      aesop
-    exact Finset.prod_nonneg fun i a ↦ this i a
-  · refine mul_le_mul_of_nonneg (norm_mul_le _ _) (by rfl) (by simp) ?_
-    have : ∀ i ∈ n.support, 0 ≤ |c| i ^ n i := by
-      aesop
-    exact Finset.prod_nonneg fun i a ↦ this i a
+  refine tendsto_const_nhds.squeeze ((hf.const_mul ‖r‖).trans_eq (by simp)) (fun n ↦ ?_) fun n ↦ ?_
+  · dsimp [Finsupp.prod]; positivity
+  simp only [map_smul, smul_eq_mul, Pi.abs_apply, ← mul_assoc]
+  exact mul_le_mul_of_nonneg_right (norm_mul_le _ _) (by dsimp [Finsupp.prod]; positivity)
 
 lemma nsmul {R : Type*} [NormedRing R] {σ : Type*} (c : σ → ℝ) (n : ℕ)
     (f : MvPowerSeries σ R) (hf : IsRestricted c f) : IsRestricted c (n • f) := by
@@ -198,10 +162,6 @@ private lemma mul_extracted {σ : Type*} (c : σ → ℝ) (a b : σ →₀ ℕ) 
 lemma mul {R : Type*} [NormedRing R] [IsUltrametricDist R] {σ : Type*} (c : σ → ℝ)
     {f g : MvPowerSeries σ R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
-  letI := Classical.typeDecidableEq σ
-  letI : Finset.HasAntidiagonal (σ →₀ ℕ) := by
-    exact Finsupp.instHasAntidiagonal
+  classical
   rw [isRestricted_iff_abs, IsRestricted] at *
-  simp_rw [coeff_mul]
-  have := tendsto_antidiagonal (mul_extracted c) hf hg
-  exact this
+  exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
