@@ -303,18 +303,18 @@ The logarithmic counting function of the constant function zero is zero.
 The logarithmic counting function is even.
 -/
 theorem logCounting_even {f : 𝕜 → E} {e : WithTop E} :
-    Function.Even (logCounting f e) := by
+    (logCounting f e).Even := by
   intro r
   by_cases h : e = ⊤
-  all_goals simp [logCounting, h, Function.locallyFinsuppWithin.logCounting_even _ r]
+  all_goals simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
 
 /--
 The logarithmic counting function is monotonous.
 -/
 theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
     MonotoneOn (logCounting f e) (Ioi 0) := by
-  unfold logCounting
-  all_goals simpa [h] using locallyFinsuppWithin.logCounting_mono (by positivity))
+  by_cases h : e = ⊤
+  all_goals simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
@@ -382,8 +382,8 @@ theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : Me
     (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
     logCounting (f₁ + f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
   simp only [logCounting, ↓reduceDIte]
-  rw [← Function.locallyFinsuppWithin.logCounting.map_add]
-  exact Function.locallyFinsuppWithin.logCounting_le
+  rw [← locallyFinsuppWithin.logCounting.map_add]
+  exact locallyFinsuppWithin.logCounting_le
     (negPart_divisor_add_le_add h₁f₁.meromorphicOn h₁f₂.meromorphicOn) hr
 
 /--
@@ -447,9 +447,9 @@ theorem logCounting_mul_zero_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
     logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
   simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
-    ← Function.locallyFinsuppWithin.logCounting.map_add]
-  apply Function.locallyFinsuppWithin.logCounting_le _ hr
-  apply Function.locallyFinsuppWithin.posPart_add
+    ← locallyFinsuppWithin.logCounting.map_add]
+  apply locallyFinsuppWithin.logCounting_le _ hr
+  apply locallyFinsuppWithin.posPart_add
 
 @[deprecated (since := "2025-12-11")] alias logCounting_zero_mul_le := logCounting_mul_zero_le
 
@@ -477,9 +477,9 @@ theorem logCounting_mul_top_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
     logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
   simp only [logCounting, reduceDIte]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
-    ← Function.locallyFinsuppWithin.logCounting.map_add]
-  apply Function.locallyFinsuppWithin.logCounting_le _ hr
-  apply Function.locallyFinsuppWithin.negPart_add
+    ← locallyFinsuppWithin.logCounting.map_add]
+  apply locallyFinsuppWithin.logCounting_le _ hr
+  apply locallyFinsuppWithin.negPart_add
 
 @[deprecated (since := "2025-12-11")] alias logCounting_top_mul_le := logCounting_mul_top_le
 

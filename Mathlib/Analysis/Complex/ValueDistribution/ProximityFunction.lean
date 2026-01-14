@@ -113,7 +113,7 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
 /--
 The proximity function is even.
 -/
-theorem proximity_even : Function.Even (proximity f a) := by
+theorem proximity_even : (proximity f a).Even := by
   intro r
   by_cases h : a = ⊤
   all_goals simp [proximity, h]
@@ -126,8 +126,7 @@ theorem proximity_nonneg {a : WithTop E} :
   by_cases h : a = ⊤
   all_goals
     intro r
-    simp only [Pi.zero_apply, proximity, h, ↓reduceDIte]
-    exact circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+    simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
 
 /-!
 ## Behaviour under Arithmetic Operations
