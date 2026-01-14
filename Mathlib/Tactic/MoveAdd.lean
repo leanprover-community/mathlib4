@@ -5,9 +5,12 @@ Authors: Arthur Paulino, Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Basic
 public meta import Mathlib.Lean.Meta
-public meta import Mathlib.Order.Defs.LinearOrder
+public meta import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 

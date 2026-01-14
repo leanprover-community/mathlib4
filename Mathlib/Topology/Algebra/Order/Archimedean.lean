@@ -25,7 +25,7 @@ In this file we prove the following theorems:
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

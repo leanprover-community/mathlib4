@@ -28,7 +28,7 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Catego
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
-this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`. -/
+this is the type of morphisms `X ⟶ (Y⟦m⟧)` for `m : M`. -/
 abbrev ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ Y⟦m⟧
 
 namespace ShiftedHom
@@ -185,10 +185,12 @@ section Preadditive
 
 variable [Preadditive C] [Preadditive D]
 
+@[simp]
 lemma map_add {a : M} (α₁ α₂ : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Additive] :
     (α₁ + α₂).map F = α₁.map F + α₂.map F := by
   simp [ShiftedHom.map, F.map_add]
 
+@[simp]
 lemma map_zero {a : M} (F : C ⥤ D) [F.CommShift M] [F.Additive] :
     (0 : ShiftedHom X Y a).map F = 0 := by
   simp [ShiftedHom.map]
@@ -219,6 +221,7 @@ lemma mk₀_smul (m₀ : M) (hm₀ : m₀ = 0) (r : R) {f : X ⟶ Y} :
 
 variable [Preadditive D] [Linear R D]
 
+@[simp]
 lemma map_smul (r : R) {a : M} (α : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] [F.Linear R] :
     (r • α).map F = r • (α.map F) := by
   simp [ShiftedHom.map, F.map_smul]

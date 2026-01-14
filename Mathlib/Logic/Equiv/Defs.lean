@@ -9,7 +9,6 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Substs
 
@@ -105,13 +104,6 @@ instance : EquivLike (α ≃ β) α β where
   left_inv := Equiv.left_inv
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
-
-/-- Deprecated helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`. -/
-@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
-def instFunLike : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
 
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :

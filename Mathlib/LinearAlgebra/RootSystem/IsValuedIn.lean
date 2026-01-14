@@ -109,23 +109,15 @@ lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) 
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]
   exact pairing_reflectionPerm P i j k
 
-@[deprecated (since := "2025-05-28")] alias pairingIn_reflection_perm := pairingIn_reflectionPerm
-
 @[simp]
 lemma pairingIn_reflectionPerm_self_left [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
     P.pairingIn S (P.reflectionPerm i i) j = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
 
-@[deprecated (since := "2025-05-28")]
-alias pairingIn_reflection_perm_self_left := pairingIn_reflectionPerm_self_left
-
 @[simp]
 lemma pairingIn_reflectionPerm_self_right [FaithfulSMul S R] [P.IsValuedIn S] (i j : ι) :
     P.pairingIn S i (P.reflectionPerm j j) = - P.pairingIn S i j := by
   simp [← (FaithfulSMul.algebraMap_injective S R).eq_iff]
-
-@[deprecated (since := "2025-05-28")]
-alias pairingIn_reflection_perm_self_right := pairingIn_reflectionPerm_self_right
 
 lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R]
     [P.IsValuedIn T] :
@@ -137,12 +129,17 @@ lemma IsValuedIn.trans (T : Type*) [CommRing T] [Algebra T S] [Algebra T R] [IsS
 instance [P.IsCrystallographic] [Algebra ℚ R] : P.IsValuedIn ℚ :=
   IsValuedIn.trans P (T := ℤ) (S := ℚ)
 
+@[simp] lemma algebraMap_pairingIn' (T : Type*)
+    [CommRing T] [Algebra T S] [Algebra T R] [IsScalarTower T S R] [P.IsValuedIn T] [P.IsValuedIn S]
+    [FaithfulSMul S R] (i j : ι) :
+    algebraMap T S (P.pairingIn T i j) = P.pairingIn S i j := by
+  apply FaithfulSMul.algebraMap_injective S R
+  rw [← RingHom.comp_apply, ← IsScalarTower.algebraMap_eq]
+  simp
+
 @[simp] lemma pairingIn_rat [Nontrivial R] [P.IsCrystallographic] [Algebra ℚ R] (i j : ι) :
     P.pairingIn ℚ i j = P.pairingIn ℤ i j := by
-  apply FaithfulSMul.algebraMap_injective ℚ R
-  have : algebraMap ℤ R = algebraMap ℚ R ∘ algebraMap ℤ ℚ := by simp
-  rw [← eq_intCast (algebraMap ℤ ℚ), ← comp_apply (f := algebraMap ℚ R) (g := algebraMap ℤ ℚ),
-    ← this, algebraMap_pairingIn, algebraMap_pairingIn]
+  simp [← P.algebraMap_pairingIn' ℚ ℤ]
 
 lemma coroot'_apply_apply_mem_of_mem_span [Module S M] [IsScalarTower S R M] [P.IsValuedIn S]
     {x : M} (hx : x ∈ span S (range P.root)) (i : ι) :
@@ -188,16 +185,10 @@ lemma rootSpanMem_reflectionPerm_self [Module S M] (i : ι) :
     P.rootSpanMem S (P.reflectionPerm i i) = - P.rootSpanMem S i := by
   ext; simp
 
-@[deprecated (since := "2025-05-28")]
-alias rootSpanMem_reflection_perm_self := rootSpanMem_reflectionPerm_self
-
 omit [Algebra S R] in
 lemma corootSpanMem_reflectionPerm_self [Module S N] (i : ι) :
     P.corootSpanMem S (P.reflectionPerm i i) = - P.corootSpanMem S i := by
   ext; simp
-
-@[deprecated (since := "2025-05-28")]
-alias corootSpanMem_reflection_perm_self := corootSpanMem_reflectionPerm_self
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
@@ -310,7 +301,7 @@ lemma iInf_ker_coroot'_eq :
   span_root'_eq_top P.flip
 
 lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
-    [P.IsValuedIn S] [NoZeroSMulDivisors R M] [NeZero (2 : R)] {i j : ι} :
+    [P.IsValuedIn S] [IsDomain R] [Module.IsTorsionFree R M] [NeZero (2 : R)] {i j : ι} :
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
   simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
     P.pairing_eq_zero_iff

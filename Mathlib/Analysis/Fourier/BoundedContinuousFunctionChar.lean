@@ -108,7 +108,7 @@ lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
 noncomputable
 def charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     AddMonoidAlgebra ℂ W →ₐ[ℂ] (V →ᵇ ℂ) :=
-  AddMonoidAlgebra.lift ℂ W (V →ᵇ ℂ) (charMonoidHom he hL)
+  AddMonoidAlgebra.lift ℂ (V →ᵇ ℂ) W (charMonoidHom he hL)
 
 @[simp]
 lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :

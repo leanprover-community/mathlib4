@@ -28,7 +28,7 @@ requires slightly less imports.
 * Prove convexity for negative powers.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
