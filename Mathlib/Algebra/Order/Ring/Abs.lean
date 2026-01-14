@@ -275,3 +275,6 @@ lemma Odd.of_dvd_nat (hn : Odd n) (hm : m ∣ n) : Odd m :=
 lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by
   rintro rfl
   exact absurd (hn.of_dvd_nat hm) (by decide)
+
+lemma Int.le_abs_of_dvd {a b : ℤ} (h₁ : b ≠ 0) (h₂ : a ∣ b) : a ≤ |b| :=
+  le_of_dvd (by simpa) (by simpa)
