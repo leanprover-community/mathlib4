@@ -69,13 +69,16 @@ Differences (discrete ↔ MeasureTheory):
   - `convolution_assoc`: most general, arbitrary bilinear maps `L`, `L₂`, `L₃`, `L₄`
   - `ringConvolution_assoc`: specializes to `LinearMap.mul ℕ R`
   - `completeUniformRingConvolution_assoc`: derives fiber summabilities
-- HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
-  - `addFiber_eq_antidiagonal`: `addFiber x = ↑(Finset.antidiagonal x)`
-  - `addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
-  - `addRingConvolution_eq_cauchyProduct`: bridge to `CauchyProduct`
-- CauchyProduct (see `Mathlib.Algebra.BigOperators.CauchyProduct`):
+- HasMulAntidiagonal / HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
+  - `mulFiber_eq_mulAntidiagonal` / `addFiber_eq_antidiagonal`: fiber equals antidiagonal
+  - `convolution_eq_sum_mulAntidiagonal` / `addConvolution_eq_sum_antidiagonal`:
+    `tsum` reduces to `Finset.sum`
+  - `ringConvolution_eq_mulCauchyProduct` / `addRingConvolution_eq_cauchyProduct`:
+    bridge to `MulCauchyProduct` / `CauchyProduct`
+- MulCauchyProduct / CauchyProduct (see `Mathlib.Algebra.BigOperators.CauchyProduct`):
   - Purely algebraic finite-sum convolution (no topology needed)
-  - `CauchyProduct.assoc`, `one_mul`, `mul_one`, `comm`: ring axioms via `Finset.sum_nbij'`
+  - `MulCauchyProduct.assoc` / `CauchyProduct.assoc`, `one_mul`, `mul_one`, `comm`:
+    ring axioms via `Finset.sum_nbij'`
 
 ## Notation
 
@@ -623,70 +626,82 @@ theorem ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
 
 end MulAntidiagonalRing
 
-/-! ### CauchyProduct Bridge
-For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), `addRingConvolution` equals
-`CauchyProduct.apply`. This allows deriving ring axioms from the purely algebraic
-`CauchyProduct` proofs. See `Mathlib.Analysis.DiscreteConvolution.CauchyProduct` for
+/-! ### MulCauchyProduct / CauchyProduct Bridge
+
+For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, ring convolution
+equals the corresponding CauchyProduct. This allows deriving ring axioms from the purely
+algebraic CauchyProduct proofs. See `Mathlib.Algebra.BigOperators.CauchyProduct` for
 the standalone algebraic formulation. -/
 
-section CauchyProductBridge
+section MulCauchyProductBridge
 
-variable [AddMonoid M] [Finset.HasAntidiagonal M]
+variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- `addRingConvolution` equals `CauchyProduct.apply` for `HasAntidiagonal` types. -/
-theorem addRingConvolution_eq_cauchyProduct (f g : M → R) (x : M) :
-    (f ⋆₊ₘ g) x = CauchyProduct.apply f g x :=
-  addRingConvolution_eq_sum_antidiagonal f g x
+/-- `ringConvolution` equals `MulCauchyProduct.apply` for `HasMulAntidiagonal` types. -/
+@[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
+  /-- `addRingConvolution` equals `CauchyProduct.apply` for `HasAntidiagonal` types. -/]
+theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
+    (f ⋆ₘ g) x = MulCauchyProduct.apply f g x :=
+  ringConvolution_eq_sum_mulAntidiagonal f g x
 
-/-- Ring convolution associativity for `HasAntidiagonal` types - no hypotheses needed.
-This is the "fully automated" associativity for finite antidiagonal types like ℕ, ℕ × ℕ. -/
-theorem addRingConvolution_assoc_of_hasAntidiagonal (f g h : M → R) :
-    (f ⋆₊ₘ g) ⋆₊ₘ h = f ⋆₊ₘ (g ⋆₊ₘ h) := by
+/-- Ring convolution associativity for `HasMulAntidiagonal` types - no hypotheses needed.
+This is the "fully automated" associativity for finite antidiagonal types. -/
+@[to_additive (dont_translate := R) addRingConvolution_assoc_of_hasAntidiagonal
+  /-- Ring convolution associativity for `HasAntidiagonal` types - no hypotheses needed.
+  This is the "fully automated" associativity for finite antidiagonal types like ℕ, ℕ × ℕ. -/]
+theorem ringConvolution_assoc_of_hasMulAntidiagonal (f g h : M → R) :
+    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
   funext x
-  simp only [addRingConvolution_eq_sum_antidiagonal]
-  exact congrFun (CauchyProduct.assoc f g h) x
+  simp only [ringConvolution_eq_sum_mulAntidiagonal]
+  exact congrFun (MulCauchyProduct.assoc f g h) x
 
-end CauchyProductBridge
+end MulCauchyProductBridge
 
-/-! ### CauchyProduct Identity Bridge -/
+/-! ### MulCauchyProduct / CauchyProduct Identity Bridge -/
 
-section CauchyProductIdentityBridge
+section MulCauchyProductIdentityBridge
 
-variable [AddMonoid M] [DecidableEq M] [Finset.HasAntidiagonal M]
+variable [Monoid M] [DecidableEq M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- Identity left law for `HasAntidiagonal` types via `CauchyProduct`. -/
-theorem one_addRingConvolution (f : M → R) :
-    CauchyProduct.one ⋆₊ₘ f = f := by
+/-- Identity left law for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+@[to_additive (dont_translate := R) one_addRingConvolution
+  /-- Identity left law for `HasAntidiagonal` types via `CauchyProduct`. -/]
+theorem one_ringConvolution (f : M → R) :
+    MulCauchyProduct.one ⋆ₘ f = f := by
   funext x
-  simp only [addRingConvolution_eq_sum_antidiagonal]
-  exact congrFun (CauchyProduct.one_mul f) x
+  simp only [ringConvolution_eq_sum_mulAntidiagonal]
+  exact congrFun (MulCauchyProduct.one_mul f) x
 
-/-- Identity right law for `HasAntidiagonal` types via `CauchyProduct`. -/
-theorem addRingConvolution_one (f : M → R) :
-    f ⋆₊ₘ CauchyProduct.one = f := by
+/-- Identity right law for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+@[to_additive (dont_translate := R) addRingConvolution_one
+  /-- Identity right law for `HasAntidiagonal` types via `CauchyProduct`. -/]
+theorem ringConvolution_one (f : M → R) :
+    f ⋆ₘ MulCauchyProduct.one = f := by
   funext x
-  simp only [addRingConvolution_eq_sum_antidiagonal]
-  exact congrFun (CauchyProduct.mul_one f) x
+  simp only [ringConvolution_eq_sum_mulAntidiagonal]
+  exact congrFun (MulCauchyProduct.mul_one f) x
 
-end CauchyProductIdentityBridge
+end MulCauchyProductIdentityBridge
 
-/-! ### CauchyProduct Commutativity Bridge -/
+/-! ### MulCauchyProduct / CauchyProduct Commutativity Bridge -/
 
-section CauchyProductCommBridge
+section MulCauchyProductCommBridge
 
-variable [AddCommMonoid M] [Finset.HasAntidiagonal M]
+variable [CommMonoid M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
-/-- Commutativity for `HasAntidiagonal` types via `CauchyProduct`. -/
-theorem addRingConvolution_comm_of_hasAntidiagonal (f g : M → R) :
-    f ⋆₊ₘ g = g ⋆₊ₘ f := by
+/-- Commutativity for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+@[to_additive (dont_translate := R) addRingConvolution_comm_of_hasAntidiagonal
+  /-- Commutativity for `HasAntidiagonal` types via `CauchyProduct`. -/]
+theorem ringConvolution_comm_of_hasMulAntidiagonal (f g : M → R) :
+    f ⋆ₘ g = g ⋆ₘ f := by
   funext x
-  simp only [addRingConvolution_eq_sum_antidiagonal]
-  exact congrFun (CauchyProduct.comm f g) x
+  simp only [ringConvolution_eq_sum_mulAntidiagonal]
+  exact congrFun (MulCauchyProduct.comm f g) x
 
-end CauchyProductCommBridge
+end MulCauchyProductCommBridge
 
 end DiscreteConvolution
 
