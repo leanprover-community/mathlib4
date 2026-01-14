@@ -45,8 +45,8 @@ theorem addRingConvolution_eq_measureTheory_convolution [Countable M]
 ```
 
 Parallel API:
-- `ConvolutionExistsAt`, `ConvolutionExists`, `convolution_zero`,
-  `zero_convolution`, `convolution_assoc`.
+- `ConvolutionExistsAt`, `ConvolutionExists`, `convolution`,
+  `convolution_zero`, `zero_convolution`, `convolution_assoc`.
 - Convolution associativity has the same bilinearity hypothesis:
   `hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z)`.
 
@@ -101,7 +101,9 @@ abbrev mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ 
 theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by
   simp only [Set.mem_mulAntidiagonal, Set.mem_univ, true_and]
 
-@[to_additive]
+/-- Useful for showing `mulFiber 1` is nonempty, e.g., when proving convolution has an identity. -/
+@[to_additive /-- Useful for showing `addFiber 0` is nonempty,
+e.g., when proving convolution has an identity. -/]
 theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
   simp only [Set.mem_mulAntidiagonal, Set.mem_univ, mul_one, and_self]
 
@@ -278,7 +280,7 @@ variable [CommMonoid M] [CommSemiring S] [AddCommMonoid E] [Module S E] [Topolog
 
 /-- Swap equivalence for `mulFiber`: `(a, b) ↦ (b, a)` is an equivalence on the fiber. -/
 @[to_additive /-- Swap equivalence for `addFiber`. -/]
-def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
+private def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
   toFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
   invFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
   left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
