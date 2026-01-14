@@ -1166,7 +1166,7 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
 @[simp] theorem map_to_real : map K ℝ = reCLM := by
   ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
 
-theorem map_apply_real (x : ℝ) : map ℝ K x = x := by simp [im, re]
+@[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
 
 end LinearMaps
 

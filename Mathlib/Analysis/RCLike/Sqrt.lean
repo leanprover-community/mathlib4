@@ -22,11 +22,14 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 open ComplexOrder
 
 /-- The square root of a complex number. -/
-noncomputable abbrev Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
+noncomputable def Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
+
+@[simp] theorem Complex.sqrt_zero : (0 : ℂ).sqrt = 0 := by simp [sqrt]
+@[simp] theorem Complex.sqrt_one : (1 : ℂ).sqrt = 1 := by simp [sqrt]
 
 theorem Complex.sqrt_eq_re_add_ite {a : ℂ} :
     a.sqrt = √((‖a‖ + a.re) / 2) + (if 0 ≤ a.im then 1 else -1) * √((‖a‖ - a.re) / 2) * I := by
-  rw [← cpow_inv_two_re]
+  rw [← cpow_inv_two_re, sqrt]
   by_cases! h : 0 ≤ a.im
   · simp [← cpow_inv_two_im_eq_sqrt h, h]
   simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
@@ -56,12 +59,12 @@ theorem RCLike.sqrt_eq_re_add_ite {a : 𝕜} :
     simp [h, im_eq_zero]
   aesop
 
-@[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
-@[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
+@[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt, Complex.sqrt]
+@[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt, Complex.sqrt]
 
 theorem Complex.re_sqrt_ofReal {a : ℝ} :
     (sqrt (a : ℂ)).re = √a := by
-  simp only [cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re]
+  simp only [cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re, Complex.sqrt]
   grind
 
 theorem RCLike.re_sqrt_ofReal {a : ℝ} :
