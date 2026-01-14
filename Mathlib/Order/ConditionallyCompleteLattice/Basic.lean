@@ -269,12 +269,8 @@ theorem csInf_upperBounds_range [Nonempty β] {f : β → α} (hf : BddAbove (ra
 theorem notMem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf := notMem_of_lt_csInf
-
 theorem notMem_of_csSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : BddAbove s) : x ∉ s :=
   notMem_of_lt_csInf (α := αᵒᵈ) h hs
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_csSup_lt := notMem_of_csSup_lt
 
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that `b`
 is larger than all elements of `s`, and that this is not the case of any `w<b`.
@@ -630,8 +626,6 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
 
 theorem notMem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
   notMem_of_lt_csInf h (OrderBot.bddBelow s)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_csInf' := notMem_of_lt_csInf'
 
 @[gcongr mid]
 theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sInf s ≤ sInf t :=

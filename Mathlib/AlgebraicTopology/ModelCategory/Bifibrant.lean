@@ -32,7 +32,10 @@ section Cofibrant
 variable [CategoryWithCofibrations C] [HasInitial C]
 
 variable (C) in
-/-- The property that is satisfied by cofibrant objects. -/
+/-- The property that is satisfied by cofibrant objects.
+(This is only introduced in order to consider the full subcategory
+`CofibrantObject`. Otherwise, the typeclass `IsCofibrant`
+is preferred.) -/
 def cofibrantObjects : ObjectProperty C := IsCofibrant
 
 variable (C) in
@@ -86,7 +89,10 @@ section Fibrant
 variable [CategoryWithFibrations C] [HasTerminal C]
 
 variable (C) in
-/-- The property that is satisfied by fibrant objects. -/
+/-- The property that is satisfied by fibrant objects.
+(This is only introduced in order to consider the full subcategory
+`FibrantObject`. Otherwise, the typeclass `IsFibrant`
+is preferred.) -/
 def fibrantObjects : ObjectProperty C := fun X ↦ IsFibrant X
 
 variable (C) in
@@ -142,9 +148,12 @@ variable [CategoryWithCofibrations C] [HasInitial C]
 
 variable (C) in
 /-- The property that is satisfied by bifibrant objects, i.e. objects
-that are both cofibrant and fibrant. -/
+that are both cofibrant and fibrant.
+(This is only introduced in order to consider the full subcategory
+`BifibrantObject`. Otherwise, the typeclasses `IsCofibrant` and
+`IsFibrant` are preferred.) -/
 def bifibrantObjects : ObjectProperty C :=
-    cofibrantObjects C ⊓ fibrantObjects C
+  cofibrantObjects C ⊓ fibrantObjects C
 
 variable (C) in
 lemma bifibrantObjects_le_cofibrantObject :
@@ -180,6 +189,13 @@ lemma homMk_surjective {X Y : C} [IsCofibrant X] [IsCofibrant Y]
     [IsFibrant X] [IsFibrant Y]
     (f : mk X ⟶ mk Y) :
     ∃ (g : X ⟶ Y), f = homMk g := ⟨f.hom, rfl⟩
+
+@[simp]
+lemma weakEquivalence_homMk_iff [CategoryWithWeakEquivalences C] {X Y : C}
+    [IsCofibrant X] [IsFibrant X] [IsCofibrant Y] [IsFibrant Y] (f : X ⟶ Y) :
+    WeakEquivalence (homMk f) ↔ WeakEquivalence f := by
+  simp only [weakEquivalence_iff]
+  rfl
 
 @[simp]
 lemma homMk_id (X : C) [IsCofibrant X] [IsFibrant X] :

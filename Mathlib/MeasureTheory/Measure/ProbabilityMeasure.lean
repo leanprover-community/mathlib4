@@ -238,7 +238,7 @@ theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.m
   refine ⟨fun ⟨ν, hν⟩ ↦ by simp [← hν], fun h ↦ ?_⟩
   refine ⟨⟨μ, isProbabilityMeasure_iff_real.2 (by simpa using h)⟩, ?_⟩
   ext s hs
-  rfl
+  simp
 
 theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure ≠ 0 := by
   simp [← FiniteMeasure.mass_nonzero_iff]
@@ -320,6 +320,8 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
   injective _μ _ν h := Subtype.ext <| congr_arg FiniteMeasure.toMeasure h
+
+instance R1Space : R1Space (ProbabilityMeasure Ω) := (toFiniteMeasure_isEmbedding Ω).r1Space
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :

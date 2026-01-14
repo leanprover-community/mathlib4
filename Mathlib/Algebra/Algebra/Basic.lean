@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Data.Int.CharZero
 
+import Mathlib.Algebra.Ring.Hom.InjSurj
+
 /-!
 # Further basic results about `Algebra`.
 
@@ -344,7 +346,7 @@ theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
 theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   FaithfulSMul.algebraMap_eq_zero_iff _ _
 
-@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+@[deprecated coe_eq_zero_iff (since := "2025-10-21")]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
   coe_eq_zero_iff _ _ _
 
@@ -359,6 +361,12 @@ instance [CharZero R] : FaithfulSMul ℕ R := by
 
 instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
   simpa only [faithfulSMul_iff_algebraMap_injective] using (algebraMap ℤ R).injective_int
+
+lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
+  (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
+
+lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
+  (FaithfulSMul.algebraMap_injective R A).isDomain
 
 end FaithfulSMul
 

@@ -118,7 +118,7 @@ def lift : { u : A // u * u = a • 1 + b • u } ≃ (QuadraticAlgebra R a b �
               (z.im * w.re) • u + (z.im * w.im) • (u * u) := by
               simp only [mul_add, mul_one, add_mul, one_mul, ← add_assoc, smul_mul_smul]
               apply add_add_add_comm'
-          _ = (z.re * w.re) • (1 : A) + (z.re * w.im+ z.im * w.re) • u +
+          _ = (z.re * w.re) • (1 : A) + (z.re * w.im + z.im * w.re) • u +
                 (z.im * w.im) • (u * u) := by
               congr 1
               simp only [add_assoc]
@@ -280,7 +280,7 @@ alias coe_mem_nonZeroDivisors_iff := algebraMap_mem_nonZeroDivisors_iff
 
 theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
     (hz : z ∈ (QuadraticAlgebra R a b)⁰) :
-    star z ∈ (QuadraticAlgebra R a b)⁰ :=  by
+    star z ∈ (QuadraticAlgebra R a b)⁰ := by
   rw [mem_nonZeroDivisors_iff_right] at hz ⊢
   intro w hw
   apply star_involutive.injective
@@ -325,7 +325,7 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
       aesop
     · exfalso
       rw [← pow_two, sub_eq_zero, ← eq_sub_iff_add_eq] at hz
-      apply Hab.out (- z.re / z.im)
+      apply Hab.out (-z.re / z.im)
       grind
   · intro hz
     simp [hz]

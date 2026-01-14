@@ -673,7 +673,6 @@ circumradius. -/
 theorem exists_circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumradius_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -721,7 +720,6 @@ circumcenter. -/
 theorem exists_circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumcenter_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -759,7 +757,6 @@ circumsphere. -/
 theorem exists_circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumsphere_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _

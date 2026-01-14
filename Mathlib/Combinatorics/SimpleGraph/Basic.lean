@@ -142,6 +142,10 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
+instance {V : Type u} [DecidableEq V] (r : V → V → Prop)
+    [DecidableRel r] : DecidableRel (SimpleGraph.fromRel r).Adj :=
+  inferInstanceAs (DecidableRel fun a b ↦ a ≠ b ∧ (r a b ∨ r b a))
+
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
@@ -517,11 +521,17 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
-theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
   simp [← le_bot_iff, le_iff_adj]
 
-theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
   simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 
@@ -696,8 +706,6 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_neighborSet_self := notMem_neighborSet_self
-
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
   simp [incidenceSet]
@@ -758,14 +766,8 @@ theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbo
 theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_left := notMem_commonNeighbors_left
-
 theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_right := notMem_commonNeighbors_right
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=

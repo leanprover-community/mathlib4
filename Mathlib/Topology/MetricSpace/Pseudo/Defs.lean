@@ -93,6 +93,7 @@ export Dist (dist)
 
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
+set_option backward.privateInPublic true in
 /-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
 private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
@@ -103,6 +104,8 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
@@ -1082,10 +1085,16 @@ theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
     rw [mem_ball, dist_comm, Real.dist_eq, abs_sub_lt_iff, mem_Ioo, ← sub_lt_iff_lt_add',
       sub_lt_comm]
 
+theorem Real.ball_zero_eq_Ioo (r : ℝ) : ball 0 r = Ioo (-r) r := by
+  simp [Real.ball_eq_Ioo]
+
 theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r) := by
   ext y
   rw [mem_closedBall, dist_comm, Real.dist_eq, abs_sub_le_iff, mem_Icc, ← sub_le_iff_le_add',
     sub_le_comm]
+
+theorem Real.closedBall_zero_eq_Icc (r : ℝ) : closedBall 0 r = Icc (-r) r := by
+  simp [Real.closedBall_eq_Icc]
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,

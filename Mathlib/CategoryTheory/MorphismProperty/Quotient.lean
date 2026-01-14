@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Quotient
 # Classes of morphisms induced on quotient categories
 
 Let `W : MorphismProperty C` and `homRel : HomRel C`. We assume that
-`homRel` is stable under composition. We introduce a property
+`homRel` is stable under pre- and postcomposition. We introduce a property
 `W.HasQuotient homRel` expressing that `W` induces a property of
 morphisms on the quotient category, i.e. `W f ↔ W g` when `homRel f g` holds.
 We denote `W.quotient homRel : MorphismProperty (Quotient homRel)` the
@@ -27,16 +27,19 @@ namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- Let `W : MorphismProperty C` and `homRel : HomRel C`. We say that `W` induces
 a class of morphisms on the quotient category by `homRel` if `homRel` is stable under
-composition and if `W f ↔ W g` whenever `homRel f g` hold. -/
-class HasQuotient (W : MorphismProperty C) (homRel : HomRel C) : Prop where
+pre- and postcomposition and if `W f ↔ W g` whenever `homRel f g` hold. -/
+class HasQuotient (W : MorphismProperty C) (homRel : HomRel C)
+    [HomRel.IsStableUnderPrecomp homRel]
+    [HomRel.IsStableUnderPostcomp homRel] : Prop where
   iff (W) : ∀ ⦃X Y : C⦄ ⦃f g : X ⟶ Y⦄, homRel f g → (W f ↔ W g)
-  compClosure_eq_self (W homRel) : Quotient.CompClosure homRel = homRel
 
 variable (W : MorphismProperty C) {homRel : HomRel C}
+  [HomRel.IsStableUnderPrecomp homRel]
+  [HomRel.IsStableUnderPostcomp homRel]
 
 lemma HasQuotient.iff_of_eqvGen [W.HasQuotient homRel] {X Y : C} {f g : X ⟶ Y}
     (h : Relation.EqvGen (@homRel _ _) f g) : W f ↔ W g := by
@@ -54,14 +57,16 @@ on the quotient category by `homRel : HomRel C` when `W.HasQuotient homRel` hold
 def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
   fun ⟨X⟩ ⟨Y⟩ f ↦ ∃ (f' : X ⟶ Y) (_ : W f'), f = (Quotient.functor _).map f'
 
-lemma quotient_iff [W.HasQuotient homRel] {X Y : C} (f : X ⟶ Y) :
+variable [W.HasQuotient homRel]
+
+lemma quotient_iff {X Y : C} (f : X ⟶ Y) :
     W.quotient homRel ((Quotient.functor homRel).map f) ↔ W f := by
   refine ⟨fun ⟨f', hf', h⟩ ↦ ?_, fun hf ↦ ⟨f, hf, rfl⟩⟩
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    HasQuotient.compClosure_eq_self W] at h
+    HomRel.compClosure_eq_self homRel] at h
   rwa [HasQuotient.iff_of_eqvGen W h]
 
-lemma eq_inverseImage_quotientFunctor [W.HasQuotient homRel] :
+lemma eq_inverseImage_quotientFunctor :
     W = (W.quotient homRel).inverseImage (Quotient.functor _) := by
   ext
   exact (quotient_iff _ _ _).symm

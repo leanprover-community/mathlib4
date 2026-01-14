@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Data.Finite.Card
-public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.LinearAlgebra.Isomorphisms
@@ -77,7 +76,8 @@ instance (priority := low) [Subsingleton R] : IsSemisimpleRing R :=
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S where
-  __ := (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
+  __ := have := RingHomInvPair.of_ringEquiv e; have := this.symm
+    (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing_iff (e : R ≃+* S) : IsSemisimpleRing R ↔ IsSemisimpleRing S :=
@@ -301,8 +301,10 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr e.symm
 
 instance (priority := low) [Module.Finite R M] : IsNoetherian R M where
-  noetherian m := have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
-    Module.Finite.iff_fg.mp (Module.Finite.equiv e.symm)
+  noetherian m :=
+    have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
+    letI := Module.Finite.equiv e.symm
+    .of_finite
 
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=

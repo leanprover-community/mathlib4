@@ -22,15 +22,13 @@ in `C`, and we define a cofibrant resolution functor
 
 -/
 
-universe v u
-
 @[expose] public section
 
 open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
 
 namespace CofibrantObject
 
@@ -42,13 +40,11 @@ def homRel : HomRel (CofibrantObject C) :=
 lemma homRel_iff_rightHomotopyRel {X Y : CofibrantObject C} {f g : X ⟶ Y} :
     homRel C f g ↔ RightHomotopyRel f.hom g.hom := Iff.rfl
 
-variable (C) in
-lemma compClosure_homRel :
-    Quotient.CompClosure (homRel C) = homRel C := by
-  ext X Y f g
-  refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
-  rintro ⟨i, f', g', p, h⟩
-  exact (h.postcomp p.hom).precomp i.hom
+instance : HomRel.IsStableUnderPostcomp (homRel C) where
+  comp_right _ h := h.postcomp _
+
+instance : HomRel.IsStableUnderPrecomp (homRel C) where
+  comp_left _ _ _ h := h.precomp _
 
 variable (C) in
 /-- The homotopy category of cofibrant objects. -/
@@ -72,7 +68,7 @@ lemma toπ_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.1] (f g : X ⟶ Y) 
     toπ.map f = toπ.map g ↔ homRel C f g := by
   dsimp [toπ]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    compClosure_homRel]
+    HomRel.compClosure_eq_self]
   refine ⟨?_, .rel _ _⟩
   rw [homRel_iff_rightHomotopyRel]
   intro h
@@ -87,7 +83,6 @@ instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
     simp only [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
     obtain ⟨P, ⟨h⟩⟩ := h
     apply h.weakEquivalence_iff
-  compClosure_eq_self := compClosure_homRel C
 
 instance : CategoryWithWeakEquivalences (CofibrantObject.π C) where
   weakEquivalences := (weakEquivalences _).quotient _
@@ -127,7 +122,7 @@ instance : (toπLocalizerMorphism C).IsLocalizedEquivalence := by
   apply (factorsThroughLocalization C).isLocalizedEquivalence
   apply MorphismProperty.eq_inverseImage_quotientFunctor
 
-instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : CofibrantObject.π C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     (toπ ⋙ L).IsLocalization (weakEquivalences _) := by
   change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)
@@ -234,7 +229,7 @@ instance (X : CofibrantObject C) :
   rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_of_objectProperty]
   infer_instance
 
-instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : CofibrantObject.π C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     IsIso (Functor.whiskerRight π.ιCompResolutionNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
@@ -245,7 +240,7 @@ instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
 
 section
 
-variable {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
+variable {D : Type*} [Category* D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
 
 /-- The induced functor `CofibrantObject.π C ⥤ D`, when `D` is a localization
 of `C` with respect to weak equivalences. -/
@@ -321,7 +316,7 @@ instance (X : CofibrantObject C) :
     IsCofibrant ((localizerMorphism C).functor.obj X) := by
   dsimp; infer_instance
 
-instance {D : Type*} [Category D] (L : C ⥤ D)
+instance {D : Type*} [Category* D] (L : C ⥤ D)
     [L.IsLocalization (weakEquivalences C)] :
     (ι ⋙ L).IsLocalization (weakEquivalences (CofibrantObject C)) :=
   inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)

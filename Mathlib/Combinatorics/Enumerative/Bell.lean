@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Be
 module
 
 public import Mathlib.Data.Nat.Choose.Multinomial
-public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -146,7 +145,7 @@ theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
   simp [uniformBell_eq]
 
 theorem uniformBell_succ_left (m n : ℕ) :
-    uniformBell (m+1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
+    uniformBell (m + 1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
   simp only [uniformBell_eq, Finset.prod_range_succ, mul_comm]
 
 theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
@@ -170,7 +169,7 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n = (m * n) ! / (n ! ^ m * m !) := by
+    uniformBell m n = (m * n)! / (n ! ^ m * m !) := by
   rw [eq_comm]
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos

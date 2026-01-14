@@ -34,7 +34,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -175,9 +175,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
-  have : Module.Finite R (LinearMap.ker i) := by
-    constructor
-    exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
+  have : Module.Finite R (LinearMap.ker i) :=
+    .of_fg (Module.FinitePresentation.fg_ker i hi)
   -- We claim that `i` is actually a bijection,
   -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by

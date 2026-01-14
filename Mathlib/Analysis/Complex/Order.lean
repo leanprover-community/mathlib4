@@ -134,9 +134,9 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Complex
 open scoped ComplexOrder
 
-private alias ⟨_, ofReal_pos⟩ := zero_lt_real
-private alias ⟨_, ofReal_nonneg⟩ := zero_le_real
-private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
+alias ⟨_, ofReal_pos⟩ := zero_lt_real
+alias ⟨_, ofReal_nonneg⟩ := zero_le_real
+alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/

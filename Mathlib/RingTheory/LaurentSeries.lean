@@ -226,8 +226,8 @@ theorem powerSeriesPart_eq_zero (x : R⸨X⸩) : x.powerSeriesPart = 0 ↔ x = 0
     simp only [ne_eq]
     intro h
     rw [PowerSeries.ext_iff, not_forall]
-    refine ⟨0, ?_⟩
-    simp [coeff_order_ne_zero h]
+    use 0
+    simpa
   · rintro rfl
     simp
 

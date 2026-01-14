@@ -257,6 +257,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
+set_option backward.privateInPublic true in
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -1504,3 +1505,21 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor Q = -f.rTensor Q := by
 end LinearMap
 
 end Ring
+
+namespace Equiv
+variable {R A A' B B' : Type*} [CommSemiring R]
+  [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
+
+variable (R) in
+open TensorProduct in
+lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
+    letI := eA.addCommMonoid
+    letI := eB.addCommMonoid
+    letI := eA.module R
+    letI := eB.module R
+    TensorProduct.comm R A B = .trans
+      (congr (eA.linearEquiv R) (eB.linearEquiv R)) (.trans
+      (TensorProduct.comm R A' B') <| congr (eB.linearEquiv R).symm (eA.linearEquiv R).symm) := by
+  ext x; induction x <;> simp [*]
+
+end Equiv
