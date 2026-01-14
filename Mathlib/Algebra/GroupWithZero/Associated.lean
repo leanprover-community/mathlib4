@@ -245,7 +245,7 @@ lemma prime_pow_iff [CancelCommMonoidWithZero M] {p : M} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
   suffices n = 1 by simp_all
-  grind only [not_prime_pow, Nat.zero_eq_one_mod_iff]
+  grind [not_prime_pow, Nat.zero_eq_one_mod_iff]
 
 theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
