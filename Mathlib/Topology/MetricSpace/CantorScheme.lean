@@ -166,7 +166,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     intro n m hnm
     exact this hnm (hu _)
   have : CauchySeq u := by
-    rw [Metric.cauchySeq_iff]
+    rw [Metric.cauchySeq_iff_dist]
     intro ε ε_pos
     obtain ⟨n, hn⟩ := hdiam.dist_lt _ ε_pos x
     use n

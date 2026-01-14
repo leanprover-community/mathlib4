@@ -56,19 +56,25 @@ variable [Nonempty β] [SemilatticeSup β]
 
 /-- In a pseudometric space, Cauchy sequences are characterized by the fact that, eventually,
 the distance between its elements is arbitrarily small -/
-theorem Metric.cauchySeq_iff {u : β → α} :
+theorem Metric.cauchySeq_iff_dist {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m ≥ N, ∀ n ≥ N, dist (u m) (u n) < ε :=
   uniformity_basis_dist.cauchySeq_iff
 
+@[deprecated (since := "2026-01-14")]
+alias Metric.cauchySeq_iff := Metric.cauchySeq_iff_dist
+
 /-- A variation around the pseudometric characterization of Cauchy sequences -/
-theorem Metric.cauchySeq_iff' {u : β → α} :
+theorem Metric.cauchySeq_iff_dist' {u : β → α} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, dist (u n) (u N) < ε :=
   uniformity_basis_dist.cauchySeq_iff'
+
+@[deprecated (since := "2026-01-14")]
+alias Metric.cauchySeq_iff' := Metric.cauchySeq_iff_dist'
 
 -- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
 eventually, the distance between all its elements is uniformly, arbitrarily small. -/
-theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :
+theorem Metric.uniformCauchySeqOn_iff_dist {γ : Type*} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
       ∃ N : β, ∀ m ≥ N, ∀ n ≥ N, ∀ x ∈ s, dist (F m x) (F n x) < ε := by
   constructor
@@ -89,25 +95,29 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
     rcases hb with ⟨hbl, hbr⟩
     exact hab (hN b.fst hbl.ge b.snd hbr.ge x hx)
 
+@[deprecated (since := "2026-01-14")]
+alias Metric.uniformCauchySeqOn_iff := Metric.uniformCauchySeqOn_iff_dist
+
 /-- If the distance between `s n` and `s m`, `n ≤ m` is bounded above by `b n`
 and `b` converges to zero, then `s` is a Cauchy sequence. -/
-theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
+theorem CauchySeq.of_dist_le_tendsto_zero {s : β → α} (b : β → ℝ)
     (h : ∀ n m : β, n ≤ m → dist (s n) (s m) ≤ b n) (h₀ : Tendsto b atTop (𝓝 0)) : CauchySeq s :=
-  Metric.cauchySeq_iff'.2 fun ε ε0 => (h₀.eventually (gt_mem_nhds ε0)).exists.imp fun N hN n hn =>
+  Metric.cauchySeq_iff_dist'.2 fun ε ε0 => (h₀.eventually_lt_const ε0).exists.imp fun N hN n hn =>
     calc dist (s n) (s N) = dist (s N) (s n) := dist_comm _ _
     _ ≤ b N := h _ _ hn
     _ < ε := hN
 
 /-- If the distance between `s n` and `s m`, `n, m ≥ N` is bounded above by `b N`
 and `b` converges to zero, then `s` is a Cauchy sequence. -/
-theorem cauchySeq_of_le_tendsto_0 {s : β → α} (b : β → ℝ)
+theorem CauchySeq.of_dist_le_tendsto_zero' {s : β → α} (b : β → ℝ)
     (h : ∀ n m N : β, N ≤ n → N ≤ m → dist (s n) (s m) ≤ b N) (h₀ : Tendsto b atTop (𝓝 0)) :
     CauchySeq s :=
-  cauchySeq_of_le_tendsto_0' b (fun _n _m hnm => h _ _ _ le_rfl hnm) h₀
+  CauchySeq.of_dist_le_tendsto_zero b (fun _n _m hnm => h _ _ _ le_rfl hnm) h₀
 
 /-- A Cauchy sequence on the natural numbers is bounded. -/
-theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, dist (u m) (u n) < R := by
-  rcases Metric.cauchySeq_iff'.1 hu 1 zero_lt_one with ⟨N, hN⟩
+theorem CauchySeq.exists_dist_lt {u : ℕ → α} (hu : CauchySeq u) :
+    ∃ R > 0, ∀ m n, dist (u m) (u n) < R := by
+  rcases Metric.cauchySeq_iff_dist'.1 hu 1 zero_lt_one with ⟨N, hN⟩
   rsuffices ⟨R, R0, H⟩ : ∃ R > 0, ∀ n, dist (u n) (u N) < R
   · exact ⟨_, add_pos R0 R0, fun m n =>
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
@@ -118,9 +128,12 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
   · have : _ ≤ R := Finset.le_sup (Finset.mem_range.2 h)
     exact lt_of_le_of_lt this (lt_add_of_pos_right _ zero_lt_one)
 
+@[deprecated (since := "2026-01-14")]
+alias cauchySeq_bdd := CauchySeq.exists_dist_lt
+
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
-theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
+theorem cauchySeq_iff_dist_le_tendsto_zero {s : ℕ → α} :
     CauchySeq s ↔
       ∃ b : ℕ → ℝ,
         (∀ n, 0 ≤ b n) ∧
@@ -132,7 +145,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
       would not make sense. -/
     let S N := (fun p : ℕ × ℕ => dist (s p.1) (s p.2)) '' { p | p.1 ≥ N ∧ p.2 ≥ N }
     have hS : ∀ N, ∃ x, ∀ y ∈ S N, y ≤ x := by
-      rcases cauchySeq_bdd hs with ⟨R, -, hR⟩
+      rcases CauchySeq.exists_dist_lt hs with ⟨R, -, hR⟩
       refine fun N => ⟨R, ?_⟩
       rintro _ ⟨⟨m, n⟩, _, rfl⟩
       exact le_of_lt (hR m n)
@@ -143,17 +156,17 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     have S0 := fun n => le_csSup (hS n) (S0m n)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     refine ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => ?_⟩
-    refine (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_
+    refine (Metric.cauchySeq_iff_dist.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
     refine lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ ?_) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
-   fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
+   fun ⟨b, _, b_bound, b_lim⟩ => CauchySeq.of_dist_le_tendsto_zero' b b_bound b_lim⟩
 
 lemma Metric.exists_subseq_bounded_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) (b : ℕ → ℝ)
     (hb : ∀ n, 0 < b n) :
     ∃ f : ℕ → ℕ, StrictMono f ∧ ∀ n, ∀ m ≥ f n, dist (u m) (u (f n)) < b n := by
-  rw [cauchySeq_iff] at hu
+  rw [Metric.cauchySeq_iff_dist] at hu
   have hu' : ∀ k, ∀ᶠ (n : ℕ) in atTop, ∀ m ≥ n, dist (u m) (u n) < b k := by
     intro k
     rw [eventually_atTop]

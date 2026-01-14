@@ -91,7 +91,7 @@ lemma Bornology.IsBounded.exists_pos_norm_lt' (hs : IsBounded s) : ∃ R > 0, �
 @[to_additive]
 lemma NormedCommGroup.cauchySeq_iff [Nonempty α] [SemilatticeSup α] {u : α → E} :
     CauchySeq u ↔ ∀ ε > 0, ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → ‖u m / u n‖ < ε := by
-  simp [Metric.cauchySeq_iff, dist_eq_norm_div]
+  simp [Metric.cauchySeq_iff_dist, dist_eq_norm_div]
 
 @[to_additive IsCompact.exists_bound_of_continuousOn]
 lemma IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)

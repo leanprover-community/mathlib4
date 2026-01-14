@@ -79,8 +79,8 @@ See `cauchySeq_finset_of_norm_bounded` for the same statement about absolutely c
 theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} {g : ℕ → ℝ}
     (hg : CauchySeq fun n => ∑ i ∈ range n, g i) (hf : ∀ i, ‖f i‖ ≤ g i) :
     CauchySeq fun n => ∑ i ∈ range n, f i := by
-  refine Metric.cauchySeq_iff'.2 fun ε hε => ?_
-  refine (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => ?_
+  refine Metric.cauchySeq_iff_dist'.2 fun ε hε => ?_
+  refine (Metric.cauchySeq_iff_dist'.1 hg ε hε).imp fun N hg n hn => ?_
   specialize hg n hn
   rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
   calc

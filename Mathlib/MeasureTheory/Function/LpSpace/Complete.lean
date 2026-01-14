@@ -314,11 +314,11 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
       exact fun N n m hnN hmN => ae_lt_of_essSup_lt (h_cau N n m hnN hmN)
     simp_rw [eLpNorm_exponent_top, eLpNormEssSup] at h_cau
     refine h_cau_ae.mono fun x hx => cauchySeq_tendsto_of_complete ?_
-    refine cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) ?_ ?_
-    · intro n m N hnN hmN
-      specialize hx N n m hnN hmN
+    refine CauchySeq.of_dist_le_tendsto_zero (fun n => (B n).toReal) ?_ ?_
+    · intro n m hnm
+      specialize hx n n m le_rfl hnm
       rw [_root_.dist_eq_norm,
-        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N),
+        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB n),
         ofReal_norm_eq_enorm]
       exact hx.le
     · rw [← ENNReal.toReal_zero]

@@ -1054,7 +1054,7 @@ open Filter Set
 instance : CompleteSpace ℚ_[p] := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
-  let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩
+  let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff_dist'.mp hu⟩
   refine ⟨c.lim, fun s h ↦ ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0

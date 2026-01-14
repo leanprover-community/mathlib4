@@ -639,7 +639,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
     Tendsto f atTop (𝓝 (limUnder atTop f)) := by
   suffices ∃ a, Tendsto f atTop (𝓝 a) from tendsto_nhds_limUnder this
   suffices CauchySeq f from cauchySeq_tendsto_of_complete this
-  apply Metric.cauchySeq_iff'.2 (fun ε εpos ↦ ?_)
+  apply Metric.cauchySeq_iff_dist'.2 (fun ε εpos ↦ ?_)
   have A : ∀ᶠ (n : ℕ) in atTop, ∫ (x : ℝ) in Ici ↑n, ‖f' x‖ < ε := by
     have L : Tendsto (fun (n : ℕ) ↦ ∫ x in Ici (n : ℝ), ‖f' x‖) atTop
         (𝓝 (∫ x in ⋂ (n : ℕ), Ici (n : ℝ), ‖f' x‖)) := by

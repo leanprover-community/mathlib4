@@ -457,7 +457,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     φlim : Tendsto (g ∘ φ) atTop (𝓝 x)⟩ := h.tendsto_subseq A
   have B : CauchySeq (g ∘ φ) := φlim.cauchySeq
   obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ n : ℕ, N ≤ n → dist ((g ∘ φ) n) ((g ∘ φ) N) < ‖c‖ :=
-    Metric.cauchySeq_iff'.1 B ‖c‖ hc.1
+    Metric.cauchySeq_iff_dist'.1 B ‖c‖ hc.1
   apply lt_irrefl ‖c‖
   calc
     ‖c‖ ≤ dist (g (φ (N + 1))) (g (φ N)) := by

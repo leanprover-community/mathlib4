@@ -25,8 +25,8 @@ variable {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ�
 lemma LipschitzWith.cauchySeq_comp {f : α → β} (hf : LipschitzWith K f) {u : ℕ → α}
     (hu : CauchySeq u) :
     CauchySeq (f ∘ u) := by
-  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  rcases cauchySeq_iff_dist_le_tendsto_zero.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_dist_le_tendsto_zero.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
   · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
   · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
   · rw [← mul_zero (K : ℝ)]
@@ -35,8 +35,8 @@ lemma LipschitzWith.cauchySeq_comp {f : α → β} (hf : LipschitzWith K f) {u :
 lemma LipschitzOnWith.cauchySeq_comp {s : Set α} {f : α → β} (hf : LipschitzOnWith K f s)
     {u : ℕ → α} (hu : CauchySeq u) (h'u : range u ⊆ s) :
     CauchySeq (f ∘ u) := by
-  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
-  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  rcases cauchySeq_iff_dist_le_tendsto_zero.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_dist_le_tendsto_zero.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
   · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
   · intro n m N hn hm
     have A n : u n ∈ s := h'u (mem_range_self _)
