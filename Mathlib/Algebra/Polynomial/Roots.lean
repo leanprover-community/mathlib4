@@ -637,35 +637,35 @@ theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
   ext x
   simp_all
 
-theorem smul_mem_rootSet [CommRing S] [Algebra S R] {G : Type*} {f : S[X]}
-    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
+theorem smul_mem_rootSet [CommRing S] [Algebra S R] {G : Type*}
+    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     (g : G) {x : R} (hx : x ∈ f.rootSet R) : g • x ∈ f.rootSet R := by
   simp [mem_rootSet', aeval_smul, aeval_eq_zero_of_mem_rootSet hx, (mem_rootSet'.mp hx).1]
 
-instance [CommRing S] [Algebra S R] (G : Type*) (f : S[X])
-    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] :
+instance [CommRing S] [Algebra S R] (G : Type*)
+    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
   smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
 @[simp]
-theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*} {f : S[X]}
-    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
+theorem rootSet.coe_smul [CommRing S] [Algebra S R] {G : Type*}
+    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
     (g : G) (x : f.rootSet R) : (g • x : f.rootSet R) = g • (x : R) :=
   rfl
 
-instance [CommRing S] [Algebra S R] (G H : Type*) (f : S[X])
+instance [CommRing S] [Algebra S R] (G H : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
     [Monoid H] [MulSemiringAction H R] [SMulCommClass H S R]
-    [SMulCommClass G H R] : SMulCommClass G H (f.rootSet R) where
-  smul_comm g h x := by simp [Subtype.ext_iff, smul_comm]
+    [SMulCommClass G H R] (f : S[X]) : SMulCommClass G H (f.rootSet R) where
+  smul_comm _ _ _ := Subtype.ext <| smul_comm _ _ _
 
-instance [CommRing S] [Algebra S R] (G H : Type*) (f : S[X])
+instance [CommRing S] [Algebra S R] (G H : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
     [Monoid H] [MulSemiringAction H R] [SMulCommClass H S R]
-    [SMul G H] [IsScalarTower G H R] : IsScalarTower G H (f.rootSet R) where
-  smul_assoc g h x := by simp [Subtype.ext_iff]
+    [SMul G H] [IsScalarTower G H R] (f : S[X]) : IsScalarTower G H (f.rootSet R) where
+  smul_assoc _ _ _ := Subtype.ext <| smul_assoc _ _ _
 
 end Roots
 
