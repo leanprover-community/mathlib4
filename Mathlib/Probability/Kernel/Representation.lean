@@ -67,7 +67,6 @@ lemma unitInterval_representation (κ : Kernel α I) [IsMarkovKernel κ] :
         obtain ⟨y, y_mem, (hy : a.1 < y.1)⟩ := he
         obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
         have q_in_I : (q : ℝ) ∈ I := ⟨a.2.1.trans hqa.le, hqy.le.trans y.2.2⟩
-        refine ⟨q, q_in_I, hqa, ?_⟩
         exact ⟨q, q_in_I, hqa, lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)⟩
       · intro he
         simp_all only [lt_sSup_iff, Set.mem_iUnion]
@@ -84,7 +83,7 @@ lemma unitInterval_representation (κ : Kernel α I) [IsMarkovKernel κ] :
   rw [volume.map_apply measurable_f.of_uncurry_left measurableSet_Iic, preimage]
   simp only [mem_Iic]
   have Iic_to_Icc : Iic x = Icc 0 x := by ext; simp
-rw [Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _)]
+  rw [Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _)]
   have κ_in_I : ((κ a).real (Icc 0 x)) ∈ I := ⟨measureReal_nonneg, measureReal_le_one⟩
   rw [← volume_Iic ⟨_, κ_in_I⟩]
   congr with ξ
