@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Ideal.IsPrimary
 /-!
 # Annihilator Ideals
 
-We provide the definition and related lemmas about annihilator ideals `Ann(m)`.
+We provide the definition and related lemmas about annihilator ideals `ann m`.
 
 ## Main definition
 
@@ -39,7 +39,7 @@ def ann : Ideal R where
 
 variable {I r m} in
 theorem mem_ann_iff : r ∈ I.ann m ↔ r • m ∈ I :=
-  Iff.rfl
+  .rfl
 
 variable {I J} in
 theorem ann_mono (h : I ≤ J) : I.ann m ≤ J.ann m :=
