@@ -15,6 +15,15 @@ public import Mathlib.Analysis.Fourier.Inversion
 This file constructs the Fourier transform as a continuous linear map acting on Schwartz
 functions, in `fourierTransformCLM`. It is also given as a continuous linear equiv, in
 `fourierTransformCLE`.
+
+## Main statements
+* `SchwartzMap.fderivCLM_fourier_eq`: The derivative of the Fourier transform is given by the
+  Fourier transform of the multiplication with `-(2 * π * Complex.I) • innerSL ℝ`.
+* `SchwartzMap.lineDerivOp_fourier_eq`: The line derivative of the Fourier transform is given by the
+  Fourier transform of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`.
+* `SchwartzMap.integral_bilin_fourier_eq`: The Fourier transform is self-adjoint.
+* `SchwartzMap.integral_inner_fourier_fourier`: Plancherel's theorem for Schwartz functions.
+
 -/
 
 @[expose] public section
@@ -163,6 +172,8 @@ end eval
 
 section deriv
 
+/-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
+with `-(2 * π * Complex.I) • innerSL ℝ`. -/
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) := by
   ext1 x
@@ -173,6 +184,8 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
       convert f.integrable_pow_mul volume 1
       simp
 
+/-- The Fourier transform of the derivative is given by multiplication of
+`(2 * π * Complex.I) • innerSL ℝ` with the Fourier transform. -/
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
     𝓕 (fderivCLM 𝕜 V E f) = -(2 * π * Complex.I) • smulRightCLM ℂ E (-innerSL ℝ) (𝓕 f) := by
   ext1 x
@@ -181,6 +194,8 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
 
 open LineDeriv
 
+/- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
+of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
   _ = SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E (𝓕 f)) := rfl
@@ -194,6 +209,8 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
     have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
     simp [this, innerSL_apply_apply ℝ]
 
+/- The Fourier transform of line derivative in direction `m` is given by multiplication of
+`(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕 f) := calc
   _ = 𝓕 (SchwartzMap.evalCLM ℝ V E m (fderivCLM ℝ V E f)) := rfl
@@ -208,6 +225,8 @@ theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
 
 variable [CompleteSpace E]
 
+/- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
+Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := calc
   _ = 𝓕⁻ (𝓕 (∂_{m} (𝓕⁻ f))) := by simp
@@ -215,6 +234,8 @@ theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     rw [fourier_lineDerivOp_eq]
   _ = _ := by simp
 
+/- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
+`-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
 theorem fourierInv_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     𝓕⁻ (∂_{m} f) = -(2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) (𝓕⁻ f) := calc
   _ = 𝓕⁻ (∂_{m} (𝓕 (𝓕⁻ f))) := by simp
