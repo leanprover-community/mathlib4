@@ -163,7 +163,7 @@ theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype �
 
 /-- We say that `R` satisfies the rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` surjective
     implies `m ≤ n`. -/
-class RankCondition : Prop where
+@[mk_iff] class RankCondition : Prop where
   /-- Any surjective linear map from `Rⁿ` to `Rᵐ` guarantees `m ≤ n`. -/
   le_of_fin_surjective : ∀ {n m : ℕ} (f : (Fin n → R) →ₗ[R] Fin m → R), Surjective f → m ≤ n
 
@@ -201,7 +201,7 @@ instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondi
 /-- We say that `R` has the invariant basis number property if `(Fin n → R) ≃ₗ[R] (Fin m → R)`
     implies `n = m`. This gives rise to a well-defined notion of rank of a finitely generated free
     module. -/
-class InvariantBasisNumber : Prop where
+@[mk_iff] class InvariantBasisNumber : Prop where
   /-- Any linear equiv between `Rⁿ` and `Rᵐ` guarantees `m = n`. -/
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
 

@@ -42,8 +42,8 @@ These definitions are just handy tools for some proofs of this file, so they are
 there, and not exported.
 
 Note that the theory of Stieltjes measures is not completely satisfactory when there is a bot
-element `x`: any Stieljes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
-is not representable as a Stieljes measure.
+element `x`: any Stieltjes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
+is not representable as a Stieltjes measure.
 -/
 
 noncomputable section
@@ -175,7 +175,7 @@ theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
   continuousWithinAt_id.leftLim_eq
 
 variable (R) in
-/-- Constant functions are Stieltjes function. -/
+/-- A constant function is a Stieltjes function. -/
 protected def const (c : ℝ) : StieltjesFunction R where
   toFun := fun _ ↦ c
   mono' _ _ := by simp

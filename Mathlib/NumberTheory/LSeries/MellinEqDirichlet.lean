@@ -13,7 +13,7 @@ Here we prove general results of the form "the Mellin transform of a power serie
 a Dirichlet series".
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex

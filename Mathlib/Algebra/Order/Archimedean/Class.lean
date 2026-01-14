@@ -22,7 +22,10 @@ This file defines archimedean classes of a given linearly ordered group. Archime
 measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`
 in the same class are "equivalent" in the sense that there exist two natural numbers
 `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
-is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural number `n`.
+is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural numbers `n`.
+
+If `a` and `b` are in the same equivalence class, they're sometimes referred to as "commensurate"
+elements.
 
 ## Main definitions
 
@@ -331,6 +334,23 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
   simpa using h
 
 @[to_additive]
+theorem mk_le_mk_of_mabs {a b : M} (h : |a|ₘ ≤ |b|ₘ) : mk b ≤ mk a := by
+  rw [← mk_mabs a, ← mk_mabs]
+  have ha := one_le_mabs a
+  exact mk_antitoneOn ha (ha.trans h) h
+
+@[to_additive]
+theorem min_le_mk_of_le_of_le {x y z : M} (hy : y ≤ x) (hz : x ≤ z) : min (mk y) (mk z) ≤ mk x := by
+  have H := mabs_le_max_mabs_mabs hy hz
+  rw [← mabs_of_one_le (le_max_of_le_left (one_le_mabs y))] at H
+  apply (mk_le_mk_of_mabs H).trans'
+  obtain h | h := le_total |y|ₘ |z|ₘ
+  · rw [max_eq_right h, min_eq_right, mk_mabs]
+    exact mk_le_mk_of_mabs h
+  · rw [max_eq_left h, min_eq_left, mk_mabs]
+    exact mk_le_mk_of_mabs h
+
+@[to_additive]
 theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
   rw [lt_min_iff] at h
@@ -358,6 +378,40 @@ theorem mk_left_le_mk_div (hab : mk a ≤ mk b) : mk a ≤ mk (a / b) := by
 @[to_additive]
 theorem mk_right_le_mk_div (hba : mk b ≤ mk a) : mk b ≤ mk (a / b) := by
   simpa [div_eq_mul_inv, hba] using mk_right_le_mk_mul (a := a) (b := b⁻¹)
+
+@[to_additive (attr := simp)]
+theorem mk_left_le_mk_mul_iff : mk a ≤ mk (a * b) ↔ mk a ≤ mk b where
+  mp h := by simpa using mk_left_le_mk_div h
+  mpr := mk_left_le_mk_mul
+
+@[to_additive (attr := simp)]
+theorem mk_right_le_mk_mul_iff : mk b ≤ mk (a * b) ↔ mk b ≤ mk a := by
+  rw [mul_comm, mk_left_le_mk_mul_iff]
+
+@[to_additive (attr := simp)]
+theorem mk_left_le_mk_div_iff : mk a ≤ mk (a / b) ↔ mk a ≤ mk b where
+  mp h := by simpa using mk_left_le_mk_div h
+  mpr := mk_left_le_mk_div
+
+@[to_additive (attr := simp)]
+theorem mk_right_le_mk_div_iff : mk b ≤ mk (a / b) ↔ mk b ≤ mk a := by
+  rw [mk_div_comm, mk_left_le_mk_div_iff]
+
+@[to_additive (attr := simp)]
+theorem mk_mul_lt_mk_left_iff : mk (a * b) < mk a ↔ mk b < mk a :=
+  le_iff_le_iff_lt_iff_lt.1 mk_left_le_mk_mul_iff
+
+@[to_additive (attr := simp)]
+theorem mk_mul_lt_mk_right_iff : mk (a * b) < mk b ↔ mk a < mk b :=
+  le_iff_le_iff_lt_iff_lt.1 mk_right_le_mk_mul_iff
+
+@[to_additive (attr := simp)]
+theorem mk_div_lt_mk_left_iff : mk (a / b) < mk a ↔ mk b < mk a :=
+  le_iff_le_iff_lt_iff_lt.1 mk_left_le_mk_div_iff
+
+@[to_additive (attr := simp)]
+theorem mk_div_lt_mk_right_iff : mk (a / b) < mk b ↔ mk a < mk b :=
+  le_iff_le_iff_lt_iff_lt.1 mk_right_le_mk_div_iff
 
 @[to_additive]
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by

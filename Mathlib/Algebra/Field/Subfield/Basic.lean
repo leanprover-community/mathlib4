@@ -304,8 +304,6 @@ theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSub
 theorem notMem_of_notMem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 /-- A subfield `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set K} {t : Subfield K} : closure s ≤ t ↔ s ⊆ t :=

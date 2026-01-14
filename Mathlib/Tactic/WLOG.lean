@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Mu
 -/
 module
 
-public meta import Mathlib.Tactic.Core
 public meta import Lean.Meta.Tactic.Cases
-public meta import Mathlib.Tactic.Push
 import all Lean.MetavarContext
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Push
 
 /-!
 
@@ -84,7 +84,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
     let HType ← withFreshCache do
-      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := true)
+      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := false)
     return (revertedFVars, HType))
       { preserveOrder := false, quotContext := ctx.quotContext }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h

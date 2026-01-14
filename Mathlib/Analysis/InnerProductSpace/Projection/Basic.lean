@@ -332,8 +332,8 @@ open ContinuousLinearMap in
 @[simp]
 lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     U.starProjection.ker = Uᗮ := by
-  rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
-    range_starProjection]
+  rw [LinearMap.IsIdempotentElem.ker_eq_range U.isIdempotentElem_starProjection.toLinearMap,
+    ← range_starProjection Uᗮ, starProjection_orthogonal, coe_sub, coe_id]
 
 theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
@@ -688,7 +688,7 @@ theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
 open RCLike
 
 lemma re_inner_starProjection_eq_normSq [K.HasOrthogonalProjection] (v : E) :
-    re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖^2 := by
+    re ⟪K.starProjection v, v⟫ = ‖K.orthogonalProjection v‖ ^ 2 := by
   rw [starProjection_apply,
     re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two,
     div_eq_iff (NeZero.ne' 2).symm, pow_two, add_sub_assoc, ← eq_sub_iff_add_eq', coe_norm,

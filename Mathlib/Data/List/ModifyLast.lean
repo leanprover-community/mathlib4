@@ -12,7 +12,7 @@ import all Init.Data.Array.Basic
 
 /-! ### List.modifyLast -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
