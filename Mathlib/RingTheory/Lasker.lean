@@ -297,56 +297,47 @@ end Submodule
 
 end IsLasker
 
-namespace Ideal
+namespace Submodule
 
 section Noetherian
 
-variable {R M : Type*} [CommRing R] [IsNoetherianRing R] [AddCommMonoid M] [Module R M]
+open Pointwise
 
-lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
-  rw [Ideal.isPrimary_iff]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
+
+lemma _root_.InfIrred.isPrimary {I : Submodule R M} (h : InfIrred I) : I.IsPrimary := by
+  rw [Submodule.IsPrimary]
   refine ⟨h.ne_top, fun {a b} hab ↦ ?_⟩
-  let f : ℕ → Ideal R := fun n ↦ (I.colon (span {b ^ n}))
+  let f : ℕ → Submodule R M := fun n ↦
+  { carrier := {x | a ^ n • x ∈ I}
+    add_mem' hx hy := by simp [I.add_mem hx hy]
+    zero_mem' := by simp
+    smul_mem' x y h := by simp [smul_comm _ x, I.smul_mem x h] }
   have hf : Monotone f := by
-    intro n m hnm
-    simp_rw [f]
-    exact (Submodule.colon_mono le_rfl (Ideal.span_singleton_le_span_singleton.mpr
-      (pow_dvd_pow b hnm)))
+    intro n m hnm x hx
+    simpa [hnm, smul_smul, ← pow_add] using I.smul_mem (a ^ (m - n)) hx
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
-  specialize @h (I.colon (span {b ^ n})) (I + (span {b ^ n})) ?_
-  · refine le_antisymm (fun r ↦ ?_) (le_inf (fun _ ↦ ?_) ?_)
-    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
-        mem_span_singleton_sup, and_imp, forall_exists_index]
-      rintro hrb t s hs rfl
-      refine add_mem ?_ hs
-      have := hn (n + n) (by simp)
-      simp only [OrderHom.coe_mk, f] at this
-      rw [add_mul, mul_assoc, ← pow_add] at hrb
-      rwa [← mem_colon_singleton, this, mem_colon_singleton,
-           ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
-    · simpa only [mem_colon_singleton] using mul_mem_right _ _
-    · simp
-  rcases h with (h | h)
-  · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl | hn'
-      · simpa [f] using hn 1 zero_le_one
-      refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
-      · intro
-        simpa only [mem_colon_singleton] using mul_mem_right _ _
-      · exact span_singleton_le_span_singleton.mpr (dvd_pow_self b hn')
-    rw [← mem_colon_singleton, ← h] at hab
-    exact Or.inl hab
-  · rw [← h]
-    refine Or.inr ⟨n, ?_⟩
-    simpa using mem_sup_right (mem_span_singleton_self _)
+  specialize @h (f n) (I + a ^ n • ⊤) ?_
+  · refine le_antisymm (fun r ⟨h1, h2⟩ ↦ ?_) (le_inf (fun x ↦ I.smul_mem (a ^ n)) (by simp))
+    simp only [add_eq_sup, SetLike.mem_coe, mem_sup, mem_smul_pointwise_iff_exists] at h2
+    obtain ⟨x, hx, -, ⟨y, -, rfl⟩, rfl⟩ := h2
+    have h : (a ^ n • y ∈ I) = (a ^ (n + n) • y ∈ I) := congr_arg (y ∈ ·) (hn (n + n) le_add_self)
+    rw [pow_add, mul_smul] at h
+    rwa [I.add_mem_iff_right hx, h, ← I.add_mem_iff_right (I.smul_mem (a ^ n) hx), ← smul_add]
+  rw [add_eq_sup, sup_eq_left] at h
+  refine h.imp (fun h ↦ ?_) (fun h ↦ ⟨n, h⟩)
+  replace hn : f n = f (n + 1) := hn (n + 1) n.le_succ
+  rw [← h, hn]
+  rw [← h] at hab
+  simpa [f, pow_succ, mul_smul] using hab
 
-variable (R) in
+variable (R M) in
 /-- The Lasker--Noether theorem: every ideal in a Noetherian ring admits a decomposition into
   primary ideals. -/
-lemma isLasker : IsLasker R R := fun I ↦
+lemma isLasker : IsLasker R M := fun I ↦
   (exists_infIrred_decomposition I).imp fun _ h ↦ h.imp_right fun h' _ ht ↦ (h' ht).isPrimary
 
 end Noetherian
 
-end Ideal
+end Submodule
