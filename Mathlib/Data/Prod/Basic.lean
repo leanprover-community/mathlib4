@@ -9,6 +9,7 @@ public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
 public import Aesop
 public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
 
 /-!
 # Extra facts about `Prod`
@@ -139,22 +140,23 @@ instance Lex.decidable [DecidableEq α]
   fun _ _ ↦ decidable_of_decidable_of_iff lex_def.symm
 
 @[refl]
-theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl r] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
-theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [Std.Refl s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
-instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z
@@ -167,8 +169,8 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTra
     IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
-    IsAntisymm (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [Std.Antisymm s] :
+    Std.Antisymm (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
     | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
