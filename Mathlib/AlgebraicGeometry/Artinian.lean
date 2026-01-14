@@ -75,6 +75,11 @@ lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     rw [← IsHomeomorph.topologicalKrullDim_eq _ U.2.isoSpec.hom.homeomorph.isHomeomorph]
     exact (topologicalKrullDim_subspace_le X U).trans h
 
+theorem IsLocallyArtinian.of_isLocallyNoetherian_of_discreteTopology
+    [IsLocallyNoetherian X] [DiscreteTopology X] :
+    IsLocallyArtinian X :=
+  .of_topologicalKrullDim_le_zero (topologicalKrullDim_zero_of_discreteTopology X)
+
 /-- See `isLocallyArtinian_of_isImmersion`. -/
 private lemma IsLocallyArtinian.of_isOpenImmersion [IsOpenImmersion f] [IsLocallyArtinian Y] :
     IsLocallyArtinian X where
@@ -103,8 +108,7 @@ alias IsLocallyArtinian.discreteTopology_of_isAffine := IsLocallyArtinian.discre
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩,
-  fun ⟨_,_⟩ ↦ .of_topologicalKrullDim_le_zero (topologicalKrullDim_zero_of_discreteTopology X)⟩
+  ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_,_⟩ ↦ .of_isLocallyNoetherian_of_discreteTopology⟩
 
 -- This can be extended to locally quasi-finite morphisms.
 theorem IsLocallyArtinian.of_isImmersion [IsImmersion f] [IsLocallyArtinian Y] :
@@ -150,11 +154,9 @@ instance (priority := low) IsArtinianScheme.isNoetherianScheme [IsArtinianScheme
 
 /-- A scheme is Artinian if and only if it is Noetherian and has the discrete topology. -/
 theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
-    IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩,
-  fun ⟨_,_⟩ =>
-    {toIsLocallyArtinian := IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology.mpr
-      ⟨inferInstance, inferInstance⟩ }⟩
+    IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X := by
+  aesop (add simp [isArtinianScheme_iff, isNoetherian_iff,
+    IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology])
 
 instance {R : CommRingCat} [IsArtinianRing R] :
     IsArtinianScheme (Spec R) :=
@@ -163,8 +165,7 @@ instance {R : CommRingCat} [IsArtinianRing R] :
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem Scheme.isArtinianScheme_Spec {R : CommRingCat} :
-    IsArtinianScheme (Spec R) ↔ IsArtinianRing R :=
-  ⟨fun _ ↦ RingEquiv.isArtinianRing (AlgebraicGeometry.Scheme.ΓSpecIso R).commRingCatIsoToRingEquiv,
-  fun _ ↦ inferInstance⟩
+    IsArtinianScheme (Spec R) ↔ IsArtinianRing R := by
+  simp [isArtinianScheme_iff, inferInstanceAs (CompactSpace (Spec R))]
 
 end AlgebraicGeometry
