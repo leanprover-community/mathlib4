@@ -9,9 +9,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
