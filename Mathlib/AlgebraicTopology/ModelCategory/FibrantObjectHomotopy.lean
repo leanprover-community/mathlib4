@@ -203,7 +203,7 @@ noncomputable def π.resolution : C ⥤ FibrantObject.π C where
     exact resolutionObj_hom_ext (by simpa using .refl _)
   map_comp {X₁ X₂ X₃} f g := by
     rw [← toπ.map_comp]
-    refine resolutionObj_hom_ext (by simpa using .refl _)
+    exact resolutionObj_hom_ext (by simpa using .refl _)
 
 variable (C) in
 /-- The fibration resolution functor, as a localizer morphism. -/
