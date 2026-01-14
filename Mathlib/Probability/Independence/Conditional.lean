@@ -890,7 +890,7 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
   rw [← h_eq]
   have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a, g a, f a))).map e := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)]
-    rfl
+    simp [e, Function.comp_def]
   have h1_symm : μ.map (fun a ↦ (k a, g a, f a)) =
       (μ.map (fun x ↦ ((k x, g x), f x))).map e.symm := by
     rw [h1, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,

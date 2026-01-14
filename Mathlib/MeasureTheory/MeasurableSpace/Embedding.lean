@@ -363,6 +363,7 @@ def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
 
 /-- Products of measurable spaces are associative. -/
+@[simps!]
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
 
