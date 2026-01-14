@@ -97,7 +97,7 @@ theorem modEq_zero : a ≡ b [PMOD 0] ↔ a = b := by simp [modEq_iff_nsmul]
 
 @[simp]
 theorem self_modEq_zero : p ≡ 0 [PMOD p] :=
-  modEq_iff_nsmul.mpr ⟨0, 1, by simp⟩
+  modEq_iff_nsmul.mpr ⟨0, 1, by simp [one_nsmul]⟩
 
 theorem add_nsmul_modEq (n : ℕ) : a + n • p ≡ a [PMOD p] :=
   modEq_iff_nsmul.mpr ⟨0, n, by simp [add_comm]⟩
@@ -232,7 +232,7 @@ theorem modEq_neg : a ≡ b [PMOD -p] ↔ a ≡ b [PMOD p] :=
 alias ⟨ModEq.of_neg', ModEq.neg'⟩ := modEq_neg
 
 theorem modEq_sub (a b : G) : a ≡ b [PMOD b - a] :=
-  ⟨1, 0, by simp⟩
+  ⟨1, 0, by simp [one_nsmul]⟩
 
 @[simp]
 theorem zsmul_modEq_zero (z : ℤ) : z • p ≡ 0 [PMOD p] :=
