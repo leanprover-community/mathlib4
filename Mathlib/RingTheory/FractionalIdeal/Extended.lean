@@ -113,7 +113,7 @@ theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
     Finset.univ_eq_attach, coe_one] at hx ⊢
   obtain ⟨s, hs, c, rfl⟩ := hx
-  refine Submodule.sum_smul_mem _ _ fun x h ↦ Submodule.mem_one.mpr ?_
+  refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
   obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
     simpa [val_eq_coe, coe_one, mem_one] using hI <| hs x.prop
   exact ⟨f a, by rw [← ha, map_eq]⟩
