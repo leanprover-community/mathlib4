@@ -33,6 +33,10 @@ protected theorem Sublist.flatMap {l₁ l₂ : List α} (h : l₁ <+ l₂) (f : 
     l₁.flatMap f <+ l₂.flatMap f :=
   (h.map f).flatten
 
+protected theorem Sublist.flatMap_right (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a <+ g a) :
+    l.flatMap f <+ l.flatMap g := by
+  induction l with grind
+
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
 theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length) :

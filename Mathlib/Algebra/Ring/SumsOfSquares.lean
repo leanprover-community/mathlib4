@@ -162,6 +162,13 @@ theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
 
 end NonUnitalSubsemiring
 
+@[simp, aesop safe]
+theorem IsSumSq.natCast {R : Type*} [NonAssocSemiring R] (n : ℕ) : IsSumSq (n : R) := by
+  induction n <;> aesop
+
+@[simp]
+theorem Nat.isSumSq (n : ℕ) : IsSumSq n := IsSumSq.natCast n
+
 /--
 In a commutative (possibly non-unital) semiring,
 if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares.
