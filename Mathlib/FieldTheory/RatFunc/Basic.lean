@@ -473,7 +473,7 @@ lemma liftRingHom_ofFractionRing_algebraMap (φ : F) (hφ : R[X]⁰ ≤ L⁰.com
   rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
   simp
 
-theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
+theorem liftRingHom_injective [Nontrivial R] (φ : F) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftRingHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
@@ -614,8 +614,8 @@ lemma liftRingHom_algebraMap {L F : Type*} [Field L] [FunLike F K[X] L] [RingHom
   simpa using liftRingHom_apply_div' φ hφ x 1
 
 @[simp]
-lemma liftRingHom_comp_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
-    (liftRingHom φ hφ).comp (algebraMap K[X] _) = φ :=
+lemma liftRingHom_comp_algebraMap {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L]
+  (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) : (liftRingHom φ hφ).comp (algebraMap K[X] _) = φ :=
   RingHom.ext fun _ ↦ liftRingHom_algebraMap _ hφ _
 
 variable (K)
@@ -630,24 +630,31 @@ theorem algebraMap_injective : Function.Injective (algebraMap K[X] (RatFunc K)) 
 
 variable {K}
 
-section LiftAlgHom
+section MapAlgHom
 
-variable {L R S : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [Algebra S K[X]]
-  [Algebra S L] [Algebra S R[X]] (φ : K[X] →ₐ[S] L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
+variable {R S F : Type*} [CommRing R] [IsDomain R] [CommSemiring S] [Algebra S K[X]]
+  [Algebra S R[X]] [FunLike F K[X] R[X]] [AlgHomClass F S K[X] R[X]]
+  (φ : F) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ)
 
 /-- Lift an algebra homomorphism that maps polynomials `φ : K[X] →ₐ[S] R[X]`
 to a `RatFunc K →ₐ[S] RatFunc R`,
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : RatFunc K →ₐ[S] RatFunc R :=
+def mapAlgHom : RatFunc K →ₐ[S] RatFunc R :=
   { mapRingHom φ hφ with
     commutes' := fun r => by
       simp_rw [RingHom.toFun_eq_coe, coe_mapRingHom_eq_coe_map, algebraMap_apply r, map_apply_div,
-        map_one, AlgHom.commutes] }
+        map_one, AlgHomClass.commutes] }
 
-theorem coe_mapAlgHom_eq_coe_map (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) :
-    (mapAlgHom φ hφ : RatFunc K → RatFunc R) = map φ hφ :=
-  rfl
+theorem coe_mapAlgHom_eq_coe_map : (mapAlgHom φ hφ : RatFunc K → RatFunc R) = map φ hφ := rfl
+
+end MapAlgHom
+
+section LiftAlgHom
+
+variable {L R S F : Type*} [Field L] [CommRing R] [IsDomain R] [CommSemiring S] [Algebra S K[X]]
+  [Algebra S L] [Algebra S R[X]] [FunLike F K[X] L] [AlgHomClass F S K[X] L] (φ : K[X] →ₐ[S] L)
+  (hφ : K[X]⁰ ≤ L⁰.comap φ)
 
 /-- Lift an injective algebra homomorphism `K[X] →ₐ[S] L` to a `RatFunc K →ₐ[S] L`
 by mapping both the numerator and denominator and quotienting them. -/
@@ -655,13 +662,13 @@ def liftAlgHom : RatFunc K →ₐ[S] L :=
   { liftRingHom φ.toRingHom hφ with
     commutes' := fun r => by
       simp_rw [RingHom.toFun_eq_coe, AlgHom.toRingHom_eq_coe, algebraMap_apply r,
-        liftRingHom_apply_div, AlgHom.coe_toRingHom, map_one, div_one, AlgHom.commutes] }
+        liftRingHom_apply_div, AlgHom.coe_toRingHom, map_one, div_one, AlgHomClass.commutes] }
 
 theorem liftAlgHom_apply_ofFractionRing_mk (n : K[X]) (d : K[X]⁰) :
     liftAlgHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
-theorem liftAlgHom_injective (φ : K[X] →ₐ[S] L) (hφ : Function.Injective φ)
+theorem liftAlgHom_injective (hφ : Function.Injective φ)
     (hφ' : K[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftAlgHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
