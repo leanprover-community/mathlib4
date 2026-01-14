@@ -113,12 +113,45 @@ class LatinSquare (n : Type u) (α : Type v) [Fintype n] [Fintype α] [Decidable
   m_le_n := by rfl
   
 @[coe]
-def to_matrix : (LatinRectangle m n α) → (Matrix m n α)
+abbrev to_matrix : (LatinRectangle m n α) → (Matrix m n α)
  | A => A.M
 
-instance : Coe (LatinRectangle m n α) (Matrix m n α) where
+instance {m : Type u} {n : Type u'} {α : Type v} [Fintype m] 
+  [Fintype n] [Fintype α] [DecidableEq α] : 
+  Coe (LatinRectangle m n α) (Matrix m n α) where
   coe := to_matrix
+
+abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
+abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
   
+
+
+lemma col_map_inj (A : LatinRectangle m n α) :
+  Function.Injective (col A) := by sorry
+  
+lemma col_map_bij (A : LatinSquare n α) :
+  Function.Bijective (col A) := by sorry
+
+@[coe]
+def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α) 
+  | A => {
+      M := A.M,
+      exactly_n_symbols := A.exactly_n_symbols,
+      once_per_row := A.once_per_row,
+      m_le_n := A.m_le_n,
+      once_per_column := by 
+        unfold once_per_column 
+        have h := A.distinct_col_entries
+        unfold distinct_col_entries at h
+        sorry
+      }
+
+instance : Coe (LatinRectangle n n α) (LatinSquare n α) where 
+  coe := lr_to_ls
+
+  
+
+
 def LatinRectangle.to_latin_sq (A : LatinRectangle n n α) : (LatinSquare n α) := 
 {
   M := A.M,
@@ -138,6 +171,7 @@ def LatinRectangle.to_latin_sq (A : LatinRectangle n n α) : (LatinSquare n α) 
 instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
     reprPrec L prec := Repr.reprPrec L.toLatinRectangle prec
+
 
 /-- Every Finite Group's Cayley table is an example of a Latin Square. -/
 @[to_additive]
@@ -167,6 +201,10 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
       exact hy
    }
    
+
+#check col (addGroup_to_cayley_table (ZMod 5) : LatinRectangle (ZMod 5) (ZMod 5) (ZMod 5))
+
+
 def latin_rectangle_isomorphism
   (f : m ≃ m')
   (g : n ≃ n')
