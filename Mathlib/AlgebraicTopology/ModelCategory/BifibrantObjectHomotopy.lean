@@ -159,6 +159,7 @@ lemma π.homEquivLeft_symm_apply (f : X ⟶ Y) :
 
 end
 
+/-- The inclusion functor `BifibrantObject.π C ⥤ FibrantObject.π C`. -/
 def π.ιFibrantObject : π C ⥤ FibrantObject.π C :=
   CategoryTheory.Quotient.lift _
     (BifibrantObject.ιFibrantObject ⋙ FibrantObject.toπ) (fun _ _ _ _ h ↦ by
@@ -177,24 +178,13 @@ lemma π.ιFibrantObject_map_toπ_map {X Y : BifibrantObject C} (f : X ⟶ Y) :
       FibrantObject.toπ.map (FibrantObject.homMk f.hom) :=
   rfl
 
-instance : (π.ιFibrantObject (C := C)).Faithful where
-  map_injective := by
-    rintro X Y f g h
-    obtain ⟨f, rfl⟩ := toπ.map_surjective f
-    obtain ⟨g, rfl⟩ := toπ.map_surjective g
-    dsimp at h
-    rw [FibrantObject.toπ_map_eq_iff] at h
-    rwa [toπ_map_eq_iff, homRel_iff_leftHomotopyRel]
-
-instance : (π.ιFibrantObject (C := C)).Full where
-  map_surjective f := by
-    obtain ⟨f, rfl⟩ := FibrantObject.toπ.map_surjective f
-    exact ⟨toπ.map (homMk f.hom), rfl⟩
-
+/-- The isomomorphism `toπ ⋙ π.ιFibrantObject ≅ ιFibrantObject ⋙ FibrantObject.toπ`
+between functors `BifibrantObject C ⥤ FibrantObject.π C`. -/
 def toπCompιFibrantObject :
     toπ (C := C) ⋙ π.ιFibrantObject ≅
       ιFibrantObject ⋙ FibrantObject.toπ := Iso.refl _
 
+/-- The inclusion functor `BifibrantObject.π C ⥤ CofibrantObject.π C`. -/
 def π.ιCofibrantObject : π C ⥤ CofibrantObject.π C :=
   CategoryTheory.Quotient.lift _
     (BifibrantObject.ιCofibrantObject ⋙ CofibrantObject.toπ) (fun _ _ _ _ h ↦ by
@@ -212,20 +202,8 @@ lemma π.ιCofibrantObject_map_toπ_map {X Y : BifibrantObject C} (f : X ⟶ Y) 
       CofibrantObject.toπ.map (CofibrantObject.homMk f.hom) :=
   rfl
 
-instance : (π.ιCofibrantObject (C := C)).Faithful where
-  map_injective := by
-    rintro X Y f g h
-    obtain ⟨f, rfl⟩ := toπ.map_surjective f
-    obtain ⟨g, rfl⟩ := toπ.map_surjective g
-    dsimp at h
-    rw [CofibrantObject.toπ_map_eq_iff] at h
-    rwa [toπ_map_eq_iff]
-
-instance : (π.ιCofibrantObject (C := C)).Full where
-  map_surjective f := by
-    obtain ⟨f, rfl⟩ := CofibrantObject.toπ.map_surjective f
-    exact ⟨toπ.map (homMk f.hom), rfl⟩
-
+/-- The isomomorphism `toπ ⋙ π.ιCofibrantObject ≅ ιCofibrantObject ⋙ CofibrantObject.toπ`
+between functors `BifibrantObject C ⥤ CofibrantObject.π C`. -/
 def toπCompιCofibrantObject :
     toπ (C := C) ⋙ π.ιCofibrantObject ≅
       ιCofibrantObject ⋙ CofibrantObject.toπ := Iso.refl _
@@ -246,10 +224,13 @@ lemma exists_bifibrant (X : CofibrantObject C) :
   exact ⟨BifibrantObject.mk h.Z, homMk h.i, inferInstanceAs (Cofibration h.i),
     inferInstanceAs (WeakEquivalence h.i)⟩
 
+/-- Given `X : CofibrantObject C`, this is a choice of bifibrant resolution of `X`. -/
 noncomputable def bifibrantResolutionObj (X : CofibrantObject C) :
     BifibrantObject C :=
   (exists_bifibrant X).choose
 
+/-- Given `X : CofibrantObject C`, this is a trivial cofibration
+from `X` to a choice of bifibrant resolution. -/
 noncomputable def iBifibrantResolutionObj (X : CofibrantObject C) :
     X ⟶ BifibrantObject.ιCofibrantObject.obj (bifibrantResolutionObj X) :=
   (exists_bifibrant X).choose_spec.choose
@@ -278,6 +259,8 @@ lemma exists_bifibrant_map {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     (iBifibrantResolutionObj X₁).hom (terminal.from _) (terminal.from _) := ⟨by simp⟩
   exact ⟨BifibrantObject.homMk sq.lift, by cat_disch⟩
 
+/-- Given a morphism in `CofibrantObject C`, this is a choice of morphism
+(well defined only up to homotopy) between the chosen bifibrant resolutions. -/
 noncomputable def bifibrantResolutionMap {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     bifibrantResolutionObj X₁ ⟶ bifibrantResolutionObj X₂ :=
   (exists_bifibrant_map f).choose
@@ -327,16 +310,20 @@ lemma bifibrantResolutionObj_hom_ext
   simpa only [ObjectProperty.ι_obj, ObjectProperty.ιOfLE_obj_obj, ObjectProperty.ι_map,
     RightHomotopyClass.precomp_mk] using h
 
+/-- The bifibrant resolution functor from the category of cofibrant objects
+to the homotopy category of bifibrant objects. -/
 @[simps]
-noncomputable def bifibrantResolution : CofibrantObject C ⥤ BifibrantObject.π C where
+noncomputable def π.bifibrantResolution' : CofibrantObject C ⥤ BifibrantObject.π C where
   obj X := BifibrantObject.toπ.obj (bifibrantResolutionObj X)
   map f := BifibrantObject.toπ.map (bifibrantResolutionMap f)
   map_id X := bifibrantResolutionObj_hom_ext (by simp)
   map_comp {X₁ X₂ X₃} f g := bifibrantResolutionObj_hom_ext (by simp)
 
+/-- The bifibrant resolution functor from the homotopy category of
+cofibrant objects to the homotopy category of bifibrant objects. -/
 noncomputable def π.bifibrantResolution :
     CofibrantObject.π C ⥤ BifibrantObject.π C :=
-  CategoryTheory.Quotient.lift _ CofibrantObject.bifibrantResolution (by
+  CategoryTheory.Quotient.lift _ CofibrantObject.π.bifibrantResolution' (by
     intro X Y f g h
     apply bifibrantResolutionObj_hom_ext
     simpa [← Functor.map_comp, toπ_map_eq_iff] using h.postcomp _)
@@ -351,6 +338,7 @@ lemma π.bifibrantResolution_map {X Y : CofibrantObject C} (f : X ⟶ Y) :
     π.bifibrantResolution.map (CofibrantObject.toπ.map f) =
       BifibrantObject.toπ.map (bifibrantResolutionMap f) := rfl
 
+/-- Auxiliary definition for `CofibrantObject.π.adj`. -/
 noncomputable def π.adjUnit :
     𝟭 (π C) ⟶ π.bifibrantResolution ⋙ BifibrantObject.π.ιCofibrantObject :=
   Quotient.natTransLift _
@@ -367,8 +355,9 @@ instance (X : CofibrantObject.π C) : WeakEquivalence (π.adjUnit.app X) := by
     weakEquivalence_iff_of_objectProperty]
   infer_instance
 
+/-- Auxiliary definition for `CofibrantObject.π.adj`. -/
 noncomputable def π.adjCounit' :
-    𝟭 (BifibrantObject.π C) ⟶ BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution :=
+    𝟭 (BifibrantObject.π C) ⟶ BifibrantObject.π.ιCofibrantObject ⋙ π.bifibrantResolution :=
   Quotient.natTransLift _
     { app X :=
         BifibrantObject.toπ.map
@@ -396,6 +385,7 @@ instance (X : BifibrantObject.π C) : IsIso (π.adjCounit'.app X) := by
 
 instance : IsIso (π.adjCounit' (C := C)) := NatIso.isIso_of_isIso_app _
 
+/-- Auxiliary definition for `CofibrantObject.π.adj`. -/
 noncomputable def π.adjCounitIso :
     BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution ≅ 𝟭 (BifibrantObject.π C) :=
   (asIso π.adjCounit').symm
@@ -405,6 +395,7 @@ lemma π.adjCounitIso_inv_app (X : BifibrantObject C) :
       BifibrantObject.toπ.map (BifibrantObject.homMk
         ((iBifibrantResolutionObj (.mk X.obj))).hom) := rfl
 
+/-- The adjunction between the category `CofibrantObject.π C` and `BifibrantObject.π C`. -/
 noncomputable def π.adj :
     π.bifibrantResolution (C := C) ⊣ BifibrantObject.π.ιCofibrantObject where
   unit := π.adjUnit
@@ -417,19 +408,12 @@ noncomputable def π.adj :
     dsimp
     simp only [π.adjCounitIso_inv_app, Category.comp_id, Category.id_comp,
       BifibrantObject.π.ιCofibrantObject_map_toπ_map, ObjectProperty.homMk_hom]
-    erw [bifibrantResolutionMap_fac']
-    rfl
-    /-rw [Category.comp_id, Category.id_comp, π.adjUnit_app,
-      bifibrantResolution_map, π.adjCounitIso_inv_app,
-      bifibrantResolutionMap_fac']
-    rfl-/
+    apply bifibrantResolutionMap_fac'
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toπ_obj_surjective X
     rw [← cancel_mono (BifibrantObject.π.ιCofibrantObject.map (π.adjCounitIso.inv.app _)),
       Category.assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
-    simp only [Functor.id_obj, Functor.comp_obj, CategoryTheory.Functor.map_id, Category.comp_id,
-      Category.id_comp]
-    rfl
+    cat_disch
 
 instance : IsIso (π.adj (C := C)).counit := by
   dsimp [π.adj]
@@ -473,6 +457,7 @@ def localizerMorphism :
   map := by rfl
 
 variable (C) in
+/-- The inclusion `BifibrantObject C ⥤ CofibrantObject C`, as a localizer morphism. -/
 @[simps]
 def ιCofibrantObjectLocalizerMorphism :
     LocalizerMorphism (weakEquivalences (BifibrantObject C))
@@ -481,6 +466,7 @@ def ιCofibrantObjectLocalizerMorphism :
   map _ _ _ h := h
 
 variable (C) in
+/-- The inclusion `BifibrantObject C ⥤ FibrantObject C`, as a localizer morphism. -/
 @[simps]
 def ιFibrantObjectLocalizerMorphism :
     LocalizerMorphism (weakEquivalences (BifibrantObject C))

@@ -10,6 +10,16 @@ public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
 /-!
 # The fundamental lemma of homotopical algebra
 
+Let `C` be a model category. Let `L : C ⥤ H` be a localization functor
+with respect to weak equivalences in `C`. We obtain the fundamental
+lemma of homotopical algebra: if `X` is cofibrant and `Y` fibrant,
+the map `(X ⟶ Y) → (L.obj X ⟶ L.obj Y)` identifies `L.obj X ⟶ L.obj Y`
+to the quotient of `X ⟶ Y` by the homotopy relation (in this case,
+the left and right homotopy relations coincide).
+
+## References
+* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
+
 -/
 
 @[expose] public section
