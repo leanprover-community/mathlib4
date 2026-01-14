@@ -60,7 +60,7 @@ noncomputable section
 
 namespace NumberField.InfinitePlace
 
-open AbsoluteValue.Completion
+open AbsoluteValue.Completion UniformSpace.Completion NumberField.ComplexEmbedding
 
 variable {K : Type*} [Field K] (v : InfinitePlace K)
 
@@ -216,11 +216,44 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbeddingOfIsReal hv
 
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
+  [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
+
+@[simp]
+theorem algebraMap_coe (x : WithAbs v.1) :
+    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x := by
+  have := IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x
+  rw [algebraMap_def] at this
+  simp [this, algebraMap_def, Algebra.algebraMap_self]
+
+/-- Assume that `w.Completion` forms an algebra over `v.Completion` with continuous scalar action,
+such that that `K`, `v.Completion` and `w.Completion` forms a scalar tower.
+If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
+to completions are also extensions. -/
+theorem isExtension_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
+    (h : IsExtension v.embedding w.embedding) :
+    IsExtension (extensionEmbedding v) (extensionEmbedding w) := by
+  ext x
+  induction x using induction_on
+  · exact isClosed_eq (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion)
+      continuous_extension
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+
+theorem isExtension_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
+    (h : IsExtension v.embedding (conjugate w.embedding)) :
+    IsExtension (extensionEmbedding v) (conjugate (extensionEmbedding w)) := by
+  ext x
+  induction x using induction_on
+  · simpa using isClosed_eq (.comp (by fun_prop)
+      (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion))
+      continuous_extension
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+
 end Completion
 
 namespace LiesOver
 
-open Completion UniformSpace.Completion NumberField.ComplexEmbedding
+open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
 
@@ -228,36 +261,10 @@ theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) 
   AddMonoidHomClass.isometry_of_norm _ fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.1 _ ▸
     comp_of_comap_eq (comap_eq w v) _
 
--- Even though v.1.LiesOver v.1 does not yet exist, scoping this in case that is ever added.
-/-- If `w : InfinitePlace L` lies over `v : InfinitePlace K` then `w.Completion` is a
-`v.Completion`-algebra. This instance is `scoped` to avoid causing diamonds when `v = w`,
-use `open scoped NumberField.InfinitePlace.LiesOver` to access it. -/
-scoped instance : Algebra v.Completion w.Completion := (isometry_algebraMap w).mapRingHom.toAlgebra
+variable [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
 
-@[simp]
-theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
-  (isometry_algebraMap w).mapRingHom_coe _
-
-/-- If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
-to completions are also extensions. -/
-theorem isExtension_extensionEmbedding (h : IsExtension v.embedding w.embedding) :
-    IsExtension (extensionEmbedding v) (extensionEmbedding w) := by
-  ext x
-  induction x using induction_on
-  · simpa using isClosed_eq (continuous_extension.comp continuous_map) continuous_extension
-  · simp [WithAbs.equiv_algebraMap_apply, ← h]
-
-theorem isExtension_conjugate_extensionEmbedding
-    (h : IsExtension v.embedding (conjugate w.embedding)) :
-    IsExtension (extensionEmbedding v) (conjugate (extensionEmbedding w)) := by
-  ext x
-  induction x using induction_on
-  · simpa using isClosed_eq (.comp (by fun_prop) (continuous_extension.comp continuous_map))
-      continuous_extension
-  · simp [WithAbs.equiv_algebraMap_apply, ← h]
-
-theorem isExtension_extensionEmbedding_of_isReal (h : v.IsReal) :
+theorem isExtension_extensionEmbedding_of_isReal [ContinuousSMul v.Completion w.Completion]
+    (h : v.IsReal) :
     IsExtension (extensionEmbedding v) (extensionEmbedding w) :=
   isExtension_extensionEmbedding w
     (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm

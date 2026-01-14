@@ -48,6 +48,12 @@ instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
     Algebra.IsSeparable (WithAbs v) R' :=
   ‹Algebra.IsSeparable R R'›
 
+instance {R : Type*} [CommRing R] [Algebra R R'] (w : AbsoluteValue R' ℝ) :
+    UniformContinuousConstSMul R (WithAbs w) where
+  uniformContinuous_const_smul r := by
+    simp_rw [Algebra.smul_def]
+    exact (Ring.uniformContinuousConstSMul _).uniformContinuous_const_smul _
+
 end more_instances
 
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
