@@ -172,7 +172,7 @@ noncomputable instance forget_createsLimit :
   refine IsLimit.ofFaithful (forget MonCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _) ?_ ?_
   · intro _
     refine ofHom
-      { toFun := (Types.Small.limitConeIsLimit.{v,u} _).lift ((forget MonCat).mapCone _),
+      { toFun := (Types.Small.limitConeIsLimit.{v, u} _).lift ((forget MonCat).mapCone _),
         map_one' := by simp; rfl, map_mul' := ?_ }
     · intro x y
       simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,
