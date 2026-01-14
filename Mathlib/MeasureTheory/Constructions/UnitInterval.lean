@@ -6,6 +6,7 @@ Authors: Eric Wieser, Gaëtan Serré
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # The canonical measure on the unit interval
@@ -130,3 +131,6 @@ lemma volume_uIoo : volume (uIoo x y) = edist y x := by
     max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
 
 end unitInterval
+
+lemma unitInterval_not_countable : ¬ Countable I := by
+  simp only [countable_coe_iff, Cardinal.Real.Icc_countable_iff, not_le, zero_lt_one]
