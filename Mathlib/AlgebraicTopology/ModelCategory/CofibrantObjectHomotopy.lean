@@ -155,6 +155,9 @@ instance (X : C) : Fibration (π.pResolutionObj X) :=
 instance (X : C) : WeakEquivalence (π.pResolutionObj X) :=
   (π.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
+instance (X : C) [IsFibrant X] : IsFibrant (π.resolutionObj X) :=
+  isFibrant_of_fibration (π.pResolutionObj X)
+
 lemma π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       g ≫ pResolutionObj Y = pResolutionObj X ≫ f := by

@@ -158,6 +158,9 @@ instance (X : C) : Cofibration (π.iResolutionObj X) :=
 instance (X : C) : WeakEquivalence (π.iResolutionObj X) :=
   (π.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
+instance (X : C) [IsCofibrant X] : IsCofibrant (π.resolutionObj X) :=
+  isCofibrant_of_cofibration (π.iResolutionObj X)
+
 lemma π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       iResolutionObj X ≫ g = f ≫ iResolutionObj Y := by
