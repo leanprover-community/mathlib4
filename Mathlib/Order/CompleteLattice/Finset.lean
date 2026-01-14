@@ -13,11 +13,11 @@ public import Mathlib.Data.Set.Lattice.Image
 
 This file is concerned with how big lattice or set operations behave when indexed by a finset.
 
-See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
+See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 

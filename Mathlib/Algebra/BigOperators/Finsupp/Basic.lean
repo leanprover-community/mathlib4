@@ -190,6 +190,11 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     rw [h]
     exact h₁ h
 
+@[to_additive]
+lemma prod_unique [Unique α] {f : α →₀ M} {g : α → M → N} (h₁ : f default = 0 → g default 0 = 1) :
+    f.prod g = g default (f default) :=
+  prod_eq_single _ (fun a ↦ by simp [Subsingleton.elim a default]) h₁
+
 end SumProd
 
 section CommMonoidWithZero
@@ -621,9 +626,6 @@ theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.
     0 < f.prod (· ^ ·) :=
   Nat.pos_iff_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr fun _ hf =>
     pow_ne_zero _ fun H => by subst H; exact nhf hf
-
-@[deprecated (since := "2025-05-23")]
-alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
 
 end Nat
 

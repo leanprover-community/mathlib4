@@ -13,6 +13,11 @@ This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.
 
+This is mostly useful when `v` is an absolute value on `R` and `c` is set to be `1`, in which case
+the Gauss norm corresponds to the maximum of the absolute values of the coefficients of `p`. When
+`R` is a subring of `ℂ` and `v` is the standard absolute value, this is sometimes called the
+"height" of `p`.
+
 In the file `Mathlib/RingTheory/PowerSeries/GaussNorm.lean`, the Gauss norm is defined for power
 series. This is a generalization of the Gauss norm defined in this file in case `v` is a
 non-negative function with `v 0 = 0` and `c ≥ 0`.

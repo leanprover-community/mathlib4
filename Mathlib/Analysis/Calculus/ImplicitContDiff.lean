@@ -89,8 +89,8 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   isCompl_ker := by
     apply IsCompl.of_eq
     · ext ⟨x, y⟩
-      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst',
-        LinearMap.mem_ker, Prod.ext_iff, ← h.bijective.injective.eq_iff]
+      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst,
+        LinearMap.coe_fst, LinearMap.mem_ker, Prod.ext_iff, ← h.bijective.injective.eq_iff]
       simp +contextual [Prod.mk_zero_zero]
     · ext x
       simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]
@@ -98,12 +98,16 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
-lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+lemma implicitFunctionData_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.pt = a := rfl
 
 @[simp]
-lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
+lemma implicitFunctionData_leftFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.leftFun xy = xy.1 := rfl
+
+@[simp]
+lemma implicitFunctionData_rightFun_apply {h : IsContDiffImplicitAt n f f' a} {xy : E × F} :
+    h.implicitFunctionData.rightFun xy = f xy := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -126,6 +130,10 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
     h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
+@[simp]
+lemma implicitFunction_apply (h : IsContDiffImplicitAt n f f' a) (x : E) :
+    h.implicitFunction x = (h.implicitFunctionData.implicitFunction x (f a)).2 := rfl
+
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
@@ -141,6 +149,11 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   ext
   · rw [h1]
   · rfl
+
+theorem eventually_implicitFunction_apply_eq (h : IsContDiffImplicitAt n f f' a) :
+    ∀ᶠ xy in 𝓝 a, f xy = f a → h.implicitFunction xy.1 = xy.2 := by
+  refine h.implicitFunctionData.implicitFunction_apply_image.mono fun xy h₁ h₂ ↦ ?_
+  simp_all
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/

@@ -176,9 +176,6 @@ lemma tendstoLocallyUniformlyOn_of_forall_exists_nhds
   rw [tendstoUniformlyOn_iff_tendsto] at htr
   exact htr.mono_left <| prod_mono_right _ <| le_principal_iff.mpr ht
 
-@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformlyOn_of_forall_exists_nhd :=
-  tendstoLocallyUniformlyOn_of_forall_exists_nhds
-
 /-- If every `x` has a neighbourhood on which `F i` tends uniformly to `f`, then `F i` tends
 locally uniformly to `f`. (Special case of `tendstoLocallyUniformlyOn_of_forall_exists_nhds`
 where `s = univ`.) -/
@@ -187,9 +184,6 @@ lemma tendstoLocallyUniformly_of_forall_exists_nhds
     TendstoLocallyUniformly F f p :=
   tendstoLocallyUniformlyOn_univ.mp
     <| tendstoLocallyUniformlyOn_of_forall_exists_nhds (by simpa using h)
-
-@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformly_of_forall_exists_nhd :=
-  tendstoLocallyUniformly_of_forall_exists_nhds
 
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :

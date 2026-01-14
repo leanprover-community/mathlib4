@@ -154,14 +154,9 @@ theorem blockTriangular_single {i j : m} (hij : b i ≤ b j) (c : R) :
   rintro ⟨rfl, rfl⟩
   exact (hij.trans_lt hrs).false
 
-@[deprecated (since := "2025-05-05")] alias blockTriangular_stdBasisMatrix := blockTriangular_single
-
 theorem blockTriangular_single' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (single i j c) (toDual ∘ b) :=
   blockTriangular_single (by exact toDual_le_toDual.mpr hij) _
-
-@[deprecated (since := "2025-05-05")]
-alias blockTriangular_stdBasisMatrix' := blockTriangular_single'
 
 end Zero
 

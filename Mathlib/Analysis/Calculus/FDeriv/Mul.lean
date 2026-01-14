@@ -22,7 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics ContinuousLinearMap Topology

@@ -14,7 +14,7 @@ This file contains lemmas about the integral against a kernel and over a set.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory
 
