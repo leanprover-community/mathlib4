@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Andrew Yang, Joël Riou
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Discrete
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Discrete
 
 /-!
 # Shift
@@ -35,6 +37,8 @@ which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero
 `shiftFunctorAdd'_add_zero`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -654,6 +658,20 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m�
       (m₁ + (m₂ + m₃)) (add_comm _ _) rfl (by rw [add_comm m₂ m₁, add_assoc]) X,
     shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃
       (m₁ + m₂) (m₂ + m₃) (m₁ + (m₂ + m₃)) rfl rfl (add_assoc _ _ _) X]
+
+@[reassoc]
+lemma shiftFunctorComm_hom_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).hom.app X =
+      (shiftFunctorCompIsoId C m n hmn).hom.app X ≫
+        (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
+
+@[reassoc]
+lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
+    (shiftFunctorComm C m n).inv.app X =
+      (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).hom.app X ≫
+        (shiftFunctorCompIsoId C m n hmn).inv.app X := by
+  simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
 
 end AddCommMonoid
 

@@ -3,14 +3,18 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
 
 -/
+
+@[expose] public section
 
 open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 

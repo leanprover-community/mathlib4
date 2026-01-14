@@ -3,11 +3,13 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set
@@ -44,6 +46,8 @@ performance-wise.
 These considerations more generally apply to `Finset.card` and `Finset.sum` and demonstrate that
 overengineering basic definitions is likely to hinder user experience.
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists Ring

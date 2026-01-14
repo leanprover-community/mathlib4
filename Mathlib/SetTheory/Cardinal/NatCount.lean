@@ -3,15 +3,18 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vladimir Goryachev
 -/
+module
 
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Set.Card
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Set.Card
 
 /-!
 # Counting on ℕ
 
 This file provides lemmas about the relation of `Nat.count` with cardinality functions.
 -/
+
+@[expose] public section
 
 
 namespace Nat

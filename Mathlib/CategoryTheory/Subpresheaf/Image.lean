@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Subpresheaf.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Types.Colimits
+module
+
+public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # The image of a subpresheaf
@@ -16,6 +18,8 @@ define `G'.image p : Subpresheaf F` as the image of `G'` by `f`, and
 if `G : Subpresheaf F`, we define its preimage `G.preimage f : Subpresheaf F'`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

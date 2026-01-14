@@ -3,11 +3,13 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+module
+
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Evaluation of specific improper integrals
@@ -24,6 +26,8 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 - `Mathlib/Analysis/SpecialFunctions/Gaussian.lean` -- integral of `exp (-x ^ 2)`
 - `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
 -/
+
+@[expose] public section
 
 
 open Real Set Filter MeasureTheory intervalIntegral
@@ -114,7 +118,7 @@ theorem integrableOn_add_rpow_Ioi_of_lt {a c m : ℝ} (ha : a < -1) (hc : -m < c
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t ↦ (t + m) ^ (a + 1) / (a + 1)) ((x + m) ^ a) x := by
     intro x hx
     convert (((hasDerivAt_id _).add_const _).rpow_const _).div_const _ using 1
-    simp [show a + 1 ≠ 0 by linarith]
+    · simp [show a + 1 ≠ 0 by linarith]
     left; linarith [mem_Ici.mp hx, id_eq x]
   have ht : Tendsto (fun t ↦ ((t + m) ^ (a + 1)) / (a + 1)) atTop (nhds (0 / (a + 1))) := by
     rw [← neg_neg (a + 1)]

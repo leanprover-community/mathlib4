@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Biproducts and binary biproducts
@@ -36,6 +38,8 @@ and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
+
+@[expose] public section
 
 noncomputable section
 

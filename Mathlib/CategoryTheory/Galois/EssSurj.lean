@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Full
-import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.CategoryTheory.Galois.Full
+public import Mathlib.CategoryTheory.Galois.Topology
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 
@@ -34,6 +36,8 @@ Since `H` preserves finite coproducts, it hence suffices to treat the case `Y = 
 For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

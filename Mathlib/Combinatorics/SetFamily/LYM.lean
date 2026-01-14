@@ -3,12 +3,14 @@ Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SetFamily.Shadow
-import Mathlib.Data.NNRat.Order
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SetFamily.Shadow
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem
@@ -44,6 +46,8 @@ Provide equality cases. Local LYM gives that the equality case of LYM and Sperne
 
 shadow, lym, slice, sperner, antichain
 -/
+
+@[expose] public section
 
 open Finset Nat
 open scoped FinsetFamily
@@ -184,9 +188,8 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
       cast_add, _root_.add_div, add_comm]
     rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
-      local_lubell_yamamoto_meshalkin_inequality_div
-        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
+    grw [ih <| le_of_succ_le hk, local_lubell_yamamoto_meshalkin_inequality_div
+      (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _]
 
 end Falling
 
@@ -214,7 +217,8 @@ alias sum_card_slice_div_choose_le_one := lubell_yamamoto_meshalkin_inequality_s
 /-- The **Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
 
 If `𝒜` is an antichain, then the sum of `(#α.choose #s)⁻¹` over `s ∈ 𝒜` is less than `1`. -/
-theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose (h𝒜 : IsAntichain (· ⊆ ·) 𝒜.toSet) :
+theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
+    (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :
     ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : 𝕜)⁻¹ ≤ 1 := by
   calc
     _ = ∑ r ∈ range (Fintype.card α + 1),
@@ -228,7 +232,7 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose (h𝒜 : IsAntichain
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
-theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) 𝒜.toSet) :
+theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :
     #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   have : 0 < ((Fintype.card α).choose (Fintype.card α / 2) : ℚ≥0) :=
     Nat.cast_pos.2 <| choose_pos (Nat.div_le_self _ _)

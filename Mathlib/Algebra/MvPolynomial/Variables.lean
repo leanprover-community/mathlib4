@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Algebra.MvPolynomial.Degrees
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 # Variables of polynomials
@@ -38,6 +40,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -304,7 +308,7 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
-lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars : Set σ) ⊆ s)
     [∀ i, Decidable (i ∈ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
   rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]

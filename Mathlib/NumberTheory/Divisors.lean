@@ -3,15 +3,17 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Divisor Finsets
@@ -36,6 +38,8 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 divisors, perfect numbers
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -127,7 +131,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   constructor
   · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
     simp [Nat.mul_div_eq_iff_dvd, han]
-    cutsat
+    lia
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
@@ -141,25 +145,39 @@ lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
   rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap
     (f_inj := by simp_all), List.toFinset_range'_1_1]
 
-lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
-    n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
-  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha => ?_
+lemma pairwise_divisorsAntidiagonalList_fst {n : ℕ} :
+    n.divisorsAntidiagonalList.Pairwise (·.fst < ·.fst) := by
+  refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ fun a b c d h ha h' => ?_
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
   simpa [← h.right, ← h'.right]
 
-lemma sorted_divisorsAntidiagonalList_snd {n : ℕ} :
-    n.divisorsAntidiagonalList.Sorted (·.snd > ·.snd) := by
+lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
+    n.divisorsAntidiagonalList.Pairwise (·.snd > ·.snd) := by
   obtain rfl | hn := eq_or_ne n 0
   · simp
-  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap ?_
-  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt, and_imp, Prod.forall,
-    Prod.mk.injEq]
-  rintro a b _ _ _ _ ha rfl rfl hb rfl rfl hab
+  refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ ?_
+  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt,
+    and_imp, Prod.forall, Prod.mk.injEq]
+  rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
+
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_fst :=
+  pairwise_divisorsAntidiagonalList_fst
+
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_snd :=
+  pairwise_divisorsAntidiagonalList_snd
+
+lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.fst).SortedLT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_fst).sortedLT
+
+lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.snd).SortedGT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
   have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
-  sorted_divisorsAntidiagonalList_fst.nodup
+  pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
 @[simp]
@@ -179,8 +197,8 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
   have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
-  refine List.eq_of_perm_of_sorted ?_ sorted_divisorsAntidiagonalList_snd.reverse <|
-    sorted_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id
+  refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
+    (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
     (nodup_divisorsAntidiagonalList.map Prod.swap_injective), mul_comm]
 
@@ -244,8 +262,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
 
 @[simp]
-lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 :=
-  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
+  contrapose!; exact nonempty_divisors
 
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
@@ -301,7 +319,7 @@ lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
 
 @[simp]
 lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
-  rw [← not_nonempty_iff_eq_empty, nonempty_properDivisors, not_lt]
+  contrapose!; exact nonempty_properDivisors
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -407,7 +425,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ, eq_comm]
+  simp [Nat.lt_succ_iff, eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id
@@ -426,11 +444,10 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     intro h
     apply Subset.antisymm hsub
     rw [← sdiff_eq_empty_iff_subset]
-    contrapose h
-    rw [← Ne, ← nonempty_iff_ne_empty] at h
+    contrapose! h
     apply ne_of_lt
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
-    apply add_lt_add_right
+    gcongr
     have hlt :=
       sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
     simp only [sum_const_zero] at hlt
@@ -579,6 +596,21 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
+
+/-- Useful lemma for reordering sums. -/
+lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+    n.divisorsAntidiagonal = ((Ioc 0 N) ×ˢ (Ioc 0 N)).filter
+    (fun x ↦ x.1 * x.2 = n) := by
+  ext ⟨n1, n2⟩
+  rw [Nat.mem_divisorsAntidiagonal]
+  simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]
+  constructor
+  · intro ⟨rfl, hn2⟩
+    grw [← hn]
+    simp (disch := lia) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
+    lia
+  · intro ⟨⟨hn1, hn2⟩, hn3⟩
+    exact ⟨hn3, n_ne_zero⟩
 
 end Nat
 

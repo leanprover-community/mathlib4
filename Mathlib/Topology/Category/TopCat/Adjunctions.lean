@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Mario Carneiro
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of topological spaces
@@ -13,6 +15,8 @@ This file shows that the forgetful functor from topological spaces to types has 
 adjoint, given by `TopCat.discrete`, resp. `TopCat.trivial`, the functors which equip a type with
 the discrete, resp. trivial, topology.
 -/
+
+@[expose] public section
 
 
 universe u

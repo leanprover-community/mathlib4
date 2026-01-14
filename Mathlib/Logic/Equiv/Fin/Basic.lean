@@ -3,15 +3,19 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Embedding.Set
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Data.Int.Init
-import Batteries.Data.Fin.Lemmas
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Data.Int.Init
+public import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -316,8 +320,8 @@ theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by cutsat⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by cutsat⟩ m
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
+  convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/

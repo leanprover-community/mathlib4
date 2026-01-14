@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Locality conditions on morphism properties
@@ -29,6 +31,8 @@ The covers appearing in the definitions have index type in the morphism universe
 - Define source and target local closure of a morphism property.
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -43,7 +47,7 @@ variable (K : Precoverage C)
 
 /--
 A property of morphisms `P` in `C` is local at the target with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `Y` in the precoverage `K`.
 
@@ -117,7 +121,7 @@ alias iff_of_zeroHypercover_target := IsLocalAtTarget.iff_of_zeroHypercover
 
 /--
 A property of morphisms `P` in `C` is local at the source with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `X` in the precoverage `K`.
 

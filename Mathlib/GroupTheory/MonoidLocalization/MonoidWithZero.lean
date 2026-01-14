@@ -3,16 +3,20 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.OreLocalization.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -26,14 +30,13 @@ namespace Submonoid
 variable {S N}
 
 /-- If `S` contains `0` then the localization at `S` is trivial. -/
-theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) :
-    Subsingleton N := by
-  refine ⟨fun a b ↦ ?_⟩
-  rw [← LocalizationMap.mk'_sec f a, ← LocalizationMap.mk'_sec f b, LocalizationMap.eq]
-  exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
+theorem LocalizationMap.subsingleton (f : LocalizationMap S N) (h : 0 ∈ S) : Subsingleton N where
+  allEq a b := by
+    rw [← f.mk'_sec a, ← f.mk'_sec b, f.eq]
+    exact ⟨⟨0, h⟩, by simp only [zero_mul]⟩
 
 theorem LocalizationMap.subsingleton_iff (f : LocalizationMap S N) : Subsingleton N ↔ 0 ∈ S :=
-  ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq 0 1 (Subsingleton.elim ..)
+  ⟨fun _ ↦ have ⟨c, eq⟩ := f.exists_of_eq (Subsingleton.elim (f 0) (f 1))
     by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, f.subsingleton⟩
 
 theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Nontrivial N := by
@@ -43,13 +46,20 @@ protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 :
   have ⟨ms, eq⟩ := f.surj 0
   rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 
-/-- The monoid with zero hom underlying a `LocalizationMap`. -/
-def LocalizationMap.toMonoidWithZeroHom (f : LocalizationMap S N) : M →*₀ N :=
-  { f with map_zero' := f.map_zero }
+protected theorem IsLocalizationMap.map_zero {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+    (hf : IsLocalizationMap S f) : f 0 = 0 :=
+  LocalizationMap.map_zero ⟨MulHomClass.toMulHom f, hf⟩
 
+instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
+  map_zero f := by
+    have ⟨ms, eq⟩ := f.surj 0
+    rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
+
+@[deprecated (since := "2025-08-15")]
+alias LocalizationMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
 @[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
 @[deprecated (since := "2025-08-01")]
-alias LocalizationWithZeroMap.toMonoidWithZeroHom := LocalizationMap.toMonoidWithZeroHom
+alias LocalizationWithZeroMap.toMonoidWithZeroHom := MonoidWithZeroHomClass.toMonoidWithZeroHom
 
 end Submonoid
 
@@ -92,7 +102,7 @@ noncomputable def lift₀ (f : LocalizationMap S N) (g : M →*₀ P)
       rw [LocalizationMap.lift_spec f hg 0 0, mul_zero, ← map_zero g, ← g.toMonoidHom_coe]
       refine f.eq_of_eq hg ?_
       rw [LocalizationMap.sec_zero_fst]
-      exact f.toMonoidWithZeroHom.map_zero.symm }
+      exact (map_zero f).symm }
 
 lemma lift₀_def (f : LocalizationMap S N) (g : M →*₀ P) (hg : ∀ y : S, IsUnit (g y)) :
     ⇑(f.lift₀ g hg) = f.lift (g := g) hg := rfl
@@ -110,7 +120,7 @@ theorem isCancelMulZero (f : LocalizationMap S N) [IsCancelMulZero M] : IsCancel
   have ⟨ms, eq⟩ := f.surj n
   refine (eq ▸ f.map_isRegular (isCancelMulZero_iff_forall_isRegular.mp ‹_› ?_)).2.of_mul
   refine fun h ↦ hn ?_
-  rwa [h, f.map_zero, (f.map_units _).mul_left_eq_zero] at eq
+  rwa [h, map_zero, (f.map_units _).mul_left_eq_zero] at eq
 
 theorem map_eq_zero_iff (f : LocalizationMap S N) {m : M} : f m = 0 ↔ ∃ s : S, s * m = 0 := by
   simp_rw [← f.map_zero, eq_iff_exists, mul_zero]

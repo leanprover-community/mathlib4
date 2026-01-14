@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Topology on `Hom(R, S)`
@@ -25,6 +27,8 @@ this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ`.
   `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
+module
+
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
 /-!
 # Homology of complexes in concrete categories
@@ -17,6 +19,8 @@ we give a computation of the connecting homomorphism of
 the homology sequence in terms of (co)cycles.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

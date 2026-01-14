@@ -3,9 +3,11 @@ Copyright (c) 2023 Claus Clausen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Probability.Distributions.Gamma
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
@@ -13,7 +15,7 @@ Define the Exponential measure over the reals.
 
 ## Main definitions
 * `exponentialPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
-  or `0` else, which is the probability density function of a exponential distribution with
+  or `0` else, which is the probability density function of an exponential distribution with
   rate `r` (when `hr : 0 < r`).
 * `exponentialPDF`: `ℝ≥0∞`-valued pdf,
   `exponentialPDF r = ENNReal.ofReal (exponentialPDFReal r)`.
@@ -23,6 +25,8 @@ Define the Exponential measure over the reals.
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -58,12 +62,12 @@ lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
 /-- The exponential pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r) :=
   measurable_gammaPDFReal 1 r
 
 -- The exponential pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
     StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
 
@@ -132,6 +136,8 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
 lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPDF r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
@@ -146,8 +152,9 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     simp only [exponentialPDF_eq]
     rw [setLIntegral_congr_fun measurableSet_Icc (g := fun x ↦ ENNReal.ofReal (r * rexp (-(r * x))))
       (by intro a ha; simp [ha.1])]
-    rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
-        (Eventually.of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
+    rw [← ENNReal.toReal_eq_toReal_iff' _ ENNReal.ofReal_ne_top,
+        ← integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun _ ↦ le_of_lt
+        (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in 0..x, r * rexp (-(r * a)) := by
         rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]

@@ -3,11 +3,13 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
-import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+module
+
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Algebra.Polynomial.CoeffMem
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -57,6 +59,8 @@ The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, al
 not give an explicit bound on the complexity.
 
 -/
+
+@[expose] public section
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
@@ -195,16 +199,15 @@ private lemma induction_structure (n : ℕ)
     by_cases H : (∃ i, (e.1 i).Monic ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree)
     · obtain ⟨i, hi, i_min⟩ := H
       -- Case I.ii : `e j = 0` for all `j ≠ i`.
-      by_cases H' : ∀ j ≠ i, e.1 j = 0
+      by_cases! H' : ∀ j ≠ i, e.1 j = 0
       -- then `I = Ideal.span {e i}`
       · exact hP₂ R e i hi H'
       -- Case I.i : There is another `e j ≠ 0`
-      · simp only [ne_eq, not_forall] at H'
-        obtain ⟨j, hj, hj'⟩ := H'
+      · obtain ⟨j, hj, hj'⟩ := H'
         replace i_min := i_min j hj'
         -- then we can replace `e j` with `e j %ₘ (C h.unit⁻¹ * e i) `
         -- with `h : IsUnit (e i).leadingCoeff`.
-        apply hP₃ R e i j hi i_min (.symm hj) (H_IH _ ?_ _ rfl)
+        apply hP₃ R e i j hi i_min (hj.symm) (H_IH _ ?_ _ rfl)
         refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
         · intro k
           simp only [comp_apply, update_apply, hv]
@@ -259,6 +262,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
+-- TODO: fix non-terminal simp (large simp set)
+set_option linter.flexible false in
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -340,7 +345,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             RingHom.algebraMap_toAlgebra]; exact Set.union_compl_self _) _
       _ = (⋃ C ∈ S₁, C.toSet) ∪ ⋃ C ∈ S₂, C.toSet := ?_
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
-        simpa using (Set.biUnion_union S₁.toSet S₂.toSet _).symm
+        simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
     · convert congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
@@ -405,13 +410,13 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · cutsat
+          · lia
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
-      · cutsat
+      · lia
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
@@ -433,10 +438,9 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
         trans f.coeff '' (Set.Iio (f.natDegree + 2))
         · refine ((Set.image_subset_range _ _).antisymm ?_).symm
           rintro _ ⟨i, rfl⟩
-          by_cases hi : i ≤ f.natDegree
+          by_cases! hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
-          · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
+          · exact ⟨f.natDegree + 1, by simp, by simp [f.coeff_eq_zero_of_natDegree_lt hi]⟩
         · ext; simp [eq_comm]
     · simp
   · intro R _ g i hi hi_min _ R₀ _ f
@@ -510,7 +514,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> omega
+          _ ≤ c.degBound ^ c.degBound := by gcongr <;> lia
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
@@ -670,7 +674,7 @@ lemma chevalley_mvPolynomialC
     refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
       change _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← OrderIso.image_eq_preimage]
+      rw [← OrderIso.image_eq_preimage_symm]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
@@ -754,7 +758,7 @@ lemma chevalley_mvPolynomialC
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
     change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← OrderIso.image_eq_preimage, Set.image_image]
+    rw [← OrderIso.image_eq_preimage_symm, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm

@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Data.Finset.Sym
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+public import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -38,6 +40,8 @@ identification. See `Finset.finAntidiag` for the details.
 
 `Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -201,7 +205,7 @@ variable [DecidableEq ι]
 
 /-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
 pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
+local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by

@@ -3,17 +3,21 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
 In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -285,10 +289,8 @@ theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
 end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
-  by_contra r
-  dsimp [Function.Surjective] at r
-  push_neg at r
-  rcases r with ⟨b, hb⟩
+  dsimp [Function.Surjective]
+  by_contra! ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
       (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))

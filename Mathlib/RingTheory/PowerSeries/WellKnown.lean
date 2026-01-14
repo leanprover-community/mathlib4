@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Definition of well-known power series
@@ -23,6 +25,8 @@ In this file we define the following power series:
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
+
+@[expose] public section
 
 
 namespace PowerSeries

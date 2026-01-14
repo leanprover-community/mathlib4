@@ -3,12 +3,14 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Module.ULift
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.Support
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.Support
 
 /-!
 # Monoid actions continuous in the second variable
@@ -41,6 +43,8 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing
 
@@ -154,6 +158,23 @@ theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [Topo
   continuous_const_smul c := by
     simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
 
+@[to_additive]
+theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
+  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
+
+@[to_additive]
+theorem set_smul_closure_subset (s : Set M) (t : Set α) : s • closure t ⊆ closure (s • t) := by
+  simp only [← iUnion_smul_set]
+  exact iUnion₂_subset fun c hc ↦ (smul_closure_subset c t).trans <| closure_mono <|
+    subset_biUnion_of_mem (u := (· • t)) hc
+
+theorem isClosed_setOf_map_smul {N : Type*} (α β) [SMul M α] [SMul N β]
+    [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
+    IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
+  simp only [Set.setOf_forall]
+  exact isClosed_iInter fun c => isClosed_iInter fun x =>
+    isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
+
 end SMul
 
 section Monoid
@@ -166,26 +187,9 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
   continuous_const_smul m := continuous_const_smul (m : M)
 
 @[to_additive]
-theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
-  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
-
-@[to_additive]
-theorem set_smul_closure_subset (s : Set M) (t : Set α) : s • closure t ⊆ closure (s • t) := by
-  simp only [← iUnion_smul_set]
-  exact iUnion₂_subset fun c hc ↦ (smul_closure_subset c t).trans <| closure_mono <|
-    subset_biUnion_of_mem (u := (· • t)) hc
-
-@[to_additive]
 theorem smul_closure_orbit_subset (c : M) (x : α) :
     c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
-
-theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [MulAction M α] [MulAction N β]
-    [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
-    IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
-  simp only [Set.setOf_forall]
-  exact isClosed_iInter fun c => isClosed_iInter fun x =>
-    isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 
 end Monoid
 
@@ -278,6 +282,29 @@ theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 
 theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G} {s : Set G} :
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
   rw [← smul_mem_nhds_smul_iff g⁻¹]; simp
+
+namespace MulAction.IsPretransitive
+
+variable (G)
+
+@[to_additive]
+lemma t1Space_iff (x : α) [IsPretransitive G α] :
+    T1Space α ↔ IsClosed {x} := by
+  refine ⟨fun H ↦ isClosed_singleton, fun hx ↦ ⟨fun y ↦ ?_⟩⟩
+  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rw [← image_singleton, image_smul]
+  exact hx.smul _
+
+@[to_additive]
+lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
+    DiscreteTopology α ↔ IsOpen {x} := by
+  rw [discreteTopology_iff_isOpen_singleton]
+  refine ⟨fun H ↦ H _, fun hx y ↦ ?_⟩
+  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rw [← image_singleton, image_smul]
+  exact hx.smul _
+
+end MulAction.IsPretransitive
 
 end Group
 
@@ -415,7 +442,6 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -424,7 +450,7 @@ class ProperlyDiscontinuousSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [S
     Prop where
   /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·) '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | ((γ • ·) '' K ∩ L).Nonempty }
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
@@ -434,9 +460,12 @@ class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [V
   Prop where
   /-- Given two compact sets `K` and `L`, `γ +ᵥ K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ +ᵥ ·) '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | ((γ +ᵥ ·) '' K ∩ L).Nonempty }
 
 attribute [to_additive] ProperlyDiscontinuousSMul
+
+export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
+export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
 variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
@@ -444,9 +473,6 @@ variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ 
 @[to_additive /-- A finite group action is always properly discontinuous. -/]
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
-
-export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
-export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
   quotient. -/
@@ -479,7 +505,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm :)
   obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
   obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
-  let bad_Γ_set := { γ : Γ | (γ • ·) '' K₀ ∩ L₀ ≠ ∅ }
+  let bad_Γ_set := { γ : Γ | ((γ • ·) '' K₀ ∩ L₀).Nonempty }
   have bad_Γ_finite : bad_Γ_set.Finite := finite_disjoint_inter_image (Γ := Γ) hK₀ hL₀
   choose u v hu hv u_v_disjoint using fun γ => t2_separation_nhds (hγx₀y₀ γ)
   let U₀₀ := ⋂ γ ∈ bad_Γ_set, (γ • ·) ⁻¹' u γ
@@ -496,7 +522,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
+    simp only [bad_Γ_set, image_smul, not_nonempty_iff_eq_empty, mem_setOf_eq] at H
     exact eq_empty_iff_forall_notMem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 
 /-- The quotient of a second countable space by a group action is second countable. -/

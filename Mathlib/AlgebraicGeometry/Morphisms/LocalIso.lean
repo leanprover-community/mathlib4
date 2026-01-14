@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
 
 /-!
 # Local isomorphisms
 
 A local isomorphism of schemes is a morphism that is source-locally an open immersion.
 -/
+
+@[expose] public section
 
 universe u
 

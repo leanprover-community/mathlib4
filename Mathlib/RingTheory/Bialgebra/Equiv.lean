@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Bialgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Hom
 
 /-!
 # Isomorphisms of `R`-bialgebras
@@ -20,6 +22,8 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁
 
@@ -281,7 +285,7 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
   __ := f

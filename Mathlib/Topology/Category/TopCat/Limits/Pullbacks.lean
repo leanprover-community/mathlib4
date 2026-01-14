@@ -3,11 +3,15 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Products
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 

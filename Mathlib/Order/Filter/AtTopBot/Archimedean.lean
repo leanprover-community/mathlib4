@@ -3,10 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Tactic.GCongr
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -16,6 +18,8 @@ the function `Nat.cast ∘ f : α → R` tends to `Filter.atTop` along a filter 
 does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` along `Filter.atTop`, as
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
+
+@[expose] public section
 
 
 variable {α R : Type*}
@@ -147,11 +151,11 @@ namespace Filter
 variable {l : Filter α} {f : α → R} {r : R}
 
 theorem map_add_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a + k) atTop = atTop :=
+    [IsDirectedOrder α] (k : α) : map (fun a => a + k) atTop = atTop :=
   map_atTop_eq_of_gc (fun a => a - k) 0 add_left_mono (by simp [le_sub_iff_add_le]) (by simp)
 
 theorem map_sub_atTop_eq [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [IsDirected α (· ≤ ·)] (k : α) : map (fun a => a - k) atTop = atTop := by
+    [IsDirectedOrder α] (k : α) : map (fun a => a - k) atTop = atTop := by
   simp_rw [sub_eq_add_neg]
   apply map_add_atTop_eq
 

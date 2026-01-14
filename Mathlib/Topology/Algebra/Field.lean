@@ -3,12 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Topological fields
@@ -17,6 +19,8 @@ A topological division ring is a topological ring whose inversion function is co
 non-zero element.
 
 -/
+
+@[expose] public section
 
 variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 
@@ -47,8 +51,6 @@ variable (K)
 continuous, including inversion. -/
 class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, ContinuousInv₀ K
 
-@[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
-
 section Subfield
 
 variable {α : Type*} [Field α] [TopologicalSpace α] [IsTopologicalDivisionRing α]
@@ -76,6 +78,28 @@ theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} 
   closure_minimal h ht
 
 end Subfield
+
+section Units
+
+/-- In an ordered field, the units of the nonnegative elements are the positive elements. -/
+@[simps!]
+def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
+    [IsStrictOrderedRing R] [PosMulReflectLT R]
+    [TopologicalSpace R] [ContinuousInv₀ R] :
+    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+  __ := Nonneg.unitsEquivPos R
+  continuous_toFun := by
+    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    exact Continuous.subtype_val (p := (0 ≤ ·)) Units.continuous_val
+  continuous_invFun := by
+    rw [Units.continuous_iff]
+    refine ⟨by fun_prop, ?_⟩
+    suffices Continuous fun (x : { r : R // 0 < r }) ↦ (x⁻¹ : R) by
+      simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def]
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ ContinuousAt.inv₀ (by fun_prop) x.2.ne'
+
+end Units
 
 section affineHomeomorph
 
@@ -154,10 +178,9 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo hf hmaps
+  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on

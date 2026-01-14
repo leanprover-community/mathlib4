@@ -3,7 +3,9 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Logic.Basic
+module
+
+public meta import Mathlib.Logic.Basic
 
 /-!
 # `subsingleton` tactic
@@ -11,8 +13,10 @@ import Mathlib.Logic.Basic
 The `subsingleton` tactic closes `Eq` or `HEq` goals using an argument
 that the types involved are subsingletons.
 To first approximation, it does `apply Subsingleton.elim` but it also will try `proof_irrel_heq`,
-and it is careful not to accidentally specialize `Sort _` to `Prop.
+and it is careful not to accidentally specialize `Sort _` to `Prop`.
 -/
+
+public meta section
 
 open Lean Meta
 

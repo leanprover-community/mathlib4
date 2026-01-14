@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Gaussian integral
@@ -18,6 +20,8 @@ We prove various versions of the formula for the Gaussian integral:
 * `integral_gaussian_Ioi` and `integral_gaussian_complex_Ioi`: variants for integrals over `Ioi 0`.
 * `Complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -35,8 +39,7 @@ theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p)
     refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
     rw [mem_Ioi] at hx
     rw [rpow_sub_one hx.ne']
-    field_simp
-    ring
+    field
   apply tendsto_id.atTop_mul_atTop₀
   refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
   exact Tendsto.const_mul_atTop hb (tendsto_rpow_atTop (by linarith))
@@ -173,8 +176,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     (x * cexp (-b * x ^ 2)) x := by
     intro x
     convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
-    field_simp
-    ring
+    field
   have B : Tendsto (fun y : ℝ ↦ -(2 * b)⁻¹ * cexp (-b * (y : ℂ) ^ 2))
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
     refine Tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr ?_)

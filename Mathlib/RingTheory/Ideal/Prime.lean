@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 
@@ -15,6 +17,8 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -94,6 +98,14 @@ theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsP
 theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
+
+lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+
+lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
+    {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
+  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
 
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where

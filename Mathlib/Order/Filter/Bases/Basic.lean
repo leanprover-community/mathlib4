@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Basic results on filter bases
@@ -67,6 +69,8 @@ machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can he
 
 ## Main statements
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -173,6 +177,9 @@ protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := 
     exact GenerateSets.superset (GenerateSets.basic V_in) h
   · rw [le_generate_iff]
     apply mem_filter_of_mem
+
+lemma ker_filter (F : FilterBasis α) : F.filter.ker = ⋂₀ F.sets := by
+  aesop (add simp [ker, FilterBasis.filter])
 
 end FilterBasis
 
@@ -649,7 +656,7 @@ protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
   ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
-lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
   ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
 

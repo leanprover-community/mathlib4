@@ -3,15 +3,17 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Data.PNat.Prime
-import Mathlib.NumberTheory.Cyclotomic.Basic
-import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Data.PNat.Prime
+public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.Adjoin.PowerBasis
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -62,6 +64,8 @@ and only at the "final step", when we need to provide an "explicit" primitive ro
 
 -/
 
+@[expose] public section
+
 
 open Polynomial Algebra Finset Module IsCyclotomicExtension Nat PNat Set
 open scoped IntermediateField
@@ -91,7 +95,7 @@ theorem zeta_spec : IsPrimitiveRoot (zeta n A B) n :=
 
 theorem aeval_zeta [IsDomain B] [NeZero (n : B)] :
     aeval (zeta n A B) (cyclotomic n A) = 0 := by
-  rw [aeval_def, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
+  rw [← eval_map_algebraMap, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff]
   exact zeta_spec n A B
 
 theorem zeta_isRoot [IsDomain B] [NeZero (n : B)] : IsRoot (cyclotomic n B) (zeta n A B) := by
@@ -389,7 +393,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by cutsat) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by lia) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by
@@ -404,8 +408,8 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
         exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
       · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
     rw [HKη]
-    have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
-      ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
+    have H := IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+      ((integral {p ^ (k + 1)} K L).isIntegral (η + 1)).isAlgebraic
     refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
     rw [H]
     have hη' : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by simpa using hη
@@ -471,7 +475,8 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     [IsCyclotomicExtension {2 ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (2 ^ (k + 1)) K)) :
     norm K (ζ ^ 2 ^ k - 1) = (-2 : K) ^ 2 ^ k := by
-  have := hζ.pow_of_dvd (fun h => two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
+  have := hζ.pow_of_dvd
+    (fun h => two_ne_zero (eq_zero_of_pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
   rw [Nat.pow_div (le_succ k) zero_lt_two, Nat.succ_sub (le_refl k), Nat.sub_self, pow_one] at this
   have H : (-1 : L) - (1 : L) = algebraMap K L (-2) := by
     simp only [map_neg, map_ofNat]

@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 /-!
 # Braidings for Day convolution
@@ -17,6 +19,8 @@ prove that it satisfies the forward and reverse hexagon identities.
 Furthermore, we show that when both `C` and `V` are symmetric monoidal
 categories, then the Day convolution monoidal structure is symmetric as well.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -171,7 +175,10 @@ lemma hexagon_reverse (H : C ⥤ V)
     NatTrans.id_app, id_tensorHom]
   simp only [← comp_whiskerRight_assoc, ← whiskerLeft_comp_assoc,
     unit_app_braiding_hom_app]
-  simp [← Functor.map_comp]
+  simp only [comp_whiskerRight, ← Functor.map_comp, Category.assoc, Functor.comp_obj, tensor_obj,
+    whiskerLeft_comp, whiskerLeft_comp_unit_app_assoc, NatTrans.naturality_assoc,
+    NatTrans.naturality, associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj,
+    unit_app_map_app_assoc, NatTrans.id_app, tensorHom_id]
   congr 2
   rw [← BraidedCategory.hexagon_forward, ← comp_whiskerRight_assoc]
   haveI := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv

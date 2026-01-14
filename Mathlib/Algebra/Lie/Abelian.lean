@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.IdealOperations
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.IdealOperations
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -28,6 +30,8 @@ In this file we define these concepts and provide some related definitions and r
 
 lie algebra, abelian, commutative, center
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -64,7 +68,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
-        _ = f 0 := f.map_zero.symm}
+        _ = f 0 := (map_zero _).symm}
 
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
@@ -72,7 +76,7 @@ theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Ty
   { trivial := fun x y => by
       obtain ⟨u, rfl⟩ := h₁ x
       obtain ⟨v, rfl⟩ := h₁ y
-      rw [← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero] }
+      rw [← LieHom.map_lie, trivial_lie_zero, map_zero] }
 
 theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] (e : L₁ ≃ₗ⁅R⁆ L₂) :
@@ -138,6 +142,15 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
+lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
+    IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
+  refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
+  · ext y
+    have := IsTrivial.trivial (⟨x, hx⟩ : I) y
+    rw [LieIdeal.coe_bracket_of_module] at this
+    simp [this]
+  · simpa using LinearMap.congr_fun (h hx) ⟨y, hy⟩
+
 lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
   rw [isFaithful_iff', LieSubmodule.ext_iff]
   aesop
@@ -194,7 +207,7 @@ variable {R L M N}
 def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L⁆ maxTrivSubmodule R L N where
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
-      (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
+      (congr_arg f (m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
@@ -307,7 +320,7 @@ include hx
 
 lemma commute_toEnd_of_mem_center_left :
     Commute (toEnd R L M x) (toEnd R L M y) := by
-  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, map_zero]
 
 lemma commute_toEnd_of_mem_center_right :
     Commute (toEnd R L M y) (toEnd R L M x) :=

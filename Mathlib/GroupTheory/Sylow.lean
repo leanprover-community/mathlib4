@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Data.SetLike.Fintype
-import Mathlib.GroupTheory.PGroup
-import Mathlib.GroupTheory.NoncommPiCoprod
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.NoncommPiCoprod
 
 /-!
 # Sylow theorems
@@ -37,6 +39,8 @@ The Sylow theorems are the following results for every finite group `G` and ever
 * `card_sylow_modEq_one`: a generalization of Sylow's third theorem:
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
+
+@[expose] public section
 
 
 open MulAction Subgroup

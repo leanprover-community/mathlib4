@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Thin categories
@@ -18,6 +20,8 @@ If `C` is thin, then the category of functors to `C` is also thin.
 Further, to show two objects are isomorphic in a thin category, it suffices only to give a morphism
 in each direction.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

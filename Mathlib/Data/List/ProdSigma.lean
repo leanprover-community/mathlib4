@@ -3,7 +3,9 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Lists in product and sigma types
@@ -12,6 +14,8 @@ This file proves basic properties of `List.product` and `List.sigma`, which are 
 living in `Prod` and `Sigma` types respectively. Their definitions can be found in
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -38,8 +42,7 @@ theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, and_left_comm,
-    exists_and_left, exists_eq_left, exists_eq_right]
+  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, and_left_comm]
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by

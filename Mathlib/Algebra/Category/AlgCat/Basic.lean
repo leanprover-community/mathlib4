@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Category instance for algebras over a commutative ring
@@ -15,6 +17,8 @@ We introduce the bundled category `AlgCat` of algebras over a fixed commutative 
 with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

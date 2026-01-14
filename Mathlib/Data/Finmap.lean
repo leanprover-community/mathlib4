@@ -3,13 +3,17 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.AList
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Part
+module
+
+public import Mathlib.Data.List.AList
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Part
 
 /-!
 # Finite maps over `Multiset`
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -72,6 +76,8 @@ structure Finmap (β : α → Type v) : Type max u v where
 def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :

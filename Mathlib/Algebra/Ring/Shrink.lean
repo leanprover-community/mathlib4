@@ -3,12 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Ring.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
 # Transfer ring structures from `α` to `Shrink α`
 -/
+
+@[expose] public section
 
 noncomputable section
 

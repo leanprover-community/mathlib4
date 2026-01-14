@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 ## Moore complex
@@ -27,6 +29,8 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
 -/
+
+@[expose] public section
 
 
 universe v u

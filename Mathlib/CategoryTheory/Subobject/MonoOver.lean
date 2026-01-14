@@ -3,14 +3,16 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.WithTerminal.Cone
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,6 +38,8 @@ This development originally appeared in Bhavik Mehta's "Topos theory for Lean" r
 and was ported to mathlib by Kim Morrison.
 
 -/
+
+@[expose] public section
 
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
@@ -212,28 +216,25 @@ section Limits
 
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
-lemma closedUnderLimitsOfShape_isMono :
-    ClosedUnderLimitsOfShape J (Over.isMono X) := by
-  refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
-  apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
-  intro j; cases j with
-  | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
-  | star => exact e
+instance : (Over.isMono X).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun F ⟨p, hp⟩ ↦ ⟨fun g h e ↦ by
+    refine (WithTerminal.isLimitEquiv.invFun p.isLimit).hom_ext (fun j ↦ ?_)
+    cases j with
+    | of j => have := hp j; rw [← cancel_mono ((p.diag.obj j).hom)]; simpa
+    | star => exact e⟩
 
 instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
-    HasLimit F := by
-  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+    HasLimit F :=
+  hasLimit_of_closedUnderLimits _ _ _
 
 instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
-    HasLimitsOfShape J (MonoOver X) := by
-  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+    HasLimitsOfShape J (MonoOver X) where
 
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
-  out _ _ _ := by apply hasLimitsOfShape X
+  out _ _ _ := inferInstance
 
 instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
     HasLimitsOfSize.{w, w'} (MonoOver X) where
-  has_limits_of_shape _ _ := by apply hasLimitsOfShape X
 
 end Limits
 
@@ -262,8 +263,8 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   }
 
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
-  CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
-    c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
+      c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
   w := by
     apply Sigma.hom_ext
     intro j

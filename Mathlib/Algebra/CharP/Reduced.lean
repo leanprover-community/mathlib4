@@ -3,12 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Results about characteristic p reduced rings
 -/
+
+@[expose] public section
 
 
 open Finset

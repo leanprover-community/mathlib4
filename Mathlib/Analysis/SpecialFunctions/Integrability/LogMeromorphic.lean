@@ -3,12 +3,14 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Integral.CircleIntegral
+module
+
+public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Integrability for Logarithms of Meromorphic Functions
@@ -18,6 +20,8 @@ functions are interval integrable over every interval of the real line. This imp
 that logarithms of trigonometric functions are interval integrable. In the complex setting, the
 functions are circle integrable over every circle in the complex plane.
 -/
+
+@[expose] public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 

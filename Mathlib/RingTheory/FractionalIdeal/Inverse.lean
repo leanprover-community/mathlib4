@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
 # Inverse operator for fractional ideals
@@ -28,6 +30,8 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 fractional ideal, invertible ideal
 -/
 
+@[expose] public section
+
 assert_not_exists IsDedekindDomain
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
@@ -45,17 +49,20 @@ theorem inv_eq : I⁻¹ = 1 / I := rfl
 
 theorem inv_zero' : (0 : FractionalIdeal R₁⁰ K)⁻¹ = 0 := div_zero
 
-theorem inv_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
-    J⁻¹ = ⟨(1 : FractionalIdeal R₁⁰ K) / J, fractional_div_of_nonzero h⟩ := div_nonzero h
+theorem inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
+    J⁻¹ = ⟨(1 : FractionalIdeal R₁⁰ K) / J, isFractional_div_of_ne_zero h⟩ := div_of_ne_zero h
 
-theorem coe_inv_of_nonzero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
+theorem coe_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
-  simp_rw [inv_nonzero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
+  simp_rw [inv_of_ne_zero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
+
+@[deprecated (since := "2025-09-14")] alias inv_nonzero := inv_of_ne_zero
+@[deprecated (since := "2025-09-14")] alias coe_inv_of_nonzero := coe_inv_of_ne_zero
 
 variable {K}
 
 theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
-  mem_div_iff_of_nonzero hI
+  mem_div_iff_of_ne_zero hI
 
 theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
   -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
@@ -75,21 +82,8 @@ theorem coe_ideal_le_self_mul_inv (I : Ideal R₁) :
   le_self_mul_inv coeIdeal_le_one
 
 /-- `I⁻¹` is the inverse of `I` if `I` has an inverse. -/
-theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ := by
-  have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
-  suffices h' : I * (1 / I) = 1 from
-    congr_arg Units.inv <| @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
-  apply le_antisymm
-  · apply mul_le.mpr _
-    intro x hx y hy
-    rw [mul_comm]
-    exact (mem_div_iff_of_nonzero hI).mp hy x hx
-  rw [← h]
-  apply mul_left_mono I
-  apply (le_div_iff_of_nonzero hI).mpr _
-  intro y hy x hx
-  rw [mul_comm]
-  exact mul_mem_mul hy hx
+theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ :=
+  eq_one_div_of_mul_eq_one_right _ _ h
 
 theorem mul_inv_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ ∃ J, I * J = 1 :=
   ⟨fun h => ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
@@ -184,7 +178,7 @@ theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (
 variable {K}
 
 lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
-    (algebraMap R₁ K) (I.den : R₁) ∈ I⁻¹ := by
+    algebraMap R₁ K (I.den : R₁) ∈ I⁻¹ := by
   rw [mem_inv_iff hI]
   intro i hi
   rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
@@ -198,7 +192,8 @@ lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := b
   · rw [hI, num_zero_eq <| FaithfulSMul.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
       coeIdeal_bot]
   · rw [mul_comm, ← den_mul_self_eq_num']
-    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+    gcongr
+    exact spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
 lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
   lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv

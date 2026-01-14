@@ -3,7 +3,9 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Bundled exact functors
@@ -14,6 +16,8 @@ preserves finite colimits, and it is exact if it is both left exact and right ex
 In this file, we define the categories of bundled left exact, right exact and exact functors.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃

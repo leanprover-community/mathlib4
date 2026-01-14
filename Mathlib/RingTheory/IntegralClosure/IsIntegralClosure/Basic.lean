@@ -3,13 +3,15 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-import Mathlib.RingTheory.Polynomial.IntegralNormalization
-import Mathlib.RingTheory.Polynomial.ScaleRoots
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
+public import Mathlib.RingTheory.Polynomial.IntegralNormalization
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.TensorProduct.MvPolynomial
 We prove basic properties of `IsIntegralClosure`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -185,7 +189,7 @@ theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
-    Subtype.eq <| by
+    Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
 instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
@@ -372,21 +376,21 @@ theorem algebraMap_mk' (x : B) (hx : IsIntegral R x) : algebraMap A B (mk' A x h
 
 @[simp]
 theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
-  algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_one]
+  algebraMap_injective A R B <| by rw [algebraMap_mk', map_one]
 
 @[simp]
 theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
-  algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
+  algebraMap_injective A R B <| by rw [algebraMap_mk', map_zero]
 
 @[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
+  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_add]
 
 @[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]
+  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_mul]
 
 @[simp]
 theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
@@ -413,10 +417,10 @@ then `S` maps (uniquely) into an integral closure `B / A / R`. -/
 noncomputable def lift : S →ₐ[R] A where
   toFun x := mk' A (algebraMap S B x) (IsIntegral.algebraMap
     (Algebra.IsIntegral.isIntegral (R := R) x))
-  map_one' := by simp only [RingHom.map_one, mk'_one]
-  map_zero' := by simp only [RingHom.map_zero, mk'_zero]
+  map_one' := by simp only [map_one, mk'_one]
+  map_zero' := by simp only [map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, map_add]
-  map_mul' x y := by simp_rw [← mk'_mul, RingHom.map_mul]
+  map_mul' x y := by simp_rw [← mk'_mul, map_mul]
   commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap]
 
 @[simp]
@@ -594,7 +598,7 @@ theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     obtain ⟨p, p_monic, hp⟩ := hf (ha.unit⁻¹ : _)
     -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
     -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
-    refine isUnit_of_mul_eq_one _ (-p.reverse.divX.eval a) ?_
+    refine .of_mul_eq_one (-p.reverse.divX.eval a) ?_
     nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
       ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
       ← (injective_iff_map_eq_zero' _).mp inj, ← eval₂_hom]

@@ -11,7 +11,7 @@ import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing
 
 /-!
-#  Create a deprecated module
+# Create a deprecated module
 
 This file defines the lean script for creating a deprecated module.
 -/

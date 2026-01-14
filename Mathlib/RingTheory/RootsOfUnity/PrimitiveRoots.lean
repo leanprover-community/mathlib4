@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Primitive roots of unity
@@ -41,6 +43,8 @@ This creates a little bit of friction with how `rootsOfUnity` is implemented (as
 of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -99,11 +103,9 @@ variable {k l : ℕ}
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
   refine ⟨h1, fun l hl ↦ ?_⟩
-  suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
-  rw [eq_iff_le_not_lt]
-  refine ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), ?_⟩
-  intro h'; apply h _ (Nat.gcd_pos_of_pos_left _ hk) h'
-  exact pow_gcd_eq_one _ h1 hl
+  suffices k.gcd l = k from this ▸ k.gcd_dvd_right l
+  refine (Nat.le_of_dvd hk (k.gcd_dvd_left l)).eq_of_not_lt fun h' ↦ ?_
+  exact h _ (Nat.gcd_pos_of_pos_left _ hk) h' (by simp [h1, hl])
 
 section CommMonoid
 
@@ -117,9 +119,8 @@ theorem pow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℕ) : ζ ^ l = 1 ↔
   ⟨h.dvd_of_pow_eq_one l, by
     rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow]⟩
 
-theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ := by
-  apply isUnit_of_mul_eq_one ζ (ζ ^ (k - 1))
-  rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
+theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ :=
+  .of_mul_eq_one (ζ ^ (k - 1)) <| by rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
 
 theorem pow_ne_one_of_pos_of_lt (h : IsPrimitiveRoot ζ k) (h0 : l ≠ 0) (hl : l < k) : ζ ^ l ≠ 1 :=
   mt (Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr h0) ∘ h.dvd_of_pow_eq_one _) <| not_le_of_gt hl
@@ -385,21 +386,14 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := Nat.finiteMultiplicity_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
-  obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
-  by_cases hp : p ∣ n
-  · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'
-    have : NeZero p := NeZero.of_pos (Nat.pos_of_dvd_of_pos hp (NeZero.pos n))
-    have hpri : Fact p.Prime := CharP.char_is_prime_of_pos R p
-    have := hζ.pow_eq_one
-    rw [hm.1, hk, pow_succ', mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at this
-    exfalso
-    have hpos : 0 < p ^ k * m :=
-      mul_pos (pow_pos hpri.1.pos _) <| Nat.pos_of_ne_zero (fun H ↦ hm.2 <| H ▸ p.dvd_zero)
-    refine hζ.pow_ne_one_of_pos_of_lt hpos.ne' ?_ (frobenius_inj R p this)
-    rw [hm.1, hk, pow_succ', mul_assoc, mul_comm p]
-    exact lt_mul_of_one_lt_right hpos hpri.1.one_lt
-  · exact NeZero.of_not_dvd R hp
+  refine .of_not_dvd R (p := p) fun hpn ↦ ?_
+  obtain ⟨n, rfl⟩ := hpn
+  have h : p ≠ 0 ∧ n ≠ 0 := by aesop
+  have : NeZero p := .mk h.1
+  have hp : Fact p.Prime := CharP.char_is_prime_of_pos R p
+  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.1.one_lt) <|
+    frobenius_inj R p ?_).elim
+  rw [frobenius_def, ← pow_mul', hζ.1, map_one]
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
@@ -654,14 +648,13 @@ theorem card_nthRoots_one {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha : a ≠ 0) :
     (nthRoots n a).Nodup := by
   obtain (rfl | hn) := n.eq_zero_or_pos; · simp
-  by_cases h : ∃ α, α ^ n = a
+  by_cases! h : ∃ α, α ^ n = a
   · obtain ⟨α, hα⟩ := h
     by_cases hα' : α = 0
     · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
     rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
     exact h.injOn_pow_mul hα'
   · suffices nthRoots n a = 0 by simp [this]
-    push_neg at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
 /-- The multiset `nthRoots ↑n (1 : R)` has no repeated elements

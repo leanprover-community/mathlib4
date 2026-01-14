@@ -3,13 +3,15 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Data.Set.Pointwise.Support
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Data.Set.Pointwise.Support
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Bump functions in finite-dimensional vector spaces
@@ -21,6 +23,8 @@ in `IsOpen.exists_smooth_support_eq`.
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -138,7 +142,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
       simp only [Finset.mem_range]
-      omega
+      lia
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
@@ -156,7 +160,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
-      simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
+      simp only [Pi.smul_apply, smul_eq_mul, mem_support, Ne] at hx
       contrapose! hx
       have : ∀ n, g n x = 0 := by
         intro n
@@ -302,7 +306,7 @@ theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 
   have C : D ^ finrank ℝ E ≠ 0 := by
     norm_cast
     exact pow_ne_zero _ Dpos.ne'
-  simp only [w_def, Algebra.id.smul_eq_mul, support_mul, support_inv, univ_inter,
+  simp only [w_def, smul_eq_mul, support_mul, support_inv, univ_inter,
     support_comp_inv_smul₀ Dpos.ne', u_support, B, support_const (u_int_pos E).ne', support_const C,
     abs_of_nonneg Dpos.le]
 
@@ -341,7 +345,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
   have Bx : φ x = 1 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
+  simp only [lsmul_apply, smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
     one_mul]
 
 theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
@@ -359,7 +363,7 @@ theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ba
   have Bx : φ x = 0 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
+  simp only [lsmul_apply, smul_eq_mul, Bx, mul_zero, integral_const]
 
 @[deprecated (since := "2025-05-23")] alias y_eq_zero_of_not_mem_ball := y_eq_zero_of_notMem_ball
 
@@ -375,7 +379,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
       (locallyIntegrable_const (1 : ℝ)) x).integrable
     exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
-    simp only [convolution, mul_one, lsmul_apply, Algebra.id.smul_eq_mul, w_integral E Dpos]
+    simp only [convolution, mul_one, lsmul_apply, smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
 
 theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
@@ -403,7 +407,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         linarith only
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp [field]
+          · field
           · field_simp
             linarith only
         rw [← mem_closedBall_iff_norm']
@@ -422,7 +426,7 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
   have hk : IsCompact (closedBall (0 : E) 1) := ProperSpace.isCompact_closedBall _ _
   refine contDiffOn_convolution_left_with_param (lsmul ℝ ℝ) hs hk ?_ ?_ ?_
   · rintro p x hp hx
-    simp only [w, mul_inv_rev, Algebra.id.smul_eq_mul, mul_eq_zero, inv_eq_zero]
+    simp only [w, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero]
     right
     contrapose! hx
     have : p⁻¹ • x ∈ support u := mem_support.2 hx
@@ -504,14 +508,14 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           abs_of_nonneg A.le]
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
-          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
+          _ = 1 - (R - 1) / (R + 1) := by field
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine congr (congr_arg ball (Eq.refl 0)) ?_
-        field_simp; ring }
+        field }
 
 end ExistsContDiffBumpBase
 

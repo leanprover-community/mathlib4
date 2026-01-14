@@ -3,11 +3,13 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Option.Basic
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Data.Option.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Encodings
@@ -23,6 +25,8 @@ It also contains several examples:
 - `unaryFinEncodingNat` : a unary encoding of ℕ
 - `finEncodingBoolBool` : an encoding of bool.
 -/
+
+@[expose] public section
 
 
 universe u v

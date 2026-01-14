@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Specialization
+module
+
+public import Mathlib.Topology.Specialization
 
 /-!
 # Category of Alexandrov-discrete topological spaces
@@ -11,6 +13,8 @@ import Mathlib.Topology.Specialization
 This defines `AlexDisc`, the category of Alexandrov-discrete topological spaces with continuous
 maps, and proves it's equivalent to the category of preorders.
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+module
+
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Higher differentiability
@@ -86,13 +88,15 @@ We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinea
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
 In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞`, and `⊤ : WithTop ℕ∞` with `ω`. To
-avoid ambiguities with the two tops, the theorems name use either `infty` or `omega`.
+avoid ambiguities with the two tops, the theorem names use either `infty` or `omega`.
 These notations are scoped in `ContDiff`.
 
 ## Tags
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -833,7 +837,7 @@ theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     exact H.analyticOn
   have A (m : ℕ) (hm : m ≤ n) : ContDiffWithinAt 𝕜 m (fun y => fderivWithin 𝕜 f s y) s x := by
     rcases (contDiffWithinAt_succ_iff_hasFDerivWithinAt (n := m) (ne_of_beq_false rfl)).1
-      (H.of_le (add_le_add_right hm 1) x hx) with ⟨u, hu, -, f', hff', hf'⟩
+      (H.of_le (by gcongr) x hx) with ⟨u, hu, -, f', hff', hf'⟩
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [inter_comm, insert_eq_of_mem hx] at ho
     have := hf'.mono ho
@@ -1039,6 +1043,8 @@ def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
 theorem HasFTaylorSeriesUpTo.contDiff {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
     (hf : HasFTaylorSeriesUpTo n f f') : ContDiff 𝕜 n f :=
   ⟨f', hf⟩
+
+@[simp, fun_prop] theorem contDiffOn_empty : ContDiffOn 𝕜 n f ∅ := fun _x hx ↦ hx.elim
 
 theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
   match n with

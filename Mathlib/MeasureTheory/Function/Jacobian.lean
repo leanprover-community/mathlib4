@@ -3,14 +3,16 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Congr
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
-import Mathlib.Topology.Algebra.Module.Determinant
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Congr
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+public import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -91,6 +93,8 @@ Change of variables in integrals
 ## References
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace
@@ -310,10 +314,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         (𝓝 (d * μ (closedBall 0 1))) := by
       convert L1
       exact (addHaar_image_continuousLinearMap _ _ _).symm
-    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
-      (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
-            measure_closedBall_lt_top.ne).2
-        hm
+    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) := by
+      gcongr; exacts [(measure_closedBall_pos μ _ zero_lt_one).ne', measure_closedBall_lt_top.ne]
     have H :
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I
@@ -514,16 +516,16 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     calc
       ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
-      _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
+      _ ≤ ‖z‖ + ε := by grw [mem_closedBall_iff_norm.1 az]
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
   -- close to `a`.
   have I : r * ‖(f' x - A) a‖ ≤ r * (δ + ε) * (‖z‖ + ε) :=
     calc
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
-        simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
+        simp only [map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
-          Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
+          Pi.sub_apply, map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
@@ -589,7 +591,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
       apply (hδ (A n)).2
       exact ht n
     _ ≤ ∑' n, ((Real.toNNReal |(A n).det| + 1 : ℝ≥0) : ℝ≥0∞) * 0 := by
-      refine ENNReal.tsum_le_tsum fun n => mul_le_mul_left' ?_ _
+      gcongr with n
       exact le_trans (measure_mono inter_subset_left) (le_of_eq hs)
     _ = 0 := by simp only [tsum_zero, mul_zero]
 
@@ -640,9 +642,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
       · exact pairwise_disjoint_mono t_disj fun n => inter_subset_right
       · intro n
         exact measurableSet_closedBall.inter (t_meas n)
-    _ ≤ ε * μ (closedBall 0 R) := by
-      rw [← inter_iUnion]
-      exact mul_le_mul_left' (measure_mono inter_subset_left) _
+    _ ≤ ε * μ (closedBall 0 R) := by grw [← inter_iUnion, inter_subset_left]
 
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
 a set where the differential is not invertible, then the image of this set has zero measure. -/

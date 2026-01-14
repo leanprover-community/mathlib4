@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Functor.EpiMono
 We show that evaluation of functors have adjoints, given the existence of (co)products.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -63,7 +67,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 
-/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
+/-- See also the file `Mathlib/CategoryTheory/Limits/FunctorCategory/EpiMono.lean`
 for a similar result under a `HasPullbacks` assumption. -/
 theorem NatTrans.mono_iff_mono_app' {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor

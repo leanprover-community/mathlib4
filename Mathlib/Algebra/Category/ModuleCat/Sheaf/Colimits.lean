@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 
 /-!
 # Colimits in categories of sheaves of modules
@@ -13,6 +15,8 @@ of sheaves of modules if it exists in the corresponding category
 of presheaves of modules.
 
 -/
+
+@[expose] public section
 
 universe w' w v v' u' u
 

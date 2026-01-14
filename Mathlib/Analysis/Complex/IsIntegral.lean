@@ -3,15 +3,19 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Complex.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Integral elements of ℂ
 
 This file proves that `Complex.I` is integral over ℤ and ℚ.
 -/
+
+@[expose] public section
 
 open Polynomial
 

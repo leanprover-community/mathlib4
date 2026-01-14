@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.ExactFunctor
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Additive Functors
@@ -21,12 +23,14 @@ biproducts, and if `F` preserves binary biproducts, then `F` is additive.
 
 We also define the category of bundled additive functors.
 
-# Implementation details
+## Implementation details
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

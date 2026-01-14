@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Category.DistLat
+module
+
+public import Mathlib.Order.Category.BddLat
+public import Mathlib.Order.Category.DistLat
 
 /-!
 # The category of bounded distributive lattices
@@ -14,6 +16,8 @@ This defines `BddDistLat`, the category of bounded distributive lattices.
 Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab/show/DistLat) when
 being a lattice is understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u

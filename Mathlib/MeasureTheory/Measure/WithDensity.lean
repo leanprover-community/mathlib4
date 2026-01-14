@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.LConvolution
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Analysis.LConvolution
 
 /-!
 # Measure with a given density with respect to another measure
@@ -21,6 +23,8 @@ An important result about `withDensity` is the Radon-Nikodym theorem. It states 
 See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 -/
+
+@[expose] public section
 
 open Set hiding restrict restrict_apply
 
@@ -366,7 +370,7 @@ theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ
   · intro g h _ h_mea_g _ h_ind_g h_ind_h
     simp [mul_add, *, Measurable.mul]
   · intro g h_mea_g h_mono_g h_ind
-    have : Monotone fun n a => f a * g n a := fun m n hmn x => mul_le_mul_left' (h_mono_g hmn x) _
+    have : Monotone fun n a => f a * g n a := fun m n hmn x => by dsimp; grw [h_mono_g hmn x]
     simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.mul (h_mea_g _), *]
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
@@ -433,9 +437,8 @@ theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
   rw [← iSup_lintegral_measurable_le_eq_lintegral, ← iSup_lintegral_measurable_le_eq_lintegral]
   refine iSup₂_le fun i i_meas => iSup_le fun hi => ?_
-  have A : f * i ≤ f * g := fun x => mul_le_mul_left' (hi x) _
-  refine le_iSup₂_of_le (f * i) (f_meas.mul i_meas) ?_
-  exact le_iSup_of_le A (le_of_eq (lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas))
+  rw [lintegral_withDensity_eq_lintegral_mul _ f_meas i_meas]
+  exact le_iSup₂_of_le (f * i) (f_meas.mul i_meas) <| le_iSup_of_le (by grw [hi]) le_rfl
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (hf : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :

@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Util.Path
+public import Mathlib.Init
+public meta import Lean.Util.Path
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
@@ -15,6 +16,8 @@ TODO:
 should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 
 -/
+
+public meta section
 
 open Lean System.FilePath
 

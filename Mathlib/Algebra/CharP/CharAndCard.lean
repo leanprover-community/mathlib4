@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.RingTheory.Coprime.Lemmas
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Characteristic and cardinality
@@ -16,6 +18,8 @@ We prove some results relating characteristic and cardinality of finite rings
 ## Tags
 characteristic, cardinality, ring
 -/
+
+@[expose] public section
 
 
 /-- A prime `p` is a unit in a commutative ring `R` of nonzero characteristic iff it does not divide
@@ -43,7 +47,7 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
     apply_fun ((↑) : ℤ → R) at hab
     push_cast at hab
     rw [hch, mul_zero, add_zero, mul_comm] at hab
-    exact isUnit_of_mul_eq_one (p : R) a hab
+    exact .of_mul_eq_one a hab
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/

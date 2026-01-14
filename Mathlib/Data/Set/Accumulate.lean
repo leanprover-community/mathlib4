@@ -3,13 +3,23 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.PartialSups
 
 /-!
 # Accumulate
 
 The function `Accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
+
+This is closely related to the function `partialSups`, although these two functions have
+slightly different typeclass assumptions and API. `partialSups_eq_accumulate` shows
+that they coincide on `ℕ`.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} {s : α → Set β}
@@ -67,5 +77,13 @@ theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j :
   simp only [Accumulate, mem_iUnion, exists_prop] at hx
   rcases hx with ⟨k, hk, hx⟩
   exact disjoint_left.1 (hs (hk.trans_lt hij).ne) hx
+
+theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
+    Accumulate u (n + 1) = Accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
+
+lemma partialSups_eq_accumulate (f : ℕ → Set α) :
+    partialSups f = Accumulate f := by
+  ext n
+  simp [partialSups_eq_sup_range, Accumulate, Nat.lt_succ_iff]
 
 end Set

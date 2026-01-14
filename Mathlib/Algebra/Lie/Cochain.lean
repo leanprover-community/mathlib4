@@ -3,7 +3,9 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Abelian
+module
+
+public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
@@ -27,6 +29,8 @@ general theory of Lie algebra cohomology.
 * [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
 
 -/
+
+@[expose] public section
 
 namespace LieModule.Cohomology
 
@@ -57,6 +61,9 @@ instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
   map_smulₛₗ a := a.1.map_smul
+
+@[simp]
+lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
 
 @[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :

@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Data.Option.Basic
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -40,6 +42,10 @@ of some code.
 
 -/
 
+@[expose] public section
+
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
 
 open Encodable Denumerable
 
@@ -199,7 +205,7 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  cutsat
+  lia
 
 end Nat.Partrec.Code
 

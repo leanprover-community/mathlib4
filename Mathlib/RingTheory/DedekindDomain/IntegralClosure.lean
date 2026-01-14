@@ -3,13 +3,12 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.BilinearForm.DualLattice
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Integral closure of Dedekind domains
@@ -35,6 +34,8 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped nonZeroDivisors Polynomial
@@ -244,10 +245,5 @@ the field of fractions yourself. -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
-
-attribute [local instance] FractionRing.liftAlgebra in
-instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
-    FiniteDimensional (FractionRing A) (FractionRing C) :=
-  .of_isLocalization A C A⁰
 
 end IsIntegralClosure

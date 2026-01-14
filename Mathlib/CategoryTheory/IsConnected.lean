@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Connected category
@@ -40,6 +42,8 @@ We also prove the result that the functor given by `(X × -)` preserves any
 connected limit. That is, any limit of shape `J` where `J` is a connected
 category is preserved by the functor `(X × -)`. This appears in `CategoryTheory.Limits.Connected`.
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -144,6 +148,19 @@ theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F :
       { obj := Discrete.mk ∘ F
         map := fun f => eqToHom (by ext; exact h _ _ f) }
       j j'
+
+/-- If `J` is connected, then given any function `F` such that the presence of a
+morphism `j₁ ⟶ j₂` implies `F j₁ = F j₂`, there exists `a` such that `F j = a`
+holds for any `j`. See `constant_of_preserves_morphisms` for a different
+formulation of the fact that `F` is constant.
+This can be thought of as a local-to-global property.
+
+The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
+-/
+theorem constant_of_preserves_morphisms' [IsConnected J] {α : Type u₂} (F : J → α)
+    (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) :
+    ∃ (a : α), ∀ (j : J), F j = a :=
+  ⟨F (Classical.arbitrary _), fun _ ↦ constant_of_preserves_morphisms _ h _ _⟩
 
 /-- `J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.

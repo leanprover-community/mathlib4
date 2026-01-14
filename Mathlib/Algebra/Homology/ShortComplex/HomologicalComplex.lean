@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.Tactic.Linarith
 
 /-!
 # The short complexes attached to homological complexes
@@ -21,6 +23,8 @@ the homology of the short complex `(shortComplexFunctor C c i).obj K`, which can
 abbreviated as `K.sc i`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -815,9 +819,7 @@ lemma cyclesIsoSc'_hom_iCycles :
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
     (K.cyclesIsoSc' i j k hi hk).inv ≫ K.iCycles j = (K.sc' i j k).iCycles := by
-  dsimp [cyclesIsoSc']
-  erw [ShortComplex.cyclesMap_i]
-  apply comp_id
+  simp [cyclesIsoSc', iCycles]
 
 @[reassoc (attr := simp)]
 lemma toCycles_cyclesIsoSc'_hom :
@@ -841,9 +843,7 @@ lemma pOpcycles_opcyclesIsoSc'_inv :
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_hom :
     K.pOpcycles j ≫ (K.opcyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).pOpcycles := by
-  dsimp [opcyclesIsoSc']
-  erw [ShortComplex.p_opcyclesMap]
-  apply id_comp
+  simp [opcyclesIsoSc', pOpcycles]
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoSc'_inv_fromOpcycles :

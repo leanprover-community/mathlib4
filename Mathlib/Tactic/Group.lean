@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Algebra.Group.Commutator
+module
+
+public meta import Mathlib.Tactic.Ring
+public meta import Mathlib.Tactic.FailIfNoProgress
+public meta import Mathlib.Algebra.Group.Commutator
 
 /-!
 # `group` tactic
@@ -21,6 +23,8 @@ some `ring` invocations.
 
 group_theory
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Group
 
@@ -92,4 +96,4 @@ end Mathlib.Tactic.Group
 We register `group` with the `hint` tactic.
 -/
 
-register_hint group
+register_hint 900 group

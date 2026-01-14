@@ -3,13 +3,15 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Topology.UniformSpace.Equicontinuity
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Equicontinuity in metric spaces
 
-This files contains various facts about (uniform) equicontinuity in metric spaces. Most
+This file contains various facts about (uniform) equicontinuity in metric spaces. Most
 importantly, we prove the usual characterization of equicontinuity of `F` at `x₀` in the case of
 (pseudo) metric spaces: `∀ ε > 0, ∃ δ > 0, ∀ x, dist x x₀ < δ → ∀ i, dist (F i x₀) (F i x) < ε`,
 and we prove that functions sharing a common (local or global) continuity modulus are
@@ -30,6 +32,8 @@ and we prove that functions sharing a common (local or global) continuity modulu
 
 equicontinuity, continuity modulus
 -/
+
+@[expose] public section
 
 
 open Filter Topology Uniformity

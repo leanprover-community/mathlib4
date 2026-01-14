@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-!
 # An assumption for constructions by transfinite induction
@@ -17,6 +19,8 @@ an assumption in order to do constructions by transfinite induction indexed by
 a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

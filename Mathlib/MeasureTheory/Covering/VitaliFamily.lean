@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+module
+
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Vitali families
@@ -44,6 +46,8 @@ Let `v` be such a Vitali family.
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
   (Vitali families are called Vitali relations there)
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure

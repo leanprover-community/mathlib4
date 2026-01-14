@@ -3,8 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
@@ -23,6 +26,8 @@ Related files are:
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -44,13 +49,9 @@ theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r []
   | [] => Or.inr rfl
   | _ :: _ => .inl .nil
 
-@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
-
 @[simp]
 theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | .rel h => h, .rel⟩
-
-@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
 
 namespace Lex
 

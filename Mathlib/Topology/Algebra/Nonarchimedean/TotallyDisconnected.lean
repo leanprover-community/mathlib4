@@ -3,8 +3,9 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu, Johan Commelin
 -/
+module
 
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Total separatedness of nonarchimedean groups
@@ -28,6 +29,8 @@ is implied by the fact that a nonarchimedean group is totally separated.
 See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
 
+@[expose] public section
+
 open Pointwise TopologicalSpace
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
@@ -42,8 +45,7 @@ lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
   use V
   simp only [Disjoint, Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff]
   intro x mem_aV mem_bV
-  by_contra! con
-  obtain ⟨s, hs⟩ := con
+  by_contra! ⟨s, hs⟩
   have hsa : s ∈ a • (V : Set G) := mem_aV hs
   have hsb : s ∈ b • (V : Set G) := mem_bV hs
   rw [mem_leftCoset_iff] at hsa hsb

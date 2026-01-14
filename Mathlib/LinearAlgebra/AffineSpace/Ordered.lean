@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.AffineSpace.Slope
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
 
 /-!
 # Ordered modules as affine spaces
@@ -25,6 +27,8 @@ for an ordered module interpreted as an affine space.
 
 affine space, ordered module, slope
 -/
+
+@[expose] public section
 
 
 open AffineMap
@@ -62,8 +66,7 @@ theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ li
 
 omit [IsOrderedRing k] in
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
-  simp only [lineMap_apply_module]
-  exact add_lt_add_left (smul_lt_smul_of_pos_left hb hr) _
+  simp only [lineMap_apply_module]; gcongr
 
 theorem lineMap_mono_endpoints (ha : a ≤ a') (hb : b ≤ b') (h₀ : 0 ≤ r) (h₁ : r ≤ 1) :
     lineMap a b r ≤ lineMap a' b' r :=

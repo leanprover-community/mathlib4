@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.Algebraic.Basic
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.FieldTheory.SplittingField.IsSplittingField
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Splitting fields
@@ -29,6 +31,8 @@ definitional equalities. Then the actual `SplittingField` is defined to be a quo
 actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice instances on it.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -161,17 +165,18 @@ theorem algebraMap_succ (n : ℕ) (f : K[X]) :
   rfl
 
 protected theorem splits (n : ℕ) :
-    ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f :=
-  Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f) n
+    ∀ {K : Type u} [Field K], ∀ (f : K[X]) (_hfn : f.natDegree = n),
+      Splits (f.map (algebraMap K <| SplittingFieldAux n f)) :=
+  Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K], ∀ (f : K[X]) (_hfn : f.natDegree = n),
+      Splits (f.map (algebraMap K <| SplittingFieldAux n f))) n
     (fun {_} _ _ hf =>
-      splits_of_degree_le_one _
+      Splits.of_degree_le_one <| degree_map_le.trans
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
-    rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
+    rw [algebraMap_succ, ← map_map,
       ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
-    exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
+    rw [Polynomial.map_mul]
+    exact Splits.mul ((Splits.X_sub_C _).map _) (ih _ (natDegree_removeFactor' hf))
 
 theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
@@ -264,10 +269,10 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
 @[stacks 09HU "Splitting part"]
-protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
+protected theorem splits : Splits (f.map (algebraMap K (SplittingField f))) :=
   IsSplittingField.splits f.SplittingField f
 
-variable [Algebra K L] (hb : Splits (algebraMap K L) f)
+variable [Algebra K L] (hb : Splits (f.map (algebraMap K L)))
 
 /-- Embeds the splitting field into any other field that splits the polynomial. -/
 def lift : SplittingField f →ₐ[K] L :=

@@ -3,11 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -15,6 +18,8 @@ import Mathlib.Tactic.TypeStar
 Defines classes for preorders, partial orders, and linear orders
 and proves some basic lemmas about them.
 -/
+
+@[expose] public section
 
 /-! ### Unbundled classes -/
 
@@ -223,22 +228,16 @@ section LE
 variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
 
 /-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
+@[to_dual /-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/]
 def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
 
-/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
-def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
-
+@[to_dual]
 lemma Minimal.prop (h : Minimal P x) : P x :=
   h.1
 
-lemma Maximal.prop (h : Maximal P x) : P x :=
-  h.1
-
+@[to_dual le_of_ge] -- TODO: improve this naming
 lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
   h.2 hy hle
-
-lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
-  h.2 hy hge
 
 end LE
 
@@ -246,19 +245,15 @@ section LE
 variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
 
 /-- `MinimalFor P f i` means that `f i` is minimal over all `i` satisfying `P`. -/
+@[to_dual /-- `MaximalFor P f i` means that `f i` is maximal over all `i` satisfying `P`. -/]
 def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
 
-/-- `MaximalFor P f i` means that `f i` is maximal over all `i` satisfying `P`. -/
-def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
-
+@[to_dual]
 lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
-lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
 
+@[to_dual]
 lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
   h.2 hj hji
-
-lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
-  h.2 hj hij
 
 end LE
 
@@ -266,13 +261,10 @@ end LE
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
 also a member. Also called up-set, upward-closed set. -/
+@[to_dual /-- A lower set in an order `α` is a set such that any element less than one of its
+members is also a member. Also called down-set, downward-closed set. -/]
 def IsUpperSet {α : Type*} [LE α] (s : Set α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
-
-/-- A lower set in an order `α` is a set such that any element less than one of its members is also
-a member. Also called down-set, downward-closed set. -/
-def IsLowerSet {α : Type*} [LE α] (s : Set α) : Prop :=
-  ∀ ⦃a b : α⦄, b ≤ a → a ∈ s → b ∈ s
 
 @[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where
@@ -283,7 +275,7 @@ structure UpperSet (α : Type*) [LE α] where
 
 extend_docs UpperSet before "The type of upper sets of an order."
 
-@[inherit_doc IsLowerSet]
+@[inherit_doc IsLowerSet, to_dual]
 structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
@@ -294,13 +286,10 @@ extend_docs LowerSet before "The type of lower sets of an order."
 
 /-- An upper set relative to a predicate `P` is a set such that all elements satisfy `P` and
 any element greater than one of its members and satisfying `P` is also a member. -/
+@[to_dual /-- A lower set relative to a predicate `P` is a set such that all elements satisfy `P`
+and any element less than one of its members and satisfying `P` is also a member. -/]
 def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
   ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, a ≤ b → P b → b ∈ s
-
-/-- A lower set relative to a predicate `P` is a set such that all elements satisfy `P` and
-any element less than one of its members and satisfying `P` is also a member. -/
-def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
-  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, b ≤ a → P b → b ∈ s
 
 @[inherit_doc IsRelUpperSet]
 structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
@@ -313,7 +302,7 @@ structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
 
 extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
 
-@[inherit_doc IsRelLowerSet]
+@[inherit_doc IsRelLowerSet, to_dual]
 structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
   /-- The carrier of a `RelLowerSet`. -/
   carrier : Set α

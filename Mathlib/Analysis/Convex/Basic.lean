@@ -3,13 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.NoncommRing
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Convex sets
@@ -23,6 +22,8 @@ We provide various equivalent versions, and prove that some specific sets are co
 
 Generalize all this file to affine spaces.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E F β : Type*}
@@ -120,6 +121,9 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
+theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+  by_cases hP : P <;> simp [hP, hs, convex_univ]
+
 end SMul
 
 section Module
@@ -164,6 +168,8 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
+/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+  linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
@@ -172,17 +178,13 @@ theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinear
     Convex 𝕜 (f '' s) :=
   hs.linear_image <| hf.mk' f
 
-theorem Convex.linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) (f : E →ₗ[𝕜₁] F) :
-    Convex 𝕜 (f ⁻¹' s) := fun x hx y hy a b ha hb hab => by
-  rw [mem_preimage, f.map_add, LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower]
-  exact hs hx hy ha hb hab
+theorem Convex.linear_preimage {s : Set F} (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f ⁻¹' s) :=
+  fun x hx y hy a b ha hb hab => by
+    rw [mem_preimage, f.map_add, LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower]
+    exact hs hx hy ha hb hab
 
-theorem Convex.is_linear_preimage {𝕜₁ : Type*} [Semiring 𝕜₁] [Module 𝕜₁ E] [Module 𝕜₁ F] {s : Set F}
-    [SMul 𝕜 𝕜₁] [IsScalarTower 𝕜 𝕜₁ E] [IsScalarTower 𝕜 𝕜₁ F] (hs : Convex 𝕜 s) {f : E → F}
-    (hf : IsLinearMap 𝕜₁ f) :
-    Convex 𝕜 (f ⁻¹' s) :=
-  hs.linear_preimage <| hf.mk' f
+theorem Convex.is_linear_preimage {s : Set F} (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+    Convex 𝕜 (f ⁻¹' s) := hs.linear_preimage <| hf.mk' f
 
 theorem Convex.add {t : Set E} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s + t) := by
   rw [← add_image_prod]
@@ -455,7 +457,7 @@ theorem Convex.affine_image (f : E →ᵃ[𝕜] F) (hs : Convex 𝕜 s) : Convex
   exact (hs hx).affine_image _
 
 theorem Convex.neg (hs : Convex 𝕜 s) : Convex 𝕜 (-s) :=
-  hs.is_linear_preimage IsLinearMap.isLinearMap_neg (𝕜₁ := 𝕜)
+  hs.is_linear_preimage IsLinearMap.isLinearMap_neg
 
 theorem Convex.sub (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Convex 𝕜 (s - t) := by
   rw [sub_eq_add_neg]
@@ -490,9 +492,29 @@ end AddCommGroup
 
 end OrderedRing
 
-section LinearOrderedSemiring
+section LinearOrder
 
-variable [Semiring 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [AddCommMonoid E]
+section SemilinearMap
+
+variable [PartialOrder 𝕜]
+variable {𝕜' : Type*} [Semiring 𝕜'] [PartialOrder 𝕜']
+variable {σ : 𝕜 →+* 𝕜'} [RingHomSurjective σ]
+variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F'] [Module 𝕜 E]
+
+theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : ∀ {s t}, σ s ≤ σ t ↔ s ≤ t)
+    (f : E →ₛₗ[σ] F') : Convex 𝕜' (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  obtain ⟨r, rfl⟩ : ∃ r : 𝕜, σ r = a := RingHomSurjective.is_surjective ..
+  obtain ⟨t, rfl⟩ : ∃ t : 𝕜, σ t = b := RingHomSurjective.is_surjective ..
+  refine ⟨r • x + t • y, hs hx hy (by simp_all [(@hσ 0 r).mp]) (by simp_all [(@hσ 0 t).mp])
+    ?_, by simp⟩
+  apply_fun σ using injective_of_le_imp_le _ hσ.mp
+  simpa
+
+end SemilinearMap
+
+variable [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
     (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
@@ -504,7 +526,7 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
     _ ≤ a • B + b • B := by gcongr <;> assumption
     _ ≤ B := by rw [← add_smul, hs, one_smul]
 
-end LinearOrderedSemiring
+end LinearOrder
 
 theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
@@ -539,7 +561,7 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
   · replace hpq : 0 < p + q :=
       (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
-    match_scalars <;> field_simp
+    match_scalars <;> field
 
 protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     (p + q) • s = p • s + q • s := (add_smul_subset _ _ _).antisymm <| by
@@ -593,6 +615,10 @@ protected theorem convex (K : Submodule 𝕜 E) : Convex 𝕜 (↑K : Set E) := 
 
 protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K :=
   K.convex K.zero_mem
+
+theorem Convex.semilinear_range {𝕜' : Type*} [Semiring 𝕜'] {σ : 𝕜' →+* 𝕜}
+    [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
+    (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
 
 end Submodule
 

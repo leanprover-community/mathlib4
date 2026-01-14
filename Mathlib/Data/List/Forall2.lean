@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Double universal quantification on a list
@@ -12,6 +14,8 @@ This file provides an API for `List.Forall₂` (definition in `Data.List.Defs`).
 `Forall₂ R l₁ l₂` means that `l₁` and `l₂` have the same length, and whenever `a` is the nth element
 of `l₁`, and `b` is the nth element of `l₂`, then `R a b` is satisfied.
 -/
+
+@[expose] public section
 
 
 open Nat Function

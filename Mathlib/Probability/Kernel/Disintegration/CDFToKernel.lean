@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.Probability.Kernel.Composition.CompProd
-import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.Probability.Kernel.Composition.CompProd
+public import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
@@ -44,6 +46,8 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 

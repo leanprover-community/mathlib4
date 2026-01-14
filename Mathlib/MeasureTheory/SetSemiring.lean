@@ -3,10 +3,12 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
 
@@ -47,6 +49,8 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   * `⋃ x ∈ J, x = ⋃ x ∈ J, ⋃ s ∈ K x, s`.
 
 -/
+
+@[expose] public section
 
 open Finset Set
 
@@ -494,12 +498,7 @@ lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
 lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
     (hs : ∀ i ∈ t, s i ∈ C) :
     t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
+  simpa using biUnion_mem hC _ hs
 
 lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
     (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :

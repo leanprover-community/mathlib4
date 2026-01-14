@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Limit preservation properties of `Functor.op` and related constructions
@@ -13,6 +15,8 @@ We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` 
 preserve certain (co)limits and vice versa.
 
 -/
+
+@[expose] public section
 
 
 universe w w' v₁ v₂ u₁ u₂

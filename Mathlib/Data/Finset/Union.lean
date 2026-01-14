@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Order.SetNotation
 
 /-!
 # Unions of finite sets
@@ -25,6 +27,8 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 
@@ -51,7 +55,7 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, mem_coe]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -153,7 +157,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, mem_coe]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
 
 @[simp]
 lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t := by
@@ -187,6 +191,7 @@ lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) 
 
 lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by grind
 
+@[gcongr]
 lemma biUnion_subset_biUnion_of_subset_left (t : α → Finset β) (h : s₁ ⊆ s₂) :
     s₁.biUnion t ⊆ s₂.biUnion t := by grind
 

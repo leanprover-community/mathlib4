@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 
@@ -35,6 +37,8 @@ In this file we provide various results regarding idempotent elements in rings.
   If `R` is commutative, then a family `{ eᵢ }` of complete orthogonal idempotent elements induces
   a ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
 -/
+
+@[expose] public section
 
 section Semiring
 
@@ -376,7 +380,7 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
     eq_of_isNilpotent_sub_of_isIdempotentElem hx he₂
       (h _ (by rw [RingHom.mem_ker, map_sub, hx', sub_self]))⟩
 
-/-- A family of orthogonal idempotents induces an surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
+/-- A family of orthogonal idempotents induces a surjection `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     (he : OrthogonalIdempotents e) :
     Function.Surjective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
@@ -424,7 +428,8 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp only [funext_iff, Pi.ringHom_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
+    Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_
@@ -526,7 +531,7 @@ def NonUnitalSubsemiring.corner [NonUnitalSemiring R] : NonUnitalSubsemiring R w
   add_mem' := by rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by simp_rw [mul_add, add_mul]⟩
   zero_mem' := ⟨0, by simp_rw [mul_zero, zero_mul]⟩
 
-/-- The corner associated to an element `e` in a ring without `
+/-- The corner associated to an element `e` in a ring without 1
 is the subring without 1 of all elements of the form `e * r * e`. -/
 def NonUnitalRing.corner [NonUnitalRing R] : NonUnitalSubring R where
   __ := NonUnitalSubsemiring.corner e
@@ -582,11 +587,5 @@ give rise to a direct product decomposition. -/
 def CompleteOrthogonalIdempotents.ringEquivOfComm [CommSemiring R]
     (he : CompleteOrthogonalIdempotents e) : R ≃+* Π i, (he.idem i).Corner :=
   he.ringEquivOfIsMulCentral fun _ ↦ Semigroup.mem_center_iff.mpr fun _ ↦ mul_comm ..
-
-@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfIsMulCentral :=
-  CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral
-
-@[deprecated (since := "2025-04-14")] alias CompleteOrthogonalIdempotents.mulEquivOfComm :=
-  CompleteOrthogonalIdempotents.ringEquivOfComm
 
 end corner

@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Subpresheaf.Basic
-import Mathlib.CategoryTheory.Sites.IsSheafFor
+module
+
+public import Mathlib.CategoryTheory.Subpresheaf.Basic
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
 # Sieves attached to subpresheaves
@@ -14,6 +16,8 @@ a section `s : F.obj U`, we define a sieve `G.sieveOfSection s : Sieve (unop U)`
 and the associated compatible family of elements with values in `G.toPresheaf`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

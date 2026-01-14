@@ -3,8 +3,10 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-!
 # Euclidean absolute values
@@ -19,6 +21,8 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 * `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
   mapping negative `x` to `-x`, is Euclidean.
 -/
+
+@[expose] public section
 
 @[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r

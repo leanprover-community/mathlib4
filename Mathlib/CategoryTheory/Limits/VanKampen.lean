@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
 
@@ -26,6 +28,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProduct
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits CategoryTheory.Functor
@@ -323,10 +327,7 @@ theorem IsUniversalColimit.map_reflective
       ι := { app := fun j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
              naturality := ?_ } }
     · rw [← Gr.map_comp, ← hc'']
-      erw [← adj.unit_naturality]
-      rw [Gl.map_comp, hα'']
-      dsimp
-      simp only [Category.assoc, Functor.map_comp, adj.right_triangle_components_assoc]
+      simp_all [← adj.unit_naturality]
     · intro i j g
       dsimp [α']
       ext
@@ -677,7 +678,8 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt,
         Cofan.mk_ι_app, IsColimit.fac, Fin.cases_succ]
     · intro T f₁ f₂ f₃ m₁ m₂
-      simp at m₁ m₂ ⊢
+      simp only [Discrete.functor_obj_eq_as, pair_obj_left, BinaryCofan.mk_pt, const_obj_obj,
+        BinaryCofan.mk_inl, pair_obj_right, BinaryCofan.mk_inr] at m₁ m₂ ⊢
       refine Hc.uniq (Cofan.mk T (Fin.cases f₁
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩

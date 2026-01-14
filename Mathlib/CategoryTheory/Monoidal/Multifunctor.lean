@@ -3,7 +3,9 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 
 # Constructing monoidal functors from natural transformations between multifunctors
@@ -17,6 +19,8 @@ and the unitality conditions are phrased as equalities of natural transformation
 Once we have more API for quadrifunctors, we can add constructors for monoidal category structures
 by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -67,6 +71,28 @@ abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
 abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
 
+/-- The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given a monoidal functor `F`. -/
+@[simps!]
+def Functor.curriedTensorPreIsoPost (F : C ⥤ D) [F.Monoidal] :
+    curriedTensorPre F ≅ curriedTensorPost F :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Monoidal.μIso F _ _))
+
+/-- The functor which associates to a functor `F` the bifunctor `F - ⊗ F -`. -/
+@[simps]
+def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
+  obj F := curriedTensorPre F
+  map {F₁ F₂} f :=
+    { app X₁ :=
+        { app X₂ := f.app _ ⊗ₘ f.app _
+          naturality := by simp [← id_tensorHom] }
+      naturality _ _ _ := by
+        ext
+        simp [← tensorHom_id] }
+
+/-- The functor which associates to a functor `F` the bifunctor `F (- ⊗ -)`. -/
+abbrev curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
+  Functor.postcompose₂.flip.obj (curriedTensor C)
+
 end MonoidalCategory
 
 open MonoidalCategory
@@ -75,13 +101,13 @@ namespace Functor.LaxMonoidal
 
 /-!
 
-# Lax monoidal functors
+## Lax monoidal functors
 
 Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C))` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.LaxMonoidal.ofBifunctor : F.LaxMonoidal`.
 
-## Associativity hexagon
+### Associativity hexagon
 
 ```
       (F - ⊗ F -) ⊗ F -
@@ -96,7 +122,7 @@ F ((- ⊗ -) ⊗ -)    F - ⊗ F (- ⊗ -)
        F (- ⊗ (- ⊗ -))
 ```
 
-## Left unitality square
+### Left unitality square
 
 ```
 𝟙 ⊗ F - ⟶ F 𝟙 ⊗ F -
@@ -105,7 +131,7 @@ F ((- ⊗ -) ⊗ -)    F - ⊗ F (- ⊗ -)
   F    ←   F (𝟙 ⊗ -)
 ```
 
-## Right unitality square
+### Right unitality square
 
 ```
 F - ⊗ 𝟙 ⟶ F - ⊗ F 𝟙
@@ -261,13 +287,13 @@ namespace OplaxMonoidal
 
 /-!
 
-# Oplax monoidal functors
+## Oplax monoidal functors
 
 Given a counit morphism `η : F.obj (𝟙_ C)) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.OplaxMonoidal.ofBifunctor : F.OplaxMonoidal`.
 
-## Oplax associativity hexagon
+### Oplax associativity hexagon
 
 ```
       F ((- ⊗ -) ⊗ -)
@@ -282,7 +308,7 @@ F (- ⊗ -) ⊗ F -      F (- ⊗ (- ⊗ -))
        F - ⊗ (F - ⊗ F -)
 ```
 
-## Oplax left unitality square
+### Oplax left unitality square
 
 ```
   F   ⟶  F (𝟙 ⊗ -)
@@ -291,7 +317,7 @@ F (- ⊗ -) ⊗ F -      F (- ⊗ (- ⊗ -))
 𝟙 ⊗ F - ← F 𝟙 ⊗ F -
 ```
 
-## Oplax right unitality square
+### Oplax right unitality square
 
 ```
   F  ⟶   F (- ⊗ 𝟙)

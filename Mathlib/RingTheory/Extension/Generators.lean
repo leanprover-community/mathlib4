@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Extension.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ by unbundling the `vars` field or making the field globally reducible in constru
 unification hints.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -105,6 +109,9 @@ lemma σ_smul (x y) : P.σ x • y = x * y := by
 lemma σ_injective : P.σ.Injective := by
   intro x y e
   rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
+
+lemma aeval_val_surjective : Function.Surjective (aeval (R := R) P.val) :=
+  fun x ↦ ⟨P.σ x, by simp⟩
 
 lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
   (⟨_, P.algebraMap_apply _ ▸ P.aeval_val_σ ·⟩)
@@ -244,6 +251,20 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     use (a + b)
     rw [map_add, ha, hb]
 
+/-- Extend generators by more variables. -/
+noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=
+  .ofSurjective (Sum.elim P.val b) fun s ↦ by
+    use rename Sum.inl (P.σ s)
+    simp [aeval_rename]
+
+@[simp]
+lemma extend_val_inl (P : Generators R S ι) (b : ι' → S) (i : ι) :
+    (P.extend b).val (.inl i) = P.val i := rfl
+
+@[simp]
+lemma extend_val_inr (P : Generators R S ι) (b : ι' → S) (i : ι') :
+    (P.extend b).val (.inr i) = b i := rfl
+
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/
 noncomputable def reindex (P : Generators R S ι') (e : ι ≃ ι') :
@@ -286,6 +307,15 @@ def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
 @[simp] lemma naive_σ : (Generators.naive s hs).σ = s := rfl
 
 end
+
+lemma finiteType {α : Type*} [Finite α] (P : Generators R S α) : FiniteType R S :=
+  .of_surjective (IsScalarTower.toAlgHom R P.Ring S) P.algebraMap_surjective
+
+lemma _root_.Algebra.FiniteType.iff_exists_generators :
+    FiniteType R S ↔ ∃ (n : ℕ), Nonempty (Generators R S (Fin n)) := by
+  refine ⟨fun h ↦ ?_, fun ⟨n, ⟨P⟩⟩ ↦ P.finiteType⟩
+  obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp h
+  exact ⟨n, ⟨.ofSurjective (fun i ↦ f (X i)) <| by rwa [aeval_unique f] at hf⟩⟩
 
 end Construction
 
@@ -333,6 +363,12 @@ lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.
   apply MvPolynomial.algHom_ext
   intro i
   simp [Hom.toAlgHom]
+
+/-- Version of `Hom.algebraMap_toAlgHom` where `S = S'`, sometimes useful for rewriting. -/
+lemma Hom.algebraMap_toAlgHom' [Algebra R' S] [IsScalarTower R R' S]
+    {P' : Generators R' S ι'} (f : Hom P P') (x : P.Ring) :
+    MvPolynomial.aeval P'.val (f.toAlgHom x) = MvPolynomial.aeval P.val x :=
+  f.algebraMap_toAlgHom _
 
 @[simp]
 lemma Hom.toAlgHom_X (f : Hom P P') (i) : f.toAlgHom (.X i) = f.val i :=
@@ -524,6 +560,13 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+@[simp]
+lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
+    (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
+  change RingHom.ker _ = _
+  congr
+  exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
+
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
@@ -563,7 +606,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
       rw [← coeff_zero i, ← h₂]
       clear h₂ hi
       have (x : (Q.comp P).Ring) : (Function.support fun a ↦ if a.1 = i then aeval P.val
-          (monomial a.2 (coeff (e.symm a) x)) else 0) ⊆ ((support x).map e).toSet := by
+          (monomial a.2 (coeff (e.symm a) x)) else 0) ⊆ SetLike.coe ((support x).map e) := by
         rw [← Set.compl_subset_compl]
         intro j
         obtain ⟨j, rfl⟩ := e.surjective j
@@ -655,6 +698,11 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
   rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
     ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+
+lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
+    ((localizationAway T g).ofComp P).toAlgHom
+      (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
+  simp [Generators.Hom.toAlgHom, Generators.ofComp, aeval_rename]
 
 end Hom
 

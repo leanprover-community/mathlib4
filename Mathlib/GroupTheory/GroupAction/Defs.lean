@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -23,6 +25,8 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
@@ -33,7 +37,7 @@ open Function
 
 namespace MulAction
 
-variable (M : Type u) [Monoid M] (α : Type v) [MulAction M α] {β : Type*} [MulAction M β]
+variable (M γ α : Type*) [SMul γ α] [Monoid M] [MulAction M α]
 
 section Orbit
 
@@ -42,17 +46,19 @@ variable {α}
 /-- The orbit of an element under an action. -/
 @[to_additive /-- The orbit of an element under an action. -/]
 def orbit (a : α) :=
-  Set.range fun m : M => m • a
+  Set.range fun m : γ => m • a
 
-variable {M}
+variable {γ}
 
 @[to_additive]
-theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x • a₁ = a₂ :=
+theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit γ a₁ ↔ ∃ x : γ, x • a₁ = a₂ :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
+theorem mem_orbit (a : α) (m : γ) : m • a ∈ orbit γ a :=
   ⟨m, rfl⟩
+
+variable {M}
 
 @[to_additive]
 theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :

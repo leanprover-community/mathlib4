@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Kähler differential module under base change
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Localization.BaseChange
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
 -/
+
+@[expose] public section
 
 variable (R S A B : Type*) [CommRing R] [CommRing S] [Algebra R S] [CommRing A] [CommRing B]
 variable [Algebra R A] [Algebra R B]
@@ -191,6 +195,7 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
     | add x y e₁ e₂ => simp only [map_add, e₁, e₂]
     | tmul x y =>
       dsimp
+      -- We use the specialized version of `map_smul` here for performance.
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
       induction y using h.1.inductionOn
@@ -198,7 +203,8 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
       · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]
-      · simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
+      · -- We use the specialized version of `map_smul` here for performance.
+        simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
       · simp only [map_add, smul_add, *]
 
 @[simp]

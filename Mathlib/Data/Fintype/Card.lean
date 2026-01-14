@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Cardinalities of finite types
@@ -19,6 +21,8 @@ We also include some elementary results on the values of `Fintype.card` on speci
   itself is also surjective.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

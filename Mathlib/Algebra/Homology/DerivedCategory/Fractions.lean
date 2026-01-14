@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
 /-! # Calculus of fractions in the derived category
 
@@ -18,6 +20,8 @@ When strict bounds are known on `X` or `Y`, certain bounds may also be ensured
 on the auxiliary object appearing in the fraction.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -164,7 +168,7 @@ lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C �
     ext i
     by_cases hi : a < i
     · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
-    · apply (Y.isZero_of_isStrictlyGE b i (by cutsat)).eq_of_tgt
+    · apply (Y.isZero_of_isStrictlyGE b i (by lia)).eq_of_tgt
   rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

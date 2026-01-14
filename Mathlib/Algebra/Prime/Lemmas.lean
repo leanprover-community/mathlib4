@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Irreducible.Lemmas
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Irreducible.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -26,7 +28,9 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset
 
 variable {M N : Type*}
 
@@ -125,9 +129,6 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
 
 theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_isSquare
-
-@[deprecated (since := "2025-04-17")]
-alias Prime.not_square := Prime.not_isSquare
 
 theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSquare ha
 

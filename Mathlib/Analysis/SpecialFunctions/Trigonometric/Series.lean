@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yaël Dillies
 -/
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.SpecialFunctions.Exponential
+module
+
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Trigonometric functions as sums of infinite series
@@ -18,6 +20,8 @@ In this file we express trigonometric functions in terms of their series expansi
 * `Complex.hasSum_sin`, `Complex.sin_eq_tsum`: `Complex.sin` as the sum of an infinite series.
 * `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
+
+@[expose] public section
 
 open NormedSpace
 

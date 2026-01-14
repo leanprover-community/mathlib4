@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou
 -/
-import Mathlib.RingTheory.RingHom.Flat
+module
+
+public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
 # Faithfully flat ring maps
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.RingHom.Flat
 A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. This is
 the same as being flat and a surjection on prime spectra.
 -/
+
+@[expose] public section
 
 namespace RingHom
 

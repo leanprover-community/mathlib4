@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+module
+
+public import Mathlib.Algebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.
@@ -58,6 +60,8 @@ This belongs to a companion PR.
 
 * reprove `TensorProduct.finsuppLeft'` using existing heterobasic version of `TensorProduct.congr`
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -156,7 +160,7 @@ lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
   | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]
 
 variable (R M N ι S)
-/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N``
+/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N`
   is an `S`-linear equiv -/
 noncomputable def finsuppLeft' :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N where

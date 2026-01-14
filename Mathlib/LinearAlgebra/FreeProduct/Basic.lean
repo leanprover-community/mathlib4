@@ -3,8 +3,10 @@ Copyright (c) 2024 Robert Maxton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Maxton
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 
 /-!
 # The free product of $R$-algebras
@@ -41,6 +43,8 @@ general $R$-algebras.
 - Induction principle for `FreeProduct`
 
 -/
+
+@[expose] public section
 universe u v w w'
 
 namespace DirectSum
@@ -129,7 +133,7 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
-  | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
+  | id : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))

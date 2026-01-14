@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean.Elab.DeclarationRange
-import Lean.Meta.Tactic.Cases
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Name
-import Mathlib.Tactic.TypeStar
+module
+
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Meta.Tactic.Cases
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.TypeStar
 
 /-!
 # mk_iff_of_inductive_prop
@@ -24,6 +26,8 @@ the following type:
 This tactic can be called using either the `mk_iff_of_inductive_prop` user command or
 the `mk_iff` attribute.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.MkIff
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Quotient category
@@ -17,6 +19,8 @@ This is analogous to 'the quotient of a group by the normal closure of a subset'
 than 'the quotient of a group by a normal subgroup'. When taking the quotient by a congruence
 relation, `functor_map_eq_iff` says that no unnecessary identifications have been made.
 -/
+
+@[expose] public section
 
 
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
@@ -118,6 +122,12 @@ instance category : Category (Quotient r) where
   comp_id f := Quot.inductionOn f <| by simp
   id_comp f := Quot.inductionOn f <| by simp
   assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
+
+/-- An equivalence between the type synonym for a quotient category and the type alias
+for the original category. -/
+def equiv {C : Type _} [Category C] (r : HomRel C) : Quotient r ≃ C where
+  toFun x := x.1
+  invFun x := ⟨x⟩
 
 noncomputable section
 

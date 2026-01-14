@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
-import Mathlib.Order.BooleanAlgebra.Defs
+module
+
+public import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Basic properties of Boolean algebras
@@ -22,6 +24,8 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -127,7 +131,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
             inf_sup_right]))
         (calc
           y ⊔ y \ x ≤ y \ x ⊔ x ⊔ z := by
-            grind [sup_of_le_left, sdiff_le', le_sup_left, sup_assoc, sdiff_sup_self']
+            grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
           _ = x ⊔ z ⊔ y \ x := by ac_rfl),
       fun h => le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
         y \ x ⊔ x = y ⊔ x := sdiff_sup_self'
@@ -630,9 +634,6 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [B
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) :
     BooleanAlgebra α where
   __ := hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff
-  compl := compl
-  himp := himp
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
   bot_le _ := map_bot.le.trans bot_le
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le

@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # (Semi)linear maps
@@ -49,6 +51,8 @@ To ensure that composition works smoothly for semilinear maps, we use the typecl
 
 linear map
 -/
+
+@[expose] public section
 
 
 assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
@@ -335,7 +339,7 @@ protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S)
     c • f x = f (σ' c • x) := by simp
 
 @[simp]
-theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
+protected theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
   _root_.map_eq_zero_iff f h
 
 variable (M M₂)
@@ -426,6 +430,9 @@ instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
 theorem coe_restrictScalars (f : M →ₗ[S] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 
+@[simp]
+lemma restrictScalars_self (f : M →ₗ[R] M₂) : f.restrictScalars R = f := rfl
+
 theorem restrictScalars_apply (fₗ : M →ₗ[S] M₂) (x) : restrictScalars R fₗ x = fₗ x :=
   rfl
 
@@ -437,6 +444,10 @@ theorem restrictScalars_injective :
 theorem restrictScalars_inj (fₗ gₗ : M →ₗ[S] M₂) :
     fₗ.restrictScalars R = gₗ.restrictScalars R ↔ fₗ = gₗ :=
   (restrictScalars_injective R).eq_iff
+
+@[simp]
+lemma restrictScalars_id [CompatibleSMul M M R S] :
+    (id (R := S) (M := M)).restrictScalars R = id := rfl
 
 end RestrictScalars
 

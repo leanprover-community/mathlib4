@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.LinearAlgebra.Finsupp.Defs
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Finitely supported functions and spans
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.Span.Basic
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -67,6 +71,22 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
 theorem span_single_image (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
   rw [← span_image]; rfl
+
+lemma range_lmapDomain {β : Type*} (u : α → β) :
+    LinearMap.range (lmapDomain R R u) = .span R (.range fun x ↦ single (u x) 1) := by
+  refine le_antisymm ?_ ?_
+  · rintro x ⟨x, rfl⟩
+    induction x using induction_linear with
+    | single i s =>
+        rw [lmapDomain_apply, mapDomain_single, ← Finsupp.smul_single_one]
+        exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
+    | zero => simp
+    | add f g hf hg =>
+        rw [map_add]
+        exact Submodule.add_mem _ hf hg
+  · rw [Submodule.span_le, Set.range_subset_iff]
+    intro i
+    exact ⟨Finsupp.single i 1, by simp⟩
 
 end Finsupp
 

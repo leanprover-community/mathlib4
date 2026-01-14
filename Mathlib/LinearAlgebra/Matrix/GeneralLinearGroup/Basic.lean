@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+module
+
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Basic lemmas about the general linear group $GL(n, R)$
@@ -11,6 +13,8 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 This file lists various basic lemmas about the general linear group $GL(n, R)$. For the definitions,
 see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 -/
+
+@[expose] public section
 
 namespace Matrix
 

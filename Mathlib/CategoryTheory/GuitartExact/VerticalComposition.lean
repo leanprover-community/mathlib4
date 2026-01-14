@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.GuitartExact.Basic
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # Vertical composition of Guitart exact squares
@@ -13,6 +15,8 @@ In this file, we show that the vertical composition of Guitart exact squares
 is Guitart exact.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

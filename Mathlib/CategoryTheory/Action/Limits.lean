@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.Transfer
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Linear.FunctorCategory
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Action.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Abelian.Transfer
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Linear.FunctorCategory
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Categorical properties of `Action V G`
@@ -18,6 +20,8 @@ We show:
 * When `V` has (co)limits so does `Action V G`.
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
 -/
+
+@[expose] public section
 
 universe u v w₁ w₂ t₁ t₂
 

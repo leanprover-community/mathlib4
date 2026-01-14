@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The colon ideal
@@ -14,6 +16,8 @@ This file defines `Submodule.colon N P` as the ideal of all elements `r : R` suc
 The normal notation for this would be `N : P` which has already been taken by type theory.
 
 -/
+
+@[expose] public section
 
 namespace Submodule
 

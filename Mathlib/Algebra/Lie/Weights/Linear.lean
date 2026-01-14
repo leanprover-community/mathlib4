@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -38,6 +40,8 @@ or `R` has characteristic zero.
   with linear weights.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -95,7 +99,7 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
     LinearWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by
-      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
+      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, map_zero]
     intro χ hχ x y
     simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
       LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ

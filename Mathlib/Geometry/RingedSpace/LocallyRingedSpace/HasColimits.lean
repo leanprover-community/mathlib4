@@ -3,10 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Geometry.RingedSpace.OpenImmersion
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # Colimits of LocallyRingedSpace
@@ -16,6 +19,8 @@ It then follows that `LocallyRingedSpace` has all colimits, and
 `forgetToSheafedSpace` preserves them.
 
 -/
+
+@[expose] public section
 
 
 namespace AlgebraicGeometry

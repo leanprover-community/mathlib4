@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
 
 /-!
 # Increment partition for Szemerédi Regularity Lemma
@@ -32,6 +34,8 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
@@ -61,8 +65,7 @@ variable {hP G ε}
 /-- The increment partition has a prescribed (very big) size in terms of the original partition. -/
 theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.IsUniform G ε) :
     #(increment hP G ε).parts = stepBound #P.parts := by
-  have hPα' : stepBound #P.parts ≤ card α :=
-    (mul_le_mul_left' (pow_le_pow_left' (by simp) _) _).trans hPα
+  have hPα' : stepBound #P.parts ≤ card α := by grw [← hPα, stepBound]; gcongr; simp
   have hPpos : 0 < stepBound #P.parts := stepBound_pos (nonempty_of_not_uniform hPG).card_pos
   rw [increment, card_bind]
   simp_rw [chunk, apply_dite Finpartition.parts, apply_dite card, sum_dite]
@@ -153,8 +156,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
   rw [Finpartition.IsUniform, not_le, mul_tsub, mul_one, ← offDiag_card] at hPG
   calc
     _ ≤ ∑ x ∈ P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
-        (#(nonUniforms P G ε) * (ε ^ 4 / 3) - #P.parts.offDiag * (ε ^ 5 / 25)) :=
-        add_le_add_left ?_ _
+        (#(nonUniforms P G ε) * (ε ^ 4 / 3) - #P.parts.offDiag * (ε ^ 5 / 25)) := ?_
     _ = ∑ x ∈ P.parts.offDiag, ((G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
         ((if G.IsUniform ε x.1 x.2 then (0 : ℝ) else ε ^ 4 / 3) - ε ^ 5 / 25) : ℝ) := by
         rw [sum_add_distrib, sum_sub_distrib, sum_const, nsmul_eq_mul, sum_ite, sum_const_zero,
@@ -162,6 +164,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
           add_sub_right_comm]
     _ = _ := (sum_attach ..).symm
     _ ≤ _ := sum_le_sum fun i _ ↦ le_sum_distinctPairs_edgeDensity_sq i hε₁ hPα hPε
+  gcongr
   calc
     _ = (6/7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ #P.parts.offDiag * ε ^ 5 * (22 / 75) := by

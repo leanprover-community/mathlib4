@@ -3,17 +3,19 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
 
 The theory of multivariate polynomials and power series is built
 on the type `σ →₀ ℕ` which gives the exponents of the monomials.
 Many aspects of the theory (degree, order, graded ring structure)
-require to classify these exponents according to their total sum
-`∑  i, f i`, or variants, and this files provides some API for that.
+require classifying these exponents according to their total sum
+`∑ i, f i`, or variants, and this file provides some API for that.
 
 ## Weight
 
@@ -61,6 +63,8 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
   both `AddMonoidHom` or both functions.
 
 -/
+
+@[expose] public section
 
 variable {σ M R : Type*} [Semiring R] (w : σ → M)
 
@@ -201,27 +205,32 @@ end CanonicallyOrderedAddCommMonoid
 variable {R : Type*} [AddCommMonoid R]
 
 /-- The degree of a finsupp function. -/
-def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
+def degree : (σ →₀ R) →+ R where
+  toFun := fun d => ∑ i ∈ d.support, d i
+  map_zero' := by simp
+  map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+
+@[deprecated (since := "2025-12-09")] alias degree_add := map_add
+
+@[deprecated (since := "2025-12-09")] alias degree_zero := map_zero
+
+theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
+
+@[deprecated (since := "2025-12-09")]
+alias degree_def := degree_apply
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
-  rw [degree, Finset.sum_subset] <;> simp
-
-@[simp]
-theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
-  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+  rw [degree_apply, Finset.sum_subset] <;> simp
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
   Finsupp.sum_single_index (h := fun _ => id) rfl
 
-@[simp]
-theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
-
 lemma degree_eq_zero_iff {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
-  simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
+  simp only [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
@@ -236,7 +245,7 @@ theorem le_degree {R : Type*}
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp [weight_apply, smul_eq_mul, mul_one]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by
@@ -244,5 +253,13 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   refine finite_of_nat_weight_le (Function.const σ 1) ?_ n
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
+
+lemma range_single_one :
+    Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
+  refine subset_antisymm ?_ ?_
+  · simp [Set.range_subset_iff]
+  · intro p (hp : p.sum (fun a k ↦ k) = 1)
+    obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
+    use a
 
 end Finsupp

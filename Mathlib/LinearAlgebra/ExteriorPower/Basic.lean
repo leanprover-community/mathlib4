@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
 # Exterior powers
@@ -18,8 +20,9 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file
+  `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
+  `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
@@ -30,6 +33,8 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

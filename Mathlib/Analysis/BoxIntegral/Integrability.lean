@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Tactic.Generalize
+module
+
+public import Mathlib.Analysis.BoxIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Tactic.Generalize
 
 /-!
 # McShane integrability vs Bochner integrability
@@ -20,6 +22,8 @@ We deduce that the same is true for the Riemann integral for continuous function
 
 integral, McShane integral, Bochner integral
 -/
+
+@[expose] public section
 
 open scoped NNReal ENNReal Topology
 
@@ -146,9 +150,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact ⟨hrU _ (hπ.1 _ hJ (Box.coe_subset_Icc hx)), π.le_of_mem' J hJ hx⟩
   clear_value m
   lift m to ℝ≥0 using ne_top_of_lt this
-  rw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
-    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm]
-  exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
+  grw [ENNReal.coe_toReal, ← NNReal.coe_natCast, ← NNReal.coe_mul, NNReal.coe_le_coe, ←
+    ENNReal.coe_le_coe, ENNReal.coe_mul, ENNReal.coe_natCast, mul_comm, this, ENNReal.mul_div_le]
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
 a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/

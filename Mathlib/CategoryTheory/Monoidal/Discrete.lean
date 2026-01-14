@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Monoids as discrete monoidal categories
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 The discrete category on a monoid is a monoidal category.
 Multiplicative morphisms induced monoidal functors.
 -/
+
+@[expose] public section
 
 
 universe u u'

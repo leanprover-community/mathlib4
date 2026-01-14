@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Prod
+module
+
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Partially defined linear maps
@@ -21,12 +23,14 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
 
-Partially defined maps are currently used in `Mathlib` to prove Hahn-Banach theorem
+Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -223,8 +227,7 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
   ⟨⊥⟩
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
-  le := (· ≤ ·)
-  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
+  le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.ext h ▸ rfl⟩
   le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
     ⟨le_trans fg_le gh_le, fun x _ hxz =>
       have hxy : (x : E) = inclusion fg_le x := rfl
@@ -237,16 +240,15 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       ⟨fg_le hx, fh_le hx,
       (fg_eq (x := ⟨x, hx⟩) rfl).symm.trans (fh_eq rfl)⟩,
       fun x ⟨y, yg, hy⟩ h => fg_eq h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.eq <| h⟩
+  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.ext <| h⟩
   inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
+    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.ext <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
-  bot := ⊥
   bot_le f :=
     ⟨bot_le, fun x y h => by
-      have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
-      have hy : y = 0 := Subtype.eq (h.symm.trans (congr_arg _ hx))
+      have hx : x = 0 := Subtype.ext ((mem_bot R).1 x.2)
+      have hy : y = 0 := Subtype.ext (h.symm.trans (congr_arg _ hx))
       rw [hx, hy, map_zero, map_zero]⟩
 
 theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) : f ≤ g :=
@@ -327,8 +329,8 @@ protected theorem sup_le {f g h : E →ₗ.[R] F}
 theorem sup_h_of_disjoint (f g : E →ₗ.[R] F) (h : Disjoint f.domain g.domain) (x : f.domain)
     (y : g.domain) (hxy : (x : E) = y) : f x = g y := by
   rw [disjoint_def] at h
-  have hy : y = 0 := Subtype.eq (h y (hxy ▸ x.2) y.2)
-  have hx : x = 0 := Subtype.eq (hxy.trans <| congr_arg _ hy)
+  have hy : y = 0 := Subtype.ext (h y (hxy ▸ x.2) y.2)
+  have hx : x = 0 := Subtype.ext (hxy.trans <| congr_arg _ hy)
   simp [*]
 
 /-! ### Algebraic operations -/
@@ -374,7 +376,6 @@ instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N 
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 
@@ -703,7 +704,7 @@ def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
 theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x := by simp [graph]
 
-@[simp]
+@[simp, grind =]
 theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y : E) = x.1 ∧ f y = x.2 := by
   cases x
@@ -778,13 +779,11 @@ theorem neg_graph (f : E →ₗ.[R] F) :
 
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
-  grind [mem_graph_iff]
+  grind
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
     (hxy : x.1 = y.1) : x.2 = y.2 := by
-  cases x
-  cases y
-  exact f.mem_graph_snd_inj hx hy hxy
+  grind
 
 /-- The property that `f 0 = 0` in terms of the graph. -/
 theorem graph_fst_eq_zero_snd (f : E →ₗ.[R] F) {x : E} {x' : F} (h : (x, x') ∈ f.graph)
@@ -795,7 +794,7 @@ theorem mem_domain_iff {f : E →ₗ.[R] F} {x : E} : x ∈ f.domain ↔ ∃ y :
   constructor <;> intro h
   · use f ⟨x, h⟩
     exact f.mem_graph ⟨x, h⟩
-  grind [mem_graph_iff]
+  grind
 
 theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y) ∈ f.graph) :
     x ∈ f.domain := by
@@ -804,7 +803,7 @@ theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y)
 
 theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
     y = f ⟨x, hx⟩ ↔ (x, y) ∈ f.graph := by
-  grind [mem_graph_iff]
+  grind
 
 theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x : E, (x, y) ∈ f.graph := by
   constructor <;> intro h
@@ -813,7 +812,7 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
-  grind [mem_graph_iff]
+  grind
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
@@ -1007,7 +1006,7 @@ theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph 
 theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
     (inverse f) y = x := by
   have := mem_inverse_graph hf x
-  grind [mem_graph_iff]
+  grind
 
 end inverse
 

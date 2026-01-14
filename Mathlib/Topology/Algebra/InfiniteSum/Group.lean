@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -169,18 +173,10 @@ protected theorem Multipliable.tprod_div [L.NeBot] (hf : Multipliable f L) (hg :
     ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
   (hf.hasProd.div hg.hasProd).tprod_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
-  Multipliable.tprod_div
-
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
-
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
-  Multipliable.prod_mul_tprod_compl
 
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
@@ -192,10 +188,6 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Mul
     (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
   exact (mul_div_cancel _ _).symm
-
-@[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
-@[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
-  Multipliable.tprod_eq_mul_tprod_ite
 
 end tprod
 
@@ -318,11 +310,6 @@ protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α
     (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
   ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
 
-@[deprecated (since := "2025-04-12")] alias tsum_subtype_add_tsum_subtype_compl :=
-  Summable.tsum_subtype_add_tsum_subtype_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_subtype_mul_tprod_subtype_compl := Multipliable.tprod_subtype_mul_tprod_subtype_compl
-
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
     (hf : Multipliable f) (s : Finset β) :
@@ -330,11 +317,6 @@ protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β
   rw [← hf.tprod_subtype_mul_tprod_subtype_compl s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
-
-@[deprecated (since := "2025-04-12")] alias sum_add_tsum_subtype_compl :=
-  Summable.sum_add_tsum_subtype_compl
-@[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_subtype_compl :=
-  Multipliable.prod_mul_tprod_subtype_compl
 
 end IsUniformGroup
 
@@ -346,7 +328,7 @@ variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -354,7 +336,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -454,8 +436,6 @@ protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliab
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
 /--
 See also `Multipliable.congr_cofinite`, which does not have a non-vanishing condition, but instead

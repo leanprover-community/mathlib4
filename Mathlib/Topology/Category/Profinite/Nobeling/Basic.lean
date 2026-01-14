@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Topology.Category.Profinite.Product
-import Mathlib.Topology.LocallyConstant.Algebra
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.SetTheory.Ordinal.Basic
+public import Mathlib.Topology.Category.Profinite.Product
+public import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
 # Preliminaries for Nöbeling's theorem
@@ -40,6 +42,8 @@ independent. The fact that it spans is proved directly in
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 open CategoryTheory ContinuousMap Limits Opposite Submodule
 
@@ -326,7 +330,7 @@ def isGood (l : Products I) : Prop :=
 
 theorem rel_head!_of_mem [Inhabited I] {i : I} {l : Products I} (hi : i ∈ l.val) :
     i ≤ l.val.head! :=
-  List.Sorted.le_head! (List.isChain_iff_pairwise.mp l.prop) hi
+  List.Pairwise.head!_le l.2.sortedGT.sortedGE.pairwise hi
 
 theorem head!_le_of_lt [Inhabited I] {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
@@ -583,8 +587,7 @@ namespace Products
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.Sorted.lt_ord_of_lt (List.isChain_iff_pairwise.mp l.2)
-    (List.isChain_iff_pairwise.mp m.2) h₁ h₂
+  List.SortedGT.lt_ord_of_lt l.2.sortedGT m.2.sortedGT h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by

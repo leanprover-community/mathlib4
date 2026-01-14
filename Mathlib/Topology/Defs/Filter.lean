@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Defs.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Filter.Defs
-import Mathlib.Tactic.IrreducibleDef
+module
+
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
@@ -29,6 +31,9 @@ as well as other definitions that rely on `Filter`s.
 * `nhdsSet s`: the filter of neighborhoods of a set in a topological space,
   denoted by `𝓝ˢ s` in the `Topology` scope.
   A set `t` is called a neighborhood of `s`, if it includes an open set that includes `s`.
+
+* `nhdsSetWithin s t`: the filter of neighborhoods of a set `s` within another set `t`,
+  defined as `𝓝ˢ s ⊓ 𝓟 t` and denoted by `𝓝ˢ[t] s` in the `Topology` scope.
 
 * `nhdsKer s`: The *neighborhoods kernel* of a set is the intersection of all its neighborhoods.
   In an Alexandrov-discrete space, this is the smallest neighborhood of the set.
@@ -109,6 +114,8 @@ as well as other definitions that rely on `Filter`s.
 * `𝓝ˢ s`: the filter `nhdsSet s` of neighborhoods of a set.
 -/
 
+@[expose] public section
+
 assert_not_exists Ultrafilter
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -154,6 +161,12 @@ def nhdsSet (s : Set X) : Filter X :=
   sSup (nhds '' s)
 
 @[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
+
+/-- The "neighbourhood within" filter for sets. Elements of `𝓝[t] s` are sets containing the
+intersection of `t` and a neighbourhood of `s`. -/
+def nhdsSetWithin (s t : Set X) : Filter X := 𝓝ˢ s ⊓ 𝓟 t
+
+@[inherit_doc] scoped[Topology] notation "𝓝ˢ[" t "] " s:100 => nhdsSetWithin s t
 
 /-- The *neighborhoods kernel* of a set is the intersection of all its neighborhoods. In an
 Alexandrov-discrete space, this is the smallest neighborhood of the set. -/

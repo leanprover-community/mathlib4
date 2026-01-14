@@ -3,12 +3,14 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.CardCommute
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -19,6 +21,8 @@ For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n
 represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of the
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -109,14 +113,14 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 @[simp]
-theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
-theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where

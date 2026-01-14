@@ -3,11 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-import Mathlib.CategoryTheory.Quotient.Linear
-import Mathlib.CategoryTheory.Quotient.Preadditive
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Quotient.Linear
+public import Mathlib.CategoryTheory.Quotient.Preadditive
 
 /-!
 # The homotopy category
@@ -15,6 +17,8 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -114,6 +118,11 @@ theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homot
 def homotopyOfEq {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (w : (quotient V c).map f = (quotient V c).map g) : Homotopy f g :=
   ((Quotient.functor_map_eq_iff _ _ _).mp w).some
+
+lemma quotient_map_eq_zero_iff {C D : HomologicalComplex V c} (f : C ⟶ D) :
+    (quotient V c).map f = 0 ↔ Nonempty (Homotopy f 0) :=
+  ⟨fun h ↦ ⟨homotopyOfEq _ _ (by simpa using h)⟩,
+    fun ⟨h⟩ ↦ by simpa using eq_of_homotopy _ _ h⟩
 
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.

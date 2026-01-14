@@ -3,13 +3,14 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.ElabRules
-import Lean.DocString
+public import Mathlib.Init
+public meta import Lean.Elab.ElabRules
+public meta import Lean.DocString
 
 /-!
-#  `extend_doc` command
+# `extend_doc` command
 
 In a file where declaration `decl` is defined, writing
 ```lean
@@ -23,6 +24,8 @@ does what is probably clear: it extends the doc-string of `decl` by adding the s
 
 At least one of `before` and `after` must appear, but either one of them is optional.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ExtendDocs
 

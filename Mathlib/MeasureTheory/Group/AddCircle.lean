@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.MeasureTheory.Group.AEStabilizer
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
 # Measure-theoretic results about the additive circle
@@ -20,6 +22,8 @@ The file is a place to collect measure-theoretic results about the additive circ
   angle rotation in the additive circle
 
 -/
+
+@[expose] public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure Metric

@@ -3,9 +3,12 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Calculus.Deriv.Shift
+module
+
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.SpecificLimits.RCLike
 
 /-!
 # Estimates for the complex logarithm
@@ -21,6 +24,8 @@ over the unit interval (`Complex.log_eq_integral`) and introduce notation
 
 Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
+
+@[expose] public section
 
 namespace Complex
 

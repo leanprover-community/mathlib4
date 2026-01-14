@@ -3,17 +3,21 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Control.AlternativeMonad
-import Mathlib.Control.Basic
-import Mathlib.Data.Set.Defs
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Notation
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Functoriality of `Set`
 
 This file defines the functor structure of `Set`.
 -/
+
+@[expose] public section
 
 universe u
 

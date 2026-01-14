@@ -3,8 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Basic properties of the manifold Fréchet derivative
@@ -19,6 +22,8 @@ mimicking the API for Fréchet derivatives.
 - composition lemmas and the chain rule
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -136,6 +141,9 @@ theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I
 
 theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
     MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
+
+@[simp]
+theorem mdifferentiableOn_empty : MDifferentiableOn I I' f ∅ := fun _x hx ↦ hx.elim
 
 theorem mdifferentiableOn_univ : MDifferentiableOn I I' f univ ↔ MDifferentiable I I' f := by
   simp only [MDifferentiableOn, mdifferentiableWithinAt_univ, mfld_simps]; rfl
@@ -495,9 +503,9 @@ theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
-    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
-          (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
-      𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
+    writtenInExtChartAt I I'' x (g ∘ f)
+      =ᶠ[𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x x)]
+      (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) := by
   apply
     @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
       (extChartAt_preimage_mem_nhdsWithin
@@ -850,7 +858,8 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
   simp only [eq_iff_iff, mem_setOf_eq]
   change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
-  · simp [-extChartAt, hIz] at hz ⊢
+  · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
+      or_false, and_true] at hz ⊢
     rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
     simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢

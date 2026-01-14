@@ -3,10 +3,12 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Anatole Dedecker, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivative of `f x * g x`
@@ -14,12 +16,14 @@ import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 In this file we prove formulas for `(f x * g x)'` and `(f x • g x)'`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
 derivative, multiplication
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -368,6 +372,9 @@ theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
     HasDerivAt (fun y => c * d y) (c * d') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hd.const_mul c
+
+theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
+  simpa only [mul_one] using (hasDerivAt_id' x).const_mul c
 
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by

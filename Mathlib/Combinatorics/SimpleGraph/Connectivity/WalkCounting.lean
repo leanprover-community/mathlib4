@@ -3,10 +3,12 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -20,6 +22,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 TODO: should this be extended further?
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -122,7 +126,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -175,6 +179,10 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
 end LocallyFinite
 
 instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
+
+theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} (h : G ≤ G') :
+    Nat.card G'.ConnectedComponent ≤ Nat.card G.ConnectedComponent :=
+  Nat.card_le_card_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
 
 section Fintype
 

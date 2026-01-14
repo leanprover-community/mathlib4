@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.Jacobian
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.MeasureTheory.Function.Jacobian
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Polar coordinates
@@ -18,14 +20,16 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 -/
 
+@[expose] public section
+
 noncomputable section Real
 
 open Real Set MeasureTheory
 
 open scoped ENNReal Real Topology
 
-/-- The polar coordinates open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to
-`(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
+/-- The polar coordinates are an open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)`
+to `(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
@@ -66,9 +70,6 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     rintro ⟨x, y⟩ _
     have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
       rw [Complex.norm_def, Complex.normSq_add_mul_I]
-    have Z := Complex.norm_mul_cos_add_sin_mul_I (x + y * Complex.I)
-    simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
-      mul_assoc] at Z
     simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=

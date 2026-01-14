@@ -3,13 +3,15 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.DefView
-import Lean.Util.CollectAxioms
-import ImportGraph.Imports
-import ImportGraph.RequiredModules
+module
+
+public meta import Lean.Elab.DefView
+public meta import Lean.Util.CollectAxioms
+public meta import ImportGraph.Imports
+public meta import ImportGraph.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -54,6 +56,8 @@ It may be more efficient (not necessarily in terms of speed, but of simplicity o
 to inspect the `InfoTrees` for each command and retrieve information from there.
 I have not looked into this yet.
 -/
+
+public meta section
 
 open Lean Elab Command
 
@@ -109,7 +113,7 @@ def getAttrNames (stx : Syntax) : NameSet :=
     | some stx => getIds stx
 
 /-- `getAttrs env stx` returns all attribute declaration names contained in `stx` and registered
-in the `Environment `env`. -/
+in the `Environment` `env`. -/
 def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   Id.run do
   let mut new : NameSet := {}

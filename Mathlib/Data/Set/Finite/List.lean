@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Finite.Vector
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Finite.Vector
 
 /-!
 # Finiteness of sets of lists
@@ -17,7 +19,9 @@ import Mathlib.Data.Finite.Vector
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedRing MonoidWithZero
 
 namespace List
 variable (α : Type*) [Finite α] (n : ℕ)

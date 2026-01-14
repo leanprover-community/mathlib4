@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Computability.PartrecCode
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Computability theory and the halting problem
@@ -15,6 +17,11 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
+
+-- TODO: fix all violations in this file
+set_option linter.flexible false
+
+@[expose] public section
 
 open List (Vector)
 open Encodable Denumerable
@@ -252,7 +259,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.
--- @[nolint decidable_classical]
+set_option linter.unusedDecidableInType false in
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ REPred p ∧ REPred fun a => ¬p a :=
   ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>

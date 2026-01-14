@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.TopCat.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Basic
+public import Mathlib.Topology.Category.TopCat.Yoneda
 
 /-!
 
@@ -20,6 +22,8 @@ We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -64,7 +68,7 @@ theorem equalizerCondition_yonedaPresheaf
   apply EqualizerCondition.mk
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
-  · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
+  · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, mapToEqualizer,
       Set.mem_setOf_eq, Subtype.mk.injEq, comp, ContinuousMap.mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
     ext x
@@ -74,7 +78,7 @@ theorem equalizerCondition_yonedaPresheaf
   · simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.mem_setOf_eq,
       ContinuousMap.mk.injEq] at ha
     simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.coe_setOf,
-      MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
+      mapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr 1

@@ -3,23 +3,27 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
-import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
-import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
 /-!
 
-# N₁ and N₂ reflects isomorphisms
+# N₁ and N₂ reflect isomorphisms
 
 In this file, it is shown that the functors
 `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` and
-`N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
+`N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflect isomorphisms for any preadditive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite Simplicial
@@ -90,14 +94,14 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
-/-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
+/-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
 instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
   ⟨fun f => by
     intro
-    -- The following functor `F` reflects isomorphism because it is
-    -- a composition of four functors which reflects isomorphisms.
+    -- The following functor `F` reflects isomorphisms because it is
+    -- a composition of four functors which reflect isomorphisms.
     -- Then, it suffices to show that `F.map f` is an isomorphism.
     let F₁ := karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C
     let F₂ : SimplicialObject (Karoubi C) ⥤ _ := N₁

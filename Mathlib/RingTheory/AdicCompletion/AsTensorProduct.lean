@@ -3,11 +3,13 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.FiveLemma
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Tensor
+module
+
+public import Mathlib.Algebra.FiveLemma
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.AdicCompletion.Exactness
+public import Mathlib.RingTheory.Flat.Tensor
 
 /-!
 
@@ -34,6 +36,8 @@ As a corollary we obtain
   ring. This is mostly composing with the isomorphism to `R^n` and checking that a diagram commutes.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -99,7 +103,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
-    simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
+    simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
 private lemma ofTensorProduct_eq :

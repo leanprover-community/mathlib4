@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Data.DFinsupp.Ext
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Data.DFinsupp.Ext
 
 /-!
 # Dependent functions with finite support
@@ -38,6 +40,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 `DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
+
+@[expose] public section
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -290,14 +294,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hf i).resolve_left H2, map_zero]
     · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hg i).resolve_left H2, map_zero]
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)
@@ -464,20 +468,10 @@ theorem coe_dfinsuppProd [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g :
     ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 
-@[deprecated (since := "2025-04-06")]
-alias _root_.AddMonoidHom.coe_dfinsupp_sum := AddMonoidHom.coe_dfinsuppSum
-@[to_additive existing, deprecated (since := "2025-04-06")]
-alias coe_dfinsupp_prod := coe_dfinsuppProd
-
 @[to_additive]
 theorem dfinsuppProd_apply [MulOneClass R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S)
     (r : R) : (f.prod g) r = f.prod fun a b => (g a b) r :=
   finset_prod_apply _ _ _
-
-@[deprecated (since := "2025-04-06")]
-alias _root_.AddMonoidHom.dfinsupp_sum_apply := AddMonoidHom.dfinsuppSum_apply
-@[to_additive existing, deprecated (since := "2025-04-06")]
-alias dfinsupp_prod_apply := dfinsuppProd_apply
 
 end MonoidHom
 
@@ -496,14 +490,10 @@ theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZer
     h (sumAddHom g f) = sumAddHom (fun i => h.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h g) f
 
-@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
-
 theorem dfinsuppSumAddHom_apply [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
     (f : Π₀ i, β i) (g : ∀ i, β i →+ R →+ S) (r : R) :
     (sumAddHom g f) r = sumAddHom (fun i => (eval r).comp (g i)) f :=
   map_dfinsuppSumAddHom (eval r) f g
-
-@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_apply := dfinsuppSumAddHom_apply
 
 @[simp, norm_cast]
 theorem coe_dfinsuppSumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZeroClass (β i)]
@@ -511,7 +501,6 @@ theorem coe_dfinsuppSumAddHom [AddZeroClass R] [AddCommMonoid S] [∀ i, AddZero
     ⇑(sumAddHom g f) = sumAddHom (fun i => (coeFn R S).comp (g i)) f :=
   map_dfinsuppSumAddHom (coeFn R S) f g
 
-@[deprecated (since := "2025-04-06")] alias coe_dfinsupp_sumAddHom := coe_dfinsuppSumAddHom
 end AddMonoidHom
 
 namespace RingHom
@@ -526,8 +515,6 @@ theorem map_dfinsuppSumAddHom [NonAssocSemiring R] [NonAssocSemiring S] [∀ i, 
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
 
-@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
-
 end RingHom
 
 namespace AddEquiv
@@ -541,8 +528,6 @@ theorem map_dfinsuppSumAddHom [AddCommMonoid R] [AddCommMonoid S] [∀ i, AddZer
     (h : R ≃+ S) (f : Π₀ i, β i) (g : ∀ i, β i →+ R) :
     h (sumAddHom g f) = sumAddHom (fun i => h.toAddMonoidHom.comp (g i)) f :=
   DFunLike.congr_fun (comp_liftAddHom h.toAddMonoidHom g) f
-
-@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 end AddEquiv
 

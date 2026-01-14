@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compact sets in uniform spaces
@@ -14,6 +16,8 @@ import Mathlib.Topology.Compactness.Compact
 
 -/
 
+@[expose] public section
+
 universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
@@ -21,7 +25,7 @@ variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*
 section Compact
 
 open Uniformity Set Filter UniformSpace
-open scoped Topology
+open scoped SetRel Topology
 
 variable [UniformSpace α] {K : Set α}
 
@@ -33,7 +37,7 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   have : ∀ x ∈ K, ∃ i, ∃ V ∈ 𝓤 α, ball x (V ○ V) ⊆ U i := fun x hx ↦ by
     obtain ⟨i, hi⟩ := mem_iUnion.1 (hcover hx)
     rw [← (hopen i).mem_nhds_iff, nhds_eq_comap_uniformity, ← lift'_comp_uniformity] at hi
-    exact ⟨i, (((basis_sets _).lift' <| monotone_id.compRel monotone_id).comap _).mem_iff.1 hi⟩
+    exact ⟨i, (((basis_sets _).lift' <| monotone_id.relComp monotone_id).comap _).mem_iff.1 hi⟩
   choose ind W hW hWU using this
   rcases hK.elim_nhds_subcover' (fun x hx ↦ ball x (W x hx)) (fun x hx ↦ ball_mem_nhds _ (hW x hx))
     with ⟨t, ht⟩
@@ -140,8 +144,8 @@ theorem Disjoint.exists_uniform_thickening {A B : Set α} (hA : IsCompact A) (hB
   refine ⟨V, hV, Set.disjoint_left.mpr fun x => ?_⟩
   simp only [mem_iUnion₂]
   rintro ⟨a, ha, hxa⟩ ⟨b, hb, hxb⟩
-  rw [mem_ball_symmetry hVsymm] at hxa hxb
-  exact hUAB (mem_iUnion₂_of_mem ha <| hVU <| mem_comp_of_mem_ball hVsymm hxa hxb) hb
+  rw [mem_ball_symmetry] at hxa hxb
+  exact hUAB (mem_iUnion₂_of_mem ha <| hVU <| mem_comp_of_mem_ball hxa hxb) hb
 
 theorem Disjoint.exists_uniform_thickening_of_basis {p : ι → Prop} {s : ι → Set (α × α)}
     (hU : (𝓤 α).HasBasis p s) {A B : Set α} (hA : IsCompact A) (hB : IsClosed B)

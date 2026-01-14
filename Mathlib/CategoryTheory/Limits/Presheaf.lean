@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf.Basic
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Over
+module
+
+public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Over
 
 /-!
 # Colimit of representables
@@ -26,7 +28,7 @@ In this file, we also study the left Kan extensions of functors `A : C ⥤ ℰ`
 along the Yoneda embedding `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`
 (when `Category.{v₂} ℰ` and `w` is an auxiliary universe). In particular,
 the definition `uliftYonedaAdjunction` shows that such a pointwise left Kan
-extension  (which exists when `ℰ` has colimits) is a left adjoint to the
+extension (which exists when `ℰ` has colimits) is a left adjoint to the
 functor `restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₁ v₂)`.
 
 In the lemma `isLeftKanExtension_along_uliftYoneda_iff`, we show that
@@ -49,6 +51,8 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Opposite
@@ -62,7 +66,7 @@ namespace Presheaf
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
 /--
-Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and a auxiliary universe `w`,
+Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and an auxiliary universe `w`,
 this is the functor `ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂)` which sends `(E : ℰ) (c : Cᵒᵖ)`
 to the homset `A.obj C ⟶ E` (considered in the higher universe `max w v₂`).
 Under the existence of a suitable pointwise left Kan extension, it is shown in
@@ -231,7 +235,7 @@ end
 
 /-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
 of the category of elements of `X` which sends an element in `P.obj (op X)` to the
-presheaf represented by `X`. The definition`coconeOfRepresentable`
+presheaf represented by `X`. The definition `coconeOfRepresentable`
 gives a cocone for this functor which is a colimit and has point `P`.
 -/
 @[simps! obj map]

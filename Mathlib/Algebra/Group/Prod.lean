@@ -3,15 +3,17 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.TermCongr
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # Monoid, group etc. structures on `M × N`
@@ -35,6 +37,8 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
   multiplicative/monoid homomorphism.
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered AddMonoidWithOne
 
@@ -594,12 +598,17 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
+@[to_additive]
+instance _root_.Prod.instSubsingletonUnits [Subsingleton Mˣ] [Subsingleton Nˣ] :
+    Subsingleton (M × N)ˣ :=
+  .units_of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
 
 end
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Filtered colimits in the category of types.
@@ -14,6 +16,8 @@ lemma `CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff`:
 `colimit.ι F i xi = colimit.ι F j xj ↔ ∃ k (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -151,5 +155,15 @@ theorem colimit_eq_iff [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
       ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
   isColimit_eq_iff _ (colimit.isColimit F)
+
+open IsFiltered in
+variable {F} in
+lemma jointly_surjective_of_isColimit₂
+    {t : Cocone F} (ht : IsColimit t) (x₁ x₂ : t.pt) :
+    ∃ (j : J) (x₁' x₂' : F.obj j), t.ι.app j x₁' = x₁ ∧ t.ι.app j x₂' = x₂ := by
+  obtain ⟨j₁, x₁, rfl⟩ := Types.jointly_surjective_of_isColimit ht x₁
+  obtain ⟨j₂, x₂, rfl⟩ := Types.jointly_surjective_of_isColimit ht x₂
+  exact ⟨max j₁ j₂, F.map (leftToMax _ _) x₁, F.map (rightToMax _ _) x₂,
+    congr_fun (t.w (leftToMax j₁ j₂)) x₁, congr_fun (t.w (rightToMax j₁ j₂)) x₂⟩
 
 end CategoryTheory.Limits.Types.FilteredColimit

@@ -3,8 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+module
+
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Strong epimorphisms
@@ -32,6 +34,8 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -86,14 +90,14 @@ section
 variable {R : C} (f : P ⟶ Q) (g : Q ⟶ R)
 
 /-- The composition of two strong epimorphisms is a strong epimorphism. -/
-theorem strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
+instance strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
   { epi := epi_comp _ _
     llp := by
       intros
       infer_instance }
 
 /-- The composition of two strong monomorphisms is a strong monomorphism. -/
-theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
+instance strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
   { mono := mono_comp _ _
     rlp := by
       intros

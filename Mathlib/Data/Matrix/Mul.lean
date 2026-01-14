@@ -3,11 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Diagonal
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Matrix.Diagonal
 
 /-!
 # Matrix multiplication
@@ -46,6 +48,8 @@ as having the right type. Instead, `Matrix.of` should be used.
 Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra Field TrivialStar
 
@@ -446,7 +450,6 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
 
 instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
   { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
-    one := 1
     one_mul := Matrix.one_mul
     mul_one := Matrix.mul_one }
 
@@ -536,6 +539,14 @@ variable [Semiring α]
 theorem mul_mul_left [Fintype n] (M : Matrix m n α) (N : Matrix n o α) (a : α) :
     (of fun i j => a * M i j) * N = a • (M * N) :=
   smul_mul a M N
+
+lemma pow_apply_nonneg [Fintype n] [DecidableEq n] [PartialOrder α] [IsOrderedRing α]
+    {A : Matrix n n α} (hA : ∀ i j, 0 ≤ A i j) (k : ℕ) : ∀ i j, 0 ≤ (A ^ k) i j := by
+  induction k with
+  | zero => aesop (add simp one_apply)
+  | succ m ih =>
+    intro i j; rw [pow_succ, mul_apply]
+    exact Finset.sum_nonneg fun l _ => mul_nonneg (ih i l) (hA l j)
 
 end Semiring
 
@@ -904,7 +915,25 @@ lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
   simp_rw [single_one_vecMul] at h
   exact congrFun (h i) j
 
-variable [Fintype m] [Fintype n] [DecidableEq m]
+theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  simpa using congrFun₂ h (Pi.single j 1) i
+
+theorem ext_iff_mulVec [Fintype n] {A B : Matrix m n α} : A = B ↔ ∀ v, A *ᵥ v = B *ᵥ v :=
+  mulVec_injective.eq_iff.symm.trans funext_iff
+
+theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  simpa using congrFun₂ h (Pi.single i 1) j
+
+theorem ext_iff_vecMul [Fintype m] {A B : Matrix m n α} : A = B ↔ ∀ v, v ᵥ* A = v ᵥ* B :=
+  vecMul_injective.eq_iff.symm.trans funext_iff
+
+variable [Fintype m] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : 1 *ᵥ v = v := by
@@ -1034,14 +1063,14 @@ lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
 lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).row i = 0) (h' : k ≤ l) :
     (M ^ l).row i = 0 := by
-  replace h' : l = k + (l - k) := by omega
+  replace h' : l = k + (l - k) := by lia
   rw [← single_one_vecMul] at h ⊢
   rw [h', pow_add, ← vecMul_vecMul, h, zero_vecMul]
 
 lemma pow_col_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).col i = 0) (h' : k ≤ l) :
     (M ^ l).col i = 0 := by
-  replace h' : l = (l - k) + k := by omega
+  replace h' : l = (l - k) + k := by lia
   rw [← mulVec_single_one] at h ⊢
   rw [h', pow_add, ← mulVec_mulVec, h, mulVec_zero]
 

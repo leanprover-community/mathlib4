@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Type synonyms
@@ -16,7 +18,7 @@ This file provides three type synonyms for order theory:
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
 * `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning
-  depends on the type we take the colex of. Examples include `Finset`.
+  depends on the type we take the colex of. Examples include `Finset`, `DFinsupp`, `Finsupp`.
 
 ## Notation
 
@@ -38,6 +40,8 @@ coercions should be inserted:
 This file is similar to `Algebra.Group.TypeTags`.
 -/
 
+@[expose] public section
+
 
 variable {α : Type*}
 
@@ -46,8 +50,8 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
-  h
+instance [h : Nontrivial α] : Nontrivial αᵒᵈ := h
+instance [h : Unique α] : Unique αᵒᵈ := h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
@@ -70,6 +74,11 @@ theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
 @[simp]
 theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
+
+@[simp] theorem toDual_trans_ofDual : (toDual (α := α)).trans ofDual = Equiv.refl _ := rfl
+@[simp] theorem ofDual_trans_toDual : (ofDual (α := α)).trans toDual = Equiv.refl _ := rfl
+@[simp] theorem toDual_comp_ofDual : (toDual (α := α)) ∘ ofDual = id := rfl
+@[simp] theorem ofDual_comp_toDual : (ofDual (α := α)) ∘ toDual = id := rfl
 
 theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 
@@ -177,6 +186,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
 instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
   inferInstanceAs (Inhabited α)
 
+instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
+  coe f := H.coe (ofLex f)
+
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
@@ -232,6 +244,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
 
 instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
   inferInstanceAs (Inhabited α)
+
+instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
+  coe f := H.coe (ofColex f)
 
 /-- A recursor for `Colex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

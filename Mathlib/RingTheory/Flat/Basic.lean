@@ -3,12 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
-import Mathlib.Algebra.Colimit.TensorProduct
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Small
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Colimit.TensorProduct
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Small
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.Adjoin.FGBaseChange
 
 /-!
 # Flat modules
@@ -56,6 +59,8 @@ the current `Module.Flat` to `Module.MonoFlat`.
 * Generalize flatness to noncommutative semirings.
 
 -/
+
+@[expose] public section
 
 assert_not_exists AddCircle
 
@@ -582,3 +587,22 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
   reg.of_flat_of_isBaseChange (IsBaseChange.linearMap R S)
 
 end IsSMulRegular
+
+/-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
+  `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
+  `C ⊗[R] A` is also reduced. -/
+theorem IsReduced.tensorProduct_of_flat_of_forall_fg {R C A : Type*}
+    [CommSemiring R] [CommSemiring C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
+    (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
+    IsReduced (C ⊗[R] A) := by
+  by_contra h_contra
+  obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
+  obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
+  have h_inj : Function.Injective
+      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) :=
+    Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective
+  obtain ⟨z, rfl⟩ := hD.2
+  have h_notReduced : ¬IsReduced (C ⊗[R] D) := by
+    simp_rw [isReduced_iff, not_forall]
+    exact ⟨z, (IsNilpotent.map_iff h_inj).mp hx.right, (by simpa [·] using hx.1)⟩
+  tauto

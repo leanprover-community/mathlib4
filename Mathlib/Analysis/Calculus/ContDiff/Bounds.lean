@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Choose.Multinomial
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Multinomial
 
 /-!
 # Bounds on higher derivatives
@@ -15,6 +17,8 @@ import Mathlib.Data.Nat.Choose.Multinomial
   of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
   derivative of `f` is bounded by `D ^ i`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -373,8 +377,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     simp only [Finset.mem_range_succ_iff] at hi
     apply IH i hi
     · apply hg.fderivWithin ht
-      simp only [Nat.cast_succ]
-      exact add_le_add_right (Nat.cast_le.2 hi) _
+      grw [Nat.cast_succ, hi]
     · apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
     · intro j hj
       have : ‖iteratedFDerivWithin 𝕜 j (fderivWithin 𝕜 g t) t (f x)‖ =
@@ -505,15 +508,29 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
 
 /-- If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
+of `g ∘ f` is bounded by `n! * C * D^n`.
+
+Version with the iterated derivative of `g` only bounded on the range of `f`. -/
+theorem norm_iteratedFDeriv_comp_le' {g : F → G} {f : E → F} {n : ℕ} {N : WithTop ℕ∞}
+    {t : Set F} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn 𝕜 t)
+    (hg : ContDiffOn 𝕜 N g t) (hf : ContDiff 𝕜 N f) (hn : n ≤ N) (x : E) {C : ℝ} {D : ℝ}
+    (hC : ∀ i, i ≤ n → ‖iteratedFDerivWithin 𝕜 i g t (f x)‖ ≤ C)
+    (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i) :
+    ‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n ! * C * D ^ n := by
+  simp_rw [← iteratedFDerivWithin_univ] at hD ⊢
+  exact norm_iteratedFDerivWithin_comp_le hg hf.contDiffOn hn ht' uniqueDiffOn_univ
+    (by simp [mapsTo_iff_subset_preimage, ht]) (mem_univ x) hC hD
+
+/-- If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
+of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`. -/
 theorem norm_iteratedFDeriv_comp_le {g : F → G} {f : E → F} {n : ℕ} {N : WithTop ℕ∞}
     (hg : ContDiff 𝕜 N g) (hf : ContDiff 𝕜 N f) (hn : n ≤ N) (x : E) {C : ℝ} {D : ℝ}
     (hC : ∀ i, i ≤ n → ‖iteratedFDeriv 𝕜 i g (f x)‖ ≤ C)
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i) :
     ‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n ! * C * D ^ n := by
-  simp_rw [← iteratedFDerivWithin_univ] at hC hD ⊢
-  exact norm_iteratedFDerivWithin_comp_le hg.contDiffOn hf.contDiffOn hn uniqueDiffOn_univ
-    uniqueDiffOn_univ (mapsTo_univ _ _) (mem_univ x) hC hD
+  simp_rw [← iteratedFDerivWithin_univ] at hC
+  exact norm_iteratedFDeriv_comp_le' (subset_univ _) uniqueDiffOn_univ hg.contDiffOn hf hn x hC hD
 
 section Apply
 
@@ -539,17 +556,28 @@ theorem norm_iteratedFDeriv_clm_apply {f : E → F →L[𝕜] G} {g : E → F} {
   exact norm_iteratedFDerivWithin_clm_apply hf.contDiffOn hg.contDiffOn uniqueDiffOn_univ
     (Set.mem_univ x) hn
 
+theorem ContinuousLinearMap.norm_iteratedFDerivWithin_comp_left (L : F →L[𝕜] G) {f : E → F}
+    {s : Set E} {x : E} {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffWithinAt 𝕜 N f s x)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hn : n ≤ N) :
+    ‖iteratedFDerivWithin 𝕜 n (L ∘ f) s x‖ ≤ ‖L‖ * ‖iteratedFDerivWithin 𝕜 n f s x‖ := by
+  have h := L.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
+  rwa [← L.iteratedFDerivWithin_comp_left hf hs hx hn] at h
+
+theorem ContinuousLinearMap.norm_iteratedFDeriv_comp_left (L : F →L[𝕜] G) {f : E → F} {x : E}
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffAt 𝕜 N f x) (hn : n ≤ N) :
+    ‖iteratedFDeriv 𝕜 n (L ∘ f) x‖ ≤ ‖L‖ * ‖iteratedFDeriv 𝕜 n f x‖ := by
+  simp only [← iteratedFDerivWithin_univ]
+  exact L.norm_iteratedFDerivWithin_comp_left hf.contDiffWithinAt uniqueDiffOn_univ (Set.mem_univ x)
+    hn
+
 theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {s : Set E} {x : E}
     {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffWithinAt 𝕜 N f s x) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) (hn : n ≤ N) :
     ‖iteratedFDerivWithin 𝕜 n (fun y : E => (f y) c) s x‖ ≤
       ‖c‖ * ‖iteratedFDerivWithin 𝕜 n f s x‖ := by
-  let g : (F →L[𝕜] G) →L[𝕜] G := ContinuousLinearMap.apply 𝕜 G c
-  have h := g.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
-  rw [← g.iteratedFDerivWithin_comp_left hf hs hx hn] at h
-  refine h.trans ?_
+  apply ((ContinuousLinearMap.apply 𝕜 G c).norm_iteratedFDerivWithin_comp_left  hf hs hx hn).trans
   gcongr
-  refine g.opNorm_le_bound (norm_nonneg _) fun f => ?_
+  refine (ContinuousLinearMap.apply 𝕜 G c).opNorm_le_bound (norm_nonneg _) fun f => ?_
   rw [ContinuousLinearMap.apply_apply, mul_comm]
   exact f.le_opNorm c
 

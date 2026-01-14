@@ -3,15 +3,17 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 /-!
 # Affine morphisms with additional ring hom property
 
 In this file we define a constructor `affineAnd Q` for affine target morphism properties of schemes
 from a property of ring homomorphisms `Q`: A morphism `f : X ⟶ Y` with affine target satisfies
-`affineAnd Q` if it is an affine morphim (i.e. `X` is affine) and the induced ring map on global
+`affineAnd Q` if it is an affine morphism (i.e. `X` is affine) and the induced ring map on global
 sections satisfies `Q`.
 
 `affineAnd Q` inherits most stability properties of `Q` and is local at the target if `Q` is local
@@ -21,6 +23,8 @@ Typical examples of this are affine morphisms (where `Q` is trivial), finite mor
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
 
 -/
+
+@[expose] public section
 
 universe v u
 

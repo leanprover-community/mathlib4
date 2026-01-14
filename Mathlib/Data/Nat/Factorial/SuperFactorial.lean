@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Tactic.Ring
 
 /-!
 # Superfactorial
@@ -17,6 +19,8 @@ This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactor
 * `Nat.superFactorial`: The superfactorial, denoted by `sf`.
 -/
 
+@[expose] public section
+
 
 namespace Nat
 
@@ -26,7 +30,7 @@ def superFactorial : ℕ → ℕ
   | succ n => factorial n.succ * superFactorial n
 
 /-- `sf` notation for superfactorial -/
-scoped notation "sf" n:60 => Nat.superFactorial n
+scoped notation "sf " n:60 => Nat.superFactorial n
 
 section SuperFactorial
 

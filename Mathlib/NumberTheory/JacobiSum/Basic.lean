@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.GaussSum
-import Mathlib.NumberTheory.MulChar.Lemmas
-import Mathlib.RingTheory.RootsOfUnity.Lemmas
+module
+
+public import Mathlib.NumberTheory.GaussSum
+public import Mathlib.NumberTheory.MulChar.Lemmas
+public import Mathlib.RingTheory.RootsOfUnity.Lemmas
 
 /-!
 # Jacobi Sums
@@ -27,6 +29,8 @@ but generalize where appropriate.
 
 This is based on Lean code written as part of the bachelor's thesis of Alexander Spahl.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -291,7 +295,7 @@ lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F 
     rw [jacobiSum_comm, hψ₀, jacobiSum_one_nontrivial hχ₀, zero_mul, add_zero]
   · classical
     rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
-    have : NeZero n := ⟨by cutsat⟩
+    have : NeZero n := ⟨by lia⟩
     have H := MulChar.exists_apply_sub_one_mul_apply_sub_one hχ hψ hμ
     have Hcs x := (H x).choose_spec
     refine ⟨-q * z₁ + ∑ x ∈ (univ \ {0, 1} : Finset F), (H x).choose, ?_, ?_⟩
@@ -330,9 +334,9 @@ theorem gaussSum_pow_eq_prod_jacobiSum {χ : MulChar F R} {ψ : AddChar F R} (h�
     (hψ : ψ.IsPrimitive) :
     gaussSum χ ψ ^ orderOf χ =
       χ (-1) * Fintype.card F * ∏ i ∈ Ico 1 (orderOf χ - 1), jacobiSum χ (χ ^ i) := by
-  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := orderOf χ - 1) (by cutsat) (by cutsat)
+  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := orderOf χ - 1) (by lia) (by lia)
   apply_fun (gaussSum χ ψ * ·) at this
-  rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by cutsat)] at this
+  rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by lia)] at this
   have hχ₁ : χ ≠ 1 :=
     fun h ↦ ((orderOf_one (G := MulChar F R) ▸ h ▸ hχ).trans_lt Nat.one_lt_two).false
   rw [this, ← mul_assoc, gaussSum_mul_gaussSum_pow_orderOf_sub_one hχ₁ hψ]

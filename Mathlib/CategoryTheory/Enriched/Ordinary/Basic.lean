@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+module
+
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 
 /-!
 # Enriched ordinary categories
@@ -23,6 +25,8 @@ Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.B
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 -/
+
+@[expose] public section
 
 universe v' v v'' u u' u''
 
@@ -175,7 +179,7 @@ instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from `D` to
 `ForgetEnrichment V D`. -/
 @[simps]
-def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivInverse (D : Type u'') [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     D ⥤ ForgetEnrichment V D where
   obj X := .of V X
   map f := ForgetEnrichment.homOf V (eHomEquiv V f)
@@ -184,7 +188,7 @@ def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdin
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from
 `ForgetEnrichment V D` to `D`. -/
 @[simps]
-def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     ForgetEnrichment V D ⥤ D where
   obj X := ForgetEnrichment.to V X
   map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
@@ -195,7 +199,7 @@ def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdin
 
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 @[simps]
-def ForgetEnrichment.equiv {D : Type u'} [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equiv {D : Type u''} [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     ForgetEnrichment V D ≌ D where
   functor := equivFunctor V D
   inverse := equivInverse V D
@@ -226,13 +230,18 @@ open EnrichedCategory
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
-noncomputable def TransportEnrichment.enrichedOrdinaryCategory
-    (h : ∀ v : V, Function.Bijective fun (f : 𝟙_ V ⟶ v) => Functor.LaxMonoidal.ε F ≫ F.map f) :
+def TransportEnrichment.enrichedOrdinaryCategory
+  (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
+  (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
-  homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
+  homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
+  homEquiv_id {X} := by simpa using h _ (eId V _)
   homEquiv_comp f g := by
-    simp [← tensorHom_comp_tensorHom, eHomEquiv_comp, eComp_eq,
-      tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+    dsimp [instEnrichedCategoryTransportEnrichment]
+    rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,
+      whiskerRight_id_assoc, unitors_inv_equal, Iso.inv_hom_id_assoc,
+      Functor.LaxMonoidal.μ_natural_assoc, Functor.LaxMonoidal.right_unitality_inv_assoc,
+      eHomEquiv_comp, ← F.map_comp, ← F.map_comp, unitors_inv_equal]
 
 section Equiv
 
@@ -307,5 +316,29 @@ def TransportEnrichment.forgetEnrichmentEquiv : TransportEnrichment F (ForgetEnr
 end Equiv
 
 end TransportEnrichment
+
+section full_subcategory
+
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+  {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
+
+/-- A full subcategory of an enriched ordinary category is an enriched ordinary category. -/
+instance (P : ObjectProperty C) :
+    EnrichedOrdinaryCategory V (ObjectProperty.FullSubcategory P) where
+  Hom X Y := X.obj ⟶[V] Y.obj
+  id X := eId V X.obj
+  comp X Y Z := eComp V X.obj Y.obj Z.obj
+  homEquiv {X} {Y} := P.fullyFaithfulι.homEquiv.trans (eHomEquiv V)
+  homEquiv_id {X} := by
+    change _ = eId V X.obj
+    rw [← eHomEquiv_id]
+    rfl
+  homEquiv_comp f g := by
+    simp only [ObjectProperty.ι_obj, Equiv.trans_apply]
+    change (eHomEquiv V) (P.ι.map (f ≫ g)) = _
+    rw [Functor.map_comp, eHomEquiv_comp]
+    rfl
+
+end full_subcategory
 
 end CategoryTheory

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.EqToHom
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.EqToHom
 
 /-!
 # Functors from the category of the ordered set `ℕ`
@@ -21,6 +23,8 @@ The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOp
 `NatTrans.ofOpSequence`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -44,11 +48,11 @@ the form `X n ⟶ X (n + 1)` when `i ≤ j`. -/
 def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ j → (X i ⟶ X j)
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
-  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by omega)
+  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by lia)
   | _, _, _ + 1, 0 => nofun
-  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
+  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by lia)
 
-lemma map_id (i : ℕ) : map f i i (by cutsat) = 𝟙 _ := by
+lemma map_id (i : ℕ) : map f i i (by lia) = 𝟙 _ := by
   revert X f
   induction i with
   | zero => intros; rfl
@@ -56,7 +60,7 @@ lemma map_id (i : ℕ) : map f i i (by cutsat) = 𝟙 _ := by
       intro X f
       apply hi
 
-lemma map_le_succ (i : ℕ) : map f i (i + 1) (by cutsat) = f i := by
+lemma map_le_succ (i : ℕ) : map f i (i + 1) (by lia) = f i := by
   revert X f
   induction i with
   | zero => intros; rfl
@@ -74,24 +78,24 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           rw [map_id, id_comp]
       | succ j hj =>
           obtain (_ | _ | k) := k
-          · cutsat
-          · obtain rfl : j = 0 := by cutsat
+          · lia
+          · obtain rfl : j = 0 := by lia
             rw [map_id, comp_id]
           · simp only [map, Nat.reduceAdd]
-            rw [hj (fun n ↦ f (n + 1)) (k + 1) (by cutsat) (by cutsat)]
+            rw [hj (fun n ↦ f (n + 1)) (k + 1) (by lia) (by lia)]
             obtain _ | j := j
             all_goals simp [map]
   | succ i hi =>
       rcases j, k with ⟨(_ | j), (_ | k)⟩
-      · cutsat
-      · cutsat
-      · cutsat
-      · exact hi _ j k (by cutsat) (by cutsat)
+      · lia
+      · lia
+      · lia
+      · exact hi _ j k (by lia) (by lia)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
-example : map f 5 5 (by cutsat) = 𝟙 _ := rfl
-example : map f 0 3 (by cutsat) = f 0 ≫ f 1 ≫ f 2 := rfl
-example : map f 3 7 (by cutsat) = f 3 ≫ f 4 ≫ f 5 ≫ f 6 := rfl
+example : map f 5 5 (by lia) = 𝟙 _ := rfl
+example : map f 0 3 (by lia) = f 0 ≫ f 1 ≫ f 2 := rfl
+example : map f 3 7 (by lia) = f 3 ≫ f 4 ≫ f 5 ≫ f 6 := rfl
 
 end OfSequence
 
@@ -126,16 +130,16 @@ def ofSequence : F ⟶ G where
   naturality := by
     intro i j φ
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
-    obtain rfl := Subsingleton.elim φ (homOfLE (by omega))
+    obtain rfl := Subsingleton.elim φ (homOfLE (by lia))
     revert i j
     induction k with
     | zero =>
         intro i j hk
-        obtain rfl : j = i := by omega
+        obtain rfl : j = i := by lia
         simp
     | succ k hk =>
         intro i j hk'
-        obtain rfl : j = i + k + 1 := by omega
+        obtain rfl : j = i + k + 1 := by lia
         simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
 
@@ -151,9 +155,9 @@ morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
 def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
 
 -- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
-example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by cutsat)).op = 𝟙 _ := rfl
-example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by cutsat)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
-example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by cutsat)).op =
+example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by lia)).op = 𝟙 _ := rfl
+example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by lia)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
+example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by lia)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
 @[simp]

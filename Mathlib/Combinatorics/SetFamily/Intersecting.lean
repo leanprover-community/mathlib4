@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Intersecting families
@@ -23,6 +25,8 @@ This file defines intersecting families and proves their basic properties.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -186,9 +190,8 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   revert hs
   refine s.strongDownwardInductionOn ?_ this
   rintro s ih _hcard hs
-  by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
+  by_cases! h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
-  push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.mul_comm]

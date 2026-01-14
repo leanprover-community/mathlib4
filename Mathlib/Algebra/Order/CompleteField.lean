@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -41,6 +43,8 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 reals, conditionally complete, ordered field, uniqueness
 -/
 
+@[expose] public section
+
 variable {F α β γ : Type*}
 
 noncomputable section
@@ -58,14 +62,12 @@ class ConditionallyCompleteLinearOrderedField (α : Type*) extends
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
-  archimedean_iff_nat_lt.2
-    (by
-      by_contra! h
-      obtain ⟨x, h⟩ := h
-      have := csSup_le (range_nonempty Nat.cast)
-        (forall_mem_range.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
-      linarith)
+  archimedean_iff_nat_lt.2 <| by
+    by_contra! ⟨x, h⟩
+    have := csSup_le (range_nonempty Nat.cast)
+      (forall_mem_range.2 fun m =>
+        le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+    linarith
 
 namespace LinearOrderedField
 
@@ -259,8 +261,8 @@ def inducedOrderRingHom : α →+*o β :=
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
-          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [mul_zero, AddMonoidHom.map_zero]
+          · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [mul_zero, map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound

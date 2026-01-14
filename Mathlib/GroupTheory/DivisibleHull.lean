@@ -3,11 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Order.Module.Archimedean
-import Mathlib.Algebra.Order.Monoid.PNat
-import Mathlib.Data.Sign.Defs
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Order.Module.Archimedean
+public import Mathlib.Algebra.Order.Monoid.PNat
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Divisible Hull of an abelian group
@@ -35,6 +37,8 @@ it.
   `ArchimedeanClass (DivisibleHull M)`.
 
 -/
+
+@[expose] public section
 
 variable {M : Type*} [AddCommMonoid M]
 
@@ -249,6 +253,7 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     ring_nf
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
+
 instance : LE (DivisibleHull M) where
   le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
 
@@ -296,7 +301,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [mk_add_mk]
     rw [mk_lt_mk] at ⊢ h
     simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
-    have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
+    have := add_lt_add_right (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert this using 3 <;> ring)
 

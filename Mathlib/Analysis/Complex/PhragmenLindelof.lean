@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 /-!
 # Phragmen-Lindelöf principle
@@ -41,6 +43,8 @@ In the case of the right half-plane, we prove a version of the Phragmen-Lindelö
 useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial vector field on the
 real plane has only finitely many limit cycles).
 -/
+
+@[expose] public section
 
 open Set Function Filter Asymptotics Metric Complex Bornology
 open scoped Topology Filter Real
@@ -516,7 +520,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
     simpa only [Function.comp_def, norm_neg]
-      using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
+      using hO.comp_tendsto (Filter.tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonpos.2 hx)
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]
@@ -580,7 +584,7 @@ theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
     simpa only [Function.comp_def, norm_neg]
-      using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
+      using hO.comp_tendsto (Filter.tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonneg.2 hx)
   · rw [comp_apply, ← neg_mul, ← ofReal_neg]
@@ -664,9 +668,8 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) := by
       refine hd.continuousOn.comp continuous_ofReal.continuousOn fun x hx => ?_
       rwa [closure_setOf_lt_re]
-    by_cases h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
+    by_cases! h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
     · refine ⟨0, le_rfl, fun y hy => ?_⟩; rw [h₀ y hy, h₀ 0 le_rfl]
-    push_neg at h₀
     rcases h₀ with ⟨x₀, hx₀, hne⟩
     have hlt : ‖(0 : E)‖ < ‖f x₀‖ := by rwa [norm_zero, norm_pos_iff]
     suffices ∀ᶠ x : ℝ in cocompact ℝ ⊓ 𝓟 (Ici 0), ‖f x‖ ≤ ‖f x₀‖ by

@@ -3,11 +3,13 @@ Copyright (c) 2025 Christian Merten, Yi Song, Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.TensorProduct.Quotient
+module
+
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -35,6 +37,8 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
+
+@[expose] public section
 
 universe u v
 

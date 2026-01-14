@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.MvPolynomial.Tower
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -24,6 +26,8 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 

@@ -3,9 +3,10 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -20,6 +21,8 @@ as `R`-modules.
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`
 
 -/
+
+@[expose] public section
 
 open TensorProduct Module Module.DirectLimit
 

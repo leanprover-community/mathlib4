@@ -3,11 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Integral.Bochner.L1
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.Real
+module
+
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
+public import Mathlib.MeasureTheory.Integral.Bochner.L1
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
+public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.Real
 
 /-!
 # Bochner integral
@@ -130,6 +132,8 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter ENNReal EMetric Set TopologicalSpace Topology
@@ -148,7 +152,7 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NormedDivisionRing 𝕜]
+variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
@@ -181,6 +185,10 @@ open ContinuousLinearMap MeasureTheory.SimpleFunc
 
 variable [NormedSpace ℝ E]
 variable {f : α → E} {m : MeasurableSpace α} {μ : Measure α}
+
+section Basic
+
+variable [hE : CompleteSpace E]
 
 theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) := by
   simp [integral, hE, hf]
@@ -569,15 +577,19 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
   · simp
   · exact hf.neg.real_toNNReal
 
+end Basic
+
 section Order
 
 variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
-    0 ≤ ∫ x, f x ∂μ :=
-  integral_eq_setToFun f ▸ setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
-    (fun s _ _ => weightedSMul_nonneg s) hf
+    0 ≤ ∫ x, f x ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact integral_eq_setToFun f ▸ setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
+      (fun s _ _ => weightedSMul_nonneg s) hf
+  · simp [integral, hE]
 
 lemma integral_nonneg {f : α → E} (hf : 0 ≤ f) :
     0 ≤ ∫ x, f x ∂μ :=
@@ -615,6 +627,8 @@ lemma integral_mono_of_nonneg {f g : α → E} (hf : 0 ≤ᵐ[μ] f) (hgi : Inte
 @[gcongr]
 lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
     (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
+  by_cases hE : CompleteSpace E
+  swap; · simp [integral, hE]
   borelize E
   obtain ⟨g, hg, hg_nonneg, hfg⟩ := hfi.1.exists_stronglyMeasurable_range_subset
     isClosed_Ici.measurableSet (Set.nonempty_Ici (a := 0)) hf
@@ -675,6 +689,8 @@ lemma integral_concaveOn_of_integrand_ae {β : Type*} [AddCommMonoid β]
     integral_convexOn_of_integrand_ae hs hf_conc (hf_int · · |>.neg)
 
 end Order
+
+variable [hE : CompleteSpace E]
 
 theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x => (f x : ℝ)) μ) :
     ∫⁻ a, f a ∂μ = ENNReal.ofReal (∫ a, f a ∂μ) := by
@@ -1416,7 +1432,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
   rw [integral_add hfint.real_toNNReal]
   · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.coe_toReal,
       toReal_ofNat] at hfint' ⊢
-    refine (add_le_add_left hfint' _).trans ?_
+    grw [hfint']
     rwa [← two_mul, mul_assoc, mul_le_mul_iff_right₀ (two_pos : (0 : ℝ) < 2)]
   · exact hfint.neg.sup (integrable_zero _ _ μ)
 
@@ -1440,7 +1456,7 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for integration and
 requires more assumptions. -/
 @[positivity MeasureTheory.integral _ _]
-def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+meta def evalIntegral : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque

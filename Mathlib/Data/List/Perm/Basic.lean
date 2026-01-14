@@ -3,11 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Logic.Relation
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.InsertIdx
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Logic.Relation
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.InsertIdx
 
 /-!
 # List Permutations
@@ -19,8 +20,10 @@ This file develops theory about the `List.Perm` relation.
 The notation `~` is used for permutation equivalence.
 -/
 
+@[expose] public section
+
 -- Make sure we don't import algebra
-assert_not_exists Monoid
+assert_not_exists Monoid Preorder
 
 open Nat
 
@@ -44,7 +47,7 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
 
 theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
     l.set n a ~ a :: l.eraseIdx n := by
-  rw [← insertIdx_eraseIdx_self h.ne]
+  rw [← insertIdx_eraseIdx_self (Nat.ne_of_lt h)]
   apply perm_insertIdx
   rw [length_eraseIdx_of_lt h]
   exact Nat.le_sub_one_of_lt h
@@ -63,7 +66,7 @@ alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
 theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
     l₁.insertIdx n a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
-  · rw [perm_comm, this (le_of_not_ge hle), perm_comm]
+  · rw [perm_comm, this (Nat.le_of_not_ge hle), perm_comm]
   cases Nat.lt_or_ge (length l₁) n with
   | inl hn₁ =>
     rw [insertIdx_of_length_lt hn₁]
@@ -73,10 +76,10 @@ theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
       apply iff_of_false
       · intro h
         rw [h.length_eq] at hn₁
-        exact (hn₁.trans_le hn₂).not_ge (length_le_length_insertIdx ..)
-      · exact fun h ↦ (hn₁.trans_le hn₂).not_ge h.length_eq.ge
+        grind
+      · grind [Perm.length_eq]
   | inr hn₁ =>
-    exact perm_insertIdx_iff_of_le hn₁ (le_trans hn₁ hle) _
+    exact perm_insertIdx_iff_of_le hn₁ (Nat.le_trans hn₁ hle) _
 
 @[gcongr]
 protected theorem Perm.insertIdx {l₁ l₂ : List α} (h : l₁ ~ l₂) (n : ℕ) (a : α) :
@@ -173,7 +176,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} [lcomm : Left
   intro b
   induction p using Perm.recOnSwap' generalizing b with
   | nil => rfl
-  | cons _ _ r  => simp [r b]
+  | cons _ _ r => simp [r b]
   | swap' _ _ _ r => simp only [foldr_cons]; rw [lcomm.left_comm, r b]
   | trans _ _ r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 

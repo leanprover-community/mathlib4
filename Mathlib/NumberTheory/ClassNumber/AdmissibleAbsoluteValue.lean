@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values
@@ -26,6 +28,8 @@ of the ring of integers of a global field is finite.
 * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
+
+@[expose] public section
 
 local infixl:50 " ≺ " => EuclideanDomain.r
 

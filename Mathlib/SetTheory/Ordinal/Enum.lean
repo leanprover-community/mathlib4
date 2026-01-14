@@ -3,7 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -17,6 +19,8 @@ We define this correspondence as `enumOrd`, and use it to then define an order i
 
 This can be thought of as an ordinal analog of `Nat.nth`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -139,15 +143,12 @@ theorem enumOrd_univ : enumOrd Set.univ = id := by
   rw [← range_id]
   exact enumOrd_range strictMono_id
 
-@[simp]
-theorem enumOrd_zero : enumOrd s 0 = sInf s := by
-  rw [enumOrd]
-  simp [Ordinal.not_lt_zero]
+@[simp] lemma enumOrd_zero : enumOrd s 0 = sInf s := by rw [enumOrd]; simp
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
   StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
-    ⟨a, Subtype.eq ha⟩
+    ⟨a, Subtype.ext ha⟩
 
 end Ordinal

@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.LinearAlgebra.StdBasis
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.LinearAlgebra.StdBasis
 
 /-!
 # Standard basis on matrices
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.StdBasis
 
 * `Basis.matrix`: extend a basis on `M` to the standard basis on `Matrix n m M`
 -/
+
+@[expose] public section
 
 open Module
 

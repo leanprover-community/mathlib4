@@ -3,14 +3,15 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
-We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`
+We work with `MvPowerSeries σ R`, for `Semiring R`, and `w : σ → ℕ`.
 
 ## Weighted Order
 
@@ -29,9 +30,9 @@ then there exists a nonzero coefficient of weight the weighted order.
 most the weight of that exponent.
 
 - `MvPowerSeries.coeff_eq_zero_of_lt_weightedOrder`: all coefficients of weights strictly less
-than the weighted order vanish
+than the weighted order vanish.
 
-- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only `f = 0`.
+- `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only if `f = 0`.
 
 - `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
 weighted order is at least `n`.
@@ -114,6 +115,8 @@ TODO: Define a coercion to MvPolynomial.
 
 -/
 
+@[expose] public section
+
 namespace MvPowerSeries
 
 noncomputable section
@@ -128,9 +131,7 @@ variable (w : σ → ℕ) {f g : MvPowerSeries σ R}
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ weight w d = n) := by
-  refine not_iff_not.mp ?_
-  simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact MvPowerSeries.ext_iff
+  simpa using ne_zero_iff_exists_coeff_ne_zero f
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
@@ -216,7 +217,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
-  · rw [h, weightedOrder_eq_top_iff, LinearMap.map_zero]
+  · rw [h, weightedOrder_eq_top_iff, map_zero]
   · rw [weightedOrder_eq_nat]
     constructor
     · use d
@@ -282,24 +283,26 @@ theorem le_weightedOrder_mul :
   intro d hd
   rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
-  by_cases hi : weight w i < f.weightedOrder w
+  by_cases! hi : weight w i < f.weightedOrder w
   · rw [coeff_eq_zero_of_lt_weightedOrder w hi, zero_mul]
-  · by_cases hj : weight w j < g.weightedOrder w
+  · by_cases! hj : weight w j < g.weightedOrder w
     · rw [coeff_eq_zero_of_lt_weightedOrder w hj, mul_zero]
-    · rw [not_lt] at hi hj
-      simp only [Finset.mem_antidiagonal] at hij
+    · simp only [Finset.mem_antidiagonal] at hij
       exfalso
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
+
+theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
+  induction n with
+  | zero => simp
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons a s ha ih =>
-    rw [Finset.sum_cons ha, Finset.prod_cons ha]
-    exact le_trans (add_le_add_left ih _) (le_weightedOrder_mul _)
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 
@@ -443,9 +446,23 @@ theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
 
 alias order_mul_ge := le_order_mul
 
+theorem le_order_pow (n : ℕ) : n • f.order ≤ (f ^ n).order :=
+  le_weightedOrder_pow _ n
+
 theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
+
+theorem order_ne_zero_iff_constCoeff_eq_zero :
+    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+  constructor
+  · intro h
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| MvPowerSeries.le_order fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [(degree_eq_zero_iff d).mp hd, h]
 
 section Ring
 

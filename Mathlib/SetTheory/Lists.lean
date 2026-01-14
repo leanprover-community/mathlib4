@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Sigma.Basic
 
 /-!
 # A computable model of ZFA without infinity
@@ -38,6 +42,8 @@ This calls for a two-step definition of ZFA lists:
 * `Finsets α`: ZFA sets. Defined as `Lists` quotiented by `Lists.Equiv`, the extensional
   equivalence.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -93,7 +99,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
   suffices
     ∀ (b) (h : true = b) (l : Lists' α b),
-      let l' : Lists' α true := by rw [h]; exact l
+      let l' : Lists' α true := h ▸ l
       ofList (toList l') = l'
     from this _ rfl
   fun b h l => by

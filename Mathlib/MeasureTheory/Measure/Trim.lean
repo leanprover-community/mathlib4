@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Restriction of a measure to a sub-σ-algebra
@@ -14,6 +16,8 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -140,5 +144,12 @@ lemma Measure.AbsolutelyContinuous.trim {ν : Measure α} (hμν : μ ≪ ν) (h
   refine Measure.AbsolutelyContinuous.mk (fun s hs hsν ↦ ?_)
   rw [trim_measurableSet_eq hm hs] at hsν ⊢
   exact hμν hsν
+
+theorem _root_.ae_eq_trim_of_measurable {α β} {m m0 : MeasurableSpace α} {μ : Measure α}
+    [MeasurableSpace β] [MeasurableEq β]
+    (hm : m ≤ m0) {f g : α → β} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
+    f =ᵐ[μ.trim hm] g := by
+  rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
+  measurability
 
 end MeasureTheory

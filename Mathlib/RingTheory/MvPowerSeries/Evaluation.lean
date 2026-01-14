@@ -3,15 +3,16 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.TopologicallyNilpotent
-import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.MvPowerSeries.Trunc
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.TopologicallyNilpotent
+public import Mathlib.Topology.Algebra.LinearTopology
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series
 
@@ -40,6 +41,8 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 * `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -341,7 +344,7 @@ theorem comp_aeval (ha : HasEval a)
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
-    ε.comp (aeval ha) = aeval (ha.map hε)  := by
+    ε.comp (aeval ha) = aeval (ha.map hε) := by
   apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
   rw [← RingHom.coe_coe,

@@ -3,14 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.Algebra.StarSubalgebra
-import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Lattice
-import Mathlib.Topology.ContinuousMap.Weierstrass
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.Algebra.StarSubalgebra
+public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.Lattice
+public import Mathlib.Topology.ContinuousMap.Weierstrass
 
 /-!
 # The Stone-Weierstrass theorem
@@ -45,6 +47,8 @@ Extend to cover the case of subalgebras of the continuous functions vanishing at
 on non-compact spaces.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Unitization
 
@@ -376,7 +380,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   have hFA : F ∈ A := by
     refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
-    simp only [smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
+    simp only [smul_apply, one_apply, smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
