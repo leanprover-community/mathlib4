@@ -1654,6 +1654,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
+  decl: tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems
@@ -2001,6 +2002,8 @@ Q2226624:
 
 Q2226625:
   title: Commandino's theorem
+  decl: Affine.Simplex.point_vsub_centroid_eq_smul_vsub
+  authors: Chu Zheng
 
 Q2226640:
   title: Cramér’s decomposition theorem
@@ -2082,6 +2085,9 @@ Q2266397:
 
 Q2267175:
   title: Tangent-secant theorem
+  decl: EuclideanGeometry.Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant
+  authors: Li Jiale
+  date: 2025
 
 Q2269888:
   title: Cohn's irreducibility criterion
@@ -3602,6 +3608,11 @@ Q7245073:
 
 Q7249519:
   title: Prokhorov's theorem
+  decls:
+    - isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
+    - isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le
+    - isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le
+    - isCompact_closure_of_isTightMeasureSet
 
 Q7255475:
   title: Pseudorandom generator theorem
@@ -4057,6 +4068,7 @@ Q17098075:
 
 Q17098298:
   title: Jacobson density theorem
+  decl: jacobson_density
 
 Q17098379:
   title: Kaplansky's theorem on quadratic forms

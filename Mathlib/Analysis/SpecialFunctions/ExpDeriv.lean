@@ -21,7 +21,7 @@ In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 exp, derivative
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 

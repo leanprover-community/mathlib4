@@ -888,10 +888,10 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
     _ = (Kernel.id ×ₖ (condDistrib f k μ).prodMkRight _) ∘ₘ μ.map (fun a ↦ (k a, g a)) := by
       rw [compProd_map_condDistrib hg.aemeasurable]
   rw [← h_eq]
-  have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a , g a, f a))).map e := by
+  have h1 : μ.map (fun x ↦ ((k x, g x), f x)) = (μ.map (fun a ↦ (k a, g a, f a))).map e := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)]
     rfl
-  have h1_symm : μ.map (fun a ↦ (k a , g a, f a)) =
+  have h1_symm : μ.map (fun a ↦ (k a, g a, f a)) =
       (μ.map (fun x ↦ ((k x, g x), f x))).map e.symm := by
     rw [h1, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,
       Measure.map_id]

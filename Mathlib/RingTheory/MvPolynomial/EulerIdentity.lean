@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 * `IsWeightedHomogeneous.sum_weight_X_mul_pderiv`: the weighted version of Euler's identity.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

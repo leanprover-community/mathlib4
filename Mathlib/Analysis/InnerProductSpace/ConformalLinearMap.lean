@@ -14,7 +14,7 @@ public import Mathlib.Analysis.InnerProductSpace.LinearMap
 In an inner product space, a map is conformal iff it preserves inner products up to a scalar factor.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E F : Type*}

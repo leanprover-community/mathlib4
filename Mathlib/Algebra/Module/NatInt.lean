@@ -49,6 +49,9 @@ instance AddCommMonoid.toNatModule : Module ℕ M where
   zero_smul := zero_nsmul
   add_smul r s x := add_nsmul x r s
 
+theorem DistribSMul.toAddMonoidHom_eq_nsmulAddMonoidHom :
+    toAddMonoidHom M = nsmulAddMonoidHom := rfl
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -62,6 +65,9 @@ instance AddCommGroup.toIntModule : Module ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
   add_smul r s x := add_zsmul x r s
+
+theorem DistribSMul.toAddMonoidHom_eq_zsmulAddGroupHom :
+    toAddMonoidHom M = zsmulAddGroupHom := rfl
 
 end AddCommGroup
 
