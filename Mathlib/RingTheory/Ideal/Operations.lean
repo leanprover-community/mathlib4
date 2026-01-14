@@ -1015,6 +1015,10 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
+theorem eq_inf_of_isPrime_inf {s : Finset ι} {f : ι → Ideal R} (hp : IsPrime (s.inf f)) :
+    ∃ i ∈ s, f i = s.inf f :=
+  (hp.inf_le'.mp le_rfl).imp (fun _ ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
+
 theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
     (hx : x ∈ I) : y ∉ I := fun hy ↦
   have ⟨a, b, e⟩ := h
