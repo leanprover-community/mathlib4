@@ -801,9 +801,9 @@ end AddCommMonoid
 
 section NoZeroDivisors
 
-variable (R M)
 variable [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
 
+variable (R) in
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
 
@@ -841,7 +841,7 @@ noncomputable
 def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
-      (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
+      (ker_eq_bot.1 <| ker_toSpanSingleton R h))
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (range_toSpanSingleton x))
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
