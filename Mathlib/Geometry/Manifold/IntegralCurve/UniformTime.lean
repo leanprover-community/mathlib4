@@ -25,7 +25,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 integral curve, vector field, global existence
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

@@ -134,8 +134,8 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
 
 instance : Preadditive (TopModuleCat R) where
-  add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
-  comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+  add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
+  comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
 
 section
 
@@ -179,7 +179,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
   { obj M := .of M
-    map φ   := TopCat.ofHom ⟨φ, φ.1.2⟩ }
+    map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
@@ -324,7 +324,7 @@ instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     PreservesLimit F (forget₂ _ TopCat) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
-      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1:)
+      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
 instance {J : Type*} [Category* J]

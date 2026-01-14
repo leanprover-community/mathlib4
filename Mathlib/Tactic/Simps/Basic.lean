@@ -7,9 +7,11 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Mathlib.Tactic.Simps.NotationClass
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.Basic
+public import Mathlib.Util.AddRelatedDecl
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Simps attribute
@@ -151,12 +153,9 @@ attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Int
 attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
 
-/-- An `(attr := ...)` option for `simps`. -/
-syntax simpsOptAttrOption := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
-
 /-- Arguments to `@[simps]` attribute.
 Currently, a potential `(attr := ...)` argument has to come before other configuration options. -/
-syntax simpsArgsRest := simpsOptAttrOption Tactic.optConfig (ppSpace ident)*
+syntax simpsArgsRest := Mathlib.Tactic.optAttrArg Tactic.optConfig (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -840,7 +839,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
-library_note2 «custom simps projection» /--
+library_note «custom simps projection» /--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
 `MyStructure.Simps.myProjection` that is definitionally equal to
@@ -883,7 +882,7 @@ structure Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
   /-- Other attributes to apply to generated lemmas. -/
-  attrs : Array Syntax := #[]
+  attrs : Array Attribute := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
@@ -1009,8 +1008,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
-    let attrs ← elabAttrs cfg.attrs
-    Elab.Term.applyAttributes declName attrs
+    Elab.Term.applyAttributes declName cfg.attrs
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1223,10 +1221,8 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
-  | `(attr| simps $[!%$bang]? $[?%$trc]? $attrs:simpsOptAttrOption $c:optConfig $[$ids]*) => do
-    let extraAttrs := match attrs with
-      | `(Attr.simpsOptAttrOption| (attr := $[$stxs],*)) => stxs
-      | _ => #[]
+  | `(attr| simps $[!%$bang]? $[?%$trc]? $optAttr $c:optConfig $[$ids]*) => do
+    let extraAttrs ← Mathlib.Tactic.elabOptAttrArg optAttr |>.run' |>.run'
     let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
     let cfg := { cfg with attrs := cfg.attrs ++ extraAttrs }

@@ -110,7 +110,7 @@ lemma Cotangent.exact :
     simp only [AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
       Submodule.mem_map, Submodule.mem_comap, Submodule.restrictScalars_mem, Submodule.coe_subtype,
       Subtype.exists, exists_and_right, exists_eq_right,
-      toExtension_Ring, toExtension_commRing, toExtension_algebra₂]
+      toExtension_Ring, toExtension_commRing]
     refine ⟨?_, Submodule.subset_span ⟨Extension.Cotangent.mk ⟨w, hw⟩, ?_⟩⟩
     · simp only [ker_eq_ker_aeval_val, RingHom.mem_ker, Hom.algebraMap_toAlgHom]
       rw [aeval_val_eq_zero hw, map_zero]

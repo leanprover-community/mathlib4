@@ -422,7 +422,7 @@ private def widePullbackShapeEquivObj {J : Type*} :
   invFun
   | .of x => .some <| Discrete.as x
   | .star => .none
-  left_inv  x := by cases x <;> simp
+  left_inv x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in
@@ -438,8 +438,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     cast (by
         have eq : x = y := PLift.down (ULift.down (down f))
         rw [eq]
-        rfl
-    ) (Hom.id (some y))
+        rfl) (Hom.id (some y))
   | none, some y => by cases f
   | some x, none => .term x
   | none, none => .id none
@@ -815,7 +814,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         match x, y, f with
         | op (of x), op (of y), f => (WithTerminal.down f).op
         | op star, op (of _), _ => WithInitial.starInitial.to _
-        | op star, op star, _  => 𝟙 _
+        | op star, op star, _ => 𝟙 _
       map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
       map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
         match x, y, z, f, g with
@@ -832,7 +831,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         match x, y, f with
         | .of (op x), .of (op y), f => WithInitial.down f
         | .star, .of (op _), _ => op <| WithTerminal.starTerminal.from _
-        | .star, .star, _  => 𝟙 _
+        | .star, .star, _ => 𝟙 _
       map_id := fun x ↦ by cases x <;> rfl
       map_comp := fun {x y z} f g ↦
         match x, y, z, f, g with
@@ -851,7 +850,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
               Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
             rfl
         | op star, op (of _), _ => rfl
-        | op star, op star, _  => rfl)
+        | op star, op star, _ => rfl)
   counitIso :=
     NatIso.ofComponents
       (fun x ↦ match x with
@@ -878,7 +877,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
         match x, y, f with
         | op (of x), op (of y), f => (WithTerminal.down f).op
         | op (of _), op star, _ => WithTerminal.starTerminal.from _
-        | op star, op star, _  => 𝟙 _
+        | op star, op star, _ => 𝟙 _
       map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
       map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
         match x, y, z, f, g with
@@ -895,7 +894,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
         match x, y, f with
         | .of (op x), .of (op y), f => WithInitial.down f
         | .of (op _), .star, _ => op <| WithInitial.starInitial.to _
-        | .star, .star, _  => 𝟙 _
+        | .star, .star, _ => 𝟙 _
       map_id := fun x ↦ by cases x <;> rfl
       map_comp := fun {x y z} f g ↦
         match x, y, z, f, g with
