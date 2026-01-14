@@ -415,6 +415,12 @@ theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
         hg.2 ▸ (hl _ hg.1).sign_eq⟩
   rw [← List.prod_replicate, ← h₁, List.prod_hom _ (@sign α _ _)]
 
+lemma sign_eq_one_or_eq_neg_one [DecidableEq β] [Fintype β] (f : Perm β) :
+    sign f = 1 ∨ sign f = -1 := by
+  induction f using swap_induction_on with
+  | one => simp
+  | swap_mul σa' a₁ a₂ ha ih => cases ih <;> simp [*]
+
 @[simp]
 theorem sign_abs (f : Perm α) :
     |(Equiv.Perm.sign f : ℤ)| = 1 := by
