@@ -165,20 +165,14 @@ variable [RCLike 𝕜]
 
 open FourierTransform Convolution
 
-variable [CompleteSpace F₃]
-
 /-- The bilinear convolution of Schwartz functions.
 
 The continuity in the left argument is provided in `SchwartzMap.convolution_continuous_left`. -/
 noncomputable
 def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →ₗ[𝕜] 𝓢(E, F₂) →L[𝕜] 𝓢(E, F₃) where
-  toFun f := (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L pairing B (𝓕 f) ∘L
-    fourierTransformCLM 𝕜
-  map_add' := by simp [FourierTransform.fourier_add (R := 𝕜)]
+  toFun f := fourierInvCLM 𝕜 𝓢(E, F₃) ∘L pairing B (𝓕 f) ∘L fourierCLM 𝕜 𝓢(E, F₂)
+  map_add' := by simp [FourierTransform.fourier_add]
   map_smul' := by simp [FourierTransform.fourier_smul]
-
-theorem fourier_convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
-    𝓕 (convolution B f g) = pairing B (𝓕 f) (𝓕 g) := by simp [convolution]
 
 @[simp]
 theorem convolution_flip (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
@@ -191,6 +185,11 @@ coincide. -/
 @[fun_prop]
 theorem convolution_continuous_left (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : 𝓢(E, F₂)) :
     Continuous (convolution B · g) := (convolution B.flip g).continuous
+
+variable [CompleteSpace F₃]
+
+theorem fourier_convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
+    𝓕 (convolution B f g) = pairing B (𝓕 f) (𝓕 g) := by simp [convolution]
 
 variable [CompleteSpace F₁] [CompleteSpace F₂]
 
