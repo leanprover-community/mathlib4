@@ -117,7 +117,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
+variable {J : Type u} [Category* J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.obj i))
 
 /-- The eventual range of the functor `F : J ⥤ Type v` at index `j : J` is the intersection
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/

@@ -6,9 +6,10 @@ Authors: Patrick Massot
 module
 
 public meta import Lean.Meta.ExprLens
-public meta import ProofWidgets.Component.MakeEditLink
-public meta import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
 public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 
@@ -41,7 +42,8 @@ def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
   | [s] => s
-  | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
+  | head::tail => head ++ "?_" ++
+      "?_".toSlice.intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
 

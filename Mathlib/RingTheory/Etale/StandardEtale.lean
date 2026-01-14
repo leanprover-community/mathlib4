@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 
 # Standard etale maps
 
-# Main definitions
+## Main definitions
 - `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
 - `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
@@ -202,7 +202,7 @@ def equivAwayAdjoinRoot :
   · rw [aeval_algebraMap_apply, AdjoinRoot.aeval_eq]
     exact IsLocalization.Away.algebraMap_isUnit ..
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le,  IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
   · ext; simp [Algebra.algHom]
   · ext; simp
 
@@ -219,7 +219,7 @@ def equivAwayQuotient :
       aeval_X_left_apply]
     exact (IsLocalization.Away.algebraMap_isUnit ..).map _
   · change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
-    simpa [Submonoid.powers_le,  IsUnit.mem_submonoid_iff] using P.hasMap_X.2
+    simpa [Submonoid.powers_le, IsUnit.mem_submonoid_iff] using P.hasMap_X.2
   · change Ideal.span _ ≤ RingHom.ker _
     simpa [Ideal.span_le] using P.hasMap_X.1
   · apply Ideal.Quotient.algHom_ext

@@ -91,8 +91,6 @@ alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
 
 theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
 
-@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
-
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
 @[simp, mfld_simps, grind ←]
@@ -100,7 +98,7 @@ theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
-instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
+instance : Compl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
 @[simp, grind =]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
@@ -170,6 +168,14 @@ def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_
 
 @[simp] lemma rangeFactorization_bijective :
     (Set.rangeFactorization f).Bijective ↔ f.Injective := by simp [Function.Bijective]
+
+@[simp] lemma rangeFactorization_eq_rangeFactorization_iff {ι : Sort*} {α : Type*} {f : ι → α}
+    (a b : ι) : Set.rangeFactorization f a = Set.rangeFactorization f b ↔ f a = f b := by
+  simp [Set.rangeFactorization]
+
+lemma rangeFactorization_eq_iff {ι : Sort*} {α : Type*} {f : ι → α} (a : ι) (b : Set.range f) :
+    Set.rangeFactorization f a = b ↔ f a = b := by
+  rw [Set.rangeFactorization, ← b.coe_eta b.2, Subtype.ext_iff]
 
 end Range
 

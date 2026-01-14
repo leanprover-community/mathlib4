@@ -5,9 +5,9 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public meta import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Util.AddRelatedDecl
-public meta import Batteries.Tactic.Lint
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -52,7 +52,7 @@ attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
-theorem hom_elementwise {C : Type*} [Category C] [HasForget C]
+theorem hom_elementwise {C : Type*} [Category* C] [HasForget C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
 
 end theorems
@@ -182,14 +182,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type*} [Category C]
+lemma some_lemma {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type*} [Category C]
+lemma some_lemma_apply {C : Type*} [Category* C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [HasForget C] (x : X) : g (f x) = h x := ...
 ```
@@ -205,18 +205,17 @@ The `[HasForget C]` argument will be omitted if it is possible to synthesize an 
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
 -/
-syntax (name := elementwise) "elementwise"
-  " nosimp"? (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := elementwise) "elementwise" " nosimp"? optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| elementwise $[nosimp%$nosimp?]? $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "" "_apply" ref stx? fun value levels => do
+    addRelatedDecl src "" "_apply" ref optAttr fun value levels => do
       let (newValue, level?) ← elementwiseExpr src value (simpSides := nosimp?.isNone)
       let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w

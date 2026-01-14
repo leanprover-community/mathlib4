@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -620,6 +621,7 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.privateInPublic true in
 private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -672,6 +674,7 @@ private lemma uniformInducing_toMatrixAux :
   AntilipschitzWith.isUniformInducing antilipschitzWith_toMatrixAux
     lipschitzWith_toMatrixAux.uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -683,6 +686,7 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
+set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -719,6 +723,8 @@ instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore

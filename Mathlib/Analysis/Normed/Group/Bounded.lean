@@ -19,7 +19,7 @@ This file rephrases metric boundedness in terms of norms.
 normed group
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Bornology
 open scoped Pointwise Topology

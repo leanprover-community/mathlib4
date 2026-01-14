@@ -35,7 +35,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- A morphism `φ : Y ⟶ X _⦋n+1⦌` satisfies `HigherFacesVanish q φ`
@@ -67,7 +67,7 @@ theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
 theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hnaq : n = a + q) :
     φ ≫ (Hσ q).f (n + 1) = -φ ≫ X.δ ⟨a + 1, by lia⟩ ≫ X.σ ⟨a, by lia⟩ := by
-  have hnaq_shift (d : ℕ) : n + d = a + d + q := by omega
+  have hnaq_shift (d : ℕ) : n + d = a + d + q := by lia
   rw [Hσ, Homotopy.nullHomotopicMap'_f (c_mk (n + 2) (n + 1) rfl) (c_mk (n + 1) n rfl),
     hσ'_eq hnaq (c_mk (n + 1) n rfl), hσ'_eq (hnaq_shift 1) (c_mk (n + 2) (n + 1) rfl)]
   simp only [AlternatingFaceMapComplex.obj_d_eq, eqToHom_refl, comp_id, comp_sum, sum_comp,
@@ -126,7 +126,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
         Fin.castSucc (⟨a, by lia⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
-      omega
+      lia
     generalize_proofs
     rw [← Fin.succ_mk (n + 1) a ‹_›, ← Fin.castSucc_mk (n + 2) i ‹_›,
       δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
@@ -144,7 +144,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
       AlternatingFaceMapComplex.obj_d_eq]
     -- All terms of the sum but the first two are zeros
     rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
-    · simp only [Fin.val_zero, Fin.val_succ, Fin.coe_castSucc, zero_add, pow_zero, one_smul,
+    · simp only [Fin.val_zero, Fin.val_succ, Fin.val_castSucc, zero_add, pow_zero, one_smul,
         pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 2), δ_comp_σ_self, δ_comp_σ_succ,
         add_neg_cancel]
     · intro j
@@ -177,7 +177,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by lia)
-  have ham : a ≤ m := by omega
+  have ham : a ≤ m := by lia
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_def]

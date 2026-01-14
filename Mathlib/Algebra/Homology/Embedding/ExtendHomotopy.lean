@@ -27,7 +27,7 @@ namespace Homotopy
 
 open HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroObject C] [Preadditive C]
+variable {C : Type*} [Category* C] [HasZeroObject C] [Preadditive C]
   {K L : HomologicalComplex C c} {f g : K ⟶ L}
 
 namespace extend
@@ -176,7 +176,7 @@ end Homotopy
 namespace ComplexShape.Embedding
 
 variable (e : Embedding c c') [e.IsRelIff]
-  (C : Type*) [Category C] [HasZeroObject C] [Preadditive C]
+  (C : Type*) [Category* C] [HasZeroObject C] [Preadditive C]
 
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is
 the functor `HomotopyCategory C c ⥤ HomotopyCategory C c'` which
