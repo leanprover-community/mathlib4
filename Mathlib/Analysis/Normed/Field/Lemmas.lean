@@ -91,7 +91,7 @@ lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobound
 end Filter
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
+instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α := by
   refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
@@ -102,11 +102,14 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
         rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
+      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
   simp
+
+@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
+  NormedDivisionRing.to_continuousInv₀
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/

@@ -65,8 +65,7 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f) by
-    rw [← bind_pure_comp, bind_assoc]
-    simp [pure_bind, Function.comp_def]
+    simp [Function.comp_def]
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]

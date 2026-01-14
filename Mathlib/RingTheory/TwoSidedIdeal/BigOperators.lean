@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Congruence.BigOperators
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
-# Interactions between `∑, ∏` and two sided ideals
+# Interactions between `∑, ∏` and two-sided ideals
 
 -/
 

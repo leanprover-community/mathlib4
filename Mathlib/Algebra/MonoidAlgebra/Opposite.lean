@@ -46,13 +46,14 @@ protected noncomputable def opRingEquiv [Mul G] :
         (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
       ext
       -- Porting note: `reducible` cannot be `local` so proof gets long.
-      simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, opAddEquiv_apply,
-        Function.comp_apply, singleAddHom_apply, AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul,
-        AddMonoidHom.coe_mulLeft, AddMonoidHom.compl₂_apply]
+      simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply,
+        AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft,
+        AddMonoidHom.compl₂_apply, AddEquiv.toAddMonoidHom_eq_coe,
+        AddEquiv.coe_addMonoidHom_trans]
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_symm_apply]
-      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
+      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
+        MulOpposite.opAddEquiv_symm_apply]
+      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
       simp }
 
 theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
@@ -95,9 +96,8 @@ protected noncomputable def opRingEquiv [AddCommMagma G] :
       rw [single_mul_single, mapRange_single, mapRange_single, mapRange_single, single_mul_single]
       simp only [opAddEquiv_apply, op_mul, add_comm] }
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
--- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
--- defeq abuse going on.
+-- Not `@[simp]` because the LHS simplifies further.
+-- TODO: the LHS simplifies to `Finsupp.single`, which implies there's some defeq abuse going on.
 theorem opRingEquiv_single [AddCommMagma G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 

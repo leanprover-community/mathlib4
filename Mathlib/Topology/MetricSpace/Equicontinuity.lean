@@ -85,9 +85,7 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
-  -- Porting note: Lean 3 didn't need `Filter.mem_map.mp` here
-  filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
-    fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
+  filter_upwards [b_lim (Iio_mem_nhds ε0), H] using fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 
 /-- For a family of functions between (pseudo) metric spaces, a convenient way to prove
 uniform equicontinuity is to show that all of the functions share a common *global* continuity

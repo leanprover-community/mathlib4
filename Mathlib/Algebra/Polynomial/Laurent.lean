@@ -166,7 +166,7 @@ theorem T_sub (m n : ℤ) : (T (m - n) : R[T;T⁻¹]) = T m * T (-n) := by rw [�
 
 @[simp]
 theorem T_pow (m : ℤ) (n : ℕ) : (T m ^ n : R[T;T⁻¹]) = T (n * m) := by
-  rw [T, T, single_pow n, one_pow, nsmul_eq_mul]
+  rw [T, T, single_pow, one_pow, nsmul_eq_mul]
 
 /-- The `simp` version of `mul_assoc`, in the presence of `T`'s. -/
 @[simp]
@@ -240,7 +240,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
-  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.toFun n) * T n) := by
+  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
     apply Finset.induction
     · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
@@ -250,12 +250,11 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   convert B p.support
   ext a
   simp_rw [← single_eq_C_mul_T]
-  -- Porting note: did not make progress in `simp_rw`
-  rw [Finset.sum_apply']
-  simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
-  split_ifs with h
-  · rfl
-  · exact Finsupp.notMem_support_iff.mp h
+  rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
+  · intro b _ hb
+    rw [single_eq_of_ne' hb]
+  · intro ha
+    rw [single_eq_same, notMem_support_iff.mp ha]
 
 /-- To prove something about Laurent polynomials, it suffices to show that
 * the condition is closed under taking sums, and
@@ -297,17 +296,18 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
-  rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
+  simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_coe,
+    AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
+  -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
-  rw [toFinsuppIso_apply]
   split_ifs with n0
   · rw [toFinsupp_monomial]
     lift n to ℕ using n0
     apply comapDomain_single
   · rw [toFinsupp_inj]
     ext a
-    have : n ≠ a := by omega
+    have : a ≠ n := by omega
     simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
       single_eq_of_ne this]
 
@@ -354,12 +354,12 @@ theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f'
 
 /-- This is a version of `exists_T_pow` stated as an induction principle. -/
 @[elab_as_elim]
-theorem induction_on_mul_T {Q : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
-    (Qf : ∀ {f : R[X]} {n : ℕ}, Q (toLaurent f * T (-n))) : Q f := by
+theorem induction_on_mul_T {motive : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
+    (mul_T : ∀ (f : R[X]) (n : ℕ), motive (toLaurent f * T (-n))) : motive f := by
   rcases f.exists_T_pow with ⟨n, f', hf⟩
   rw [← mul_one f, ← T_zero, ← Nat.cast_zero, ← Nat.sub_self n, Nat.cast_sub rfl.le, T_sub,
     ← mul_assoc, ← hf]
-  exact Qf
+  exact mul_T ..
 
 /-- Suppose that `Q` is a statement about Laurent polynomials such that
 * `Q` is true on *ordinary* polynomials;
@@ -367,7 +367,7 @@ theorem induction_on_mul_T {Q : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
 it follow that `Q` is true on all Laurent polynomials. -/
 theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Prop}
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
-  induction' f using LaurentPolynomial.induction_on_mul_T with f n
+  induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
   induction n with
   | zero => simpa only [Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
   | succ n hn => convert QT _ _; simpa using hn
@@ -497,12 +497,12 @@ theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toL
   rfl
 
 instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
-  { map_units' := fun ⟨t, ht⟩ => by
+  { map_units := fun ⟨t, ht⟩ => by
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
       exact isUnit_T ↑n
-    surj' := fun f => by
-      induction' f using LaurentPolynomial.induction_on_mul_T with f n
+    surj f := by
+      induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,

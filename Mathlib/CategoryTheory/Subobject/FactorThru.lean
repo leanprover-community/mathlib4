@@ -84,7 +84,7 @@ theorem factors_comp_arrow {X Y : C} {P : Subobject Y} (f : X ⟶ P) : P.Factors
 
 theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g : Y ⟶ Z}
     (h : P.Factors g) : P.Factors (f ≫ g) := by
-  induction' P using Quotient.ind' with P
+  induction P using Quotient.ind'
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 

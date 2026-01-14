@@ -26,7 +26,7 @@ variable {α : Type u} {β : Type v} [TopologicalSpace α] [CompactSpace α] [Ps
 theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : IsClosed A)
     (H : Equicontinuous ((↑) : A → α → β)) : IsCompact A := by
   simp_rw [Equicontinuous, Metric.equicontinuousAt_iff_pair] at H
-  refine isCompact_of_totallyBounded_isClosed ?_ closed
+  refine TotallyBounded.isCompact_of_isClosed ?_ closed
   refine totallyBounded_of_finite_discretization fun ε ε0 => ?_
   rcases exists_between ε0 with ⟨ε₁, ε₁0, εε₁⟩
   let ε₂ := ε₁ / 2 / 2

@@ -63,9 +63,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
     have h₂ :=
       calc
         ‖p fun _ => k • y‖ ≤ c * ‖k • y‖ ^ (n.succ + 1) := by
-          -- Porting note: now Lean wants `_root_.`
           simpa only [norm_pow, _root_.norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
-          --simpa only [norm_pow, norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
         _ = ‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
           simp only [norm_smul, mul_pow]
           ring
@@ -190,7 +188,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
-    convert hasSum_zero (α := F) using 2
+    convert hasSum_zero (α := F) using 1
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B

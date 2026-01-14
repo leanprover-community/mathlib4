@@ -22,14 +22,14 @@ open CategoryTheory
 @[pp_with_univ]
 structure FiniteGrp where
   /-- A group that is finite -/
-  toGrp : Grp
+  toGrp : GrpCat
   [isFinite : Finite toGrp]
 
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
   /-- An additive group that is finite -/
-  toAddGrp : AddGrp
+  toAddGrp : AddGrpCat
   [isFinite : Finite toAddGrp]
 
 attribute [to_additive] FiniteGrp
@@ -56,14 +56,14 @@ instance (G : FiniteGrp) : Finite G := G.isFinite
 @[to_additive /-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
 finite additive group. -/]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
-  toGrp := Grp.of G
+  toGrp := GrpCat.of G
   isFinite := ‹_›
 
-/-- The morphism in `FiniteGrp`, induced from a morphism of the category `Grp`. -/
+/-- The morphism in `FiniteGrp`, induced from a morphism of the category `GrpCat`. -/
 @[to_additive
-/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp` -/]
+/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrpCat` -/]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
-  Grp.ofHom f
+  GrpCat.ofHom f
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :

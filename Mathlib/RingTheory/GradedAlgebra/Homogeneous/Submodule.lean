@@ -26,7 +26,7 @@ the module. However, most interesting properties of homogeneous submodules do re
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
-synthesation order.
+synthesization order.
 
 ## Tags
 

@@ -9,9 +9,9 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
-# Finite dimensional vector spaces
+# Finite-dimensional vector spaces
 
-This file contains some further development of finite dimensional vector spaces, their dimensions,
+This file contains some further development of finite-dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
@@ -139,7 +139,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   have h₁ := f.finrank_range_add_finrank_ker
   have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
-  omega
+  cutsat
 
 end DivisionRing
 

@@ -175,7 +175,6 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · exact H
     · exact Nat.succ_le_succ_iff.mp a.2
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
@@ -196,9 +195,8 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     rw [hi'] at this
     have h := (dvd_prime_pow (show Prime (c 1) from ?_) i).1 this
     · rcases h with ⟨u, hu, hu'⟩
-      refine Finset.mem_image.mpr ⟨u, Finset.mem_univ _, ?_⟩
-      rw [associated_iff_eq] at hu'
-      rw [Fin.val_cast_of_lt (Nat.lt_succ_of_le hu), hu']
+      refine Finset.mem_image.mpr ⟨⟨u, Nat.lt_succ_of_le hu⟩, Finset.mem_univ _, ?_⟩
+      rwa [associated_iff_eq, eq_comm] at hu'
     · rw [← irreducible_iff_prime]
       exact second_of_chain_is_irreducible hn h₁ (@h₂) hq
 
@@ -279,9 +277,9 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
-  · obtain ⟨x, hx⟩ :=
-      d.surjective ⟨b, le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop⟩
-    rw [← Subtype.coe_mk b _, ← hx] at hb
+  · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
+    obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
+    rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb
     letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
     letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by

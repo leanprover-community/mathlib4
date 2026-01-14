@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
 /-! # Type synonym for types with a `CStarModule` structure
 
@@ -170,11 +170,7 @@ def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ(A, E)
     invFun := (equiv _ _).symm }
 
 lemma map_top_submodule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
-    (⊤ : Submodule R E).map (linearEquiv R A E).symm = ⊤ := by
-  ext x
-  refine ⟨fun _  => trivial, fun _ => ?_⟩
-  rw [Submodule.mem_map]
-  exact ⟨linearEquiv R A E x, by simp⟩
+    (⊤ : Submodule R E).map (linearEquiv R A E).symm = ⊤ := Submodule.map_eq_top_iff.mpr rfl
 
 instance instModuleFinite [Semiring R] [AddCommGroup E] [Module R E] [Module.Finite R E] :
     Module.Finite R C⋆ᵐᵒᵈ(A, E) := ‹Module.Finite R E›

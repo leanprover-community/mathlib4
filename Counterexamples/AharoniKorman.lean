@@ -153,7 +153,7 @@ instance : PartialOrder Hollom where
   le_trans := «forall₃».2 HollomOrder.trans
   le_antisymm := «forall₂».2 fun
   | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega -- see lean4#6416 about the `(_, _, _)`
+  | _, (_, _, _), .twice _, .within _ _ => by omega -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
   | _, _, .twice _, .next_min _ => by omega
   | _, _, .twice _, .next_add _ => by omega
   | _, _, .within _ _, .twice _ => by omega
@@ -272,7 +272,7 @@ lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
   induction x with | h a b c =>
   induction y with | h d e f =>
   obtain rfl : c = f := by simpa using hxy
-  rw [Set.mapsTo']
+  rw [Set.mapsTo_iff_image_subset]
   intro n
   simp only [Set.mem_image, Set.mem_Icc, «exists», line_toHollom, Prod.exists, exists_and_right,
     forall_exists_index, and_imp]
@@ -291,7 +291,7 @@ private lemma no_strictly_decreasing {α : Type*} [Preorder α] [WellFoundedLT �
     (hf : ∀ n ≥ n₀, f (n + 1) < f n) : False := by
   let g (n : ℕ) : α := f (n₀ + n)
   have : (· > ·) ↪r (· < ·) := RelEmbedding.natGT g (fun n ↦ hf _ (by simp))
-  exact this.not_wellFounded_of_decreasing_seq wellFounded_lt
+  exact this.not_wellFounded wellFounded_lt
 
 private lemma no_strictAnti {α : Type*} [Preorder α] [WellFoundedLT α] (f : ℕ → α)
     (hf : StrictAnti f) : False :=
@@ -724,7 +724,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     omega
   -- Thus the image of `B` under `f` is all of `I`, except for exactly one element.
   have card_eq : (I \ B.image f).card = 1 := by
-    rw [card_sdiff, cI, card_image_of_injOn f_inj, cB]
+    rw [card_sdiff_of_subset, cI, card_image_of_injOn f_inj, cB]
     · omega
     · rw [← coe_subset, coe_image]
       exact f_maps.image_subset

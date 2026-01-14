@@ -73,7 +73,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
+      let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
@@ -85,9 +85,9 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
+      let pα' ← synthInstanceQ q(AddLeftMono $α)
       assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $pα' $f $s fun i _ ↦ $pr i)
+      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $f $s $pα' fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}

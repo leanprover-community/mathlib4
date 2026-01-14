@@ -3,7 +3,7 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Order.PartialSups
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Disjointed
 

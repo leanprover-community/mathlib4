@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Tactic.Polyrith
 
 /-!
 # IMO 1962 Q4

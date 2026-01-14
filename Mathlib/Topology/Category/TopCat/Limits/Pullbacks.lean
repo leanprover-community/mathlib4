@@ -109,10 +109,7 @@ theorem pullbackIsoProdSubtype_hom_apply {f : X ⟶ Z} {g : Y ⟶ Z}
     (x : ↑(pullback f g)) :
     (pullbackIsoProdSubtype f g).hom x =
       ⟨⟨pullback.fst f g x, pullback.snd f g x⟩, by
-        simpa using CategoryTheory.congr_fun pullback.condition x⟩ := by
-  apply Subtype.ext; apply Prod.ext
-  exacts [ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_fst f g) x,
-    ConcreteCategory.congr_hom (pullbackIsoProdSubtype_hom_snd f g) x]
+        simpa using CategoryTheory.congr_fun pullback.condition x⟩ := rfl
 
 theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).str =
@@ -122,7 +119,7 @@ theorem pullback_topology {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
   refine homeo.isInducing.eq_induced.trans ?_
   change induced homeo (induced _ ( (induced Prod.fst X.str) ⊓ (induced Prod.snd Y.str))) = _
   simp only [induced_compose, induced_inf]
-  congr
+  rfl
 
 theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Set.range (prod.lift (pullback.fst f g) (pullback.snd f g)) =

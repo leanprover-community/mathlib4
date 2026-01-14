@@ -276,7 +276,7 @@ theorem coe_basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι
 theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : v i ≠ 0 := by
   refine ne_of_apply_ne norm ?_
   rw [hv.1 i, norm_zero]
-  norm_num
+  simp
 
 end OrthonormalSets_Seminormed
 

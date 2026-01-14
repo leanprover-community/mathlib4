@@ -13,6 +13,14 @@ import Mathlib.Tactic.Algebraize
 In this file we define standard smooth ring homomorphisms and show their
 meta properties.
 
+## Main definitions
+
+- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+  smooth as `R`-algebra.
+- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
+  `R`-algebra.
+
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"

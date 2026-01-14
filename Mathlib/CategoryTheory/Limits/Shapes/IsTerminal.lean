@@ -111,7 +111,9 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
-  right_inv := by grind
+  right_inv := by
+    #adaptation_note /-- 19-07-2025 grind stopped working -/
+    intro x; dsimp
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -394,10 +396,7 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
     IsColimit (coconeOfDiagramTerminal tX F) where
   desc s := s.ι.app X
-  uniq s m w := by
-    conv_rhs => dsimp -- Porting note: why do I need this much firepower?
-    rw [← w X, coconeOfDiagramTerminal_ι_app, tX.hom_ext (tX.from X) (𝟙 _)]
-    simp
+  uniq s m w := by simp [← w X]
 
 lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
     (X : J) (hX : IsTerminal X) :

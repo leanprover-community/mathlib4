@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # Preservation of well order continuous functors
 
-Given a well ordered type `J` and a functor `G : C ⥤ D`,
+Given a well-ordered type `J` and a functor `G : C ⥤ D`,
 we define a type class `PreservesWellOrderContinuousOfShape J G`
 saying that `G` preserves colimits of shape `Set.Iio j`
 for any limit element `j : J`. It follows that if

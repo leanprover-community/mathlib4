@@ -217,7 +217,6 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
 
 theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
-  ext y
   simp [hf.dist_eq]
 
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
@@ -617,6 +616,12 @@ def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃
 theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
+
+/-- The natural `IsometryEquiv` `(Fin m → ℝ) × (Fin l → ℝ) ≃ᵢ (Fin n → ℝ)` when `m + l = n`. -/
+@[simps!]
+def _root_.Fin.appendIsometryOfEq {n m l : ℕ} (hmln : m + l = n) :
+    (Fin m → α) × (Fin l → α) ≃ᵢ (Fin n → α) :=
+  (Fin.appendIsometry m l).trans (IsometryEquiv.piCongrLeft (Y := fun _ ↦ α) (finCongr hmln))
 
 variable (ι α)
 

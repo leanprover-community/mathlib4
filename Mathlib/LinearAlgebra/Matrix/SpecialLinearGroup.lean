@@ -25,7 +25,7 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 ## Notation
 
 For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group on the fintype
-`n = Fin m`, in the locale `MatrixGroups`.
+`n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate

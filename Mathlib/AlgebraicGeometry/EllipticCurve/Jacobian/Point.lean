@@ -580,17 +580,29 @@ noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Poi
     · rw [fromAffine_some, toAffineLift_some]
   map_add' := toAffineLift_add
 
-noncomputable instance [DecidableEq F] : AddCommGroup W.Point where
+noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
+  zero_add _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
+  add_zero _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+  neg_add_cancel P := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+  add_comm _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]
+  add_assoc _ _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_assoc]
 
 end Point
 

@@ -85,7 +85,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     intro ij hij
     simp_rw [S, φ, Finset.compl_filter, Finset.mem_filter_univ, Fin.val_succ,
       Fin.coe_castLT] at hij ⊢
-    omega
+    cutsat
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk_inj]

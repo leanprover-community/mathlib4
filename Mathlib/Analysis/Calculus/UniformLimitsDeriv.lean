@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Order.Filter.Curry
 
 /-!

@@ -318,8 +318,6 @@ variable (R S A) [NoZeroDivisors S]
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
 
-@[deprecated (since := "2025-02-08")] alias IsAlgebraic.trans' := IsAlgebraic.trans
-
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _⟩

@@ -109,8 +109,9 @@ class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
 
+-- These instances should have a lower priority, or typeclass search times out.
 attribute [instance 100] Abelian.has_finite_products
-attribute [instance 90] Abelian.has_kernels Abelian.has_cokernels
+attribute [instance 100] Abelian.has_kernels Abelian.has_cokernels
 
 end CategoryTheory
 
@@ -253,9 +254,9 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
--- Porting note: the below porting note is from mathlib3!
 -- Porting note: this should be an instance,
 -- but triggers https://github.com/leanprover/lean4/issues/2055
+-- (this is still the case despite that issue being closed now).
 -- We set it as a local instance instead.
 -- instance (priority := 100)
 -- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
@@ -311,10 +312,8 @@ section
 theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
-  apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
-  simp_rw [← h]
-  exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
+theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f :=
+  epi_of_cokernel_zero h
 
 end
 

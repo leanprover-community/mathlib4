@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 
-/-! # Some lemmas about the deglex monomial order on multivariate polynomials -/
+/-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
 
 namespace MvPolynomial
 

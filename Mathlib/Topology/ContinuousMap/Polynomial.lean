@@ -184,7 +184,6 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
       · ext
         simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
-        simp only [mul_add]
         field_simp
         ring
       · change _ + _ ∈ I

@@ -61,10 +61,7 @@ theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
-    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := by
-  have := piIsoPi_inv_π α i
-  rw [Iso.inv_comp_eq] at this
-  exact ConcreteCategory.congr_hom this x
+    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i :) x := rfl
 
 /-- The inclusion to the coproduct as a bundled continuous map. -/
 abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σ i, α i) := by
@@ -164,10 +161,7 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 -- Note that `(x : X ⨯ Y)` would mean `(x : ↑X × ↑Y)` below:
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑(X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
-    (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
-  ext
-  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
-  · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
+    (Limits.prod.snd : X ⨯ Y ⟶ _) x) := rfl
 
 @[reassoc (attr := simp), elementwise]
 theorem prodIsoProd_inv_fst (X Y : TopCat.{u}) :
@@ -307,7 +301,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        rw [dif_pos]
+        rw [dif_pos ⟨x, rfl⟩]
         conv_lhs => rw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x

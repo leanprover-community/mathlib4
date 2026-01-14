@@ -93,12 +93,12 @@ open DerivedCategory
 lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (e : Ext X I (n + 1)) : e = 0 := by
   let K := (CochainComplex.singleFunctor C 0).obj X
-  have := K.isStrictlyGE_of_ge (-n) 0 (by omega)
+  have := K.isStrictlyGE_of_ge (-n) 0 (by cutsat)
   letI := HasDerivedCategory.standard C
   apply homEquiv.injective
   simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
-    (by omega)).hom.app _), zero_hom, Limits.zero_comp]
-  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by omega)
+    (by cutsat)).hom.app _), zero_hom, Limits.zero_comp]
+  exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by cutsat)
 
 end Abelian.Ext
 

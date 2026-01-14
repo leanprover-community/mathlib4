@@ -46,9 +46,13 @@ lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣
   let f : Perm (Fin n) → Ico (0 : ℤ) n ! := fun a ↦ ⟨_, mir a⟩
   have bijf : Function.Bijective f := by
     rw [Fintype.bijective_iff_injective_and_card, Fintype.card_coe, Int.card_Ico, sub_zero,
-      Int.toNat_natCast, Fintype.card_perm, Fintype.card_fin]; refine ⟨?_, rfl⟩
-    contrapose! hS; unfold Function.Injective at hS; push_neg at hS; obtain ⟨a, b, he, hn⟩ := hS
-    use a, b, hn; simp only [f, Subtype.mk.injEq] at he; exact Int.ModEq.dvd he.symm
+      Int.toNat_natCast, Fintype.card_perm, Fintype.card_fin, Function.Injective]
+    refine ⟨?_, rfl⟩
+    contrapose! hS
+    obtain ⟨a, b, he, hn⟩ := hS
+    use a, b, hn
+    simp only [f, Subtype.mk.injEq] at he
+    exact Int.ModEq.dvd he.symm
   let e : Perm (Fin n) ≃ Ico (0 : ℤ) n ! := ofBijective _ bijf
   change _ % _ = _ % _; rw [sum_int_mod]; congr 1
   change _ = ∑ i, (e i).1; rw [Equiv.sum_comp]

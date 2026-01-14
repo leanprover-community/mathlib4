@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Int.Sum
 import Mathlib.Algebra.Order.Ring.Int
 
@@ -192,7 +193,7 @@ theorem result (ha : Condition a) :
         rw [mem_range] at mx; omega
       rw [sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
     _ ≤ _ := by
-      rw [← mul_le_mul_left zero_lt_four, ← mul_assoc,
+      rw [← mul_le_mul_iff_right₀ zero_lt_four, ← mul_assoc,
         show 4 * 1007 ^ 2 = ((b - 1 : ℤ) + (2015 - b)) ^ 2 by simp]
       exact four_mul_le_sq_add ..
 

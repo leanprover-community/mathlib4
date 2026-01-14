@@ -15,7 +15,7 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/

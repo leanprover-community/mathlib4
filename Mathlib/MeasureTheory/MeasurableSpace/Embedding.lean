@@ -683,7 +683,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
     (hf₂ : MeasurableSet (range f)) (hg : Measurable g) (H : LeftInverse g (rangeFactorization f)) :
     MeasurableEmbedding f := by
   set e : α ≃ᵐ range f :=
-    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective surjective_onto_range⟩,
+    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective rangeFactorization_surjective⟩,
       hf₁.subtype_mk, hg⟩
   exact (MeasurableEmbedding.subtype_coe hf₂).comp e.measurableEmbedding
 
@@ -746,7 +746,6 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
 @[simp]
 lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
     hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
-  suffices f x = (hf.equivRange x).1 by simp [this]
   simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
     MeasurableEmbedding.equivImage]
 
@@ -785,3 +784,42 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
 @[simp] theorem MeasurableSpace.comap_not (p : α → Prop) :
     MeasurableSpace.comap (fun a ↦ ¬p a) inferInstance = MeasurableSpace.comap p inferInstance :=
   MeasurableSpace.comap_compl (fun _ _ ↦ measurableSet_top) _
+
+section curry
+
+/-! ### Currying as a measurable equivalence -/
+
+namespace MeasurableEquiv
+
+/-- The currying operation `Function.curry` as a measurable equivalence.
+See `MeasurableEquiv.curry` for the non-dependent version. -/
+@[simps!]
+def piCurry {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
+    [∀ i j, MeasurableSpace (X i j)] :
+    ((p : (i : ι) × κ i) → X p.1 p.2) ≃ᵐ ((i : ι) → (j : κ i) → X i j) where
+  toEquiv := Equiv.piCurry X
+  measurable_toFun := by fun_prop
+  measurable_invFun := by fun_prop
+
+lemma coe_piCurry {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
+    [∀ i j, MeasurableSpace (X i j)] : ⇑(piCurry X) = Sigma.curry := rfl
+
+lemma coe_piCurry_symm {ι : Type*} {κ : ι → Type*} (X : (i : ι) → κ i → Type*)
+    [∀ i j, MeasurableSpace (X i j)] : ⇑(piCurry X).symm = Sigma.uncurry := rfl
+
+/-- The currying operation `Sigma.curry` as a measurable equivalence.
+See `MeasurableEquiv.piCurry` for the dependent version. -/
+@[simps!]
+def curry (ι κ X : Type*) [MeasurableSpace X] : (ι × κ → X) ≃ᵐ (ι → κ → X) where
+  toEquiv := Equiv.curry ι κ X
+  measurable_toFun := by fun_prop
+  measurable_invFun := by fun_prop
+
+lemma coe_curry (ι κ X : Type*) [MeasurableSpace X] : ⇑(curry ι κ X) = Function.curry := rfl
+
+lemma coe_curry_symm (ι κ X : Type*) [MeasurableSpace X] :
+    ⇑(curry ι κ X).symm = Function.uncurry := rfl
+
+end MeasurableEquiv
+
+end curry

@@ -76,7 +76,6 @@ variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 
-@[field_simps]
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
   mt eq_zero_or_eq_zero_of_mul_eq_zero <| not_or.mpr ⟨ha, hb⟩
 
@@ -162,7 +161,7 @@ lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
 
 lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
     (h : a ^ m * b = 0) : a ^ n * b = 0 := by
-  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  rw [show n = n - m + m by cutsat, pow_add, mul_assoc, h]
   simp
 
 variable [NoZeroDivisors M₀]
@@ -176,7 +175,6 @@ lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
 
 lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
 
-@[field_simps]
 lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
 
 instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
@@ -287,7 +285,6 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       by_cases h : a = 0
       · simp [h]
       · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
-        ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
@@ -300,9 +297,9 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x hx y z h => by
+    mul_left_cancel_of_ne_zero {x} hx y z h := by
       dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x hx y z h => by
+    mul_right_cancel_of_ne_zero {x} hx y z h := by
       dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z] }
 
 end GroupWithZero

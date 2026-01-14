@@ -162,7 +162,7 @@ theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a 
   haveI : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
 
-/-- The quadratic form (metric) is just euclidean -/
+/-- The quadratic form (metric) is just Euclidean -/
 def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 

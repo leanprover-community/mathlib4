@@ -35,7 +35,7 @@ as is any field.
 
 ## Notation
 
-`≺` denotes the well founded relation on the Euclidean domain, e.g. in the example of the polynomial
+`≺` denotes the well-founded relation on the Euclidean domain, e.g. in the example of the polynomial
 ring over a field, `p ≺ q` for polynomials `p` and `q` if and only if the degree of `p` is less than
 the degree of `q`.
 
@@ -64,7 +64,7 @@ universe u
 /-- A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder,
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
-  This definition is slightly generalised to include a well founded relation
+  This definition is slightly generalised to include a well-founded relation
   `r` with the property that `r (a % b) b`, instead of a valuation. -/
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.

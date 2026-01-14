@@ -33,7 +33,7 @@ def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
     (h : finrank ℝ V + 1 = Fintype.card ι) :
     OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1 := by
   classical
-  have : Nonempty ι := Fintype.card_pos_iff.mp <| by omega
+  have : Nonempty ι := Fintype.card_pos_iff.mp <| by cutsat
   let v : EuclideanSpace ℝ ι := .single (Classical.arbitrary ι) 1
   have hv : ‖v‖ = 1 := by simp [v]
   have hv₀ : v ≠ 0 := fun contra ↦ by simp [contra] at hv

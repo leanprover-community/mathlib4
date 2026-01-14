@@ -15,7 +15,7 @@ the action of `Mᵈᵐᵃ` on `MeasureTheory.Lp E p μ` is continuous in both va
 
 Recall that `Mᵈᵐᵃ` acts on `MeasureTheory.Lp E p μ`
 by `mk c • f = MeasureTheory.Lp.compMeasurePreserving (c • ·) _ f`.
-This action is defined, if `M` acts on `X` by mesaure preserving maps.
+This action is defined, if `M` acts on `X` by measure-preserving maps.
 
 If `M` acts on `X` by continuous maps
 preserving a locally finite measure

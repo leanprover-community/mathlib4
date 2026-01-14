@@ -295,7 +295,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rw [if_pos]
   · gcongr
     exact (hi.2 _).1
-  rfl
+  simp [j]
 
 /-- There is a cube in the valley -/
 theorem nonempty_bcubes : (bcubes cs c).Nonempty :=
@@ -329,7 +329,7 @@ theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   · apply lt_of_lt_of_le _ h.b_add_w_le_one
     · exact i
     · exact 0
-    rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
+    rw [xm, mi_mem_bcubes.1, hi.1, add_lt_add_iff_left]
     exact mi_strict_minimal h2i.symm hi
 
 /-- If `mi` lies on the boundary of the valley in dimension j, then this lemma expresses that all
@@ -355,7 +355,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   have hs : s.Nonempty := by
     rcases (nontrivial_bcubes h v).exists_ne i with ⟨i', hi', h2i'⟩
     exact ⟨i', hi', h2i'⟩
-  rcases Set.exists_min_image s (w ∘ cs) (Set.toFinite _) hs with ⟨i', ⟨hi', h2i'⟩, h3i'⟩
+  rcases Set.exists_min_image s (w <| cs ·) (Set.toFinite _) hs with ⟨i', ⟨hi', h2i'⟩, h3i'⟩
   rw [mem_singleton_iff] at h2i'
   let x := c.b j.succ + c.w - (cs i').w
   have hx : x < (cs i).b j.succ := by
@@ -368,8 +368,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
-  refine le_trans ?_ (t_le_t hi'' j); gcongr; apply h3i' i'' ⟨hi'', _⟩
-  simp [i, h2i'']
+  grw [← t_le_t hi'', h3i' i'' ⟨hi'', h2i''⟩]
 
 variable (h v)
 
@@ -402,7 +401,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
-    by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
+    by_cases hj₂ : j₂ = j'; · simpa [hj₂] using tail_sub h2i' _ hx'.1
     simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩

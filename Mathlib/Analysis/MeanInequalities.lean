@@ -50,7 +50,7 @@ $$
 $$
 The classical version is proven as a special case of this inequality for $w_i=\frac{1}{n}$.
 
-The inequalities are proven only for real valued positive functions on `Finset`s, and namespaced in
+The inequalities are proven only for real-valued positive functions on `Finset`s, and namespaced in
 `Real`. The weighted version follows as a corollary of the weighted AM-GM inequality.
 
 ### Young's inequality
@@ -326,21 +326,6 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
   NNReal.geom_mean_le_arith_mean4_weighted ⟨w₁, hw₁⟩ ⟨w₂, hw₂⟩ ⟨w₃, hw₃⟩ ⟨w₄, hw₄⟩ ⟨p₁, hp₁⟩
       ⟨p₂, hp₂⟩ ⟨p₃, hp₃⟩ ⟨p₄, hp₄⟩ <|
     NNReal.coe_inj.1 <| by assumption
-
-/-- As an example application of AM-GM we prove that the **Motzkin polynomial** is nonnegative.
-This bivariate polynomial cannot be written as a sum of squares. -/
-lemma motzkin_polynomial_nonneg (x y : ℝ) :
-    0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
-  have nn₁ : 0 ≤ x ^ 4 * y ^ 2 := by positivity
-  have nn₂ : 0 ≤ x ^ 2 * y ^ 4 := by positivity
-  have key := geom_mean_le_arith_mean3_weighted (by simp) (by simp) (by simp)
-    nn₁ nn₂ zero_le_one (add_thirds 1)
-  rw [one_rpow, mul_one, ← mul_rpow nn₁ nn₂, ← mul_add, ← mul_add,
-    show x ^ 4 * y ^ 2 * (x ^ 2 * y ^ 4) = (x ^ 2) ^ 3 * (y ^ 2) ^ 3 by ring,
-    mul_rpow (by positivity) (by positivity),
-    ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg x), ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg y),
-    show ((3 : ℕ) * ((1 : ℝ) / 3)) = 1 by simp, rpow_one, rpow_one] at key
-  linarith
 
 end Real
 
@@ -731,7 +716,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (NNReal.Lp_add_le s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩) hp)
   push_cast at this
   refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
-    simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add,
+    simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
       rpow_le_rpow]
 
 variable {f g}
@@ -956,7 +941,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
-to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞` valued nonnegative
+to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞`-valued nonnegative
 functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤

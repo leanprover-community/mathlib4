@@ -143,7 +143,7 @@ end
 
 variable {P}
 
-/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
+/-- If `P` implies `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps map]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
@@ -156,7 +156,7 @@ section
 
 variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
 
-/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
+/-- If `P` implies `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
 def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _

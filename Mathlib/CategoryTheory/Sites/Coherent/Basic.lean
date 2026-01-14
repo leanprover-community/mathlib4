@@ -64,7 +64,7 @@ class Precoherent : Prop where
 The coherent coverage on a precoherent category `C`.
 -/
 def coherentCoverage [Precoherent C] : Coverage C where
-  covering B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
+  coverings B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
   pullback := by
     rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
@@ -77,7 +77,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
 The coherent Grothendieck topology on a precoherent category `C`.
 -/
 def coherentTopology [Precoherent C] : GrothendieckTopology C :=
-  Coverage.toGrothendieck _ <| coherentCoverage C
+  (coherentCoverage C).toGrothendieck
 
 /--
 The condition `Preregular C` is property that effective epis can be "pulled back" along any
@@ -105,7 +105,7 @@ class Preregular : Prop where
 The regular coverage on a regular category `C`.
 -/
 def regularCoverage [Preregular C] : Coverage C where
-  covering B := { S | ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
+  coverings B := { S | ∃ (X : C) (f : X ⟶ B), S = Presieve.ofArrows (fun (_ : Unit) ↦ X)
     (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f }
   pullback := by
     intro X Y f S ⟨Z, π, hπ, h_epi⟩
@@ -124,7 +124,7 @@ def regularCoverage [Preregular C] : Coverage C where
 The regular Grothendieck topology on a preregular category `C`.
 -/
 def regularTopology [Preregular C] : GrothendieckTopology C :=
-  Coverage.toGrothendieck _ <| regularCoverage C
+  (regularCoverage C).toGrothendieck
 
 /--
 The extensive coverage on an extensive category `C`
@@ -132,7 +132,7 @@ The extensive coverage on an extensive category `C`
 TODO: use general colimit API instead of `IsIso (Sigma.desc π)`
 -/
 def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
-  covering B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
+  coverings B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
   pullback := by
     intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
@@ -152,6 +152,6 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
 The extensive Grothendieck topology on a finitary pre-extensive category `C`.
 -/
 def extensiveTopology [FinitaryPreExtensive C] : GrothendieckTopology C :=
-  Coverage.toGrothendieck _ <| extensiveCoverage C
+  (extensiveCoverage C).toGrothendieck
 
 end CategoryTheory

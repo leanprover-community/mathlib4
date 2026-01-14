@@ -315,10 +315,10 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]

@@ -103,8 +103,6 @@ lemma ShortExact.map_of_exact (hS : S.ShortExact)
     [PreservesFiniteColimits F] : (S.map F).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  have := preserves_mono_of_preservesLimit F S.f
-  have := preserves_epi_of_preservesColimit F S.g
   exact hS.map F
 
 end

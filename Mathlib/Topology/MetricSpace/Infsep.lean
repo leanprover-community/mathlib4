@@ -217,7 +217,6 @@ theorem einfsep_eq_top_iff : s.einfsep = ∞ ↔ s.Subsingleton :=
 
 theorem Nontrivial.einfsep_ne_top (hs : s.Nontrivial) : s.einfsep ≠ ∞ := by
   contrapose! hs
-  rw [not_nontrivial_iff]
   exact subsingleton_of_einfsep_eq_top hs
 
 theorem Nontrivial.einfsep_lt_top (hs : s.Nontrivial) : s.einfsep < ∞ := by

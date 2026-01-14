@@ -87,7 +87,7 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
   himp := himp
   le_himp_iff _ _ _ := by simp [eq_le, eq_himp, eq_inf]
 
-/-- A function to create a provable equal copy of a generalised coheyting algebra
+/-- A function to create a provable equal copy of a generalised co-Heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
@@ -121,7 +121,7 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
   compl := compl
   himp_bot := by simp [eq_le, eq_himp, eq_bot, eq_compl]
 
-/-- A function to create a provable equal copy of a coheyting algebra
+/-- A function to create a provable equal copy of a co-Heyting algebra
 with possibly different definitional equalities. -/
 def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
@@ -140,7 +140,7 @@ def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
   hnot := hnot
   top_sdiff := by simp [eq_le, eq_sdiff, eq_top, eq_hnot]
 
-/-- A function to create a provable equal copy of a biheyting algebra
+/-- A function to create a provable equal copy of a bi-Heyting algebra
 with possibly different definitional equalities. -/
 def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)

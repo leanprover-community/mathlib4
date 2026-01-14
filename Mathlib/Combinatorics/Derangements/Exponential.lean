@@ -47,5 +47,4 @@ theorem numDerangements_tendsto_inv_e :
   have h_le : k ≤ n := Finset.mem_range_succ_iff.mp hk
   rw [Nat.ascFactorial_eq_div, add_tsub_cancel_of_le h_le]
   push_cast [Nat.factorial_dvd_factorial h_le]
-  field_simp [Nat.factorial_ne_zero]
-  ring
+  field_simp

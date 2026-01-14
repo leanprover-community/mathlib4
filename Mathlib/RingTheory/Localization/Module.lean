@@ -225,8 +225,8 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
   invFun := LinearMap.restrictScalars R
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  left_inv := by intros _; ext; simp
-  right_inv := by intros _; ext; simp
+  left_inv := by intro _; ext; simp
+  right_inv := by intro _; ext; simp
 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]

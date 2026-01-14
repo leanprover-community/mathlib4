@@ -81,17 +81,38 @@ namespace Hindman
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
 inductive FS {M} [AddSemigroup M] : Stream' M → Set M
-  | head (a : Stream' M) : FS a a.head
-  | tail (a : Stream' M) (m : M) (h : FS a.tail m) : FS a m
-  | cons (a : Stream' M) (m : M) (h : FS a.tail m) : FS a (a.head + m)
+  | head' (a : Stream' M) : FS a a.head
+  | tail' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a m
+  | cons' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a (a.head + m)
 
 /-- `FP a` is the set of finite products in `a`, i.e. `m ∈ FP a` if `m` is the product of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
 @[to_additive FS]
 inductive FP {M} [Semigroup M] : Stream' M → Set M
-  | head (a : Stream' M) : FP a a.head
-  | tail (a : Stream' M) (m : M) (h : FP a.tail m) : FP a m
-  | cons (a : Stream' M) (m : M) (h : FP a.tail m) : FP a (a.head * m)
+  | head' (a : Stream' M) : FP a a.head
+  | tail' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a m
+  | cons' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a (a.head * m)
+
+section Aliases
+
+/-! Since the constructors for `FS` and `FP` cheat using the `Set M = M → Prop` defeq,
+we provide match patterns that preserve the defeq correctly in their type. -/
+
+variable {M} [Semigroup M] (a : Stream' M) (m : M) (h : FP a.tail m)
+/-- Constructor for `FP`. This is the preferred spelling over `FP.head'`. -/
+@[to_additive (attr := match_pattern, nolint defLemma)
+  /-- Constructor for `FS`. This is the preferred spelling over `FS.head'`. -/]
+abbrev FP.head : a.head ∈ FP a := FP.head' a
+/-- Constructor for `FP`. This is the preferred spelling over `FP.tail'`. -/
+@[to_additive (attr := match_pattern, nolint defLemma)
+  /-- Constructor for `FS`. This is the preferred spelling over `FS.tail'`. -/]
+abbrev FP.tail : m ∈ FP a := FP.tail' a m h
+/-- Constructor for `FP`. This is the preferred spelling over `FP.cons'`. -/
+@[to_additive (attr := match_pattern, nolint defLemma)
+  /-- Constructor for `FS`. This is the preferred spelling over `FS.cons'`. -/]
+abbrev FP.cons : a.head * m ∈ FP a := FP.cons' a m h
+
+end Aliases
 
 /-- If `m` and `m'` are finite products in `M`, then so is `m * m'`, provided that `m'` is obtained
 from a subsequence of `M` starting sufficiently late. -/
@@ -100,13 +121,13 @@ is obtained from a subsequence of `M` starting sufficiently late. -/]
 theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     ∃ n, ∀ m' ∈ FP (a.drop n), m * m' ∈ FP a := by
   induction hm with
-  | head a => exact ⟨1, fun m hm => FP.cons a m hm⟩
-  | tail a m _ ih =>
+  | head' a => exact ⟨1, fun m hm => FP.cons a m hm⟩
+  | tail' a m _ ih =>
     obtain ⟨n, hn⟩ := ih
     use n + 1
     intro m' hm'
     exact FP.tail _ _ (hn _ hm')
-  | cons a m _ ih =>
+  | cons' a m _ ih =>
     obtain ⟨n, hn⟩ := ih
     use n + 1
     intro m' hm'
@@ -166,15 +187,15 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
   clear sU s₀
   intro a m h
   induction h with
-  | head b =>
+  | head' b =>
     rintro p rfl
     rw [Stream'.corec_eq, Stream'.head_cons]
     exact Set.inter_subset_left (Set.Nonempty.some_mem _)
-  | tail b n h ih =>
+  | tail' b n h ih =>
     rintro p rfl
     refine Set.inter_subset_left (ih (succ p) ?_)
     rw [Stream'.corec_eq, Stream'.tail_cons]
-  | cons b n h ih =>
+  | cons' b n h ih =>
     rintro p rfl
     have := Set.inter_subset_right (ih (succ p) ?_)
     · simpa only using this
@@ -222,12 +243,10 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   rw [← Stream'.head_drop]
   apply FP.cons
   rcases Nat.exists_eq_add_of_le (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
-  -- Porting note: need to fix breakage of Set notation
-  change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
   rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
   convert this
-  omega
+  cutsat
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :

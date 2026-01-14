@@ -53,7 +53,7 @@ theorem prod_X_add_C_coeff (s : Multiset R) {k : ℕ} (h : k ≤ Multiset.card s
     (s.map fun r => X + C r).prod.coeff k = s.esymm (Multiset.card s - k) := by
   convert Polynomial.ext_iff.mp (prod_X_add_C_eq_sum_esymm s) k using 1
   simp_rw [finset_sum_coeff, coeff_C_mul_X_pow]
-  rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _] <;> grind [Finset.mem_range]
+  rw [Finset.sum_eq_single_of_mem (Multiset.card s - k) _] <;> grind
 
 theorem prod_X_add_C_coeff' {σ} (s : Multiset σ) (r : σ → R) {k : ℕ} (h : k ≤ Multiset.card s) :
     (s.map fun i => X + C (r i)).prod.coeff k = (s.map r).esymm (Multiset.card s - k) := by

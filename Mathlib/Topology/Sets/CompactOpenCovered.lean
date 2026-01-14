@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Data.Finite.Sigma
 import Mathlib.Topology.Spectral.Prespectral
 
 /-!
@@ -71,7 +72,7 @@ lemma iff_isCompactOpenCovered_sigmaMk :
       · simpa [h] using (V _ _).2
       · simp [h]
     · dsimp only
-      exact Set.isCompact_sigma hs fun i ↦ (by aesop)
+      exact Set.isCompact_sigma hs fun i ↦ (by simp_all)
     · aesop
   · obtain ⟨s, t, hs, hc, heq'⟩ := hc.sigma_exists_finite_sigma_eq
     have (i : ι) (hi : i ∈ s) : IsOpen (t i) := by
@@ -93,7 +94,7 @@ lemma of_iUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s
     have : Finite s := hf
     exact isCompact_iUnion (fun _ ↦ hVeq _ _)
   · simp [Set.image_iUnion, ← hs]
-    aesop
+    simp_all
 
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/

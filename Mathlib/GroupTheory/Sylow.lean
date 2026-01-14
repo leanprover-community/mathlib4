@@ -81,9 +81,9 @@ def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
       have : P.FiniteIndex := ⟨fun h ↦ hP2 (h ▸ (dvd_zero p))⟩
       obtain ⟨k, hk⟩ := (hQ.to_quotient (P.normalCore.subgroupOf Q)).exists_card_eq
       have h := hk ▸ Nat.Prime.coprime_pow_of_not_dvd (m := k) Fact.out hP2
-      exact le_antisymm (Subgroup.relindex_eq_one.mp
-        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relindex_dvd_index_of_le hPQ)
-        (Subgroup.relindex_dvd_of_le_left Q P.normalCore_le))) hPQ }
+      exact le_antisymm (Subgroup.relIndex_eq_one.mp
+        (Nat.eq_one_of_dvd_coprimes h (Subgroup.relIndex_dvd_index_of_le hPQ)
+        (Subgroup.relIndex_dvd_of_le_left Q P.normalCore_le))) hPQ }
 
 @[simp] theorem _root_.IsPGroup.toSylow_coe [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : (hP1.toSylow hP2) = P :=
@@ -414,8 +414,8 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hP : P.relindex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
-  rw [← relindex_mul_index le_normalizer, ← card_eq_index_normalizer]
+    (hP : P.relIndex P.normalizer ≠ 0) : ¬ p ∣ P.index := by
+  rw [← relIndex_mul_index le_normalizer, ← card_eq_index_normalizer]
   haveI : (P.subtype le_normalizer).Normal :=
     Subgroup.normal_in_normalizer
   haveI : (P.subtype le_normalizer).FiniteIndex := ⟨hP⟩
@@ -622,7 +622,6 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
-        have _wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _

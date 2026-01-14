@@ -22,7 +22,7 @@ namespace DerivedCategory
 variable (C : Type u) [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 
 /-- The canonical isomorphism
-`DerivedCateogry.singleFunctor C n ⋙ DerivedCateogry.homologyFunctor C n ≅ 𝟭 C` -/
+`DerivedCategory.singleFunctor C n ⋙ DerivedCategory.homologyFunctor C n ≅ 𝟭 C` -/
 noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
   Functor.isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso

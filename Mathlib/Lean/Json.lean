@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 
 import Mathlib.Init
-import Lean.Data.Json.FromToJson
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`
@@ -17,6 +16,9 @@ universe u
 namespace Lean
 
 deriving instance FromJson, ToJson for PUnit
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Lean.instToJsonPUnit_mathlib.toJson
 
 instance {n : Nat} : FromJson (Fin n) where
   fromJson? j := do

@@ -36,7 +36,7 @@ theorem saturated_iff_npow {H : Subgroup G} :
 theorem saturated_iff_zpow {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
-  · intros hH n g hgn
+  · intro hH n g hgn
     cases n with
     | ofNat n =>
       simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢

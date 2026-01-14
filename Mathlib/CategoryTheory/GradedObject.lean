@@ -265,7 +265,8 @@ instance : (total β C).Faithful where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp? at * says simp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app] at *
+    replace w : f i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ =
+      g i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ := by simpa
     exact Mono.right_cancellation _ _ w
 
 end GradedObject

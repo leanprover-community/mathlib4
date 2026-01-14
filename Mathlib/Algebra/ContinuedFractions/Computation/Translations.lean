@@ -237,11 +237,8 @@ fractional parts of the stream of integer and fractional parts.
 theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_ne_zero : ifp_n.fr ≠ 0) :
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
-  have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
-    cases ifp_n
-    simp only [IntFractPair.stream, stream_nth_eq, Option.bind_some, ite_eq_right_iff]
-    intro; contradiction
-  get?_of_eq_some_of_succ_get?_intFractPair_stream this
+  get?_of_eq_some_of_succ_get?_intFractPair_stream <|
+    IntFractPair.stream_succ_of_some stream_nth_eq nth_fr_ne_zero
 
 open Int IntFractPair
 

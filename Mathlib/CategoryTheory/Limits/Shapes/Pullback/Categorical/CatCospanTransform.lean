@@ -237,6 +237,76 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
           IsIso.inv_eq_inv.mpr right_coherence =≫
           ψ.squareRight.iso.hom }
 
+section Iso
+
+variable {ψ ψ' : CatCospanTransform F G F' G'}
+  (f : ψ' ⟶ ψ') [IsIso f] (e : ψ ≅ ψ')
+
+instance isIso_left : IsIso f.left :=
+  ⟨(inv f).left, by simp [← CatCospanTransform.category_comp_left]⟩
+
+instance isIso_right : IsIso f.right :=
+  ⟨(inv f).right, by simp [← CatCospanTransform.category_comp_right]⟩
+
+instance isIso_base : IsIso f.base :=
+  ⟨(inv f).base, by simp [← CatCospanTransform.category_comp_base]⟩
+
+@[simp]
+lemma inv_left : inv f.left = (inv f).left := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_left]
+
+@[simp]
+lemma inv_right : inv f.right = (inv f).right := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_right]
+
+@[simp]
+lemma inv_base : inv f.base = (inv f).base := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_base]
+
+/-- Extract an isomorphism between left components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def leftIso : ψ.left ≅ ψ'.left where
+  hom := e.hom.left
+  inv := e.inv.left
+  hom_inv_id := by simp [← category_comp_left]
+  inv_hom_id := by simp [← category_comp_left]
+
+/-- Extract an isomorphism between right components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def rightIso : ψ.right ≅ ψ'.right where
+  hom := e.hom.right
+  inv := e.inv.right
+  hom_inv_id := by simp [← category_comp_right]
+  inv_hom_id := by simp [← category_comp_right]
+
+/-- Extract an isomorphism between base components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def baseIso : ψ.base ≅ ψ'.base where
+  hom := e.hom.base
+  inv := e.inv.base
+  hom_inv_id := by simp [← category_comp_base]
+  inv_hom_id := by simp [← category_comp_base]
+
+omit [IsIso f] in
+lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right where
+  mp h := ⟨inferInstance, inferInstance, inferInstance⟩
+  mpr h := by
+    obtain ⟨_, _, _⟩ := h
+    use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
+      f.left_coherence f.right_coherence|>.inv
+    aesop_cat
+
+end Iso
+
 /-- The left unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
 def leftUnitor (φ : CatCospanTransform F G F' G') :

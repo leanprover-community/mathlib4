@@ -43,11 +43,11 @@ functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure she
 
 ## TODO
 
-There are variants of `smoothSheafCommGroup.compLeft` for `Grp`, `RingCat`, `CommRingCat`;
+There are variants of `smoothSheafCommGroup.compLeft` for `GrpCat`, `RingCat`, `CommRingCat`;
 this is just boilerplate and can be added as needed.
 
 Similarly, there are variants of `smoothSheafCommRing.forgetStalk` and `smoothSheafCommRing.eval`
-for `Grp`, `CommGrp` and `RingCat` which can be added as needed.
+for `GrpCat`, `CommGrpCat` and `RingCat` which can be added as needed.
 
 Currently there is a universe restriction: one can consider the sheaf of smooth functions from `M`
 to `N` only if `M` and `N` are in the same universe.  For example, since `ℂ` is in `Type`, we can
@@ -159,9 +159,9 @@ noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
 -/
 @[to_additive /-- The presheaf of smooth functions from `M` to `G`, for `G` an additive Lie group,
 as a presheaf of additive groups. -/]
-noncomputable def smoothPresheafGroup : TopCat.Presheaf Grp.{u} (TopCat.of M) :=
-  { obj := fun U ↦ Grp.of ((smoothSheaf IM I M G).presheaf.obj U)
-    map := fun h ↦ Grp.ofHom <|
+noncomputable def smoothPresheafGroup : TopCat.Presheaf GrpCat.{u} (TopCat.of M) :=
+  { obj := fun U ↦ GrpCat.of ((smoothSheaf IM I M G).presheaf.obj U)
+    map := fun h ↦ GrpCat.ofHom <|
       ContMDiffMap.restrictMonoidHom IM I G <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
     map_comp := fun _ _ ↦ rfl }
@@ -170,10 +170,10 @@ noncomputable def smoothPresheafGroup : TopCat.Presheaf Grp.{u} (TopCat.of M) :=
 groups. -/
 @[to_additive /-- The sheaf of smooth functions from `M` to `G`, for `G` an additive Lie group, as a
 sheaf of additive groups. -/]
-noncomputable def smoothSheafGroup : TopCat.Sheaf Grp.{u} (TopCat.of M) :=
+noncomputable def smoothSheafGroup : TopCat.Sheaf GrpCat.{u} (TopCat.of M) :=
   { val := smoothPresheafGroup IM I M G
     cond := by
-      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget Grp)]
+      rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _ (CategoryTheory.forget GrpCat)]
       exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M G) }
 
 end LieGroup
@@ -190,9 +190,9 @@ open Manifold in
 presheaf of abelian groups. -/
 @[to_additive /-- The presheaf of smooth functions from `M` to `A`, for `A` an additive abelian Lie
 group, as a presheaf of additive abelian groups. -/]
-noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGrp.{u} (TopCat.of M) :=
-  { obj := fun U ↦ CommGrp.of ((smoothSheaf IM I M A).presheaf.obj U)
-    map := fun h ↦ CommGrp.ofHom <|
+noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGrpCat.{u} (TopCat.of M) :=
+  { obj := fun U ↦ CommGrpCat.of ((smoothSheaf IM I M A).presheaf.obj U)
+    map := fun h ↦ CommGrpCat.ofHom <|
       ContMDiffMap.restrictMonoidHom IM I A <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
     map_comp := fun _ _ ↦ rfl }
@@ -201,11 +201,11 @@ noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGrp.{u} (TopCat.
 sheaf of abelian groups. -/
 @[to_additive /-- The sheaf of smooth functions from `M` to
 `A`, for `A` an abelian additive Lie group, as a sheaf of abelian additive groups. -/]
-noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGrp.{u} (TopCat.of M) :=
+noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGrpCat.{u} (TopCat.of M) :=
   { val := smoothPresheafCommGroup IM I M A
     cond := by
       rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
-        (CategoryTheory.forget CommGrp)]
+        (CategoryTheory.forget CommGrpCat)]
       exact CategoryTheory.Sheaf.cond (smoothSheaf IM I M A) }
 
 /-- For a manifold `M` and a smooth homomorphism `φ` between abelian Lie groups `A`, `A'`, the
@@ -217,7 +217,7 @@ groups `A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from
 noncomputable def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : ContMDiff I I' ∞ φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
   CategoryTheory.Sheaf.Hom.mk <|
-  { app := fun _ ↦ CommGrp.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
+  { app := fun _ ↦ CommGrpCat.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
     naturality := fun _ _ _ ↦ rfl }
 
 end CommLieGroup

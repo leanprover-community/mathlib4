@@ -33,7 +33,7 @@ In other words, `f : α → β` is null measurable if it is measurable as a func
 ### Complete measures
 
 We say that a measure `μ` is complete w.r.t. the `MeasurableSpace α` σ-algebra (or the σ-algebra is
-complete w.r.t measure `μ`) if every set of measure zero is measurable. In this case all null
+complete w.r.t. measure `μ`) if every set of measure zero is measurable. In this case all null
 measurable sets and functions are measurable.
 
 For each measure `μ`, we define `MeasureTheory.Measure.completion μ` to be the same measure

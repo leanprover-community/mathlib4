@@ -129,9 +129,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
@@ -156,9 +153,6 @@ add_decl_doc Subring.toSubsemiring
 add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
-
--- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
--- projection `s.toSubmonoid`
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier
@@ -369,9 +363,6 @@ lemma subtype_injective (s : Subring R) :
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl

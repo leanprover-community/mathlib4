@@ -103,7 +103,7 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases hb x with ⟨Vb, mb, ib, rb, sb, wb⟩
-    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, sb• ra+ sa•rb , sa * sb, ?_⟩
+    refine ⟨Va ⊓ Vb, ⟨ma, mb⟩, Opens.infLELeft _ _ ≫ ia, sb • ra + sa • rb, sa * sb, ?_⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y : Va) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y : Vb) with ⟨nmb, wb⟩
@@ -118,7 +118,7 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     intro r a ha x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
     rcases r.2 x with ⟨Vr, mr, ir, rr, sr, wr⟩
-    refine ⟨Va ⊓ Vr, ⟨ma, mr⟩, Opens.infLELeft _ _ ≫ ia, rr•ra, sr*sa, ?_⟩
+    refine ⟨Va ⊓ Vr, ⟨ma, mr⟩, Opens.infLELeft _ _ ≫ ia, rr • ra, sr * sa, ?_⟩
     intro y
     rcases wa (Opens.infLELeft _ _ y : Va) with ⟨nma, wa⟩
     rcases wr (Opens.infLERight _ _ y) with ⟨nmr, wr⟩
@@ -146,24 +146,24 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module (Spec(R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
+    Module ((Spec <| .of R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def tilde : Spec(R).Modules where
+noncomputable def tilde : (Spec <| .of R).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
       map := fun {U V} i ↦ ofHom
         -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
         -- This suggests `restrictScalars` needs to be redesigned.
-        (Y := (restrictScalars (Spec(R).ringCatSheaf.val.map i).hom).obj
-          (of (Spec(R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
+        (Y := (restrictScalars ((Spec <| .of R).ringCatSheaf.val.map i).hom).obj
+          (of ((Spec <| .of R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
-  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ ).2
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _ ).2
     M.tildeInType.2
 
 /--

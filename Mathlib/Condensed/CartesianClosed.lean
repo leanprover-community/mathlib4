@@ -9,7 +9,7 @@ import Mathlib.Condensed.Basic
 import Mathlib.CategoryTheory.Sites.LeftExact
 /-!
 
-# Condensed sets form a cartesian closed category
+# Condensed sets form a Cartesian-closed category
 -/
 
 universe u

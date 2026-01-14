@@ -123,7 +123,7 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
   { toOuterMeasure := inducedOuterMeasure m _ m0
     m_iUnion := fun f hf hd =>
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
-        rw [inducedOuterMeasure_eq m0 mU, mU hf hd]
+        rw [inducedOuterMeasure_eq m0 mU (MeasurableSet.iUnion hf), mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]
     trim_le := le_inducedOuterMeasure.2 fun s hs ↦ by
       rw [OuterMeasure.trim_eq _ hs, inducedOuterMeasure_eq m0 mU hs] }
@@ -421,11 +421,11 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
   measurable_id.aemeasurable
 

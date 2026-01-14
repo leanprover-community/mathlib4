@@ -72,7 +72,7 @@ instance : IsIso (limit.post F G) :=
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
-functorial wrt `F`. -/
+functorial w.r.t. `F`. -/
 @[simps!]
 def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
   NatIso.ofComponents (fun F => preservesLimitIso G F)
@@ -139,7 +139,7 @@ instance : IsIso (colimit.post F G) :=
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
-is functorial wrt `F`. -/
+is functorial w.r.t. `F`. -/
 @[simps!]
 def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
   NatIso.ofComponents (fun F => preservesColimitIso G F)

@@ -20,7 +20,7 @@ This file implements diffeomorphisms.
   a diffeomorphism.
 * `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a
   continuous linear equiv between the old and the new target spaces. Useful, e.g, to turn any
-  finite dimensional manifold into a manifold modelled on a Euclidean space.
+  finite-dimensional manifold into a manifold modelled on a Euclidean space.
 * `Diffeomorph.toTransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
   model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
@@ -33,7 +33,7 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
 
-## Notations
+## Notation
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
 * `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`
@@ -86,6 +86,7 @@ scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeom
 /-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`. -/
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ∞
 
+-- Porting note: this notation is broken because `n[𝕜]` gets parsed as `getElem`
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph 𝓘(𝕜, E) 𝓘(𝕜, E') E E' n
 
@@ -125,8 +126,6 @@ protected theorem contMDiffAt (h : M ≃ₘ^n⟮I, I'⟯ M') {x} : ContMDiffAt I
 protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContMDiffWithinAt I I' n h s x :=
   h.contMDiffAt.contMDiffWithinAt
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
--- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 
@@ -330,13 +329,16 @@ theorem contMDiff_diffeomorph_comp_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : M' 
     ContMDiff I' J m (h ∘ f) ↔ ContMDiff I' I m f :=
   forall_congr' fun _ => h.contMDiffWithinAt_diffeomorph_comp_iff hm
 
-theorem toPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    h.toHomeomorph.toPartialHomeomorph.MDifferentiable I J :=
+theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
+    h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
 
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
-  convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
+  convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
   simp [h.image_eq_preimage]
 
 @[simp]
@@ -350,16 +352,12 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
     UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
--- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 
 @[simp]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
--- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn

@@ -260,11 +260,10 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   classical
   simp only [ENNReal.tsum_eq_zero]
   refine ENNReal.tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
-  split_ifs with h _ h_1 _ h_2
+  split_ifs with h _ h_1 H h_2
   any_goals ring1
-  · have := h_1 a'
-    simp? [h] at this says simp only [h, ↓reduceDIte, mul_eq_zero, false_or] at this
-    contradiction
+  · absurd H
+    simpa [h] using h_1 a'
   · simp [h_2]
 
 theorem bindOnSupport_comm (p : PMF α) (q : PMF β) (f : ∀ a ∈ p.support, ∀ b ∈ q.support, PMF γ) :

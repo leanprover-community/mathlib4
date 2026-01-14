@@ -82,9 +82,9 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
-  map_units' y := isUnit_iff_ne_zero.mpr
+  map_units y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
-  surj' x := by
+  surj x := by
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective I.primeCompl x
     refine ⟨⟨Ideal.Quotient.mk _ x, ⟨Ideal.Quotient.mk _ s, ?_⟩⟩, ?_⟩

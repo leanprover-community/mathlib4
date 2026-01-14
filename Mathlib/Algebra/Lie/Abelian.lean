@@ -352,3 +352,38 @@ lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L]
   lie_eq_self_of_isAtom_of_ne_bot hI <| not_imp_not.mpr (lie_abelian_iff_lie_self_eq_bot I).mpr h
 
 end IdealOperations
+
+section TrivialLieModule
+
+set_option linter.unusedVariables false in
+/-- A type synonym for an `R`-module to have a trivial Lie module structure. -/
+@[nolint unusedArguments]
+def TrivialLieModule (R L M : Type*) := M
+
+namespace TrivialLieModule
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
+
+instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGroup M)
+
+instance : Module R (TrivialLieModule R L M) := inferInstanceAs (Module R M)
+
+/-- The linear equivalence between a trivial Lie module and its underlying `R`-module. -/
+def equiv : (TrivialLieModule R L M) ≃ₗ[R] M := LinearEquiv.refl R M
+
+instance : LieRingModule L (TrivialLieModule R L M) where
+  bracket x m := 0
+  add_lie := by simp
+  lie_add := by simp
+  leibniz_lie := by simp
+
+instance : LieModule.IsTrivial L (TrivialLieModule R L M) where
+  trivial _ _ := rfl
+
+instance : LieModule R L (TrivialLieModule R L M) where
+  smul_lie := by simp
+  lie_smul := by simp
+
+end TrivialLieModule
+
+end TrivialLieModule

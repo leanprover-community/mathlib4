@@ -174,7 +174,7 @@ theorem ext {f g : α →ₘ[μ] β} (h : f =ᵐ[μ] g) : f = g := by
   rwa [← f.mk_coeFn, ← g.mk_coeFn, mk_eq_mk]
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by
-  rw [← mk_eq_mk, mk_coeFn]
+  rw [← mk_eq_mk (hf := AEEqFun.aestronglyMeasurable ..) (hg := hf), mk_coeFn]
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
@@ -197,7 +197,7 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi) measure preserving function
+### Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
@@ -206,7 +206,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 
 open MeasureTheory.Measure (QuasiMeasurePreserving)
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
@@ -237,7 +237,7 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
 definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
@@ -274,6 +274,15 @@ def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[
 theorem comp_mk (g : β → γ) (hg : Continuous g) (f : α → β) (hf) :
     comp g hg (mk f hf : α →ₘ[μ] β) = mk (g ∘ f) (hg.comp_aestronglyMeasurable hf) :=
   rfl
+
+@[simp]
+theorem comp_id (f : α →ₘ[μ] β) : comp id (continuous_id) f = f := by
+  rcases f; rfl
+
+@[simp]
+theorem comp_comp (g : γ → δ) (g' : β → γ) (hg : Continuous g) (hg' : Continuous g')
+    (f : α →ₘ[μ] β) : comp g hg (comp g' hg' f) = comp (g ∘ g') (hg.comp hg') f := by
+  rcases f; rfl
 
 theorem comp_eq_mk (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     comp g hg f = mk (g ∘ f) (hg.comp_aestronglyMeasurable f.aestronglyMeasurable) := by
@@ -419,7 +428,8 @@ def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
 theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f :=
   rfl
 
-theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
+theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by
+  rw [← mk_toGerm f f.aestronglyMeasurable, mk_coeFn]
 
 theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
@@ -474,7 +484,9 @@ theorem liftRel_mk_mk {r : β → γ → Prop} {f : α → β} {g : α → γ} {
   Iff.rfl
 
 theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : α →ₘ[μ] γ} :
-    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by rw [← liftRel_mk_mk, mk_coeFn, mk_coeFn]
+    LiftRel r f g ↔ ∀ᵐ a ∂μ, r (f a) (g a) := by
+  rw [← liftRel_mk_mk (hf := f.aestronglyMeasurable) (hg := g.aestronglyMeasurable),
+    mk_coeFn, mk_coeFn]
 
 section Order
 
@@ -823,7 +835,7 @@ theorem lintegral_mk (f : α → ℝ≥0∞) (hf) : (mk f hf : α →ₘ[μ] ℝ
   rfl
 
 theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : ∫⁻ a, f a ∂μ = f.lintegral := by
-  rw [← lintegral_mk, mk_coeFn]
+  rw [← lintegral_mk (hf := f.aestronglyMeasurable), mk_coeFn]
 
 @[simp]
 nonrec theorem lintegral_zero : lintegral (0 : α →ₘ[μ] ℝ≥0∞) = 0 :=
@@ -848,6 +860,24 @@ theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β
   rw [hx_sup, hx_neg, Pi.neg_apply]
 
 end Abs
+
+section Star
+
+variable {R : Type*} [TopologicalSpace R]
+
+instance [Star R] [ContinuousStar R] : Star (α →ₘ[μ] R) where
+  star f := (AEEqFun.comp _ continuous_star f)
+
+lemma coeFn_star [Star R] [ContinuousStar R] (f : α →ₘ[μ] R) : ↑(star f) =ᵐ[μ] (star f : α → R) :=
+  coeFn_comp _ (continuous_star) f
+
+instance [InvolutiveStar R] [ContinuousStar R] : InvolutiveStar (α →ₘ[μ] R) where
+  star_involutive f := comp_comp _ _ _ _ f |>.trans <| by simp [star_involutive.comp_self]
+
+instance [Star R] [TrivialStar R] [ContinuousStar R] : TrivialStar (α →ₘ[μ] R) where
+  star_trivial f := show comp _ _ f = f by simp [funext star_trivial, ← Function.id_def]
+
+end Star
 
 section PosPart
 

@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Basic
 This file defines the localization of a monoid over a left Ore set and proves its universal
 mapping property.
 
-## Notations
+## Notation
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
 subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
@@ -149,8 +149,8 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
 
 /-- A function or predicate over `X` and `S` can be lifted to `X[S⁻¹]` if it is invariant
 under expansion on the left. -/
-@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localizaton if it is
-invariant under expansion on the left. -/]
+@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localization if it
+is invariant under expansion on the left. -/]
 def liftExpand {C : Sort*} (P : X → S → C)
     (hP : ∀ (r : X) (t : R) (s : S) (ht : t * s ∈ S), P r s = P (t • r) ⟨t * s, ht⟩) :
     X[S⁻¹] → C :=
@@ -305,17 +305,17 @@ theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) := by
   with_unfolding_all exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
-/-- Another characterization lemma for the scalar multiplication on the Ore localizaion delivering
+/-- Another characterization lemma for the scalar multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive /-- Another characterization lemma for the vector addition on the
-  Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type. -/]
+  Ore localization delivering Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
-/-- Another characterization lemma for the multiplication on the Ore localizaion delivering
+/-- Another characterization lemma for the multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
-@[to_additive /-- Another characterization lemma for the addition on the Ore localizaion delivering
+@[to_additive /-- Another characterization lemma for the addition on the Ore localization delivering
   Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=

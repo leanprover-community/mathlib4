@@ -123,6 +123,26 @@ lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
     matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
   rw [← one_mul M, ← smul_mul_assoc, map_mul, matPolyEquiv_smul_one, one_mul]
 
+theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
+    (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
+  suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
+      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+        fun x => (scalar_commute _ (Commute.all _) _).symm) from
+    DFunLike.congr_fun this M
+  ext : 1
+  · ext M : 1
+    simp [Function.comp_def]
+  · simp
+
+theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
+    (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
+  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
+
+-- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
+theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
+    (matPolyEquiv M).eval (scalar n r) i j = (M i j).eval r := by
+  rw [matPolyEquiv_eval_eq_map, map_apply]
+
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
   intro k
@@ -130,6 +150,17 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   simp only [notMem_support_iff]
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
+
+theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
+    Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
+  rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
+  exact congr_arg det <| ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm
+
+lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
+    (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
+  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
+  simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
+    mul_zero, add_zero]
 
 variable {A}
 /-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.OfNat
 
@@ -30,25 +31,6 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
 
--- the following four declarations are not in mathlib3 and are relevant to the way numeric
--- literals are handled in Lean 4.
-
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
-class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : 2 ≤ n
-
-instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-namespace Nat.AtLeastTwo
-
-variable {n : ℕ} [n.AtLeastTwo]
-
-lemma one_lt : 1 < n := prop
-lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
-
-end Nat.AtLeastTwo
-
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
@@ -58,7 +40,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note "no_index around OfNat.ofNat"
+library_note2 «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -86,7 +68,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
-library_note "coercion into rings"
+library_note2 «coercion into rings»
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:

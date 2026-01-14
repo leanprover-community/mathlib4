@@ -93,19 +93,16 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
-protected theorem add_pos_of_nonneg_of_pos {a b : EReal} (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by
-  lift a to ℝ≥0∞ using ha
-  lift b to ℝ≥0∞ using hb.le
-  norm_cast at *
-  simp [hb]
+@[deprecated (since := "2025-08-14")] alias add_pos_of_nonneg_of_pos :=
+  Right.add_pos_of_nonneg_of_pos
 
 protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
-  add_comm a b ▸ EReal.add_pos_of_nonneg_of_pos hb ha
+  add_comm a b ▸ Right.add_pos_of_nonneg_of_pos hb ha
 
 /-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
 then their sum is also greater than `0`. -/
 protected theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b :=
-  EReal.add_pos_of_nonneg_of_pos ha.le hb
+  Right.add_pos_of_nonneg_of_pos ha.le hb
 
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
@@ -187,15 +184,11 @@ lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
     x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
 
-lemma add_ne_top_iff_of_ne_bot {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
-  refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
-  induction x <;> simp_all
-  induction y <;> simp_all
+@[deprecated (since := "2025-08-14")] alias add_ne_top_iff_of_ne_bot := add_ne_top_iff_ne_top₂
 
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  induction x <;> simp [add_ne_top_iff_of_ne_bot, hy, hy']
+  induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
 
 /-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
@@ -735,16 +728,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
-  | symm h =>
-    rw [EReal.mul_comm, h]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;>
-    cases H with
-      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
-      | inr h => cases h with
-        | inl h => exact Or.inl ⟨h.2, h.1⟩
-        | inr h => cases h with
-          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
-          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+  | symm h => grind [EReal.mul_comm]
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
@@ -858,7 +842,7 @@ def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match ← core zα pα b with
-      | .positive pb => pure (.positive q(EReal.add_pos_of_nonneg_of_pos $pa $pb))
+      | .positive pb => pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
       | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
       | _ => pure .none
     | _ => pure .none
@@ -879,11 +863,11 @@ def evalERealMul : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match (← core zα pα b).toNonneg with
-      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | .none => pure .none
+      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | none => pure .none
     | .nonzero pa =>
       match (← core zα pα b).toNonzero with
-      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
       | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"

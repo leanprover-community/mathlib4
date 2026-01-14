@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Field.GeomSum
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
@@ -80,7 +81,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
-  · field_simp [Nat.cast_ne_zero.mpr hn]
+  · simp [Nat.cast_ne_zero.mpr hn, add_div']
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
       rw [mul_zero, add_zero, div_one]
     rw [this]
@@ -112,7 +113,7 @@ theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
 theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
     {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
   filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx
-  aesop
+  simp_all
 
 /-- If `g` tends to `∞`, then eventually for all `x` we have `(f x / g x) * g x = f x`. -/
 theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
@@ -396,6 +397,26 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
+lemma ENNReal.tsum_two_zpow_neg_add_one :
+    ∑' m : ℕ, 2 ^ (-1 - m  : ℤ) = (1 : ℝ≥0∞) := by
+  simp_rw [neg_sub_left, ENNReal.zpow_neg,← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
+    ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
+  exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
+
+open Encodable
+
+protected lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
+
+lemma ENNReal.tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
+    ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=
+  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_eq ENNReal.tsum_geometric_two
+
+lemma tsum_geometric_lt_top {r : ℝ≥0∞} : ∑' n, r ^ n < ∞ ↔ r < 1 := by simp
+
+lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [Encodable ι] :
+    ∑' i : ι, (r : ℝ≥0∞) ^ encode i < ∞ :=
+  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
+
 end Geometric
 
 /-!
@@ -644,7 +665,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
     (by
       refine (eventually_gt_atTop 0).mono fun n hn ↦ ?_
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
-      rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
+      rw [factorial_eq_prod_range_add_one, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
         prod_natCast, Nat.cast_succ, ← Finset.prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
       simp only [one_mul, Nat.cast_add, zero_add, Nat.cast_one]
@@ -655,7 +676,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
         norm_cast
-        omega)
+        cutsat)
 
 /-!
 ### Ceil and floor

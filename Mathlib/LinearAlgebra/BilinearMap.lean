@@ -119,10 +119,74 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
     -- It looks like we now run out of assignable metavariables.
     (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 
-end
-
 @[simp]
 theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
+
+end
+
+section Semiring
+
+variable {R R₂ R₃ R₄ R₅ : Type*}
+variable {M N P Q : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄] [Semiring R₅]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q] [Module R₅ P]
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+
+variable (R₅ P σ₂₃)
+
+/-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
+`M → P` is itself a linear map. -/
+def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ[R₅] M →ₛₗ[σ₁₃] P :=
+  letI := SMulCommClass.symm
+  flip <| LinearMap.comp (flip id) f
+
+variable {P σ₂₃ R₅}
+
+@[simp]
+theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
+    lcompₛₗ R₅ P σ₂₃ f g x = g (f x) := rfl
+
+
+/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
+form a bilinear map `M → Q → P`. -/
+def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+  toFun a := (lcompₛₗ R₅ P σ₂₃ g) (h a)
+  map_add' _ _ := by
+    simp [map_add]
+  map_smul' _ _ := by
+    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
+
+@[simp]
+theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
+    h.compl₂ g m q = h m (g q) := rfl
+
+@[simp]
+theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.compl₂ LinearMap.id = h := by
+  ext
+  rw [compl₂_apply, id_coe, _root_.id]
+
+end Semiring
+
+section lcomp
+
+variable (S N) [Module R N] [SMulCommClass R S N]
+
+/-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
+`Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
+def lcomp (f : M →ₗ[R] M₂) : (M₂ →ₗ[R] N) →ₗ[S] M →ₗ[R] N :=
+  lcompₛₗ _ _ _ f
+
+variable {S N}
+
+@[simp]
+theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcomp S N f g x = g (f x) := rfl
+
+theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
+
+end lcomp
 
 attribute [local instance] SMulCommClass.symm
 
@@ -227,52 +291,6 @@ theorem lflip_apply {R₀ : Type*} [Semiring R₀] [Module R₀ P] [SMulCommClas
 
 end Semiring
 
-section Semiring
-
-variable {R R₂ R₃ R₄ R₅ : Type*}
-variable {M N P Q : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄] [Semiring R₅]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q] [Module R₅ P]
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
-variable [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
-
-variable (R₅ P σ₂₃)
-
-/-- Composing a semilinear map `M → N` and a semilinear map `N → P` to form a semilinear map
-`M → P` is itself a linear map. -/
-def lcompₛₗ (f : M →ₛₗ[σ₁₂] N) : (N →ₛₗ[σ₂₃] P) →ₗ[R₅] M →ₛₗ[σ₁₃] P :=
-  letI := SMulCommClass.symm
-  flip <| LinearMap.comp (flip id) f
-
-variable {P σ₂₃ R₅}
-
-@[simp]
-theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) (x : M) :
-    lcompₛₗ R₅ P σ₂₃ f g x = g (f x) := rfl
-
-/-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
-form a bilinear map `M → Q → P`. -/
-def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
-  toFun a := (lcompₛₗ R₅ P σ₂₃ g) (h a)
-  map_add' _ _ := by
-    simp [map_add]
-  map_smul' _ _ := by
-    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
-    rfl
-
-@[simp]
-theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
-    h.compl₂ g m q = h m (g q) := rfl
-
-@[simp]
-theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.compl₂ LinearMap.id = h := by
-  ext
-  rw [compl₂_apply, id_coe, _root_.id]
-
-end Semiring
-
 section CommSemiring
 
 variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
@@ -301,21 +319,7 @@ def mk₂ (f : M → Nₗ → Pₗ) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f
 theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
     (mk₂ R f H1 H2 H3 H4 : M →ₗ[R] Nₗ →ₗ[R] Pₗ) m n = f m n := rfl
 
-variable {R}
-
-variable (A Pₗ)
-variable [Module A Pₗ] [SMulCommClass R A Pₗ]
-
-/-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
-`Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
-def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[A] M →ₗ[R] Pₗ := lcompₛₗ _ _ _ f
-
-variable {A Pₗ}
-
-@[simp]
-theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp A _ f g x = g (f x) := rfl
-
-theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A Pₗ f g = g ∘ₗ f := rfl
+variable [Module A Pₗ] [SMulCommClass R A Pₗ] {R}
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/

@@ -882,7 +882,6 @@ noncomputable def Exact.descToInjective
 lemma Exact.comp_descToInjective
     (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.g ≫ hS.descToInjective f hf = f := by
-  have := hS.mono_fromOpcycles
   dsimp [descToInjective]
   simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
 
@@ -898,7 +897,6 @@ noncomputable def Exact.liftFromProjective
 lemma Exact.liftFromProjective_comp
     (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
     hS.liftFromProjective f hf ≫ S.f = f := by
-  have := hS.epi_toCycles
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 

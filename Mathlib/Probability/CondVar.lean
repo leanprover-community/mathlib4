@@ -142,7 +142,7 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
 
 lemma condVar_bot' [NeZero μ] (X : Ω → ℝ) :
     Var[X; μ | ⊥] = fun _ => ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by
-  ext ω; simp [condVar, condExp_bot', average, measureReal_def]
+  simp [condVar, condExp_bot', average, measureReal_def]
 
 lemma condVar_bot_ae_eq (X : Ω → ℝ) :
     Var[X; μ | ⊥] =ᵐ[μ] fun _ ↦ ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by

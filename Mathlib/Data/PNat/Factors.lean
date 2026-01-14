@@ -25,23 +25,10 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 gives an equivalence between this set and ℕ+, as we will formalize
 below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, AddCommMonoid, DistribLattice,
-  SemilatticeSup, Sub
--- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
--- handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : IsOrderedCancelAddMonoid PrimeMultiset :=
-  inferInstanceAs (IsOrderedCancelAddMonoid (Multiset Nat.Primes))
-
-instance : CanonicallyOrderedAdd PrimeMultiset :=
-  inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))
-
-instance : OrderBot PrimeMultiset :=
-  inferInstanceAs (OrderBot (Multiset Nat.Primes))
-
-instance : OrderedSub PrimeMultiset :=
-  inferInstanceAs (OrderedSub (Multiset Nat.Primes))
+  Multiset Nat.Primes
+deriving Inhabited, AddCommMonoid, DistribLattice,
+  SemilatticeSup, Sub,
+  IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
 
 namespace PrimeMultiset
 
@@ -118,7 +105,7 @@ instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
-  congr
+  rfl
 
 /-- The product of a `PrimeMultiset`, as a `ℕ+`. -/
 def prod (v : PrimeMultiset) : ℕ+ :=

@@ -3,12 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.ConvergenceRadius
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`
-
 In this file we prove that the radius of convergence of a `FormalMultilinearSeries` is equal to
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `Analysis.Analytic.Basic`
 because this would create a circular dependency once we redefine `exp` using

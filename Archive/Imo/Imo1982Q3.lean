@@ -61,7 +61,7 @@ lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     -- We make use of the `le_avg` lemma.
     _ ≤ (∑ k ∈ range (n + 1), x k) ^ 2 / ∑ k ∈ range (n + 1), x (k + 1) := by
       gcongr
-      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_succ
+      · exact sum_pos (fun k _ ↦ hp _) nonempty_range_add_one
       · exact add_nonneg (sum_nonneg fun k _ ↦ (hp _).le) zero_le_one
       · rw [sum_range_succ', h0]
       · exact le_avg hn (hx.comp_monotone @Nat.succ_le_succ)

@@ -36,12 +36,12 @@ attribute [local instance] Opposite.small
 namespace AlgebraicGeometry
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
-noncomputable def specZIsTerminal : IsTerminal Spec(ℤ) :=
+noncomputable def specZIsTerminal : IsTerminal (Spec <| .of ℤ) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.zIsInitial)
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
-noncomputable def specULiftZIsTerminal : IsTerminal Spec(ULift.{u} ℤ) :=
+noncomputable def specULiftZIsTerminal : IsTerminal (Spec <| .of <| ULift.{u} ℤ) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.isInitial)
 
@@ -90,7 +90,7 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty Spec(PUnit.{u+1}) :=
+instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u+1}) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
@@ -112,11 +112,11 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial Spec(PUnit.{u+1}) :=
+noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u+1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to Spec(PUnit))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec <| .of PUnit))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -230,7 +230,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
-      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).map _).stalkMap y)
+      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.comp_base_apply]
     · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
@@ -329,18 +329,19 @@ lemma coprodMk_inr (x : Y) :
 /-- The open cover of the coproduct of two schemes. -/
 noncomputable
 def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
-  J := PUnit.{w + 1} ⊕ PUnit.{w + 1}
-  obj x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
-  map x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
-  f x := ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
-  covers x := by
+  I₀ := PUnit.{w + 1} ⊕ PUnit.{w + 1}
+  X x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
+  f x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
+  mem₀ := by
+    rw [Scheme.presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, fun x ↦ x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)⟩
+    use ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
     obtain ⟨x, rfl⟩ := (coprodMk X Y).surjective x
     simp only [Sum.elim_inl, Sum.elim_inr, Set.mem_range]
     rw [Homeomorph.symm_apply_apply]
     obtain (x | x) := x
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
-  map_prop x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
 
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
@@ -367,7 +368,7 @@ variable (R S : Type u) [CommRing R] [CommRing S]
 /-- The map `Spec R ⨿ Spec S ⟶ Spec (R × S)`.
 This is an isomorphism as witnessed by an `IsIso` instance provided below. -/
 noncomputable
-def coprodSpec : Spec(R) ⨿ Spec(S) ⟶ Spec(R × S) :=
+def coprodSpec : Spec (.of R) ⨿ Spec (.of S) ⟶ Spec (.of <| R × S) :=
   coprod.desc (Spec.map (CommRingCat.ofHom <| RingHom.fst _ _))
     (Spec.map (CommRingCat.ofHom <| RingHom.snd _ _))
 
@@ -394,7 +395,7 @@ lemma coprodSpec_coprodMk (x) :
 
 lemma coprodSpec_apply (x) :
     (coprodSpec R S).base x =
-      (PrimeSpectrum.primeSpectrumProd R S).symm ((coprodMk Spec(R) Spec(S)).symm x) := by
+      (PrimeSpectrum.primeSpectrumProd R S).symm ((coprodMk _ _).symm x) := by
   rw [← coprodSpec_coprodMk, Homeomorph.apply_symm_apply]
 
 lemma isIso_stalkMap_coprodSpec (x) :
@@ -404,7 +405,6 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inl R S)] at this
     rw [coprodMk_inl, ← this]
     letI := (RingHom.fst R S).toAlgebra
-    have := IsLocalization.away_fst (R := R) (S := S)
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.fst R S))) :=
       IsOpenImmersion.of_isLocalization (1, 0)
     infer_instance
@@ -412,7 +412,6 @@ lemma isIso_stalkMap_coprodSpec (x) :
     rw [← IsIso.comp_inv_eq, Scheme.stalkMap_congr_hom _ (Spec.map _) (coprodSpec_inr R S)] at this
     rw [coprodMk_inr, ← this]
     letI := (RingHom.snd R S).toAlgebra
-    have := IsLocalization.away_snd (R := R) (S := S)
     have : IsOpenImmersion (Spec.map (CommRingCat.ofHom (RingHom.snd R S))) :=
       IsOpenImmersion.of_isLocalization (0, 1)
     infer_instance
@@ -420,8 +419,8 @@ lemma isIso_stalkMap_coprodSpec (x) :
 instance : IsIso (coprodSpec R S) := by
   rw [isIso_iff_stalk_iso]
   refine ⟨?_, isIso_stalkMap_coprodSpec R S⟩
-  convert_to IsIso (TopCat.isoOfHomeo (X := Spec(R × S)) <|
-    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk Spec(R) Spec(S))).inv
+  convert_to IsIso (TopCat.isoOfHomeo (X := Spec (.of <| R × S)) <|
+    PrimeSpectrum.primeSpectrumProdHomeo.trans (coprodMk (Spec <| .of R) (Spec <| .of S))).inv
   · ext x; exact coprodSpec_apply R S x
   · infer_instance
 
@@ -460,7 +459,7 @@ instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.S
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/
 noncomputable
-def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec(Π i, R i) :=
+def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of <| Π i, R i) :=
   Sigma.desc (fun i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)))
 
 @[reassoc (attr := simp)]

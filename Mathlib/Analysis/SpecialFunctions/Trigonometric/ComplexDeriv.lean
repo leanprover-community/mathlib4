@@ -44,10 +44,6 @@ theorem tendsto_norm_tan_atTop (k : ℤ) :
     Tendsto (fun x => ‖tan x‖) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
   tendsto_norm_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 
-@[deprecated (since := "2025-02-17")] alias tendsto_abs_tan_of_cos_eq_zero :=
-  tendsto_norm_tan_of_cos_eq_zero
-@[deprecated (since := "2025-02-17")] alias tendsto_abs_tan_atTop := tendsto_norm_tan_atTop
-
 @[simp]
 theorem continuousAt_tan {x : ℂ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
   refine ⟨fun hc h₀ => ?_, fun h => (hasDerivAt_tan h).continuousAt⟩

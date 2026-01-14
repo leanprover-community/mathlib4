@@ -137,8 +137,8 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_zero : (inst₁.toMulZeroClass).toZero.zero = (inst₂.toMulZeroClass).toZero.zero :=
     congrArg (fun inst => (inst.toMulZeroClass).toZero.zero) h
   have h_one' : (inst₁.toMulZeroOneClass).toMulOneClass.toOne
-                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne :=
-    congrArg (@MulOneClass.toOne R) <| by ext : 1; exact h_mul
+                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne := by
+    congr 2; ext : 1; exact h_mul
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'

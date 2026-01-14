@@ -8,16 +8,16 @@ import Lean.Elab.Command
 import Mathlib.Util.AssertExistsExt
 
 /-!
-# User commands for assert the (non-)existence of declaration or instances.
+# User commands to assert the (non-)existence of declarations or instances.
 
 These commands are used to enforce the independence of different parts of mathlib.
 
 ## TODO
 
-Potentially after the port reimplement the mathlib 3 linters to check that declarations asserted
-about do eventually exist.
+Potentially reimplement the mathlib 3 linters to check that declarations asserted
+not to exist do eventually exist.
 
-Implement `assert_instance` and `assert_no_instance`
+Implement `assert_instance` and `assert_no_instance`.
 -/
 
 section
@@ -35,7 +35,7 @@ This means that the expectation is that all checks *succeed* by the time `#check
 is used, typically once all of `Mathlib` has been built.
 
 If all declarations and imports are available when `#check_assertions` is used,
-then the command logs an info. Otherwise, it emits a warning.
+then the command logs an info message. Otherwise, it emits a warning.
 
 The variant `#check_assertions!` only prints declarations/imports that are not present in the
 environment.  In particular, it is silent if everything is imported, making it useful for testing.

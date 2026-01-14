@@ -66,16 +66,17 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
 theorem id_tensorHom_id (M N : ModuleCat R) :
     tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
-    (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+    (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ = tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -124,7 +125,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp
@@ -135,7 +136,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp
@@ -148,11 +149,8 @@ theorem triangle (M N : ModuleCat.{u} R) :
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   ext : 1
   apply TensorProduct.ext_threefold
-  intro x y z
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp [tensorHom, associator]
-  change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
-  erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
-  exact (TensorProduct.smul_tmul _ _ _).symm
+  intro x y
+  exact TensorProduct.tmul_smul _ _
 
 end MonoidalCategory
 
@@ -160,7 +158,7 @@ open MonoidalCategory
 
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (id_tensorHom_id := fun M N ↦ id_tensorHom_id M N)
-  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
+  (tensorHom_comp_tensorHom := fun f g h ↦ MonoidalCategory.tensorHom_comp_tensorHom f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
   (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
   (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)
@@ -170,6 +168,42 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
 instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
+
+theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
+    (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
+  rfl
+
+theorem hom_whiskerLeft (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N) :
+    (L ◁ f).hom = f.hom.lTensor L :=
+  rfl
+
+theorem hom_whiskerRight {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R) :
+    (f ▷ N).hom = f.hom.rTensor N :=
+  rfl
+
+theorem hom_hom_leftUnitor {M : ModuleCat.{u} R} :
+    (λ_ M).hom.hom = (TensorProduct.lid _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_leftUnitor {M : ModuleCat.{u} R} :
+    (λ_ M).inv.hom = (TensorProduct.lid _ _).symm.toLinearMap :=
+  rfl
+
+theorem hom_hom_rightUnitor {M : ModuleCat.{u} R} :
+    (ρ_ M).hom.hom = (TensorProduct.rid _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_rightUnitor {M : ModuleCat.{u} R} :
+    (ρ_ M).inv.hom = (TensorProduct.rid _ _).symm.toLinearMap :=
+  rfl
+
+theorem hom_hom_associator {M N K : ModuleCat.{u} R} :
+    (α_ M N K).hom.hom = (TensorProduct.assoc _ _ _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
+    (α_ M N K).inv.hom = (TensorProduct.assoc _ _ _ _).symm.toLinearMap :=
+  rfl
 
 namespace MonoidalCategory
 

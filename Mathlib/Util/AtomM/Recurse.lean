@@ -40,6 +40,9 @@ structure Recurse.Config where
   zetaDelta := false
 deriving Inhabited, BEq, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.AtomM.Recurse.instReprConfig.repr
+
 /-- The read-only state of the `AtomM.Recurse` monad. -/
 structure Recurse.Context where
   /-- A basically empty simp context, passed to the `simp` traversal in `AtomM.onSubexpressions`.

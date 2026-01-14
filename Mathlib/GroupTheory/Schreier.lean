@@ -175,7 +175,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
-  have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`

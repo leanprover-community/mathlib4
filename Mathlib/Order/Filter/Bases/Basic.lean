@@ -20,7 +20,7 @@ to `B.filter` if and only if it contains an element of `B`.
 
 Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → Set α`,
 the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
-(ie. `s '' setOf p`) defines a filter basis `h.filterBasis`.
+(i.e. `s '' setOf p`) defines a filter basis `h.filterBasis`.
 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → Set α` as above) means that a set belongs to `l` if and
@@ -539,7 +539,7 @@ theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟
 theorem disjoint_principal_left {f : Filter α} {s : Set α} : Disjoint (𝓟 s) f ↔ sᶜ ∈ f := by
   rw [disjoint_comm, disjoint_principal_right]
 
-@[simp 1100] -- Porting note: higher priority for linter
+@[simp high] -- This should fire before `disjoint_principal_left` and `disjoint_principal_right`.
 theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t) ↔ Disjoint s t := by
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 

@@ -63,7 +63,4 @@ theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
-
 end MeasureTheory

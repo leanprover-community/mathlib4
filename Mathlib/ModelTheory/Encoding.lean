@@ -123,7 +123,7 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
     refine ⟨Infinite.of_injective
-        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
+        (fun i => ⟨i + 1, var (Sum.inr (last i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]
@@ -218,7 +218,6 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction l with
     | nil =>
-      rw [List.flatMap_nil]
       simp [listDecode]
     | cons φ l ih => rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩

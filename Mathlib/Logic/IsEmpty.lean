@@ -130,11 +130,11 @@ instance (priority := 100) : Subsingleton α :=
 
 end IsEmpty
 
-@[simp]
+@[simp, push]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
 
-@[simp]
+@[simp, push]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
   not_iff_comm.mp not_nonempty_iff
 

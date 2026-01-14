@@ -451,7 +451,7 @@ lemma stieltjesOfMeasurableRat_unit_prod (hf : Measurable f) (a : α) :
       = stieltjesOfMeasurableRat f hf a := by
   simp_rw [stieltjesOfMeasurableRat, IsMeasurableRatCDF.stieltjesFunction,
     ← IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod a]
-  congr with x
+  congr 1 with x
   congr 1 with p : 1
   cases p with
   | mk _ b => rw [← toRatCDF_unit_prod b]

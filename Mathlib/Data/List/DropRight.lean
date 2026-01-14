@@ -50,9 +50,10 @@ theorem rdrop_zero : rdrop l 0 = l := by simp [rdrop]
 
 theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
   rw [rdrop]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · simp [take_length_add_append]
     · simp [take_append, IH]
 
@@ -72,9 +73,10 @@ theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
 
 theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
   rw [rtake]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · exact drop_length
     · simp [drop_append, IH]
 
@@ -169,7 +171,7 @@ theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
 
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction' l using List.reverseRecOn with l a <;> simp [rtakeWhile]
+  induction l using List.reverseRecOn <;> simp [rtakeWhile]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx

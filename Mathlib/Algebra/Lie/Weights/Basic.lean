@@ -297,7 +297,6 @@ end Weight
 @[simp]
 theorem zero_genWeightSpace_eq_top_of_nilpotent' [IsNilpotent L M] :
     genWeightSpace M (0 : L → R) = ⊤ := by
-  ext
   simp [genWeightSpace, genWeightSpaceOf]
 
 theorem coe_genWeightSpace_of_top (χ : L → R) :
@@ -392,7 +391,7 @@ def posFittingCompOf (x : L) : LieSubmodule R L M :=
   { toSubmodule := ⨅ k, LinearMap.range (toEnd R L M x ^ k)
     lie_mem := by
       set φ := toEnd R L M x
-      intros y m hm
+      intro y m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid, Submodule.mem_iInf, LinearMap.mem_range] at hm ⊢
       intro k

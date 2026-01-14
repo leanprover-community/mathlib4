@@ -3,10 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Category of categories
@@ -39,7 +39,7 @@ namespace Cat
 instance : Inhabited Cat :=
   ⟨⟨Type u, CategoryTheory.types⟩⟩
 
--- Porting note: maybe this coercion should be defined to be `objects.obj`?
+-- TODO: maybe this coercion should be defined to be `objects.obj`?
 instance : CoeSort Cat (Type u) :=
   ⟨Bundled.α⟩
 
@@ -173,8 +173,8 @@ def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
   map F := F.obj
 
--- Porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
-instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
+/-- See through the defeq `objects.obj X = X`. -/
+instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
 
 section
 

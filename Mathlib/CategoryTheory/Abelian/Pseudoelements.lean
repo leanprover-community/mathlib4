@@ -24,7 +24,7 @@ A classic application of pseudoelements are diagram lemmas like the four lemma o
 Pseudoelements are in some ways weaker than actual elements in a concrete category. The most
 important limitation is that there is no extensionality principle: If `f g : X ⟶ Y`, then
 `∀ x ∈ X, f x = g x` does not necessarily imply that `f = g` (however, if `f = 0` or `g = 0`,
-it does). A corollary of this is that we can not define arrows in abelian categories by dictating
+it does). A corollary of this is that we cannot define arrows in abelian categories by dictating
 their action on pseudoelements. Thus, a usual style of proofs in abelian categories is this:
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
@@ -53,7 +53,7 @@ Here are the metatheorems we provide:
   `g a' = 0 → g a = g a''`. We can think of `a''` as `a - a'`, but don't get too carried away
   by that: pseudoelements of an object do not form an abelian group.
 
-## Notations
+## Notation
 
 We introduce coercions from an object of an abelian category to the set of its pseudoelements
 and from a morphism to the function it induces on pseudoelements.
@@ -212,10 +212,6 @@ theorem zero_eq_zero' {P Q R : C} :
 def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 
--- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on `coe_sort`.
--- However now that coercions are treated differently, this is a structural instance triggered by
--- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
   ⟨pseudoZero⟩
 

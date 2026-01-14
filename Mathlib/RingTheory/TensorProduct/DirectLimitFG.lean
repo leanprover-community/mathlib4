@@ -192,8 +192,9 @@ variable {R M N} (u : M ⊗[R] N)
     {P : Submodule R M} (hP : Submodule.FG P) {t : P ⊗[R] N}
     {P' : Submodule R M} (hP' : Submodule.FG P') {t' : P' ⊗[R] N}
 
-theorem TensorProduct.exists_of_fg [DecidableEq {P : Submodule R M // P.FG}] :
+theorem TensorProduct.exists_of_fg :
     ∃ (P : Submodule R M), P.FG ∧ u ∈ range (rTensor N P.subtype) := by
+  classical
   let ⟨P, t, ht⟩ := Module.DirectLimit.exists_of ((Submodule.FG.rTensor.directLimit R M N).symm u)
   use P.val, P.property, t
   rw [← Submodule.FG.rTensor.directLimit_apply, ht, LinearEquiv.apply_symm_apply]
@@ -239,7 +240,7 @@ variable {R S M N : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
   {A : Subalgebra R S} (hA : A.FG) {t t' : A ⊗[R] N}
   {A' : Subalgebra R S} (hA' : A'.FG)
 
-theorem TensorProduct.Algebra.exists_of_fg [DecidableEq {P : Submodule R S // P.FG}] :
+theorem TensorProduct.Algebra.exists_of_fg :
     ∃ (A : Subalgebra R S), Subalgebra.FG A ∧ u ∈ range (rTensor N A.val.toLinearMap) := by
   obtain ⟨P, ⟨s, hs⟩, hu⟩ := TensorProduct.exists_of_fg u
   use Algebra.adjoin R s, Subalgebra.fg_adjoin_finset _

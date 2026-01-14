@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Objects of a category up to an isomorphism

@@ -18,8 +18,8 @@ then use it to show that a nonempty convex set is path connected.
 In particular, a topological vector space over `ℝ` is path connected.
 -/
 
-open Set
-open scoped Convex
+open AffineMap Set
+open scoped Convex unitInterval
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
@@ -29,7 +29,7 @@ namespace Path
 /-- The path from `a` to `b` going along a straight line segment -/
 @[simps]
 protected def segment (a b : E) : Path a b where
-  toFun t := AffineMap.lineMap a b (t : ℝ)
+  toFun t := lineMap a b (t : ℝ)
   source' := by simp
   target' := by simp
 
@@ -43,18 +43,23 @@ protected theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; s
 
 @[simp]
 protected theorem segment_symm (a b : E) : (Path.segment a b).symm = .segment b a := by
-  ext; simp [AffineMap.lineMap_apply_one_sub]
+  ext; simp
 
 @[simp]
 theorem segment_add_segment (a b c d : E) :
     (Path.segment a b).add (.segment c d) = .segment (a + c) (b + d) := by
   ext
-  simp [AffineMap.lineMap_apply_module, add_add_add_comm]
+  simp [lineMap_apply_module, add_add_add_comm]
 
 @[simp]
 theorem cast_segment {a b c d : E} (hac : c = a) (hbd : d = b) :
     (Path.segment a b).cast hac hbd = .segment c d := by
   subst_vars; rfl
+
+theorem eqOn_extend_segment (a b : E) :
+    EqOn (Path.segment a b).extend (AffineMap.lineMap a b) I := by
+  intro t ht
+  simp [ht]
 
 end Path
 

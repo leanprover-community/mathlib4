@@ -38,9 +38,9 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
+  /-- The `i`-th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
-  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
+  /-- The `i`-th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 attribute [coe] Sequence.elems'
@@ -132,7 +132,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
           mul_one, C_eq_zero, leadingCoeff_eq_zero]
       · apply head.ne_zero_of_degree_gt
         rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by omega)
+        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq
@@ -174,7 +174,7 @@ variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
-/-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+/-- The `i`-th basis vector is the `i`-th polynomial in the sequence. -/
 @[simp]
 lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 

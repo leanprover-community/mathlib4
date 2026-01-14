@@ -121,9 +121,11 @@ class Uncountable (α : Sort*) : Prop where
   /-- A type `α` is uncountable if it is not countable. -/
   not_countable : ¬Countable α
 
+@[push]
 lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
   rw [uncountable_iff_not_countable, not_not]
 
+@[push]
 lemma not_countable_iff : ¬Countable α ↔ Uncountable α := (uncountable_iff_not_countable α).symm
 
 @[simp]

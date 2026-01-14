@@ -73,12 +73,19 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
 
 /-- A prime that divides the cardinality of a finite commutative ring `R`
 isn't a unit in `R`. -/
-theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime]
+theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] {p : ℕ} [Fact p.Prime]
     (hp : p ∣ Fintype.card R) : ¬IsUnit (p : R) :=
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))
 
-lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] (p : ℕ) [hp : Fact p.Prime]
+lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] {p : ℕ} [hp : Fact p.Prime]
     (hR : Fintype.card R = p) : CharP R p :=
   have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.1.one_lt)
   (CharP.charP_iff_prime_eq_zero hp.1).2 (hR ▸ Nat.cast_card_eq_zero R)
+
+lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype R] {p f : ℕ}
+    [hp : Fact p.Prime] (hR : Fintype.card R = p ^ f) : CharP R p :=
+  have hf : f ≠ 0 := fun h0 ↦ not_subsingleton R <|
+    Fintype.card_le_one_iff_subsingleton.mp <| by simpa [h0] using hR.le
+  (CharP.charP_iff_prime_eq_zero hp.out).mpr
+    (by simpa [hf, hR] using Nat.cast_card_eq_zero R)

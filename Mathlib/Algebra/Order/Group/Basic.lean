@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -90,9 +89,6 @@ lemma zpow_le_zpow_iff_left (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
 lemma zpow_lt_zpow_iff_left (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
   (zpow_left_strictMono α hn).lt_iff_lt
 
-@[to_additive]
-instance : IsMulTorsionFree α where pow_left_injective _ hn := (pow_left_strictMono hn).injective
-
 variable (α) in
 /-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
 @[to_additive
@@ -103,7 +99,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
   rcases lt_trichotomy a 1 with hlt | rfl | hlt
   · rcases exists_between hlt with ⟨b, hab, hb⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
+    suffices 0 < k ∧ k < 1 by cutsat
     rw [← one_lt_inv'] at hlt
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
@@ -111,7 +107,7 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
     simpa [hb.symm] using ha b
   · rcases exists_between hlt with ⟨b, hb, hba⟩
     rcases ha b with ⟨k, rfl⟩
-    suffices 0 < k ∧ k < 1 by omega
+    suffices 0 < k ∧ k < 1 by cutsat
     simp_rw [← zpow_lt_zpow_iff_right hlt]
     simp_all
 

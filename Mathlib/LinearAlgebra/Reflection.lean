@@ -36,15 +36,15 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
   commutative ring. This is used to define reflection representations of Coxeter groups.
-* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-  finite spanning sets that is useful in the theory of root data / systems.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections that preserve
+  finite spanning sets. It is useful in the theory of root data / systems.
 
 ## TODO
 
 Related definitions of reflection exists elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
-should connect (or unify) these definitions with `Module.reflecton` defined here.
+should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
 
@@ -201,7 +201,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
-    rw [← Int.ediv_add_emod m 2]
+    rw [← Int.mul_ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
@@ -352,7 +352,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
-    intros n
+    intro n
     induction n with
     | zero => simp
     | succ n ih =>

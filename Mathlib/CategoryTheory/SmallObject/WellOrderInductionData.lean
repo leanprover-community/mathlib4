@@ -6,7 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Order.SuccPred.Limit
 
 /-!

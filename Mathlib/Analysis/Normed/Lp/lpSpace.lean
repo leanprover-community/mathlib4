@@ -379,6 +379,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
     ‖f‖ ^ p.toReal = ∑' i, ‖f i‖ ^ p.toReal := by
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
+    simp
   apply tsum_nonneg
   intro i
   calc
@@ -621,9 +622,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
-    rw [← NNReal.mul_rpow]
-    -- Porting note: added
-    rw [lp.coeFn_smul, Pi.smul_apply]
+    rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
     apply nnnorm_smul_le
 
@@ -722,7 +721,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
+  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _, f.property.infty_mul g.property⟩
 
 @[simp]
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
@@ -1200,7 +1199,7 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
   rintro - ⟨i, rfl⟩
   calc
     |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
-    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add_le _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
         · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀

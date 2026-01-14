@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Comma.Over.Basic
 This is only a sensible approach when the morphism is considered as a structure on `X`,
 typically in algebraic geometry.
 
-This is analogous to to how we view ringhoms as structures via the `Algebra` typeclass.
+This is analogous to how we view ringhoms as structures via the `Algebra` typeclass.
 
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 

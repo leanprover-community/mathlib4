@@ -161,7 +161,8 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
       rw [List.mem_map] at hx hy
       obtain ⟨a, hx, rfl⟩ := hx
       obtain ⟨b, hy, hx⟩ := hy
-      simp [Ne.symm h.1] at hx
+      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
+        false_or] at hx
       obtain ⟨rfl, rfl⟩ := hx
       exact h.2 hy
     · exact ih h.2

@@ -18,7 +18,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe v
 
@@ -74,7 +74,7 @@ noncomputable def hom :
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       dsimp [mappingConeCompTriangle, map]
-      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p+1) p (p+2) (by omega) (by omega)])
+      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p+1) p (p+2) (by cutsat) (by cutsat)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
 is the canonical morphism (which is an homotopy equivalence) from the mapping cone of
@@ -85,7 +85,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by omega) (by omega)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by cutsat) (by cutsat)])
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
@@ -109,14 +109,14 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
         Cochain.neg_comp, neg_neg]
       ext n
       rw [ext_from_iff _ (n + 1) n rfl, ext_from_iff _ (n + 1) n rfl,
-        ext_from_iff _ (n + 2) (n + 1) (by omega)]
+        ext_from_iff _ (n + 2) (n + 1) (by cutsat)]
       dsimp [hom, inv]
       simp [ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
-          (add_neg_cancel 1) n (n + 1) n (by omega) (by omega),
+          (add_neg_cancel 1) n (n + 1) n (by cutsat) (by cutsat),
         Cochain.comp_v _ _ (show 1 + -2 = -1 by decide) (n + 1) (n + 2) n
-          (by omega) (by omega),
+          (by cutsat) (by cutsat),
         Cochain.comp_v _ _ (show (-1) + -1 = -2 by decide) (n + 2) (n + 1) n
-          (by omega) (by omega)]⟩
+          (by cutsat) (by cutsat)]⟩
 
 end MappingConeCompHomotopyEquiv
 

@@ -5,14 +5,14 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.Normed.Module.Ball.Action
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Tactic.Module
 
 /-!
@@ -24,11 +24,11 @@ it to put an analytic manifold structure on the sphere.
 ## Main results
 
 For a unit vector `v` in `E`, the definition `stereographic` gives the stereographic projection
-centred at `v`, a partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal complement of
-`v`).
+centred at `v`, an open partial homeomorphism from the sphere to `(ℝ ∙ v)ᗮ` (the orthogonal
+complement of `v`).
 
 For finite-dimensional `E`, we then construct an analytic manifold instance on the sphere; the
-charts here are obtained by composing the partial homeomorphisms `stereographic` with arbitrary
+charts here are obtained by composing the open partial homeomorphisms `stereographic` with arbitrary
 isometries from `(ℝ ∙ v)ᗮ` to Euclidean space.
 
 We prove two lemmas about `C^n` maps:
@@ -135,10 +135,10 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
 
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
-  have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
+  have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : StrongDual ℝ E) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
     simp only [map_zero, smul_zero]
-  have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
+  have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : StrongDual ℝ E) 0 := by
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
   have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
@@ -223,27 +223,25 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
   match_scalars
   · field_simp
-    linear_combination 4 * (1 - a) * pythag
+    linear_combination 4 * pythag
   · field_simp
-    linear_combination 4 * (a - 1) ^ 3 * pythag
+    linear_combination 4 * (a - 1) * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
     Submodule.orthogonalProjection_mem_subspace_eq_self]
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
     Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
-  -- Porting note: was innerSL _ and now just inner
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-  -- Porting note: was innerSL _ and now just inner
   have h₃ : ⟪v, v⟫ = 1 := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
-  field_simp
+  simp [field]
   ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
-this is the version as a partial homeomorphism. -/
-def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
+this is the version as an open partial homeomorphism. -/
+def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
   toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
@@ -327,19 +325,15 @@ fixed normed space.  This could be proved in general by a simple case of Gram-Sc
 orthogonalization, but in the finite-dimensional case it follows more easily by dimension-counting.
 -/
 
--- Porting note: unnecessary in Lean 3
-private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
-  .of_fact_finrank_eq_succ n
-
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
 composing the original stereographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
+    OpenPartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
   stereographic (norm_eq_of_mem_sphere v) ≫ₕ
     (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toPartialHomeomorph
+            (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph.toOpenPartialHomeomorph
 
 @[simp]
 theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
@@ -405,12 +399,12 @@ instance EuclideanSpace.instIsManifoldSphere
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ω _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
-      simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
-        PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
-        stereographic'_source]
+      simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
+        OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
+        PartialEquiv.symm_source, stereographic'_target, stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
+      simp only [id, comp_apply, Submodule.subtypeL_apply, OpenPartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
@@ -421,8 +415,6 @@ instance (n : ℕ) : IsManifold (𝓡 n) ω (sphere (0 :  EuclideanSpace ℝ (Fi
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is analytic. -/
 theorem contMDiff_coe_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) m ((↑) : sphere (0 : E) 1 → E) := by
-  -- Porting note: trouble with filling these implicit variables in the instance
-  have := EuclideanSpace.instIsManifoldSphere (E := E) (n := n)
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -460,9 +452,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
     have hfx : ‖f x‖ = 1 := by simpa using hf' x
     rw [inner_eq_one_iff_of_norm_one hfx]
     exact norm_eq_of_mem_sphere (-v)
-  -- Porting note: unfold more
-  dsimp [chartAt, Set.codRestrict, ChartedSpace.chartAt]
-  simp [Subtype.ext_iff, hfxv, real_inner_comm]
+  simp [chartAt, ChartedSpace.chartAt, Subtype.ext_iff, hfxv, real_inner_comm]
 
 /-- The antipodal map is analytic. -/
 theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
@@ -545,7 +535,7 @@ section Circle
 
 open Complex
 
--- Porting note: 1+1 = 2 except when synthing instances
+/-- Local instance to help the typeclass system to figure out `1 + 1 = 2`. -/
 theorem finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
   finrank_real_complex_fact
 
@@ -567,8 +557,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ω fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
-    -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
-    suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ω (Prod.map c c) from
+    suffices h₁ : ContMDiff _ _ _ (Prod.map c c) from
       h₂.comp h₁
     apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
   contMDiff_inv := by

@@ -64,21 +64,18 @@ theorem functor_skeletal [Quiver.IsThin C] (hC : Skeletal C) : Skeletal (D ⥤ C
 
 variable (C D)
 
+noncomputable section
+
 /-- Construct the skeleton category as the induced category on the isomorphism classes, and derive
 its category structure.
 -/
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving
+  Category,
+  [Inhabited C] → Inhabited _,
+  (α : Sort _) → [CoeSort C α] → CoeSort _ α
 
-instance [Inhabited C] : Inhabited (Skeleton C) :=
-  ⟨⟦default⟧⟩
-
-noncomputable instance : Category (Skeleton C) := by
-  apply InducedCategory.category
-
-noncomputable instance {α} [CoeSort C α] : CoeSort (Skeleton C) α :=
-  inferInstanceAs (CoeSort (InducedCategory _ _) _)
+end
 
 /-- The functor from the skeleton of `C` to `C`. -/
 @[simps!]
@@ -86,6 +83,9 @@ noncomputable def fromSkeleton : Skeleton C ⥤ C :=
   inducedFunctor _
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
+-- Note(kmill): `derive Functor.Full, Functor.Faithful` does not create instances
+-- that are in terms of `Skeleton`, but rather `InducedCategory`, which can't be applied.
+-- With `deriving @Functor.Full (Skeleton C)`, the instance can't be derived, for a similar reason.
 
 noncomputable instance : (fromSkeleton C).Full := by
   apply InducedCategory.full
@@ -203,13 +203,17 @@ variable (C D)
 
 /-- Construct the skeleton category by taking the quotient of objects. This construction gives a
 preorder with nice definitional properties, but is only really appropriate for thin categories.
-If your original category is not thin, you probably want to be using `skeleton` instead of this.
+If your original category is not thin, you probably want to be using `Skeleton` instead of this.
 -/
 def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
+variable {C} in
+/-- Convenience constructor for `ThinSkeleton`. -/
+abbrev ThinSkeleton.mk (c : C) : ThinSkeleton C := Quotient.mk' c
+
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
-  ⟨@Quotient.mk' C (isIsomorphicSetoid C) default⟩
+  ⟨ThinSkeleton.mk default⟩
 
 instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le :=
@@ -229,7 +233,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
 def toThinSkeleton : C ⥤ ThinSkeleton C where
-  obj := @Quotient.mk' C _
+  obj := ThinSkeleton.mk
   map f := homOfLE (Nonempty.intro f)
 
 /-!

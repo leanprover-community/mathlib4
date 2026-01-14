@@ -299,14 +299,14 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) : C ⥤ D :=
   { obj, map := @map,
     map_id := by
-      intros X
+      intro X
       apply G.map_injective
       apply eq_of_heq
       trans F.map (𝟙 X)
       · exact h_map
       · rw [F.map_id, G.map_id, h_obj X]
     map_comp := by
-      intros X Y Z f g
+      intro X Y Z f g
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
       grind }

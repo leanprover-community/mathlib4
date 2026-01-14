@@ -6,6 +6,11 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Algebra.CharP.Two
 import Mathlib.SetTheory.Nimber.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division

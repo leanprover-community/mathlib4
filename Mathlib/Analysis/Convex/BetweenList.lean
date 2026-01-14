@@ -114,7 +114,7 @@ lemma sbtw_iff_triplewise_and_ne_pair [IsOrderedRing R] {l : List P} :
           · refine ⟨(hpne.1 head2 ?_).symm, hpne.2.1 a ha⟩
             simp
           · rw [wbtw_cons] at ht
-            grind
+            grind [List.pairwise_iff_forall_sublist]
       · rw [pairwise_cons] at hpne
         exact (ih.1 ⟨ht, hpne.2⟩).1
       · grind
@@ -261,7 +261,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
           fun h ↦ ?_⟩
   · rw [← hl'l]
     rcases hla with hla | hla
-    · grind
+    · grind [List.pairwise_iff_forall_sublist]
     · exact (hl's.imp LT.lt.ne).map _ fun _ _ ↦ (lineMap_injective _ hla).ne
   · rw [List.Sbtw, ← exists_map_eq_of_sorted_nonempty_iff_wbtw hl] at h
     rcases h with ⟨⟨l', hl's, hl'l⟩, hp⟩

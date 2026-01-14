@@ -15,7 +15,7 @@ We first prove the part of Schur's Lemma that holds in any preadditive category 
 that any nonzero morphism between simple objects
 is an isomorphism.
 
-Second, we prove Schur's lemma for `𝕜`-linear categories with finite dimensional hom spaces,
+Second, we prove Schur's lemma for `𝕜`-linear categories with finite-dimensional hom spaces,
 over an algebraically closed field `𝕜`:
 the hom space `X ⟶ Y` between simple objects `X` and `Y` is at most one dimensional,
 and is 1-dimensional iff `X` and `Y` are isomorphic.
@@ -93,12 +93,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
--- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
--- where we need a `FiniteDimensional 𝕜 (End X)`.
--- These are definitionally equal, but without eta reduction Lean can't see this.
--- To get around this, we use `convert I`,
--- then check the various instances agree field-by-field,
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -178,14 +172,14 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
       finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
-    omega
+    cutsat
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
-  omega
+  cutsat
 
 open scoped Classical in
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Nikolas Kuhn
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-/-!
+import Mathlib.Data.Finite.Sigma
 
+/-!
 # Description of the covering sieves of the coherent topology
 
 This file characterises the covering sieves of the coherent topology.

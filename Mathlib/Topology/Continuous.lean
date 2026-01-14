@@ -310,7 +310,7 @@ theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
 
 end DenseRange
 
-library_note "continuity lemma statement"/--
+library_note2 «continuity lemma statement» /--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
 Note: for the most part this note also applies to other properties
@@ -407,7 +407,7 @@ With `ContinuousAt` you can be even more precise about what to prove in case of 
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
 
-library_note "comp_of_eq lemmas"/--
+library_note2 «comp_of_eq lemmas» /--
 Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
 two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
 `ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like

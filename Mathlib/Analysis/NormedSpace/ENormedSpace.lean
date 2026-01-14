@@ -99,7 +99,7 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   simp]
 theorem map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
-  norm_num
+  simp
 
 @[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
   simp]

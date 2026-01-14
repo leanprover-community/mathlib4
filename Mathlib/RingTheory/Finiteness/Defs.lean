@@ -47,13 +47,15 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
     exact ⟨t, rfl⟩⟩
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
 
-theorem fg_iff_add_subgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
+theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+
+@[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
@@ -79,6 +81,20 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
   · rintro ⟨G, _, g, hg⟩
     have := Fintype.ofFinite (range g)
     exact ⟨(range g).toFinset, by simpa using hg⟩
+
+theorem fg_span_iff_fg_span_finset_subset (s : Set M) :
+    (span R s).FG ↔ ∃ s' : Finset M, ↑s' ⊆ s ∧ span R s = span R s' := by
+  unfold FG
+  constructor
+  · intro ⟨s'', hs''⟩
+    obtain ⟨s', hs's, hss'⟩ := subset_span_finite_of_subset_span <| hs'' ▸ subset_span
+    refine ⟨s', hs's, ?_⟩
+    apply le_antisymm
+    · rwa [← hs'', Submodule.span_le]
+    · rw [Submodule.span_le]
+      exact le_trans hs's subset_span
+  · intro ⟨s', _, h⟩
+    exact ⟨s', h.symm⟩
 
 end Submodule
 
@@ -121,8 +137,8 @@ theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔
     finite_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
 
 theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
-  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).1 (finite_def.1 h), fun h =>
-    finite_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
+  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_addSubgroup_fg ⊤).1 (finite_def.1 h), fun h =>
+    finite_def.2 <| (Submodule.fg_iff_addSubgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
 
 variable {R M N}
 
@@ -153,6 +169,11 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
+
+@[simp]
+lemma finite_algebraMap [Algebra A B] :
+    (algebraMap A B).Finite ↔ Module.Finite A B := by
+  rw [RingHom.Finite, toAlgebra_algebraMap]
 
 end RingHom
 

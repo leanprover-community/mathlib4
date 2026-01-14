@@ -89,7 +89,7 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   __ := divInvMonoid
   __ := involutiveInv
   mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
-  inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+  inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
 @[to_additive instSubtractionCommMonoid]
 instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=

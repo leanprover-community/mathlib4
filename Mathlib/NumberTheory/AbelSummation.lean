@@ -77,7 +77,7 @@ private theorem ineqofmemIco {k : ℕ} (hk : k ∈ Set.Ico (⌊a⌋₊ + 1) ⌊b
     a ≤ k ∧ k + 1 ≤ b := by
   constructor
   · have := (Set.mem_Ico.mp hk).1
-    exact le_of_lt <| (Nat.floor_lt' (by omega)).mp this
+    exact le_of_lt <| (Nat.floor_lt' (by cutsat)).mp this
   · rw [← Nat.cast_add_one, ← Nat.le_floor_iff' (Nat.succ_ne_zero k)]
     exact (Set.mem_Ico.mp hk).2
 
@@ -143,7 +143,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
     Ico_add_one_right_eq_Icc, smul_eq_mul]
   have : ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f k) * ∑ n ∈ Icc 0 k, c n =
         ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ t in k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n := by
-    rw [← Ico_add_one_add_one_eq_Ioc, Nat.sub_add_cancel (by omega), Eq.comm]
+    rw [← Ico_add_one_add_one_eq_Ioc, Nat.sub_add_cancel (by cutsat), Eq.comm]
     exact sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _  (mod_cast k.le_succ)
       le_rfl (mod_cast le_rfl) (ineqofmemIco' hk).1 <| mod_cast (ineqofmemIco' hk).2)
   rw [this, sum_integral_adjacent_intervals_Ico hb, Nat.cast_add, Nat.cast_one,
@@ -212,7 +212,7 @@ theorem sum_mul_eq_sub_integral_mul₀ (hc : c 0 = 0) (b : ℝ)
   obtain hb | hb := le_or_gt 1 b
   · have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
     nth_rewrite 1 [Icc_eq_cons_Ioc (Nat.zero_le _), sum_cons, ← Icc_add_one_left_eq_Ioc,
-      Icc_eq_cons_Ioc (by omega), sum_cons]
+      Icc_eq_cons_Ioc (by cutsat), sum_cons]
     rw [zero_add, ← Nat.floor_one (R := ℝ),
       sum_mul_eq_sub_sub_integral_mul c zero_le_one hb hf_diff hf_int, Nat.floor_one, Nat.cast_one,
       Icc_eq_cons_Ioc zero_le_one, sum_cons, show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton,

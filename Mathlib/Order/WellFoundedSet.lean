@@ -38,7 +38,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## TODO
 
-* Prove that `s` is partial well ordered iff it has no infinite descending chain or antichain.
+* Prove that `s` is partially well-ordered iff it has no infinite descending chain or antichain.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
@@ -163,7 +163,7 @@ instance IsStrictOrder.subset : IsStrictOrder α fun a b : α => r a b ∧ a ∈
 
 theorem wellFoundedOn_iff_no_descending_seq :
     s.WellFoundedOn r ↔ ∀ f : ((· > ·) : ℕ → ℕ → Prop) ↪r r, ¬∀ n, f n ∈ s := by
-  simp only [wellFoundedOn_iff, RelEmbedding.wellFounded_iff_no_descending_seq, ← not_exists, ←
+  simp only [wellFoundedOn_iff, RelEmbedding.wellFounded_iff_isEmpty, ← not_exists, ←
     not_nonempty_iff, not_iff_not]
   constructor
   · rintro ⟨⟨f, hf⟩⟩
@@ -211,11 +211,6 @@ theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFoundedLT α := by
 
 theorem IsWF.of_wellFoundedLT [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
   (Set.isWF_univ_iff.2 h).mono s.subset_univ
-
-@[deprecated IsWF.of_wellFoundedLT (since := "2025-01-16")]
-theorem _root_.WellFounded.isWF (h : WellFounded ((· < ·) : α → α → Prop)) (s : Set α) : s.IsWF :=
-  have : WellFoundedLT α := ⟨h⟩
-  .of_wellFoundedLT s
 
 end LT
 
@@ -527,10 +522,6 @@ theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF := by
   rw [← wellQuasiOrderedLE_def, ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
 
 alias ⟨_, IsWF.isPWO⟩ := isPWO_iff_isWF
-
-@[deprecated isPWO_iff_isWF (since := "2025-01-21")]
-theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
-  isPWO_iff_isWF.symm
 
 /--
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
@@ -886,7 +877,7 @@ end Set.PartiallyWellOrderedOn
 ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
 This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
 Some generalizations would be possible based on this proof, to include cases where the target is
-partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
+partially well-ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPWO`. -/
 theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPWO := by
@@ -947,10 +938,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
     · exact ⟨c, h'⟩
     · exact PSigma.subtype_ext (Subtype.ext h') rfl
     · dsimp only [Subtype.coe_mk, Subrel, Order.Preimage] at *
-      revert h'
-      generalize f c = d
-      rintro rfl h''
-      exact h''
+      grind
 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :

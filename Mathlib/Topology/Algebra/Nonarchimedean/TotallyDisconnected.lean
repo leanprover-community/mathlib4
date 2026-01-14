@@ -41,7 +41,7 @@ lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
   obtain ⟨V, hV⟩ := is_nonarchimedean v (open_v.mem_nhds mem_v)
   use V
   simp only [Disjoint, Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff]
-  intros x mem_aV mem_bV
+  intro x mem_aV mem_bV
   by_contra! con
   obtain ⟨s, hs⟩ := con
   have hsa : s ∈ a • (V : Set G) := mem_aV hs

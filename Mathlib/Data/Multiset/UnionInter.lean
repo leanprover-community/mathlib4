@@ -102,7 +102,7 @@ lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s �
   Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
   induction s using Multiset.induction_on generalizing t with
@@ -113,7 +113,7 @@ lemma inter_le_right : s ∩ t ≤ t := by
     · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
+  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intro s u h₁ h₂
   · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]

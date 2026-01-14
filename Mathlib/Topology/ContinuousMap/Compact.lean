@@ -183,7 +183,7 @@ section
 variable (f : C(α, E))
 
 -- The corresponding lemmas for `BoundedContinuousFunction` are stated with `{f}`,
--- and so can not be used in dot notation.
+-- and so cannot be used in dot notation.
 theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
   (mkOfCompact f).norm_coe_le_norm x
 

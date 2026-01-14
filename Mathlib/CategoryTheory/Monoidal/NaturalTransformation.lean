@@ -60,7 +60,7 @@ instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' 
     simp only [comp_obj, comp_ε, hcomp_app, assoc, naturality_assoc, unit_assoc, ← map_comp, unit]
   tensor X Y := by
     simp only [comp_obj, comp_μ, hcomp_app, assoc, naturality_assoc,
-      tensor_assoc, tensor_comp, μ_natural_assoc]
+      tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
     simp only [← map_comp, tensor]
 
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
@@ -103,7 +103,7 @@ instance : NatTrans.IsMonoidal e.inv where
   unit := by rw [← NatTrans.IsMonoidal.unit (τ := e.hom), assoc, hom_inv_id_app, comp_id]
   tensor X Y := by
     rw [← cancel_mono (e.hom.app (X ⊗ Y)), assoc, assoc, inv_hom_id_app, comp_id,
-      NatTrans.IsMonoidal.tensor, ← MonoidalCategory.tensor_comp_assoc,
+      NatTrans.IsMonoidal.tensor, MonoidalCategory.tensorHom_comp_tensorHom_assoc,
       inv_hom_id_app, inv_hom_id_app, tensorHom_id, id_whiskerRight, id_comp]
 
 end Iso

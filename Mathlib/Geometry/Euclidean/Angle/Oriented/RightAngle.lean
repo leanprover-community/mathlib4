@@ -9,7 +9,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 /-!
 # Oriented angles in right-angled triangles.
 
-This file proves basic geometrical results about distances and oriented angles in (possibly
+This file proves basic geometric results about distances and oriented angles in (possibly
 degenerate) right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 -/
@@ -451,9 +451,7 @@ theorem oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ
         sub_eq_zero, add_comm, sub_neg_eq_add, ← Real.Angle.coe_add, ← Real.Angle.coe_add,
         add_assoc, add_halves, ← two_mul, Real.Angle.coe_two_pi]
       simpa using h
-    -- Porting note: if the type is not given in `neg_neg` then Lean "forgets" about the instance
-    -- `Neg (Orientation ℝ V (Fin 2))`
-    rw [← neg_inj, ← oangle_neg_orientation_eq_neg, @neg_neg Real.Angle] at ha
+    rw [← neg_inj, ← oangle_neg_orientation_eq_neg, neg_neg] at ha
     rw [← neg_inj, oangle_rev, ← oangle_neg_orientation_eq_neg, neg_inj, oangle_rev,
       (-o).oangle_add_right_eq_arctan_of_oangle_eq_pi_div_two ha, norm_smul,
       LinearIsometryEquiv.norm_map, mul_div_assoc, div_self (norm_ne_zero_iff.2 h), mul_one,

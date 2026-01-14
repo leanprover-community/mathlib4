@@ -143,7 +143,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     obtain rfl | hij := eq_or_ne i j
     · simp
     rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
-    simp [Finsupp.single_eq_pi_single, hij]
+    simp [hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
 `End(M) ≃ M* ⊗ M`. -/
@@ -264,6 +264,12 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_comp_comm R M N) g) f
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
+
+@[simp]
+lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
+    trace R M (f.smulRight x) = f x := by
+  rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
+  simp [- Basis.sum_repr, dotProduct]
 
 end
 

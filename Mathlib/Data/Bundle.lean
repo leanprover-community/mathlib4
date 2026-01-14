@@ -104,7 +104,7 @@ def TotalSpace.trivialSnd (B : Type*) (F : Type*) : TotalSpace F (Bundle.Trivial
   TotalSpace.snd
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
-@[simps (attrs := [`mfld_simps])]
+@[simps (attr := mfld_simps)]
 def TotalSpace.toProd (B F : Type*) : (TotalSpace F fun _ : B => F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
@@ -129,7 +129,7 @@ def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' 
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
-@[simps (attrs := [`mfld_simps])]
+@[simps (attr := mfld_simps)]
 def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
 
 @[simp, mfld_simps]
