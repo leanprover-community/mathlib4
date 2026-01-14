@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 module
 
 public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Basic properties of Boolean algebras
@@ -632,7 +633,7 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α]
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [LE α] [LT α] [Top α] [Bot α]
-    [HasCompl α] [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
+    [Compl α] [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)

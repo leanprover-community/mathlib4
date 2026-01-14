@@ -417,7 +417,7 @@ def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
     refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
-      _ < w[i2]  := h2
+      _ < w[i2] := h2
       _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl

@@ -75,7 +75,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 
-theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [IsIrrefl ι r] {x y : Π₀ i, α i} :
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [Std.Irrefl r] {x y : Π₀ i, α i} :
     DFinsupp.Lex r (fun _ ↦ (· < ·)) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
