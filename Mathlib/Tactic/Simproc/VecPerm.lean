@@ -29,8 +29,7 @@ private partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
   match n, vec with
   | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
-    let some prevList ← listOfVecQ prevVec | return none
-    return some <| lastOut :: prevList
+    return (← listOfVecQ prevVec).map (lastOut :: ·)
   | ~q(0), ~q(Matrix.vecEmpty) => return some []
 
 /--
@@ -59,7 +58,7 @@ private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
     | none => current
 
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
-list of term of type `Fin n`. This is meant to be used when `perm corresponds to a permutation
+list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     MetaM (Option <| List Nat) :=
