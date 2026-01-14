@@ -331,7 +331,7 @@ theorem logCounting_nonneg {r : ℝ} {f : 𝕜 → E} {e : WithTop E} (hr : 1 �
 The logarithmic counting function is asymptotically non-negative.
 -/
 theorem logCounting_eventually_nonneg {f : 𝕜 → E} {e : WithTop E} :
-    0 ≤ᶠ[Filter.atTop] logCounting f e  := by
+    0 ≤ᶠ[Filter.atTop] logCounting f e := by
   filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [logCounting_nonneg hr]
 
 /-!
