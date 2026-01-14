@@ -80,7 +80,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_enorm hf.1]
       simp_rw [Real.norm_eq_abs]
-      rw (config := {occs := .pos [2]}) [← integral_condExp hm]
+      rw (config := { occs := .pos [2] }) [← integral_condExp hm]
       refine integral_congr_ae ?_
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condExp_zero]
