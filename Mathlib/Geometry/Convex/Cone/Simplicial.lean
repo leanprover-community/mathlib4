@@ -20,7 +20,6 @@ the (simplicial) generators linearly span the module.
 
 * `PointedCone.IsSimplicial`: A pointed cone is simplicial if it equals the conic span of
   a finite linearly independent set.
-* `PointedCone.IsGenerating`: Abbreviation - generating if it spans the whole module.
 
 ## Results
 
