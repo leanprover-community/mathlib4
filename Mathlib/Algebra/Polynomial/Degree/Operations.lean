@@ -169,6 +169,21 @@ theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
   eq_C_of_degree_le_zero h.le
 
+theorem eq_C_leadingCoeff_of_degree_eq_zero (h : degree p = 0) : p = C (leadingCoeff p) := by
+  convert eq_C_of_degree_le_zero h.le
+  rw [leadingCoeff, natDegree_eq_of_degree_eq_some h]
+  rfl
+
+theorem eq_C_leadingCoeff_of_degree_le_zero (h : degree p ≤ 0) : p = C (leadingCoeff p) := by
+  by_cases hp : p = 0
+  · simp [hp]
+  apply eq_C_leadingCoeff_of_degree_eq_zero
+  lift degree p to ℕ using degree_ne_bot.mpr hp with d hd
+  simp [show d = 0 from Nat.le_zero.mp (WithBot.coe_le_coe.mp h)]
+
+theorem eq_C_leadingCoeff_of_natDegree_eq_zero (h : natDegree p = 0) : p = C (leadingCoeff p) :=
+  eq_C_leadingCoeff_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.mp h)
+
 theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
   ⟨eq_C_of_degree_le_zero, fun h => h.symm ▸ degree_C_le⟩
 
