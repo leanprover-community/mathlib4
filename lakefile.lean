@@ -69,6 +69,9 @@ lean_lib Mathlib where
 lean_lib Cache
 lean_lib LongestPole
 
+lean_lib ConstGraph where
+  globs := #[.submodules `ConstGraph]
+
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
 
@@ -134,6 +137,9 @@ lean_exe pole where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
+
+lean_exe const_graph where
+  root := `ConstGraph.Main
 
 /--
 `lake exe unused module_1 ... module_n` will analyze unused transitive imports in a given sequence.

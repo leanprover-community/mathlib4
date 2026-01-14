@@ -40,6 +40,24 @@ namespace CategoryTheory
 -- morphism levels before object levels. See note [category theory universes].
 universe v v' w u u'
 
+structure TypeCat where
+  carrier : Type u
+
+instance : CoeSort TypeCat.{u} (Type u) where
+  coe X := X.carrier
+
+structure TypeCat.Hom (X Y : TypeCat.{u}) where
+  toFun : X → Y
+
+instance typeCat : LargeCategory TypeCat where
+  Hom := TypeCat.Hom
+  id X := ⟨fun x => x⟩
+  comp f g := ⟨fun x => g.toFun <| f.toFun x⟩
+
+instance {X Y : TypeCat} : FunLike (X ⟶ Y) X Y where
+  coe f := f.toFun
+  coe_injective' | ⟨_⟩, ⟨_⟩ => congr_arg _
+
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
 @[to_additive self]
