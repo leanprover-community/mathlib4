@@ -39,7 +39,7 @@ def solutionSet : Set ℝ := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
-    rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by norm_num)] at this
+    rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by simp)] at this
     exact_mod_cast this
   simp_rw [Int.floor_intCast, ← sum_mul, ← Ico_succ_right_eq_Icc, ← range_eq_Ico, ← mul_assoc]
   apply dvd_mul_of_dvd_left
@@ -58,7 +58,7 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   simp
 
 lemma condition_toIcoMod_iff {α : ℝ} :
-    Condition (toIcoMod (by norm_num : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
+    Condition (toIcoMod (by simp : (0 : ℝ) < 2) 0 α) ↔ Condition α := by
   rw [toIcoMod, zsmul_eq_mul, mul_comm, condition_sub_two_mul_int_iff]
 
 namespace Condition
@@ -102,7 +102,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
   induction n, hn using Nat.le_induction with
   | base =>
     obtain ⟨h1, h2⟩ := hc.mem_Ico_one_of_mem_Ioo h
-    simp only [zero_add, Finset.Icc_self, Finset.sum_singleton, Nat.cast_one, one_mul, one_pow,
+    simp only [Finset.Icc_self, Finset.sum_singleton, Nat.cast_one, one_mul, one_pow,
                Int.floor_eq_iff, Int.cast_one, mul_one, div_one, Set.mem_Ico, tsub_le_iff_right]
     exact ⟨⟨h1, by linarith⟩, by linarith, h2⟩
   | succ k kpos hk =>

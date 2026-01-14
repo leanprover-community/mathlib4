@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.UniqueProds.Basic
 # Free abelian groups have unique sums
 -/
 
-assert_not_exists StarModule
+assert_not_exists Cardinal StarModule
 
 instance {σ : Type*} : TwoUniqueSums (FreeAbelianGroup σ) :=
   (FreeAbelianGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance

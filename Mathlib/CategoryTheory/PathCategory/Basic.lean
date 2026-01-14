@@ -139,7 +139,7 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefu
   · rintro X Y f
     rcases φ with ⟨φo, φm⟩
     dsimp [lift, Quiver.Hom.toPath]
-    simp only [Category.id_comp]
+    simp
 
 theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
@@ -206,7 +206,7 @@ def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
 @[simp] lemma composePath_nil {X : C} : composePath (Path.nil : Path X X) = 𝟙 X := rfl
 
 @[simp] lemma composePath_cons {X Y Z : C} (p : Path X Y) (e : Y ⟶ Z) :
-  composePath (p.cons e) = composePath p ≫ e := rfl
+    composePath (p.cons e) = composePath p ≫ e := rfl
 
 @[simp]
 theorem composePath_toPath {X Y : C} (f : X ⟶ Y) : composePath f.toPath = f := Category.id_comp _
@@ -271,10 +271,10 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X
-    simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,
+    simp only [Functor.id_obj,
                quotientPathsTo_obj, Functor.comp_obj, toQuotientPaths_obj_as,
                NatIso.ofComponents_hom_app, Iso.refl_hom, quotientPathsTo_map, Category.comp_id]
     rfl

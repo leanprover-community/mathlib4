@@ -6,6 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences

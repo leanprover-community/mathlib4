@@ -59,7 +59,7 @@ theorem coeffList_eq_nil {P : R[X]} : P.coeffList = [] ↔ P = 0 := by
 
 @[simp]
 theorem coeffList_C {x : R} (h : x ≠ 0) : (C x).coeffList = [x] := by
-  simp [coeffList, h, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
+  simp [coeffList, List.range_succ, degree_eq_natDegree (C_ne_zero.mpr h)]
 
 theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
     ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
@@ -97,7 +97,7 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     (monomial n x).coeffList = x :: List.replicate n 0 := by
   have h := mt (Polynomial.monomial_eq_zero_iff x n).mp hx
   apply List.ext_get (by classical simp [hx])
-  rintro (_|k) _ h₁
+  rintro (_ | k) _ h₁
   · exact (coeffList_eq_cons_leadingCoeff h).rec (by simp_all)
   · rw [List.length_cons, List.length_replicate] at h₁
     have : ((monomial n) x).natDegree.succ = n + 1 := by
@@ -128,10 +128,10 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     omega
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
-  rintro (_|k)
+  rintro (_ | k)
   · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
-  simp only [coeffList, support_eq_empty, h, reduceIte, List.map_reverse, hep]
+  simp only [coeffList, List.map_reverse]
   by_cases hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
       <;> simpa [hep, h] using by omega
@@ -161,7 +161,7 @@ variable [Ring R] (P : R[X])
 theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   by_cases hp : P = 0
   · rw [hp, coeffList_zero, neg_zero, coeffList_zero, List.map_nil]
-  · simp [coeffList, hp]
+  · simp [coeffList]
 
 end Ring
 

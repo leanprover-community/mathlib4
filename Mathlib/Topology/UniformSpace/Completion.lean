@@ -146,7 +146,7 @@ def pureCauchy (a : α) : CauchyFilter α :=
 theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → CauchyFilter α) :=
   ⟨have : (preimage fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ∘ gen = id :=
       funext fun s =>
-        Set.ext fun ⟨a₁, a₂⟩ => by simp [preimage, gen, pureCauchy, prod_principal_principal]
+        Set.ext fun ⟨a₁, a₂⟩ => by simp [preimage, gen, pureCauchy]
     calc
       comap (fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ((𝓤 α).lift' gen) =
           (𝓤 α).lift' ((preimage fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ∘ gen) :=
@@ -357,6 +357,10 @@ theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completi
   IsUniformEmbedding.injective (isUniformEmbedding_coe _)
 
 variable {α}
+
+@[simp]
+lemma coe_inj [T0Space α] {a b : α} : (a : Completion α) = b ↔ a = b :=
+  (coe_injective _).eq_iff
 
 theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
   { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }

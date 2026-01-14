@@ -156,8 +156,7 @@ theorem eqvGen_of_π_eq
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
     rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
-    erw [h]
-    simp
+    simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=

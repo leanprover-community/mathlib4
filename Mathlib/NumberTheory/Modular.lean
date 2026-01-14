@@ -139,10 +139,10 @@ theorem tendsto_normSq_coprime_pair :
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
     fin_cases i
-    · show (z : ℂ).im⁻¹ * (f c).im = c 0
+    · change (z : ℂ).im⁻¹ * (f c).im = c 0
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
-    · show (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
+    · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
       rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
@@ -208,18 +208,18 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   fin_cases i <;> [fin_cases j; skip]
   -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
   · simp only [Fin.isValue, Int.cast_one, map_apply_coe, RingHom.mapMatrix_apply,
-      Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, id_eq, Function.comp_apply,
+      Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, Function.comp_apply,
       of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one, lcRow0Extend_apply,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
-      cons_val_one, head_cons, mB, f₁]
+      cons_val_one, mB, f₁]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
-    simp only [Fin.zero_eta, id_eq, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
+    simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
     simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
-      empty_val', cons_val_fin_one, cons_val_one, head_fin_const, map_apply, Fin.sum_univ_two,
-      cons_val_zero, neg_mul, head_cons, Int.cast_sub, Int.cast_mul, neg_sub]
+      empty_val', cons_val_fin_one, cons_val_one, map_apply, Fin.sum_univ_two,
+      cons_val_zero, neg_mul, Int.cast_sub, Int.cast_mul, neg_sub]
     ring
   · rfl
 
@@ -303,7 +303,7 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
   rw [UpperHalfPlane.coe_specialLinearGroup_apply]
-  simp [coe_T_zpow, denom, num, -map_zpow]
+  simp [coe_T_zpow, -map_zpow]
 
 theorem re_T_zpow_smul (n : ℤ) : (T ^ n • z).re = z.re + n := by
   rw [← coe_re, coe_T_zpow_smul_eq, add_re, intCast_re, coe_re]
@@ -429,7 +429,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
     refine ⟨S * g, ?_⟩
     rw [mul_smul]
     exact im_lt_im_S_smul hg₀'
-  · show |(g • z).re| ≤ 1 / 2
+  · change |(g • z).re| ≤ 1 / 2
     -- if not, then either `T` or `T'` decrease |Re|.
     rw [abs_le]
     constructor
@@ -455,7 +455,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
-    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith
   intro hc

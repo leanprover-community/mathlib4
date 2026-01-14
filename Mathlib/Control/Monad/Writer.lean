@@ -21,15 +21,23 @@ computation progresses.
 
 universe u v
 
+/-- Adds a writable output of type `ω` to a monad.
+
+The instances on this type assume that either `[Monoid ω]` or `[EmptyCollection ω] [Append ω]`.
+
+Use `WriterT.run` to obtain the final value of this output. -/
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
 abbrev Writer ω := WriterT ω Id
 
 class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
-  tell : ω → M PUnit
-  listen {α} : M α → M (α × ω)
-  pass {α} : M (α × (ω → ω)) → M α
+  /-- Emit an output `w`. -/
+  tell (w : ω) : M PUnit
+  /-- Capture the output produced by `f`, without intercepting. -/
+  listen {α} (f : M α) : M (α × ω)
+  /-- Buffer the output produced by `f` as `w`, then emit `(← f).2 w` in its place. -/
+  pass {α} (f : M (α × (ω → ω))) : M α
 
 export MonadWriter (tell listen pass)
 

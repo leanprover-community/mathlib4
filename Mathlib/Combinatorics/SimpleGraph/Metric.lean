@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -230,8 +230,7 @@ theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
-  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
-  push_neg; rfl
+  simp
 
 lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : G.Reachable u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2

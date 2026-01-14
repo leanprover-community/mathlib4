@@ -138,7 +138,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [OrderedSMul ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul
@@ -242,14 +242,14 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
 /-- Calculate the integral of `g ∘ f : α →ₛ F`, where `f` is an integrable function from `α` to `E`
-    and `g` is a function from `E` to `F`. We require `g 0 = 0` so that `g ∘ f` is integrable. -/
+and `g` is a function from `E` to `F`. We require `g 0 = 0` so that `g ∘ f` is integrable. -/
 theorem map_integral (f : α →ₛ E) (g : E → F) (hf : Integrable f μ) (hg : g 0 = 0) :
     (f.map g).integral μ = ∑ x ∈ f.range, (μ.real (f ⁻¹' {x})) • g x :=
   map_setToSimpleFunc _ weightedSMul_union hf hg
 
 /-- `SimpleFunc.integral` and `SimpleFunc.lintegral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion.
-    See `integral_eq_lintegral` for a simpler version. -/
+`α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion.
+See `integral_eq_lintegral` for a simpler version. -/
 theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : Integrable f μ) (hg0 : g 0 = 0)
     (ht : ∀ b, g b ≠ ∞) :
     (f.map (ENNReal.toReal ∘ g)).integral μ = ENNReal.toReal (∫⁻ a, g (f a) ∂μ) := by
@@ -271,7 +271,7 @@ theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ
   setToSimpleFunc_congr (weightedSMul μ) (fun _ _ => weightedSMul_null) weightedSMul_union hf h
 
 /-- `SimpleFunc.bintegral` and `SimpleFunc.integral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion. -/
+`α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion. -/
 theorem integral_eq_lintegral {f : α →ₛ ℝ} (hf : Integrable f μ) (h_pos : 0 ≤ᵐ[μ] f) :
     f.integral μ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal (f a) ∂μ) := by
   have : f =ᵐ[μ] f.map (ENNReal.toReal ∘ ENNReal.ofReal) :=
@@ -479,7 +479,7 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   filter_upwards [posPart_toSimpleFunc (-f), neg_toSimpleFunc f]
   intro a h₁ h₂
   rw [h₁]
-  show max _ _ = max _ _
+  change max _ _ = max _ _
   rw [h₂]
   simp
 
@@ -495,7 +495,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.negPart_map_norm, SimpleFunc.map_apply]
   rw [integral, norm_eq_integral, norm_eq_integral, ← SimpleFunc.integral_sub]
-  · show (toSimpleFunc f).integral μ =
+  · change (toSimpleFunc f).integral μ =
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
@@ -577,7 +577,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
-  show (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
+  change (integralCLM' 𝕜) (c • f) = c • (integralCLM' 𝕜) f
   exact map_smul (integralCLM' 𝕜) c f
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=

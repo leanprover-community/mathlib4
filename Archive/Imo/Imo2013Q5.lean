@@ -3,7 +3,9 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination

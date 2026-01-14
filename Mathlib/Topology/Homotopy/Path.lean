@@ -281,7 +281,7 @@ theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.tran
   rfl
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
-    This is `Path.map` descended to the quotient. -/
+This is `Path.map` descended to the quotient. -/
 def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
   Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀

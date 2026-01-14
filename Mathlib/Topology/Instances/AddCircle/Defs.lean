@@ -94,7 +94,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
       (by
         rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
         exact isOpen_iUnion fun i => isOpen_Ioo) <|
-    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx
+    (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx.symm
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
   let h := toIcoMod_eventuallyEq_toIocMod hp a hx
@@ -303,7 +303,7 @@ theorem coe_image_Ioc_eq : ((↑) : 𝕜 → AddCircle p) '' Ioc a (a + p) = uni
 entire space. -/
 @[simp]
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
-  eq_top_mono (image_subset _ Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
+  eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
 
 end LinearOrderedAddCommGroup
 
@@ -459,19 +459,21 @@ theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOr
   let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 
+lemma not_isOfFinAddOrder_iff_forall_rat_ne_div {a : 𝕜} :
+    ¬ IsOfFinAddOrder (a : AddCircle p) ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
+  simp +contextual [← QuotientAddGroup.mk_zsmul, mul_comm (Int.cast _), mem_zmultiples_iff,
+    eq_div_iff (Fact.out : 0 < p).ne', isOfFinAddOrder_iff_zsmul_eq_zero, Rat.forall, div_eq_iff,
+    div_mul_eq_mul_div]
+  grind
+
+lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
+    IsOfFinAddOrder (a : AddCircle p) ↔ ∃ q : ℚ, (q : 𝕜) = a / p := by
+  simpa using not_isOfFinAddOrder_iff_forall_rat_ne_div.not_right
+
+@[deprecated not_isOfFinAddOrder_iff_forall_rat_ne_div (since := "2025-08-13")]
 theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
     addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
-  simp only [ne_eq, eq_div_iff (Fact.out : 0 < p).ne']
-  constructor
-  · rintro h q rfl
-    rw [addOrderOf_coe_rat] at h
-    exact q.den_ne_zero h
-  · rw [addOrderOf_eq_zero_iff']
-    intro h n hn han
-    simp only [← coe_nsmul, coe_eq_zero_iff, nsmul_eq_mul, zsmul_eq_mul] at han
-    rcases han with ⟨m, hm⟩
-    apply h (m / n)
-    field_simp [hm]
+  simp [not_isOfFinAddOrder_iff_forall_rat_ne_div]
 
 variable (p)
 

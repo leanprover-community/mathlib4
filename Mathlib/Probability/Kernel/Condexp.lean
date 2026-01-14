@@ -89,9 +89,6 @@ lemma condExpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
     condExpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
   simp [condExpKernel_eq, Kernel.comap_apply]
 
-@[deprecated (since := "2025-01-21")]
-alias condexpKernel_apply_eq_condDistrib := condExpKernel_apply_eq_condDistrib
-
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
@@ -133,9 +130,6 @@ theorem stronglyMeasurable_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
     StronglyMeasurable[m] fun ω => condExpKernel μ m ω s :=
   Measurable.stronglyMeasurable (measurable_condExpKernel hs)
 
-@[deprecated (since := "2025-01-21")]
-alias stronglyMeasurable_condexpKernel := stronglyMeasurable_condExpKernel
-
 theorem _root_.MeasureTheory.StronglyMeasurable.integral_condExpKernel' [NormedSpace ℝ F]
     (hf : StronglyMeasurable f) :
     StronglyMeasurable[m ⊓ mΩ] (fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω) := by
@@ -171,9 +165,6 @@ theorem aestronglyMeasurable_integral_condExpKernel [NormedSpace ℝ F]
     (hf.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
   rw [MeasurableSpace.comap_id] at h
   exact h.mono inf_le_left
-
-@[deprecated (since := "2025-01-24")]
-alias aestronglyMeasurable'_integral_condExpKernel := aestronglyMeasurable_integral_condExpKernel
 
 @[deprecated (since := "2025-01-21")]
 alias aestronglyMeasurable'_integral_condexpKernel := aestronglyMeasurable_integral_condExpKernel
@@ -246,9 +237,6 @@ theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
   rw [condExpKernel_eq]
   exact integrable_toReal_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) hs
 
-@[deprecated (since := "2025-01-21")]
-alias integrable_toReal_condexpKernel := integrable_toReal_condExpKernel
-
 end Integrability
 
 lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
@@ -262,16 +250,10 @@ lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
   simp_rw [condExpKernel_apply_eq_condDistrib]
   exact h
 
-@[deprecated (since := "2025-01-21")]
-alias condexpKernel_ae_eq_condexp' := condExpKernel_ae_eq_condExp'
-
 lemma condExpKernel_ae_eq_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s | m⟧ :=
   (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
-
-@[deprecated (since := "2025-01-21")]
-alias condexpKernel_ae_eq_condexp := condExpKernel_ae_eq_condExp
 
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
@@ -280,9 +262,6 @@ lemma condExpKernel_ae_eq_trim_condExp
   rw [(measurable_condExpKernel hs).ennreal_toReal.stronglyMeasurable.ae_eq_trim_iff hm
     stronglyMeasurable_condExp]
   exact condExpKernel_ae_eq_condExp hm hs
-
-@[deprecated (since := "2025-01-21")]
-alias condexpKernel_ae_eq_trim_condexp := condExpKernel_ae_eq_trim_condExp
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
@@ -295,18 +274,12 @@ theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω →
   have h := condExp_ae_eq_integral_condDistrib_id hX hf_int
   simpa only [MeasurableSpace.comap_id, id_eq] using h
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_ae_eq_integral_condexpKernel' := condExp_ae_eq_integral_condExpKernel'
-
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is almost everywhere equal to
 the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
 theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
   ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_ae_eq_integral_condexpKernel := condExp_ae_eq_integral_condExpKernel
 
 /-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
 theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
@@ -364,22 +337,16 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
       · simp only [h, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter,
           measureReal_restrict_apply hs.compl, compl_inter_self, measureReal_empty, zero_smul,
           ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
-          setIntegral_zero_measure]
+          setIntegral_measure_zero]
       · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv, ←
         measureReal_def, integral_const, MeasurableSet.univ, measureReal_restrict_apply, univ_inter]
         rw [smul_inv_smul₀]
         exact (measureReal_ne_zero_iff (by finiteness)).2 hμs
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_generateFrom_singleton := condExp_generateFrom_singleton
-
 lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ μ[|s].real t := by
   rw [← integral_indicator_one ht]
   exact condExp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_set_generateFrom_singleton := condExp_set_generateFrom_singleton
 
 lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
     (ht : MeasurableSet t) :
@@ -392,9 +359,6 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, measureReal_def, measureReal_def,
     ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
-
-@[deprecated (since := "2025-01-21")]
-alias condexpKernel_singleton_ae_eq_cond := condExpKernel_singleton_ae_eq_cond
 
 end Cond
 

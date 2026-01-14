@@ -533,7 +533,7 @@ theorem of_isField (H : IsField (A ⊗[F] L)) : A.LinearDisjoint L := by
     Algebra.TensorProduct.instMul
   exact Algebra.TensorProduct.congr (AlgEquiv.refl : A ≃ₐ[F] A)
     (AlgEquiv.ofInjective (IsScalarTower.toAlgHom F L E) (RingHom.injective _))
-      |>.symm.toMulEquiv.isField _ H
+      |>.symm.toMulEquiv.isField H
 
 /-- If `A` and `B` are field extensions of `F`, such that `A ⊗[F] B` is a field, then for any
 field extension of `F` that `A` and `B` embed into, their images are linearly disjoint. -/
@@ -544,7 +544,7 @@ theorem of_isField' {A : Type v} [Field A] {B : Type w} [Field B]
   rw [linearDisjoint_iff']
   apply Subalgebra.LinearDisjoint.of_isField
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa fa.injective)
-    (AlgEquiv.ofInjective fb fb.injective) |>.symm.toMulEquiv.isField _ H
+    (AlgEquiv.ofInjective fb fb.injective) |>.symm.toMulEquiv.isField H
 
 variable (F) in
 /-- If `A` and `B` are field extensions of `F`, such that `A ⊗[F] B` is a domain, then there exists
@@ -604,7 +604,7 @@ theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic
       (sup_toSubalgebra_of_isAlgebraic fa.fieldRange fb.fieldRange <| by
         rwa [(AlgEquiv.ofInjective fa hfa).isAlgebraic_iff,
           (AlgEquiv.ofInjective fb hfb).isAlgebraic_iff] at halg).symm)
-  f.toMulEquiv.isField _ (Field.toIsField _)
+  f.toMulEquiv.isField (Field.toIsField _)
 
 /-- If `A` and `L` are linearly disjoint over `F` and one of them is algebraic,
 then `A ⊗[F] L` is a field. -/
@@ -631,7 +631,7 @@ theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
     (f1 : A ≃ₐ[F] B) (f2 : L ≃ₐ[F] L')
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F L) :
     B.LinearDisjoint L' :=
-  .of_isField ((Algebra.TensorProduct.congr f1 f2).symm.toMulEquiv.isField _
+  .of_isField ((Algebra.TensorProduct.congr f1 f2).symm.toMulEquiv.isField
     (H.isField_of_isAlgebraic halg))
 
 end LinearDisjoint

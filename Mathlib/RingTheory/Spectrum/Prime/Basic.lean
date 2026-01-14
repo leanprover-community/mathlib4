@@ -412,7 +412,7 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
   simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
   exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 

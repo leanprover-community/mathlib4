@@ -89,7 +89,7 @@ theorem t2_separation [T2Space X] {x y : X} (h : x ≠ y) :
 -- todo: use this as a definition?
 theorem t2Space_iff_disjoint_nhds : T2Space X ↔ Pairwise fun x y : X => Disjoint (𝓝 x) (𝓝 y) := by
   refine (t2Space_iff X).trans (forall₃_congr fun x y _ => ?_)
-  simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), exists_prop, ← exists_and_left,
+  simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens y), ← exists_and_left,
     and_assoc, and_comm, and_left_comm]
 
 @[simp]
@@ -189,7 +189,7 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   refine le_antisymm (nhdsSet_inter_le _ _) ?_
   simp_rw [hs.nhdsSet_inf_eq_biSup, ht.inf_nhdsSet_eq_biSup, nhdsSet, sSup_image]
   refine iSup₂_le fun x hxs ↦ iSup₂_le fun y hyt ↦ ?_
-  rcases eq_or_ne x y with (rfl|hne)
+  rcases eq_or_ne x y with (rfl | hne)
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
@@ -361,9 +361,6 @@ theorem Topology.IsEmbedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X →
     (hf : IsEmbedding f) : T2Space X :=
   .of_injective_continuous hf.injective hf.continuous
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t2Space := IsEmbedding.t2Space
-
 protected theorem Homeomorph.t2Space [TopologicalSpace Y] [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
   h.symm.isEmbedding.t2Space
 
@@ -384,7 +381,7 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
   inferInstance
 
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
-    T2Space (Σi, X i) := by
+    T2Space (Σ i, X i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
   rcases eq_or_ne i j with (rfl | h)
@@ -575,24 +572,23 @@ end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
-  isOpen_compl_iff.1 <| isOpen_iff_forall_mem_open.mpr fun x hx =>
-    let ⟨u, v, _, vo, su, xv, uv⟩ :=
-      SeparatedNhds.of_isCompact_isCompact hs isCompact_singleton (disjoint_singleton_right.2 hx)
-    ⟨v, (uv.mono_left <| show s ≤ u from su).subset_compl_left, vo, by simpa using xv⟩
+  isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
+    let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs
+    mem_of_eq_of_mem (eq_of_nhds_neBot (hfy.mono hfx).neBot).symm hy
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
     (hs : IsCompact s) (hf : Continuous f) : IsCompact (f ⁻¹' s) :=
   (hs.isClosed.preimage hf).isCompact
 
-lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
 
-lemma Pi.isCompact_closure_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
+lemma Pi.isCompact_closure_iff {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, T2Space (X i)] {s : Set (Π i, X i)} :
     IsCompact (closure s) ↔ ∀ i, IsCompact (closure <| eval i '' s) := by
   simp_rw [← exists_isCompact_superset_iff, Pi.exists_compact_superset_iff, image_subset_iff]
 
@@ -615,7 +611,7 @@ theorem IsCompact.inter [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCom
 theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (closure s)) {f : X → Y}
     (hf : ContinuousOn f (closure s)) : f '' closure s = closure (f '' s) :=
   Subset.antisymm hf.image_closure <|
-    closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
+    closure_minimal (image_mono subset_closure) (hs.image_of_continuousOn hf).isClosed
 
 /-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
 neighborhood. -/
@@ -670,9 +666,6 @@ theorem Continuous.isClosedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} 
 theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
     (hsurj : Surjective f) (hcont : Continuous f) : IsQuotientMap f :=
   hcont.isClosedMap.isQuotientMap hcont hsurj
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by

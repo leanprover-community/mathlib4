@@ -65,8 +65,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
       <;> positivity
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
-   `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
--/
+`∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`. -/
 theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     HasSum (fun k : ℕ => (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
@@ -82,7 +81,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     ring
   · have h : ∀ x ≠ (0 : ℝ), 1 + x⁻¹ = (x + 1) / x := fun x hx ↦ by field_simp [hx]
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
-      factorial_succ, cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
+      factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
 
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/

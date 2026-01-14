@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
@@ -54,12 +54,8 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   | nil => simp [eq_comm]
   | cons huw pwv =>
     simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
-      Set.mem_iUnion, Set.mem_image, exists_prop]
-    constructor
-    · rintro rfl
-      exact ⟨_, huw, pwv, rfl, rfl⟩
-    · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
-      rfl
+      Set.mem_iUnion, Set.mem_image]
+    grind
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
@@ -70,7 +66,6 @@ def walkLengthTwoEquivCommonNeighbors (u v : V) :
     | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
-  right_inv _ := rfl
 
 section LocallyFinite
 
@@ -129,7 +124,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -241,7 +236,7 @@ abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | O
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by
-  simp_rw [← Set.Nat.card_coe_set_eq]
+  simp_rw [← Nat.card_coe_set_eq]
   classical
   cases nonempty_fintype V
   rw [Nat.card_eq_card_toFinset c'.supp, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
@@ -249,7 +244,7 @@ lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   congr! 2
   ext c
-  simp_rw [Set.toFinset_setOf, mem_filter, ← Set.ncard_coe_Finset, coe_filter,
+  simp_rw [Set.toFinset_setOf, mem_filter, ← Set.ncard_coe_finset, coe_filter,
     mem_supp_iff, mem_univ, true_and, supp, and_comm]
 
 lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Nat.card V) := by
@@ -257,12 +252,10 @@ lemma odd_ncard_oddComponents [Finite V] : Odd G.oddComponents.ncard ↔ Odd (Na
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
   simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
-    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
     ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
   rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
-  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card, ← Finset.coe_filter_univ,
-    Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
+  simp_rw [← Set.ncard_eq_toFinset_card', ← Finset.coe_filter_univ, Set.ncard_coe_finset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard)).symm
 
 lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :

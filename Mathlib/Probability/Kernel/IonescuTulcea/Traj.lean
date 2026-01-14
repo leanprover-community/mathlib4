@@ -95,8 +95,8 @@ private lemma measure_cast {a b : ℕ} (h : a = b) (μ : (n : ℕ) → Measure (
   exact Measure.map_id
 
 private lemma heq_measurableSpace_Iic_pi {a b : ℕ} (h : a = b) :
-    HEq (inferInstance : MeasurableSpace (Π i : Iic a, X i))
-    (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
+    (inferInstance : MeasurableSpace (Π i : Iic a, X i)) ≍
+      (inferInstance : MeasurableSpace (Π i : Iic b, X i)) := by cases h; rfl
 
 end castLemmas
 
@@ -320,7 +320,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
   convert this using 1
   refine (hcte n).dependsOn_lmarginalPartialTraj _ (mf n) fun i hi ↦ ?_
-  simp only [update, updateFinset, mem_Iic, F]
+  simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
   omega
@@ -406,7 +406,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
   -- for any `k ≥ p` and `n`, integrating `χ n` from time `k` to time `a n`
   -- with the trajectory up to `k` being equal to `z` gives something greater than `ε`.
   choose! ind hind using
-    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by norm_num : (1 : ℝ≥0∞) ≠ ∞)
+    fun k y h ↦ le_lmarginalPartialTraj_succ χ_dep mχ (by simp : (1 : ℝ≥0∞) ≠ ∞)
       χ_le (anti_lma (k + 1)) (hl (k + 1)) ε y h
   let z := iterateInduction x₀ ind
   have main k (hk : p ≤ k) : ∀ x n,
@@ -417,7 +417,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       intro x n
       convert hind k (fun i ↦ z i.1) h x n
       ext i
-      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, χ, z]
+      simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
       any_goals omega
       any_goals rfl

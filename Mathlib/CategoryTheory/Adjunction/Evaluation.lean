@@ -63,7 +63,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             ext g
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
-              Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
+              Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
           right_inv := fun f => by
             simp }
       -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
@@ -120,9 +120,9 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
             ext x
             dsimp
             ext g
-            simp only [Discrete.functor_obj, NatTrans.naturality_assoc,
+            simp only [NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
-              Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
+              Fan.mk_pt, Fan.mk_π_app, Category.comp_id] } }
 
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩

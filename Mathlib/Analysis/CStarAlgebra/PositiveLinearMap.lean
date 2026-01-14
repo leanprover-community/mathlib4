@@ -82,7 +82,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     refine ⟨4 * C, fun x ↦ ?_⟩
     obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg x
     conv_lhs => rw [hy]
-    simp only [map_sum, map_smul, NNReal.coe_add]
+    simp only [map_sum, map_smul]
     apply norm_sum_le _ _ |>.trans
     simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
     apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]

@@ -87,9 +87,6 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       filter_upwards [this] with x hx
       exact abs_eq_self.2 hx
 
-@[deprecated (since := "2025-01-21")]
-alias eLpNorm_one_condexp_le_eLpNorm := eLpNorm_one_condExp_le_eLpNorm
-
 theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ ≤ ∫ x, |f x| ∂μ := by
   by_cases hm : m ≤ m0
   swap
@@ -165,8 +162,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
       stronglyMeasurable_condExp.norm.measurable
-  simp only [← smul_eq_mul, ← setIntegral_const, NNReal.val_eq_coe, RCLike.ofReal_real_eq_id,
-    _root_.id]
+  simp only [← smul_eq_mul, ← setIntegral_const]
   refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
@@ -224,9 +220,6 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
   rw [← eLpNorm_congr_ae (condExp_indicator hint hmeasℱ)]
   exact eLpNorm_one_condExp_le_eLpNorm _
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.uniformIntegrable_condexp := Integrable.uniformIntegrable_condExp
-
 section PullOut
 
 -- TODO: this section could be generalized beyond multiplication, to any bounded bilinear map.
@@ -256,9 +249,6 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
         rw [add_mul]; exact condExp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _) _
       _ =ᵐ[μ] ⇑g₁ * μ[g|m] + ⇑g₂ * μ[g|m] := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] ⇑(g₁ + g₂) * μ[g|m] := by rw [h_add, add_mul]
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_stronglyMeasurable_simpleFunc_mul := condExp_stronglyMeasurable_simpleFunc_mul
 
 theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure μ] {f g : α → ℝ}
     (hf : StronglyMeasurable[m] f) (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
@@ -303,9 +293,6 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
       ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_stronglyMeasurable_mul_of_bound := condExp_stronglyMeasurable_mul_of_bound
-
 theorem condExp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeasure μ] {f g : α → ℝ}
     (hf : AEStronglyMeasurable[m] f μ) (hg : Integrable g μ) (c : ℝ)
     (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
@@ -317,9 +304,6 @@ theorem condExp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeas
   refine condExp_stronglyMeasurable_mul_of_bound hm hf.stronglyMeasurable_mk hg c ?_
   filter_upwards [hf_bound, hf.ae_eq_mk] with x hxc hx_eq
   rwa [← hx_eq]
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_stronglyMeasurable_mul_of_bound₀ := condExp_stronglyMeasurable_mul_of_bound₀
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
@@ -358,9 +342,6 @@ theorem condExp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : Strongly
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
   · simp only [hxs, Set.indicator_of_notMem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
 
-@[deprecated (since := "2025-01-22")]
-alias condexp_stronglyMeasurable_mul := condExp_mul_of_stronglyMeasurable_left
-
 /-- Pull-out property of the conditional expectation. -/
 lemma condExp_mul_of_stronglyMeasurable_right {f g : α → ℝ} (hg : StronglyMeasurable[m] g)
     (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g := by
@@ -376,9 +357,6 @@ theorem condExp_mul_of_aestronglyMeasurable_left {f g : α → ℝ} (hf : AEStro
   refine (condExp_mul_of_stronglyMeasurable_left hf.stronglyMeasurable_mk ?_ hg).trans this.symm
   refine (integrable_congr ?_).mp hfg
   exact hf.ae_eq_mk.mul EventuallyEq.rfl
-
-@[deprecated (since := "2025-01-22")]
-alias condexp_stronglyMeasurable_mul₀ := condExp_mul_of_aestronglyMeasurable_left
 
 /-- Pull-out property of the conditional expectation. -/
 lemma condExp_mul_of_aestronglyMeasurable_right {f g : α → ℝ} (hg : AEStronglyMeasurable[m] g μ)

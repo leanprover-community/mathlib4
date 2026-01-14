@@ -136,9 +136,8 @@ theorem filter_add_filter (q) [DecidablePred q] (s : Multiset α) :
 theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) s = s := by
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
   · simp only [Multiset.add_zero]
-  · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
-  · simp only [Bool.not_eq_true, decide_eq_true_eq, Bool.eq_false_or_eq_true,
-      decide_true, implies_true, Decidable.em]
+  · simp [-Bool.not_eq_true, -not_and]
+  · simp only [implies_true, Decidable.em]
 
 theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
   Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
@@ -147,7 +146,7 @@ theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map 
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [comp_def, filter_map, hf.eq_iff]
+  simp [filter_map, hf.eq_iff]
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     card (s.filter P) ≤ n ↔ ∀ s' ≤ s, n < card s' → ∃ a ∈ s', ¬ P a := by
@@ -248,7 +247,7 @@ theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
     countP p s = (filter q s).countP p + (filter (fun a => ¬q a) s).countP p :=
   Quot.inductionOn s fun l => by
     convert l.countP_eq_countP_filter_add (p ·) (q ·)
-    simp [countP_filter]
+    simp
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
@@ -275,7 +274,7 @@ variable [DecidableEq α] {s t u : Multiset α}
 theorem count_filter_of_pos {p} [DecidablePred p] {a} {s : Multiset α} (h : p a) :
     count a (filter p s) = count a s :=
   Quot.inductionOn s fun _l => by
-    simp only [quot_mk_to_coe'', filter_coe, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe'', filter_coe, coe_count]
     apply count_filter
     simpa using h
 
@@ -291,7 +290,7 @@ theorem count_filter {p} [DecidablePred p] {a} {s : Multiset α} :
 
 theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
     count b (map f s) = card (s.filter fun a => b = f a) := by
-  simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
+  simp [count, countP_map]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
@@ -301,8 +300,8 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
     rw [count, countP_map, ← this]
     exact count_filter_of_pos <| rfl
   · rw [eq_replicate_card.2 fun b hb => (hf H (mem_filter.1 hb).left _).symm]
-    · simp only [count_replicate, eq_self_iff_true, if_true, card_replicate]
-    · simp only [mem_filter, beq_iff_eq, and_imp, @eq_comm _ (f x), imp_self, implies_true]
+    · simp only [count_replicate, if_true, card_replicate]
+    · simp only [mem_filter, and_imp, @eq_comm _ (f x), imp_self, implies_true]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective -/
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
@@ -316,7 +315,7 @@ theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (
 
 theorem filter_eq' (s : Multiset α) (b : α) : s.filter (· = b) = replicate (count b s) b :=
   Quotient.inductionOn s fun l => by
-    simp only [quot_mk_to_coe, filter_coe, mem_coe, coe_count]
+    simp only [quot_mk_to_coe, filter_coe, coe_count]
     rw [List.filter_eq, coe_replicate]
 
 theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (count b s) b := by
@@ -396,8 +395,8 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   classical
   refine Multiset.map_injective Subtype.val_injective ?_
   rw [map_filter' _ Subtype.val_injective]
-  simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
+  simp only [Function.comp, Subtype.exists, Subtype.map,
+    exists_and_right, exists_eq_right, attach_map_val, map_map, id]
 
 end Map
 

@@ -95,7 +95,7 @@ divide `t`. -/
 def invertibleOfCharPNotDvd {p : ℕ} [CharP K p] {t : ℕ} (not_dvd : ¬p ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((CharP.cast_eq_zero_iff K p t).mp h)
 
--- warning: this could potentially loop with `Invertible.ne_zero` - if there is weird type-class
+-- warning: this could potentially loop with `Invertible.ne_zero` - if there are weird type-class
 -- loops, watch out for that.
 instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) :=
   invertibleOfNonzero <| NeZero.out

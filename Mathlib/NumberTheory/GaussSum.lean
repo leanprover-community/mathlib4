@@ -91,7 +91,7 @@ lemma gaussSum_mul {R : Type u} [CommRing R] [Fintype R] {R' : Type v} [CommRing
   simp only [← ψ.map_add_eq_mul]
   have sum_eq x : ∑ y : R, χ x * φ y * ψ (x + y) = ∑ y : R, χ x * φ (y - x) * ψ y := by
     rw [sum_bij (fun a _ ↦ a + x)]
-    · simp only [mem_univ, forall_true_left, forall_const]
+    · simp only [mem_univ, forall_const]
     · simp only [mem_univ, add_left_inj, imp_self, forall_const]
     · exact fun b _ ↦ ⟨b - x, mem_univ _, by rw [sub_add_cancel]⟩
     · exact fun a _ ↦ by rw [add_sub_cancel_right, add_comm]
@@ -321,7 +321,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       show ((3 : Fin 8) : ℕ) = 3 from rfl, show ((5 : Fin 8) : ℕ) = 5 from rfl,
       show ((7 : Fin 8) : ℕ) = 7 from rfl]
     simp only [Int.cast_zero, zero_mul, Int.cast_one, Fin.val_one, pow_one, one_mul, zero_add,
-      Fin.val_two, add_zero, Int.reduceNeg, Int.cast_neg, neg_mul]
+      Fin.val_two, add_zero, Int.reduceNeg, Int.cast_neg]
     linear_combination (τ ^ 3 - τ) * τ_spec
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat, hg₁]

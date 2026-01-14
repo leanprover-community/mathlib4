@@ -131,7 +131,7 @@ instance : OrderTop (IdealSheafData X) where
 
 instance : OrderBot (IdealSheafData X) where
   bot.ideal := ⊥
-  bot.map_ideal_basicOpen := by simp [Ideal.map_top]
+  bot.map_ideal_basicOpen := by simp
   bot.supportSet := ⊤
   bot.supportSet_eq_iInter_zeroLocus := by ext; simp
   bot_le I U := bot_le
@@ -216,8 +216,8 @@ lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
   have := I.map_ideal_basicOpen_of_eq (V := X.affineBasicOpen g) f (Subtype.ext hfg.symm)
   rw [← I.map_ideal_basicOpen] at this
   apply_fun Ideal.map (X.presheaf.germ (X.basicOpen g) x (hfg ▸ hxf)).hom at this
-  simp only [Ideal.map_map, ← RingHom.comp_apply, ← CommRingCat.hom_comp,
-    affineBasicOpen_coe, X.presheaf.germ_res] at this ⊢
+  simp only [Ideal.map_map, ← CommRingCat.hom_comp, affineBasicOpen_coe, X.presheaf.germ_res]
+    at this ⊢
   simp only [homOfLE_leOfHom, TopCat.Presheaf.germ_res', this]
 
 /-- A form of `map_ideal` that is easier to rewrite with. -/
@@ -322,7 +322,7 @@ def mkOfMemSupportIff
   supportSet := supportSet
   supportSet_eq_iInter_zeroLocus := by
     let I' : X.IdealSheafData := { ideal := ideal, map_ideal_basicOpen := map_ideal_basicOpen }
-    show supportSet = I'.supportSet
+    change supportSet = I'.supportSet
     ext x
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
@@ -412,7 +412,7 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
       congr($(I.map_ideal_basicOpen U f).radical))
   I.supportSet
   (fun U x hx ↦ by
-    simp only [mem_supportSet_iff_of_mem hx, SetLike.mem_coe, Scheme.zeroLocus_radical])
+    simp only [mem_supportSet_iff_of_mem hx, Scheme.zeroLocus_radical])
 
 @[simp]
 lemma support_radical (I : IdealSheafData X) : I.radical.support = I.support := rfl
@@ -504,6 +504,9 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
   rw [coe_support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
+
+@[deprecated (since := "2025-05-16")]
+alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
 /-- `support` and `vanishingIdeal` forms a galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
@@ -657,7 +660,7 @@ lemma Hom.iInf_ker_openCover_map_comp_apply
   apply X.IsSheaf.section_ext
   rintro x hxU
   obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
-  simp only [homOfLE_leOfHom, CommRingCat.forget_map, map_zero, exists_and_left]
+  simp only [homOfLE_leOfHom, map_zero, exists_and_left]
   refine ⟨𝒰.map i ''ᵁ 𝒰.map i ⁻¹ᵁ f ⁻¹ᵁ U.1, ⟨_, hxU, rfl⟩,
     Set.image_preimage_subset (𝒰.map i).base (f ⁻¹ᵁ U), ?_⟩
   apply ((𝒰.map i).appIso _).commRingCatIsoToRingEquiv.injective
@@ -717,7 +720,7 @@ lemma ker_ideal_of_isPullback_of_isOpenImmersion {X Y U V : Scheme.{u}}
     simp only [Scheme.Hom.app_eq_appLE, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
       eqToHom_op, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE, e, Scheme.appLE_comp_appLE, H.w]
   simp only [Scheme.Hom.ker_apply, RingHom.mem_ker, Ideal.mem_comap, ← RingHom.comp_apply,
-    ← CommRingCat.hom_comp, Scheme.Hom.appIso_inv_app, this]
+    ← CommRingCat.hom_comp, this]
   simpa using (map_eq_zero_iff _ (ConcreteCategory.bijective_of_isIso e.inv).1).symm
 
 lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
@@ -748,7 +751,7 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
       let 𝒰 := X.affineCover.finiteSubcover
       obtain ⟨_, ⟨i, rfl⟩, hx⟩ := (f.iUnion_support_ker_openCover_map_comp 𝒰).ge hx
       have inst : QuasiCompact (𝒰.map i ≫ f) := HasAffineProperty.iff_of_isAffine.mpr
-        (by show CompactSpace (Spec _); infer_instance)
+        (by change CompactSpace (Spec _); infer_instance)
       exact closure_mono (Set.range_comp_subset_range _ _) (this S (𝒰.map i ≫ f) ⟨_, rfl⟩ hx)
     obtain ⟨R, rfl⟩ := hX
     obtain ⟨φ, rfl⟩ := Spec.map_surjective f

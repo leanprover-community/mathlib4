@@ -76,13 +76,13 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
     simp only [sub_add, ← C_1, ← map_sub, coeff_smul, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
-      (monic_ascPochhammer _ _), one_mul, leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
+      (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
 
 lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
   rw [leadingCoeff, natDegree_preHilbertPoly, coeff_preHilbertPoly_self]
 
-lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n):
+lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n) :
     (preHilbertPoly F d k).eval (n : F) = (n - k + d).choose d := by
   have : (d ! : F) ≠ 0 := by norm_cast; positivity
   calc
@@ -126,7 +126,7 @@ lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
   induction d with
   | zero => simp only [add_zero]
   | succ d _ =>
-      simp only [← coeff_add]
+      simp only
       rw [← sum_def _ fun _ r => r • _]
       exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
 
@@ -200,8 +200,6 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_hilbertPoly := existsUnique_hilbertPoly
-
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
 we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly
@@ -234,7 +232,7 @@ lemma hilbertPoly_eq_zero_of_le_rootMultiplicity_one
   by_cases hp : p = 0
   · rw [hp, hilbertPoly_zero_left]
   · rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
-    have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
+    have heq : p = q * (-1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
       simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
       exact hq1.trans (mul_comm _ _)
     rw [heq, ← zero_add d, ← Nat.sub_add_cancel hdp, pow_add (1 - X), ← mul_assoc,
@@ -244,7 +242,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     {p : F[X]} {d : ℕ} (hp : p ≠ 0) (hpd : p.rootMultiplicity 1 < d) :
     (hilbertPoly p d).natDegree = d - p.rootMultiplicity 1 - 1 := by
   rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
-  have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
+  have heq : p = q * (-1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
     simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
     exact hq1.trans (mul_comm _ _)
   nth_rw 1 [heq, ← Nat.sub_add_cancel (le_of_lt hpd), hilbertPoly_mul_one_sub_pow_add,

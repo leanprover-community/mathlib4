@@ -198,7 +198,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
-    simp [← Multicoequalizer.ι_sigmaπ]
+    simp
     rfl ⟩
 
 variable (F : C ⥤ C')
@@ -220,7 +220,7 @@ def mapGlueData : GlueData C' where
   f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
-    simp [D.t_id i]
+    simp
   t' i j k :=
     (PreservesPullback.iso F (D.f i j) (D.f i k)).inv ≫
       F.map (D.t' i j k) ≫ (PreservesPullback.iso F (D.f j k) (D.f j i)).hom
@@ -402,7 +402,7 @@ instance (D : GlueData' C) (i j k : D.J) :
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
-    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
+    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : eqToHom e ≫ f ≍ f := by subst e; simp
     convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
 open scoped Classical in
@@ -471,7 +471,7 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
       ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
     else if hjk : j = k then
       subst hjk
-      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
+      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq]
     else
       ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk,
         pullback.map_comp_assoc]

@@ -34,7 +34,7 @@ field norm, algebra norm, localization
 
 -/
 
-
+open Module
 open scoped nonZeroDivisors
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]

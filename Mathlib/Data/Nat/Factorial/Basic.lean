@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -108,7 +107,7 @@ theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
   · intro h
     rw [← not_lt, ← one_lt_factorial, h]
     apply lt_irrefl
-  · rintro (_|_|_) <;> rfl
+  · rintro (_ | _ | _) <;> rfl
 
 theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
   refine ⟨fun h => ?_, congr_arg _⟩
@@ -121,7 +120,7 @@ theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
   cases lt_irrefl _ hnm
 
 theorem factorial_inj' (h : 1 < n ∨ 1 < m) : n ! = m ! ↔ n = m := by
-  obtain hn|hm := h
+  obtain hn | hm := h
   · exact factorial_inj hn
   · rw [eq_comm, factorial_inj hm, eq_comm]
 
@@ -206,13 +205,13 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k) * n.ascF
 theorem zero_ascFactorial : ∀ (k : ℕ), (0 : ℕ).ascFactorial k.succ = 0
   | 0 => by
     rw [ascFactorial_succ, ascFactorial_zero, Nat.zero_add, Nat.zero_mul]
-  | (k+1) => by
+  | (k + 1) => by
     rw [ascFactorial_succ, zero_ascFactorial k, Nat.mul_zero]
 
 @[simp]
 theorem one_ascFactorial : ∀ (k : ℕ), (1 : ℕ).ascFactorial k = k.factorial
   | 0 => ascFactorial_zero 1
-  | (k+1) => by
+  | (k + 1) => by
     rw [ascFactorial_succ, one_ascFactorial k, Nat.add_comm, factorial_succ]
 
 theorem succ_ascFactorial (n : ℕ) :
@@ -233,7 +232,7 @@ theorem factorial_mul_ascFactorial (n : ℕ) : ∀ k, n ! * (n + 1).ascFactorial
 `Nat.ascFactorial_eq_div` for the version with ℕ-division. Consider using
 `factorial_mul_ascFactorial` to avoid complications of ℕ-subtraction. -/
 theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
-    (n - 1) ! * n.ascFactorial k = (n + k - 1)! := by
+    (n - 1)! * n.ascFactorial k = (n + k - 1)! := by
   rw [Nat.sub_add_comm h, Nat.sub_one]
   nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]
   rw [Nat.sub_one, factorial_mul_ascFactorial]
@@ -256,7 +255,7 @@ theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n 
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial'` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div' (n k : ℕ) (h : 0 < n) :
-    n.ascFactorial k = (n + k - 1)! / (n - 1) ! :=
+    n.ascFactorial k = (n + k - 1)! / (n - 1)! :=
   Nat.eq_div_of_mul_eq_right (n - 1).factorial_ne_zero (factorial_mul_ascFactorial' _ _ h)
 
 theorem ascFactorial_of_sub {n k : ℕ} :
@@ -280,7 +279,7 @@ theorem pow_lt_ascFactorial (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1) ^ k <
   | 1 => by intro; contradiction
   | k + 2 => fun _ => pow_lt_ascFactorial' n k
 
-theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, (n+1).ascFactorial k ≤ (n + k) ^ k
+theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, (n + 1).ascFactorial k ≤ (n + k) ^ k
   | 0 => by rw [ascFactorial_zero, Nat.pow_zero]
   | k + 1 => by
     rw [ascFactorial_succ, Nat.pow_succ, Nat.mul_comm, ← Nat.add_assoc, Nat.add_right_comm n 1 k]
@@ -449,7 +448,7 @@ lemma factorial_two_mul_le (n : ℕ) : (2 * n)! ≤ (2 * n) ^ n * n ! := by
   rw [Nat.two_mul, ← factorial_mul_ascFactorial, Nat.mul_comm]
   exact Nat.mul_le_mul_right _ (ascFactorial_le_pow_add _ _)
 
-lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 * n) ! := by
+lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 * n)! := by
   obtain _ | n := n
   · simp
   rw [Nat.mul_comm, Nat.two_mul]

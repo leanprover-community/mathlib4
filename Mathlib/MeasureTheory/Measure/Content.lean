@@ -92,7 +92,7 @@ variable (μ : Content G)
 
 @[simp]
 lemma mk_apply (toFun : Compacts G → ℝ≥0) (mono' sup_disjoint' sup_le') (K : Compacts G) :
-  mk toFun mono' sup_disjoint' sup_le' K = toFun K := rfl
+    mk toFun mono' sup_disjoint' sup_le' K = toFun K := rfl
 
 @[simp] lemma apply_ne_top {K : Compacts G} : μ K ≠ ∞ := coe_ne_top
 
@@ -198,7 +198,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
     (U : Opens G) : μ.innerContent (Opens.comap f U) = μ.innerContent U := by
   refine (Compacts.equiv f).surjective.iSup_congr _ fun K => iSup_congr_Prop image_subset_iff ?_
   intro hK
-  simp only [Equiv.coe_fn_mk, Subtype.mk_eq_mk, Compacts.equiv]
+  simp only [Equiv.coe_fn_mk, Compacts.equiv]
   apply h
 
 @[to_additive]

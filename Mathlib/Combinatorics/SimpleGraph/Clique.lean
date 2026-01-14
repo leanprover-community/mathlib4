@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
@@ -54,7 +54,7 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
   constructor
   · intro h
     ext ⟨v, hv⟩ ⟨w, hw⟩
-    simp only [comap_adj, Subtype.coe_mk, top_adj, Ne, Subtype.mk_eq_mk]
+    simp only [comap_adj, top_adj, Ne, Subtype.mk_eq_mk]
     exact ⟨Adj.ne, h hv hw⟩
   · intro h v hv w hw hne
     have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
@@ -148,7 +148,7 @@ theorem isClique_map_finset_iff :
   · simp only [ht, true_or, iff_true]
     exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
-  · simp [ht, Finset.map_eq_image]
+  · simp [ht]
   exact Finset.one_lt_card_iff_nontrivial.mp ht
 
 protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
@@ -169,7 +169,7 @@ lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).
   have := hc hx.1 hy.1 hxy
   simp_all [sup_adj, edge_adj]
 
-lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w) (hv : G.IsClique (s \ {v}))
     (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
   intro x hx y hy hxy
   by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
@@ -268,9 +268,9 @@ protected lemma IsNClique.insert_erase
   | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
-  simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
+  simp only [isNClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
   by_cases hab : a = b <;> by_cases hbc : b = c <;> by_cases hac : a = c <;> subst_vars <;>
-    simp [G.ne_of_adj, and_rotate, *]
+    simp [and_rotate, *]
 
 theorem is3Clique_iff :
     G.IsNClique 3 s ↔ ∃ a b c, G.Adj a b ∧ G.Adj a c ∧ G.Adj b c ∧ s = {a, b, c} := by
@@ -297,7 +297,7 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
   rw [isNClique_iff] at cc ⊢
-  simp only [Subgraph.induce_verts, coe_map, card_map]
+  simp only [coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
 
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
@@ -327,7 +327,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
-  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true]
+  simp only [card_map, Finset.card_fin, and_true]
   ext ⟨v, hv⟩ ⟨w, hw⟩
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
@@ -482,7 +482,7 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
 open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-   (G ⊔ edge v w).CliqueFree (n + 1) :=
+    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
@@ -549,7 +549,7 @@ theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   refine ⟨fun h a ha b hb _ hab => h ?_ ⟨by simpa [hab.ne], card_pair hab.ne⟩, ?_⟩
   · push_cast
     exact Set.insert_subset_iff.2 ⟨ha, Set.singleton_subset_iff.2 hb⟩
-  simp only [CliqueFreeOn, isNClique_iff, card_eq_two, coe_subset, not_and, not_exists]
+  simp only [CliqueFreeOn, isNClique_iff, card_eq_two, not_and, not_exists]
   rintro h t hst ht a b hab rfl
   simp only [coe_insert, coe_singleton, Set.insert_subset_iff, Set.singleton_subset_iff] at hst
   refine h hst.1 hst.2 hab (ht ?_ ?_ hab) <;> simp
@@ -657,7 +657,7 @@ lemma IsClique.card_le_cliqueNum [Finite α] {t : Finset α} {tc : G.IsClique t}
 
 lemma exists_isNClique_cliqueNum [Finite α] : ∃ s, G.IsNClique G.cliqueNum s := by
   cases nonempty_fintype α
-  exact Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+  exact Nat.sSup_mem ⟨0, by simp⟩ G.fintype_cliqueNum_bddAbove
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where

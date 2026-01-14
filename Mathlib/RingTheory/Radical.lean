@@ -104,7 +104,7 @@ lemma normalizedFactors_nodup (ha : IsRadical a) : (normalizedFactors a).Nodup :
 
 /--
 If `x` is a unit, then the finset of prime factors of `x` is empty.
-The converse is true with a nonzero assumption, see `normalizedFactors_eq_zero_iff`.
+The converse is true with a nonzero assumption, see `primeFactors_eq_empty_iff`.
 -/
 lemma primeFactors_of_isUnit (h : IsUnit a) : primeFactors a = ∅ := by
   classical

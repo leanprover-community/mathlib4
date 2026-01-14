@@ -53,7 +53,7 @@ private lemma binomial_sum_eq (h : n < m) :
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
   suffices ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i) by
     rw [← sum_congr rfl this, sum_range_sub', hf]
-    simp [choose_self, choose_zero_right, choose_eq_zero_of_lt h]
+    simp [choose_zero_right]
   intro i h₁
   rw [mem_range] at h₁
   have h₁ := le_of_lt_succ h₁
@@ -162,9 +162,9 @@ lemma truncatedSup_union (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t)
 
 lemma truncatedSup_union_left (hs : a ∈ lowerClosure s) (ht : a ∉ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup s a := by
-  simp only [mem_lowerClosure, mem_coe, exists_prop, not_exists, not_and] at ht
+  simp only [mem_lowerClosure, mem_coe, not_exists, not_and] at ht
   simp only [truncatedSup_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
-    lower_aux.2 (Or.inl hs), ht]
+    lower_aux.2 (Or.inl hs)]
 
 lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup t a := by rw [union_comm, truncatedSup_union_left ht hs]
@@ -212,7 +212,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
-    filter_congr_decidable, id_eq]
+    id_eq]
   split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
@@ -239,9 +239,9 @@ lemma truncatedInf_union (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t)
 
 lemma truncatedInf_union_left (hs : a ∈ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = truncatedInf s a := by
-  simp only [mem_upperClosure, mem_coe, exists_prop, not_exists, not_and] at ht
+  simp only [mem_upperClosure, mem_coe, not_exists, not_and] at ht
   simp only [truncatedInf_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
-    upper_aux.2 (Or.inl hs), ht]
+    upper_aux.2 (Or.inl hs)]
 
 lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClosure t) :
     truncatedInf (s ∪ t) a = truncatedInf t a := by

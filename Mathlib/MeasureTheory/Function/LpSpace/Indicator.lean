@@ -162,9 +162,6 @@ theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμ
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
 
-@[deprecated (since := "2025-01-20")]
-alias edist_indicatorConstLp_eq_nnnorm := edist_indicatorConstLp_eq_enorm
-
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
@@ -183,7 +180,7 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
   convert tendsto_const_nhds.mul
     (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
-  · simp [Real.rpow_eq_zero_iff_of_nonneg, ENNReal.toReal_eq_zero_iff, hp, hp₀]
+  · simp [ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp
 
 /-- A family of `indicatorConstLp` functions is continuous in the parameter,
@@ -221,10 +218,10 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
     indicatorConstLp p (hs.union ht) (measure_union_ne_top hμs hμt) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
-  refine indicatorConstLp_coeFn.trans (EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm)
+  grw [Lp.coeFn_add, indicatorConstLp_coeFn]
   refine
     EventuallyEq.trans ?_
-      (EventuallyEq.add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
+      (EventuallyEq.fun_add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
   rw [Set.indicator_union_of_disjoint hst]
 
 end IndicatorConstLp
@@ -255,7 +252,7 @@ alias Memℒp.toLp_const := MemLp.toLp_const
 lemma indicatorConstLp_univ :
     indicatorConstLp p .univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← MemLp.toLp_const, indicatorConstLp]
-  simp only [Set.indicator_univ, Function.const]
+  simp only [Set.indicator_univ]
 
 theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by

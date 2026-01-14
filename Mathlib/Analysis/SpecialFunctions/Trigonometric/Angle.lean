@@ -43,7 +43,7 @@ protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
 instance : Coe ℝ Angle := ⟨Angle.coe⟩
 
 instance : CircularOrder Real.Angle :=
-  QuotientAddGroup.circularOrder (hp' := ⟨by norm_num [pi_pos]⟩)
+  QuotientAddGroup.circularOrder (hp' := ⟨by simp [pi_pos]⟩)
 
 
 @[continuity]
@@ -98,8 +98,7 @@ theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n 
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
-  simp only [QuotientAddGroup.eq, AddSubgroup.zmultiples_eq_closure,
-    AddSubgroup.mem_closure_singleton, zsmul_eq_mul', (sub_eq_neg_add _ _).symm, eq_comm]
+  simp only [eq_comm]
   rw [Angle.coe, Angle.coe, QuotientAddGroup.eq]
   simp only [AddSubgroup.zmultiples_eq_closure,
     AddSubgroup.mem_closure_singleton, zsmul_eq_mul', (sub_eq_neg_add _ _).symm, eq_comm]
@@ -849,10 +848,10 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
       rw [Ne, two_nsmul_eq_pi_iff, not_or]
       constructor
       · rintro rfl
-        simp [pi_pos, div_pos, abs_of_pos] at h
+        simp [pi_pos, abs_of_pos] at h
       · rintro rfl
         rw [toReal_neg_pi_div_two] at h
-        simp [pi_pos, div_pos, neg_div, abs_of_pos] at h
+        simp [pi_pos, neg_div, abs_of_pos] at h
     rw [abs_lt, ← neg_div] at h
     rw [← sign_toReal hpi, ← sign_toReal hpi', two_nsmul_toReal_eq_two_mul.2 ⟨h.1, h.2.le⟩,
       sign_mul, sign_pos (zero_lt_two' ℝ), one_mul]

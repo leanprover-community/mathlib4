@@ -12,6 +12,11 @@ notation "ℝ" => Real
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
+example {a b c : ℝ} {f : ℝ → ℝ} (h : f (a * c * b) * f (c + b + a) = 1) :
+    f (a + b + c) * f (b * a * c) = 1 := by
+  ring_nf at *
+  exact h
+
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
@@ -69,7 +74,7 @@ end Rat
 
 example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
-example (x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
     x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y := by
   field_simp
   ring
@@ -98,7 +103,7 @@ example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 example (f : ℕ → ℕ) :
   2 + f (2 * f 3 * f 3) + f 3 = 1 + f (f 3 ^ 2 + f 3 * f 3) + 1 + f (2 + 1) := by ring_nf
 
-example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
+example (n : ℕ) (m : ℤ) : 2^(n + 1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
 

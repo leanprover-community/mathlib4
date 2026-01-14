@@ -148,7 +148,7 @@ instance (priority := 100) strongRankCondition_of_orzechProperty
     apply OrzechProperty.injective_of_surjective_of_injective i f hi
       (Fin.castSucc_injective _).surjective_comp_right
     ext m
-    simp [f, update_apply]
+    simp [f]
   simpa using congr_fun h (Fin.last n)
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]

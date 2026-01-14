@@ -208,13 +208,7 @@ instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (�
 instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]
-  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
-  · simp only [Kernel.const_zero, Kernel.compProd_zero_left, Kernel.zero_apply]
-    infer_instance
-  rcases eq_zero_or_isMarkovKernel κ with rfl | hκ
-  · simp only [Kernel.prodMkLeft_zero, Kernel.compProd_zero_right, Kernel.zero_apply]
-    infer_instance
-  · infer_instance
+  exact IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure ()
 
 section AbsolutelyContinuous
 
@@ -228,9 +222,6 @@ lemma AbsolutelyContinuous.compProd_left [SFinite ν] (hμν : μ ≪ ν) (κ : 
     exact hμν.ae_eq hs_zero
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
-@[deprecated (since := "2024-12-11")]
-alias absolutelyContinuous_compProd_left := AbsolutelyContinuous.compProd_left
-
 lemma AbsolutelyContinuous.compProd_right [SFinite μ] [IsSFiniteKernel η]
     (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
@@ -241,17 +232,11 @@ lemma AbsolutelyContinuous.compProd_right [SFinite μ] [IsSFiniteKernel η]
     filter_upwards [hs_zero, hκη] with a ha_zero ha_ac using ha_ac ha_zero
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
-@[deprecated (since := "2024-12-11")]
-alias absolutelyContinuous_compProd_right := AbsolutelyContinuous.compProd_right
-
 lemma AbsolutelyContinuous.compProd [SFinite ν] [IsSFiniteKernel η]
     (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η :=
   have : SFinite μ := sFinite_of_absolutelyContinuous hμν
   (Measure.AbsolutelyContinuous.compProd_right hκη).trans (hμν.compProd_left _)
-
-@[deprecated (since := "2024-12-11")]
-alias absolutelyContinuous_compProd := AbsolutelyContinuous.compProd
 
 lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero : ∀ a, NeZero (κ a)]
     (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :

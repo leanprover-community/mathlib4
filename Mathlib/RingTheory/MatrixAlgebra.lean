@@ -16,53 +16,49 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 * `Matrix.kroneckerTMulAlgEquiv :
-    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B)`,
-  where the forward map is the (tensor-ified) kronecker product.
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+  where the forward map is the (tensor-ified) Kronecker product.
 -/
-
-suppress_compilation
 
 open TensorProduct Algebra.TensorProduct Matrix
 
-variable {l m n p : Type*} {R A B M N : Type*}
+variable {l m n p : Type*} {R S A B M N : Type*}
 section Module
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Semiring A] [Semiring B]
-variable [Module R M] [Module R N] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring S] [Semiring A] [Semiring B] [AddCommMonoid M] [AddCommMonoid N]
+variable [Algebra R S] [Algebra R A] [Algebra R B] [Module R M] [Module S M] [Module R N]
+variable [IsScalarTower R S M]
 variable [Fintype l] [Fintype m] [Fintype n] [Fintype p]
 variable [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
 
 open Kronecker
 
-variable (l m n p R M N)
+variable (l m n p R S A M N)
 
 attribute [local ext] ext_linearMap
 
 /-- `Matrix.kroneckerTMul` as a linear equivalence, when the two arguments are tensored. -/
 def kroneckerTMulLinearEquiv :
-    Matrix l m M ⊗[R] Matrix n p N ≃ₗ[R] Matrix (l × n) (m × p) (M ⊗[R] N) :=
+    Matrix l m M ⊗[R] Matrix n p N ≃ₗ[S] Matrix (l × n) (m × p) (M ⊗[R] N) :=
   .ofLinear
-    (TensorProduct.lift <| kroneckerTMulBilinear _)
-    ((LinearMap.lsum R _ R fun ii => LinearMap.lsum R _ R fun jj => TensorProduct.map
-      (singleLinearMap R ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
-      ∘ₗ (ofLinearEquiv R).symm.toLinearMap)
+    (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
+    (Matrix.liftLinear R fun ii jj =>
+      AlgebraTensorModule.map (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
     (by
       ext : 4
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        single_kroneckerTMul_single])
+      simp [single_kroneckerTMul_single])
     (by
       ext : 5
-      simp [-LinearMap.lsum_apply, LinearMap.lsum_piSingle,
-        single_kroneckerTMul_single])
+      simp [single_kroneckerTMul_single])
 
 @[simp]
 theorem kroneckerTMulLinearEquiv_tmul (a : Matrix l m M) (b : Matrix n p N) :
-    kroneckerTMulLinearEquiv l m n p R M N (a ⊗ₜ b) = a ⊗ₖₜ b := rfl
+    kroneckerTMulLinearEquiv l m n p R S M N (a ⊗ₜ b) = a ⊗ₖₜ b := rfl
 
 @[simp]
 theorem kroneckerTMulAlgEquiv_symm_single_tmul
     (ia : l) (ja : m) (ib : n) (jb : p) (a : M) (b : N) :
-    (kroneckerTMulLinearEquiv l m n p R M N).symm (single (ia, ib) (ja, jb) (a ⊗ₜ b)) =
+    (kroneckerTMulLinearEquiv l m n p R S M N).symm (single (ia, ib) (ja, jb) (a ⊗ₜ b)) =
       single ia ja a ⊗ₜ single ib jb b := by
   rw [LinearEquiv.symm_apply_eq, kroneckerTMulLinearEquiv_tmul,
     single_kroneckerTMul_single]
@@ -71,17 +67,17 @@ theorem kroneckerTMulAlgEquiv_symm_single_tmul
 alias kroneckerTMulAlgEquiv_symm_stdBasisMatrix_tmul := kroneckerTMulAlgEquiv_symm_single_tmul
 
 @[simp]
-theorem kroneckerTMulLinearEquiv_one :
-    kroneckerTMulLinearEquiv m m n n R A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
+theorem kroneckerTMulLinearEquiv_one [Module S A] [IsScalarTower R S A] :
+    kroneckerTMulLinearEquiv m m n n R S A B 1 = 1 := by simp [Algebra.TensorProduct.one_def]
 
 /-- Note this can't be stated for rectangular matrices because there is no
 `HMul (TensorProduct R _ _) (TensorProduct R _ _) (TensorProduct R _ _)` instance. -/
 @[simp]
-theorem kroneckerTMulLinearEquiv_mul :
+theorem kroneckerTMulLinearEquiv_mul [Module S A] [IsScalarTower R S A] :
     ∀ x y : Matrix m m A ⊗[R] Matrix n n B,
-      kroneckerTMulLinearEquiv m m n n R A B (x * y) =
-        kroneckerTMulLinearEquiv m m n n R A B x * kroneckerTMulLinearEquiv m m n n R A B y :=
-  (kroneckerTMulLinearEquiv m m n n R A B).toLinearMap.map_mul_iff.2 <| by
+      kroneckerTMulLinearEquiv m m n n R S A B (x * y) =
+        kroneckerTMulLinearEquiv m m n n R S A B x * kroneckerTMulLinearEquiv m m n n R S A B y :=
+  (kroneckerTMulLinearEquiv m m n n R S A B).toLinearMap.restrictScalars R |>.map_mul_iff.2 <| by
     ext : 10
     simp [single_kroneckerTMul_single, mul_kroneckerTMul_mul]
 
@@ -158,7 +154,7 @@ theorem invFun_smul (a : A) (M : Matrix n n A) :
 @[simp]
 theorem invFun_algebraMap (M : Matrix n n R) : invFun n R A (M.map (algebraMap R A)) = 1 ⊗ₜ M := by
   dsimp [invFun]
-  simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
+  simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum]
   congr
   conv_rhs => rw [matrix_eq_sum_single M]
   convert Finset.sum_product (β := Matrix n n R) ..; simp
@@ -223,25 +219,28 @@ theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :
 namespace Matrix
 open scoped Kronecker
 
-variable (m) (B) [Fintype m] [DecidableEq m]
+variable (m) (S B)
+variable [CommSemiring S] [Algebra R S] [Algebra S A] [IsScalarTower R S A]
+variable [Fintype m] [DecidableEq m]
 
 /-- `Matrix.kroneckerTMul` as an algebra equivalence, when the two arguments are tensored. -/
 def kroneckerTMulAlgEquiv :
-    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B) :=
-  .ofLinearEquiv (kroneckerTMulLinearEquiv m m n n R A B)
-    (kroneckerTMulLinearEquiv_one _ _ _)
-    (kroneckerTMulLinearEquiv_mul _ _ _)
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
+  .ofLinearEquiv (kroneckerTMulLinearEquiv m m n n R S A B)
+    (kroneckerTMulLinearEquiv_one _ _ _ _ _)
+    (kroneckerTMulLinearEquiv_mul _ _ _ _ _)
 
 variable {m n A B}
 
 @[simp]
 theorem kroneckerTMulAlgEquiv_apply (x : Matrix m m A ⊗[R] Matrix n n B) :
-    (kroneckerTMulAlgEquiv m n R A B) x = kroneckerTMulLinearEquiv m m n n R A B x :=
+    (kroneckerTMulAlgEquiv m n R S A B) x = kroneckerTMulLinearEquiv m m n n R S A B x :=
   rfl
 
 @[simp]
 theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R] B)) :
-    (kroneckerTMulAlgEquiv m n R A B).symm x = (kroneckerTMulLinearEquiv m m n n R A B).symm x :=
+    (kroneckerTMulAlgEquiv m n R S A B).symm x =
+      (kroneckerTMulLinearEquiv m m n n R S A B).symm x :=
   rfl
 
 end Matrix

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
@@ -77,9 +77,7 @@ namespace BuffonsNeedle
 variable
   /- Probability theory variables. -/
   {Ω : Type*} [MeasureSpace Ω]
-
   /- Buffon's needle variables. -/
-
   /-
     - `d > 0` is the distance between parallel lines.
     - `l > 0` is the length of the needle.
@@ -87,11 +85,9 @@ variable
   (d l : ℝ)
   (hd : 0 < d)
   (hl : 0 < l)
-
   /- `B = (X, Θ)` is the joint random variable for the x-position and angle of the needle. -/
   (B : Ω → ℝ × ℝ)
   (hBₘ : Measurable B)
-
   /- `B` is uniformly distributed on `[-d/2, d/2] × [0, π]`. -/
   (hB : pdf.IsUniform B ((Set.Icc (-d / 2) (d / 2)) ×ˢ (Set.Icc 0 π)) ℙ)
 
@@ -148,7 +144,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+    simp only [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
@@ -219,7 +215,7 @@ lemma buffon_integral :
     MeasureTheory.integral_integral_swap ?integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
-  simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]
+  simp only [needleCrossesIndicator, needleProjX]
   have indicator_eq (x θ : ℝ) :
       Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
       Set.indicator (Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)) (1 : ℝ → ℝ) x := by

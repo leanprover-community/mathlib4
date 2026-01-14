@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Hom
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -86,9 +86,9 @@ open Function
 /-- If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some
 bundled maps from `α`. This is a type synonym for `MulOpposite M`, so this corresponds to a right
 action of `M`. -/
-@[to_additive "If `M` additively acts on `α`, then `DomAddAct M` acts on `α → β` as
+@[to_additive /-- If `M` additively acts on `α`, then `DomAddAct M` acts on `α → β` as
 well as some bundled maps from `α`. This is a type synonym for `AddOpposite M`, so this corresponds
-to a right action of `M`."]
+to a right action of `M`. -/]
 def DomMulAct (M : Type*) := MulOpposite M
 
 @[inherit_doc] postfix:max "ᵈᵐᵃ" => DomMulAct
@@ -99,7 +99,7 @@ namespace DomMulAct
 variable {M : Type*}
 
 /-- Equivalence between `M` and `Mᵈᵐᵃ`. -/
-@[to_additive "Equivalence between `M` and `Mᵈᵐᵃ`."]
+@[to_additive /-- Equivalence between `M` and `Mᵈᵐᵃ`. -/]
 def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 
 /-!

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.SpecialFunctions.Log.PosLog
+import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 import Mathlib.MeasureTheory.Integral.CircleAverage
+
 
 /-!
 # The Proximity Function of Value Distribution Theory
@@ -90,5 +91,19 @@ For complex-valued `f`, establish a simple relation between the proximity functi
 -/
 theorem proximity_inv {f : ℂ → ℂ} : proximity f⁻¹ ⊤ = proximity f 0 := by
   simp [proximity_zero, proximity_top]
+
+/--
+For complex-valued `f`, the difference between `proximity f ⊤` and `proximity
+f⁻¹ ⊤` is the circle average of `log ‖f ·‖`.
+-/
+theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : MeromorphicOn f ⊤) :
+    proximity f ⊤ - proximity f⁻¹ ⊤ = circleAverage (log ‖f ·‖) 0 := by
+  ext R
+  simp only [proximity, ↓reduceDIte, Pi.inv_apply, norm_inv, Pi.sub_apply]
+  rw [← circleAverage_sub]
+  · simp_rw [← posLog_sub_posLog_inv, Pi.sub_def]
+  · apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.mono_set (by tauto))
+  · simp_rw [← norm_inv]
+    apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.inv.mono_set (by tauto))
 
 end ValueDistribution

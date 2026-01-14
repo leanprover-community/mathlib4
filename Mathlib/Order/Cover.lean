@@ -179,7 +179,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c : α}
 
 theorem WCovBy.inf_eq (hca : c ⩿ a) (hcb : c ⩿ b) (hab : a ≠ b) : a ⊓ b = c :=
-  (le_inf hca.le hcb.le).eq_of_not_gt fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
+  (le_inf hca.le hcb.le).eq_of_not_lt' fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
 
 end SemilatticeInf
 
@@ -466,7 +466,7 @@ lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t
   let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_insert ha).symm⟩
 
-lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
+lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} = s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
     sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩

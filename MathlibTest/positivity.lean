@@ -5,6 +5,7 @@ import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
@@ -25,11 +26,19 @@ example : 0 ≤ 0 := by positivity
 example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
+example : (0 : EReal) < 2 := by positivity
+example : 0 < (2 : EReal) := by positivity
+example : (0 : EReal) < 2 := by positivity
 
-example : (0 : ℝ≥0∞) < 1 := by positivity
-example : (0 : ℝ≥0∞) < 2 := by positivity
+example : (0 : ℝ≥0∞) ≤ 1 := by positivity
+example : (0 : ℝ≥0∞) ≤ 0 := by positivity
+example : (0 : EReal) ≤ 0 := by positivity
+example : 0 ≤ (2 : EReal) := by positivity
 
 /- ## Goals working directly from a hypothesis -/
+
+section FromHypothesis
+
 -- set_option trace.Meta.debug true
 -- sudo set_option trace.Tactic.positivity true
 example {a : ℤ} (ha : 0 < a) : 0 < a := by positivity
@@ -56,6 +65,7 @@ end
 
 example {a : ℤ} (ha : a > 0) : 0 < a := by positivity
 example {a : ℤ} (ha : a > 0) : 0 ≤ a := by positivity
+example {a : ℤ} (ha : a > 0) : a ≥ 0 := by positivity
 example {a : ℤ} (ha : a > 0) : a ≠ 0 := by positivity
 example {a : ℤ} (ha : a ≥ 0) : 0 ≤ a := by positivity
 example {a : ℤ} (ha : 0 ≠ a) : a ≠ 0 := by positivity
@@ -67,6 +77,8 @@ example {a : ℤ} (ha : a ≠ 0) : 0 ≠ a := by positivity
 example {a : ℤ} (ha : a = 0) : a ≥ 0 := by positivity
 example {a : ℤ} (ha : 0 = a) : 0 ≤ a := by positivity
 example {a : ℤ} (ha : 0 = a) : a ≥ 0 := by positivity
+
+end FromHypothesis
 
 /- ### Calling `norm_num` -/
 
@@ -96,6 +108,16 @@ example : (1/4 - 2/3 : α) ≠ 0 := by positivity
 
 end
 
+/-
+## Test for meta-variable instantiation
+
+Reported on
+https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F-tactics/topic/New.20tactic.3A.20.60positivity.60/near/300639970
+-/
+
+example : 0 ≤ 0 := by apply le_trans _ (le_refl _); positivity
+
+
 /- ## Tests of the @[positivity] plugin tactics (addition, multiplication, division) -/
 
 -- example [Nonempty ι] [Zero α] {a : α} (ha : a ≠ 0) : const ι a ≠ 0 := by positivity
@@ -116,6 +138,8 @@ example (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by positivity
 
 end ite
 
+section MinMax
+
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < min a b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ min a b := by positivity
 example {a b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ min a b := by positivity
@@ -129,6 +153,12 @@ example {a b : ℚ} (hb : 0 < b) : 0 < max a b := by positivity
 example {a b : ℚ} (ha : 0 ≤ a) : 0 ≤ max a b := by positivity
 example {a b : ℚ} (hb : 0 ≤ b) : 0 ≤ max a b := by positivity
 example {a b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : max a b ≠ 0 := by positivity
+
+example : 0 ≤ max 3 4 := by positivity
+example : 0 ≤ max (0 : ℤ) (-3) := by positivity
+example : 0 ≤ max (-3 : ℤ) 5 := by positivity
+
+end MinMax
 
 example {a b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
 example {a b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
@@ -183,9 +213,10 @@ example {a : ℤ} (ha : 3 < a) : 0 ≤ a + a := by positivity
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 ≤ 3 + a + b + b + 14 := by positivity
 
--- example {H : Type _} [LinearOrderedAddCommGroup H] {a b : H} (ha : 0 < a) (hb : 0 ≤ b) :
---   0 ≤ a + a + b :=
--- by positivity
+example {H : Type*} [AddCommGroup H] [LinearOrder H] [IsOrderedAddMonoid H]
+    {a b : H} (ha : 0 < a) (hb : 0 ≤ b) :
+    0 ≤ a + a + b := by
+  positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 < a + a := by positivity
 
@@ -203,15 +234,13 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
-example (a : ℤ) : 0 ≤ a⁺ := by positivity
-example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
-example (a : ℤ) : 0 ≤ a⁻ := by positivity
-
 
 section ENNReal
 
-open scoped ENNReal
 variable {a b : ℝ≥0∞}
+
+example : (0 : ℝ≥0∞) < 1 := by positivity
+example : (0 : ℝ≥0∞) < 2 := by positivity
 
 example : 0 ≤ a := by positivity
 example (ha : a ≠ 0) : 0 < a := by positivity
@@ -231,37 +260,31 @@ end ENNReal
 
 section EReal
 
-private axiom test_sorry : ∀ {α}, α
-
--- Missing positivity extension: literals in EReal
-example : 0 < (5 : EReal) := by
-  fail_if_success positivity
-  exact test_sorry
-
 variable {a b : EReal}
 
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
-example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 + a := by positivity
+example (ha : 0 < a) : 0 < a + 2 := by positivity
 
-example (_ha : 0 ≤ a) : 0 < a + 5 := by
-  fail_if_success positivity
-  exact test_sorry
-
-example {ha : 0 ≤ a} {hb : 0 ≤ b} : 0 ≤ a * b := by positivity
--- These tests will only pass after #25094.
--- example (ha : 0 < a) : 0 < 2 * a := by positivity
--- example (ha : 0 < a) : 0 < a * 37 := by positivity
-example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by
-  fail_if_success positivity
-  exact test_sorry
-example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
-example {a b : EReal} (ha : 0 < a) (ha : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 * a := by positivity
+example (ha : 0 < a) : 0 < a * 2 := by positivity
+
+example : 0 < (5 : EReal) := by positivity
+example (_ha : 0 ≤ a) : 0 < a + 5 := by positivity
+example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by positivity
 
 end EReal
 
-/-! ### Exponentiation -/
+/-! ### Powers -/
+
+section Powers
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     (a : α) : 0 < a ^ 0 := by positivity
@@ -293,6 +316,22 @@ example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < (a : ℝ) ^ b := by positivit
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
+example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
+example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
+example {a : ℤ} (ha : 3 < a) : 0 < a ^ 2 + a := by positivity
+
+example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 ≤ 3 * a ^ 2 * b + b * 7 + 14 := by positivity
+
+example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14 := by positivity
+
+example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
+example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
+example {b : ℤ} : 0 ≤ max (b ^ 2) 0 := by positivity
+
+end Powers
+
+section FloorCeil
+
 example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
 example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
 
@@ -300,15 +339,9 @@ example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
 example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
 example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
 
-example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
+end FloorCeil
 
-example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
-
-example {a : ℤ} (ha : 3 < a) : 0 < a ^ 2 + a := by positivity
-
-example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 ≤ 3 * a ^ 2 * b + b * 7 + 14 := by positivity
-
-example {a b : ℤ} (ha : 3 < a) (hb : b ≥ 4) : 0 < 3 * a ^ 2 * b + b * 7 + 14 := by positivity
+section Abs
 
 example {a : ℤ} : 0 ≤ |a| := by positivity
 
@@ -320,44 +353,58 @@ example {n : ℤ} : 0 ≤ n.natAbs := by positivity
 
 example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
-example : 0 < NNReal.sqrt 5 := by positivity
-example : 0 ≤ Real.sqrt (-5) := by positivity
-example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
-example : 0 < Real.sqrt 5 := by positivity
+example (a : ℤ) : 0 ≤ a⁺ := by positivity
+example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
+example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
-example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
-
-example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
-
-example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
+end Abs
 
 -- -- test that the tactic can ignore arithmetic operations whose associated extension tactic
 -- -- requires more typeclass assumptions than are available
--- example {R : Type _} [Zero R] [Div R] [LinearOrder R] {a b c : R} (h1 : 0 < a) (h2 : 0 < b)
---   (h3 : 0 < c) :
---   0 < max (a / b) c :=
--- by positivity
+example {R : Type*} [Zero R] [Div R] [LinearOrder R] {a b c : R} (_h1 : 0 < a) (_h2 : 0 < b)
+  (h3 : 0 < c) :
+  0 < max (a / b) c := by positivity
 
-example : 0 ≤ max 3 4 := by positivity
-
-example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
-
-example {b : ℤ} : 0 ≤ max (b ^ 2) 0 := by positivity
-
-example : 0 ≤ max (0:ℤ) (-3) := by positivity
-
-example : 0 ≤ max (-3 : ℤ) 5 := by positivity
-
--- example [OrderedSemiring α] [OrderedAddCommMonoid β] [SMulWithZero α β]
---   [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by positivity
+example
+    [Semiring α] [PartialOrder α] [IsOrderedRing α]
+    [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [SMulWithZero α β]
+    [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by
+  positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
-example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
+example (n k : ℕ) : 0 < (n + 1).ascFactorial k := by positivity
 
-example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
-example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
+example {α : Type*} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
+example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
+
+section Norms
+
+example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
+
+example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
+
+example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
+example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
+
+example {E : Type*} [AddGroup E] {p : AddGroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
+example {E : Type*} [Group E] {p : GroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
+
+end Norms
+
+-- example {r : α → β → Prop} [∀ a, DecidablePred (r a)] {s : Finset α} {t : Finset β} :
+--   0 ≤ Rel.edgeDensity r s t := by positivity
+-- example {G : SimpleGraph α} [DecidableRel G.adj] {s t : finset α} :
+--   0 ≤ G.edgeDensity s t := by positivity
+
+/-! ### Special functions -/
+
+section SpecialFunctions
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
 
@@ -373,24 +420,30 @@ example : 0 ≤ Real.log 1 := by positivity
 example : 0 ≤ Real.log 0 := by positivity
 example : 0 ≤ Real.log (-1) := by positivity
 
-example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
+example : 0 < Real.arctan 1.1 := by positivity
+example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.arctan r := by positivity
+example {r : ℝ} (hr : r ≠ 0) : Real.arctan r ≠ 0 := by positivity
+example (r : ℝ) : 0 < Real.cos (Real.arctan r) := by positivity
+example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
+example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
+example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
 
-example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
+end SpecialFunctions
 
-example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
-example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
+/-! ### `sqrt` on `ℝ` and `ℝ≥0` -/
 
--- example {E : Type _} [AddGroup E] {p : AddGroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
--- example {E : Type _} [Group E] {p : GroupSeminorm E} {x : E} : 0 ≤ p x := by positivity
+section Sqrt
 
--- example {r : α → β → Prop} [∀ a, DecidablePred (r a)] {s : Finset α} {t : Finset β} :
---   0 ≤ Rel.edgeDensity r s t := by positivity
--- example {G : SimpleGraph α} [DecidableRel G.adj] {s t : finset α} :
---   0 ≤ G.edgeDensity s t := by positivity
+example : 0 < NNReal.sqrt 5 := by positivity
+example : 0 ≤ Real.sqrt (-5) := by positivity
+example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
+example : 0 < Real.sqrt 5 := by positivity
+
+example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
+
+example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
+
+end Sqrt
 
 /- ### Canonical orders -/
 
@@ -400,6 +453,8 @@ example {a : ℝ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
 /- ### Coercions -/
+
+section Coercions
 
 example {a : ℕ} : (0 : ℤ) ≤ a := by positivity
 example {a : ℕ} : (0 : ℚ) ≤ a := by positivity
@@ -418,19 +473,24 @@ example {a : ℚ≥0} : (0 : ℝ≥0) ≤ a := by positivity
 example {a : ℚ≥0} (ha : 0 < a) : (0 : ℝ≥0) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
--- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity
--- -- example {r : ℝ≥0} : (0 : ereal) ≤ r := by positivity -- TODO: Handle `coe_trans`
--- -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ereal) < r := by positivity
--- example {r : ℝ} (hr : 0 ≤ r) : (0 : ereal) ≤ r := by positivity
--- example {r : ℝ} (hr : 0 < r) : (0 : ereal) < r := by positivity
--- example {r : ℝ} (hr : 0 ≤ r) : (0 : hyperreal) ≤ r := by positivity
--- example {r : ℝ} (hr : 0 < r) : (0 : hyperreal) < r := by positivity
--- example {r : ℝ≥0∞} : (0 : ereal) ≤ r := by positivity
--- example {r : ℝ≥0∞} (hr : 0 < r) : (0 : ereal) < r := by positivity
 
--- example {α : Type _} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
--- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
--- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
+example : (0 : ℝ) < ↑(3 : ℝ≥0) := by positivity
+
+example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity
+example {r : ℝ≥0} : (0 : EReal) ≤ r := by positivity -- TODO: Handle `coe_trans`
+example {r : ℝ≥0} (hr : 0 < r) : (0 : EReal) < r := by positivity
+example {r : ℝ} (hr : 0 ≤ r) : (0 : EReal) ≤ r := by positivity
+example {r : ℝ} (hr : 0 < r) : (0 : EReal) < r := by positivity
+-- example {r : ℝ} (hr : 0 ≤ r) : (0 : Hyperreal) ≤ r := by positivity
+-- example {r : ℝ} (hr : 0 < r) : (0 : Hyperreal) < r := by positivity
+example {r : ℝ≥0∞} : (0 : EReal) ≤ r := by positivity
+example {r : ℝ≥0∞} (hr : 0 < r) : (0 : EReal) < r := by positivity
+
+-- example {α : Type*} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
+example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : EReal) := by positivity
+example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : EReal) := by positivity
+
+end Coercions
 
 /- ## Integrals -/
 
@@ -463,6 +523,8 @@ set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑' n, f n := by positivity
 
 /-! ## Big operators -/
+
+section BigOperators
 
 example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j ∈ range n, f j ^ 2 := by positivity
 example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j ∈ s, f j ^ 2 := by positivity
@@ -504,6 +566,8 @@ example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n ∈ Finset.range 10, f 
 example [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     {a : α} (ha : 0 < a) : 0 ≤ ∏ _i ∈ {(0 : α)}, a := by positivity
 
+end BigOperators
+
 /- ## Other extensions -/
 
 example [Zero β] [PartialOrder β] [FunLike F α β] [NonnegHomClass F α β]
@@ -513,23 +577,3 @@ example [Semiring S] [PartialOrder S] [IsOrderedRing S] [Semiring R]
     (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by
   positivity
-
-example : (0 : ℝ) < ↑(3 : ℝ≥0) := by positivity
-example (x : ℝ≥0) : (0:ℝ) ≤ ↑x := by positivity
-
-/- ## Tests that the tactic is agnostic on reversed inequalities -/
-
-example {a : ℤ} (ha : a > 0) : 0 ≤ a := by positivity
-
-example {a : ℤ} (ha : 0 < a) : a ≥ 0 := by positivity
-
-example {a : ℤ} (ha : a > 0) : a ≥ 0 := by positivity
-
-/-
-## Test for meta-variable instantiation
-
-Reported on
-https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F-tactics/topic/New.20tactic.3A.20.60positivity.60/near/300639970
--/
-
-example : 0 ≤ 0 := by apply le_trans _ (le_refl _); positivity

@@ -90,7 +90,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
+  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map] at h
   simp_rw [← h]
 
 /-- The inverse limit of nonempty finite types is nonempty.
@@ -265,12 +265,6 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
     ⟨fun _ => ⟨_, mem_iInter₂.2 fun _ f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/
@@ -325,7 +319,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
   refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, ?_⟩
   · have := (sec i).prop
-    simp only [mem_iInter, mem_preimage, mem_singleton_iff] at this
+    simp only [mem_iInter, mem_preimage] at this
     have := this (𝟙 i)
     rwa [map_id_apply] at this
 

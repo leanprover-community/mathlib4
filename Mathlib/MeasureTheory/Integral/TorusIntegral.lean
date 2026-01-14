@@ -128,7 +128,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
   · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; fun_prop
-  simp [norm_smul, map_prod]
+  simp [norm_smul]
 
 end TorusIntegrable
 
@@ -140,11 +140,11 @@ def torusIntegral (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :=
   ∫ θ : ℝⁿ in Icc (0 : ℝⁿ) fun _ => 2 * π, (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ)
 
 @[inherit_doc torusIntegral]
-notation3"∯ "(...)" in ""T("c", "R")"", "r:(scoped f => torusIntegral f c R) => r
+notation3 "∯ " (...) " in " "T(" c ", " R ")" ", " r:(scoped f => torusIntegral f c R) => r
 
 theorem torusIntegral_radius_zero (hn : n ≠ 0) (f : ℂⁿ → E) (c : ℂⁿ) :
     (∯ x in T(c, 0), f x) = 0 := by
-  simp only [torusIntegral, Pi.zero_apply, ofReal_zero, mul_zero, zero_mul, Fin.prod_const,
+  simp only [torusIntegral, Pi.zero_apply, ofReal_zero, zero_mul, Fin.prod_const,
     zero_pow hn, zero_smul, integral_zero]
 
 theorem torusIntegral_neg (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) :
@@ -187,7 +187,7 @@ theorem torusIntegral_dim0 [CompleteSpace E]
     (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
     Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
-    integral_smul_measure, integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
+    integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
     Measure.dirac_apply_of_mem (mem_singleton _), Subsingleton.elim (torusMap c R 0) c]
 
 /-- In dimension one, `torusIntegral` is the same as `circleIntegral`
@@ -226,7 +226,7 @@ theorem torusIntegral_succAbove
       i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
-      eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
+      Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
   · have := hf.function_integrable
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this
 

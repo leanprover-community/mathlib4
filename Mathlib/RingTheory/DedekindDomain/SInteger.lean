@@ -62,7 +62,7 @@ def integer : Subalgebra R K :=
   {
     (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
-      Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
+      Set.ext fun _ => by simp [SetLike.mem_coe] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 
 theorem integer_eq :
@@ -132,8 +132,6 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
           -- Porting note: was
           -- rw [← map_mul]; convert v.valuation.map_one; exact subtype.mk_eq_mk.mp x.val_inv⟩
           rw [Units.val_mk0, ← map_mul, Subtype.mk_eq_mk.mp x.val_inv, map_one]⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
 end Set

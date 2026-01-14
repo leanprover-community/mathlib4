@@ -37,6 +37,6 @@ instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) I
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
     refine ((contMDiffOn_coordChangeL e e').comp f.contMDiff.contMDiffOn fun b hb => hb).congr ?_
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
-    show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
+    change ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]

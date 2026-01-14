@@ -49,8 +49,8 @@ theorem Codiscrete.mk_as {α : Type u} (X : Codiscrete α) : Codiscrete.mk X.as 
 def codiscreteEquiv {α : Type u} : Codiscrete α ≃ α where
   toFun := Codiscrete.as
   invFun := Codiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Codiscrete α) :=
   codiscreteEquiv.decidableEq
@@ -116,8 +116,6 @@ def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
     (C → A) ≃ (C ⥤ Codiscrete A) where
   toFun := functor
   invFun := invFunctor
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The functor that turns a type into a codiscrete category is right adjoint to the objects
 functor. -/

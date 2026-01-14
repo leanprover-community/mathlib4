@@ -70,12 +70,12 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the left-translate of its stabilizer. -/]
 lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     a •> (stabilizer G A : Set G) = A := (smul_stabilizer_of_no_doubling_aux hA ha).1
 
 /-- A non-empty set with no doubling is the right translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the right translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the right translate of its stabilizer. -/]
 lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
@@ -94,7 +94,7 @@ private lemma big_intersection {x y : G} (hx : x ∈ A) (hy : y ∈ A) :
 private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) :
     A⁻¹ * A ⊆ A * A⁻¹ := by
   intro z
-  simp only [mem_mul, forall_exists_index, exists_and_left, and_imp, mem_inv,
+  simp only [mem_mul, forall_exists_index, and_imp, mem_inv,
     exists_exists_and_eq_and]
   rintro x hx y hy rfl
   have ⟨t, ht⟩ : (x • A ∩ y • A).Nonempty := by
@@ -138,7 +138,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
     exact ⟨x⁻¹, inv_mem_inv hx, x, by simp [hx]⟩
   inv_mem' := by
     intro x
-    simp only [Set.mem_mul, Set.mem_inv, coe_inv, forall_exists_index, exists_and_left, mem_coe,
+    simp only [Set.mem_mul, Set.mem_inv, coe_inv, forall_exists_index, mem_coe,
       and_imp]
     rintro a ha b hb rfl
     exact ⟨b⁻¹, by simpa using hb, a⁻¹, ha, by simp⟩
@@ -150,7 +150,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
       rw [← Nat.cast_le (α := ℚ), Nat.cast_mul, Nat.cast_add, Nat.cast_two] at this
       linarith
     intro a c ha hc
-    simp only [mem_mul, mem_inv', exists_and_left] at ha hc
+    simp only [mem_mul, mem_inv'] at ha hc
     obtain ⟨a, ha, b, hb, rfl⟩ := ha
     obtain ⟨c, hc, d, hd, rfl⟩ := hc
     have h₂ : (1 / 2 : ℚ) * #A < #(A ∩ (a * b)⁻¹ • A) := by
@@ -182,7 +182,9 @@ lemma invMulSubgroup_eq_mul_inv (A : Finset G) (h) : (invMulSubgroup A h : Set G
   exact mul_inv_eq_inv_mul_of_doubling_lt_two (by qify at h ⊢; linarith)
 
 instance (A : Finset G) (h) : Fintype (invMulSubgroup A h) := by
-  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, mem_coe]; infer_instance
+  simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_coe]
+  infer_instance
 
 private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by
@@ -193,15 +195,15 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     rw [← Nat.cast_le (α := ℚ), Nat.cast_mul, Nat.cast_add, Nat.cast_two] at this
     linarith
   have h₂ : ∀ a ∈ A⁻¹ * A, (1 / 2 : ℚ) * #A < #{xy ∈ A ×ˢ A | xy.1 * xy.2⁻¹ = a} := by
-    simp only [mem_mul, mem_product, Prod.forall, and_imp, mem_inv, exists_exists_and_eq_and,
+    simp only [mem_mul, and_imp, mem_inv, exists_exists_and_eq_and,
       forall_exists_index]
     rintro _ a ha b hb rfl
     refine (h₁ a ha b hb).trans_le ?_
     rw [Nat.cast_le]
     refine card_le_card_of_injOn (fun t => (a⁻¹ * t, b⁻¹ * t)) ?_ (by simp [Set.InjOn])
-    simp only [mem_inter, mem_product, and_imp, Prod.forall, mem_filter, mul_inv_rev, inv_inv,
-      exists_and_left, exists_eq_left, forall_exists_index, smul_eq_mul,
-      forall_apply_eq_imp_iff₂, inv_mul_cancel_left, inv_mul_cancel_right, mem_smul_finset]
+    simp only [mem_inter, mem_product, and_imp, mem_filter, mul_inv_rev, inv_inv,
+      forall_exists_index, smul_eq_mul, Set.MapsTo, mem_coe, forall_apply_eq_imp_iff₂,
+      inv_mul_cancel_left, mem_smul_finset]
     rintro c hc d hd h
     rw [mul_assoc, mul_inv_cancel_left, ← h, inv_mul_cancel_left]
     simp [hd, hc]
@@ -238,7 +240,7 @@ private lemma subgroup_strong_bound_right (h : #(A * A) < (3 / 2 : ℚ) * #A) (a
     a • op a • (A⁻¹ * A) ⊆ A * A := by
   intro z hz
   simp only [mem_smul_finset, smul_eq_mul_unop, unop_op, smul_eq_mul, mem_mul, mem_inv,
-    exists_exists_and_eq_and, exists_and_left] at hz
+    exists_exists_and_eq_and] at hz
   obtain ⟨d, ⟨b, hb, c, hc, rfl⟩, hz⟩ := hz
   let l : Finset G := A ∩ ((z * a⁻¹) • (A⁻¹ * A))
     -- ^ set of x ∈ A st ∃ y ∈ H a with x y = z
@@ -250,13 +252,13 @@ private lemma subgroup_strong_bound_right (h : #(A * A) < (3 / 2 : ℚ) * #A) (a
     rw [inter_eq_left, ← this, subset_smul_finset_iff]
     simp only [← hz, mul_inv_rev, inv_inv, ← mul_assoc]
     refine smul_finset_subset_mul ?_
-    simp [mul_mem_mul, mem_inv, ha, hb, hc]
+    simp [mul_mem_mul, ha, hb, hc]
   have hr : r = z • A⁻¹ := by
     rw [inter_eq_right, ← this, mul_assoc _ A,
       ← mul_inv_eq_inv_mul_of_doubling_lt_two (weaken_doubling h), subset_smul_finset_iff]
     simp only [← mul_assoc, smul_smul]
     refine smul_finset_subset_mul ?_
-    simp [← hz, mul_mem_mul, ha, hb, hc, mem_inv]
+    simp [← hz, mul_mem_mul, ha, hb, hc]
   have lr : l ∪ r ⊆ a • (A⁻¹ * A) := by
     rw [union_subset_iff, hl]
     exact ⟨A_subset_aH a ha, inter_subset_left⟩
@@ -319,7 +321,7 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
   refine ⟨H, inferInstance, ?_, fun a ha ↦ ⟨?_, ?_⟩⟩
-  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, ← coe_inv, H]
+  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, - coe_inv, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
     exact_mod_cast A_subset_aH a ha

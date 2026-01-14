@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Set.Card
 
 /-!
@@ -191,8 +191,6 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
-  simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
   simp
 
 @[simp]
@@ -251,17 +249,14 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
         use 0
         simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
         refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
-        simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-        cases hl with
-        | inl h1 => left; exact ⟨h1.1, h1.2⟩
-        | inr h2 => right; exact ⟨h2.1, h2.2⟩
+        exact Sym2.eq_iff.mpr hl
       | inr hr =>
         obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
         use i + 1
         simp only [getVert_cons_succ]
         constructor
         · exact hi.1
-        · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]
+        · simp only [Walk.length_cons, Nat.add_lt_add_right hi.2 1]
   · rintro ⟨i, hi⟩
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
@@ -275,7 +270,7 @@ lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
     (hp : p.IsPath) (hnp : ¬ p.Nil) : p.toSubgraph.neighborSet u = {p.snd} := by
   have hadj1 := p.toSubgraph_adj_snd hnp
   ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
   refine ⟨?_, by aesop⟩
   rintro ⟨i, hl | hr⟩
@@ -521,11 +516,11 @@ lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
   apply (sconn.adj_union tconn hv hw ha).mono
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.le_induce_union_left,
+  · simp only [sup_le_iff, Subgraph.le_induce_union_left,
       Subgraph.le_induce_union_right, and_true, ← Subgraph.subgraphOfAdj_eq_induce ha]
     apply subgraphOfAdj_le_of_adj
     simp [hv, hw, ha]
-  · simp only [Set.mem_singleton_iff, sup_le_iff, Subgraph.verts_sup, Subgraph.induce_verts]
+  · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
     rw [Set.union_assoc]
     simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
 
@@ -546,7 +541,7 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   obtain ⟨v, vs⟩ := (Sc sS).nonempty
   apply G.induce_connected_of_patches _ (Set.subset_sUnion_of_mem sS vs)
   rintro w hw
-  simp only [Set.mem_sUnion, exists_prop] at hw
+  simp only [Set.mem_sUnion] at hw
   obtain ⟨t, tS, wt⟩ := hw
   refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
           Or.inl vs, Or.inr wt, induce_union_connected (Sc sS) (Sc tS) (Snd sS tS) _ _⟩
@@ -556,14 +551,14 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
   classical
   obtain ⟨u, ut⟩ := tn
   refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
-  · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
+  · simp only [Finset.mem_biUnion, List.mem_toFinset]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset, Set.mem_iUnion,
                  Set.mem_setOf_eq, Walk.start_mem_support, exists_prop, and_true]
       exact ⟨u, ut⟩
     intros v hv
-    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset, exists_prop] at hv
+    simp only [Finset.mem_coe, Finset.mem_biUnion, List.mem_toFinset] at hv
     obtain ⟨w, wt, hw⟩ := hv
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]

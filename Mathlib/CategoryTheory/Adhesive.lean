@@ -76,7 +76,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
       · refine Cocones.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
-          simp only [c'.w, Category.assoc, Category.id_comp, Category.comp_id]
+          simp only [c'.w, Category.id_comp, Category.comp_id]
     · exact ⟨NatTrans.congr_app eα.symm _⟩
     · exact ⟨NatTrans.congr_app eα.symm _⟩
     · exact ⟨by simp⟩
@@ -319,7 +319,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
   rw [IsPushout.isVanKampen_iff] at this ⊢
   refine (IsVanKampenColimit.precompose_isIso_iff
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
+    (Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)

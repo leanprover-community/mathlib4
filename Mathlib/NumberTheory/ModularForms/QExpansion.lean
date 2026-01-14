@@ -17,7 +17,7 @@ analytic on the open unit disc, and `𝕢 n` is the parameter `τ ↦ exp (2 * I
 application, we show that cusp forms decay exponentially to 0 as `im τ → ∞`.
 
 We also define the `q`-expansion of a modular form, either as a power series or as a
-`FormalMultlinearSeries`, and show that it converges to `f` on the upper half plane.
+`FormalMultilinearSeries`, and show that it converges to `f` on the upper half plane.
 
 ## Main definitions and results
 
@@ -119,7 +119,7 @@ lemma qExpansion_coeff (m : ℕ) :
 lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • q ^ m) (cuspFunction n f q) := by
-  simp only [qExpansion_coeff, ← eq_cuspFunction n f]
+  simp only [qExpansion_coeff]
   have hdiff : DifferentiableOn ℂ (cuspFunction n f) (Metric.ball 0 1) := by
     refine fun z hz ↦ (differentiableAt_cuspFunction n f ?_).differentiableWithinAt
     simpa using hz
@@ -136,7 +136,7 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
 The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`.
 
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
-`FormalMultlinearSeries`.
+`FormalMultilinearSeries`.
 -/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _

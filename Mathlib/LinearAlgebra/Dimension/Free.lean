@@ -90,7 +90,7 @@ lemma rank_eq_mk_of_infinite_lt [Infinite R] (h_lt : lift.{v} #R < lift.{u} #M) 
     Module.rank R M = #M := by
   have : Infinite M := infinite_iff.mpr <| lift_le.mp <| le_trans (by simp) h_lt.le
   have h : lift #M = lift #(ChooseBasisIndex R M →₀ R) := lift_mk_eq'.mpr ⟨(chooseBasis R M).repr⟩
-  simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
+  simp only [mk_finsupp_lift_of_infinite', ← rank_eq_card_chooseBasisIndex, lift_max,
     lift_lift] at h
   refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
   exact (lift_umax.{v, u}.symm ▸ h_lt).ne
@@ -167,7 +167,7 @@ namespace Module
 /-- A free module of rank zero is trivial. -/
 lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
   rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
-  exact (Module.Free.repr R M).subsingleton
+  exact (Module.Free.chooseBasis R M).repr.subsingleton
 
 /-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
 lemma rank_lt_aleph0_iff : Module.rank R M < ℵ₀ ↔ Module.Finite R M := by

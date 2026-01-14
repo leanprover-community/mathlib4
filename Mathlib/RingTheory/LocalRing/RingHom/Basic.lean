@@ -48,8 +48,6 @@ theorem RingHom.domain_isLocalRing {R S : Type*} [Semiring R] [CommSemiring S] [
   simp_rw [← map_mem_nonunits_iff f, f.map_add]
   exact IsLocalRing.nonunits_add
 
-@[deprecated (since := "2024-11-12")] alias RingHom.domain_localRing := RingHom.domain_isLocalRing
-
 end
 
 section
@@ -132,19 +130,11 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
 
 end IsLocalRing
 
-@[deprecated (since := "2024-11-11")] alias LocalRing.local_hom_TFAE := IsLocalRing.local_hom_TFAE
-@[deprecated (since := "2024-11-11")] alias LocalRing.of_surjective := IsLocalRing.of_surjective
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.surjective_units_map_of_local_ringHom :=
-  IsLocalRing.surjective_units_map_of_local_ringHom
-
 namespace RingEquiv
 
 protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
-
-@[deprecated (since := "2024-11-09")] alias localRing := RingEquiv.isLocalRing
 
 end RingEquiv

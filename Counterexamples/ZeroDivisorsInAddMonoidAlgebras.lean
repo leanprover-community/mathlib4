@@ -3,9 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
@@ -87,8 +87,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · intro b hb b0
       rw [single_pow, one_pow, single_eq_of_ne]
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
-    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
-        false_imp_iff]
+    · grind
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : R[A] => x 0
     refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
@@ -226,8 +225,7 @@ example : ¬AddLeftMono (Lex (F →₀ F)) := by
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, coe_add, Pi.add_apply, forall_eq,
-      f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
+  · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
@@ -235,7 +233,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
       ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero]⟩
 
 end F
 

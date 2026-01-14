@@ -3,15 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs
-
-import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Nilpotent elements
@@ -118,7 +117,9 @@ theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical 
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
-  rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
+  rw [mul_pow]
+  gcongr
+  exact dvd_pow_self _ two_ne_zero
 
 namespace Commute
 
@@ -172,19 +173,19 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
     exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
   · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
-protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
+protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
-  rintro ⟨k, hk⟩
-  rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
-
-protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsRight R) :
-    IsNilpotent (x * y) ↔ IsNilpotent y := by
   refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hy k _ hk⟩
+
+protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsLeft R) :
+    IsNilpotent (x * y) ↔ IsNilpotent y := by
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hx k _ hk⟩
 
 end Semiring
 

@@ -58,8 +58,11 @@ variable {s t : Set M}
 theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p :=
   mem_iInter₂
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
 
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
@@ -167,7 +170,7 @@ theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ
       | mem _ h =>
         obtain ⟨r₂, -, x, hx, rfl⟩ := h
         exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
-      | one => simpa only [smul_zero] using zero_mem _
+      | one => simp only [smul_zero, zero_mem]
       | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
   case of_mem_closure =>
     refine closure_le.2 ?_ hx
@@ -312,7 +315,7 @@ theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
   have : Nonempty s := hs.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists, Subtype.coe_mk,
+  simp only [sSup_eq_iSup', mem_iSup_of_directed _ hdir.directed_val, SetCoe.exists,
     exists_prop]
 
 @[norm_cast, simp]
@@ -346,10 +349,13 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 
-lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
-    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
-  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
-  simpa only [h.eq_top] using Submodule.mem_top
+theorem codisjoint_iff_exists_add_eq :
+    Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
+  rw [codisjoint_iff, eq_top_iff']
+  exact forall_congr' (fun z => mem_sup.trans <| by simp)
+
+@[deprecated (since := "2025-07-05")]
+alias ⟨exists_add_eq_of_codisjoint, _⟩ := codisjoint_iff_exists_add_eq
 
 variable (p p')
 
@@ -482,6 +488,10 @@ theorem iSup_span {ι : Sort*} (p : ι → Set M) : ⨆ i, span R (p i) = span R
 theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
 
+theorem iSup_eq_span' {ι : Sort*} (p : ι → Submodule R M) (h : ι → Prop) :
+    (⨆ (i : ι) (_ : h i), p i) = Submodule.span R (⋃ (i : ι) (_ : h i), ↑(p i)) := by
+  simp_rw [← Submodule.iSup_span, Submodule.span_eq]
+
 /-- A submodule is equal to the supremum of the spans of the submodule's nonzero elements. -/
 theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
     p = sSup { T : Submodule R M | ∃ m ∈ p, m ≠ 0 ∧ T = span R {m} } := by
@@ -564,7 +574,7 @@ theorem mem_span_insert' {x y} {s : Set M} :
   · rintro ⟨a, z, hz, rfl⟩
     exact ⟨-a, by simp [hz, add_assoc]⟩
   · rintro ⟨a, h⟩
-    exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
+    exact ⟨-a, _, h, by simp [add_comm]⟩
 
 lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by

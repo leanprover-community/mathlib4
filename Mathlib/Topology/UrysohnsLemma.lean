@@ -385,7 +385,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.zero_apply]
-    exact sub_eq_zero_of_eq (id (EqOn.symm hgt) hx)
+    exact sub_eq_zero_of_eq (hgt.symm hx)
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx
@@ -529,5 +529,5 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
     with ⟨f, fk, -, f_comp, hf⟩
   refine ⟨f, f_comp, fun x ↦ (hf x).1, ?_⟩
   have := fk (mem_of_mem_nhds k_mem)
-  simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+  simp only [Pi.one_apply] at this
   simp [this]

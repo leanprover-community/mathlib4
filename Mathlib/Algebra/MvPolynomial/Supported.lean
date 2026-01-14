@@ -92,7 +92,7 @@ theorem supported_empty : supported R (∅ : Set σ) = ⊥ := by simp [supported
 variable {s}
 
 theorem supported_mono (st : s ⊆ t) : supported R s ≤ supported R t :=
-  Algebra.adjoin_mono (Set.image_subset _ st)
+  Algebra.adjoin_mono (Set.image_mono st)
 
 @[simp]
 theorem X_mem_supported [Nontrivial R] {i : σ} : X i ∈ supported R s ↔ i ∈ s := by

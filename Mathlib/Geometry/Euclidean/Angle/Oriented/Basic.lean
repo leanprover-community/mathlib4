@@ -669,10 +669,10 @@ theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
 theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
     o.oangle x y = π ↔ InnerProductGeometry.angle x y = π := by
   by_cases hx : x = 0
-  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
+  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   by_cases hy : y = 0
-  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
+  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
@@ -790,15 +790,11 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
-      simp only [Prod.fst, Prod.snd]
+      simp only
       intro hz
     · simpa [hz] using (h' 0).1
     · simpa [hz] using (h' r').1
-  have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
-    intro z hz
-    simp_rw [s, Set.mem_image] at hz
-    obtain ⟨r', -, rfl⟩ := hz
-    exact h' r'
+  have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by grind
   have hx : (x, y) ∈ s := by
     convert Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
     simp
@@ -924,7 +920,7 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
 /-- A base angle of an isosceles triangle is acute, oriented vector angle form. -/
 theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y‖) :
     |(o.oangle (y - x) y).toReal| < π / 2 := by
-  by_cases hn : x = y; · simp [hn, div_pos, Real.pi_pos]
+  by_cases hn : x = y; · simp [hn, Real.pi_pos]
   have hs : ((2 : ℤ) • o.oangle (y - x) y).sign = (o.oangle (y - x) y).sign := by
     conv_rhs => rw [oangle_sign_sub_left_swap]
     rw [o.oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq hn h, Real.Angle.sign_pi_sub]

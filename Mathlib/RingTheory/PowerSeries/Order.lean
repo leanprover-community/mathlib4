@@ -43,7 +43,7 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine not_iff_not.mp ?_
   push_neg
-  simp [(coeff R _).map_zero]
+  simp
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
@@ -130,7 +130,7 @@ and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
     order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff R i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff R i φ = 0 := by
   cases n with
-  | top => simp [ext_iff]
+  | top => simp
   | coe n => simp [order_eq_nat]
 
 
@@ -139,8 +139,6 @@ is at least the minimum of their orders. -/
 theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
   simp +contextual [coeff_of_lt_order]
-
-@[deprecated (since := "2024-11-12")] alias le_order_add := min_order_le_order_add
 
 private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by

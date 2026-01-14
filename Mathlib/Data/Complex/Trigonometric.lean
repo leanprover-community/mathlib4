@@ -117,7 +117,7 @@ theorem two_cosh : 2 * cosh x = exp x + exp (-x) :=
 theorem sinh_zero : sinh 0 = 0 := by simp [sinh]
 
 @[simp]
-theorem sinh_neg : sinh (-x) = -sinh x := by simp [sinh, exp_neg, (neg_div _ _).symm, add_mul]
+theorem sinh_neg : sinh (-x) = -sinh x := by simp [sinh, exp_neg, (neg_div _ _).symm]
 
 private theorem sinh_add_aux {a b c d : ℂ} :
     (a - b) * (c + d) + (a + b) * (c - d) = 2 * (a * c - b * d) := by ring
@@ -309,7 +309,7 @@ theorem sin_add : sin (x + y) = sin x * cos y + cos x * sin y := by
 theorem cos_zero : cos 0 = 1 := by simp [cos]
 
 @[simp]
-theorem cos_neg : cos (-x) = cos x := by simp [cos, sub_eq_add_neg, exp_neg, add_comm]
+theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg, add_comm]
 
 theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y := by
   rw [← cosh_mul_I, add_mul, cosh_add, cosh_mul_I, cosh_mul_I, sinh_mul_I, sinh_mul_I,
@@ -464,7 +464,7 @@ theorem sin_two_mul : sin (2 * x) = 2 * sin x * cos x := by
   rw [two_mul, sin_add, two_mul, add_mul, mul_comm]
 
 theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 := by
-  simp [cos_two_mul, div_add_div_same, mul_div_cancel_left₀, two_ne_zero, -one_div]
+  simp [cos_two_mul, div_add_div_same, mul_div_cancel_left₀, -one_div]
 
 theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 
@@ -476,12 +476,12 @@ theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv, one_mul]
+  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
   have h1 : x + 2 * x = 3 * x := by ring
   rw [← h1, cos_add x (2 * x)]
-  simp only [cos_two_mul, sin_two_mul, mul_add, mul_sub, mul_one, sq]
+  simp only [cos_two_mul, sin_two_mul, mul_sub, mul_one, sq]
   have h2 : 4 * cos x ^ 3 = 2 * cos x * cos x * cos x + 2 * cos x * cos x ^ 2 := by ring
   rw [h2, cos_sq']
   ring
@@ -535,7 +535,7 @@ variable (x y : ℝ)
 theorem sin_zero : sin 0 = 0 := by simp [sin]
 
 @[simp]
-theorem sin_neg : sin (-x) = -sin x := by simp [sin, exp_neg, (neg_div _ _).symm, add_mul]
+theorem sin_neg : sin (-x) = -sin x := by simp [sin]
 
 nonrec theorem sin_add : sin (x + y) = sin x * cos y + cos x * sin y :=
   ofReal_injective <| by simp [sin_add]
@@ -544,7 +544,7 @@ nonrec theorem sin_add : sin (x + y) = sin x * cos y + cos x * sin y :=
 theorem cos_zero : cos 0 = 1 := by simp [cos]
 
 @[simp]
-theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg]
+theorem cos_neg : cos (-x) = cos x := by simp [cos]
 
 @[simp]
 theorem cos_abs : cos |x| = cos x := by
@@ -559,14 +559,17 @@ theorem sin_sub : sin (x - y) = sin x * cos y - cos x * sin y := by
 theorem cos_sub : cos (x - y) = cos x * cos y + sin x * sin y := by
   simp [sub_eq_add_neg, cos_add, sin_neg, cos_neg]
 
+nonrec theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) :=
+  ofReal_injective <| by simp [sin_add_sin]
+
 nonrec theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) :=
   ofReal_injective <| by simp [sin_sub_sin]
 
-nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
-  ofReal_injective <| by simp [cos_sub_cos]
-
 nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
   ofReal_injective <| by simp [cos_add_cos]
+
+nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2) :=
+  ofReal_injective <| by simp [cos_sub_cos]
 
 theorem two_mul_sin_mul_sin (x y : ℝ) : 2 * sin x * sin y = cos (x - y) - cos (x + y) := by
   simp [cos_add, cos_sub]
@@ -594,7 +597,7 @@ theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
 theorem tan_zero : tan 0 = 0 := by simp [tan]
 
 @[simp]
-theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
+theorem tan_neg : tan (-x) = -tan x := by simp [tan]
 
 @[simp]
 nonrec theorem sin_sq_add_cos_sq : sin x ^ 2 + cos x ^ 2 = 1 :=
@@ -659,7 +662,7 @@ theorem inv_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ =
 
 theorem tan_sq_div_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) :
     tan x ^ 2 / (1 + tan x ^ 2) = sin x ^ 2 := by
-  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv, one_mul]
+  simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv]
 
 theorem inv_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) : (√(1 + tan x ^ 2))⁻¹ = cos x := by
   rw [← sqrt_sq hx.le, ← sqrt_inv, inv_one_add_tan_sq hx.ne']
@@ -682,7 +685,7 @@ nonrec theorem sinh_eq (x : ℝ) : sinh x = (exp x - exp (-x)) / 2 :=
 theorem sinh_zero : sinh 0 = 0 := by simp [sinh]
 
 @[simp]
-theorem sinh_neg : sinh (-x) = -sinh x := by simp [sinh, exp_neg, (neg_div _ _).symm, add_mul]
+theorem sinh_neg : sinh (-x) = -sinh x := by simp [sinh]
 
 nonrec theorem sinh_add : sinh (x + y) = sinh x * cosh y + cosh x * sinh y := by
   rw [← ofReal_inj]; simp [sinh_add]
@@ -720,7 +723,7 @@ nonrec theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
 theorem tanh_zero : tanh 0 = 0 := by simp [tanh]
 
 @[simp]
-theorem tanh_neg : tanh (-x) = -tanh x := by simp [tanh, neg_div]
+theorem tanh_neg : tanh (-x) = -tanh x := by simp [tanh]
 
 @[simp]
 theorem cosh_add_sinh : cosh x + sinh x = exp x := by rw [← ofReal_inj]; simp
@@ -794,7 +797,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
     |cos x - (1 - x ^ 2 / 2)| = ‖Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)‖ := by
       rw [← Real.norm_eq_abs, ← norm_real]; simp
     _ = ‖(Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2‖ := by
-      simp [Complex.cos, sub_div, add_div, neg_div, div_self (two_ne_zero' ℂ)]
+      simp [Complex.cos, sub_div, add_div]
     _ = ‖((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
               (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2‖ :=
       (congr_arg (‖·‖ : ℂ → ℝ)
@@ -807,7 +810,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
       rw [add_div]; exact norm_add_le _ _
     _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
           ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp [map_div₀]
+      simp
     _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
           ‖-x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
@@ -821,7 +824,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       rw [← Real.norm_eq_abs, ← norm_real]; simp
     _ = ‖((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
           (2 * x - x ^ 3 / 3 : ℝ)) / 2‖ := by
-      simp [Complex.sin, sub_div, add_div, neg_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
+      simp [Complex.sin, sub_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
         div_div, show (3 : ℂ) * 2 = 6 by norm_num]
     _ = ‖((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
                 (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2‖ :=
@@ -837,7 +840,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       rw [sub_mul, sub_eq_add_neg, add_div]; exact norm_add_le _ _
     _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
           ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp [add_comm, map_div₀]
+      simp [add_comm]
     _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
           ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
@@ -877,7 +880,7 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [abs_of_nonneg (le_of_lt hx0)]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
-  have : x / 2 ≤ 1 := (div_le_iff₀ (by norm_num)).mpr (by simpa)
+  have : x / 2 ≤ 1 := (div_le_iff₀ (by simp)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))

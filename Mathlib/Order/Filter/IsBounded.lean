@@ -38,10 +38,10 @@ theorem isBoundedUnder_of {f : Filter β} {u : β → α} : (∃ b, ∀ x, r (u 
 
 theorem isBounded_bot : IsBounded r ⊥ ↔ Nonempty α := by simp [IsBounded, exists_true_iff_nonempty]
 
-theorem isBounded_top : IsBounded r ⊤ ↔ ∃ t, ∀ x, r x t := by simp [IsBounded, eq_univ_iff_forall]
+theorem isBounded_top : IsBounded r ⊤ ↔ ∃ t, ∀ x, r x t := by simp [IsBounded]
 
 theorem isBounded_principal (s : Set α) : IsBounded r (𝓟 s) ↔ ∃ t, ∀ x ∈ s, r x t := by
-  simp [IsBounded, subset_def]
+  simp [IsBounded]
 
 theorem isBounded_sup [IsTrans α r] [IsDirected α r] :
     IsBounded r f → IsBounded r g → IsBounded r (f ⊔ g)
@@ -255,11 +255,11 @@ lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
-  simp +contextual [IsCobounded, eq_univ_iff_forall,
+  simp +contextual [IsCobounded,
     exists_true_iff_nonempty]
 
 theorem isCobounded_principal (s : Set α) :
-    (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [IsCobounded, subset_def]
+    (𝓟 s).IsCobounded r ↔ ∃ b, ∀ a, (∀ x ∈ s, r x a) → r b a := by simp [IsCobounded]
 
 theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
   | ⟨b, hb⟩ => ⟨b, fun a ha => hb a (h ha)⟩
@@ -373,7 +373,7 @@ end add_and_sum
 section add_and_sum
 
 variable {α : Type*} {R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
-  [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+  [AddLeftMono R] [AddRightMono R]
   {u v : α → R}
 
 lemma isCoboundedUnder_ge_add (hu : f.IsBoundedUnder (· ≤ ·) u)
@@ -573,7 +573,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp +contextual only [implies_true, max_le_iff, and_imp]
+    simp +contextual only [implies_true, max_le_iff]
 
 open Finset
 
@@ -585,7 +585,7 @@ theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter
   simp only [eventually_map] at hm ⊢
   rw [← eventually_all_finset s] at hm
   refine hm.mono fun a h ↦ ?_
-  simp only [Finset.sup'_apply, sup'_le_iff]
+  simp only [sup'_le_iff]
   exact fun i i_s ↦ le_trans (h i i_s) (le_sup' m i_s)
 
 theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι → α → β}
@@ -596,7 +596,7 @@ theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι
   refine fun c hc ↦ hb c ?_
   rw [eventually_map] at hc ⊢
   refine hc.mono fun a h ↦ ?_
-  simp only [Finset.sup'_apply, sup'_le_iff] at h ⊢
+  simp only [sup'_le_iff] at h ⊢
   exact h i i_s
 
 theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
@@ -633,7 +633,7 @@ lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monoto
     {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
     ∃ᶠ x' in F.map f, f l ≤ x' := by
   refine fun ev ↦ freq_ge ?_
-  simp only [not_le, not_lt] at ev freq_ge ⊢
+  simp only [not_le] at ev freq_ge ⊢
   filter_upwards [ev] with z hz
   by_contra con
   exact lt_irrefl (f l) <| lt_of_le_of_lt (f_incr <| not_lt.mp con) hz
@@ -642,7 +642,7 @@ lemma Monotone.frequently_le_map_of_frequently_le {f : R → S} (f_incr : Monoto
     {u : R} (freq_le : ∃ᶠ x in F, x ≤ u) :
     ∃ᶠ y in F.map f, y ≤ f u := by
   refine fun ev ↦ freq_le ?_
-  simp only [not_le, not_lt] at ev freq_le ⊢
+  simp only [not_le] at ev freq_le ⊢
   filter_upwards [ev] with z hz
   by_contra con
   apply lt_irrefl (f u) <| lt_of_lt_of_le hz <| f_incr (not_lt.mp con)

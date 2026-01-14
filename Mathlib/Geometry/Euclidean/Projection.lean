@@ -3,7 +3,8 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
@@ -47,7 +48,7 @@ def orthogonalProjectionFn (s : AffineSubspace ℝ P) [Nonempty s]
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjectionFn` of that
@@ -62,7 +63,7 @@ theorem inter_eq_singleton_orthogonalProjectionFn {s : AffineSubspace ℝ P} [No
       (mk'_nonempty p s.directionᗮ)
       (by
         rw [direction_mk' p s.directionᗮ]
-        exact Submodule.isCompl_orthogonal_of_completeSpace)
+        exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection)
 
 /-- The `orthogonalProjectionFn` lies in the given subspace. This
 lemma is only intended for use in setting up the bundled version and
@@ -100,18 +101,18 @@ nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
   toFun p := ⟨orthogonalProjectionFn s p, orthogonalProjectionFn_mem p⟩
   linear := s.direction.orthogonalProjection
   map_vadd' p v := by
-    have hs : (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈ s :=
+    have hs : s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈ s :=
       vadd_mem_of_mem_direction (s.direction.orthogonalProjection v).2
         (orthogonalProjectionFn_mem p)
     have ho :
-      (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
+      s.direction.starProjection v +ᵥ orthogonalProjectionFn s p ∈
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
       refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
-      rw [← neg_sub, inner_neg_left, Submodule.orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
+      rw [← neg_sub, inner_neg_left, Submodule.starProjection_inner_eq_zero _ w hw, neg_zero]
     have hm :
       (s.direction.orthogonalProjection v : V) +ᵥ orthogonalProjectionFn s p ∈
         ({orthogonalProjectionFn s (v +ᵥ p)} : Set P) := by
@@ -445,7 +446,7 @@ theorem reflection_reflection (s : AffineSubspace ℝ P) [Nonempty s]
   have : ∀ a : s, ∀ b : V, s.direction.orthogonalProjection b = 0 →
       reflection s (reflection s (b +ᵥ (a : P))) = b +ᵥ (a : P) := by
     intro _ _ h
-    simp [reflection, h]
+    simp [reflection]
   rw [← vsub_vadd p (orthogonalProjection s p)]
   exact this (orthogonalProjection s p) _ (orthogonalProjection_vsub_orthogonalProjection s p)
 
@@ -580,6 +581,17 @@ theorem dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq
   exact
     Submodule.inner_right_of_mem_orthogonal (vsub_orthogonalProjection_mem_direction p₂ hp₁)
       (orthogonalProjection_vsub_mem_direction_orthogonal _ p₂)
+
+@[simp]
+lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
+    s.orthogonalProjectionSpan p = s.points 0 := by
+  rw [orthogonalProjectionSpan]
+  convert orthogonalProjection_affineSpan_singleton _ _
+  simp [Fin.fin_one_eq_zero]
+
+lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
+    (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s.points i.rev := by
+  simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
 

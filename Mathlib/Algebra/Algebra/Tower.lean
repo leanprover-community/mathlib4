@@ -9,10 +9,10 @@ import Mathlib.LinearAlgebra.Span.Basic
 /-!
 # Towers of algebras
 
-In this file we prove basic facts about towers of algebra.
+In this file we prove basic facts about towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.

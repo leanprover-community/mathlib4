@@ -54,14 +54,14 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 lemma tendsto_toLeft_atTop :
     Tendsto (Finset.toLeft (α := α) (β := β)) atTop atTop := by
   intro s hs
-  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  simp only [mem_atTop_sets, Filter.mem_map, Set.mem_preimage] at hs ⊢
   obtain ⟨t, H⟩ := hs
   exact ⟨t.disjSum ∅, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 
 lemma tendsto_toRight_atTop :
     Tendsto (Finset.toRight (α := α) (β := β)) atTop atTop := by
   intro s hs
-  simp only [mem_atTop_sets, Finset.le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
+  simp only [mem_atTop_sets, Filter.mem_map, Set.mem_preimage] at hs ⊢
   obtain ⟨t, H⟩ := hs
   exact ⟨.disjSum ∅ t, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 

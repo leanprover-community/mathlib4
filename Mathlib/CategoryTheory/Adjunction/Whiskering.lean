@@ -17,7 +17,7 @@ and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 namespace CategoryTheory.Adjunction
 
-open CategoryTheory
+open CategoryTheory Functor
 
 variable (C : Type*) {D E : Type*} [Category C] [Category D] [Category E] {F : D ⥤ E} {G : E ⥤ D}
 
@@ -28,11 +28,11 @@ protected def whiskerRight (adj : F ⊣ G) :
     (whiskeringRight C D E).obj F ⊣ (whiskeringRight C E D).obj G where
   unit :=
     { app := fun X =>
-        (Functor.rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (Functor.associator _ _ _).inv
+        (rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (associator _ _ _).inv
       naturality := by intros; ext; simp }
   counit :=
     { app := fun X =>
-        (Functor.associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (Functor.rightUnitor _).hom
+        (associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (rightUnitor _).hom
       naturality := by intros; ext; simp }
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
@@ -42,10 +42,10 @@ protected def whiskerLeft (adj : F ⊣ G) :
     (whiskeringLeft E D C).obj G ⊣ (whiskeringLeft D E C).obj F where
   unit :=
     { app := fun X =>
-        (Functor.leftUnitor _).inv ≫ whiskerRight adj.unit X ≫ (Functor.associator _ _ _).hom }
+        (leftUnitor _).inv ≫ whiskerRight adj.unit X ≫ (associator _ _ _).hom }
   counit :=
     { app := fun X =>
-        (Functor.associator _ _ _).inv ≫ whiskerRight adj.counit X ≫ (Functor.leftUnitor _).hom }
+        (associator _ _ _).inv ≫ whiskerRight adj.counit X ≫ (leftUnitor _).hom }
   left_triangle_components X := by ext; simp [← X.map_comp]
   right_triangle_components X := by ext; simp [← X.map_comp]
 

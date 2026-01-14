@@ -44,16 +44,16 @@ namespace Ideal
 lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) :
     ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
-  induction s using Finset.strongInductionOn
-  rename_i _ s IH
-  by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
-  · exact ⟨s, Finset.Subset.rfl, hs, H⟩
-  push_neg at H
-  obtain ⟨J, hJ, hJ'⟩ := H
-  refine (IH (s.erase J) (Finset.erase_ssubset hJ) ?_).imp
-    fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
-  rw [← Finset.insert_erase hJ] at hs
-  simp [← hs, hJ']
+  induction s using Finset.eraseInduction with
+  | H s IH =>
+    by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
+    · exact ⟨s, Finset.Subset.rfl, hs, H⟩
+    push_neg at H
+    obtain ⟨J, hJ, hJ'⟩ := H
+    refine (IH _ hJ ?_).imp
+      fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
+    rw [← Finset.insert_erase hJ] at hs
+    simp [← hs, hJ']
 
 open scoped Function -- required for scoped `on` notation
 
@@ -143,9 +143,9 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
     · simpa only [mem_colon_singleton] using mul_mem_right _ _
     · simp
-  rcases h with (h|h)
+  rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl|hn'
+      rcases eq_or_ne n 0 with rfl | hn'
       · simpa [f] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro

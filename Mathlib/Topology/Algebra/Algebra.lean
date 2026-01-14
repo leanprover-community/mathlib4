@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 open Algebra Set TopologicalSpace Topology
 
@@ -239,9 +239,8 @@ theorem _root_.Subalgebra.topologicalClosure_map
   image_closure_subset_closure_image f.continuous
 
 @[simp]
-theorem _root_.Subalgebra.topologicalClosure_coe
-    (s : Subalgebra R A) :
-  (s.topologicalClosure : Set A) = closure ↑s := rfl
+theorem _root_.Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
+    (s.topologicalClosure : Set A) = closure ↑s := rfl
 
 /-- Under a dense continuous algebra map, a subalgebra
 whose `TopologicalClosure` is `⊤` is sent to another such submodule.
@@ -441,8 +440,6 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
   toFun f     := f.1.prod f.2
   invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
-  left_inv f  := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 end prod
 
@@ -484,8 +481,7 @@ def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
   toAlgHom := p.val
 
 @[simp, norm_cast]
-theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) :
-    (p.valA : p →ₐ[R] A) = p.subtype :=
+theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) : p.valA = p.subtype :=
   rfl
 
 @[simp]
@@ -579,7 +575,7 @@ theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B :
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
-  simp only [Subalgebra.coe_comap, Subsemiring.coe_comap, AlgHom.coe_toRingHom]
+  simp only [Subalgebra.coe_comap]
   rw [w]
   exact f'.preimage_closure _
 
@@ -591,15 +587,11 @@ open Subalgebra
 def Algebra.elemental (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 
-@[deprecated (since := "2024-11-05")] alias Algebra.elementalAlgebra := Algebra.elemental
-
 namespace Algebra.elemental
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
-
-@[deprecated (since := "2024-11-05")] alias _root_.Algebra.self_mem_elementalAlgebra := self_mem
 
 variable {R} in
 theorem le_of_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) (hx : x ∈ s) :

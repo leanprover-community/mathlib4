@@ -211,9 +211,9 @@ theorem ppred : Partrec fun n => ppred n :=
     cases n <;> simp
     · exact
         eq_none_iff.2 fun a ⟨⟨m, h, _⟩, _⟩ => by
-          simp [show 0 ≠ m.succ by intro h; injection h] at h
+          simp at h
     · refine eq_some_iff.2 ?_
-      simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_true, mem_some_iff,
+      simp only [mem_rfind, decide_true, mem_some_iff,
         false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
@@ -421,7 +421,7 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
 
 nonrec theorem comp {f : β →. σ} {g : α → β} (hf : Partrec f) (hg : Computable g) :
     Partrec fun a => f (g a) :=
-  (hf.comp hg).of_eq fun n => by simp; rcases e : decode (α := α) n with - | a <;> simp [e, encodek]
+  (hf.comp hg).of_eq fun n => by simp; rcases e : decode (α := α) n with - | a <;> simp [encodek]
 
 theorem nat_iff {f : ℕ →. ℕ} : Partrec f ↔ Nat.Partrec f := by simp [Partrec, map_id']
 
@@ -496,7 +496,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
     fun n => by
     rcases e : decode (α := α) n with - | a <;> simp [e, Nat.rfind_zero_none, map_id']
     congr; funext n
-    simp only [map_map, Function.comp]
+    simp only [map_map]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl
 
@@ -531,7 +531,7 @@ theorem vector_mOfFn :
       (∀ i, Partrec (f i)) → Partrec fun a : α => Vector.mOfFn fun i => f i a
   | 0, _, _ => const _
   | n + 1, f, hf => by
-    simp only [Vector.mOfFn, Nat.add_eq, Nat.add_zero, pure_eq_some, bind_eq_bind]
+    simp only [Vector.mOfFn, pure_eq_some, bind_eq_bind]
     exact
       (hf 0).bind
         (Partrec.bind ((vector_mOfFn fun i => hf i.succ).comp fst)
@@ -640,7 +640,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|
       (list_getElem?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
-        simp [List.getElem?_range (Nat.lt_succ_self a.2)]
+        simp
   option_some_iff.1 <|
     (nat_rec snd (const (Option.some []))
           (to₂ <|
@@ -751,10 +751,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simpa [F] using ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      refine ⟨n, hn₁, fun m mn km => ?_⟩
-      rcases km.lt_or_eq_dec with km | km
-      · exact hn₂ _ mn km
-      · exact km ▸ ⟨_, hk⟩
+      grind
 
 theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := by
   let F : α → ℕ →. σ ⊕ α := fun a n =>

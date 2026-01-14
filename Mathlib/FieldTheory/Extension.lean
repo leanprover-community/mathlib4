@@ -125,7 +125,7 @@ theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
       (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
 
 theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
-  le_antisymm (iSup_le <| by rintro ⟨i, rfl|hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
+  le_antisymm (iSup_le <| by rintro ⟨i, rfl | hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
     iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
 
 /-- A chain of lifts has an upper bound. -/

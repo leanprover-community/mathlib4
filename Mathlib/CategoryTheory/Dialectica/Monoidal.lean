@@ -82,7 +82,10 @@ instance : MonoidalCategoryStruct (Dial C) where
   rightUnitor := rightUnitorImpl
   associator := associatorImpl
 
-theorem tensor_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by aesop_cat
+theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by
+  cat_disch
+
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
@@ -92,14 +95,14 @@ theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
-    (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
+    (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by cat_disch
 
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
-    (𝟙 (𝟙_ (Dial C)) ⊗ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+    (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
-    (f ⊗ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+    (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
 theorem pentagon (W X Y Z : Dial C) :
@@ -110,11 +113,11 @@ theorem pentagon (W X Y Z : Dial C) :
 
 theorem triangle (X Y : Dial C) :
     (associator X (𝟙_ (Dial C)) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
-    tensorHom (rightUnitor X).hom (𝟙 Y) := by aesop_cat
+    tensorHom (rightUnitor X).hom (𝟙 Y) := by cat_disch
 
 instance : MonoidalCategory (Dial C) :=
   .ofTensorHom
-    (tensor_id := tensor_id)
+    (id_tensorHom_id := id_tensorHom_id)
     (tensor_comp := tensor_comp)
     (associator_naturality := associator_naturality)
     (leftUnitor_naturality := leftUnitor_naturality)
@@ -128,23 +131,23 @@ instance : MonoidalCategory (Dial C) :=
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_comm]
 
 theorem symmetry (X Y : Dial C) :
-    (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (tensorObj X Y) := by aesop_cat
+    (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (tensorObj X Y) := by cat_disch
 
 theorem braiding_naturality_right (X : Dial C) {Y Z : Dial C} (f : Y ⟶ Z) :
-    tensorHom (𝟙 X) f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ tensorHom f (𝟙 X) := by aesop_cat
+    tensorHom (𝟙 X) f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ tensorHom f (𝟙 X) := by cat_disch
 
 theorem braiding_naturality_left {X Y : Dial C} (f : X ⟶ Y) (Z : Dial C) :
-    tensorHom f (𝟙 Z) ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ tensorHom (𝟙 Z) f := by aesop_cat
+    tensorHom f (𝟙 Z) ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ tensorHom (𝟙 Z) f := by cat_disch
 
 theorem hexagon_forward (X Y Z : Dial C) :
     (associator X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (associator Y Z X).hom =
       tensorHom (braiding X Y).hom (𝟙 Z) ≫ (associator Y X Z).hom ≫
-      tensorHom (𝟙 Y) (braiding X Z).hom := by aesop_cat
+      tensorHom (𝟙 Y) (braiding X Z).hom := by cat_disch
 
 theorem hexagon_reverse (X Y Z : Dial C) :
     (associator X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (associator Z X Y).inv =
       tensorHom (𝟙 X) (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
-      tensorHom (braiding X Z).hom (𝟙 Y) := by aesop_cat
+      tensorHom (braiding X Z).hom (𝟙 Y) := by cat_disch
 
 instance : SymmetricCategory (Dial C) where
   braiding := braiding

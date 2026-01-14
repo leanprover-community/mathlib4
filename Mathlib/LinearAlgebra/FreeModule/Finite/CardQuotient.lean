@@ -3,8 +3,8 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best, Xavier Roblot
 -/
-import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
+import Mathlib.Data.Int.NatAbs
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
@@ -18,11 +18,11 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
+open Module Submodule
+
 section Submodule
 
 variable {M : Type*} [AddCommGroup M] [Module.Free ℤ M] [Module.Finite ℤ M]
-
-open Submodule
 
 /-- Let `e : M ≃ N` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the cardinality of the quotient `M ⧸ N` is given by taking

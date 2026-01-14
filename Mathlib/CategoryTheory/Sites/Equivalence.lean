@@ -53,8 +53,7 @@ instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
     let e := (asEquivalence G).symm
     convert J.top_mem U
     ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
+    simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)

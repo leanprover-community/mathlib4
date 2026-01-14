@@ -64,7 +64,7 @@ private lemma list_geom {T : Type*} {F : Type*} [DivisionRing F] (l : List T) {y
     (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
   rw [← geom_sum_eq hy l.length, List.mapIdx_eq_zipIdx_map, Finset.sum_range,
     ← Fin.sum_univ_fun_getElem]
-  simp only [List.getElem_zipIdx, Function.uncurry_apply_pair]
+  simp only
   let e : Fin l.zipIdx.length ≃ Fin l.length := finCongr List.length_zipIdx
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ by simp [e]
 
@@ -82,18 +82,18 @@ variable {f g : AbsoluteValue ℚ ℝ}
 
 /-- Values of an absolute value on the rationals are determined by the values on the natural
 numbers. -/
-lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
+lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext1 z
   rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_int.mp h]
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g n) ↔ f ≈ g := by
+lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f ≈ g := by
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
-    ← apply_natAbs_eq,← apply_natAbs_eq, h (natAbs x.num)]
+    ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]
 
 section Non_archimedean
 
@@ -314,9 +314,9 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     calc
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
-      simp only [List.mapIdx_eq_zipIdx_map, List.map_map]
+      simp only [List.mapIdx_eq_zipIdx_map]
       refine List.sum_le_sum fun ⟨i, a⟩ _ ↦ ?_
-      simp only [Function.comp_apply, Function.uncurry_apply_pair]
+      simp only
       exact (mul_le_mul_of_nonneg_right (mod_cast le_refl n₀) (by positivity)).trans <|
         mul_le_of_le_one_right (by positivity) (pow_le_one₀ (by positivity) h)
     _ = n₀ * (Nat.log n₀ m + 1) := by
@@ -334,12 +334,12 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     calc
     f n = (f ↑(n ^ k)) ^ (k : ℝ)⁻¹ := by
       rw [Nat.cast_pow, map_pow, ← rpow_natCast, rpow_rpow_inv (by positivity) (by positivity)]
-    _  ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
+    _ ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact h_ineq1 <| one_le_pow₀ (one_le_iff_ne_zero.mpr h₀)
-    _  = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
+    _ = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
       rw [Nat.cast_pow, logb_pow]
-    _  ≤ (n₀ * (k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
+    _ ≤ (n₀ * (k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact one_le_cast.mpr hk
     _ = (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
@@ -403,7 +403,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
       atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
     exact (tendsto_const_rpow_inv (expr_pos hm notbdd)).mul_const _
-  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this <|
+  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x := f ↑n)) this <|
     eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (ne_zero_of_lt hb)⟩
 
 include hm hn notbdd in

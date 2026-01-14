@@ -78,6 +78,7 @@ section
 variable (C)
 
 /-- The forgetful functor from commutative group objects to group objects. -/
+@[simps! obj_X]
 def forget₂Grp_ : CommGrp_ C ⥤ Grp_ C :=
   inducedFunctor CommGrp_.toGrp_
 
@@ -101,6 +102,7 @@ theorem forget₂Grp_map_hom {A B : CommGrp_ C} (f : A ⟶ B) : ((forget₂Grp_ 
   rfl
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects. -/
+@[simps! obj_X]
 def forget₂CommMon_ : CommGrp_ C ⥤ CommMon_ C :=
   inducedFunctor CommGrp_.toCommMon_
 
@@ -138,21 +140,24 @@ theorem forget₂Grp_comp_forget : forget₂Grp_ C ⋙ Grp_.forget C = forget C 
 @[simp]
 theorem forget₂CommMon_comp_forget : forget₂CommMon_ C ⋙ CommMon_.forget C = forget C := rfl
 
-end
-
-section
-
-variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : η ≫ f.hom = η := by aesop_cat)
-  (mul_f : μ ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `Grp_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+instance {G H : CommGrp_ C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
 
 end
+
+/-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
+underlying objects. -/
+@[simps!]
+def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [IsCommMon G] [Grp_Class H] [IsCommMon H]
+    [IsMon_Hom e.hom] : mk G ≅ mk H :=
+  (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
+
+/-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
+objects and checking compatibility with unit and multiplication only in the forward direction. -/
+abbrev mkIso {G H : CommGrp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : CommGrp_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_
@@ -176,15 +181,27 @@ variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
 objects. -/
 @[simps!]
-noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
+def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
-  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by aesop_cat
+  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by cat_disch
+
+protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
+protected instance Full.mapCommGrp [F.Full] [F.Faithful] : F.mapCommGrp.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+@[simps]
+protected def FullyFaithful.mapCommGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
 
 @[simp]
 theorem mapCommGrp_id_one (A : CommGrp_ C) :
@@ -208,24 +225,23 @@ theorem comp_mapCommGrp_mul (A : CommGrp_ C) :
 
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp_ C) :=
+  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp)
+    (by simp))
 
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
-  NatIso.ofComponents (fun X ↦ CommGrp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
+  NatIso.ofComponents fun X ↦ CommGrp_.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
-  app X := .mk (f.app _)
+def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
-noncomputable def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
+def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
   NatIso.ofComponents fun X ↦ CommGrp_.mkIso (e.app _)
 
 attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
@@ -233,7 +249,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
   obj F := F.1.mapCommGrp
-  map {F G} α := { app := fun A => { hom := α.app A.X } }
+  map {F G} α := { app A := .mk' (α.app A.X) }
 
 end Functor
 

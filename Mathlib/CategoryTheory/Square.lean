@@ -78,10 +78,10 @@ structure Hom (sq₁ sq₂ : Square C) where
   τ₃ : sq₁.X₃ ⟶ sq₂.X₃
   /-- the bottom-right morphism -/
   τ₄ : sq₁.X₄ ⟶ sq₂.X₄
-  comm₁₂ : sq₁.f₁₂ ≫ τ₂ = τ₁ ≫ sq₂.f₁₂ := by aesop_cat
-  comm₁₃ : sq₁.f₁₃ ≫ τ₃ = τ₁ ≫ sq₂.f₁₃ := by aesop_cat
-  comm₂₄ : sq₁.f₂₄ ≫ τ₄ = τ₂ ≫ sq₂.f₂₄ := by aesop_cat
-  comm₃₄ : sq₁.f₃₄ ≫ τ₄ = τ₃ ≫ sq₂.f₃₄ := by aesop_cat
+  comm₁₂ : sq₁.f₁₂ ≫ τ₂ = τ₁ ≫ sq₂.f₁₂ := by cat_disch
+  comm₁₃ : sq₁.f₁₃ ≫ τ₃ = τ₁ ≫ sq₂.f₁₃ := by cat_disch
+  comm₂₄ : sq₁.f₂₄ ≫ τ₄ = τ₂ ≫ sq₂.f₂₄ := by cat_disch
+  comm₃₄ : sq₁.f₃₄ ≫ τ₄ = τ₃ ≫ sq₂.f₃₄ := by cat_disch
 
 namespace Hom
 

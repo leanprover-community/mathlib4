@@ -49,7 +49,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R),
       I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
     use ⟨Z, a'.2 * b'.2⟩
-    simp only [Z, RingHom.map_add, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, RingHom.map_add, Submonoid.coe_mul, RingHom.map_mul]
     rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
       mul_assoc b, hb]
     ring
@@ -58,7 +58,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     obtain ⟨c', hc⟩ := IsLocalization.surj M c
     let Z : { x // x ∈ I } := ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
     use ⟨Z, c'.2 * x'.2⟩
-    simp only [Z, ← hx, ← hc, smul_eq_mul, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, ← hx, ← hc, smul_eq_mul, Submonoid.coe_mul, RingHom.map_mul]
     ring
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
@@ -205,8 +205,7 @@ lemma map_radical (I : Ideal R) :
   refine (I.map_radical_le (algebraMap R S)).antisymm ?_
   rintro x ⟨n, hn⟩
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
-  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M,
-    Submonoid.mem_powers_iff, exists_exists_eq_and] at hn ⊢
+  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
   refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
 
@@ -301,7 +300,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
-  simp only [RingHom.algebraMap_toAlgebra, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
+  simp only [IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
   simp only [← map_mul,
@@ -329,6 +328,12 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
       ← IsLocalization.mk'_one (M := M)] at e
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
+
+open Algebra in
+instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
+    IsDomain (Localization (algebraMapSubmonoid S P.primeCompl)) :=
+  isDomain_localization (map_le_nonZeroDivisors_of_injective _
+    (FaithfulSMul.algebraMap_injective R S) P.primeCompl_le_nonZeroDivisors)
 
 end CommRing
 

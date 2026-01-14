@@ -21,7 +21,7 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
   `A[T;T⁻¹]` when `A` is an `R`-coalgebra.
 -/
 
-suppress_compilation
+noncomputable section
 
 open Coalgebra
 

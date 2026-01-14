@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
 /-!
@@ -81,7 +81,7 @@ theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
 
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
-  ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
+  ext ⟨_ | i⟩ <;> simp
 
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
@@ -127,8 +127,5 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
-
-@[deprecated (since := "2025-01-28")]
-alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
 
 end List

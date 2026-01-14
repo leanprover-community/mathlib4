@@ -123,7 +123,7 @@ theorem volume_apply' (I : Box ι) :
 theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
     (∏ j, ((I.face i).upper j - (I.face i).lower j)) * (I.upper i - I.lower i) =
       ∏ j, (I.upper j - I.lower j) := by
-  simp only [face_lower, face_upper, (· ∘ ·), Fin.prod_univ_succAbove _ i, mul_comm]
+  simp only [face_lower, face_upper, Fin.prod_univ_succAbove _ i, mul_comm]
 
 end Box
 

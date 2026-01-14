@@ -48,7 +48,7 @@ lemma mem_stabilizer_set {s : Set α} : a ∈ stabilizer G s ↔ ∀ b, a • b 
 lemma map_stabilizer_le (f : G →* H) (s : Set G) :
     (stabilizer G s).map f ≤ stabilizer H (f '' s) := by
   rintro a
-  simp only [Subgroup.mem_map, mem_stabilizer_iff, exists_prop, forall_exists_index, and_imp]
+  simp only [Subgroup.mem_map, mem_stabilizer_iff, forall_exists_index, and_imp]
   rintro a ha rfl
   rw [← image_smul_distrib, ha]
 
@@ -97,7 +97,7 @@ lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s �
 
 @[to_additive]
 lemma stabilizer_union_eq_right (hdisj : Disjoint s t) (hstab : stabilizer G t ≤ stabilizer G s)
-    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s)  :
+    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s) :
     stabilizer G (s ∪ t) = stabilizer G t := by
   rw [union_comm, stabilizer_union_eq_left hdisj.symm hstab (union_comm .. ▸ hstab_union)]
 
@@ -221,12 +221,6 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   classical
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
-
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_smul_le := mem_stabilizer_set_iff_subset_smul_set
-
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_le_smul := mem_stabilizer_set_iff_smul_set_subset
 
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :

@@ -22,6 +22,9 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 * `TensorAlgebra.rank_eq`
 
 -/
+
+open Module
+
 namespace TensorAlgebra
 
 universe uκ uR uM
@@ -52,7 +55,7 @@ lemma equivFreeAlgebra_symm_ι (b : Basis κ R M) (i : κ) :
 
 /-- A basis on `M` can be lifted to a basis on `TensorAlgebra R M` -/
 @[simps! repr_apply]
-noncomputable def _root_.Basis.tensorAlgebra (b : Basis κ R M) :
+noncomputable def _root_.Module.Basis.tensorAlgebra (b : Basis κ R M) :
     Basis (FreeMonoid κ) R (TensorAlgebra R M) :=
   (FreeAlgebra.basisFreeMonoid R κ).map <| (equivFreeAlgebra b).symm.toLinearEquiv
 

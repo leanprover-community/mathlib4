@@ -234,9 +234,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      rw [not_le] at h
-      exact h
+      omega
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -282,7 +280,7 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, natCast_get, natCast_get]
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  change (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
   simp only [forall_prop_of_true, dom_natCast, get_natCast']
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -295,7 +293,7 @@ theorem coe_le_iff (n : ℕ) (x : PartENat) : (n : PartENat) ≤ x ↔ ∀ h : x
 
 theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.Dom, n < x.get h := by
   rw [← some_eq_natCast]
-  simp only [lt_def, exists_prop_of_true, dom_some, forall_true_iff]
+  simp only [lt_def, exists_prop_of_true, dom_some]
   rfl
 
 nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
@@ -608,7 +606,7 @@ open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_ <;>
-    simp [add_top, top_add, ← Nat.cast_add, ← ENat.coe_add]
+    simp [add_top, top_add, ← Nat.cast_add]
 
 open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
@@ -739,6 +737,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

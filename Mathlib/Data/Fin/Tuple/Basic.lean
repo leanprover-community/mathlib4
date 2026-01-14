@@ -45,7 +45,7 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
   functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`. This is a
   special case of `Fin.lastCases`.
 * `Fin.init`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.init f : Fin n → α` by forgetting
-  the start. In general, tuples can be dependent functions,
+  the end. In general, tuples can be dependent functions,
   in which case `Fin.init f : ∀ i : Fin n, α i.castSucc`.
 
 ### Adding in the middle
@@ -180,7 +180,7 @@ def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fi
 
 @[simp]
 theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
-    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : @consCases _ _ _ h (cons x₀ x) = h x₀ x := by
+    (x₀ : α 0) (x : ∀ i : Fin n, α i.succ) : consCases h (cons x₀ x) = h x₀ x := by
   rw [consCases, cast_eq]
   congr
 
@@ -386,6 +386,13 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
   unfold append addCases
   simp
 
+/-- Splitting a dependent finite sequence v into an initial part and a final part,
+and then concatenating these components, produces an identical sequence. -/
+theorem addCases_castAdd_natAdd {γ : Fin (m + n) → Sort*} (v : ∀ i, γ i) :
+    addCases (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j)) = v := by
+  ext i
+  cases i using addCases <;> simp
+
 theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
     Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
   ext (i | j) <;> simp
@@ -448,7 +455,7 @@ theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m�
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine Fin.addCases (fun l => ?_) fun r => ?_
-  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
+  · simp [modNat]
   · simp [modNat, Nat.add_mod]
 
 theorem repeat_rev (a : Fin n → α) (k : Fin (m * n)) :
@@ -517,7 +524,7 @@ lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
   simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
 
 @[simp]
-theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
+theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ (natAdd m : Fin (n + 1) → Fin (m + n + 1)) =
       snoc (f ∘ natAdd m) a := by
   ext i
@@ -527,15 +534,21 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a :
   · simp only [comp_apply, snoc_castSucc]
     rw [natAdd_castSucc, snoc_castSucc]
 
+@[deprecated (since := "2025-07-04")] alias snoc_comp_nat_add := snoc_comp_natAdd
+
 @[simp]
-theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
+theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
+@[deprecated (since := "2025-07-04")] alias snoc_cast_add := snoc_castAdd
+
 @[simp]
-theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
+theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
-  funext (snoc_cast_add _ _)
+  funext (snoc_castAdd _ _)
+
+@[deprecated (since := "2025-07-04")] alias snoc_comp_cast_add := snoc_comp_castAdd
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
@@ -598,7 +611,7 @@ would involve a cast to convince Lean that the two types are equal, making it ha
 theorem tail_init_eq_init_tail {β : Sort*} (q : Fin (n + 2) → β) :
     tail (init q) = init (tail q) := by
   ext i
-  simp [tail, init, castSucc_fin_succ]
+  simp [tail, init]
 
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
@@ -654,7 +667,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
   funext i
   rcases i with ⟨i, -⟩
-  simp only [append, addCases, cons, castLT, cast, comp_apply]
+  simp only [append, addCases, cons, castLT, comp_apply]
   rcases i with - | i
   · simp
   · split_ifs with h
@@ -668,7 +681,7 @@ theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α
   funext i
   rcases i with ⟨i, isLt⟩
   simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, snoc.eq_1,
-    cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
+    eq_rec_constant, Nat.add_eq, castLT_mk]
   split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
   · have := Nat.lt_add_right m lt_n
     contradiction
@@ -701,7 +714,7 @@ def snocCases {P : (∀ i : Fin n.succ, α i) → Sort*}
   _root_.cast (by rw [Fin.snoc_init_self]) <| h (Fin.init x) (x <| Fin.last _)
 
 @[simp] lemma snocCases_snoc
-    {P : (∀ i : Fin (n+1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
+    {P : (∀ i : Fin (n + 1), α i) → Sort*} (h : ∀ x x₀, P (Fin.snoc x x₀))
     (x : ∀ i : Fin n, (Fin.init α) i) (x₀ : α (Fin.last _)) :
     snocCases h (Fin.snoc x x₀) = h x x₀ := by
   rw [snocCases, cast_eq_iff_heq, Fin.init_snoc, Fin.snoc_last]
@@ -774,6 +787,22 @@ alias exists_iff_succ := exists_fin_succ
 lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
+
+/-- A finite sequence of properties P holds for {0 , ... , m + n - 1} iff
+it holds separately for both {0 , ... , m - 1} and {m, ..., m + n - 1}. -/
+theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
+    (∀ i, P i) ↔ (∀ i, P (castAdd _ i)) ∧ (∀ j, P (natAdd _ j)) :=
+  ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨hm, hn⟩ => Fin.addCases hm hn⟩
+
+/-- A property holds for all dependent finite sequence of length m + n iff
+it holds for the concatenation of all pairs of length m sequences and length n sequences. -/
+theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Prop} :
+    (∀ v, P v) ↔
+      (∀ (vₘ : ∀ i, γ (castAdd n i)) (vₙ : ∀ j, γ (natAdd m j)), P (addCases vₘ vₙ)) where
+  mp hv vm vn := hv (addCases vm vn)
+  mpr h v := by
+    convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
+    exact (addCases_castAdd_natAdd v).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
@@ -978,7 +1007,7 @@ lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAb
     (f : ∀ j, α j) :
     removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
   ext j
-  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -1020,8 +1049,8 @@ not a definitional equality. -/
 /-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
 theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
-    HEq (i.removeNth (j.removeNth m))
-      ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
+    i.removeNth (j.removeNth m) ≍
+      (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by
   apply Function.hfunext rfl
   simp only [heq_iff_eq]
   rintro k _ rfl
@@ -1215,4 +1244,3 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
-  right_inv := fun _ => rfl

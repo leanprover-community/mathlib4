@@ -227,7 +227,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp +unfoldPartialApp only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
@@ -240,7 +240,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
   intros
-  simp only [peval, aeval_bind₁, Function.comp, hg, hf]
+  simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
@@ -281,8 +281,7 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true,
-      eq_self_iff_true]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true]
   · intro i _hi hi0
     simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
       bind₁_X_right, map_mul]
@@ -292,7 +291,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · simp only [one_coeff_zero, onePoly, ite_true, map_one]
       · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩

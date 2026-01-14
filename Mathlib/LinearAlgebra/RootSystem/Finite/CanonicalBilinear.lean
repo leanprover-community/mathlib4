@@ -131,7 +131,7 @@ lemma ker_copolarization_eq_ker_corootForm :
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+  simp [LinearMap.isSymm_def, mul_comm, rootForm_apply_apply]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
@@ -252,7 +252,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
   nth_rw 2 [hP]
   rw [PolarizationIn_apply]
   simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflectionPerm,
-    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul, Finset.sum_neg_distrib,
+    pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
   simp only [LinearMap.coeFn_sum, LinearMap.coe_smulRight, Finset.sum_apply,
@@ -284,7 +284,7 @@ lemma rootForm_self_smul_coroot (i : ι) :
     (P.RootForm (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have : (algebraMap R R) ((P.RootFormIn R) (P.rootSpanMem R i) (P.rootSpanMem R i)) • P.coroot i =
       2 • P.Polarization (P.root i) := by
-    rw [Algebra.id.map_eq_self, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
+    rw [Algebra.algebraMap_self_apply, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
   rw [← this, algebraMap_rootFormIn]
 
 lemma corootForm_self_smul_root (i : ι) :
@@ -307,7 +307,7 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
   have hji : 2 • (P.RootForm (P.root i)) (P.root j) =
       P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
     rw [show (P.RootForm (P.root i)) (P.root j) = (P.RootForm (P.root j)) (P.root i) by
-      apply rootForm_symmetric, ← toPerfectPairing_apply_apply_Polarization,
+      apply (rootForm_symmetric P).eq, ← toPerfectPairing_apply_apply_Polarization,
       LinearMap.map_smul_of_tower]
   rw [sq, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul, hij, ← rootForm_self_smul_coroot,
     smul_mul_assoc 2, ← mul_smul_comm, hji, ← rootForm_self_smul_coroot, map_smul, ← pairing,
@@ -363,7 +363,7 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     this ▸ IsSumSq.sum_mul_self Finset.univ s
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
-  simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
+  simp [hs, rootForm_apply_apply]
 
 lemma posRootForm_posForm_apply_apply (x y : P.rootSpan S) : (P.posRootForm S).posForm x y =
     ∑ i, P.coroot'In S i x * P.coroot'In S i y := by

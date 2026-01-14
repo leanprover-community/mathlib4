@@ -26,7 +26,7 @@ import Mathlib.FieldTheory.Perfect
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+- `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
   needs to prove it for all elements of the form `x ^ (p ^ -n)`.
 
 - `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
@@ -152,7 +152,7 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_mul_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
-            simp only [add_assoc, mul_assoc, iterate_map_mul, ← iterate_add_apply,
+            simp only [mul_assoc, iterate_map_mul, ← iterate_add_apply,
               add_comm, add_left_comm]
     one := mk K p (0, 1)
     one_mul := fun e =>
@@ -290,13 +290,13 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
     mul_zero := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
-      simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
+      simp only [iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
     left_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
-            simp only [add_assoc, add_comm, add_left_comm]
+            simp only [add_comm, add_left_comm]
             apply R.sound
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               mul_add, add_comm, add_left_comm]
@@ -350,9 +350,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   | zero =>
     induction x with
     | zero => simp
-    | succ x ih =>
-      rw [Nat.cast_succ, Nat.cast_succ, ih]
-      rfl
+    | succ x ih => simp [Nat.cast_succ, ih, one_def]
   | succ n ih =>
     rw [ih]; apply Quot.sound
     suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
@@ -440,7 +438,6 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
         have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
         rw [iterate_add_apply, this _ _, add_comm n, iterate_add_apply, this _ _] }
   invFun f := f.comp (of K p)
-  left_inv f := by ext x; rfl
   right_inv f := by
     ext ⟨n, x⟩
     simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,

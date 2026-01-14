@@ -40,10 +40,10 @@ namespace NatTrans
 open Functor.LaxMonoidal
 
 /-- A natural transformation between (lax) monoidal functors is monoidal if it satisfies
-`ε F ≫ τ.app (𝟙_ C) = ε G` and `μ F X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ μ G X Y`. -/
+`ε F ≫ τ.app (𝟙_ C) = ε G` and `μ F X Y ≫ app (X ⊗ Y) = (app X ⊗ₘ app Y) ≫ μ G X Y`. -/
 class IsMonoidal : Prop where
-  unit : ε F₁ ≫ τ.app (𝟙_ C) = ε F₂ := by aesop_cat
-  tensor (X Y : C) : μ F₁ _ _ ≫ τ.app (X ⊗ Y) = (τ.app X ⊗ τ.app Y) ≫ μ F₂ _ _ := by aesop_cat
+  unit : ε F₁ ≫ τ.app (𝟙_ C) = ε F₂ := by cat_disch
+  tensor (X Y : C) : μ F₁ _ _ ≫ τ.app (X ⊗ Y) = (τ.app X ⊗ₘ τ.app Y) ≫ μ F₂ _ _ := by cat_disch
 
 namespace IsMonoidal
 
@@ -197,10 +197,10 @@ open Functor.LaxMonoidal
 @[simps!]
 def isoOfComponents {F G : LaxMonoidalFunctor C D} (e : ∀ X, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (e Y).hom = (e X).hom ≫ G.map f := by
-      aesop_cat)
-    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by aesop_cat)
+      cat_disch)
+    (unit : ε F.toFunctor ≫ (e (𝟙_ C)).hom = ε G.toFunctor := by cat_disch)
     (tensor : ∀ X Y, μ F.toFunctor X Y ≫ (e (X ⊗ Y)).hom =
-      ((e X).hom ⊗ (e Y).hom) ≫ μ G.toFunctor X Y := by aesop_cat) :
+      ((e X).hom ⊗ₘ (e Y).hom) ≫ μ G.toFunctor X Y := by cat_disch) :
     F ≅ G :=
   @isoMk _ _ _ _ _ _ _ _ (NatIso.ofComponents e naturality) (by constructor <;> assumption)
 

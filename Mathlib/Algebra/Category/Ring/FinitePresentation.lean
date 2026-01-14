@@ -60,7 +60,7 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
     simp [← α.naturality]
   · intro x hx
     rw [← c'.w (.fst (by exact ⟨x, hx⟩)), ← c'.w (.snd (by exact ⟨x, hx⟩))]
-    have (x) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
+    have (x : _) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 
 include hc in
@@ -162,3 +162,4 @@ lemma isFinitelyPresentable (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     IsFinitelyPresentable.{u} S := by
   rw [isFinitelyPresentable_iff_preservesFilteredColimits]
   exact preservesFilteredColimits_coyoneda R S hS
+

@@ -253,24 +253,24 @@ theorem dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
 
 theorem dual_node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node3L l x m y r) = node3R (dual r) y (dual m) x (dual l) := by
-  simp [node3L, node3R, dual_node', add_comm]
+  simp [node3L, node3R, add_comm]
 
 theorem dual_node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node3R l x m y r) = node3L (dual r) y (dual m) x (dual l) := by
-  simp [node3L, node3R, dual_node', add_comm]
+  simp [node3L, node3R, add_comm]
 
 theorem dual_node4L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node4L l x m y r) = node4R (dual r) y (dual m) x (dual l) := by
-  cases m <;> simp [node4L, node4R, node3R, dual_node3L, dual_node', add_comm]
+  cases m <;> simp [node4L, node4R, node3R, dual_node3L, add_comm]
 
 theorem dual_node4R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     dual (node4R l x m y r) = node4L (dual r) y (dual m) x (dual l) := by
-  cases m <;> simp [node4L, node4R, node3L, dual_node3R, dual_node', add_comm]
+  cases m <;> simp [node4L, node4R, node3L, dual_node3R, add_comm]
 
 theorem dual_rotateL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (rotateL l x r) = rotateR (dual r) x (dual l) := by
-  cases r <;> simp [rotateL, rotateR, dual_node']; split_ifs <;>
-    simp [dual_node3L, dual_node4L, node3R, add_comm]
+  cases r <;> simp [rotateL, rotateR]; split_ifs <;>
+    simp [dual_node3L, dual_node4L, node3R]
 
 theorem dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (rotateR l x r) = rotateL (dual r) x (dual l) := by
@@ -279,7 +279,7 @@ theorem dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
 theorem dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balance' l x r) = balance' (dual r) x (dual l) := by
   simp [balance', add_comm]; split_ifs with h h_1 h_2 <;>
-    simp [dual_node', dual_rotateL, dual_rotateR, add_comm]
+    simp [dual_rotateL, dual_rotateR, add_comm]
   cases delta_lt_false h_1 h_2
 
 theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
@@ -289,13 +289,13 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
   · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
     obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;>
       dsimp only [dual, id] <;> try rfl
-    split_ifs with h <;> repeat simp [h, add_comm]
+    split_ifs with h <;> repeat simp [add_comm]
   · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
     dsimp only [dual, id]
     split_ifs; swap; · simp [add_comm]
     obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;> try rfl
     dsimp only [dual, id]
-    split_ifs with h <;> simp [h, add_comm]
+    split_ifs with h <;> simp [add_comm]
 
 theorem dual_balanceR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balanceR l x r) = balanceL (dual r) x (dual l) := by
@@ -324,7 +324,7 @@ theorem node4L_size {l x m y r} (hm : Sized m) :
   cases m
   · simp [node4L, node3L, node']
     abel
-  · simp [node4L, node3L, node', size, hm.1]; abel
+  · simp [node4L, node', size, hm.1]; abel
 
 theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | nil, _ => ⟨⟩
@@ -422,7 +422,7 @@ theorem all_node4R {P l x m y r} :
 
 theorem all_rotateL {P l x r} : @All α P (rotateL l x r) ↔ All P l ∧ P x ∧ All P r := by
   cases r <;> simp [rotateL, all_node']; split_ifs <;>
-    simp [all_node3L, all_node4L, All, and_assoc]
+    simp [all_node3L, all_node4L, All]
 
 theorem all_rotateR {P l x r} : @All α P (rotateR l x r) ↔ All P l ∧ P x ∧ All P r := by
   rw [← all_dual, dual_rotateR, all_rotateL]; simp [all_dual, and_comm, and_left_comm, and_assoc]
@@ -448,7 +448,7 @@ theorem toList_node (s l x r) : toList (@node α s l x r) = toList l ++ x :: toL
   rw [toList, foldr, foldr_cons_eq_toList]; rfl
 
 theorem emem_iff_mem_toList {x : α} {t} : Emem x t ↔ x ∈ toList t := by
-  unfold Emem; induction t <;> simp [Any, *, or_assoc]
+  unfold Emem; induction t <;> simp [Any, *]
 
 theorem length_toList' : ∀ t : Ordnode α, (toList t).length = t.realSize
   | nil => rfl
@@ -546,7 +546,7 @@ theorem dual_insert [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) :
     have : @cmpLE αᵒᵈ _ _ x y = cmpLE y x := rfl
     rw [Ordnode.insert, dual, Ordnode.insert, this, ← cmpLE_swap x y]
     cases cmpLE x y <;>
-      simp [Ordering.swap, Ordnode.insert, dual_balanceL, dual_balanceR, dual_insert]
+      simp [Ordering.swap, dual_balanceL, dual_balanceR, dual_insert]
 
 /-! ### `balance` properties -/
 

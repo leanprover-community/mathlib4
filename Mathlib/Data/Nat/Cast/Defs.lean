@@ -35,7 +35,7 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
 
 /-- A type class for natural numbers which are greater than or equal to `2`. -/
 class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : n ≥ 2
+  prop : 2 ≤ n
 
 instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
@@ -70,12 +70,7 @@ Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stre
 -/
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
-
-@[deprecated Nat.cast_ofNat (since := "2024-12-22")]
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-    (Nat.cast n : R) = OfNat.ofNat n :=
-  rfl
+    (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -187,7 +182,7 @@ protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }

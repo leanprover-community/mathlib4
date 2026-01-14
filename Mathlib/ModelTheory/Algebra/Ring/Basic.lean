@@ -152,19 +152,19 @@ combination with a `Ring`, or `Field` instance without having multiple different
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   /-- Addition in the `Language.ring.Structure` is the same as the addition given by the
-    `Add` instance -/
+  `Add` instance -/
   funMap_add : ∀ x, funMap addFunc x = x 0 + x 1
   /-- Multiplication in the `Language.ring.Structure` is the same as the multiplication given by the
-    `Mul` instance -/
+  `Mul` instance -/
   funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1
   /-- Negation in the `Language.ring.Structure` is the same as the negation given by the
-    `Neg` instance -/
+  `Neg` instance -/
   funMap_neg : ∀ x, funMap negFunc x = -x 0
   /-- The constant `0` in the `Language.ring.Structure` is the same as the constant given by the
-    `Zero` instance -/
+  `Zero` instance -/
   funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0
   /-- The constant `1` in the `Language.ring.Structure` is the same as the constant given by the
-    `One` instance -/
+  `One` instance -/
   funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1
 
 open CompatibleRing
@@ -247,9 +247,7 @@ def languageEquivEquivRingEquiv {R S : Type*}
     { f with
       map_fun' := fun {n} f => by
         cases f <;> simp
-      map_rel' := fun {n} f => by cases f },
-    left_inv f := rfl
-    right_inv f := rfl }
+      map_rel' := fun {n} f => by cases f } }
 
 variable (R : Type*) [Language.ring.Structure R]
 
@@ -309,10 +307,10 @@ abbrev compatibleRingOfRingStructure : CompatibleRing R :=
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
       intros; rfl
     funMap_zero := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
+      simp only [Fin.forall_fin_zero_pi]
       rfl
     funMap_one := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
+      simp only [Fin.forall_fin_zero_pi]
       rfl  }
 
 end Ring

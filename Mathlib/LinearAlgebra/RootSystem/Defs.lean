@@ -81,10 +81,10 @@ structure RootPairing extends PerfectPairing R M N where
   coroot : ι ↪ N
   root_coroot_two : ∀ i, toLinearMap (root i) (coroot i) = 2
   /-- A parametrized family of permutations, induced by reflections. This corresponds to the
-      classical requirement that the symmetry attached to each root (later defined in
-      `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
-      formalize this stability by fixing the image of the roots through each reflection (whence the
-      permutation); and similarly for coroots. -/
+  classical requirement that the symmetry attached to each root (later defined in
+  `RootPairing.reflection`) leave the whole set of roots stable: as explained above, we
+  formalize this stability by fixing the image of the roots through each reflection (whence the
+  permutation); and similarly for coroots. -/
   reflectionPerm : ι → (ι ≃ ι)
   reflectionPerm_root : ∀ i j,
     root j - toPerfectPairing (root j) (coroot i) • root i = root (reflectionPerm i j)
@@ -142,8 +142,6 @@ variable (ι R M N) in
 @[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
@@ -161,8 +159,6 @@ variable (ι R M N) in
 @[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -227,6 +223,13 @@ variable {P} in
 lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
     P.pairing k l = P.pairing i l + P.pairing j l := by
   simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
+
+variable {P} in
+lemma pairing_eq_add_of_root_eq_smul_add_smul
+    {i j k l : ι} {x y : R} (h : P.root k = x • P.root i + y • P.root l) :
+    P.pairing k j = x • P.pairing i j + y • P.pairing l j := by
+  simp only [← root_coroot_eq_pairing, h, map_add, map_smul, LinearMap.add_apply,
+    LinearMap.smul_apply, smul_eq_mul]
 
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
@@ -372,6 +375,14 @@ lemma coreflection_eq_flip_reflection :
     P.coreflection i = P.flip.reflection i :=
   rfl
 
+lemma reflection_reflectionPerm {i j : ι} :
+    P.reflection (P.reflectionPerm j i) = P.reflection j * P.reflection i * P.reflection j := by
+  ext x
+  simp only [reflection_apply, coreflection_apply, PerfectPairing.flip_apply_apply,
+    coroot_reflectionPerm, root_coroot_eq_pairing, map_sub, map_smul, smul_eq_mul,
+    root_reflectionPerm, LinearEquiv.mul_apply, pairing_same]
+  module
+
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLinearMap.flip = P.toLinearMap.flip ∘ₗ P.coreflection i := by
   ext n m
@@ -399,7 +410,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
   simp only [pairing, root', coroot_reflectionPerm, root_reflectionPerm]
   simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp [← toLinearMap_eq_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+  simp [← toLinearMap_eq_toPerfectPairing, LinearMap.smul_apply,
     LinearMap.sub_apply, smul_eq_mul]
   simp [mul_comm]
 
@@ -444,8 +455,7 @@ of a root / coroot. -/
     apply P.root.injective
     simp only [root_reflectionPerm, reflection_apply, PerfectPairing.flip_apply_apply,
       root_coroot_eq_pairing, pairing_same, map_sub, map_smul, coroot_reflectionPerm,
-      coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
-      mul_neg, sub_neg_eq_add]
+      coreflection_apply_self, map_neg]
     module
 
 lemma ne_neg [NeZero (2 : R)] [IsDomain R] :

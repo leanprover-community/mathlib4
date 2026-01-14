@@ -42,13 +42,15 @@ theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
   ext <| congr_fun Option.map_id
 
 @[simp]
-theorem optionCongr_symm (e : α ≃ β) : (optionCongr e).symm = optionCongr e.symm :=
+theorem optionCongr_symm (e : α ≃ β) : optionCongr e.symm = (optionCongr e).symm :=
   rfl
 
 @[simp]
 theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
-    (optionCongr e₁).trans (optionCongr e₂) = optionCongr (e₁.trans e₂) :=
-  ext <| Option.map_map _ _
+    optionCongr (e₁.trans e₂) = (optionCongr e₁).trans (optionCongr e₂) := by
+  ext x : 1
+  symm
+  apply Option.map_map
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.mapEquiv`. -/
@@ -63,7 +65,7 @@ section RemoveNone
 variable (e : Option α ≃ Option β)
 
 /-- If we have a value on one side of an `Equiv` of `Option`
-    we also have a value on the other side of the equivalence
+we also have a value on the other side of the equivalence
 -/
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
@@ -128,11 +130,11 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [apply_eq_iff_eq, reduceCtorEq]
-    simp [h1, apply_eq_iff_eq]
+    simp [h1]
 
 @[simp]
 theorem removeNone_optionCongr (e : α ≃ β) : removeNone e.optionCongr = e :=
-  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp [EquivFunctor.map]⟩
+  Equiv.ext fun x => Option.some_injective _ <| removeNone_some _ ⟨e x, by simp⟩
 
 end RemoveNone
 

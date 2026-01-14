@@ -119,7 +119,7 @@ theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R 
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]
+    split_ifs with H <;> first | rfl | try simp_all only [ne_eq, not_true_eq_false]
     exfalso; apply H; subst m; exact Ne.bot_lt hnn
 
 @[simp]
@@ -189,7 +189,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first | rfl | try simp_all
     exfalso; apply H; subst m; exact zero_le n
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/

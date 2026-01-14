@@ -4,362 +4,370 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Tactic.AdaptationNote
 
 /-!
-# Relations
+# Relations as sets of pairs
 
-This file defines bundled relations. A relation between `α` and `β` is a function `α → β → Prop`.
-Relations are also known as set-valued functions, or partial multifunctions.
+This file provides API to regard relations between `α` and `β`  as sets of pairs `Set (α × β)`.
+
+This is in particular useful in the study of uniform spaces, which are topological spaces equipped
+with a *uniformity*, namely a filter of pairs `α × α` whose elements can be viewed as "proximity"
+relations.
 
 ## Main declarations
 
-* `Rel α β`: Relation between `α` and `β`.
-* `Rel.inv`: `r.inv` is the `Rel β α` obtained by swapping the arguments of `r`.
-* `Rel.dom`: Domain of a relation. `x ∈ r.dom` iff there exists `y` such that `r x y`.
-* `Rel.codom`: Codomain, aka range, of a relation. `y ∈ r.codom` iff there exists `x` such that
-  `r x y`.
-* `Rel.comp`: Relation composition. Note that the arguments order follows the `CategoryTheory/`
-  one, so `r.comp s x z ↔ ∃ y, r x y ∧ s y z`.
-* `Rel.image`: Image of a set under a relation. `r.image s` is the set of `f x` over all `x ∈ s`.
-* `Rel.preimage`: Preimage of a set under a relation. Note that `r.preimage = r.inv.image`.
-* `Rel.core`: Core of a set. For `s : Set β`, `r.core s` is the set of `x : α` such that all `y`
-  related to `x` are in `s`.
-* `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
+* `SetRel α β`: Type of relations between `α` and `β`.
+* `SetRel.inv`: Turn `R : SetRel α β` into `R.inv : SetRel β α` by swapping the arguments.
+* `SetRel.dom`: Domain of a relation. `a ∈ R.dom` iff there exists `b` such that `a ~[R] b`.
+* `SetRel.cod`: Codomain of a relation. `b ∈ R.cod` iff there exists `a` such that `a ~[R] b`.
+* `SetRel.id`: The identity relation `SetRel α α`.
+* `SetRel.comp`: SetRelation composition. Note that the arguments order follows the category theory
+  convention, namely `(R ○ S) a c ↔ ∃ b, a ~[R] b ∧ b ~[S] z`.
+* `SetRel.image`: Image of a set under a relation. `b ∈ image R s` iff there exists `a ∈ s`
+  such that `a ~[R] b`.
+  If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.image = Set.image f`.
+* `SetRel.preimage`: Preimage of a set under a relation. `a ∈ preimage R t` iff there exists
+  `b ∈ t` such that `a ~[R] b`.
+  If `R` is the graph of `f` (`a ~[R] b ↔ f a = b`), then `R.preimage = Set.preimage f`.
+* `SetRel.core`: Core of a set. For `t : Set β`, `a ∈ R.core t` iff all `b` related to `a` are in
+  `t`.
+* `SetRel.restrictDomain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
 
-## TODO
+## Implementation notes
 
-The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
-named `comp`. This is because the latter is already used for function composition, and causes a
-clash. A better notation should be found, perhaps a variant of `r ∘r s` or `r; s`.
+There is tension throughout the library between considering relations between `α` and `β` simply as
+`α → β → Prop`, or as a bundled object `SetRel α β` with dedicated operations and API.
 
+The former approach is used almost everywhere as it is very lightweight and has arguably native
+support from core Lean features, but it cracks at the seams whenever one starts talking about
+operations on relations. For example:
+* composition of relations `R : α → β → Prop`, `S : β → γ → Prop` is
+  `SetRelation.Comp R S := fun a c ↦ ∃ b, R a b ∧ S b c`
+* map of a relation `R : α → β → Prop` under `f : α → γ`, `g : β → δ` is
+  `SetRelation.map R f g := fun c d ↦ ∃ a b, r a b ∧ f a = c ∧ g b = d`.
+
+The latter approach is embodied by `SetRel α β`, with dedicated notation like `○` for composition.
+
+Previously, `SetRel` suffered from the leakage of its definition as
+```
+def SetRel (α β : Type*) := α → β → Prop
+```
+The fact that `SetRel` wasn't an `abbrev` confuses automation.
+But simply making it an `abbrev` would
+have killed the point of having a separate less see-through type to perform relation operations on,
+so we instead redefined
+```
+def SetRel (α β : Type*) := Set (α × β) → Prop
+```
+This extra level of indirection guides automation correctly and prevents (some kinds of) leakage.
+
+Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of
+`Set (α × α)`, and the new definition of `SetRel` fulfills this role quite well.
 -/
 
-variable {α β γ : Type*}
+variable {α β γ δ : Type*}
 
-/-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
-def Rel (α β : Type*) :=
-  α → β → Prop
--- The `CompleteLattice, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+/-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction.
 
-instance : CompleteLattice (Rel α β) := show CompleteLattice (α → β → Prop) from inferInstance
-instance : Inhabited (Rel α β) := show Inhabited (α → β → Prop) from inferInstance
+We represent them as sets due to how relations are used in the context of uniform spaces. -/
+abbrev SetRel (α β : Type*) := Set (α × β)
 
-namespace Rel
+namespace SetRel
+variable {R r₁ r₂ : SetRel α β} {S : SetRel β γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
+  {a a₁ a₂ : α} {b : β} {c : γ}
 
-variable (r : Rel α β)
+/-- Notation for apply a relation `R : SetRel α β` to `a : α`, `b : β`,
+scoped to the `SetRel` namespace.
 
-@[ext] theorem ext {r s : Rel α β} : (∀ a, r a = s a) → r = s := funext
+Since `SetRel α β := Set (α × β)`, `a ~[R] b` is simply notation for `(a, b) ∈ R`, but this should
+be considered an implementation detail. -/
+scoped notation:50 a:50 " ~[" R "] " b:50 => (a, b) ∈ R
 
-/-- The inverse relation : `r.inv x y ↔ r y x`. Note that this is *not* a groupoid inverse. -/
-def inv : Rel β α :=
-  flip r
+variable (R) in
+/-- The inverse relation : `R.inv x y ↔ R y x`. Note that this is *not* a groupoid inverse. -/
+def inv (R : SetRel α β) : SetRel β α := Prod.swap ⁻¹' R
 
-theorem inv_def (x : α) (y : β) : r.inv y x ↔ r x y :=
-  Iff.rfl
+@[simp] lemma mem_inv : b ~[R.inv] a ↔ a ~[R] b := .rfl
 
-theorem inv_inv : inv (inv r) = r := by
-  ext x y
-  rfl
+@[deprecated (since := "2025-07-06")] alias inv_def := mem_inv
 
-/-- Domain of a relation -/
-def dom := { x | ∃ y, r x y }
+@[simp] lemma inv_inv : R.inv.inv = R := rfl
 
-theorem dom_mono {r s : Rel α β} (h : r ≤ s) : dom r ⊆ dom s := fun a ⟨b, hx⟩ => ⟨b, h a b hx⟩
+@[gcongr] lemma inv_mono (h : r₁ ⊆ r₂) : r₁.inv ⊆ r₂.inv := fun (_a, _b) hab ↦ h hab
 
-/-- Codomain aka range of a relation -/
-def codom := { y | ∃ x, r x y }
+@[simp] lemma inv_empty : (∅ : SetRel α β).inv = ∅ := rfl
+@[simp] lemma inv_univ : inv (.univ : SetRel α β) = .univ := rfl
 
-theorem codom_inv : r.inv.codom = r.dom := by
-  ext x
-  rfl
+@[deprecated (since := "2025-07-06")] alias inv_bot := inv_empty
 
-theorem dom_inv : r.inv.dom = r.codom := by
-  ext x
-  rfl
+variable (R) in
+/-- Domain of a relation. -/
+def dom : Set α := {a | ∃ b, a ~[R] b}
 
-/-- Composition of relation; note that it follows the `CategoryTheory/` order of arguments. -/
-def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y ∧ s y z
+variable (R) in
+/-- Codomain of a relation, aka range. -/
+def cod : Set β := {b | ∃ a, a ~[R] b}
 
-/-- Local syntax for composition of relations. -/
--- TODO: this could be replaced with `local infixr:90 " ∘ " => Rel.comp`.
-local infixr:90 " • " => Rel.comp
-
-theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) :
-    (r • s) • t = r • (s • t) := by
-  unfold comp; ext (x w); constructor
-  · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
-  · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
-
-@[simp]
-theorem comp_right_id (r : Rel α β) : r • @Eq β = r := by
-  unfold comp
-  ext y
-  simp
-
-@[simp]
-theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
-  unfold comp
-  ext x
-  simp
+@[deprecated (since := "2025-07-06")] alias codom := cod
 
-@[simp]
-theorem comp_right_bot (r : Rel α β) : r • (⊥ : Rel β γ) = ⊥ := by
-  ext x y
-  simp [comp, Bot.bot]
+@[simp] lemma mem_dom : a ∈ R.dom ↔ ∃ b, a ~[R] b := .rfl
+@[simp] lemma mem_cod : b ∈ R.cod ↔ ∃ a, a ~[R] b := .rfl
 
-@[simp]
-theorem comp_left_bot (r : Rel α β) : (⊥ : Rel γ α) • r = ⊥ := by
-  ext x y
-  simp [comp, Bot.bot]
+@[gcongr] lemma dom_mono (h : r₁ ≤ r₂) : r₁.dom ⊆ r₂.dom := fun _a ⟨b, hab⟩ ↦ ⟨b, h hab⟩
+@[gcongr] lemma cod_mono (h : r₁ ≤ r₂) : r₁.cod ⊆ r₂.cod := fun _b ⟨a, hab⟩ ↦ ⟨a, h hab⟩
 
-@[simp]
-theorem comp_right_top (r : Rel α β) : r • (⊤ : Rel β γ) = fun x _ ↦ x ∈ r.dom := by
-  ext x z
-  simp [comp, Top.top, dom]
+@[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
+@[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
 
-@[simp]
-theorem comp_left_top (r : Rel α β) : (⊤ : Rel γ α) • r = fun _ y ↦ y ∈ r.codom := by
-  ext x z
-  simp [comp, Top.top, codom]
+@[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
+@[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
 
-theorem inv_id : inv (@Eq α) = @Eq α := by
-  ext x y
-  constructor <;> apply Eq.symm
+@[simp] lemma cod_inv : R.inv.cod = R.dom := rfl
+@[simp] lemma dom_inv : R.inv.dom = R.cod := rfl
 
-theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv r := by
-  ext x z
-  simp [comp, inv, flip, and_comm]
+@[deprecated (since := "2025-07-06")] alias codom_inv := cod_inv
 
-@[simp]
-theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  simp [Bot.bot, inv, Function.flip_def]
+/-- The identity relation. -/
+protected def id : SetRel α α := {(a₁, a₂) | a₁ = a₂}
 
-@[simp]
-theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  simp [Top.top, inv, Function.flip_def]
+@[simp] lemma mem_id : a₁ ~[SetRel.id] a₂ ↔ a₁ = a₂ := .rfl
 
-/-- Image of a set under a relation -/
-def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
+@[simp] lemma inv_id : (.id : SetRel α α).inv = .id := by aesop
 
-theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y :=
-  Iff.rfl
+/-- Composition of relation.
 
-open scoped Relator in
-theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
-  ⟨x, h xs, rxy⟩
+Note that this follows the `CategoryTheory` order of arguments. -/
+def comp (R : SetRel α β) (S : SetRel β γ) : SetRel α γ := {(a, c) | ∃ b, a ~[R] b ∧ b ~[S] c}
 
-theorem image_mono : Monotone r.image :=
-  r.image_subset
-
-theorem image_inter (s t : Set α) : r.image (s ∩ t) ⊆ r.image s ∩ r.image t :=
-  r.image_mono.map_inf_le s t
-
-theorem image_union (s t : Set α) : r.image (s ∪ t) = r.image s ∪ r.image t :=
-  le_antisymm
-    (fun _y ⟨x, xst, rxy⟩ =>
-      xst.elim (fun xs => Or.inl ⟨x, ⟨xs, rxy⟩⟩) fun xt => Or.inr ⟨x, ⟨xt, rxy⟩⟩)
-    (r.image_mono.le_map_sup s t)
-
-@[simp]
-theorem image_id (s : Set α) : image (@Eq α) s = s := by
-  ext x
-  simp [mem_image]
-
-theorem image_comp (s : Rel β γ) (t : Set α) : image (r • s) t = image s (image r t) := by
-  ext z; simp only [mem_image]; constructor
-  · rintro ⟨x, xt, y, rxy, syz⟩; exact ⟨y, ⟨x, xt, rxy⟩, syz⟩
-  · rintro ⟨y, ⟨x, xt, rxy⟩, syz⟩; exact ⟨x, xt, y, rxy, syz⟩
-
-theorem image_univ : r.image Set.univ = r.codom := by
-  ext y
-  simp [mem_image, codom]
-
-@[simp]
-theorem image_empty : r.image ∅ = ∅ := by
-  ext x
-  simp [mem_image]
-
-@[simp]
-theorem image_bot (s : Set α) : (⊥ : Rel α β).image s = ∅ := by
-  rw [Set.eq_empty_iff_forall_notMem]
-  intro x h
-  simp [mem_image, Bot.bot] at h
-
-@[simp]
-theorem image_top {s : Set α} (h : Set.Nonempty s) :
-    (⊤ : Rel α β).image s = Set.univ :=
-  Set.eq_univ_of_forall fun _ ↦ ⟨h.some, by simp [h.some_mem, Top.top]⟩
-
-/-- Preimage of a set under a relation `r`. Same as the image of `s` under `r.inv` -/
-def preimage (s : Set β) : Set α :=
-  r.inv.image s
-
-theorem mem_preimage (x : α) (s : Set β) : x ∈ r.preimage s ↔ ∃ y ∈ s, r x y :=
-  Iff.rfl
+@[inherit_doc] scoped infixl:62 " ○ " => comp
 
-theorem preimage_def (s : Set β) : preimage r s = { x | ∃ y ∈ s, r x y } :=
-  Set.ext fun _ => mem_preimage _ _ _
-
-theorem preimage_mono {s t : Set β} (h : s ⊆ t) : r.preimage s ⊆ r.preimage t :=
-  image_mono _ h
+@[simp] lemma mem_comp : a ~[R ○ S] c ↔ ∃ b, a ~[R] b ∧ b ~[S] c := .rfl
 
-theorem preimage_inter (s t : Set β) : r.preimage (s ∩ t) ⊆ r.preimage s ∩ r.preimage t :=
-  image_inter _ s t
+lemma comp_assoc (R : SetRel α β) (S : SetRel β γ) (t : SetRel γ δ) :
+    (R ○ S) ○ t = R ○ (S ○ t) := by aesop
 
-theorem preimage_union (s t : Set β) : r.preimage (s ∪ t) = r.preimage s ∪ r.preimage t :=
-  image_union _ s t
+@[simp] lemma comp_id (R : SetRel α β) : R ○ .id = R := by aesop
+@[simp] lemma id_comp (R : SetRel α β) : .id ○ R = R := by aesop
 
-theorem preimage_id (s : Set α) : preimage (@Eq α) s = s := by
-  simp only [preimage, inv_id, image_id]
+@[simp] lemma inv_comp (R : SetRel α β) (S : SetRel β γ) : (R ○ S).inv = S.inv ○ R.inv := by aesop
 
-theorem preimage_comp (s : Rel β γ) (t : Set γ) :
-    preimage (r • s) t = preimage r (preimage s t) := by simp only [preimage, inv_comp, image_comp]
+@[simp] lemma comp_empty (R : SetRel α β) : R ○ (∅ : SetRel β γ) = ∅ := by aesop
+@[simp] lemma empty_comp (S : SetRel β γ) : (∅ : SetRel α β) ○ S = ∅ := by aesop
 
-theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
+@[simp] lemma comp_univ (R : SetRel α β) :
+    R ○ (.univ : SetRel β γ) = {(a, _c) : α × γ | a ∈ R.dom} := by
+  aesop
 
-@[simp]
-theorem preimage_empty : r.preimage ∅ = ∅ := by rw [preimage, image_empty]
+@[simp] lemma univ_comp (S : SetRel β γ) :
+    (.univ : SetRel α β) ○ S = {(_b, c) : α × γ | c ∈ S.cod} := by
+  aesop
 
-@[simp]
-theorem preimage_inv (s : Set α) : r.inv.preimage s = r.image s := by rw [preimage, inv_inv]
+@[deprecated (since := "2025-07-06")] alias comp_right_top := comp_univ
+@[deprecated (since := "2025-07-06")] alias comp_left_top := univ_comp
 
-@[simp]
-theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ := by
-  rw [preimage, inv_bot, image_bot]
+variable (R s) in
+/-- Image of a set under a relation. -/
+def image : Set β := {b | ∃ a ∈ s, a ~[R] b}
 
-@[simp]
-theorem preimage_top {s : Set β} (h : Set.Nonempty s) :
-    (⊤ : Rel α β).preimage s = Set.univ := by rwa [← inv_top, preimage, inv_inv, image_top]
+variable (R t) in
+/-- Preimage of a set `t` under a relation `R`. Same as the image of `t` under `R.inv`. -/
+def preimage : Set α := {a | ∃ b ∈ t, a ~[R] b}
 
-theorem image_eq_dom_of_codomain_subset {s : Set β} (h : r.codom ⊆ s) : r.preimage s = r.dom := by
-  rw [← preimage_univ]
-  apply Set.eq_of_subset_of_subset
-  · exact image_subset _ (Set.subset_univ _)
-  · intro x hx
-    simp only [mem_preimage, Set.mem_univ, true_and] at hx
-    rcases hx with ⟨y, ryx⟩
-    have hy : y ∈ s := h ⟨x, ryx⟩
-    exact ⟨y, ⟨hy, ryx⟩⟩
+@[simp] lemma mem_image : b ∈ image R s ↔ ∃ a ∈ s, a ~[R] b := .rfl
+@[simp] lemma mem_preimage : a ∈ preimage R t ↔ ∃ b ∈ t, a ~[R] b := .rfl
 
-theorem preimage_eq_codom_of_domain_subset {s : Set α} (h : r.dom ⊆ s) : r.image s = r.codom := by
-  apply r.inv.image_eq_dom_of_codomain_subset (by rwa [← codom_inv] at h)
+@[gcongr] lemma image_subset_image (hs : s₁ ⊆ s₂) : image R s₁ ⊆ image R s₂ :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, hs ha, hab⟩
 
-theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := by
-  apply Set.eq_of_subset_of_subset
-  · apply r.image_mono (by simp)
-  · intro x h
-    rw [mem_image] at *
-    rcases h with ⟨y, hy, ryx⟩
-    use y
-    suffices h : y ∈ r.dom by simp_all only [Set.mem_inter_iff, and_self]
-    rw [dom, Set.mem_setOf_eq]
-    use x
+@[gcongr] lemma preimage_subset_preimage (ht : t₁ ⊆ t₂) : preimage R t₁ ⊆ preimage R t₂ :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ht ha, hab⟩
 
-@[simp]
-theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
-  rw [← dom_inv, preimage, preimage, image_inter_dom_eq]
+variable (R t) in
+@[simp] lemma image_inv : R.inv.image t = preimage R t := rfl
 
-theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
-  intro x hx
-  simp only [Set.mem_inter_iff, dom] at hx
-  rcases hx with ⟨hx, ⟨y, rxy⟩⟩
-  use y
-  simp only [image, Set.mem_setOf_eq]
-  exact ⟨⟨x, hx, rxy⟩, rxy⟩
+variable (R s) in
+@[simp] lemma preimage_inv : R.inv.preimage s = image R s := rfl
 
-theorem image_preimage_subset_inter_codom (s : Set β) : s ∩ r.codom ⊆ r.image (r.preimage s) := by
-  rw [← dom_inv, ← preimage_inv]
-  apply inter_dom_subset_preimage_image
+lemma image_mono : Monotone R.image := fun _ _ ↦ image_subset_image
+lemma preimage_mono : Monotone R.preimage := fun _ _ ↦ preimage_subset_preimage
 
-/-- Core of a set `s : Set β` w.r.t `r : Rel α β` is the set of `x : α` that are related *only*
-to elements of `s`. Other generalization of `Function.preimage`. -/
-def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
+@[simp] lemma image_empty_right : image R ∅ = ∅ := by aesop
+@[simp] lemma preimage_empty_right : preimage R ∅ = ∅ := by aesop
 
-theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y ∈ s :=
-  Iff.rfl
+@[simp] lemma image_univ_right : image R .univ = R.cod := by aesop
+@[simp] lemma preimage_univ_right : preimage R .univ = R.dom := by aesop
 
-open scoped Relator in
-theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
+variable (R) in
+lemma image_inter_subset : image R (s₁ ∩ s₂) ⊆ image R s₁ ∩ image R s₂ := image_mono.map_inf_le ..
 
-theorem core_mono : Monotone r.core :=
-  r.core_subset
+@[deprecated (since := "2025-07-06")] alias preimage_top := image_inter_subset
 
-theorem core_inter (s t : Set β) : r.core (s ∩ t) = r.core s ∩ r.core t :=
-  Set.ext (by simp [mem_core, imp_and, forall_and])
+variable (R) in
+lemma preimage_inter_subset : preimage R (t₁ ∩ t₂) ⊆ preimage R t₁ ∩ preimage R t₂ :=
+  preimage_mono.map_inf_le ..
 
-theorem core_union (s t : Set β) : r.core s ∪ r.core t ⊆ r.core (s ∪ t) :=
-  r.core_mono.le_map_sup s t
+@[deprecated (since := "2025-07-06")] alias image_eq_dom_of_codomain_subset := preimage_inter_subset
 
-@[simp]
-theorem core_univ : r.core Set.univ = Set.univ :=
-  Set.ext (by simp [mem_core])
+variable (R s₁ s₂) in
+lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := by aesop
 
-theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
+@[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
-theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
-  ext x; simp only [core, comp, forall_exists_index, and_imp, Set.mem_setOf_eq]; constructor
-  · exact fun h y rxy z => h z y rxy
-  · exact fun h z y rzy => h y rzy z
+variable (R t₁ t₂) in
+lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
 
+variable (s) in
+@[simp] lemma image_id : image .id s = s := by aesop
+
+variable (s) in
+@[simp] lemma preimage_id : preimage .id s = s := by aesop
+
+variable (R S s) in
+lemma image_comp : image (R ○ S) s = image S (image R s) := by aesop
+
+variable (R S u) in
+lemma preimage_comp : preimage (R ○ S) u = preimage R (preimage S u) := by aesop
+
+variable (s) in
+@[simp] lemma image_empty_left : image (∅ : SetRel α β) s = ∅ := by aesop
+
+variable (t) in
+@[simp] lemma preimage_empty_left : preimage (∅ : SetRel α β) t = ∅ := by aesop
+
+@[deprecated (since := "2025-07-06")] alias preimage_bot := preimage_empty_left
+
+@[simp] lemma image_univ_left (hs : s.Nonempty) : image (.univ : SetRel α β) s = .univ := by aesop
+@[simp] lemma preimage_univ_left (ht : t.Nonempty) : preimage (.univ : SetRel α β) t = .univ := by
+  aesop
+
+lemma image_eq_cod_of_dom_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
+lemma preimage_eq_dom_of_cod_subset (h : R.cod ⊆ t) : R.preimage t = R.dom := by aesop
+
+variable (R s) in
+@[simp] lemma image_inter_dom : image R (s ∩ R.dom) = image R s := by aesop
+
+variable (R t) in
+@[simp] lemma preimage_inter_cod : preimage R (t ∩ R.cod) = preimage R t := by aesop
+
+@[deprecated (since := "2025-07-06")] alias preimage_inter_codom_eq := preimage_inter_cod
+
+lemma inter_dom_subset_preimage_image : s ∩ R.dom ⊆ R.preimage (image R s) := by
+  aesop (add simp [Set.subset_def])
+
+lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) := by
+  aesop (add simp [Set.subset_def])
+
+@[deprecated (since := "2025-07-06")]
+alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
+
+variable (R t) in
+/-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
+to elements of `S`. Other generalization of `Function.preimage`. -/
+def core : Set α := {a | ∀ ⦃b⦄, a ~[R] b → b ∈ t}
+
+@[simp] lemma mem_core : a ∈ R.core t ↔ ∀ ⦃b⦄, a ~[R] b → b ∈ t := .rfl
+
+@[gcongr]
+lemma core_subset_core (ht : t₁ ⊆ t₂) : R.core t₁ ⊆ R.core t₂ := fun _a ha _b hab ↦ ht <| ha hab
+
+lemma core_mono : Monotone R.core := fun _ _ ↦ core_subset_core
+
+variable (R t₁ t₂) in
+lemma core_inter : R.core (t₁ ∩ t₂) = R.core t₁ ∩ R.core t₂ := by aesop
+
+lemma core_union_subset : R.core t₁ ∪ R.core t₂ ⊆ R.core (t₁ ∪ t₂) := core_mono.le_map_sup ..
+
+@[simp] lemma core_univ : R.core Set.univ = Set.univ := by aesop
+
+variable (t) in
+@[simp] lemma core_id : core .id t = t := by aesop
+
+variable (R S u) in
+lemma core_comp : core (R ○ S) u = core R (core S u) := by aesop
+
+lemma image_subset_iff : image R s ⊆ t ↔ s ⊆ core R t := by aesop (add simp [Set.subset_def])
+
+lemma image_core_gc : GaloisConnection R.image R.core := fun _ _ ↦ image_subset_iff
+
+variable (R s) in
 /-- Restrict the domain of a relation to a subtype. -/
-def restrictDomain (s : Set α) : Rel { x // x ∈ s } β := fun x y => r x.val y
+def restrictDomain : SetRel s β := {(a, b) | ↑a ~[R] b}
 
-theorem image_subset_iff (s : Set α) (t : Set β) : image r s ⊆ t ↔ s ⊆ core r t :=
-  Iff.intro (fun h x xs _y rxy => h ⟨x, xs, rxy⟩) fun h y ⟨_x, xs, rxy⟩ => h xs y rxy
+variable {R : SetRel α α} {S : SetRel β β} {a b c : α}
 
-theorem image_core_gc : GaloisConnection r.image r.core :=
-  image_subset_iff _
+variable (R) in
+/-- A relation `R` is transitive if `a ~[R] b` and `b ~[R] c` together imply `a ~[R] c`. -/
+protected abbrev IsTrans : Prop := IsTrans α (· ~[R] ·)
 
-end Rel
+variable (R) in
+protected lemma trans [R.IsTrans] (hab : a ~[R] b) (hbc : b ~[R] c) : a ~[R] c :=
+  trans_of (· ~[R] ·) hab hbc
+
+instance {R : α → α → Prop} [IsTrans α R] : SetRel.IsTrans {(a, b) | R a b} := ‹_›
+
+variable (R) in
+/-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
+protected abbrev IsIrrefl : Prop := IsIrrefl α (· ~[R] ·)
+
+variable (R a) in
+protected lemma irrefl [R.IsIrrefl] : ¬ a ~[R] a := irrefl_of (· ~[R] ·) _
+
+instance {R : α → α → Prop} [IsIrrefl α R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
+
+variable (R) in
+/-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
+-/
+abbrev IsWellFounded : Prop := WellFounded (· ~[R] ·)
+
+variable (R S) in
+/-- A relation homomorphism with respect to a given pair of relations `R` and `S` s is a function
+`f : α → β` such that `a ~[R] b → f a ~[s] f b`. -/
+abbrev Hom := (· ~[R] ·) →r (· ~[S] ·)
+
+end SetRel
+
+open Set
+open scoped SetRel
 
 namespace Function
+variable {f : α → β} {a : α} {b : β}
 
 /-- The graph of a function as a relation. -/
-def graph (f : α → β) : Rel α β := fun x y => f x = y
+def graph (f : α → β) : SetRel α β := {(a, b) | f a = b}
 
-@[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
+@[simp] lemma mem_graph : a ~[f.graph] b ↔ f a = b := .rfl
 
-theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
-  intro _ g h
-  ext x
-  have h2 := congr_fun₂ h x (g x)
-  simp only [graph_def, eq_iff_iff, iff_true] at h2
-  exact h2
+@[deprecated (since := "2025-07-06")] alias graph_def := mem_graph
+
+theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
+  aesop (add simp [Injective, Set.ext_iff])
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp +unfoldPartialApp [graph]
+@[simp] lemma graph_id : graph (id : α → α) = .id := by aesop
 
-theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
-  ext x y
-  simp [Rel.comp]
+theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
 
 end Function
 
-theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = Rel.inv (f : α → β).graph := by
-  ext x y
-  aesop (add norm Rel.inv_def)
+theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.inv (f : α → β).graph := by
+  aesop
 
-theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) ↔ ∀ x, ∃! y, r x y := by
-  unfold Function.graph
+lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
+    (∃! f, Function.graph f = R) ↔ ∀ a, ∃! b, a ~[R] b := by
   constructor
   · rintro ⟨f, rfl, _⟩ x
-    use f x
-    simp only [forall_eq', and_self]
-  · intro h
-    choose f hf using fun x ↦ (h x).exists
-    use f
-    constructor
-    · ext x _
-      constructor
-      · rintro rfl
-        exact hf x
-      · exact (h x).unique (hf x)
-    · rintro _ rfl
-      exact funext hf
+    simp
+  intro h
+  choose f hf using fun x ↦ (h x).exists
+  refine ⟨f, ?_, by aesop⟩
+  ext ⟨a, b⟩
+  constructor
+  · aesop
+  · exact (h _).unique (hf _)
+
+@[deprecated (since := "2025-07-06")] alias SetRelation.is_graph_iff := SetRel.exists_graph_eq_iff
 
 namespace Set
 
@@ -367,9 +375,14 @@ theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).imag
   rfl
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
-  simp [Set.preimage, Rel.preimage, Rel.inv, flip, Rel.image]
+  simp [Set.preimage, SetRel.preimage]
 
 theorem preimage_eq_core (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).core s := by
-  simp [Set.preimage, Rel.core]
+  simp [Set.preimage, SetRel.core]
 
 end Set
+
+/-- A shorthand for `α → β → Prop`.
+
+Consider using `SetRel` instead if you want extra API for relations. -/
+abbrev Rel (α β : Type*) : Type _ := α → β → Prop

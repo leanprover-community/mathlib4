@@ -31,6 +31,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   above a particular index.
 - `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
   variables with given terms.
+- `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
 - Language maps can act on syntactic objects with functions such as
   `FirstOrder.Language.LHom.onFormula`.
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
@@ -169,6 +170,10 @@ def Functions.apply₁ (f : L.Functions 1) (t : L.Term α) : L.Term α :=
 def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :=
   func f ![t₁, t₂]
 
+/-- The representation of a function symbol as a term, on fresh variables indexed by Fin. -/
+def Functions.term {n : ℕ} (f : L.Functions n) : L.Term (Fin n) :=
+  func f Term.var
+
 namespace Term
 
 /-- Sends a term with constants to a term with extra variables. -/
@@ -236,6 +241,18 @@ def liftAt {n : ℕ} (n' m : ℕ) : L.Term (α ⊕ (Fin n)) → L.Term (α ⊕ (
 def subst : L.Term α → (α → L.Term β) → L.Term β
   | var a, tf => tf a
   | func f ts, tf => func f fun i => (ts i).subst tf
+
+/-- Substitutes the functions in a given term with expressions. -/
+@[simp]
+def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n)) → L'.Term α
+  | var a, _ => var a
+  | func f ts, tf => (tf f).subst fun i ↦ (ts i).substFunc tf
+
+@[simp]
+theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
+  induction t
+  · rfl
+  · simp only [substFunc, Functions.term, subst, ‹∀ _, _›]
 
 end Term
 
@@ -400,10 +417,10 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction φ with
   | falsum => rfl
-  | equal => simp [Fin.castLE_of_eq]
-  | rel => simp [Fin.castLE_of_eq]
-  | imp _ _ ih1 ih2 => simp [Fin.castLE_of_eq, ih1, ih2]
-  | all _ ih3 => simp [Fin.castLE_of_eq, ih3]
+  | equal => simp
+  | rel => simp
+  | imp _ _ ih1 ih2 => simp [ih1, ih2]
+  | all _ ih3 => simp [ih3]
 
 @[simp]
 theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
@@ -414,7 +431,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
   | equal => simp
   | rel =>
     intros
-    simp only [castLE, eq_self_iff_true, heq_iff_eq]
+    simp only [castLE]
     rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
   | imp _ _ ih1 ih2 => simp [ih1, ih2]
@@ -598,12 +615,18 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
-/-- Take the disjunction of a finite set of formulas -/
+/-- Take the disjunction of a finite set of formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
-/-- Take the conjunction of a finite set of formulas -/
+/-- Take the conjunction of a finite set of formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
@@ -644,7 +667,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
-    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
+    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2]
   | all _ ih3 => simp only [ih3, onBoundedFormula, Function.comp_apply]
 
 /-- Maps a formula's symbols along a language map. -/
@@ -767,6 +790,20 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
+/-- Take the disjunction of finitely many formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
+noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iSup f
+
+/-- Take the conjunction of finitely many formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
+noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iInf f
+
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=
   (BoundedFormula.constantsVarsEquiv.trans (BoundedFormula.relabelEquiv (Equiv.sumEmpty _ _))).symm
@@ -859,7 +896,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
-      mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
+      mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp

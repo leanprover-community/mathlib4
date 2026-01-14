@@ -437,7 +437,7 @@ open LieEquiv
 /-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and an element `x : L`, the conjugate
 of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`. -/
 @[simp]
-lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
+lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : e.toLinearEquiv.conj (ad R L x) = ad R L' (e x) := by
   ext y'
   rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
     ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]

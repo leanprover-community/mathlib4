@@ -42,6 +42,8 @@ universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
+attribute [local instance] uliftCategory
+
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The functorial version of `ULift.up`. -/

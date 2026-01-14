@@ -90,15 +90,15 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
-    IsLocallyInjective J (whiskerRight φ (forget D)) where
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallyInjective_forget_iff :
-    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 

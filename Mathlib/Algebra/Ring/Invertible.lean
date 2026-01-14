@@ -16,21 +16,21 @@ variable {R : Type u}
 
 /-- `-⅟a` is the inverse of `-a` -/
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
-  ⟨-⅟ a, by simp, by simp⟩
+  ⟨-⅟a, by simp, by simp⟩
 
 @[simp]
 theorem invOf_neg [Monoid R] [HasDistribNeg R] (a : R) [Invertible a] [Invertible (-a)] :
-    ⅟ (-a) = -⅟ a :=
+    ⅟(-a) = -⅟a :=
   invOf_eq_right_inv (by simp)
 
 @[simp]
-theorem one_sub_invOf_two [Ring R] [Invertible (2 : R)] : 1 - (⅟ 2 : R) = ⅟ 2 :=
+theorem one_sub_invOf_two [Ring R] [Invertible (2 : R)] : 1 - (⅟2 : R) = ⅟2 :=
   (isUnit_of_invertible (2 : R)).mul_right_inj.1 <| by
     rw [mul_sub, mul_invOf_self, mul_one, ← one_add_one_eq_two, add_sub_cancel_right]
 
 @[simp]
 theorem invOf_two_add_invOf_two [NonAssocSemiring R] [Invertible (2 : R)] :
-    (⅟ 2 : R) + (⅟ 2 : R) = 1 := by rw [← two_mul, mul_invOf_self]
+    (⅟2 : R) + (⅟2 : R) = 1 := by rw [← two_mul, mul_invOf_self]
 
 theorem pos_of_invertible_cast [NonAssocSemiring R] [Nontrivial R] (n : ℕ) [Invertible (n : R)] :
     0 < n :=

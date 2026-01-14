@@ -35,7 +35,7 @@ private lemma exists_variableChange_of_char_two_of_j_ne_zero
     [E.IsCharTwoJNeZeroNF] [E'.IsCharTwoJNeZeroNF] (heq : E.a₆ = E'.a₆) :
     ∃ C : VariableChange F, C • E = E' := by
   obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
-    1 1 (E.a₂ + E'.a₂) (by norm_num) (by norm_num) one_ne_zero
+    1 1 (E.a₂ + E'.a₂) (by simp) (by simp) one_ne_zero
   use ⟨1, 0, s, 0⟩
   ext
   · simp_rw [variableChange_a₁, inv_one, Units.val_one, a₁_of_isCharTwoJNeZeroNF]
@@ -61,9 +61,9 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₃ / E'.a₃) 3
   obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 4
-    1 _ (E.a₄ - u ^ 4 * E'.a₄) (by norm_num) (by norm_num) ha₃
+    1 _ (E.a₄ - u ^ 4 * E'.a₄) (by simp) (by simp) ha₃
   obtain ⟨t, ht⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
-    1 _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₃
+    1 _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) (by simp) (by simp) ha₃
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff three_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₃, ha₃'⟩
@@ -80,7 +80,7 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     field_simp
   · field_simp [variableChange_a₄, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
     linear_combination hs + (s ^ 4 - s * t - E.a₃ * s) * CharP.cast_eq_zero F 2
-  · field_simp [variableChange_a₄, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
+  · field_simp [variableChange_a₆, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
     linear_combination ht - (t ^ 2 + E.a₃ * t) * CharP.cast_eq_zero F 2
 
 private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
@@ -159,7 +159,7 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₄ / E'.a₄) 4
   obtain ⟨r, hr⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 3 3
-    1 _ (E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₄
+    1 _ (E.a₆ - u ^ 6 * E'.a₆) (by simp) (by simp) ha₄
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff four_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₄, ha₄'⟩
@@ -257,10 +257,10 @@ private lemma exists_variableChange_of_char_ne_two_or_three
       exact ⟨ha₆, ha₆'⟩
     use ⟨Units.mk0 u hu0, 0, 0, 0⟩
     ext
-    · simp
-    · simp
-    · simp
-    · simp [ha₄, ha₄']
+    · simp [variableChange_a₁]
+    · simp [variableChange_a₂]
+    · simp [variableChange_a₃]
+    · simp [ha₄, ha₄', variableChange_a₄]
     · simp_rw [variableChange_a₆, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
         ha₄, Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu]
       field_simp
@@ -282,13 +282,13 @@ private lemma exists_variableChange_of_char_ne_two_or_three
       exact ⟨ha₄, ha₄'⟩
     use ⟨Units.mk0 u hu0, 0, 0, 0⟩
     ext
-    · simp
-    · simp
-    · simp
+    · simp [variableChange_a₁]
+    · simp [variableChange_a₂]
+    · simp [variableChange_a₃]
     · simp_rw [variableChange_a₄, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
         Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu]
       field_simp
-    · simp [ha₆, ha₆']
+    · simp [ha₆, ha₆', variableChange_a₆]
   have ha₄' : E'.a₄ ≠ 0 := fun h ↦ by
     rw [h, zero_pow three_ne_zero, zero_mul, mul_eq_zero,
       pow_eq_zero_iff two_ne_zero, pow_eq_zero_iff three_ne_zero] at heq
@@ -311,9 +311,9 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     exact ⟨ha₄, ha₄'⟩
   use ⟨Units.mk0 u hu0, 0, 0, 0⟩
   ext
-  · simp
-  · simp
-  · simp
+  · simp [variableChange_a₁]
+  · simp [variableChange_a₂]
+  · simp [variableChange_a₃]
   · simp_rw [variableChange_a₄, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
       Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu4]
     field_simp

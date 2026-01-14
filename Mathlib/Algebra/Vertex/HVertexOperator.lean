@@ -86,14 +86,10 @@ theorem coeff_add (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B
   ext
   simp
 
-@[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
-
 @[simp]
 theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
   ext
   simp
-
-@[deprecated (since := "2025-01-31")] alias smul_coeff := coeff_smul
 
 end Coeff
 
@@ -116,7 +112,7 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
     intro g' hg' hAB
     apply hg'
     simp_rw [hAB]
-    simp_all only [map_zero, HahnSeries.coeff_zero, not_true_eq_false]
+    simp_all only [map_zero, not_true_eq_false]
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :
@@ -151,8 +147,6 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
 theorem coeff_comp (g : Γ' ×ₗ Γ) :
     (comp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
-
-@[deprecated (since := "2025-01-31")] alias comp_coeff := coeff_comp
 
 end Products
 

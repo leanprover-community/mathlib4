@@ -170,7 +170,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       ∑ a ∈ antidiagonal k with a.fst < k, ∑ A ∈ powersetCard a.fst univ, ∑ j, f (A, j) := by
   rw [filter_pairs_lt, sum_product, sum_disjiUnion]
   refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst ?_ ?_ ?_ ?_ ?_ <;>
-    simp +contextual [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
+    simp +contextual [@eq_comm _ _ k, le_of_lt]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
     Disjoint {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k} := by
@@ -180,12 +180,9 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
-  intro a
-  rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
-  have hacard := le_iff_lt_or_eq.mp ha.2.1
-  tauto
+  simp only [Finset.ext_iff]
+  grind [Finset.disjUnion_eq_union, Finset.mem_filter, Finset.mem_union,
+    MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 
@@ -260,7 +257,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   simp only [left_distrib, add_sub_cancel_left] at sub_both_sides
   have sub_both_sides := congrArg ((-1 : MvPolynomial σ R) ^ (k + 1) * ·) sub_both_sides
   simp only [mul_sub_left_distrib, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k + 1, rfl⟩, one_mul,
-    not_le, lt_one_iff, filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
+    filter_filter (fun a : ℕ × ℕ ↦ a.fst < k) (fun a ↦ ¬0 < a.fst)]
     at sub_both_sides
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a

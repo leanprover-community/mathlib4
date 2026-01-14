@@ -48,7 +48,7 @@ variable [Group G] {a x y : G}
     apply pow_right h
 
 variable (a) in
-@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y): x = 1 ↔ y = 1 := by
+@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y) : x = 1 ↔ y = 1 := by
   rw [← conj_eq_one_iff (a := a) (b := x), h.eq, mul_inv_cancel_right]
 
 end Group

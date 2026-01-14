@@ -3,15 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Basic
-import Mathlib.Order.BooleanAlgebra
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.ByContra
-import Mathlib.Util.Delaborators
+import Mathlib.Order.BooleanAlgebra.Set
 import Mathlib.Order.SymmDiff
-import Mathlib.Data.Set.Basic
 
 /-! # Symmetric differences of sets -/
 

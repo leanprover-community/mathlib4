@@ -72,12 +72,12 @@ theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
   | zero => simp
   | one => simp [one_add_one_eq_two, sin_two_mul]; ring
   | add_two n ih1 ih2 =>
-    simp only [U_add_two, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+    simp only [U_add_two, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add, sin_add_sin]
     push_cast
     ring_nf
   | neg_add_one n ih1 ih2 =>
-    simp only [U_sub_one, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+    simp only [U_sub_one, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add', sin_add_sin]
     push_cast
     ring_nf

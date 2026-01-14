@@ -33,13 +33,11 @@ compatible with the restriction maps `F.map i`. -/
 @[ext]
 structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
   /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
-    `F` on `U`. -/
+  `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
   /-- If `G` is a sub-presheaf of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
-    `F i x` is in `F(V)`. -/
+  `F i x` is in `F(V)`. -/
   map : ∀ {U V : Cᵒᵖ} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
-
-@[deprecated (since := "2025-01-08")] alias GrothendieckTopology.Subpresheaf := Subpresheaf
 
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
@@ -202,7 +200,5 @@ theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U �
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
 end Subpresheaf
-
-@[deprecated (since := "2025-01-23")] alias top_subpresheaf_obj := Subpresheaf.top_obj
 
 end CategoryTheory

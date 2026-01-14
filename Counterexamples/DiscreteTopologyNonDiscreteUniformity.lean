@@ -150,7 +150,7 @@ lemma idIsCauchy : CauchySeq (id : ℕ → ℕ) := by
   rw [Metric.cauchySeq_iff]
   refine fun ε ↦ Metric.cauchySeq_iff.mp
     (@cauchySeq_of_le_geometric_two ℝ _ 1 (fun n ↦ 2 ^(-n : ℤ)) fun n ↦ le_of_eq ?_) ε
-  simp only [zpow_natCast, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
+  simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg, one_div]
   rw [Real.dist_eq, zpow_add' <| Or.intro_left _ two_ne_zero]
   calc
     |2 ^ (- n : ℤ) - 2 ^ (-1 : ℤ) * 2 ^ (- n : ℤ)|
@@ -254,8 +254,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
   · refine ⟨S, hS, ?_⟩
     obtain ⟨n, hn⟩ := hS
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn
-    simp only [hn, mem_union, mem_range, Prod.mk.injEq, Subtype.exists, mem_Icc, zero_le, true_and,
-      exists_and_left, exists_prop', nonempty_prop, exists_eq_left, mem_Ici, Prod.mk_le_mk]
+    simp only [hn]
     rintro ⟨P1, P2⟩ ⟨m, h1, h2⟩
     simp only [mem_union, mem_range, Prod.mk.injEq, Subtype.exists, mem_Icc, zero_le, true_and,
       exists_and_left, exists_prop', nonempty_prop, exists_eq_left, mem_Ici, Prod.mk_le_mk] at h1 h2
@@ -269,8 +268,8 @@ instance counterUniformity : UniformSpace ℕ := UniformSpace.ofCore counterCore
 
 lemma HasBasis_counterUniformity :
     (uniformity ℕ).HasBasis (fun _ ↦ True) fundamentalEntourage := by
-  show counterCoreUniformity.uniformity.HasBasis (fun _ ↦ True) fundamentalEntourage
-  simp only [Filter.hasBasis_iff, exists_and_left, true_and]
+  change counterCoreUniformity.uniformity.HasBasis (fun _ ↦ True) fundamentalEntourage
+  simp only [Filter.hasBasis_iff, true_and]
   intro T
   refine ⟨fun ⟨s, ⟨⟨r, hr⟩, hs⟩⟩ ↦ ⟨r, subset_of_eq_of_subset hr hs⟩ , fun ⟨n, hn⟩ ↦ ?_⟩
   exact (@FilterBasis.mem_filter_iff _ counterBasis T).mpr ⟨fundamentalEntourage n, by simp, hn⟩
@@ -292,7 +291,7 @@ theorem TopIsDiscrete' : DiscreteTopology ℕ := by
     rw [mem_fundamentalEntourage]
     aesop
   · refine ⟨fundamentalEntourage (n + 1), ?_, ?_⟩
-    · show fundamentalEntourage (n + 1) ∈ counterCoreUniformity.uniformity
+    · change fundamentalEntourage (n + 1) ∈ counterCoreUniformity.uniformity
       exact @Filter.HasBasis.mem_of_mem (ℕ × ℕ) ℕ counterCoreUniformity.uniformity (fun _ ↦ True)
         fundamentalEntourage (n + 1) HasBasis_counterUniformity trivial
     · simp only [preimage_subset_iff, mem_fundamentalEntourage, add_le_iff_nonpos_right,

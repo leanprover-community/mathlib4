@@ -29,7 +29,7 @@ namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type*} {m : MeasurableSpace α} [MetricSpace β] {μ : Measure α}
+variable {α β ι : Type*} {m : MeasurableSpace α} [PseudoEMetricSpace β] {μ : Measure α}
 
 namespace Egorov
 
@@ -39,12 +39,12 @@ set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 
 
 This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
-  ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
+  ⋃ (k) (_ : j ≤ k), { x | (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) }
 
 variable {n : ℕ} {j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
 
 theorem mem_notConvergentSeq_iff [Preorder ι] {x : α} :
-    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, 1 / (n + 1 : ℝ) < dist (f k x) (g x) := by
+    x ∈ notConvergentSeq f g n j ↔ ∃ k ≥ j, (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) := by
   simp_rw [notConvergentSeq, Set.mem_iUnion, exists_prop, mem_setOf]
 
 theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g n) :=
@@ -53,13 +53,13 @@ theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g
 theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
-  simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
+  simp_rw [EMetric.tendsto_atTop, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
   push_neg
   rintro ⟨hmem, hx⟩
-  refine ⟨hmem, 1 / (n + 1 : ℝ), Nat.one_div_pos_of_nat, fun N => ?_⟩
+  refine ⟨hmem, (n : ℝ≥0∞)⁻¹, by simp, fun N => ?_⟩
   obtain ⟨n, hn₁, hn₂⟩ := hx N
   exact ⟨n, hn₁, hn₂.le⟩
 
@@ -68,7 +68,7 @@ theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
     MeasurableSet (notConvergentSeq f g n j) :=
   MeasurableSet.iUnion fun k =>
     MeasurableSet.iUnion fun _ =>
-      StronglyMeasurable.measurableSet_lt stronglyMeasurable_const <| (hf k).dist hg
+      StronglyMeasurable.measurableSet_lt stronglyMeasurable_const <| (hf k).edist hg
 
 theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
@@ -92,9 +92,8 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε) (hf : ∀ n, StronglyMeasurabl
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     ∃ j : ι, μ (s ∩ notConvergentSeq f g n j) ≤ ENNReal.ofReal (ε * 2⁻¹ ^ n) := by
   have ⟨N, hN⟩ := (ENNReal.tendsto_atTop ENNReal.zero_ne_top).1
-    (measure_notConvergentSeq_tendsto_zero hf hg hsm hs hfg n) (ENNReal.ofReal (ε * 2⁻¹ ^ n)) (by
-      rw [gt_iff_lt, ENNReal.ofReal_pos]
-      exact mul_pos hε (pow_pos (by norm_num) n))
+    (measure_notConvergentSeq_tendsto_zero hf hg hsm hs hfg n) (.ofReal (ε * 2⁻¹ ^ n))
+      (by positivity)
   rw [zero_add] at hN
   exact ⟨N, (hN N le_rfl).2⟩
 
@@ -154,9 +153,9 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hg hsm hs hfg) := by
-  rw [Metric.tendstoUniformlyOn_iff]
+  rw [EMetric.tendstoUniformlyOn_iff]
   intro δ hδ
-  obtain ⟨N, hN⟩ := exists_nat_one_div_lt hδ
+  obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
   refine ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hg hsm hs hfg N, fun n hn x hx => ?_⟩
   simp only [Set.mem_diff, Egorov.iUnionNotConvergentSeq, not_exists, Set.mem_iUnion,
@@ -165,7 +164,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
   push_neg at hx
-  rw [dist_comm]
+  rw [edist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 
 end Egorov

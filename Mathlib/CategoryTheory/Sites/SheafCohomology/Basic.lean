@@ -25,9 +25,9 @@ of sets `yoneda.obj U` to `F`.
 
 ## TODO
 * if `U` is a terminal object of `C`, define an isomorphism
-`(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
+  `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
 * if `U : C`, define an isomorphism
-`(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
+  `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
 
@@ -69,7 +69,7 @@ presheaf of sets `yoneda.obj U` to `F`. -/
 noncomputable def cohomologyPresheafFunctor (n : ℕ) :
     Sheaf J AddCommGrp.{v} ⥤ Cᵒᵖ ⥤ AddCommGrp.{w'} :=
   Functor.flip
-    (Functor.op (yoneda ⋙ (whiskeringRight _ _ _).obj
+    (Functor.op (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj
       AddCommGrp.free ⋙ presheafToSheaf _ _) ⋙ extFunctor n)
 
 /-- Given an abelian sheaf `F`, this is the presheaf which sends `U`

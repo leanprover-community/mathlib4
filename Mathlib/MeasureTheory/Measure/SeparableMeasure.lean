@@ -90,12 +90,12 @@ structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop wher
   approx : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∀ ε : ℝ, 0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
 
 theorem Measure.MeasureDense.nonempty (h𝒜 : μ.MeasureDense 𝒜) : 𝒜.Nonempty := by
-  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, -⟩
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, -⟩
   exact ⟨t, ht⟩
 
 theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
-  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, hμt⟩
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
   convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
@@ -140,7 +140,7 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     simp_rw [indicatorConstLp]
     congr
     simp
-  · have p_pos : 0 < p := lt_of_lt_of_le (by norm_num) one_le_p.elim
+  · have p_pos : 0 < p := lt_of_lt_of_le (by simp) one_le_p.elim
     rintro - ⟨s, ms, hμs, rfl⟩
     refine Metric.mem_closure_iff.2 fun ε hε ↦ ?_
     have aux : 0 < (ε / ‖c‖) ^ p.toReal := rpow_pos_of_pos (div_pos hε (norm_pos_iff.2 hc)) _
@@ -431,7 +431,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   set 𝒜₀ := {s | s ∈ 𝒜 ∧ μ s ≠ ∞}
   have count_𝒜₀ : 𝒜₀.Countable := count_𝒜.mono fun _ ⟨h, _⟩ ↦ h
   -- `1 ≤ p` so `p ≠ 0`, we prove it now as it is often needed.
-  have p_ne_zero : p ≠ 0 := ne_of_gt <| lt_of_lt_of_le (by norm_num) one_le_p.elim
+  have p_ne_zero : p ≠ 0 := ne_of_gt <| lt_of_lt_of_le (by simp) one_le_p.elim
   -- `E` is second-countable, therefore separable and admits a countable and dense subset `u`.
   rcases exists_countable_dense E with ⟨u, countable_u, dense_u⟩
   -- The countable and dense subset of `Lᵖ` we are going to build is the set of finite sums of

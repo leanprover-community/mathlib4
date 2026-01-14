@@ -55,8 +55,8 @@ theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.l
 
 theorem rotate'_eq_drop_append_take :
     ∀ {l : List α} {n : ℕ}, n ≤ l.length → l.rotate' n = l.drop n ++ l.take n
-  | [], n, h => by simp [drop_append_of_le_length h]
-  | l, 0, h => by simp [take_append_of_le_length h]
+  | [], n, h => by simp
+  | l, 0, h => by simp
   | a :: l, n + 1, h => by
     have hnl : n ≤ l.length := le_of_succ_le_succ h
     have hnl' : n ≤ (l ++ [a]).length := by

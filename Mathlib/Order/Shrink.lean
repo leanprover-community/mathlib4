@@ -53,7 +53,7 @@ noncomputable instance [Bot α] : Bot (Shrink.{u} α) where
   bot := equivShrink _ ⊥
 
 @[simp]
-lemma equivShrink_bot [Bot α]: equivShrink.{u} α ⊥ = ⊥ := rfl
+lemma equivShrink_bot [Bot α] : equivShrink.{u} α ⊥ = ⊥ := rfl
 
 @[simp]
 lemma equivShrink_symm_bot [Bot α] : (equivShrink.{u} α).symm ⊥ = ⊥ :=

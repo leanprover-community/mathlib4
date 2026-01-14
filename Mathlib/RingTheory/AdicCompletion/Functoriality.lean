@@ -179,7 +179,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
 
 theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (x : AdicCompletion I M) :
     map I g (map I f x) = map I (g ∘ₗ f) x := by
-  show (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
+  change (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
   rw [map_comp]
 
 @[simp]

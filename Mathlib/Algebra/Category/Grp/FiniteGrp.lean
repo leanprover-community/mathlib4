@@ -28,7 +28,7 @@ structure FiniteGrp where
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
-  /-- An add group that is finite -/
+  /-- An additive group that is finite -/
   toAddGrp : AddGrp
   [isFinite : Finite toAddGrp]
 
@@ -53,14 +53,15 @@ instance (G : FiniteGrp) : Group G := inferInstanceAs <| Group G.toGrp
 instance (G : FiniteGrp) : Finite G := G.isFinite
 
 /-- Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group. -/
-@[to_additive "Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
-finite additive group."]
+@[to_additive /-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
+finite additive group. -/]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
 /-- The morphism in `FiniteGrp`, induced from a morphism of the category `Grp`. -/
-@[to_additive "The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp`"]
+@[to_additive
+/-- The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp` -/]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
 

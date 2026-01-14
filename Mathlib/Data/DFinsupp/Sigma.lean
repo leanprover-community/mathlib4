@@ -63,8 +63,6 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
 
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (f + g) = (sigmaCurry f + sigmaCurry g : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -72,8 +70,6 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (r • f) = (r • sigmaCurry f : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -98,7 +94,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
-    Π₀ i : Σ_, _, δ i.1 i.2 where
+    Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
@@ -159,7 +155,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
 def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
-    (Π₀ i : Σ_, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
+    (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by

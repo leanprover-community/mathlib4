@@ -96,7 +96,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext rfl
 
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :
-  (G.comap g).comap f = G.comap (g ∘ f) := rfl
+    (G.comap g).comap f = G.comap (g ∘ f) := rfl
 
 instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G.Adj] :
     DecidableRel (G.comap f).Adj := fun _ _ ↦ ‹DecidableRel G.Adj› _ _
@@ -161,7 +161,7 @@ protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleG
   ext; rfl
 
 @[simp] lemma _root_.Equiv.simpleGraph_trans (e₁ : V ≃ W) (e₂ : W ≃ X) :
-  (e₁.trans e₂).simpleGraph = e₁.simpleGraph.trans e₂.simpleGraph := rfl
+    (e₁.trans e₂).simpleGraph = e₁.simpleGraph.trans e₂.simpleGraph := rfl
 
 @[simp]
 lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.simpleGraph := rfl
@@ -412,8 +412,6 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     obtain rfl | hvw := eq_or_ne v w
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
-  left_inv f := rfl
-  right_inv f := rfl
 
 end Embedding
 
@@ -593,7 +591,7 @@ end Iso
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
-                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+                                implies_true]
 
 section Finite
 

@@ -57,9 +57,6 @@ protected theorem isQuotientMap_proj [Nonempty F] (h : IsHomeomorphicTrivialFibe
     IsQuotientMap proj :=
   h.isOpenMap_proj.isQuotientMap h.continuous_proj h.surjective_proj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_proj := IsHomeomorphicTrivialFiberBundle.isQuotientMap_proj
-
 end IsHomeomorphicTrivialFiberBundle
 
 /-- The first projection in a product is a trivial fiber bundle. -/

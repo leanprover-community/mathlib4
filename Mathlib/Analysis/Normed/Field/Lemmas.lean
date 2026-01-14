@@ -119,10 +119,6 @@ instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
 lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
 
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
 lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   obtain ⟨m, rfl⟩ := neg_surjective m
@@ -131,10 +127,6 @@ lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
   rw [Int.natCast_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
-
-@[deprecated (since := "2024-12-22")]
-alias NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop :=
-  NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop
 
 end NormedDivisionRing
 
@@ -155,7 +147,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     contrapose! H
     refine H.imp ?_
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
-    simp +contextual [add_comm, ne_of_lt]
+    simp +contextual [ne_of_lt]
 
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
@@ -211,7 +203,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete
-  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
+  rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _ | ⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
          ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_

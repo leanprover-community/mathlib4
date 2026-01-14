@@ -61,7 +61,7 @@ instance : SetLike (IntermediateField K L) L :=
     simp ⟩
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
-  show -x ∈S.toSubalgebra; simpa
+  change -x ∈S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
@@ -113,6 +113,9 @@ theorem mem_toSubalgebra (s : IntermediateField K L) (x : L) : x ∈ s.toSubalge
 @[simp]
 theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield ↔ x ∈ s :=
   Iff.rfl
+
+theorem toSubalgebra_strictMono :
+    StrictMono (IntermediateField.toSubalgebra : _ → Subalgebra K L) := fun _ _ h ↦ h
 
 /-- Copy of an intermediate field with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -235,7 +238,7 @@ protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n
 
 end InheritedLemmas
 
-theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
+theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simp
 
 instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
   smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
@@ -288,6 +291,16 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
     IntermediateField K L :=
   { S with
     algebraMap_mem' := algebra_map_mem }
+
+@[simp]
+theorem Subfield.toIntermediateField_toSubfield (S : Subfield L)
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
+    (S.toIntermediateField algebra_map_mem).toSubfield = S := rfl
+
+@[simp]
+theorem Subfield.coe_toIntermediateField (S : Subfield L)
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
+    ((S.toIntermediateField algebra_map_mem) : Set L) = S := rfl
 
 namespace IntermediateField
 
@@ -455,7 +468,7 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
 
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
-  SetLike.coe_mono (Set.image_subset f h)
+  SetLike.coe_mono (Set.image_mono h)
 
 theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     {s : IntermediateField K L} {t : IntermediateField K L'} :
@@ -574,8 +587,6 @@ variable {F E : IntermediateField K L}
 
 @[simp]
 theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
 
 @[simp]
 theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
@@ -754,8 +765,6 @@ def extendScalars.orderIso :
     { E : Subfield L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.toSubfield, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _
@@ -806,8 +815,6 @@ into an order isomorphism from
 def extendScalars.orderIso : { E : IntermediateField K L // F ≤ E } ≃o IntermediateField F L where
   toFun E := extendScalars E.2
   invFun E := ⟨E.restrictScalars K, fun x hx ↦ E.algebraMap_mem ⟨x, hx⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {E E'} := by
     simp only [Equiv.coe_fn_mk]
     exact extendScalars_le_extendScalars_iff _ _

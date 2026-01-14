@@ -173,8 +173,6 @@ section Set
 ### Finite sets
 -/
 
-open Set Function
-
 variable {α : Type u} {β : Type v}
 
 namespace Set

@@ -45,7 +45,7 @@ namespace Matrix
 
 theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
     (charmatrix M i j).natDegree = ite (i = j) 1 0 := by
-  by_cases h : i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
+  by_cases h : i = j <;> simp [h]
 
 theorem charmatrix_apply_natDegree_le (i j : n) :
     (charmatrix M i j).natDegree ≤ ite (i = j) 1 0 := by
@@ -106,9 +106,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -130,9 +128,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
@@ -150,7 +146,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   ext : 1
   · ext M : 1
     simp [Function.comp_def]
-  · simp [smul_eq_diagonal_mul]
+  · simp
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
     (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
@@ -308,9 +304,9 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, neg_add_cancel, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [p, t, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
+    simp [p, t, charpoly, charmatrix, AlgHom.map_det, map_sub]
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [q, t, charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
+    simp [q, t, charpolyRev, AlgHom.map_det, map_sub, smul_eq_diagonal_mul]
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
@@ -318,7 +314,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [t_inv, map_sub, map_one, map_mul, t, map_smul', smul_eq_diagonal_mul]
+  simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
 
 @[simp] lemma eval_charpolyRev :

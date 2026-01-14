@@ -147,8 +147,6 @@ lemma existsUnique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSh
   · intro y₁ y₂ hy₁ hy₂
     exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_section := existsUnique_section
-
 variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
 
 /-- The section of a sheaf of types which lifts a compatible family of elements indexed

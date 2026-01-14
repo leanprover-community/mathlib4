@@ -3,11 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Localized Module
@@ -119,8 +118,6 @@ noncomputable def algebraLid : A ⊗[R] B ≃ₐ[A] B :=
   have := tensorProduct_compatibleSMul S A A B
   Algebra.TensorProduct.lidOfCompatibleSMul R A B
 
-@[deprecated (since := "2024-12-01")] alias tensorSelfAlgEquiv := algebraLid
-
 set_option linter.docPrime false in
 theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
   have := tensorProduct_compatibleSMul S A A A
@@ -164,8 +161,8 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
     simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite e]
   split_ifs with h
-  · simp [e, IsBaseChange.equiv_tmul]
-  · simp only [tmul_zero, LinearEquiv.trans_apply, LinearEquiv.restrictScalars_apply, map_zero]
+  · simp [e]
+  · simp only [tmul_zero, map_zero]
 
 section
 
@@ -219,9 +216,9 @@ lemma IsLocalization.tmul_mk' (M : Submonoid R) [IsLocalization M A] (s : S) (x 
     s ⊗ₜ IsLocalization.mk' A x y =
       IsLocalization.mk' (S ⊗[R] A) (algebraMap R S x * s)
         ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
-  rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_apply, Algebra.id.map_eq_id,
+  rw [IsLocalization.eq_mk'_iff_mul_eq, algebraMap_apply, Algebra.algebraMap_self,
     RingHomCompTriple.comp_apply, tmul_one_eq_one_tmul, tmul_mul_tmul, mul_one, mul_comm,
-    IsLocalization.mk'_spec', algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
+    IsLocalization.mk'_spec', algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
 
 open Algebra.TensorProduct in
@@ -229,7 +226,7 @@ lemma IsLocalization.mk'_tmul (M : Submonoid R) [IsLocalization M A] (s : S) (x 
     IsLocalization.mk' A x y ⊗ₜ s =
       IsLocalization.mk' (A ⊗[R] S) (algebraMap R S x * s)
         ⟨algebraMap R S y.1, Algebra.mem_algebraMapSubmonoid_of_mem _⟩ := by
-  simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul, ← IsScalarTower.algebraMap_apply,
+  simp [IsLocalization.eq_mk'_iff_mul_eq, map_mul,
     RingHom.algebraMap_toAlgebra]
 
 namespace IsLocalization.Away

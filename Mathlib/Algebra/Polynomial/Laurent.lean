@@ -223,7 +223,7 @@ instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   mul_invOf_self := by rw [← T_add, add_neg_cancel, T_zero]
 
 @[simp]
-theorem invOf_T (n : ℤ) : ⅟ (T n : R[T;T⁻¹]) = T (-n) :=
+theorem invOf_T (n : ℤ) : ⅟(T n : R[T;T⁻¹]) = T (-n) :=
   rfl
 
 theorem isUnit_T (n : ℤ) : IsUnit (T n : R[T;T⁻¹]) :=
@@ -570,17 +570,12 @@ theorem eval₂_C (r : R) : eval₂ f x (C r) = f r := by
 theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x (C r * T n) = f r * x ^ n := by
   rw [←Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
 
-theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) =
-  f r * x⁻¹ ^ n := by rw [map_mul, eval₂_T_neg_n, eval₂_C]
+theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) = f r * x⁻¹ ^ n := by
+  rw [map_mul, eval₂_T_neg_n, eval₂_C]
 
 @[simp]
 theorem eval₂_C_mul_T (r : R) (n : ℤ) : eval₂ f x (C r * T n) = f r * (x ^ n).val := by
-  by_cases hn : 0 ≤ n
-  · lift n to ℕ using hn
-    rw [map_mul, eval₂_C, eval₂_T_n, zpow_natCast, Units.val_pow_eq_pow_val]
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
-    rw [map_mul, eval₂_C, eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow,
-      Units.val_pow_eq_pow_val]
+  simp
 
 end CommSemiring
 

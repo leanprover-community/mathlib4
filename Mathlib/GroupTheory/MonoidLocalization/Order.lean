@@ -100,8 +100,8 @@ instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b 
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
-@[to_additive (attr := simps!) "An ordered cancellative monoid injects into its localization by
-sending `a` to `a - b`."]
+@[to_additive (attr := simps!) /-- An ordered cancellative monoid injects into its localization by
+sending `a` to `a - b`. -/]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _

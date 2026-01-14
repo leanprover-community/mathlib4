@@ -86,7 +86,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           {z ∈ (decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support | z.1 + z.2 = max₁ + max₂}
            with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
-          simp only [antidiag, add_sum_erase, mem_filter, mem_product]
+          simp only [antidiag, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩
         have eq_add_sum :=
           calc
@@ -114,13 +114,13 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           have notMem : i ∉ set₁ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₁ (nonempty x rid₁)).mp max_lt i h)
           rw [set₁_eq] at notMem
-          simp only [not_and, Classical.not_not, Ne, mem_filter] at notMem
+          simp only [not_and, Classical.not_not, mem_filter] at notMem
           exact Ideal.mul_mem_right _ I (notMem H₂)
         · -- in this case `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
           have notMem : j ∉ set₂ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₂ (nonempty y rid₂)).mp max_lt j h)
           rw [set₂_eq] at notMem
-          simp only [not_and, Classical.not_not, Ne, mem_filter] at notMem
+          simp only [not_and, Classical.not_not, mem_filter] at notMem
           exact Ideal.mul_mem_left I _ (notMem H₃)
       have notMem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∉ I := by
         have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I := by
@@ -157,7 +157,7 @@ theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
   rw [Ideal.radical_eq_sInf]
   apply le_antisymm
   · exact sInf_le_sInf fun J => And.right
-  · refine sInf_le_sInf_of_forall_exists_le ?_
+  · refine sInf_le_sInf_of_isCoinitialFor ?_
     rintro J ⟨HJ₁, HJ₂⟩
     refine ⟨(J.homogeneousCore 𝒜).toIdeal, ?_, J.toIdeal_homogeneousCore_le _⟩
     refine ⟨HomogeneousIdeal.isHomogeneous _, ?_, HJ₂.homogeneousCore⟩

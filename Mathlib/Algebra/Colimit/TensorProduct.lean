@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 /-!
 # Tensor product with direct limit of finitely generated submodules
 
-we show that if `M` and `P` are arbitrary modules and `N` is a finitely generated submodule
+We show that if `M` and `P` are arbitrary modules and `N` is a finitely generated submodule
 of a module `P`, then two elements of `N ⊗ M` have the same image in `P ⊗ M` if and only if
 they already have the same image in `N' ⊗ M` for some finitely generated submodule `N' ≥ N`.
 This is the theorem `Submodule.FG.exists_rTensor_fg_inclusion_eq`. The key facts used are

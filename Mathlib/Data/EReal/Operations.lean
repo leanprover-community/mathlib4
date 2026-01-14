@@ -266,9 +266,9 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
     ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,
       WithTop.forall.2 ⟨bot_lt_top, fun _ => coe_lt_top _⟩⟩
 
-@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
+@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_ge
 
-@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
+@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_gt
 
 /-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
@@ -286,8 +286,6 @@ protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := ER
 
 /-- `-a < b` if and only if `-b < a` on `EReal`. -/
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
-
-@[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
 
 /-- If `-a < b` then `-b < a` on `EReal`. -/
 protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.mp h
@@ -334,7 +332,7 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
-  suffices ∀ y : EReal, x = y → HEq (recENNReal coe neg_coe y : motive y) (coe x) from
+  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
     heq_iff_eq.mp (this x rfl)
   intro y hy
   have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
@@ -539,10 +537,6 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
   refine add_le_of_forall_lt fun a' ha' b' hb' ↦ EReal.le_neg_of_le_neg ?_
   rw [neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)]
   exact h _ (EReal.lt_neg_of_lt_neg ha') _ (EReal.lt_neg_of_lt_neg hb')
-
-@[deprecated (since := "2024-11-19")] alias top_add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
 lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by
@@ -824,7 +818,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
-  cases hx_nonneg.eq_or_gt with
+  cases hx_nonneg.eq_or_lt' with
   | inl hx0 => simp [hx0]
   | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩

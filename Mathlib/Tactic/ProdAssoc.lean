@@ -21,7 +21,7 @@ namespace Lean.Expr
 
 open Lean Meta
 
-/-- A helper type to keep track of universe levels and types in iterated produts. -/
+/-- A helper type to keep track of universe levels and types in iterated products. -/
 inductive ProdTree where
   | type (tp : Expr) (l : Level)
   | prod (fst snd : ProdTree) (lfst lsnd : Level)

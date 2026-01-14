@@ -139,8 +139,6 @@ unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)
   exact lcProof
 
--- Porting note: remove this line when you dropped 'lcProof'
-set_option linter.unusedVariables false in
 @[nolint docBlame]
 unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
   let m' := m.succ
@@ -148,8 +146,6 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
 
--- Porting note: remove this line when you dropped 'lcProof'
-set_option linter.unusedVariables false in
 @[nolint docBlame]
 unsafe def nextDnPos (e m) (v : ValidFinite e m) : Float :=
   match m with

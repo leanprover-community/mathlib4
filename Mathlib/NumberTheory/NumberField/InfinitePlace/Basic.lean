@@ -59,8 +59,7 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
   coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
-lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) :
-  v x = v.1 x := rfl
+lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
 @[ext]
 lemma ext {K : Type*} [Field K] (v₁ v₂ : InfinitePlace K) (h : ∀ k, v₁ k = v₂ k) : v₁ = v₂ :=
@@ -378,13 +377,9 @@ open scoped Classical in
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev nrRealPlaces := card { w : InfinitePlace K // IsReal w }
 
-@[deprecated (since := "2024-10-24")] alias NrRealPlaces := nrRealPlaces
-
 open scoped Classical in
 /-- The number of infinite complex places of the number field `K`. -/
 noncomputable abbrev nrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
-
-@[deprecated (since := "2024-10-24")] alias NrComplexPlaces := nrComplexPlaces
 
 open scoped Classical in
 theorem card_real_embeddings :

@@ -43,7 +43,7 @@ theorem take_splitLength (i : ℕ) : (sz.splitLengths l).take i = (sz.take i).sp
   case succ i hi =>
     cases sz
     · simp
-    · simp only [splitLengths_cons, take_succ_cons, cons.injEq, true_and, hi]
+    · simp only [splitLengths_cons, take_succ_cons, hi]
 
 theorem length_splitLengths_getElem_le {i : ℕ} {hi : i < (sz.splitLengths l).length} :
     (sz.splitLengths l)[i].length ≤ sz[i]'(by simpa using hi) := by

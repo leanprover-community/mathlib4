@@ -149,9 +149,6 @@ theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) 
   ext
   simp
 
-@[deprecated (since := "2024-11-24")]
-alias LinearIndependent.independent_span_singleton := LinearIndependent.iSupIndep_span_singleton
-
 end repr
 
 section union
@@ -175,7 +172,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
   nontriviality R
   let e : s ⊕ t ≃ ↥(inl R M M' '' s ∪ inr R M M' '' t) :=
     .ofBijective (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.2, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.2, rfl⟩⟩)
-      ⟨by rintro (_|_) (_|_) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
+      ⟨by rintro (_ | _) (_ | _) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
         by rintro ⟨_, ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩⟩ <;> aesop⟩
   refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr' hs ht)
   ext (_ | _) <;> rfl
@@ -502,14 +499,18 @@ theorem mem_span_insert_exchange :
     simp_all
   match_scalars <;> simp [a0]
 
-protected theorem LinearIndepOn.insert (hs : LinearIndepOn K id s) (hx : x ∉ span K s) :
-    LinearIndepOn K id (insert x s) := by
+protected theorem LinearIndepOn.insert {s : Set ι} {x : ι} (hs : LinearIndepOn K v s)
+    (hx : v x ∉ span K (v '' s)) : LinearIndepOn K v (insert x s) := by
   rw [← union_singleton]
-  have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx
-  apply hs.id_union (LinearIndepOn.id_singleton _ x0)
-  rwa [disjoint_span_singleton' x0]
+  have x0 : v x ≠ 0 := fun h => hx (h ▸ zero_mem _)
+  apply hs.union (LinearIndepOn.singleton _ x0)
+  rwa [image_singleton, disjoint_span_singleton' x0]
 
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.insert
+protected theorem LinearIndepOn.id_insert (hs : LinearIndepOn K id s) (hx : x ∉ span K s) :
+    LinearIndepOn K id (insert x s) :=
+  hs.insert ((image_id s).symm ▸ hx)
+
+@[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.id_insert
 
 theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
@@ -586,17 +587,17 @@ alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} :=
-  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).insert (x := y) <|
+  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).id_insert (x := y) <|
     mt mem_span_singleton.1 <| not_exists.2 hy
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
-theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0):
+theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
     LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
   rw [pair_comm]
   convert linearIndepOn_insert (s := {i}) (a := j) hij.symm
-  simp [hi, mem_span_singleton, linearIndependent_unique_iff]
+  simp [hi, mem_span_singleton]
 
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
@@ -652,17 +653,22 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
   rw [linearIndependent_fin_succ, linearIndependent_unique_iff, range_unique, mem_span_singleton,
     not_exists, show Fin.tail f default = f 1 by rw [← Fin.succ_zero_eq_one]; rfl]
 
-/-- TODO : generalize this and related results to non-identity functions -/
-theorem exists_linearIndepOn_id_extension (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
-    ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndepOn K id b := by
+theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
+    ∃ b ⊆ t, s ⊆ b ∧ v '' t ⊆ span K (v '' b) ∧ LinearIndepOn K v b := by
   obtain ⟨b, sb, h⟩ := by
-    refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndepOn K id b} ?_ _ ⟨hst, hs⟩
+    refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndepOn K v b} ?_ _ ⟨hst, hs⟩
     · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndepOn_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem
-  refine ⟨b, h.prop.1, sb, fun x xt => by_contra fun hn ↦ hn ?_, h.prop.2⟩
-  exact subset_span <| h.mem_of_prop_insert ⟨insert_subset xt h.prop.1, h.prop.2.insert hn⟩
+  refine ⟨b, h.prop.1, sb, fun _ ⟨x, hx, hvx⟩ => by_contra fun hn ↦ hn ?_, h.prop.2⟩
+  subst hvx
+  exact subset_span <| mem_image_of_mem v <| h.mem_of_prop_insert
+    ⟨insert_subset hx h.prop.1, h.prop.2.insert hn⟩
+
+theorem exists_linearIndepOn_id_extension (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+    ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndepOn K id b := by
+  convert exists_linearIndepOn_extension hs hst <;> simp
 
 @[deprecated (since := "2025-02-15")] alias exists_linearIndependent_extension :=
     exists_linearIndepOn_id_extension
@@ -692,55 +698,63 @@ lemma exists_linearIndependent' (v : ι → V) :
     simp only [Subtype.ext_iff, hf, f'] at hij
     simp [hij]
 
-variable {K t}
+variable {K} {s t : Set ι}
 
 /-- `LinearIndepOn.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
-all elements of `t`.
-TODO - generalize the lemmas below to functions that aren't the identity. -/
-noncomputable def LinearIndepOn.extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) : Set V :=
-  Classical.choose (exists_linearIndepOn_id_extension hs hst)
+all elements of `t`. -/
+noncomputable def LinearIndepOn.extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) : Set ι :=
+  Classical.choose (exists_linearIndepOn_extension hs hst)
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.extend := LinearIndepOn.extend
 
-theorem LinearIndepOn.extend_subset (hs : LinearIndepOn K id s) (hst : s ⊆ t) : hs.extend hst ⊆ t :=
-  let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
+theorem LinearIndepOn.extend_subset (hs : LinearIndepOn K v s) (hst : s ⊆ t) : hs.extend hst ⊆ t :=
+  let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hbt
 
 @[deprecated (since := "2025-02-15")] alias
   LinearIndependent.extend_subset := LinearIndepOn.extend_subset
 
-theorem LinearIndepOn.subset_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) : s ⊆ hs.extend hst :=
-  let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
+theorem LinearIndepOn.subset_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) : s ⊆ hs.extend hst :=
+  let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hsb
 
 @[deprecated (since := "2025-02-15")] alias
   LinearIndependent.subset_extend := LinearIndepOn.subset_extend
 
-theorem LinearIndepOn.subset_span_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
-    t ⊆ span K (hs.extend hst) :=
-  let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
+theorem LinearIndepOn.image_subset_span_image_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
+    v '' t ⊆ span K (v '' hs.extend hst) :=
+  let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   htb
+
+theorem LinearIndepOn.subset_span_extend {s t : Set V} (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+    t ⊆ span K (hs.extend hst) := by
+  convert hs.image_subset_span_image_extend hst <;> simp
 
 @[deprecated (since := "2025-02-15")] alias
   LinearIndependent.subset_span_extend := LinearIndepOn.subset_span_extend
 
-theorem LinearIndepOn.span_extend_eq_span (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
+theorem LinearIndepOn.span_image_extend_eq_span_image (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
+    span K (v '' hs.extend hst) = span K (v '' t) :=
+  le_antisymm (span_mono (image_mono (hs.extend_subset hst)))
+    (span_le.2 (hs.image_subset_span_image_extend hst))
+
+theorem LinearIndepOn.span_extend_eq_span {s t : Set V} (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
     span K (hs.extend hst) = span K t :=
   le_antisymm (span_mono (hs.extend_subset hst)) (span_le.2 (hs.subset_span_extend hst))
 
 @[deprecated (since := "2025-02-15")] alias
   LinearIndependent.span_extend_eq_span := LinearIndepOn.span_extend_eq_span
 
-theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K id s) (hst : s ⊆ t) :
-    LinearIndepOn K id (hs.extend hst) :=
-  let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_id_extension hs hst)
+theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
+    LinearIndepOn K v (hs.extend hst) :=
+  let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
 
 @[deprecated (since := "2025-02-15")] alias
   LinearIndependent.linearIndependent_extend := LinearIndepOn.linearIndepOn_extend
 
 -- TODO(Mario): rewrite?
-theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
+theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
     (hs : LinearIndepOn K id s) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by
   classical
@@ -765,7 +779,7 @@ theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
         eq_empty_of_subset_empty <|
           -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
           Subset.trans
-            (by simp [inter_subset_inter, Subset.refl, -inter_subset_left, -subset_inter_iff])
+            (by simp [inter_subset_inter, -inter_subset_left, -subset_inter_iff])
             (le_of_eq hst)
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
@@ -799,13 +813,13 @@ theorem exists_of_linearIndepOn_of_finite_span {t : Finset V}
         (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, and_imp, or_imp]),
+    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
 @[deprecated (since := "2025-02-15")] alias
   exists_of_linearIndependent_of_finite_span := exists_of_linearIndepOn_of_finite_span
 
-theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
+theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set V} (ht : t.Finite)
     (hs : LinearIndepOn K id s) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simpa

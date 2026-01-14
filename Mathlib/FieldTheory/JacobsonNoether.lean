@@ -85,7 +85,7 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
-  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
+    ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (ad k D a)^[p ^ m] = 0 := by
@@ -115,12 +115,12 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨b, hb1⟩ : ∃ b : D, ad k D a b ≠ 0 := by
     rw [Subring.mem_center_iff, not_forall] at ha
     use ha.choose
-    show a * ha.choose - ha.choose * a ≠ 0
+    change a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
+  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n+1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
-    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
+    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n+1] b = 0 := ⟨p ^ m,
       ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _), Pi.zero_apply]⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
@@ -175,7 +175,7 @@ open Subring Algebra in
   that is separable over `L`. -/
 theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
-  (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
   have ntrivial : Subring.center D ≠ ⊤ :=

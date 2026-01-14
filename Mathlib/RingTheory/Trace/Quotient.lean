@@ -38,12 +38,12 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
       Ideal.Quotient.mk p (Algebra.trace R S x) := by
   classical
   let ι := Module.Free.ChooseBasisIndex R S
-  let b : Basis ι R S := Module.Free.chooseBasis R S
+  let b : Module.Basis ι R S := Module.Free.chooseBasis R S
   rw [trace_eq_matrix_trace b, trace_eq_matrix_trace (basisQuotient b), AddMonoidHom.map_trace]
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply', RingHom.toAddMonoidHom_eq_coe,
+    basisQuotient_apply, LinearMap.mul_apply',
     AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 
@@ -205,14 +205,8 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
   haveI : NoZeroSMulDivisors Rₚ Sₚ := by
     rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]
-    intro x hx
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
-    simp only [Sₚ, RingHom.algebraMap_toAlgebra, IsLocalization.map_mk',
-      IsLocalization.mk'_eq_zero_iff, mul_eq_zero, Subtype.exists, exists_prop] at hx ⊢
-    obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
-    simp only [(injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
-    refine ⟨a, ha, H⟩
-  haveI : Module.Finite Rₚ Sₚ := Module.Finite_of_isLocalization R S _ _ p.primeCompl
+    simp
+  haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
   haveI : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   have : IsPrincipalIdealRing Rₚ := by
     by_cases hp : p = ⊥

@@ -50,8 +50,8 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
     #(badVertices G ε s t) ≤ #s * ε := by
-  have hε : ε ≤ 1 := (le_rfl.trans <| le_mul_of_one_le_left hst.pos.le (by norm_num)).trans
-    (dst.trans <| by exact_mod_cast edgeDensity_le_one _ _ _)
+  have hε : ε ≤ 1 := (le_mul_of_one_le_left hst.pos.le (by simp)).trans
+    (dst.trans <| mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=
     hst (filter_subset _ _) Subset.rfl h.le (mul_le_of_le_one_right (Nat.cast_nonneg _) hε)
@@ -64,7 +64,7 @@ private lemma triangle_split_helper [DecidableEq α] :
       (fun x ↦ (G.interedges {y ∈ t | G.Adj x y} {y ∈ u | G.Adj x y}).image (x, ·)) ⊆
       (s ×ˢ t ×ˢ u).filter (fun (x, y, z) ↦ G.Adj x y ∧ G.Adj x z ∧ G.Adj y z) := by
   rintro ⟨x, y, z⟩
-  simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, exists_prop, mem_union,
+  simp only [mem_filter, mem_product, mem_biUnion, mem_sdiff, mem_union,
     mem_image, Prod.exists, and_assoc, exists_imp, and_imp, Prod.mk_inj, mem_interedges_iff]
   rintro x hx - y z hy xy hz xz yz rfl rfl rfl
   exact ⟨hx, hy, hz, xy, xz, yz⟩
@@ -125,8 +125,8 @@ lemma triangle_counting'
     gcongr
   rintro a _ b _ t
   rw [Function.onFun, disjoint_left]
-  simp only [Prod.forall, mem_image, not_exists, exists_prop, mem_filter, Prod.mk_inj,
-    exists_imp, and_imp, not_and, mem_product, or_assoc]
+  simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
+    exists_imp, and_imp, not_and]
   aesop
 
 variable [DecidableEq α]
@@ -137,14 +137,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  rw [disjoint_left] at hst hsu htu
-  rw [Prod.mk_inj, Prod.mk_inj]
-  simp only [and_assoc, @or_left_comm _ (y₁ = y₂), @or_comm _ (z₁ = z₂),
-    @or_left_comm _ (z₁ = z₂)] at h
-  refine ⟨h.1.resolve_right (not_or_intro ?_ ?_), h.2.1.resolve_right (not_or_intro ?_ ?_),
-    h.2.2.1.resolve_right (not_or_intro ?_ ?_)⟩ <;>
-  · rintro rfl
-    solve_by_elim
+  grind [disjoint_left]
 
 variable [Fintype α]
 
@@ -160,8 +153,7 @@ lemma triangle_counting
   rw [Nat.cast_le]
   refine card_le_card_of_injOn (fun (x, y, z) ↦ {x, y, z}) ?_ ?_
   · rintro ⟨x, y, z⟩
-    simp only [and_imp, mem_filter, mem_product, mem_cliqueFinset_iff, is3Clique_triple_iff]
-    exact fun _ _ _ hxy hxz hyz ↦ ⟨hxy, hxz, hyz⟩
+    simp +contextual [is3Clique_triple_iff]
   rintro ⟨x₁, y₁, z₁⟩ h₁ ⟨x₂, y₂, z₂⟩ h₂ t
   simp only [mem_coe, mem_filter, mem_product] at h₁ h₂
   apply triple_eq_triple_of_mem hst hsu htu t <;> tauto

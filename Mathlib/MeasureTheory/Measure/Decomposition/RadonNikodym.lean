@@ -453,7 +453,7 @@ lemma _root_.MeasurableEmbedding.map_withDensity_rnDeriv (hf : MeasurableEmbeddi
   ext s hs
   rw [hf.map_apply, withDensity_apply _ (hf.measurable hs), withDensity_apply _ hs,
     setLIntegral_map hs (Measure.measurable_rnDeriv _ _) hf.measurable]
-  refine setLIntegral_congr_fun (hf.measurable hs) ?_
+  refine setLIntegral_congr_fun_ae (hf.measurable hs) ?_
   filter_upwards [hf.rnDeriv_map μ ν] with a ha _ using ha.symm
 
 lemma _root_.MeasurableEmbedding.singularPart_map (hf : MeasurableEmbedding f)

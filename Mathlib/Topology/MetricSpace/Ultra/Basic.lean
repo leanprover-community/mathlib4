@@ -96,14 +96,14 @@ lemma ball_eq_or_disjoint :
   have h₂ := ball_eq_of_mem <| Set.inter_subset_right h.some_mem
   exact h₁.trans h₂.symm
 
-lemma closedBall_eq_of_mem {x y: X} {r : ℝ} (h : y ∈ closedBall x r) :
+lemma closedBall_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ closedBall x r) :
     closedBall x r = closedBall y r := by
   ext
   simp_rw [mem_closedBall] at h ⊢
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans (max_le h' (dist_comm x _ ▸ h))
 
-lemma mem_closedBall_iff {x y: X} {r : ℝ} :
+lemma mem_closedBall_iff {x y : X} {r : ℝ} :
     y ∈ closedBall x r ↔ x ∈ closedBall y r := by
   cases le_or_gt 0 r with
   | inl hr =>
@@ -130,7 +130,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     simp [ball_eq_empty.mpr hr]
   | inr h =>
     rw [← isOpen_compl_iff, isOpen_iff]
-    simp only [Set.mem_compl_iff, not_lt, gt_iff_lt]
+    simp only [Set.mem_compl_iff, gt_iff_lt]
     intro y hy
     cases ball_eq_or_disjoint x y r with
     | inl hd =>
@@ -138,7 +138,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
       simp [h.not_ge] at hy
     | inr hd =>
       use r
-      simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
+      simp [h, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
 
 lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball⟩
 
@@ -159,7 +159,7 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
     simp [closedBall_eq_empty.mpr h]
   | inr h =>
     rw [isOpen_iff]
-    simp only [Set.mem_compl_iff, not_lt, gt_iff_lt]
+    simp only [gt_iff_lt]
     intro y hy
     cases closedBall_eq_or_disjoint x y r with
     | inl hd =>

@@ -35,7 +35,7 @@ variable {X : TopCat.{w}}
 /-- Given a presieve `R` on `U`, we obtain a covering family of open sets in `X`, by taking as index
 type the type of dependent pairs `(V, f)`, where `f : V ⟶ U` is in `R`.
 -/
-def coveringOfPresieve (U : Opens X) (R : Presieve U) : (ΣV, { f : V ⟶ U // R f }) → Opens X :=
+def coveringOfPresieve (U : Opens X) (R : Presieve U) : (Σ V, { f : V ⟶ U // R f }) → Opens X :=
   fun f => f.1
 
 @[simp]
@@ -73,10 +73,9 @@ def presieveOfCoveringAux {ι : Type v} (U : ι → Opens X) (Y : Opens X) : Pre
 def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
   presieveOfCoveringAux U (iSup U)
 
-/-- Given a presieve `R` on `Y`, if we take its associated family of opens via
-    `coveringOfPresieve` (which may not cover `Y` if `R` is not covering), and take
-    the presieve on `Y` associated to the family of opens via `presieveOfCoveringAux`,
-    then we get back the original presieve `R`. -/
+/-- Given a presieve `R` on `Y`, if we take its associated family of opens via `coveringOfPresieve`
+(which may not cover `Y` if `R` is not covering), and take the presieve on `Y` associated to the
+family of opens via `presieveOfCoveringAux`, then we get back the original presieve `R`. -/
 @[simp]
 theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
@@ -99,7 +98,7 @@ theorem mem_grothendieckTopology :
 /-- An index `i : ι` can be turned into a dependent pair `(V, f)`, where `V` is an open set and
 `f : V ⟶ iSup U` is a member of `presieveOfCovering U f`.
 -/
-def homOfIndex (i : ι) : ΣV, { f : V ⟶ iSup U // presieveOfCovering U f } :=
+def homOfIndex (i : ι) : Σ V, { f : V ⟶ iSup U // presieveOfCovering U f } :=
   ⟨U i, Opens.leSupr U i, i, rfl⟩
 
 /-- By using the axiom of choice, a dependent pair `(V, f)` where `f : V ⟶ iSup U` is a member of
@@ -222,9 +221,9 @@ def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
-    is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
-    is equivalent to a homomorphism between their restrictions to the indexing type
-    `ι` of `B`, with the induced category structure on `ι`. -/
+is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
+is equivalent to a homomorphism between their restrictions to the indexing type
+`ι` of `B`, with the induced category structure on `ι`. -/
 def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
     ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _

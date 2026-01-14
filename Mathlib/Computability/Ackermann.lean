@@ -91,7 +91,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   | succ n IH =>
     rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
-    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
+    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by simp
     apply H.trans
     rw [_root_.mul_le_mul_left two_pos]
     exact pow_right_mono₀ one_le_two (Nat.le_add_left 3 n)
@@ -116,11 +116,7 @@ theorem one_lt_ack_succ_left : ∀ m n, 1 < ack (m + 1) n
 
 theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
-  | m + 1, n => by
-    rw [ack_succ_succ]
-    obtain ⟨h, h⟩ := exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
-    rw [h]
-    apply one_lt_ack_succ_right
+  | m + 1, n => one_lt_ack_succ_left m (n + 1)
 
 theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
   | 0, n₁, n₂, h => by simpa using h
@@ -214,6 +210,7 @@ theorem ack_inj_left {m₁ m₂ n : ℕ} : ack m₁ n = ack m₂ n ↔ m₁ = m�
 theorem max_ack_left (m₁ m₂ n : ℕ) : ack (max m₁ m₂) n = max (ack m₁ n) (ack m₂ n) :=
   (ack_mono_left n).map_max
 
+@[gcongr]
 theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ ≤ n₂) : ack m₁ n₁ ≤ ack m₂ n₂ :=
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 
@@ -321,8 +318,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- If m is the maximum, we get a very weak inequality.
         rcases lt_or_ge _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
-          exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
-                           (self_le_add_right m _)
+          gcongr <;> omega
         rw [max_eq_right h₁]
         -- We get rid of the second `pair`.
         apply (ack_pair_lt _ _ _).le.trans
@@ -330,7 +326,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         rcases lt_or_ge _ n with h₂ | h₂
         · rw [max_eq_left h₂.le, add_assoc]
           exact
-            ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
+            ack_le_ack (Nat.add_le_add (le_max_right a b) <| by simp)
               ((le_succ n).trans <| self_le_add_left _ _)
         rw [max_eq_right h₂]
         -- We now use the inductive hypothesis, and some simple algebraic manipulation.

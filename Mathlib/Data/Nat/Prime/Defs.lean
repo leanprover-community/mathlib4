@@ -28,9 +28,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 assert_not_exists Ring
 
-open Bool Subtype Nat
-
 namespace Nat
+
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
@@ -102,9 +101,6 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_
   rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]
 
-@[deprecated (since := "2024-11-19")]
-alias prime_def_lt'' := prime_def
-
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
   prime_def.trans <|
     and_congr_right fun p2 =>
@@ -118,9 +114,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
       forall_congr' fun m =>
         ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
           rcases m with (_ | _ | m)
-          · rw [eq_zero_of_zero_dvd d] at p2
-            revert p2
-            decide
+          · omega
           · rfl
           · exact (h (le_add_left 2 m) l).elim d⟩
 
@@ -136,6 +130,17 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         · rw [mul_comm] at e
           refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
           rwa [one_mul, ← e]⟩
+
+theorem prime_iff_not_exists_mul_eq {p : ℕ} :
+    p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
+  push_neg
+  simp_rw [prime_def_lt, dvd_def, exists_imp]
+  refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
+  simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
+  refine forall₂_congr fun n hp ↦ ⟨by aesop, fun hpn ↦ ?_⟩
+  have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by omega)
+  exact (Nat.mul_eq_right (by omega)).mp
+    (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by omega))))
 
 theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Coprime m) : Prime n := by
   refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩
@@ -222,7 +227,7 @@ theorem minFac_one : minFac 1 = 1 := by
 
 @[simp]
 theorem minFac_two : minFac 2 = 2 := by
-  simp [minFac, minFacAux]
+  simp [minFac]
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 
@@ -263,11 +268,11 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
 
 theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   by_cases n0 : n = 0
-  · simp [n0, minFacProp, GE.ge]
+  · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
-  simp only [minFac_eq, Nat.isUnit_iff]
+  simp only [minFac_eq]
   by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine
@@ -280,6 +285,12 @@ theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
 theorem minFac_prime {n : ℕ} (n1 : n ≠ 1) : Prime (minFac n) :=
   let ⟨f2, fd, a⟩ := minFac_has_prop n1
   prime_def_lt'.2 ⟨f2, fun m m2 l d => not_le_of_gt l (a m m2 (d.trans fd))⟩
+
+@[simp]
+theorem minFac_prime_iff {n : ℕ} : Prime (minFac n) ↔ n ≠ 1 := by
+  refine ⟨?_, minFac_prime⟩
+  rintro h rfl
+  simp only [minFac_one, not_prime_one] at h
 
 theorem minFac_le_of_dvd {n : ℕ} : ∀ {m : ℕ}, 2 ≤ m → m ∣ n → minFac n ≤ m := by
   by_cases n1 : n = 1
@@ -326,7 +337,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
 
 @[csimp] theorem decidablePrime_csimp :
     @decidablePrime = @decidablePrime' := by
-  funext; apply Subsingleton.elim
+  subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
@@ -410,6 +421,8 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
   ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
     Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 
+alias ⟨Prime.dvd_or_dvd, _⟩ := Prime.dvd_mul
+
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_isUnit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 
@@ -444,10 +457,6 @@ end Primes
 
 instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
-
-end Nat
-
-namespace Nat
 
 instance fact_prime_two : Fact (Prime 2) :=
   ⟨prime_two⟩

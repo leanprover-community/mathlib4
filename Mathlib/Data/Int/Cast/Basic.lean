@@ -56,7 +56,7 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
   (AddGroupWithOne.intCast_ofNat 0).trans Nat.cast_zero
 
 -- This lemma competes with `Int.ofNat_eq_natCast` to come later
-@[simp high, nolint simpNF, norm_cast]
+@[simp high, norm_cast]
 theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 
@@ -80,7 +80,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   unfold subNatNat
   cases e : n - m
   · simp only [ofNat_eq_coe]
-    simp [e, Nat.le_of_sub_eq_zero e]
+    simp [Nat.le_of_sub_eq_zero e]
   · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 
 @[simp]

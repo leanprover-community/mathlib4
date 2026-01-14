@@ -107,7 +107,7 @@ def Ideal.homogeneousCore' (I : Ideal A) : Ideal A :=
   Ideal.span ((↑) '' (((↑) : Subtype (SetLike.IsHomogeneousElem 𝒜) → A) ⁻¹' I))
 
 theorem Ideal.homogeneousCore'_mono : Monotone (Ideal.homogeneousCore' 𝒜) :=
-  fun _ _ I_le_J => Ideal.span_mono <| Set.image_subset _ fun _ => @I_le_J _
+  fun _ _ I_le_J => Ideal.span_mono <| Set.image_mono fun _ => @I_le_J _
 
 theorem Ideal.homogeneousCore'_le : I.homogeneousCore' 𝒜 ≤ I :=
   Ideal.span_le.2 <| image_preimage_subset _ _
@@ -512,7 +512,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
   apply congr_arg Ideal.span _
   ext1
   simp only [Set.mem_iUnion, Set.mem_image, mem_setOf_eq, GradedRing.proj_apply, SetLike.exists,
-    exists_prop, Subtype.coe_mk, SetLike.mem_coe]
+    exists_prop, SetLike.mem_coe]
 
 theorem Ideal.homogeneousHull_eq_iSup :
     I.homogeneousHull 𝒜 =

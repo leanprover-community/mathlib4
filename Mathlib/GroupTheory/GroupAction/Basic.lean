@@ -92,7 +92,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
     DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  simp only [MulAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
@@ -120,7 +120,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
   apply Subsingleton.elim ..
 
 /-- If a group acts nontrivially, then the type is nontrivial -/
-@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
+@[to_additive /-- If a subgroup acts nontrivially, then the type is nontrivial. -/]
 theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
     Nontrivial α :=
   (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
@@ -134,10 +134,10 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
-      _ ⊆ g • orbit G a := Set.image_subset _ (smul_orbit_subset _ _)
+      _ ⊆ g • orbit G a := Set.image_mono (smul_orbit_subset _ _)
 
 /-- The action of a group on an orbit is transitive. -/
-@[to_additive "The action of an additive group on an orbit is transitive."]
+@[to_additive /-- The action of an additive group on an orbit is transitive. -/]
 instance (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
@@ -157,11 +157,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   simp_rw [orbitRel_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
     simpa using gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
     refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
     · exact gp.2
@@ -172,8 +172,8 @@ variable (G α)
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
-@[to_additive "An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton."]
+@[to_additive /-- An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -184,8 +184,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
-@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
-quotient has exactly one element."]
+@[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element. -/]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
@@ -318,7 +318,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_trans
-    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g):
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
@@ -362,7 +362,7 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
-  "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
+  /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor

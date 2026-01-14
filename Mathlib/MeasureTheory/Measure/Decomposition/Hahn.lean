@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Loic Simon
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
@@ -10,11 +10,18 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 This file proves the unsigned version of the Hahn decomposition theorem.
 
+## Main definitions
+
+* `MeasureTheory.IsHahnDecomposition`: characterizes a set where `μ ≤ ν` (and the
+  reverse inequality on the complement),
+
 ## Main statements
 
 * `hahn_decomposition` : Given two finite measures `μ` and `ν`, there exists a measurable set `s`
-    such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
-    measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
+  such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
+  measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
+* `exists_isHahnDecomposition` : reformulation of `hahn_decomposition` using the
+  `IsHahnDecomposition` structure which relies on the measure restriction.
 
 ## Tags
 
@@ -158,5 +165,28 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
           _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [d, sub_le_iff_le_add, zero_add] using this
+
+
+/-- A set where `μ ≤ ν` (and the reverse inequality on the complement),
+defined via measurable set and measure restriction comparisons. -/
+structure IsHahnDecomposition (μ ν : Measure α) (s : Set α) : Prop where
+  measurableSet : MeasurableSet s
+  le_on : μ.restrict s ≤ ν.restrict s
+  ge_on_compl : ν.restrict sᶜ ≤ μ.restrict sᶜ
+
+lemma IsHahnDecomposition.compl {μ ν : Measure α} {s : Set α}
+    (h : IsHahnDecomposition μ ν s) : IsHahnDecomposition ν μ sᶜ where
+  measurableSet := h.measurableSet.compl
+  le_on := h.ge_on_compl
+  ge_on_compl := by simpa using h.le_on
+
+lemma exists_isHahnDecomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s : Set α, IsHahnDecomposition μ ν s := by
+  obtain ⟨s, hs, h₁, h₂⟩ := hahn_decomposition ν μ
+  refine ⟨s, hs, ?_, ?_⟩
+  all_goals
+    rw [Measure.le_iff]
+    intros
+    simp [*]
 
 end MeasureTheory

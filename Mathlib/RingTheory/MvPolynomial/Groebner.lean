@@ -37,11 +37,10 @@ The proof is done by induction, using two standard constructions
 
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
 
+* `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
+
+
 ## Reference : [Becker-Weispfenning1993]
-
-## TODO
-
-* Prove that under `Field F`, `IsUnit (m.leadingCoeff (b i))` is equivalent to `b i ≠ 0`.
 
 -/
 
@@ -120,6 +119,8 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     rw [H', degree_zero] at K
     exact hf K.symm
 
+/-- Division by a family of multivariate polynomials
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     (hb : ∀ i, IsUnit (m.leadingCoeff (b i))) (f : MvPolynomial σ R) :
     ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -222,6 +223,8 @@ decreasing_by
   nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
   simp
 
+/-- Division by a *set* of multivariate polynomials
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div_set {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -230,5 +233,25 @@ theorem div_set {B : Set (MvPolynomial σ R)}
         (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
   obtain ⟨g, r, H⟩ := m.div (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
+
+/-- Division by a multivariate polynomial
+whose leading coefficient is invertible with respect to a monomial order -/
+theorem div_single {b : MvPolynomial σ R}
+    (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
+    ∃ (g : MvPolynomial σ R) (r : MvPolynomial σ R),
+      f = g * b + r ∧
+        (m.degree (b * g) ≼[m] m.degree f) ∧
+        (∀ c ∈ r.support, ¬ (m.degree b ≤ c)) := by
+  obtain ⟨g, r, hgr, h1, h2⟩ := div_set (B := {b}) (m := m) (by simp [hb]) f
+  specialize h1 ⟨b, by simp⟩
+  set q := g ⟨b, by simp⟩
+  simp only [Set.mem_singleton_iff, forall_eq] at h2
+  simp only at h1
+  refine ⟨q, r, ?_, h1, h2⟩
+  rw [hgr]
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
+    id_eq, smul_eq_mul, add_left_inj]
+  rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
+  simp +contextual
 
 end MonomialOrder

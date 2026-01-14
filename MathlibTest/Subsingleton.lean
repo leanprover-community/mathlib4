@@ -20,7 +20,7 @@ example (p : Prop) (h h' : p) : h = h' := by subsingleton
 /-!
 HEq proof irrelevance
 -/
-example (p q : Prop) (h : p) (h' : q) : HEq h h' := by subsingleton
+example (p q : Prop) (h : p) (h' : q) : h ≍ h' := by subsingleton
 
 /-!
 Does intros.
@@ -30,7 +30,7 @@ example : ∀ {α : Type} [Subsingleton α] (x y : α), x = y := by subsingleton
 /-!
 Does intros, and turns HEq into Eq if possible.
 -/
-example : ∀ {α : Type} [Subsingleton α] (x y : α), HEq x y := by subsingleton
+example : ∀ {α : Type} [Subsingleton α] (x y : α), x ≍ y := by subsingleton
 
 section AvoidSurprise
 

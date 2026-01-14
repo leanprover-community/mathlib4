@@ -60,8 +60,8 @@ converges to the inverse of this value.
 For the version in topological groups with zero (including topological fields)
 assuming additionally that the limit is nonzero, use `Filter.Tendsto.inv₀`. -/
 @[to_additive
-  "If a function converges to a value in an additive topological group, then its
-  negation converges to the negation of this value."]
+  /-- If a function converges to a value in an additive topological group, then its
+  negation converges to the negation of this value. -/]
 theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => (f x)⁻¹) l (𝓝 y⁻¹) :=
   (continuous_inv.tendsto y).comp h

@@ -53,7 +53,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   simp_rw [Set.iUnion_mul, Set.mul_iUnion, Set.iUnion_subset_iff, Set.mul_subset_iff]
   rintro ⟨xi, rfl⟩ ⟨yi, rfl⟩ x hx y hy
   refine Set.mem_iUnion.mpr ⟨⟨xi + yi, Nat.cast_add _ _⟩, ?_⟩
-  simp only [Subtype.coe_mk, Nat.cast_add, pow_add]
+  simp only [pow_add]
   exact Submodule.mul_mem_mul hx hy
 
 instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where

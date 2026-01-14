@@ -182,7 +182,7 @@ instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalS
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
+    [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
   ⟨by borelize α; symm; apply borel_comap⟩
 
 instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
@@ -192,7 +192,7 @@ instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [Measurabl
   exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
+    [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
     exact comap_mono h.1⟩
@@ -399,10 +399,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis α, y1 ∈ a ∧ a ⊆ u :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis α) yu u_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ya, ha, v, v_open, yv, (Set.prod_mono_left au).trans huv⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ya, -, b, -, yb, hb⟩
         exact hb (mem_prod.2 ⟨ya, yb⟩)
     rw [this]
@@ -420,10 +420,10 @@ instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
         rcases isOpen_prod_iff.1 hs y1 y2 hy with ⟨u, v, u_open, v_open, yu, yv, huv⟩
         obtain ⟨a, ha, ya, au⟩ : ∃ a ∈ countableBasis β, y2 ∈ a ∧ a ⊆ v :=
           IsTopologicalBasis.exists_subset_of_mem_open (isBasis_countableBasis β) yv v_open
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop]
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop]
         exact ⟨a, ⟨u, u_open, yu, (Set.prod_mono_right au).trans huv⟩, ha, ya⟩
       · rintro ⟨y1, y2⟩ hy
-        simp only [mem_iUnion, mem_prod, mem_setOf_eq, exists_and_left, exists_prop] at hy
+        simp only [mem_iUnion, mem_prod, exists_and_left, exists_prop] at hy
         rcases hy with ⟨a, ⟨b, -, yb, hb⟩, -, ya⟩
         exact hb (mem_prod.2 ⟨yb, ya⟩)
     rw [this]
@@ -452,17 +452,20 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
     μ (closure s) = μ s :=
   measure_congr (closure_ae_eq_of_null_frontier h)
 
+theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
+    (h : μ (frontier s) = 0) (h' : μ (frontier s') = 0) :
+    μ (frontier (s ∩ s')) = 0 := by
+  apply bot_unique
+  calc μ (frontier (s ∩ s'))
+  _ ≤ μ (frontier s ∪ frontier s') := measure_mono <| (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier s) + μ (frontier s') := measure_union_le _ _
+  _ = 0 := by simp [h, h']
+
 instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
   separates x y := by
     contrapose!
-    intro x_ne_y
-    obtain ⟨U, U_open, mem_U⟩ := exists_isOpen_xor'_mem x_ne_y
-    by_cases x_in_U : x ∈ U
-    · refine ⟨U, U_open.measurableSet, x_in_U, ?_⟩
-      simp_all only [ne_eq, xor_true, not_false_eq_true]
-    · refine ⟨Uᶜ, U_open.isClosed_compl.measurableSet, x_in_U, ?_⟩
-      simp_all only [ne_eq, xor_false, id_eq, mem_compl_iff, not_true_eq_false, not_false_eq_true]
+    exact fun a => exists_measurableSet_of_ne a
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is measurable. -/
@@ -640,9 +643,6 @@ protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
 protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=

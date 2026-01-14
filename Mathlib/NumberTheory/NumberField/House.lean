@@ -78,14 +78,14 @@ private theorem c_nonneg : 0 ≤ c K := by
   positivity
 
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
-    ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖  ≤
+    ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
       (c K) * house (algebraMap (𝓞 K) K α) := by
   let σ := canonicalEmbedding K
   calc
     _ ≤ ∑ j, ‖(basisMatrix K)ᵀ⁻¹ i j‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
       rw [← inverse_basisMatrix_mulVec_eq_repr]
       exact norm_sum_le_of_le _ fun _ _ ↦ (norm_mul _ _).le
-    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖  := by
+    _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
       gcongr
       exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
     _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
@@ -158,7 +158,7 @@ private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   rw [funext_iff] at H
   have hblin := Basis.linearIndependent (newBasis K)
   simp only [zsmul_eq_mul, Fintype.linearIndependent_iff] at hblin
-  exact hblin (fun r ↦ x (l,r)) (H _) r
+  exact hblin (fun r ↦ x (l, r)) (H _) r
 
 private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
@@ -233,8 +233,8 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
       gcongr _ * (?_ * _)
       · apply house_nonneg
       · exact habs kr.1 lu.1
-    ·  gcongr
-       simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
+    · gcongr
+      simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
     · rw [mul_right_comm, c₂]
       gcongr
       exacts [supOfBasis_nonneg _, le_max_right ..]
@@ -245,7 +245,7 @@ private def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
-    ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
+    ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
   intros l
   have H₀ : 0 ≤ NumberField.house.supOfBasis K := supOfBasis_nonneg _
@@ -253,7 +253,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
   calc _ = house (algebraMap (𝓞 K) K (∑ r, (x (l, r)) * ((newBasis K) r))) := rfl
        _ ≤ ∑ r, house (((algebraMap (𝓞 K) K) (x (l, r))) *
         ((algebraMap (𝓞 K) K) ((newBasis K) r))) := ?_
-       _ ≤ ∑ r, ‖x (l,r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
+       _ ≤ ∑ r, ‖x (l, r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
        _ ≤ ∑ r, ‖x (l, r)‖ * (supOfBasis K) := ?_
        _ ≤ ∑ _r : K →+* ℂ, ((↑q * h * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p))) * supOfBasis K := ?_
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
@@ -266,7 +266,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     simp only [le_sup'_iff, mem_univ, true_and]; use r
   · gcongr with r _
     exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
-  · simp only [Nat.cast_mul, sum_const, card_univ, nsmul_eq_mul]
+  · simp only [sum_const, card_univ, nsmul_eq_mul]
     rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc,
       ← mul_assoc (q : ℝ), mul_assoc (q * _ : ℝ)]
     gcongr

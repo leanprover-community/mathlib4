@@ -385,7 +385,7 @@ theorem limsup_eq_iInf_iSup_of_nat' {u : ℕ → α} : limsup u atTop = ⨅ n : 
 
 theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (h : f.HasBasis p s) : limsup u f = ⨅ (i) (_ : p i), ⨆ a ∈ s i, u a :=
-  (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image, id]
+  (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image]
 
 lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
   simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
@@ -489,7 +489,7 @@ theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom �
   conv_rhs => rw [iInf_split _ (0 < ·)]
   simp only [not_lt, Nat.le_zero, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
   refine (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans ?_
-  simp only [zero_add, Function.comp_apply, iSup_le_iff]
+  simp only [zero_add, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
@@ -1161,10 +1161,10 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
       intro i i_s
       apply eventually_lt_of_limsup_lt _ (h₂ i i_s)
       exact lt_of_le_of_lt (Finset.le_sup' (f := fun i ↦ limsup (F i) f) i_s) hb
-    · simp only [mem_iInter, mem_setOf_eq, Finset.sup'_apply, sup'_lt_iff, imp_self, implies_true]
+    · simp only [mem_iInter, mem_setOf_eq, sup'_lt_iff, imp_self, implies_true]
   · apply Finset.sup'_le hs (fun i ↦ limsup (F i) f)
     refine fun i i_s ↦ limsup_le_limsup (Eventually.of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
-    simp only [Finset.sup'_apply, le_sup'_iff]
+    simp only [le_sup'_iff]
     use i, i_s
 
 theorem limsup_finset_sup [ConditionallyCompleteLinearOrder β] [OrderBot β] {f : Filter α}
@@ -1175,7 +1175,7 @@ theorem limsup_finset_sup [ConditionallyCompleteLinearOrder β] [OrderBot β] {f
   rcases eq_or_neBot f with (rfl | _)
   · simp [limsup_eq, csInf_univ]
   rcases Finset.eq_empty_or_nonempty s with (rfl | s_nemp)
-  · simp only [Finset.sup_apply, sup_empty, limsup_const]
+  · simp only [sup_empty, limsup_const]
   rw [← Finset.sup'_eq_sup s_nemp fun i ↦ limsup (F i) f, ← limsup_finset_sup' s_nemp h₁ h₂]
   congr
   ext a

@@ -148,19 +148,21 @@ theorem classToCong_empty : classToCong ∅ = ∅ := by
 def powerset (x : Class) : Class :=
   congToClass (Set.powerset x)
 
-/-- The union of a class is the class of all members of ZFC sets in the class -/
+/-- The union of a class is the class of all members of ZFC sets in the class. Uses `⋃₀` notation,
+scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
   ⋃₀ classToCong x
 
 @[inherit_doc]
-prefix:110 "⋃₀ " => Class.sUnion
+scoped prefix:110 "⋃₀ " => Class.sUnion
 
-/-- The intersection of a class is the class of all members of ZFC sets in the class -/
+/-- The intersection of a class is the class of all members of ZFC sets in the class .
+Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
   ⋂₀ classToCong x
 
 @[inherit_doc]
-prefix:110 "⋂₀ " => Class.sInter
+scoped prefix:110 "⋂₀ " => Class.sInter
 
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
   ZFSet.ext fun z => by
@@ -223,6 +225,7 @@ theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x
     exact ⟨z, hxz, hyz⟩
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
 
+open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : Class.{u}) :=
   ext fun y =>
@@ -241,6 +244,7 @@ theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : 
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 
+open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
   Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
@@ -344,20 +348,20 @@ theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
   exact choice_mem_aux x h y yx
 
 private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
-  (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
-    ext x
-    rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
-    refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
-    · rintro ⟨b, h2⟩
-      rw [← ZFSet.eq, ZFSet.mk_out] at h2
-      simp [h2]
-    · simp [PSet.Equiv.refl]
+    (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
+  ext x
+  rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
+  refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
+  · rintro ⟨b, h2⟩
+    rw [← ZFSet.eq, ZFSet.mk_out] at h2
+    simp [h2]
+  · simp [PSet.Equiv.refl]
 
 /-- `ZFSet.toSet` as an equivalence. -/
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).1.out
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
     fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2

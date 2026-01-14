@@ -110,7 +110,7 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     rwa [← hd]
 
 theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
-    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ)  := by
+    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ) := by
   rw [le_lexOrder_iff]
   intro d hd
   simp only [lt_min_iff] at hd
@@ -123,7 +123,7 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
   rintro ⟨u, v⟩ h h'
   simp only [Finset.mem_antidiagonal] at h
   rcases trichotomy_of_add_eq_add (congrArg toLex h) with h'' | h'' | h''
-  · exact False.elim (h' (by simp [Prod.ext_iff, h''.1, h''.2]))
+  · exact False.elim (h' (by simp [h''.1, h''.2]))
   · rw [coeff_eq_zero_of_lt_lexOrder (d := u), zero_mul]
     rw [hp]
     norm_cast

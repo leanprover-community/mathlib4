@@ -66,7 +66,7 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
 @[simps!]
 def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type v₁ :=
-  yoneda ⋙ (whiskeringLeft _ _ (Type v₁)).obj (Functor.op A)
+  yoneda ⋙ (Functor.whiskeringLeft _ _ (Type v₁)).obj (Functor.op A)
 
 /-- Auxiliary definition for `restrictedYonedaHomEquiv`. -/
 def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
@@ -77,10 +77,10 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
     { app := fun _ x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
       naturality := fun {X₁ X₂} φ => by
         ext x
-        let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.toPrefunctor.map φ x)) ⟶
+        let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.map φ x)) ⟶
           CostructuredArrow.mk (yonedaEquiv.symm x) := CostructuredArrow.homMk φ.unop (by
             dsimp [yonedaEquiv]
-            aesop_cat )
+            cat_disch )
         simpa using (f.naturality ψ).symm }
   invFun g :=
     { app := fun y => yonedaEquiv (y.hom ≫ g)
@@ -101,7 +101,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
       erw [yonedaEquiv_apply]
       dsimp [CostructuredArrow.mk]
       erw [this]
-    exact yonedaEquiv.injective (by aesop_cat)
+    exact yonedaEquiv.injective (by cat_disch)
   right_inv g := by
     ext X x
     dsimp
@@ -271,9 +271,9 @@ lemma isLeftKanExtension_along_yoneda_iff :
     apply IsColimit.ofWhiskerEquivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)
     let e : CategoryOfElements.toCostructuredArrow P ⋙ CostructuredArrow.proj yoneda P ⋙ A ≅
         functorToRepresentables P ⋙ L :=
-      isoWhiskerLeft _ (isoWhiskerLeft _ (asIso α)) ≪≫
-        isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫
-        (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Iso.refl _) L
+      Functor.isoWhiskerLeft _ (Functor.isoWhiskerLeft _ (asIso α)) ≪≫
+        Functor.isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫
+        (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight (Iso.refl _) L
     apply (IsColimit.precomposeHomEquiv e.symm _).1
     exact IsColimit.ofIsoColimit (isColimitOfPreserves L (colimitOfRepresentable P))
       (Cocones.ext (Iso.refl _))
@@ -332,7 +332,7 @@ instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
     dsimp
     simp only [Equiv.apply_symm_apply, ← StructuredArrow.w φ]
     dsimp [yonedaEquiv]
-    simp only [yonedaMap_app_apply, Functor.map_id]
+    simp only [Functor.map_id]
 
 /-- Given `F : C ⥤ D` and `X : C`, `yoneda.obj (F.obj X) : Dᵒᵖ ⥤ Type _` is the
 left Kan extension of `yoneda.obj X : Cᵒᵖ ⥤ Type _` along `F.op`. -/
@@ -421,11 +421,11 @@ lemma yonedaEquiv_presheafHom_yoneda_obj (X : C) :
 
 @[reassoc (attr := simp)]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type v₁} (f : P ⟶ Q) :
-    presheafHom φ P ≫ whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
+    presheafHom φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
   hom_ext_yoneda (fun X p => yonedaEquiv.injective (by
     rw [← assoc p f, yonedaEquiv_ι_presheafHom, ← assoc,
       yonedaEquiv_comp, yonedaEquiv_ι_presheafHom,
-      whiskerLeft_app, Functor.map_comp, FunctorToTypes.comp]
+      Functor.whiskerLeft_app, Functor.map_comp, FunctorToTypes.comp]
     dsimp))
 
 variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
@@ -483,7 +483,7 @@ lemma hom_ext {Φ : yoneda.LeftExtension (F ⋙ yoneda)}
   have eq₂ := congr_fun (congr_app (congr_app (StructuredArrow.w g) x.unop.1.unop)
     (F.op.obj x.unop.1)) (𝟙 _)
   dsimp at eq₁ eq₂ eq ⊢
-  simp only [reassoc_of% eq, ← whiskerLeft_comp]
+  simp only [reassoc_of% eq, ← Functor.whiskerLeft_comp]
   congr 2
   simp only [← cancel_epi ((compYonedaIsoYonedaCompLan F).hom.app x.unop.1.unop),
     NatTrans.naturality]
@@ -496,7 +496,7 @@ end compYonedaIsoYonedaCompLan
 variable [∀ (P : Cᵒᵖ ⥤ Type v₁), F.op.HasLeftKanExtension P]
 
 noncomputable instance (Φ : StructuredArrow (F ⋙ yoneda)
-    ((whiskeringLeft C (Cᵒᵖ ⥤ Type v₁) (Dᵒᵖ ⥤ Type v₁)).obj yoneda)) :
+    ((Functor.whiskeringLeft C (Cᵒᵖ ⥤ Type v₁) (Dᵒᵖ ⥤ Type v₁)).obj yoneda)) :
     Unique (Functor.LeftExtension.mk F.op.lan (compYonedaIsoYonedaCompLan F).hom ⟶ Φ) where
   default := compYonedaIsoYonedaCompLan.extensionHom Φ
   uniq _ := compYonedaIsoYonedaCompLan.hom_ext _ _
@@ -513,18 +513,18 @@ section
 variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁)
 
 /-- For a presheaf `P`, consider the forgetful functor from the category of representable
-    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
-    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
-    natural transformation. -/
+presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+natural transformation. -/
 @[simps]
 def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
   pt := P
   ι := { app := fun X => X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables.
+representables.
 
-    Proposition 2.6.3(i) in [Kashiwara2006] -/
+Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
     refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
@@ -553,11 +553,11 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
-    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
-    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
-    final.
+functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+`yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+final.
 
-    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
     Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
   apply Functor.final_of_isTerminal_colimit_comp_yoneda
@@ -567,7 +567,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
     apply IsTerminal.ofIso this
     refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
     apply HasColimit.isoOfNatIso
-    exact isoWhiskerLeft _
+    exact Functor.isoWhiskerLeft _
       (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
   apply IsTerminal.ofIso Over.mkIdTerminal
   let isc : IsColimit ((Over.forget _).mapCocone _) := isColimitOfPreserves _

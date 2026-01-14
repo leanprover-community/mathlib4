@@ -220,10 +220,10 @@ instance : Add (CentroidHom α) :=
   ⟨fun f g ↦
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        show f (a * b) + g (a * b) = a * (f b + g b)
+        change f (a * b) + g (a * b) = a * (f b + g b)
         simp [map_mul_left, mul_add]
       map_mul_right' := fun a b ↦ by
-        show f (a * b) + g (a * b) = (f a + g a) * b
+        change f (a * b) + g (a * b) = (f a + g a) * b
         simp [map_mul_right, add_mul] }⟩
 
 instance : Mul (CentroidHom α) :=
@@ -492,8 +492,6 @@ lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     constructor
     case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
-    case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
-      (map_mul_right T b c).symm.trans <| map_mul_left T b c
     case right_assoc => simpa [e2] using (map_mul_left T · ·)
 
 end NonUnitalNonAssocSemiring
@@ -523,7 +521,7 @@ variable [NonAssocSemiring α]
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
-      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+      ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
     right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,

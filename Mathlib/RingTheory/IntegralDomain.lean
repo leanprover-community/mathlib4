@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -51,9 +50,9 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp only [Inv.inv, dif_neg ha]
+      simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
-    inv_zero := by simp [Inv.inv, dif_pos rfl] }
+    inv_zero := by simp }
 
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
@@ -116,7 +115,8 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   calc
-    _ ≤ #(nthRoots n (f g₀)).toFinset := card_le_card_of_injOn f (by aesop) hf.injOn
+    _ ≤ #(nthRoots n (f g₀)).toFinset :=
+      card_le_card_of_injOn f (by aesop (add safe unfold Set.MapsTo)) hf.injOn
     _ ≤ _ := (nthRoots n (f g₀)).toFinset_card_le
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/
@@ -132,7 +132,7 @@ theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
 `Finite Rˣ` rather than deducing it from `Finite R`. -/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
-  isCyclic_of_subgroup_isDomain (Units.coeHom R) <| Units.ext
+  isCyclic_of_subgroup_isDomain (Units.coeHom R) Units.val_injective
 
 section
 
@@ -143,7 +143,7 @@ instance subgroup_units_cyclic : IsCyclic S := by
   -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
   · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  · exact Units.ext.comp Subtype.val_injective
+  · exact Units.val_injective.comp Subtype.val_injective
 
 end
 
@@ -151,7 +151,7 @@ section EuclideanDivision
 
 namespace Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type*) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
@@ -221,7 +221,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
                by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
-            (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
+            (by simp only [imp_true_iff, Subgroup.coe_pow,
                 Units.val_pow_eq_pow_val])
       _ = 0 := ?_
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
@@ -234,7 +234,7 @@ unless the homomorphism is trivial, in which case the sum is equal to the cardin
 theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
-  · simp [h, card_univ]
+  · simp [h]
   · rw [cast_zero] -- Porting note: added
     exact sum_hom_units_eq_zero f h
 

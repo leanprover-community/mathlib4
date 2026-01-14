@@ -37,9 +37,6 @@ see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 binomial coefficient, combination, multicombination, stars and bars
 -/
 
-
-open Nat
-
 namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
@@ -117,6 +114,12 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
 
+theorem choose_ne_zero_iff {n k : ℕ} : n.choose k ≠ 0 ↔ k ≤ n :=
+  not_iff_not.1 <| by simp [choose_eq_zero_iff]
+
+lemma choose_ne_zero {n k : ℕ} (h : k ≤ n) : n.choose k ≠ 0 :=
+  (choose_pos h).ne'
+
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]
@@ -142,7 +145,7 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
       rw [choose_succ_succ, Nat.add_mul, Nat.add_mul, succ_sub_succ, h, h₁, h₂, Nat.add_mul,
         Nat.mul_sub_right_distrib, factorial_succ, ← Nat.add_sub_assoc h₃, Nat.add_assoc,
         ← Nat.add_mul, Nat.add_sub_cancel_left, Nat.add_comm]
-    · rw [hk₁]; simp [hk₁, Nat.mul_comm, choose, Nat.sub_self]
+    · rw [hk₁]; simp [Nat.mul_comm, choose, Nat.sub_self]
 
 theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     n.choose k * k.choose s = n.choose s * (n - s).choose (k - s) :=
@@ -233,8 +236,8 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
   cases n
   · cases k
     · rw [ascFactorial_zero, choose_zero_right, factorial_zero, Nat.mul_one]
-    · simp only [zero_ascFactorial, zero_eq, Nat.zero_add, succ_sub_succ_eq_sub,
-        Nat.le_zero_eq, Nat.sub_zero, choose_succ_self, Nat.mul_zero]
+    · simp only [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
+        Nat.sub_zero, choose_succ_self, Nat.mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]
   simp only [succ_add_sub_one]
 
@@ -298,10 +301,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
-        ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
-      exact le_of_lt h
+      omega
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 

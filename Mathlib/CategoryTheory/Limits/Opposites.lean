@@ -237,8 +237,6 @@ def isLimitOfCoconeOfConeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop}
     (hc : IsColimit (coconeOfConeUnop c)) : IsLimit c :=
   isLimitConeUnopOfCocone F hc
 
-@[deprecated (since := "2024-11-01")] alias isColimitConeOfCoconeUnop := isColimitCoconeOfConeUnop
-
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a colimit, we can construct a limit for `F : J ⥤ Cᵒᵖ`.
 -/
 theorem hasLimit_of_hasColimit_leftOp (F : J ⥤ Cᵒᵖ) [HasColimit F.leftOp] : HasLimit F :=
@@ -598,6 +596,17 @@ def opCoproductIsoProduct :
 
 end
 
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct'_hom_comp_proj {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (i : α) :
+    (opCoproductIsoProduct' hc hf).hom ≫ f.proj i = (c.inj i).op := by
+  simp [opCoproductIsoProduct', Fan.proj]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comp_π [HasCoproduct Z] (i : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ i = (Sigma.ι _ i).op :=
+  Limits.opCoproductIsoProduct'_hom_comp_proj ..
+
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (hc : IsColimit c) (hf : IsLimit f) (b : α) :
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
@@ -745,7 +754,7 @@ variable {A B : C} [HasBinaryProduct A B]
 
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
-  show HasCoproduct _
+  change HasCoproduct _
   convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
@@ -760,7 +769,7 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom_inv_id := by
     apply Quiver.Hom.unop_inj
     ext <;>
-    · simp only [limit.lift_π]
+    · simp only
       apply Quiver.Hom.op_inj
       simp
   inv_hom_id := by
@@ -834,7 +843,7 @@ instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
 def spanOp {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     span f.op g.op ≅ walkingCospanOpEquiv.inverse ⋙ (cospan f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Cospan f g).op` and `Span f.op g.op` -/
 @[simps!]
@@ -853,7 +862,7 @@ def opCospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
 def cospanOp {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     cospan f.op g.op ≅ walkingSpanOpEquiv.inverse ⋙ (span f g).op :=
   NatIso.ofComponents (by rintro (_ | _ | _) <;> rfl)
-    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> aesop_cat)
+    (by rintro (_ | _ | _) (_ | _ | _) f <;> cases f <;> cat_disch)
 
 /-- The canonical isomorphism relating `(Span f g).op` and `Cospan f.op g.op` -/
 @[simps!]
@@ -1037,7 +1046,7 @@ end Pullback
 section Pushout
 
 /-- The pushout of `f` and `g` in `C` is isomorphic to the pullback of
- `f.op` and `g.op` in `Cᵒᵖ`. -/
+`f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g]
     [HasPullback f.op g.op] : pushout f g ≅ unop (pullback f.op g.op) :=
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)

@@ -188,8 +188,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         inferInstance inferInstance inferInstance
     convert this using 7
     apply pullback.hom_ext <;>
-      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
-        Scheme.Cover.pullbackHom]
+      simp [𝓤, Scheme.Cover.pullbackHom]
 
 end SurjectiveOnStalks
 

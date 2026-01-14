@@ -140,7 +140,11 @@ theorem setLAverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻
 
 @[deprecated (since := "2025-04-22")] alias setLaverage_congr := setLAverage_congr
 
-theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
+theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
+    ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
+  simp only [laverage_eq, setLIntegral_congr_fun_ae hs h]
+
+theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
   simp only [laverage_eq, setLIntegral_congr_fun hs h]
 
@@ -167,7 +171,6 @@ theorem laverage_add_measure :
   by_cases hν : IsFiniteMeasure ν; swap
   · rw [not_isFiniteMeasure_iff] at hν
     simp [laverage_eq, hν]
-  haveI := hμ; haveI := hν
   simp only [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
     ← lintegral_add_measure, ← Measure.add_apply, ← laverage_eq]
 
@@ -354,7 +357,7 @@ theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeas
       (μ.real univ / (μ.real univ + ν.real univ)) • ⨍ x, f x ∂μ +
         (ν.real univ / (μ.real univ + ν.real univ)) • ⨍ x, f x ∂ν := by
   simp only [div_eq_inv_mul, mul_smul, measure_smul_average, ← smul_add,
-    ← integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
+    ← integral_add_measure hμ hν]
   rw [average_eq, measureReal_add_apply]
 
 theorem average_pair [CompleteSpace E]

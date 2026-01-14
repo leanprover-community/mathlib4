@@ -122,8 +122,8 @@ theorem diam_closedBall {r : ℝ≥0∞} : diam (closedBall x r) ≤ 2 * r :=
 theorem diam_ball {r : ℝ≥0∞} : diam (ball x r) ≤ 2 * r :=
   le_trans (diam_mono ball_subset_closedBall) diam_closedBall
 
-theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
-    {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
+theorem diam_pi_le_of_le {X : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (X b)]
+    {s : ∀ b : β, Set (X b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
   refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
   rw [mem_univ_pi] at hx hy
   exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
@@ -140,7 +140,7 @@ theorem diam_pos_iff : 0 < diam s ↔ s.Nontrivial := by
   simp only [pos_iff_ne_zero, Ne, diam_eq_zero_iff, Set.not_subsingleton_iff]
 
 theorem diam_pos_iff' : 0 < diam s ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y := by
-  simp only [diam_pos_iff, Set.Nontrivial, exists_prop]
+  simp only [diam_pos_iff, Set.Nontrivial]
 
 end
 

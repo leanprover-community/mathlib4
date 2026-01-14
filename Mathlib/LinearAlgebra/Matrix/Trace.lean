@@ -41,7 +41,7 @@ variable [AddCommMonoid R]
 def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 
-lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+@[simp] lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
     trace (diagonal d) = ∑ i, d i := by
   simp only [trace, diag_apply, diagonal_apply_eq]
 
@@ -126,11 +126,11 @@ variable [AddCommGroup R]
 
 @[simp]
 theorem trace_sub (A B : Matrix n n R) : trace (A - B) = trace A - trace B :=
-  Finset.sum_sub_distrib
+  Finset.sum_sub_distrib ..
 
 @[simp]
 theorem trace_neg (A : Matrix n n R) : trace (-A) = -trace A :=
-  Finset.sum_neg_distrib
+  Finset.sum_neg_distrib ..
 
 end AddCommGroup
 

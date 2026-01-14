@@ -69,12 +69,20 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     _ = (v <| x - y) * (v y * v y)⁻¹ := by rw [Valuation.map_sub_swap]
     _ < γ := hyp1'
 
+theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
+    (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
+  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
+  let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
+  calc
+    v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
+    _ = v s := div_mul_cancel₀ _ (by simpa)
+
 end InversionEstimate
 
 open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
-    [BouAC, VI.5.1 middle of Proposition 1] -/
+[BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
@@ -162,7 +170,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
         exact subset_preimage_image _ _
       · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
-        simp only [mem_setOf_eq]
+        simp only
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
         clear H₀
@@ -184,6 +192,19 @@ instance (priority := 100) completable : CompletableTopField K :=
           exact mul_le_mul_left' this γ }
 
 open WithZeroTopology
+
+lemma valuation_isClosedMap : IsClosedMap (v : K → Γ₀) := by
+  refine IsClosedMap.of_nonempty ?_
+  intro U hU hU'
+  simp only [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_nhds, subset_compl_comm,
+    compl_setOf, not_lt] at hU
+  simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
+  refine (em _).imp_right fun h ↦ ?_
+  obtain ⟨γ, h⟩ := hU _ h
+  simp only [sub_zero] at h
+  refine ⟨γ, γ.ne_zero, h.trans ?_⟩
+  intro
+  simp
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
@@ -302,6 +323,28 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       rw [← le_max_iff]
       exact v.map_add x y
 
+@[simp]
+lemma extensionValuation_apply_coe (x : K) :
+    Valued.extensionValuation (x : hat K) = v x :=
+  extension_extends x
+
+@[simp]
+lemma extension_eq_zero_iff {x : hat K} :
+    extension x = 0 ↔ x = 0 := by
+  suffices extensionValuation x = 0 ↔ x = 0 from this
+  simp
+
+lemma continuous_extensionValuation : Continuous (Valued.extensionValuation : hat K → Γ₀) :=
+  continuous_extension
+
+lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
+  rcases eq_or_ne x 0 with (rfl | h)
+  · use 0
+    exact extensionValuation_apply_coe 0
+  · refine Completion.denseRange_coe.induction_on x ?_ (by simp)
+    simpa [eq_comm] using
+      valuation_isClosedMap.isClosed_range.preimage continuous_extensionValuation
+
 -- Bourbaki CA VI §5 no.3 Proposition 5 (d)
 theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     closure ((↑) '' { x : K | v x < (γ : Γ₀) }) =
@@ -310,7 +353,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
-    · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
+    · simp only [(Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true]
       apply subset_closure
       exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
@@ -329,6 +372,13 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 
+theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0) :
+    closure ((↑) '' { x : K | v x * v r < v s }) =
+    { x : hat K | extensionValuation x * v r < v s } := by
+  have hrs : v s / v r ≠ 0 := by simp [hr, hs]
+  convert closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
+  all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
+
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
@@ -342,6 +392,11 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
+    [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
+  rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
+  exact (FaithfulSMul.algebraMap_injective K (hat K)).comp (FaithfulSMul.algebraMap_injective R K)
 
 end Valued
 

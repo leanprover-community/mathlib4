@@ -39,7 +39,7 @@ theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
   calc 16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 2 * (x + y) ^ 2 := by gcongr; linarith
     _ = ((x + y) ^ 2) ^ 3 := by ring
 
-theorem four_pow_four_pos : (0 : ℝ) < 4 ^ 4 := by norm_num
+theorem four_pow_four_pos : (0 : ℝ) < 4 ^ 4 := by simp
 
 theorem mid_ineq {s t : ℝ} : s * t ^ 3 ≤ (3 * t + s) ^ 4 / 4 ^ 4 := by
   rw [le_div_iff₀ four_pow_four_pos]
@@ -51,7 +51,7 @@ theorem rhs_ineq {x y : ℝ} : 3 * (x + y) ^ 2 ≤ 2 * (x ^ 2 + y ^ 2 + (x + y) 
   have : 0 ≤ (x - y) ^ 2 := by positivity
   linarith
 
-theorem zero_lt_32 : (0 : ℝ) < 32 := by norm_num
+theorem zero_lt_32 : (0 : ℝ) < 32 := by simp
 
 theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
     32 * |x * y * z * s| ≤ sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
@@ -98,7 +98,7 @@ theorem proof₂ (M : ℝ)
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
     9 * sqrt 2 / 32 ≤ M := by
   set α := sqrt (2:ℝ)
-  have hα : α ^ 2 = 2 := sq_sqrt (by norm_num)
+  have hα : α ^ 2 = 2 := sq_sqrt (by simp)
   let a := 2 - 3 * α
   let c := 2 + 3 * α
   calc _ = 18 ^ 2 * 2 * α / 48 ^ 2 := by ring

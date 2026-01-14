@@ -1,6 +1,12 @@
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled, unlabeled]
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read # minimum permissions for actions/checkout & actions/setup-python
+  # All other permissions are implicitly 'none'
+
 jobs:
   # When a PR is (un)labelled with awaiting-author or maintainer-merge,
   # add resp. remove the matching emoji reaction from zulip messages.
@@ -12,6 +18,7 @@ jobs:
     - name: Checkout mathlib repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+          ref: master
           sparse-checkout: |
             scripts/zulip_emoji_reactions.py
 
@@ -33,6 +40,7 @@ jobs:
         PR_NUMBER: ${{ github.event.number}}
         LABEL_STATUS: ${{ github.event.action }}
         LABEL_NAME: ${{ github.event.label.name }}
+        PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
       run: |
-        printf $'Running the python script with pr "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL"
-        python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER"
+        printf $'Running the python script with:\nPR number: "%s"\nlabel status: "%s"\nlabel: "%s"\nPR labels: "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL" "$PR_LABELS"
+        python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"

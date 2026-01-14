@@ -169,7 +169,7 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
   funext fun j => by
     refine j.cases' (by simp [insert, insertPerm]) fun j => ?_
     simp only [insert, insertPerm, succ_eq_add_one, cons_fs]
-    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
+    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
     (e : (n + 1) + m = (n + m) + 1) :

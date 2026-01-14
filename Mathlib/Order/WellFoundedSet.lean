@@ -236,7 +236,7 @@ variable [Preorder α] {s t : Set α} {a : α}
 theorem isWF_iff_no_descending_seq :
     IsWF s ↔ ∀ f : ℕ → α, StrictAnti f → ¬∀ n, f n ∈ s :=
   wellFoundedOn_iff_no_descending_seq.trans
-    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_lt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
+    ⟨fun H f hf => H ⟨⟨f, hf.injective⟩, hf.lt_iff_gt⟩, fun H f => H f fun _ _ => f.map_rel_iff.2⟩
 
 end Preorder
 
@@ -453,6 +453,28 @@ theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
 
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
+
+theorem IsPWO.exists_le_minimal {a} (hs : s.IsPWO) (ha : a ∈ s) :
+    ∃ b ≤ a, Minimal (· ∈ s) b := by
+  let t : Set s := {x | x ≤ a}
+  let h : t.Nonempty := ⟨⟨a, ha⟩, le_rfl⟩
+  refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
+    (hs.wellFounded.min t h).2, fun y hy hle => ?_⟩
+  by_contra hnle
+  exact hs.wellFounded.not_lt_min t h (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
+    ⟨hle, hnle⟩
+
+theorem IsPWO.exists_minimal (h : s.IsPWO) (hs : s.Nonempty) :
+    ∃ a, Minimal (· ∈ s) a := by
+  rcases hs with ⟨a, ha⟩
+  obtain ⟨b, _, hb⟩ := h.exists_le_minimal ha
+  exact ⟨b, hb⟩
+
+theorem IsPWO.exists_minimalFor (f : ι → α) (s : Set ι) (h : (f '' s).IsPWO) (hs : s.Nonempty) :
+    ∃ i, MinimalFor (· ∈ s) f i := by
+  obtain ⟨_, h⟩ := h.exists_minimal (hs.image _)
+  obtain ⟨a, ha, rfl⟩ := h.1
+  exact ⟨a, ha, fun b hb => h.2 (mem_image_of_mem _ hb)⟩
 
 end IsPWO
 
@@ -876,7 +898,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.notMem_empty]
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
@@ -933,7 +955,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
+  change WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
   exact
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
       fun i => ((hπ i).onFun (f := fun x => ⟨x, x.1.2, x.2⟩)).mono (fun b c h => ‹_›)

@@ -41,11 +41,11 @@ of Patrick Massot.
 -/
 
 
-variable (R : Type) [CommRing R] [IsDomain R]
+variable (R : Type*) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
+variable (K : Type*) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
 
@@ -124,8 +124,6 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     ring
   congr 2
   refine Finset.sum_congr rfl fun x hxb => ?_
-  rw [if_neg]
-  rintro rfl
-  exact hab hxb
+  grind
 
 end NDenominators

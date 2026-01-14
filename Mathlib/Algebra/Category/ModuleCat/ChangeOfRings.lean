@@ -6,9 +6,10 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings
@@ -57,7 +58,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
-    `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
+`r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
 def obj' : ModuleCat R :=
   let _ := Module.compHom M f
   of R M
@@ -121,7 +122,7 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
     haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.of S M)).isModule.toSMul
     SMulCommClass R S M :=
   @SMulCommClass.mk R S M (_) _
-   fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
+    fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 
 /-- Semilinear maps `M →ₛₗ[f] N` identify to
 morphisms `M ⟶ (ModuleCat.restrictScalars f).obj N`. -/
@@ -139,15 +140,13 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.hom.map_smul }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 section
 
 variable {R : Type u₁} [Ring R] (f : R →+* R)
 
-/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphisms identifies
+/-- For a `R`-module `M`, the restriction of scalars of `M` by the identity morphism identifies
 to `M`. -/
 def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
     (restrictScalars f).obj M ≅ M :=
@@ -165,7 +164,7 @@ variable (hf : f = RingHom.id R)
     (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
-/-- The restriction of scalars by a ring morphism that is the identity identify to the
+/-- The restriction of scalars by a ring morphism that is the identity identifies to the
 identity functor. -/
 @[simps! hom_app inv_app]
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ :=
@@ -185,7 +184,7 @@ lemma restrictScalarsId'App_inv_naturality {M N : ModuleCat R} (φ : M ⟶ N) :
 
 variable (R)
 
-/-- The restriction of scalars by the identity morphisms identify to the
+/-- The restriction of scalars by the identity morphism identifies to the
 identity functor. -/
 abbrev restrictScalarsId := restrictScalarsId'.{v} (RingHom.id R) rfl
 
@@ -216,7 +215,7 @@ variable (hgf : gf = g.comp f)
     (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 
-/-- The restriction of scalars by a composition of ring morphisms identify to the
+/-- The restriction of scalars by a composition of ring morphisms identifies to the
 composition of the restriction of scalars functors. -/
 @[simps! hom_app inv_app]
 def restrictScalarsComp' :
@@ -238,7 +237,7 @@ lemma restrictScalarsComp'App_inv_naturality {M N : ModuleCat R₃} (φ : M ⟶ 
       (restrictScalarsComp'App f g gf hgf M).inv ≫ (restrictScalars gf).map φ :=
   (restrictScalarsComp' f g gf hgf).inv.naturality φ
 
-/-- The restriction of scalars by a composition of ring morphisms identify to the
+/-- The restriction of scalars by a composition of ring morphisms identifies to the
 composition of the restriction of scalars functors. -/
 abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
@@ -292,9 +291,9 @@ section ModuleCat.Unbundled
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
-scoped[ChangeOfRings]
-  notation s "⊗ₜ[" R "," f "]" m => @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
+-- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
+scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
+  @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
 end Unbundled
 
@@ -304,7 +303,7 @@ namespace ExtendScalars
 
 variable (M : ModuleCat.{v} R)
 
-/-- Extension of scalars turn an `R`-module into `S`-module by M ↦ S ⨂ M
+/-- Extension of scalars turns an `R`-module into an `S`-module by M ↦ S ⨂ M
 -/
 def obj' : ModuleCat S :=
   of _ (TensorProduct R ((restrictScalars f).obj (of _ S)) M)
@@ -346,12 +345,12 @@ variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 
 @[simp]
 protected theorem smul_tmul {M : ModuleCat.{v} R} (s s' : S) (m : M) :
-    s • (s'⊗ₜ[R,f]m : (extendScalars f).obj M) = (s * s')⊗ₜ[R,f]m :=
+    s • (s' ⊗ₜ[R,f] m : (extendScalars f).obj M) = (s * s') ⊗ₜ[R,f] m :=
   rfl
 
 @[simp]
 theorem map_tmul {M M' : ModuleCat.{v} R} (g : M ⟶ M') (s : S) (m : M) :
-    (extendScalars f).map g (s⊗ₜ[R,f]m) = s⊗ₜ[R,f]g m :=
+    (extendScalars f).map g (s ⊗ₜ[R,f] m) = s ⊗ₜ[R,f] g m :=
   rfl
 
 variable {f}
@@ -634,7 +633,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (Y := (restrictScalars f).obj Y)
-  { toFun := fun x => g <| (1 : S)⊗ₜ[R,f]x
+  { toFun := fun x => g <| (1 : S) ⊗ₜ[R,f] x
     map_add' := fun _ _ => by dsimp; rw [tmul_add, map_add]
     map_smul' := fun r s => by
       letI : Module R S := Module.compHom S f
@@ -735,7 +734,7 @@ def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (Y := (extendScalars f ⋙ restrictScalars f).obj X)
-  { toFun := fun x => (1 : S)⊗ₜ[R,f]x
+  { toFun := fun x => (1 : S) ⊗ₜ[R,f] x
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
       letI m1 : Module R S := Module.compHom S f
@@ -837,13 +836,13 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 lemma extendRestrictScalarsAdj_homEquiv_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
-    (φ : (extendScalars f).obj M ⟶ N) (m : M):
+    (φ : (extendScalars f).obj M ⟶ N) (m : M) :
     (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
   rfl
 
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
-    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
+    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
@@ -881,7 +880,7 @@ noncomputable def extendScalarsId : extendScalars (RingHom.id R) ≅ 𝟭 _ :=
   ((conjugateIsoEquiv (extendRestrictScalarsAdj (RingHom.id R)) Adjunction.id).symm
     (restrictScalarsId R)).symm
 
-lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M):
+lemma extendScalarsId_inv_app_apply (M : ModuleCat R) (m : M) :
     (extendScalarsId R).inv.app M m = (1 : R) ⊗ₜ m := rfl
 
 lemma homEquiv_extendScalarsId (M : ModuleCat R) :
@@ -903,7 +902,7 @@ variable {R₁ R₂ R₃ R₄ : Type u₁} [CommRing R₁] [CommRing R₂] [Comm
   (f₁₂ : R₁ →+* R₂) (f₂₃ : R₂ →+* R₃) (f₃₄ : R₃ →+* R₄)
 
 /-- The extension of scalars by a composition of commutative ring morphisms
-identify to the composition of the extension of scalars functors. -/
+identifies to the composition of the extension of scalars functors. -/
 noncomputable def extendScalarsComp :
     extendScalars (f₂₃.comp f₁₂) ≅ extendScalars f₁₂ ⋙ extendScalars f₂₃ :=
   (conjugateIsoEquiv
@@ -931,9 +930,11 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
 
 @[reassoc]
 lemma extendScalars_assoc :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
-      (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
-        (Functor.associator _ _ _).inv := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ =
+        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
+            (Functor.associator _ _ _).inv := by
   ext M m
   have h₁ := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
   have h₂ := extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m
@@ -948,16 +949,18 @@ lemma extendScalars_assoc :
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
 in the file `Algebra.Category.ModuleCat.Pseudofunctor` -/
 lemma extendScalars_assoc' :
-    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫ whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
-      (Functor.associator _ _ _).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
-        (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
+    (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
+      Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫
+        (Functor.associator _ _ _).hom ≫
+          Functor.whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).inv ≫
+            (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).inv = 𝟙 _ := by
   rw [extendScalars_assoc_assoc]
-  simp only [Iso.inv_hom_id_assoc, ← whiskerLeft_comp_assoc, Iso.hom_inv_id,
-    whiskerLeft_id', Category.id_comp]
+  simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
+    Functor.whiskerLeft_id', Category.id_comp]
 
 @[reassoc]
 lemma extendScalars_id_comp :
-    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ whiskerRight (extendScalarsId R₁).hom _ ≫
+    (extendScalarsComp (RingHom.id R₁) f₁₂).hom ≫ Functor.whiskerRight (extendScalarsId R₁).hom _ ≫
       (Functor.leftUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp
@@ -968,7 +971,7 @@ lemma extendScalars_id_comp :
 
 @[reassoc]
 lemma extendScalars_comp_id :
-    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ whiskerLeft _ (extendScalarsId R₂).hom ≫
+    (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ Functor.whiskerLeft _ (extendScalarsId R₂).hom ≫
       (Functor.rightUnitor _).hom = 𝟙 _ := by
   ext M m
   dsimp

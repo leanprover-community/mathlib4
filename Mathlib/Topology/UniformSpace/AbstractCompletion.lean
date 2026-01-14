@@ -48,13 +48,12 @@ noncomputable section
 
 open Filter Set Function
 
-universe u
-
-/-- A completion of `α` is the data of a complete separated uniform space (from the same universe)
+/-- A completion of `α` is the data of a complete separated uniform space
 and a map from `α` with dense range and inducing the original uniform structure on `α`. -/
-structure AbstractCompletion (α : Type u) [UniformSpace α] where
+@[pp_with_univ]
+structure AbstractCompletion.{v, u} (α : Type u) [UniformSpace α] where
   /-- The underlying space of the completion. -/
-  space : Type u
+  space : Type v
   /-- A map from a space to its completion. -/
   coe : α → space
   /-- The completion carries a uniform structure. -/
@@ -73,7 +72,9 @@ attribute [local instance]
 
 namespace AbstractCompletion
 
-variable {α : Type*} [UniformSpace α] (pkg : AbstractCompletion α)
+universe uα vα vα' uβ vβ uγ vγ
+
+variable {α : Type uα} [UniformSpace α] (pkg : AbstractCompletion.{vα} α)
 
 local notation "hatα" => pkg.space
 
@@ -100,7 +101,7 @@ theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }
     p a :=
   isClosed_property pkg.dense hp ih a
 
-variable {β : Type*}
+variable {β : Type uβ}
 
 protected theorem funext [TopologicalSpace β] [T2Space β] {f g : hatα → β} (hf : Continuous f)
     (hg : Continuous g) (h : ∀ a, f (ι a) = g (ι a)) : f = g :=
@@ -154,7 +155,7 @@ end Extend
 
 section MapSec
 
-variable (pkg' : AbstractCompletion β)
+variable (pkg' : AbstractCompletion.{vβ} β)
 
 local notation "hatβ" => pkg'.space
 
@@ -193,7 +194,7 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
 theorem map_id : pkg.map pkg id = id :=
   pkg.map_unique pkg uniformContinuous_id fun _ => rfl
 
-variable {γ : Type*} [UniformSpace γ]
+variable {γ : Type uγ} [UniformSpace γ]
 
 theorem extend_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
@@ -203,7 +204,7 @@ theorem extend_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α → �
     rw [pkg.extend_coe (hf.comp hg), comp_apply, pkg.map_coe pkg' hg, pkg'.extend_coe hf]
     rfl
 
-variable (pkg'' : AbstractCompletion γ)
+variable (pkg'' : AbstractCompletion.{vγ} γ)
 
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     pkg'.map pkg'' g ∘ pkg.map pkg' f = pkg.map pkg'' (g ∘ f) :=
@@ -214,7 +215,7 @@ end MapSec
 section Compare
 
 -- We can now compare two completion packages for the same uniform space
-variable (pkg' : AbstractCompletion α)
+variable (pkg' : AbstractCompletion.{vα'} α)
 
 /-- The comparison map between two completions of the same uniform space. -/
 def compare : pkg.space → pkg'.space :=
@@ -270,7 +271,7 @@ the statement of `compare_comp_eq_compare` is the commutativity of the right tri
  α ---f---> γ
 ```
 -/
-theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
+theorem compare_comp_eq_compare (γ : Type uγ) [TopologicalSpace γ]
     [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
     letI := pkg.uniformStruct.toTopologicalSpace
     letI := pkg'.uniformStruct.toTopologicalSpace
@@ -281,7 +282,7 @@ theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
   let _ := pkg.uniformStruct
   intro h
   have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
-    simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f, implies_true]
+    simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f]
   apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
   apply IsDenseInducing.continuous_extend
@@ -291,7 +292,7 @@ end Compare
 
 section Prod
 
-variable (pkg' : AbstractCompletion β)
+variable (pkg' : AbstractCompletion.{vβ} β)
 
 local notation "hatβ" => pkg'.space
 
@@ -311,13 +312,13 @@ end Prod
 
 section Extension₂
 
-variable (pkg' : AbstractCompletion β)
+variable (pkg' : AbstractCompletion.{vβ} β)
 
 local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type*} [UniformSpace γ]
+variable {γ : Type uγ} [UniformSpace γ]
 
 open Function
 
@@ -353,7 +354,7 @@ local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type*} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
+variable {γ : Type uγ} [UniformSpace γ] (pkg'' : AbstractCompletion.{vγ} γ)
 
 local notation "hatγ" => pkg''.space
 

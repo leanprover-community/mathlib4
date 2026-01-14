@@ -112,9 +112,6 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
     exact totallySeparatedSpace_of_t1_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
   apply TotallySeparatedSpace.totallyDisconnectedSpace
 
-@[deprecated (since := "2024-12-18")] alias compact_t2_tot_disc_iff_tot_sep :=
-  loc_compact_t2_tot_disc_iff_tot_sep
-
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
 instance (priority := 100) [TotallyDisconnectedSpace H] : TotallySeparatedSpace H :=
   loc_compact_t2_tot_disc_iff_tot_sep.mp inferInstance

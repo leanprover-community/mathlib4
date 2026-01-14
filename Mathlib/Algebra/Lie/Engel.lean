@@ -87,8 +87,8 @@ theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y =
 theorem lie_top_eq_of_span_sup_eq_top (N : LieSubmodule R L M) :
     (↑⁅(⊤ : LieIdeal R L), N⁆ : Submodule R M) =
       (N : Submodule R M).map (toEnd R L M x) ⊔ (↑⁅I, N⁆ : Submodule R M) := by
-  simp only [lieIdeal_oper_eq_linear_span', Submodule.sup_span, mem_top, exists_prop,
-    true_and, Submodule.map_coe, toEnd_apply_apply]
+  simp only [lieIdeal_oper_eq_linear_span', Submodule.sup_span, mem_top, true_and,
+    Submodule.map_coe, toEnd_apply_apply]
   refine le_antisymm (Submodule.span_le.mpr ?_) (Submodule.span_mono fun z hz => ?_)
   · rintro z ⟨y, n, hn : n ∈ N, rfl⟩
     obtain ⟨t, z, hz, rfl⟩ := exists_smul_add_of_span_sup_eq_top hxI y
@@ -252,14 +252,10 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' := by
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
-    simp only [LieHom.range_toSubmodule, LieHom.coe_toLinearMap,
-      LinearMap.range_eq_top]
+    simp only [LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
-  have hK₃ : K = ⊤ := by
-    by_contra contra
-    obtain ⟨K', hK'₁, hK'₂⟩ := this K hK₁ contra
-    exact hK₂ K' hK'₁ hK'₂
+  have hK₃ : K = ⊤ := by grind
   exact hK₃ ▸ hK₁
 
 /-- Engel's theorem.

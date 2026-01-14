@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Invertibility of factorials
@@ -65,5 +66,33 @@ theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p :=
       fun h ↦ ⟨not_dvd_of_pos_of_lt (Nat.succ_pos _) h, h.le⟩⟩
 
 end CharP
+
+section Nilpotent
+
+variable {A : Type*} [CommRing A] {n p : ℕ} (hp : IsNilpotent (p : A))
+include hp
+
+lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
+    IsUnit (n : A) := by
+  obtain ⟨m, hm⟩ := hp
+  suffices ∃ a b : A, p ^ m * a + n * b = 1 by
+    obtain ⟨a, b, h⟩ := this
+    apply isUnit_of_mul_eq_one (n : A) b
+    simpa [hm] using h
+  refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
+  norm_cast
+  rw [← Nat.cast_one, ← Int.cast_natCast 1, ← (h.pow_left m).gcd_eq_one, Nat.gcd_eq_gcd_ab]
+
+theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :
+    IsUnit (n ! : A) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
+    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by omega)⟩
+    rw [Nat.Prime.coprime_iff_not_dvd Fact.out]
+    exact Nat.not_dvd_of_pos_of_lt (by omega) h
+
+end Nilpotent
 
 end IsUnit

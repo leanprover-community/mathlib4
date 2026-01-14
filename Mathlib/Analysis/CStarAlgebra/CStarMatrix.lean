@@ -399,8 +399,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
   { reindexₗ R A e e with
     map_mul' M N := by
       ext i j
-      simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, LinearEquiv.coe_mk,
-        Matrix.reindex_apply, Matrix.submatrix_apply, mul_apply]
+      simp only [mul_apply]
       refine Fintype.sum_equiv e _ _ ?_
       intro k
       simp
@@ -523,10 +522,10 @@ open WithCStarModule in
 lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) = (equiv _ _).symm (fun j => a * M i j) := by
   ext
-  simp [toCLM_apply, EmbeddingLike.apply_eq_iff_eq, equiv, Equiv.refl]
+  simp [toCLM_apply, equiv, Equiv.refl]
 
 open WithCStarModule in
-lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j : n} (a : A) :
+lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
 open WithCStarModule in
@@ -633,7 +632,7 @@ private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
 which induces a topology that is not defeq with the matrix one, and the elementwise norm on
 matrices, in order to show that the two topologies are in fact equal -/
-attribute [local instance] normedSpaceAux Matrix.normedAddCommGroup Matrix.normedSpace
+open scoped Matrix.Norms.Elementwise
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
@@ -655,7 +654,7 @@ private lemma antilipschitzWith_toMatrixAux :
     ‖M‖ ≤ ∑ j, ∑ i, ‖M i j‖ := by
       rw [norm_def]
       refine (toCLM M).opNorm_le_bound (by positivity) fun v => ?_
-      simp only [toCLM_apply_eq_sum, equiv_symm_pi_apply, Finset.sum_mul]
+      simp only [toCLM_apply_eq_sum, Finset.sum_mul]
       apply pi_norm_le_sum_norm _ |>.trans
       gcongr with i _
       apply norm_sum_le _ _ |>.trans
@@ -759,8 +758,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
           _ = ‖M * star M‖ * ‖v‖ ^ 2 := by
                     congr
                     apply MulOpposite.op_injective
-                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM, Matrix.star_eq_conjTranspose,
-                      map_mul]
+                    simp only [← toCLMNonUnitalAlgHom_eq_toCLM, map_mul]
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]
@@ -769,13 +767,11 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 /-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
 noncomputable instance instNonUnitalCStarAlgebra :
     NonUnitalCStarAlgebra (CStarMatrix n n A) where
   smul_assoc x y z := by simp
   smul_comm m a b := (Matrix.mul_smul _ _ _).symm
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance instPartialOrder :
     PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
@@ -797,10 +793,8 @@ noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end unital
 

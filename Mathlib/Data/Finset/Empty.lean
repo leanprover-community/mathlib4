@@ -59,7 +59,7 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
 
-theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
+@[gcongr] theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
 
 theorem Nonempty.forall_const {s : Finset α} (h : s.Nonempty) {p : Prop} : (∀ x ∈ s, p) ↔ p :=
@@ -92,7 +92,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
 theorem empty_val : (∅ : Finset α).1 = 0 :=
   rfl
 
-@[simp]
+@[simp, grind]
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, notMem_zero, not_false_iff]
 
@@ -120,8 +120,7 @@ theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅
 
 @[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
 
-theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s :=
-  ⟨by rintro rfl x; apply notMem_empty, fun h => eq_empty_of_forall_notMem h⟩
+theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
 
 @[deprecated (since := "2025-05-23")]
 alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
@@ -133,9 +132,7 @@ theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
 @[simp] lemma subset_empty : s ⊆ ∅ ↔ s = ∅ := subset_zero.trans val_eq_zero
 
 @[simp]
-theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := fun h =>
-  let ⟨_, he, _⟩ := exists_of_ssubset h
-  notMem_empty _ he
+theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := by grind
 
 theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
   exists_mem_of_ne_zero (mt val_eq_zero.1 h)
@@ -151,11 +148,10 @@ theorem eq_empty_or_nonempty (s : Finset α) : s = ∅ ∨ s.Nonempty :=
   by_cases Or.inl fun h => Or.inr (nonempty_of_ne_empty h)
 
 @[simp, norm_cast]
-theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ :=
-  Set.ext <| by simp
+theorem coe_empty : ((∅ : Finset α) : Set α) = ∅ := by grind
 
 @[simp, norm_cast]
-theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by rw [← coe_empty, coe_inj]
+theorem coe_eq_empty {s : Finset α} : (s : Set α) = ∅ ↔ s = ∅ := by grind
 
 @[simp]
 theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := by
@@ -184,10 +180,10 @@ alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
 -- useful rules for calculations with quantifiers
 theorem exists_mem_empty_iff (p : α → Prop) : (∃ x, x ∈ (∅ : Finset α) ∧ p x) ↔ False := by
-  simp only [notMem_empty, false_and, exists_false]
+  grind
 
-theorem forall_mem_empty_iff (p : α → Prop) : (∀ x, x ∈ (∅ : Finset α) → p x) ↔ True :=
-  iff_true_intro fun _ h => False.elim <| notMem_empty _ h
+theorem forall_mem_empty_iff (p : α → Prop) : (∀ x, x ∈ (∅ : Finset α) → p x) ↔ True := by
+  grind
 
 end Empty
 end Finset

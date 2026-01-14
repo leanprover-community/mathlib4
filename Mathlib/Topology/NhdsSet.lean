@@ -99,7 +99,7 @@ nonrec theorem Filter.EventuallyEq.self_of_nhdsSet {Y} {f g : X → Y} (h : f =�
 
 @[simp]
 theorem nhdsSet_eq_principal_iff : 𝓝ˢ s = 𝓟 s ↔ IsOpen s := by
-  rw [← principal_le_nhdsSet.le_iff_eq, le_principal_iff, mem_nhdsSet_iff_forall,
+  rw [← principal_le_nhdsSet.ge_iff_eq', le_principal_iff, mem_nhdsSet_iff_forall,
     isOpen_iff_mem_nhds]
 
 alias ⟨_, IsOpen.nhdsSet_eq⟩ := nhdsSet_eq_principal_iff
@@ -124,7 +124,7 @@ theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet
 
 @[gcongr, mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
-  sSup_le_sSup <| image_subset _ h
+  sSup_le_sSup <| image_mono h
 
 theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set X → Filter X) := fun _ _ => nhdsSet_mono
 

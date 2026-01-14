@@ -98,18 +98,15 @@ set_option quotPrecheck false in
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for `Prefunctor.obj` -/
-@[app_delab Prefunctor.obj]
-def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
+/-- Delaborator for `Functor.obj` -/
+@[app_delab Functor.obj]
+def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
-  guard <| e.isAppOfArity' ``Prefunctor.obj 6
+  guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard <| e.isAppOfArity' ``Functor.toPrefunctor 5
-    withNaryArg 4 do
-      let e ← getExpr
-      guard <| e.isAppOfArity' ``exp 5
-      withNaryArg 3 delab
+    guard <| e.isAppOfArity' ``exp 5
+    withNaryArg 3 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
@@ -242,14 +239,14 @@ theorem uncurry_pre (f : B ⟶ A) [Exponentiable B] (X : C) :
 
 theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
     (exp.coev A).app X ≫ (pre f).app (A ⊗ X) =
-      (exp.coev B).app X ≫ (exp B).map (f ⊗ 𝟙 _) := by
+      (exp.coev B).app X ≫ (exp B).map (f ⊗ₘ 𝟙 _) := by
   rw [tensorHom_id]
   exact unit_conjugateEquiv _ _ ((tensoringLeft _).map f) X
 
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]

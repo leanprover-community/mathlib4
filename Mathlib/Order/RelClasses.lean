@@ -11,7 +11,8 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Mathlib/Order/Defs.lean`.
+In this file we prove some properties of `Is*` classes defined in
+`Mathlib/Order/Defs/Unbundled.lean`.
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
@@ -410,7 +411,7 @@ def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
 
 @[simp]
 theorem not_bounded_iff {r : α → α → Prop} (s : Set α) : ¬Bounded r s ↔ Unbounded r s := by
-  simp only [Bounded, Unbounded, not_forall, not_exists, exists_prop, not_and, not_not]
+  simp only [Bounded, Unbounded, not_forall, not_exists, exists_prop]
 
 @[simp]
 theorem not_unbounded_iff {r : α → α → Prop} (s : Set α) : ¬Unbounded r s ↔ Bounded r s := by
@@ -638,6 +639,24 @@ theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b 
 theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] :
     a ⊆ b ↔ a ⊂ b ∨ a = b :=
   ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
+
+namespace GCongr
+
+variable [IsTrans α (· ⊆ ·)] {a b c d : α}
+
+@[gcongr]
+theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
+  fun h => (h₁.trans_ssubset h).trans_subset h₂
+
+@[gcongr]
+theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
+  ssubset_imp_ssubset h₂ h₁
+
+/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
+@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
+
+end GCongr
 
 end SubsetSsubset
 

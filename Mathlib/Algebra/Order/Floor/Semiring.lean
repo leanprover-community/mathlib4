@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -401,14 +401,16 @@ theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n :=
     · simp
     apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
   obtain rfl | hn := n.eq_zero_or_pos
-  · rw [cast_zero, div_zero, Nat.div_zero, floor_zero]
-  refine (floor_eq_iff ?_).2 ?_
-  · exact div_nonneg ha n.cast_nonneg
-  constructor
-  · exact cast_div_le.trans (div_le_div_of_nonneg_right (floor_le ha) n.cast_nonneg)
-  rw [div_lt_iff₀, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
-  · exact lt_div_mul_add hn
-  · exact cast_pos.2 hn
+  · simp
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [Nat.le_div_iff_mul_le hn, le_floor_iff (by positivity), le_floor_iff ha,
+    le_div_iff₀ (by positivity), cast_mul]
+
+theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
+  simpa [hn] using (floor_div_natCast (n * a) n).symm
+
+theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
+  rw [mul_comm, cast_mul_floor_div_cancel hn]
 
 @[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
 
@@ -428,7 +430,7 @@ variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a 
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
-    b * a < b * (⌊a⌋₊ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    b * a < b * (⌊a⌋₊ + 1) := by gcongr; apply lt_floor_add_one
     _ ≤ ⌊a⌋₊ := by
       rw [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
         ← ceil_le]
@@ -443,7 +445,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
     calc
       ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
       _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ ≤ a + (b - 1) * a := by gcongr
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by

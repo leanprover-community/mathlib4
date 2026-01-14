@@ -113,9 +113,8 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj
-      "An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive
-      version implies the textbook approach."]
+@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
+surjective function, i.e. the constructive version implies the textbook approach. -/]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
@@ -188,7 +187,7 @@ end AddCommGroup
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
-  div_zero q := by norm_num
+  div_zero q := by simp
   div_cancel {n} q hn := by
     rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
 
@@ -199,7 +198,7 @@ variable (A : Type*) [Group A]
 open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
-@[to_additive "An additive group is `ℤ`-divisible if it is `ℕ`-divisible."]
+@[to_additive /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
@@ -214,7 +213,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
-@[to_additive "An additive group is `ℕ`-divisible if it `ℤ`-divisible."]
+@[to_additive /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
@@ -234,8 +233,8 @@ variable (f : A → B)
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
 @[to_additive
-      "If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
-      `α`-divisible."]
+      /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
+      `α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
   rootableByOfPowLeftSurj _ _ fun {n} hn x =>
@@ -255,7 +254,7 @@ section Quotient
 variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
-@[to_additive "Any quotient group of a divisible group is divisible"]
+@[to_additive /-- Any quotient group of a divisible group is divisible -/]
 noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 

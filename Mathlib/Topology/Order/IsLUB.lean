@@ -225,7 +225,7 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
-  apply hx.exists_seq_strictMono_tendsto_of_notMem (by aesop) hnonempty |>.imp
+  apply hx.exists_seq_strictMono_tendsto_of_notMem (by simp) hnonempty |>.imp
   aesop
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
@@ -248,7 +248,7 @@ theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder
 
 theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
     [NoMinOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
-    (x : α):
+    (x : α) :
     ∃ u : ℕ → β, StrictMono u ∧ (∀ n, f (u n) ∈ Iio x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
   rcases Dense.exists_seq_strictMono_tendsto hf x with ⟨u, hu, huxf, hlim⟩
   have hux (n : ℕ) : u n ∈ Iio x := (huxf n).1
@@ -318,7 +318,7 @@ theorem DenseRange.exists_seq_strictAnti_tendsto_of_lt {β : Type*} [LinearOrder
 
 theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
     [NoMaxOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
-    (x : α):
+    (x : α) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
 

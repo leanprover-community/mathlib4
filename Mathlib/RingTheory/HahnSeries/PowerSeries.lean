@@ -61,7 +61,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     simp
   map_mul' f g := by
     ext n
-    simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, coeff_mul, isPWO_support]
+    simp only [PowerSeries.coeff_mul, PowerSeries.coeff_mk, coeff_mul]
     classical
     refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
       sum_filter_ne_zero _
@@ -109,7 +109,7 @@ theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
 @[simp]
 theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnSeries.C r := by
   ext n
-  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, ne_eq,
+  simp only [ofPowerSeries_apply, C, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_single]
   split_ifs with hn
   · subst hn
@@ -123,7 +123,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
 @[simp]
 theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
   ext n
-  simp only [coeff_single, ofPowerSeries_apply, RingHom.coe_mk]
+  simp only [coeff_single, ofPowerSeries_apply]
   split_ifs with hn
   · rw [hn]
     convert embDomain_coeff (a := 1) <;> simp

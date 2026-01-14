@@ -29,7 +29,7 @@ section
 variable [Monoid M] (S)
 
 /-- The centralizer of a subset of a monoid `M`. -/
-@[to_additive "The centralizer of a subset of an additive monoid."]
+@[to_additive /-- The centralizer of a subset of an additive monoid. -/]
 def centralizer : Submonoid M where
   carrier := S.centralizer
   one_mem' := S.one_mem_centralizer
@@ -90,8 +90,8 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative monoid."]
+      /-- If all the elements of a set `s` commute, then `closure s` forms an additive
+      commutative monoid. -/]
 abbrev closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommMonoid (closure s) :=
   { (closure s).toMonoid with

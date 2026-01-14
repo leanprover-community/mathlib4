@@ -55,8 +55,7 @@ lemma PreservesHomology.preservesCokernel [F.PreservesHomology] {X Y : C} (f : X
   PreservesHomology.preservesCokernels _
 
 noncomputable instance preservesHomologyOfExact
-    [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
-  F.PreservesHomology where
+    [PreservesFiniteLimits F] [PreservesFiniteColimits F] : F.PreservesHomology where
 
 end Functor
 
@@ -494,8 +493,8 @@ lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
   dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
     leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
     Iso.symm, Iso.trans, Iso.refl]
-  simp only [F.map_comp, map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
-    Functor.map_id, Functor.mapShortComplex_obj]
+  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, Functor.map_id,
+    Functor.mapShortComplex_obj]
 
 lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :
@@ -633,7 +632,7 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
     Functor.map_comp, RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
     Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
     LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
-    ← leftHomologyMap'_comp_assoc, id_comp]
+    id_comp]
   have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
   have eq := γ.comm
   rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq] at eq

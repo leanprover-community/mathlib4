@@ -85,7 +85,7 @@ instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
 @[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : PosNum → Nat → Bool
   | 1, 0 => true
   | 1, _ => false
@@ -191,7 +191,7 @@ instance : HShiftRight Num Nat Num where hShiftRight := Num.shiftr
 @[simp] lemma shiftr_eq_shiftRight (p : Num) (n : Nat) : p.shiftr n = p >>> n := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : Num → Nat → Bool
   | 0, _ => false
   | pos p, n => p.testBit n
@@ -204,7 +204,7 @@ def oneBits : Num → List Nat
 end Num
 
 /-- This is a nonzero (and "non minus one") version of `SNum`.
-    See the documentation of `SNum` for more details. -/
+See the documentation of `SNum` for more details. -/
 inductive NzsNum : Type
   | msb : Bool → NzsNum
   /-- Add a bit at the end of a `NzsNum`. -/
@@ -287,7 +287,7 @@ def head : NzsNum → Bool
   | b :: _ => b
 
 /-- The `tail` of a `NzsNum` is the `SNum` obtained by removing the LSB.
-      Edge cases: `tail 1 = 0` and `tail (-2) = -1`. -/
+Edge cases: `tail 1 = 0` and `tail (-2) = -1`. -/
 def tail : NzsNum → SNum
   | msb b => SNum.zero (Not b)
   | _ :: p => p
@@ -340,8 +340,7 @@ namespace NzsNum
 
 open SNum
 
-/-- A dependent induction principle for `NzsNum`, with base cases
-      `0 : SNum` and `(-1) : SNum`. -/
+/-- A dependent induction principle for `NzsNum`, with base cases `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort*} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
   | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
@@ -359,7 +358,7 @@ def head : SNum → Bool
   | nz p => p.head
 
 /-- The `tail` of a `SNum` is obtained by removing the LSB.
-      Edge cases: `tail 1 = 0`, `tail (-2) = -1`, `tail 0 = 0` and `tail (-1) = -1`. -/
+Edge cases: `tail 1 = 0`, `tail (-2) = -1`, `tail 0 = 0` and `tail (-1) = -1`. -/
 def tail : SNum → SNum
   | zero z => zero z
   | nz p => p.tail
@@ -374,7 +373,7 @@ def rec' {α} (z : Bool → α) (s : Bool → SNum → α → α) : SNum → α 
   drec' z s
 
 /-- `SNum.testBit n a` is `true` iff the `n`-th bit (starting from the LSB) of `a` is active.
-      If the size of `a` is less than `n`, this evaluates to `false`. -/
+If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : Nat → SNum → Bool
   | 0, p => head p
   | n + 1, p => testBit n (tail p)
@@ -395,7 +394,7 @@ instance : Neg SNum :=
   ⟨SNum.neg⟩
 
 /-- `SNum.czAdd a b n` is `n + a - b` (where `a` and `b` should be read as either 0 or 1).
-      This is useful to implement the carry system in `cAdd`. -/
+This is useful to implement the carry system in `cAdd`. -/
 def czAdd : Bool → Bool → SNum → SNum
   | false, false, p => p
   | false, true, p => pred p
@@ -412,7 +411,7 @@ def bits : SNum → ∀ n, List.Vector Bool n
   | p, n + 1 => head p ::ᵥ bits (tail p) n
 
 /-- `SNum.cAdd n m a` is `n + m + a` (where `a` should be read as either 0 or 1).
-      `a` represents a carry bit. -/
+`a` represents a carry bit. -/
 def cAdd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
     rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bool.xor3 a b c :: IH q (Bool.carry a b c)

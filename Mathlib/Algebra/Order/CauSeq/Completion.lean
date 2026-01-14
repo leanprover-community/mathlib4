@@ -196,7 +196,7 @@ noncomputable instance : Inv (Cauchy abv) :=
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
-      · simp [hf, this.1 hf, Setoid.refl]
+      · simp [hf, this.1 hf]
       · have hg := mt this.2 hf
         simp only [hf, dite_false, hg]
         have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
@@ -356,7 +356,7 @@ theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
     rw [h] at hf
     exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
    fun h => by
-    have h₁ : f = f - const abv 0 := ext fun n => by simp [sub_apply, const_apply]
+    have h₁ : f = f - const abv 0 := ext fun n => by simp
     rw [h₁] at h
     exact lim_eq_of_equiv_const h⟩
 
@@ -383,7 +383,7 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
           (inv f hf - const abv (lim f)⁻¹ -
             (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) := by
               rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add]
-              show LimZero
+              change LimZero
                 (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
                   (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
               exact sub_limZero

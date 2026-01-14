@@ -134,7 +134,7 @@ def toΓSpecCApp :
       (isUnit_res_toΓSpecMapBasicOpen _ r)
 
 /-- Characterization of the sheaf hom on basic opens,
-    direction ← (next lemma) is used at various places, but → is not used in this file. -/
+direction ← (next lemma) is used at various places, but → is not used in this file. -/
 theorem toΓSpecCApp_iff
     (f :
       (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
@@ -190,7 +190,7 @@ theorem toΓSpecSheafedSpace_app_eq :
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
-    stalks (in `Spec Γ(X)` and in `X`). -/
+stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
   rw [PresheafedSpace.Hom.stalkMap,
@@ -278,7 +278,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
       dsimp
-      show PrimeSpectrum.comap (f.c.app (op ⊤)).hom (X.toΓSpecFun x) = Y.toΓSpecFun (f.base x)
+      change PrimeSpectrum.comap (f.c.app (op ⊤)).hom (X.toΓSpecFun x) = Y.toΓSpecFun (f.base x)
       dsimp [toΓSpecFun]
       rw [← IsLocalRing.comap_closedPoint (f.stalkMap x).hom, ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply,
@@ -435,11 +435,8 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
-  simp only [ΓSpec.adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
-    Scheme.Γ_obj, Category.id_comp] at this
+  simp only [Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
-
-@[deprecated (since := "2024-11-23")] alias Scheme.toSpecΓ_app_top := Scheme.toSpecΓ_appTop
 
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
@@ -462,7 +459,7 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
       X.presheaf.map (homOfLE (by exact le_top)).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
     NatTrans.naturality _ (homOfLE (le_top (a := U))).op]
-  show (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
+  change (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
     (Scheme.Γ.rightOp.map (ΓSpec.adjunction.unit.app X)).unop ≫ _ = _
   rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
   dsimp
@@ -529,6 +526,9 @@ lemma Spec.map_eq_id {R : CommRingCat} {ϕ : R ⟶ R} : Spec.map ϕ = 𝟙 (Spec
 def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
 
 @[simp] lemma Spec.map_preimage : Spec.map (Spec.preimage f) = f := Scheme.Spec.map_preimage f
+
+@[simp] lemma Spec.map_preimage_unop (f : Spec R ⟶ Spec S) :
+    Spec.map (Spec.fullyFaithful.preimage f).unop = f := Spec.fullyFaithful.map_preimage _
 
 variable (φ) in
 @[simp] lemma Spec.preimage_map : Spec.preimage (Spec.map φ) = φ :=

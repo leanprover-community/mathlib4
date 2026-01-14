@@ -77,8 +77,6 @@ variable {R : Type*} [NonUnitalSemiring R]
 def equiv : R ≃ PreQuasiregular R where
   toFun := .mk
   invFun := PreQuasiregular.val
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance instOne : One (PreQuasiregular R) where
   one := equiv 0
@@ -156,14 +154,12 @@ def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)
         inv := 1 + equiv.symm x⁻¹.val
         val_inv := by
           convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, inr_zero, add_zero, mul_add, add_mul,
-              inr_add, inr_mul]
+          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero]
         inv_val := by
           convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, inr_zero, add_zero, mul_add, add_mul,
-              inr_add, inr_mul]
+          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero] }
       property := by simp }

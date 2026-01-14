@@ -25,7 +25,7 @@ theorem effectiveEpi_desc_iff_effectiveEpiFamily {α : Type} [Finite α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
     EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
   exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
-    (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
+    (FinitaryPreExtensive.isIso_sigmaDesc_fst (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
     fun _ ↦ inferInstance⟩
 
 variable {D : Type*} [Category D] [FinitaryPreExtensive D]

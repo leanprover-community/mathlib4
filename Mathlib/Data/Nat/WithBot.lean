@@ -28,7 +28,7 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
   · simp [WithBot.bot_add]
   cases m
   · simp [WithBot.add_bot]
-  simp [← WithBot.coe_add, add_eq_zero_iff_of_nonneg]
+  simp [← WithBot.coe_add]
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   cases n

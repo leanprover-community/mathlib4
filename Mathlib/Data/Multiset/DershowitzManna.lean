@@ -163,7 +163,7 @@ theorem wellFounded_isDershowitzMannaLT [WellFoundedLT α] :
   rw [← transGen_oneStep_eq_isDershowitzMannaLT]
   exact isDershowitzMannaLT_singleton_wf.transGen
 
-instance instWellFoundedisDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
+instance instWellFoundedIsDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
     ⟨IsDershowitzMannaLT, wellFounded_isDershowitzMannaLT⟩
 
 end Multiset

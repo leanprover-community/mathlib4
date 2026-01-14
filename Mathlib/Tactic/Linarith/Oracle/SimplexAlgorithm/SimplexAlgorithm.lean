@@ -12,7 +12,7 @@ To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we r
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- An exception in the `SimplexAlgorithmM` monad. -/
 inductive SimplexAlgorithmException
@@ -120,4 +120,4 @@ def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm

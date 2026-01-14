@@ -41,7 +41,7 @@ theorem isConj_comm {g h : α} : IsConj g h ↔ IsConj h g :=
 theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
-theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a^n) (b^n)
+theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
   | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
 @[simp]
@@ -214,8 +214,7 @@ theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
-    intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
+    solve_by_elim⟩
 
 end CommMonoid
 

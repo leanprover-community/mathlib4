@@ -72,8 +72,6 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 /-- The completion of a field with respect to a real absolute value. -/
 abbrev Completion := UniformSpace.Completion (WithAbs v)
 
-@[deprecated (since := "2024-12-01")] alias completion := Completion
-
 namespace Completion
 
 instance : Coe K v.Completion :=

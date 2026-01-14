@@ -173,9 +173,9 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
 
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
-  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearIsometryEquiv.toLinearEquiv_symm,
+  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
-    LinearIsometryEquiv.coe_toLinearEquiv]
+    LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast
 
@@ -387,9 +387,9 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
         Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
-        Matrix.head_cons, Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
+        Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
-        real_inner_self_eq_norm_sq, zero_smul, one_smul]
+        real_inner_self_eq_norm_sq]
       exact this
     rintro ⟨ha, hb⟩
     have hx' : 0 < ‖x‖ := by simpa using hx
@@ -399,7 +399,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true, and_true]
+      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
@@ -519,7 +519,7 @@ protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (con
   simp only [o, o.areaForm_to_volumeForm,
     o.volumeForm_robust Complex.orthonormalBasisOneI rfl, Basis.det_apply, Matrix.det_fin_two,
     Basis.toMatrix_apply, toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, coe_basisOneI_repr,
-    Matrix.cons_val_one, Matrix.head_cons, mul_im, conj_re, conj_im]
+    Matrix.cons_val_one, mul_im, conj_re, conj_im]
   ring
 
 @[simp]

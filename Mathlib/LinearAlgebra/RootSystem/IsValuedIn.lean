@@ -89,6 +89,16 @@ lemma pairingIn_eq_add_of_root_eq_add [FaithfulSMul S R] [P.IsValuedIn S]
   apply FaithfulSMul.algebraMap_injective S R
   simpa [← P.algebraMap_pairingIn S, -algebraMap_pairingIn] using pairing_eq_add_of_root_eq_add h
 
+variable {P S} in
+lemma pairingIn_eq_add_of_root_eq_smul_add_smul
+    [FaithfulSMul S R] [P.IsValuedIn S] [Module S M] [IsScalarTower S R M]
+    {i j k l : ι} {x y : S} (h : P.root k = x • P.root i + y • P.root l) :
+    P.pairingIn S k j = x • P.pairingIn S i j + y • P.pairingIn S l j := by
+  apply FaithfulSMul.algebraMap_injective S R
+  replace h : P.root k = (algebraMap S R x) • P.root i + (algebraMap S R y) • P.root l := by simpa
+  simpa [← P.algebraMap_pairingIn S, -algebraMap_pairingIn] using
+    pairing_eq_add_of_root_eq_smul_add_smul h
+
 lemma pairingIn_reflectionPerm [FaithfulSMul S R] [P.IsValuedIn S] (i j k : ι) :
     P.pairingIn S j (P.reflectionPerm i k) = P.pairingIn S (P.reflectionPerm i j) k := by
   simp only [← (FaithfulSMul.algebraMap_injective S R).eq_iff, algebraMap_pairingIn]
@@ -243,8 +253,8 @@ lemma rootSpan_dualAnnihilator_map_eq_iInf_ker_root' :
   suffices (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} from
     SetLike.coe_injective <| by ext; simp [this]
   ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span, ← EquivLike.coe_coe,
-    ← LinearEquiv.coe_toEquiv_symm, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span,
+    ← LinearEquiv.coe_symm_toEquiv, ← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
   simp [Set.range_subset_iff]
 
 lemma corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot' :
@@ -290,6 +300,12 @@ lemma pairingIn_eq_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul
     P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
   simpa only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn] using
     P.pairing_eq_zero_iff
+
+variable {P i j} in
+lemma reflection_apply_root' (S : Type*) [CommRing S] [Algebra S R]
+    [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] :
+    P.reflection i (P.root j) = P.root j - (P.pairingIn S j i) • P.root i := by
+  rw [reflection_apply_root, ← P.algebraMap_pairingIn S, algebraMap_smul]
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.

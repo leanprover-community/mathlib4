@@ -80,12 +80,7 @@ noncomputable def adjunction :
         dsimp
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by
-        intros
-        dsimp
-        -- these erw seem difficult to remove
-        erw [Adjunction.homEquiv_naturality_right, Adjunction.homEquiv_naturality_right]
-        dsimp
-        rfl }
+        tauto }
 
 end PullbackConstruction
 

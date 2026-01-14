@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Quotient.Defs
 We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise

@@ -196,9 +196,6 @@ class ContinuousMap.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueContinuousFunctionalCalculus :=
-  ContinuousMap.UniqueHom
-
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
@@ -336,7 +333,7 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
   have h : f = (spectrum R a).restrict (Function.extend Subtype.val f g) := by
-    ext; simp [Subtype.val_injective.extend_apply]
+    ext; simp
   have hg : ContinuousOn (Function.extend Subtype.val f g) (spectrum R a) :=
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
@@ -345,6 +342,19 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
+
+/-- A version of `cfc_apply` in terms of `ContinuousMap.mkD` -/
+lemma cfc_apply_mkD :
+    cfc f a = cfcHom (a := a) ha (mkD ((spectrum R a).restrict f) 0) := by
+  by_cases hf : ContinuousOn f (spectrum R a)
+  · rw [cfc_apply f a, mkD_of_continuousOn hf]
+  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
+      map_zero]
+
+/-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
+lemma cfc_eq_cfcL_mkD :
+    cfc f a = cfcL (a := a) ha (mkD ((spectrum R a).restrict f) 0) :=
+  cfc_apply_mkD _ _
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
@@ -813,7 +823,7 @@ lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
 variable [UniqueHom R A]
 
 lemma cfc_comp_inv (f : R → R) (a : Aˣ)
-    (hf : ContinuousOn f ((· ⁻¹) '' (spectrum R (a : A))) := by cfc_cont_tac)
+    (hf : ContinuousOn f ((·⁻¹) '' (spectrum R (a : A))) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) :
     cfc (fun x ↦ f x⁻¹) (a : A) = cfc f (↑a⁻¹ : A) := by
   rw [cfc_comp' .., cfc_inv_id _]
@@ -856,7 +866,7 @@ lemma cfc_neg_id (ha : p a := by cfc_tac) : cfc (- · : R → R) a = -a := by
 
 variable [UniqueHom R A]
 
-lemma cfc_comp_neg (hf : ContinuousOn f ((- ·) '' (spectrum R (a : A))) := by cfc_cont_tac)
+lemma cfc_comp_neg (hf : ContinuousOn f ((-·) '' (spectrum R (a : A))) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : cfc (f <| - ·) a = cfc f (-a) := by
   rw [cfc_comp' .., cfc_neg_id _]
 
@@ -964,7 +974,7 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
 lemma CFC.inv_nonneg_of_nonneg (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) : (0 : A) ≤ a⁻¹ :=
   cfc_inv_id (R := ℝ≥0) a ▸ cfc_predicate _ (a : A)
 
-lemma CFC.inv_nonneg (a : Aˣ)  : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
+lemma CFC.inv_nonneg (a : Aˣ) : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
   ⟨fun _ ↦ inv_inv a ▸ inv_nonneg_of_nonneg a⁻¹, fun _ ↦ inv_nonneg_of_nonneg a⟩
 
 end NNReal

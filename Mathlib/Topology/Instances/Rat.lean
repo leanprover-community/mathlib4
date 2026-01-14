@@ -39,9 +39,6 @@ theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe_real := isEmbedding_coe_real
-
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous
 
@@ -107,8 +104,11 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
+set_option linter.style.commandStart false in
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
+
+set_option linter.style.commandStart false in
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 

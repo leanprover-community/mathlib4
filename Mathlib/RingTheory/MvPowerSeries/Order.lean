@@ -239,7 +239,7 @@ theorem min_weightedOrder_le_add :
   apply le_weightedOrder w
   simp +contextual only
     [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
-      eq_self_iff_true, imp_true_iff]
+      imp_true_iff]
 
 private theorem weightedOrder_add_of_weightedOrder_lt.aux
     (H : f.weightedOrder w < g.weightedOrder w) :
@@ -496,13 +496,13 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
   toFun f d := if weight w d = p then coeff R d f else 0
   map_add' f g := by
     ext d
-    simp only [map_add, coeff_apply, Pi.add_apply]
+    simp only [map_add, coeff_apply]
     split_ifs with h
     · rfl
     · rw [add_zero]
   map_smul' a f := by
     ext d
-    simp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk, map_smul,
+    simp only [map_smul,
       smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, MulZeroClass.mul_zero]
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :
@@ -570,7 +570,7 @@ theorem weightedHomogeneousComponent_mul_of_le_weightedOrder {f g : MvPowerSerie
     intro x hx
     rw [Finset.mem_antidiagonal] at hx
     rw [← hx, map_add] at hd
-    simp only [coeff_weightedHomogeneousComponent, coeff_mul]
+    simp only [coeff_weightedHomogeneousComponent]
     rcases trichotomy_of_add_eq_add hd with h | h | h
     · rw [if_pos h.1, if_pos h.2]
     · rw [if_neg (ne_of_lt h), zero_mul]

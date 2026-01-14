@@ -84,6 +84,8 @@ to compute some kernels.
 
 -/
 
+assert_not_exists Cardinal
+
 section Modules
 
 open TensorProduct LinearMap
@@ -447,7 +449,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
   rw [← SetLike.coe_set_eq]
   apply le_antisymm
   · intro x hx
-    simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, LinearMap.mem_range]
+    simp only [SetLike.mem_coe, LinearMap.mem_range]
     rw [Ideal.map, ← submodule_span_eq] at hx
     refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
     · intro x
@@ -472,7 +474,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [smul_eq_mul]
           with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -498,7 +500,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]
@@ -562,7 +564,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
-        simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
+        simp only [Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
         rw [map_add]

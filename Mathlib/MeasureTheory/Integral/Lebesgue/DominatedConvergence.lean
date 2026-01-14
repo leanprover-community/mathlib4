@@ -155,11 +155,11 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
   have : ∀ n, ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f n ∧ ∫⁻ a, f n a ∂μ = ∫⁻ a, g a ∂μ :=
     fun n ↦ exists_measurable_le_lintegral_eq _ _
   choose g gmeas gf hg using this
-  let g' : ℕ → α → ℝ≥0∞ := Nat.rec (g 0) (fun n I x ↦ max (g (n+1) x) (I x))
+  let g' : ℕ → α → ℝ≥0∞ := Nat.rec (g 0) (fun n I x ↦ max (g (n + 1) x) (I x))
   have M n : Measurable (g' n) := by
     induction n with
     | zero => simp [g', gmeas 0]
-    | succ n ih => exact Measurable.max (gmeas (n+1)) ih
+    | succ n ih => exact Measurable.max (gmeas (n + 1)) ih
   have I : ∀ n x, g n x ≤ g' n x := by
     intro n x
     cases n with | zero | succ => simp [g']
@@ -167,7 +167,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     filter_upwards [hf_mono] with x hx n
     induction n with
     | zero => simpa [g'] using gf 0 x
-    | succ n ih => exact max_le (gf (n+1) x) (ih.trans (hx (Nat.le_succ n)))
+    | succ n ih => exact max_le (gf (n + 1) x) (ih.trans (hx (Nat.le_succ n)))
   have Int_eq n : ∫⁻ x, g' n x ∂μ = ∫⁻ x, f n x ∂μ := by
     apply le_antisymm
     · apply lintegral_mono_ae

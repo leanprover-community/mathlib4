@@ -34,7 +34,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits Functor
 
 section
 
@@ -118,7 +118,7 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Ty
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
-    functor. -/
+functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) :
@@ -152,7 +152,7 @@ instance whiskeringRight_preservesColimitsOfShape {C : Type*} [Category C] {D : 
       exact isColimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a colimit is the same as taking the colimit and applying the
-    functor. -/
+functor. -/
 def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) :

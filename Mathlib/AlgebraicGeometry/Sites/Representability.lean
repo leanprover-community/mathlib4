@@ -111,22 +111,22 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
   apply GlueData.sheafValGluedMk_val
 
 @[simp]
-lemma yonedaGluedToSheaf_app_toGlued {i : ι}  :
+lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]
 
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
-  (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
-    F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
+    (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
+      F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
   congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
 
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
-      (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
+      (yonedaGluedToSheaf hf).val = Sigma.desc f by cat_disch)
 
 lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :

@@ -135,7 +135,7 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
       rw [hp, hq]
     · intro n a
       simp only [← smul_X_eq_monomial, ← C_mul' a (X ^ n), Quotient.lift_mk,
-        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, eval₂_X_pow, eval₂_smul,
+        Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk,
         coe_eval₂RingHom, RingHom.map_pow, eval₂_C, RingHom.coe_comp, RingHom.map_mul, eval₂_X,
         Function.comp_apply]
 
@@ -225,11 +225,11 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
       RingHom.comp_apply]
   · intros p q hp hq
-    simp only [RingHom.map_add, MvPolynomial.coe_eval₂Hom, coe_eval₂Hom, MvPolynomial.eval₂_add]
+    simp only [RingHom.map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢
     rw [hp, hq]
   · intros p i hp
-    simp only [coe_eval₂Hom] at hp
+    simp only at hp
     simp only [hp, coe_eval₂Hom, Ideal.Quotient.lift_mk, eval₂_mul, RingHom.map_mul, eval₂_X]
 
 lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
@@ -248,12 +248,11 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
       RingHom.comp_apply]
   · intros p q hp hq
     rw [Ideal.Quotient.lift_mk] at hp hq ⊢
-    simp only [Submodule.Quotient.quot_mk_eq_mk, eval₂_add, RingHom.map_add, coe_eval₂Hom,
-      Ideal.Quotient.lift_mk, Ideal.Quotient.mk_eq_mk] at hp hq ⊢
+    simp only [eval₂_add, RingHom.map_add, coe_eval₂Hom] at hp hq ⊢
     rw [hp, hq]
   · intros p i hp
-    simp only [Submodule.Quotient.quot_mk_eq_mk, coe_eval₂Hom, Ideal.Quotient.lift_mk,
-      Ideal.Quotient.mk_eq_mk, eval₂_mul, RingHom.map_mul, eval₂_X] at hp ⊢
+    simp only [coe_eval₂Hom, Ideal.Quotient.lift_mk,
+      eval₂_mul, RingHom.map_mul, eval₂_X] at hp ⊢
     simp only [hp]
 
 -- Porting note: this definition was split to avoid timeouts.

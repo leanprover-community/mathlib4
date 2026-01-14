@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
 
@@ -150,8 +151,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    rw [hn] at h
-    exact lt_irrefl 0 h
+    omega
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -269,12 +269,12 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and] at h
+  simp only [hp, Sphere.ext_iff,
+    true_and] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere, true_and] at h
+  simp only [hr, forall_const,
+    Set.forall_mem_range, mem_sphere] at h
   exact h.1
 
 /-- Given a point in the affine span from which all the points are
@@ -283,11 +283,10 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
-    Set.forall_mem_range, mem_sphere] at h
+  simp only [hp, Sphere.ext_iff] at h
   -- Porting note: added the next three lines (`simp` less powerful)
   rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hp, hr, forall_const, eq_self_iff_true, subset_sphere, Sphere.ext_iff,
+  simp only [hr, forall_const,
     Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.2
 
@@ -565,7 +564,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
   simp_rw [sum_pointsWithCircumcenter, reflectionCircumcenterWeightsWithCircumcenter, sum_ite,
     sum_const, filter_or, filter_eq']
   rw [card_union_of_disjoint]
-  · set_option simprocs false in simp
+  · norm_num
   · simpa only [if_true, mem_univ, disjoint_singleton] using h
 
 /-- The reflection of the circumcenter of a simplex in an edge, in
@@ -803,7 +802,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
   by_cases hp : p = s.orthogonalProjectionSpan p
   · rw [Simplex.orthogonalProjectionSpan] at hp
     rw [hp₁, hp₂, ← hp]
-    simp only [true_or, eq_self_iff_true, smul_zero, vsub_self]
+    simp only [true_or, smul_zero, vsub_self]
   · have hz : ⟪p -ᵥ orthogonalProjection span_s p, p -ᵥ orthogonalProjection span_s p⟫ ≠ 0 := by
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁

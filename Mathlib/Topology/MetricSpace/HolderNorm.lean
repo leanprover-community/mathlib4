@@ -146,8 +146,7 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
       exact lt_of_le_of_lt (hC x₁ x₂) <| ENNReal.mul_lt_of_lt_div hC'
   · intro h
     rcases isEmpty_or_nonempty X with hX | hX
-    · haveI := hX
-      exact eHolderNorm_of_isEmpty
+    · exact eHolderNorm_of_isEmpty
     · rw [← eHolderNorm_const X r (f hX.some)]
       congr
       simp [funext_iff, h _ hX.some]
@@ -222,7 +221,7 @@ lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
 
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
-  by_cases hfg : MemHolder r f  ∧ MemHolder r g
+  by_cases hfg : MemHolder r f ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
       ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]

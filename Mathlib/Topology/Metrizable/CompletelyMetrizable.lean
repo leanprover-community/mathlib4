@@ -82,7 +82,9 @@ def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletely
 
 namespace IsCompletelyMetrizableSpace
 
-instance (priority := 100) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+/-- Note: the priority is set to 90 to ensure that this instance is only applied after
+`EMetricSpace.metrizableSpace`. This prevents unnecessary attempts to infer completeness. -/
+instance (priority := 90) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
   letI := upgradeIsCompletelyMetrizable X
   infer_instance
@@ -145,7 +147,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
   · rw [DiscreteTopology.eq_bot (α := X)]
     refine eq_bot_of_singletons_open fun x ↦ ?_
     convert @Metric.isOpen_ball _ _ x 1
-    refine subset_antisymm (singleton_subset_iff.2 (Metric.mem_ball_self (by norm_num)))
+    refine subset_antisymm (singleton_subset_iff.2 (Metric.mem_ball_self (by simp)))
       fun y hy ↦ ?_
     simp only [Metric.mem_ball, mem_singleton_iff] at *
     by_contra
@@ -153,7 +155,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
     simp_all
   · refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
     rw [Metric.cauchySeq_iff'] at hu
-    obtain ⟨N, hN⟩ := hu 1 (by norm_num)
+    obtain ⟨N, hN⟩ := hu 1 (by simp)
     refine ⟨u N, @tendsto_atTop_of_eventually_const X UniformSpace.toTopologicalSpace (u N) _ _ _ N
       fun n hn ↦ ?_⟩
     specialize hN n hn

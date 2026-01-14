@@ -167,10 +167,6 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
             Or.inr <| hq.dvd_iff_dvd_left.2 <| hfb.2.dvd_iff_dvd_right.1 (Multiset.dvd_prod hqb)⟩,
     Prime.irreducible⟩
 
-@[deprecated (since := "2024-12-17")]
-alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
-  irreducible_iff_prime_of_existsUnique_irreducible_factors
-
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α]
@@ -220,7 +216,7 @@ theorem factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
   | 0 => rw [zero_nsmul, pow_zero, factors_one, Multiset.rel_zero_right]
-  | n+1 =>
+  | n + 1 =>
     by_cases h0 : x = 0
     · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
     · rw [pow_succ', succ_nsmul']
@@ -399,9 +395,6 @@ theorem of_existsUnique_irreducible_factors [CancelCommMonoidWithZero α]
     (by
       convert eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
-
-@[deprecated (since := "2024-12-17")]
-alias of_exists_unique_irreducible_factors := of_existsUnique_irreducible_factors
 
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 

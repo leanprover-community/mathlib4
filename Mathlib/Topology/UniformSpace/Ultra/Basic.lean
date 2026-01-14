@@ -66,6 +66,9 @@ lemma isTransitiveRel_iff_comp_subset_self {s : Set (X × X)} :
 lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
   simp [IsTransitiveRel]
 
+lemma isTransitiveRel_idRel : IsTransitiveRel (idRel : Set (X × X)) := by
+  simp [IsTransitiveRel, idRel]
+
 lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
   simp [IsTransitiveRel]
 

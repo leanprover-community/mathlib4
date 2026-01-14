@@ -116,7 +116,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [rpow_one, sub_self, rpow_zero, one_mul]; rfl
   convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂) (add_halves 1) hp
     using 1
-  · simp only [one_div, inv_mul_cancel_left₀, Ne, mul_eq_zero, two_ne_zero, one_ne_zero,
+  · simp only [one_div, inv_mul_cancel_left₀, Ne, two_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
     simp only [mul_rpow, rpow_sub' A, div_eq_inv_mul, rpow_one, mul_one]
@@ -145,7 +145,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p +
   have h_add : a / (a + b) + b / (a + b) = 1 := by rw [div_add_div_same, div_self h_zero]
   have h := add_rpow_le_one_of_add_le_one (a / (a + b)) (b / (a + b)) h_add.le hp1
   rw [div_rpow a (a + b), div_rpow b (a + b)] at h
-  have hab_0 : (a + b) ^ p ≠ 0 := by simp [hp_pos, h_nonzero]
+  have hab_0 : (a + b) ^ p ≠ 0 := by simp [h_nonzero]
   have hab_0' : 0 < (a + b) ^ p := zero_lt_iff.mpr hab_0
   have h_mul : (a + b) ^ p * (a ^ p / (a + b) ^ p + b ^ p / (a + b) ^ p) ≤ (a + b) ^ p := by
     nth_rw 4 [← mul_one ((a + b) ^ p)]
@@ -224,15 +224,11 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   have hp_nonneg : 0 ≤ p := by positivity
   have hp_not_neg : ¬p < 0 := by simp [hp_nonneg]
   have h_top_iff_rpow_top : ∀ (i : ι), i ∈ s → (w i * z i = ⊤ ↔ w i * z i ^ p = ⊤) := by
-    simp [ENNReal.mul_eq_top, hp_pos, hp_nonneg, hp_not_neg]
+    simp [ENNReal.mul_eq_top, hp_pos, hp_not_neg]
   refine le_of_top_imp_top_of_toNNReal_le ?_ ?_
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
-    intro h
-    simp only [and_false, hp_not_neg, false_or] at h
-    rcases h.left with ⟨a, H, ha⟩
-    use a, H
-    rwa [← h_top_iff_rpow_top a H]
+    grind
   · -- second, suppose both `(∑ i ∈ s, w i * z i) ^ p ≠ ⊤` and `∑ i ∈ s, (w i * z i ^ p) ≠ ⊤`,
     -- and prove `((∑ i ∈ s, w i * z i) ^ p).toNNReal ≤ (∑ i ∈ s, (w i * z i ^ p)).toNNReal`,
     -- by using `NNReal.rpow_arith_mean_le_arith_mean_rpow`.

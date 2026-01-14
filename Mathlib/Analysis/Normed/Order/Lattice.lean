@@ -110,7 +110,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊓ b - c ⊓ b| + |c ⊓ b - c ⊓ d| := abs_add_le _ _
     _ ≤ |a - c| + |b - d| := by
-      apply add_le_add
+      gcongr ?_ + ?_
       · exact abs_inf_sub_inf_le_abs _ _ _
       · rw [inf_comm c, inf_comm c]
         exact abs_inf_sub_inf_le_abs _ _ _
@@ -123,7 +123,7 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
     _ ≤ |a ⊔ b - c ⊔ b| + |c ⊔ b - c ⊔ d| := abs_add_le _ _
     _ ≤ |a - c| + |b - d| := by
-      apply add_le_add
+      gcongr ?_ + ?_
       · exact abs_sup_sub_sup_le_abs _ _ _
       · rw [sup_comm c, sup_comm c]
         exact abs_sup_sub_sup_le_abs _ _ _

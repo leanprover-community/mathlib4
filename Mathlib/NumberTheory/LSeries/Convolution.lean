@@ -117,7 +117,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
     -- the right hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
-      simp [Nat.mul_eq_zero]
+      simp
     have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
       rintro ⟨⟨_, _⟩, hp⟩
       rcases hS ▸ hp with ⟨rfl, -⟩ | ⟨-, rfl⟩ <;> simp

@@ -11,34 +11,34 @@ import Mathlib.Data.Multiset.Sections
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {ι α β : Type*}
+variable {ι M M₀ R : Type*}
 
 namespace Multiset
 section CommMonoid
-variable [CommMonoid α] [HasDistribNeg α]
+variable [CommMonoid M] [HasDistribNeg M]
 
-@[simp] lemma prod_map_neg (s : Multiset α) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
+@[simp] lemma prod_map_neg (s : Multiset M) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
   Quotient.inductionOn s (by simp)
 
 end CommMonoid
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero α] {s : Multiset α}
+variable [CommMonoidWithZero M₀] {s : Multiset M₀}
 
-lemma prod_eq_zero (h : (0 : α) ∈ s) : s.prod = 0 := by
+lemma prod_eq_zero (h : (0 : M₀) ∈ s) : s.prod = 0 := by
   rcases Multiset.exists_cons_of_mem h with ⟨s', hs'⟩; simp [hs', Multiset.prod_cons]
 
-variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
+variable [NoZeroDivisors M₀] [Nontrivial M₀] {s : Multiset M₀}
 
-@[simp] lemma prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
+@[simp] lemma prod_eq_zero_iff : s.prod = 0 ↔ (0 : M₀) ∈ s :=
   Quotient.inductionOn s fun l ↦ by rw [quot_mk_to_coe, prod_coe]; exact List.prod_eq_zero_iff
 
-lemma prod_ne_zero (h : (0 : α) ∉ s) : s.prod ≠ 0 := mt prod_eq_zero_iff.1 h
+lemma prod_ne_zero (h : (0 : M₀) ∉ s) : s.prod ≠ 0 := mt prod_eq_zero_iff.1 h
 
 end CommMonoidWithZero
 
 section NonUnitalNonAssocSemiring
-variable [NonUnitalNonAssocSemiring α] {a : α} {s : Multiset ι} {f : ι → α}
+variable [NonUnitalNonAssocSemiring R] {a : R} {s : Multiset ι} {f : ι → R}
 
 lemma sum_map_mul_left : sum (s.map fun i ↦ a * f i) = a * sum (s.map f) :=
   Multiset.induction_on s (by simp) fun i s ih => by simp [ih, mul_add]
@@ -49,7 +49,7 @@ lemma sum_map_mul_right : sum (s.map fun i ↦ f i * a) = sum (s.map f) * a :=
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
-variable [NonUnitalSemiring α] {s : Multiset α} {a : α}
+variable [NonUnitalSemiring R] {s : Multiset R} {a : R}
 
 lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
   Multiset.induction_on s (fun _ ↦ dvd_zero _) fun x s ih h ↦ by
@@ -59,14 +59,14 @@ lemma dvd_sum : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
 end NonUnitalSemiring
 
 section CommSemiring
-variable [CommSemiring α]
+variable [CommSemiring R]
 
-lemma prod_map_sum {s : Multiset (Multiset α)} :
+lemma prod_map_sum {s : Multiset (Multiset R)} :
     prod (s.map sum) = sum ((Sections s).map prod) :=
   Multiset.induction_on s (by simp) fun a s ih ↦ by
     simp [ih, map_bind, sum_map_mul_left, sum_map_mul_right]
 
-lemma prod_map_add {s : Multiset ι} {f g : ι → α} :
+lemma prod_map_add {s : Multiset ι} {f g : ι → R} :
     prod (s.map fun i ↦ f i + g i) =
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
   refine s.induction_on ?_ fun a s ih ↦ ?_
@@ -83,14 +83,14 @@ open Multiset
 
 namespace Commute
 
-variable [NonUnitalNonAssocSemiring α] (s : Multiset α)
+variable [NonUnitalNonAssocSemiring R] (s : Multiset R)
 
-theorem multiset_sum_right (a : α) (h : ∀ b ∈ s, Commute a b) : Commute a s.sum := by
+theorem multiset_sum_right (a : R) (h : ∀ b ∈ s, Commute a b) : Commute a s.sum := by
   induction s using Quotient.inductionOn
   rw [quot_mk_to_coe, sum_coe]
   exact Commute.list_sum_right _ _ h
 
-theorem multiset_sum_left (b : α) (h : ∀ a ∈ s, Commute a b) : Commute s.sum b :=
+theorem multiset_sum_left (b : R) (h : ∀ a ∈ s, Commute a b) : Commute s.sum b :=
   ((Commute.multiset_sum_right _ _) fun _ ha => (h _ ha).symm).symm
 
 end Commute

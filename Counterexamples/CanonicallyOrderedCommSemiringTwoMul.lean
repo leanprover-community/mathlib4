@@ -123,7 +123,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     · simp [ha, -Prod.mk.injEq]
     · cases hb rfl
   | b + 1 =>
-    simp [(a + b).succ_ne_zero]
+    simp
 
 theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩

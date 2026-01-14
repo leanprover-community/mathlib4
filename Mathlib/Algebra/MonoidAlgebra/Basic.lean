@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
@@ -329,7 +330,7 @@ def equivariantOfLinearOfComm
     · simp
     · intro g r c' _nm _nz w
       dsimp at *
-      simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
+      simp only [add_smul, f.map_add, w, single_eq_algebraMap_mul_of, ← smul_smul]
       rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
         of_apply, h g v]
 

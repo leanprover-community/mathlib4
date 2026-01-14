@@ -91,7 +91,7 @@ section Algebra
 def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTorus d, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range mFourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
+    change Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
     refine adjoin_le ?_
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩
@@ -194,7 +194,7 @@ local notation "L²(" α ")" => Lp ℂ 2 (volume : Measure α)
 on `UnitAddTorus d`, which by definition is an isometric isomorphism from `L²(UnitAddTorus d)`
 to `ℓ²(ℤᵈ, ℂ)`. -/
 def mFourierBasis : HilbertBasis (d → ℤ) ℂ L²(UnitAddTorus d) :=
-  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `mFourierBasis` are the functions `mFourierLp 2`, i.e. the
 monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/

@@ -14,7 +14,7 @@ some theorems about orthogonal families of subspaces.
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)
 
@@ -109,7 +109,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+      simp only [DFinsupp.sum, Finset.sum_ite_eq,
         DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
@@ -153,7 +153,7 @@ theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Inject
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
-    Orthonormal 𝕜 fun a : Σi, α i => V a.1 (v_family a.1 a.2) := by
+    Orthonormal 𝕜 fun a : Σ i, α i => V a.1 (v_family a.1 a.2) := by
   constructor
   · rintro ⟨i, v⟩
     simpa only [LinearIsometry.norm_map] using (hv_family i).left v
@@ -176,7 +176,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only [F]
-    split_ifs <;> simp only [eq_self_iff_true, norm_neg]
+    split_ifs <;> simp only [norm_neg]
   have :
     ‖(∑ i ∈ s₁ \ s₂, V i (F i)) + ∑ i ∈ s₂ \ s₁, V i (F i)‖ ^ 2 =
       (∑ i ∈ s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i ∈ s₂ \ s₁, ‖F i‖ ^ 2 := by

@@ -165,7 +165,7 @@ lemma map_comp (s : SingularManifold X k I)
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
 
 variable (M I) in
-/-- If `M` is a closd `C^k` manifold, it is a singular manifold over itself. -/
+/-- If `M` is a closed `C^k` manifold, it is a singular manifold over itself. -/
 noncomputable def refl : SingularManifold M k I where
   M := M
   f := id

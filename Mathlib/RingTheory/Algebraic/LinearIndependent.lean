@@ -42,7 +42,7 @@ theorem Transcendental.linearIndependent_sub_inv
     have := Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm hi
     simp_rw [← (s.erase j).prod_erase_mul _ this, sub_self, mul_zero]
   simp_rw [map_zero, p, map_sum, map_mul, map_prod, map_sub, aeval_X,
-    aeval_C, Algebra.id.map_eq_self, ← s.sum_erase_add _ hi,
+    aeval_C, Algebra.algebraMap_self_apply, ← s.sum_erase_add _ hi,
     Finset.sum_eq_zero h2, zero_add] at hm
   exact eq_zero_of_ne_zero_of_mul_right_eq_zero (Finset.prod_ne_zero_iff.2 fun j hj ↦
     sub_ne_zero.2 (Finset.ne_of_mem_erase hj).symm) hm

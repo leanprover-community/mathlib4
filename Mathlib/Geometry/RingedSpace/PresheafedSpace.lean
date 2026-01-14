@@ -71,8 +71,8 @@ instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
   ⟨const (TopCat.of PEmpty) default⟩
 
 /-- A morphism between presheafed spaces `X` and `Y` consists of a continuous map
-    `f` between the underlying topological spaces, and a (notice contravariant!) map
-    from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
+`f` between the underlying topological spaces, and a (notice contravariant!) map
+from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
 structure Hom (X Y : PresheafedSpace C) where
   base : (X : TopCat) ⟶ (Y : TopCat)
   c : Y.presheaf ⟶ base _* X.presheaf
@@ -90,7 +90,7 @@ theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.ba
   rfl
 
 -- TODO including `injections` would make tidy work earlier.
-theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : HEq α.c β.c) :
+theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base) (h : α.c ≍ β.c) :
     α = β := by
   cases α
   cases β
@@ -120,7 +120,7 @@ section
 attribute [local simp] id comp
 
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
-    from the presheaf on the target to the pushforward of the presheaf on the source. -/
+from the presheaf on the target to the pushforward of the presheaf on the source. -/
 instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   Hom := Hom
   id := id
@@ -305,7 +305,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
       congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
     simp only [g₁.c.naturality, g₂.c.naturality_assoc] at h
-    simp only [eqToHom_op, eqToHom_unop, eqToHom_map, eqToHom_trans,
+    simp only [eqToHom_op, eqToHom_map, eqToHom_trans,
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 
@@ -389,7 +389,7 @@ variable {D : Type*} [Category D]
 namespace Functor
 
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
-    giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
+giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
 def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   obj X :=
     { carrier := X.carrier

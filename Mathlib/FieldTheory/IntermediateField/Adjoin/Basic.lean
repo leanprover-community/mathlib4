@@ -4,16 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields
@@ -307,6 +303,19 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   obtain ⟨x, rfl⟩ := @H x IntermediateField.mem_top
   exact x.2
 
+theorem bot_eq_top_iff_finrank_eq_one :
+    (⊥ : IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
+  rw [← IntermediateField.finrank_bot', ← finrank_eq_one_iff_eq_top]
+
+variable (F E) in
+theorem isSimpleOrder_of_finrank_prime (hp : Nat.Prime (Module.finrank F E)) :
+    IsSimpleOrder (IntermediateField F E) := by
+  refine { toNontrivial := ?_, eq_bot_or_eq_top := ?_ }
+  · exact ⟨⊥, ⊤, fun h ↦ Nat.prime_one_false (bot_eq_top_iff_finrank_eq_one.mp h ▸ hp)⟩
+  · intro K
+    simpa [← toSubalgebra_strictMono.apply_eq_bot_iff, ← toSubalgebra_strictMono.apply_eq_top_iff]
+      using (Subalgebra.isSimpleOrder_of_finrank_prime _ _ hp).eq_bot_or_eq_top K.toSubalgebra
+
 theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 
@@ -482,8 +491,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     intro K
     have := adjoin.finrank (.of_finite K α)
     rw [adjoin_eq_top_of_adjoin_eq_top F hprim] at this
-    erw [finrank_top K E] at this
-    exact this
+    simp_all
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_g
@@ -579,8 +587,9 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F K)) :
-    @Fintype.card (F⟮α⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
-  rw [AlgHom.card_of_powerBasis] <;>
+    Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
+  let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
+  rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 

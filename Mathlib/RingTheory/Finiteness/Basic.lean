@@ -15,7 +15,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-assert_not_exists Basis Ideal.radical Matrix Subalgebra
+assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -51,6 +51,17 @@ theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, 
     (iSup N).FG := by
   cases nonempty_fintype (PLift ι)
   simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
+
+instance : SemilatticeSup {P : Submodule R M // P.FG} where
+  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
+  le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
+  le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
+  sup_le := fun P Q R hPR hQR ↦ by
+    rw [← Subtype.coe_le_coe] at hPR hQR ⊢
+    exact sup_le hPR hQR
+
+instance : Inhabited {P : Submodule R M // P.FG} where
+  default := ⟨⊥, fg_bot⟩
 
 section
 
@@ -126,7 +137,7 @@ lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
   refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
-  · show Submodule.span A s ≤ S
+  · change Submodule.span A s ≤ S
     have := Submodule.span_le.mp e.le
     rwa [Submodule.span_le]
   · rw [← e]

@@ -66,7 +66,7 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
         (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped, A]
-  simp only [volume, Basis.addHaar, one_smul]
+  simp only [volume, Module.Basis.addHaar, one_smul]
 
 theorem volume_val (s) : volume s = StieltjesFunction.id.measure s := by
   simp [volume_eq_stieltjes_id]
@@ -111,7 +111,7 @@ theorem volume_real_Ioc {a b : ℝ} : volume.real (Ioc a b) = max (b - a) 0 := b
 theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b) = b - a := by
   simp [hab]
 
-theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp [volume_val]
+theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp
 
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
   ENNReal.eq_top_of_forall_nnreal_le fun r =>
@@ -502,7 +502,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
         rw [indicator_apply]
         split_ifs with h
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = Ioo (f x) (g x) := by simp [h, Ioo]
-          simp only [hx, Real.volume_Ioo, sub_zero]
+          simp only [hx, Real.volume_Ioo]
         · have hx : { a | x ∈ s ∧ a ∈ Ioo (f x) (g x) } = ∅ := by simp [h]
           simp only [hx, measure_empty]
       dsimp only [regionBetween, preimage_setOf_eq]
@@ -510,7 +510,7 @@ theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable 
     · exact measurableSet_regionBetween hf hg hs
 
 /-- The volume of the region between two almost everywhere measurable functions on a measurable set
-    can be represented as a Lebesgue integral. -/
+can be represented as a Lebesgue integral. -/
 theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.restrict s))
     (hg : AEMeasurable g (μ.restrict s)) (hs : MeasurableSet s) :
     μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by

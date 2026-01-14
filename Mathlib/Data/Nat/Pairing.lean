@@ -66,7 +66,7 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
     have ae : sqrt (a * a + (a + b)) = a := by
       rw [sqrt_add_eq]
       exact Nat.add_le_add_left (le_of_not_gt h) _
-    simp [unpair, ae, Nat.not_lt_zero, Nat.add_assoc, Nat.add_sub_cancel_left]
+    simp [unpair, ae, Nat.add_assoc, Nat.add_sub_cancel_left]
 
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
 @[simps -fullyApplied]
@@ -82,7 +82,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp only [unpair, Nat.sub_le_iff_le_add]
+  simp only [unpair]
   by_cases h : n - s * s < s <;> simp [s, h, ↓reduceIte]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp only [not_lt] at h
@@ -110,7 +110,7 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
 
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
   by_cases h₁ : a₁ < b <;> simp [pair, h₁, Nat.add_assoc]
-  · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
+  · by_cases h₂ : a₂ < b <;> simp [h₂, h]
     simp? at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
     · exact Nat.mul_self_le_mul_self h₂
@@ -125,7 +125,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
   by_cases h₁ : a < b₁
   · simpa [pair, h₁, Nat.add_assoc, lt_trans h₁ h, h] using mul_self_lt_mul_self h
   · simp only [pair, h₁, ↓reduceIte, Nat.add_assoc]
-    by_cases h₂ : a < b₂ <;> simp [pair, h₂, h]
+    by_cases h₂ : a < b₂ <;> simp [h₂, h]
     simp? at h₁ says simp only [not_lt] at h₁
     rw [Nat.add_comm, Nat.add_comm _ a, Nat.add_assoc, Nat.add_lt_add_iff_left]
     rwa [Nat.add_comm, ← sqrt_lt, sqrt_add_eq]
@@ -133,7 +133,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
 
 theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   simp only [pair, Nat.pow_two, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul, Nat.add_assoc]
-  split_ifs <;> simp [Nat.max_eq_left, Nat.max_eq_right, Nat.le_of_lt, not_lt.1, *] <;> omega
+  split_ifs <;> simp [Nat.le_of_lt, not_lt.1, *] <;> omega
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]

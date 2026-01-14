@@ -279,7 +279,7 @@ theorem coe_coordChangeL' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.
 theorem symm_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e'.baseSet ∩ e.baseSet) : (e.coordChangeL R e' b).symm = e'.coordChangeL R e b := by
   apply ContinuousLinearEquiv.toLinearEquiv_injective
-  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).symm_toLinearEquiv,
+  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).toLinearEquiv_symm,
     coe_coordChangeL' e e' hb.symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
 
 theorem coordChangeL_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
@@ -437,7 +437,7 @@ theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e
   · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
-  · simp only [coe_coe, continuousLinearEquivAt_apply]
+  · simp only [continuousLinearEquivAt_apply]
 
 protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x : B}
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
@@ -654,6 +654,8 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
 
 instance fiberBundle : FiberBundle F Z.Fiber :=
   Z.toFiberBundleCore.fiberBundle
+
+protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
 
 instance vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by

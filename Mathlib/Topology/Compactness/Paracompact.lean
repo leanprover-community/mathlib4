@@ -213,7 +213,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
     set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n ↦ T n
     -- Finally, we take the union of all these coverings
-    refine ⟨Σn, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
+    refine ⟨Σ n, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
     · rintro ⟨n, x, hx⟩
       exact ⟨x.2.2, hrp _ _⟩
     · refine fun x hx ↦ mem_iUnion.2 ?_
@@ -223,11 +223,11 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
       refine
         ⟨interior (K (K'.find x + 3)),
           IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), ?_⟩
-      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σn, T' n)).Finite :=
+      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σ n, T' n)).Finite :=
         (finite_le_nat _).biUnion fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
-      simp only [mem_iUnion, mem_setOf_eq, mem_image, Subtype.coe_mk]
+      simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)

@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -86,7 +86,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).mul ((hf x).pow _) using 1
+    convert (hasDerivAt_id' x).fun_mul ((hf x).fun_pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
@@ -103,7 +103,7 @@ private lemma recursion' (n : ℕ) :
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
     (hu₂d.intervalIntegrable _ _) (hv₂d.intervalIntegrable _ _),
     mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
-  have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
+  have (x : _) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases n with
     | zero => simp [u₂']
     | succ n => ring!
@@ -163,7 +163,7 @@ explicit description of `sinPoly`.
 -/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
-  | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
+  | 1 => by simp only [natDegree_C, zero_le', sinPoly]
   | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
@@ -233,7 +233,7 @@ The integrand in the definition of `I` is nonnegative and takes a positive value
 so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
-  refine integral_pos (by norm_num) (by fun_prop) ?_ ⟨0, by simp⟩
+  refine integral_pos (by simp) (by fun_prop) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
@@ -284,7 +284,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   have k (n : ℕ) : 0 < (a : ℝ) ^ (2 * n + 1) / n ! := by positivity
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
     have := (tendsto_pow_div_factorial_at_top_aux a).eventually_lt_const
-      (show (0 : ℝ) < 1 / 2 by norm_num)
+      (show (0 : ℝ) < 1 / 2 by simp)
     filter_upwards [this] with n hn
     rw [lt_div_iff₀ (zero_lt_two : (0 : ℝ) < 2)] at hn
     exact hn.trans_le' (mul_le_mul_of_nonneg_left (I_le _) (by positivity))

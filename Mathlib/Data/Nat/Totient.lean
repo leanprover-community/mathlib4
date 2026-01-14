@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
@@ -46,8 +47,8 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta] }
+      left_inv := fun m => by simp only [Subtype.coe_eta]
+      right_inv := fun m => by simp only [Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -78,7 +79,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos), zero_add]
+    simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
     exact le_of_lt (mod_lt n a_pos)
   simp only [mul_succ]
@@ -176,7 +177,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         (by
           rw [sdiff_eq_filter]
           apply filter_congr
-          simp only [mem_range, mem_filter, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
+          simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
             hp.coprime_iff_not_dvd]
           intro a ha
           constructor
@@ -239,6 +240,11 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
 theorem totient_two : φ 2 = 1 :=
   (totient_prime prime_two).trans rfl
 
+/-- Euler's totient function is only odd at `1` or `2`. -/
+theorem odd_totient_iff {n : ℕ} :
+    Odd (φ n) ↔ n = 1 ∨ n = 2 := by
+  rcases n with _ | _ | _ | _ <;> simp [Nat.totient_even]
+
 theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 0 => by simp
   | 1 => by simp
@@ -250,6 +256,21 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+
+theorem odd_totient_iff_eq_one {n : ℕ} :
+    Odd (φ n) ↔ φ n = 1 := by
+  simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]
+
+/-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
+theorem totient_coprime_totient_iff (m n : ℕ) :
+    (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
+  constructor
+  · rw [← not_imp_not]
+    simp_rw [← odd_totient_iff, not_or, not_odd_iff_even, even_iff_two_dvd]
+    exact fun h ↦ Nat.not_coprime_of_dvd_of_dvd one_lt_two h.1 h.2
+  · simp_rw [← totient_eq_one_iff]
+    rintro (h | h) <;> rw [h]
+    exacts [Nat.coprime_one_left _, Nat.coprime_one_right _]
 
 /-! ### Euler's product formula for the totient function
 
@@ -326,6 +347,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   rw [← totient_gcd_mul_totient_mul a b, mul_comm]
   apply mul_le_mul_left' (Nat.totient_le d)
 
+@[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   rcases eq_or_ne a 0 with (rfl | ha0)
   · simp [zero_dvd_iff.1 h]

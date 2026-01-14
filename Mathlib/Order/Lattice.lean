@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # (Semi-)lattices
@@ -48,10 +47,6 @@ of `sup` over `inf`, on the left or on the right.
 semilattice, lattice
 
 -/
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 universe u v w
 
@@ -129,11 +124,11 @@ theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
 
 @[simp]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
@@ -171,11 +166,9 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
   sup_le (le_sup_of_le_left h₁) (le_sup_of_le_right h₂)
 
-@[gcongr]
 theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
   sup_le_sup le_rfl h₁
 
-@[gcongr]
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 
@@ -326,11 +319,11 @@ theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
 
 @[simp]
 theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+  le_antisymm_iff.trans <| by simp
 
 @[simp]
 theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
@@ -361,11 +354,9 @@ theorem inf_lt_left_or_right (h : a ≠ b) : a ⊓ b < a ∨ a ⊓ b < b :=
 theorem inf_le_inf (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊓ c ≤ b ⊓ d :=
   @sup_le_sup αᵒᵈ _ _ _ _ _ h₁ h₂
 
-@[gcongr]
 theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a :=
   inf_le_inf h le_rfl
 
-@[gcongr]
 theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 
@@ -593,12 +584,12 @@ theorem sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 
 theorem sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
-  simp only [sup_inf_left, sup_comm _ c, eq_self_iff_true]
+  simp only [sup_inf_left, sup_comm _ c]
 
 theorem inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
   calc
     a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
-    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
+    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right]
     _ = (a ⊔ a ⊓ b) ⊓ (a ⊓ b ⊔ c) := by rw [sup_inf_self]
     _ = (a ⊓ b ⊔ a) ⊓ (a ⊓ b ⊔ c) := by rw [sup_comm]
     _ = a ⊓ b ⊔ a ⊓ c := by rw [sup_inf_left]
@@ -607,7 +598,7 @@ instance OrderDual.instDistribLattice (α : Type*) [DistribLattice α] : Distrib
   le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
 
 theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
-  simp only [inf_sup_left, inf_comm _ c, eq_self_iff_true]
+  simp only [inf_sup_left, inf_comm _ c]
 
 theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
   calc
@@ -645,14 +636,6 @@ instance (priority := 100) LinearOrder.toLattice {α : Type u} [LinearOrder α] 
 section LinearOrder
 
 variable [LinearOrder α] {a b c d : α}
-
-@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
-theorem sup_eq_max : a ⊔ b = max a b :=
-  rfl
-
-@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
-theorem inf_eq_min : a ⊓ b = min a b :=
-  rfl
 
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
   (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by

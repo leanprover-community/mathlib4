@@ -101,7 +101,7 @@ structure RootedTree where
   /-- The type representing the elements in the tree. -/
   α : Type*
   /-- The type should be a `SemilatticeInf`,
-    where `inf` is the least common ancestor in the tree. -/
+  where `inf` is the least common ancestor in the tree. -/
   [semilatticeInf : SemilatticeInf α]
   /-- The type should have a bottom, the root. -/
   [orderBot : OrderBot α]

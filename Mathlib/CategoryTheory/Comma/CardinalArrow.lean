@@ -48,8 +48,6 @@ instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
 def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C where
   toFun f := Arrow.mk f.hom.unop
   invFun g := Arrow.mk g.hom.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :

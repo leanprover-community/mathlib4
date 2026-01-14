@@ -104,12 +104,12 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsT
   exact hGab <| le_sup_right.trans_eq ((hG.le_iff_eq <| h.sup_edge _ _).1 le_sup_left).symm <|
     (edge_adj ..).2 ⟨Or.inl ⟨rfl, rfl⟩, hab⟩
 
-lemma exists_isTuranMaximal (hr : 0 < r):
+lemma exists_isTuranMaximal (hr : 0 < r) :
     ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
   classical
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
-    simp only [Set.toFinset_setOf, mem_filter, mem_univ, true_and, c]
+    rw [Set.toFinset_setOf, mem_filter_univ]
     exact cliqueFree_bot (by omega)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
   use S, inferInstance
@@ -155,7 +155,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     card_edgeFinset_replaceVertex_of_not_adj _ hst, dst, Nat.add_sub_cancel]
   have l1 : (G.replaceVertex s t).degree s = G.degree s := by
     unfold degree; congr 1; ext v
-    simp only [mem_neighborFinset, SimpleGraph.irrefl, ite_self]
+    simp only [mem_neighborFinset]
     by_cases eq : v = t
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]

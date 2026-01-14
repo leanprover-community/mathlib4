@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Declarations about scalar multiplication on `Finsupp`

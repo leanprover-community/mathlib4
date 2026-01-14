@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 
@@ -60,23 +60,16 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
       obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
         simp only [huv.ne, imp_false, Ne, not_false_iff, true_and, not_forall,
-          Classical.not_not, exists_prop, eq_self_iff_true, not_true, false_and,
+          Classical.not_not, exists_prop, not_true, false_and,
           and_iff_right_iff_imp]
         rintro rfl rfl
         exact G.loopless _ huv
       · rw [Nat.even_add_one, ih, ← not_iff_not]
-        simp only [huv.ne.symm, Ne, eq_self_iff_true, not_true, false_and, not_forall,
+        simp only [huv.ne.symm, Ne, not_true, false_and, not_forall,
           not_false_iff, exists_prop, and_true, Classical.not_not, true_and, iff_and_self]
         rintro rfl
         exact huv.ne
-    · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and, add_zero, Ne] at ih ⊢
-      rw [ih]
-      constructor <;>
-        · rintro h' h'' rfl
-          simp only [imp_false, eq_self_iff_true, not_true, Classical.not_not] at h'
-          cases h'
-          simp only [not_true, and_false, false_and] at h
+    · grind
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
@@ -115,6 +108,15 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
     exact ⟨h.isTrail, fun _ => h.mem_edges_iff.mpr⟩
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
+
+theorem IsTrail.isEulerian_iff {u v : V} {p : G.Walk u v} (hp : p.IsTrail) :
+    p.IsEulerian ↔ p.edgeSet = G.edgeSet :=
+  ⟨fun h ↦ Set.Subset.antisymm p.edges_subset_edgeSet (p.isEulerian_iff.mp h).2,
+   fun h ↦ p.isEulerian_iff.mpr ⟨hp, by simp [← h]⟩⟩
+
+theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+    p.edgeSet = G.edgeSet := by
+  rwa [← h.isTrail.isEulerian_iff]
 
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by

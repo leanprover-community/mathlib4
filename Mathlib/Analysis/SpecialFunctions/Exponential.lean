@@ -287,7 +287,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t := by
   convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
-  show Commute (t' • x) (exp 𝕂 (t • x))
+  change Commute (t' • x) (exp 𝕂 (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right 𝕂
 
 theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
@@ -308,7 +308,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
   let ⟨_, _⟩ := analyticAt_exp_of_mem_ball (t • x) htx
   convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
-  show Commute (t' • x) (exp 𝕂 (t • x))
+  change Commute (t' • x) (exp 𝕂 (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right 𝕂
 
 variable {𝕂}

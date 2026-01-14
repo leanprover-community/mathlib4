@@ -39,7 +39,7 @@ def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff R m φ else 0 := by
-  simp [trunc, Polynomial.coeff_sum, Polynomial.coeff_monomial, Nat.lt_succ_iff]
+  simp [trunc, Polynomial.coeff_monomial]
 
 @[simp]
 theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
@@ -61,12 +61,12 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first | rfl | try simp_all
 
 @[simp]
 theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=
   Polynomial.ext fun m => by
-    simp only [coeff_trunc, AddMonoidHom.map_add, Polynomial.coeff_add]
+    simp only [coeff_trunc, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]

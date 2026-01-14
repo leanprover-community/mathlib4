@@ -54,7 +54,7 @@ private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) 
   apply (mod_lt n hk).trans_le
   simpa using Nat.mul_le_mul_left k ((Nat.one_le_div_iff hk).2 hn)
 
-private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4/ε⌉₊)
+private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4 / ε⌉₊)
     (hX : s ∈ P.parts) : card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊ : ℝ) ≤ #s := by
   cases isEmpty_or_nonempty α
   · simp [Fintype.card_eq_zero]
@@ -66,8 +66,8 @@ private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound
     _ ≤ (#s : ℝ) := mod_cast hP₁.average_le_card_part hX
 
 private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
-    (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4/ε⌉₊)
-    (ht : t ∈ (G.regularityReduced P (ε/8) (ε/4)).cliqueFinset 3) :
+    (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4 / ε⌉₊)
+    (ht : t ∈ (G.regularityReduced P (ε / 8) (ε / 4)).cliqueFinset 3) :
     triangleRemovalBound ε * card α ^ 3 ≤ #(G.cliqueFinset 3) := by
   rw [mem_cliqueFinset_iff, is3Clique_iff] at ht
   obtain ⟨x, y, z, ⟨-, s, hX, Y, hY, xX, yY, nXY, uXY, dXY⟩,
@@ -94,7 +94,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
       triangle_counting G (by rwa [that]) uXY dXY (by rwa [that]) uXZ dXZ (by rwa [that]) uYZ dYZ
 
 lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEquipartition)
-    (hPε : P.IsUniform G (ε/8)) (hP' : 4 / ε ≤ #P.parts) :
+    (hPε : P.IsUniform G (ε / 8)) (hP' : 4 / ε ≤ #P.parts) :
     2 * (#G.edgeFinset - #(G.regularityReduced P (ε/8) (ε/4)).edgeFinset : ℝ)
       < 2 * ε * (card α ^ 2 : ℕ) := by
   let A := (P.nonUniforms G (ε/8)).biUnion fun (U, V) ↦ U ×ˢ V

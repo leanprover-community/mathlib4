@@ -37,24 +37,13 @@ theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
   intro a
   rw [← h, ← IsInducing.subtypeVal.nhds_eq_comap]
 
-@[deprecated (since := "2024-10-28")]
-alias Set.restrictPreimage_inducing := Set.restrictPreimage_isInducing
-
 alias Topology.IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
-
-@[deprecated (since := "2024-10-28")] alias Inducing.restrictPreimage := IsInducing.restrictPreimage
 
 theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
     IsEmbedding (s.restrictPreimage f) :=
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 
-@[deprecated (since := "2024-10-26")]
-alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
-
 alias Topology.IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f) :
     IsOpenEmbedding (s.restrictPreimage f) :=
@@ -118,7 +107,7 @@ theorem isClosed_iff_coe_preimage {s : Set β} :
 
 theorem isLocallyClosed_iff_coe_preimage {s : Set β} :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
-  have (i) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
+  have (i : _) : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s :=
     (U i).isOpen.isOpenEmbedding_subtypeVal.coborder_preimage _
   simp [isLocallyClosed_iff_isOpen_coborder, hU.isOpen_iff_coe_preimage, this]
 
@@ -268,9 +257,6 @@ theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
 theorem isEmbedding_iff_of_iSup_eq_top (h : Continuous f) :
     IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).1.restrictPreimage f) :=
   (IsOpenCover.mk hU).isEmbedding_iff_restrictPreimage h
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_iff_embedding_of_iSup_eq_top := isEmbedding_iff_of_iSup_eq_top
 
 @[deprecated IsOpenCover.isOpenEmbedding_iff_restrictPreimage (since := "2025-02-10")]
 theorem isOpenEmbedding_iff_isOpenEmbedding_of_iSup_eq_top (h : Continuous f) :

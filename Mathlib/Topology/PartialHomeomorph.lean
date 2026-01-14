@@ -1074,7 +1074,7 @@ theorem continuousOn_iff_continuousOn_comp_left {f : Z → X} {s : Set Z} (h : s
 on the left is continuous and its image is contained in the source. -/
 theorem continuous_iff_continuous_comp_left {f : Z → X} (h : f ⁻¹' e.source = univ) :
     Continuous f ↔ Continuous (e ∘ f) := by
-  simp only [continuous_iff_continuousOn_univ]
+  simp only [← continuousOn_univ]
   exact e.continuousOn_iff_continuousOn_comp_left (Eq.symm h).subset
 
 end Continuity
@@ -1084,7 +1084,7 @@ end Continuity
 def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) (ht : e '' s = t) :
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
-  have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
+  have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_mono hs
   have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
@@ -1127,9 +1127,9 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
       rw [h']
       exact mem_univ _
   continuous_toFun := by
-    simpa only [continuous_iff_continuousOn_univ, h] using e.continuousOn
+    simpa only [continuousOn_univ, h] using e.continuousOn
   continuous_invFun := by
-    simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
+    simpa only [continuousOn_univ, h'] using e.continuousOn_symm
 
 theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
   refine .of_continuous_injective_isOpenMap (e.continuousOn.comp_continuous
@@ -1276,7 +1276,7 @@ theorem transHomeomorph_transHomeomorph (e : PartialHomeomorph X Y) (f' : Y ≃�
 theorem trans_transHomeomorph (e : PartialHomeomorph X Y) (e' : PartialHomeomorph Y Z)
     (f'' : Z ≃ₜ Z') :
     (e.trans e').transHomeomorph f'' = e.trans (e'.transHomeomorph f'') := by
-  simp only [transHomeomorph_eq_trans, trans_assoc, Homeomorph.trans_toPartialHomeomorph]
+  simp only [transHomeomorph_eq_trans, trans_assoc]
 
 end transHomeomorph
 
@@ -1353,7 +1353,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
     rw [PartialHomeomorph.symm_source]
     exact hyV
   · rw [(V.partialHomeomorphSubtypeCoe hV).right_inv hyV]
-    show _ = U.partialHomeomorphSubtypeCoe hU _
+    change _ = U.partialHomeomorphSubtypeCoe hU _
     rw [(U.partialHomeomorphSubtypeCoe hU).right_inv hy.2]
 
 end subtypeRestr

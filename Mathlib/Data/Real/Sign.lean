@@ -40,7 +40,7 @@ theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_
 
 @[simp]
 theorem sign_one : sign 1 = 1 :=
-  sign_of_pos <| by norm_num
+  sign_of_pos <| by simp
 
 theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
@@ -78,7 +78,7 @@ theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
 theorem sign_mul_nonneg (r : ℝ) : 0 ≤ sign r * r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn]
-    exact mul_nonneg_of_nonpos_of_nonpos (by norm_num) hn.le
+    exact mul_nonneg_of_nonpos_of_nonpos (by simp) hn.le
   · rw [mul_zero]
   · rw [sign_of_pos hp, one_mul]
     exact hp.le

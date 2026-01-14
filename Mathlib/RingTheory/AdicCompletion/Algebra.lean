@@ -262,7 +262,7 @@ instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
     simp only [smul_eval, val_mul, mul_smul]
   smul_zero r := by ext n; simp
   smul_add r x y := by ext n; simp
-  add_smul r s x := by ext n; simp [val_smul, add_smul]
+  add_smul r s x := by ext n; simp [add_smul]
   zero_smul x := by ext n; simp
 
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where

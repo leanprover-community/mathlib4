@@ -330,7 +330,7 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   -- But `σ₁₂` is isometric, so `‖σ₁₂ c‖ = ‖c‖ > r`, which concludes the argument since
   -- `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
   refine hrU (σ₁₂ c) ?_
-  rw [RingHomIsometric.is_iso]
+  rw [RingHomIsometric.norm_map]
   exact hc.le
 
 /-- Upgrade a compact `LinearMap` to a `ContinuousLinearMap`. -/
