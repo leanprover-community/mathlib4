@@ -22,6 +22,8 @@ variable {C : Type*} [Category C] [ModelCategory C] {H : Type*} [Category H]
   (L : C ⥤ H) [L.IsLocalization (weakEquivalences _)]
   {X Y : C}
 
+/-- The map `LeftHomotopyClass X Y → (L.obj X ⟶ L.obj Y)` when `L` is
+a localization functor with respect to `weakEquivalences C`. -/
 def leftHomotopyClassToHom : LeftHomotopyClass X Y → (L.obj X ⟶ L.obj Y) :=
   Quot.lift L.map (fun _ _ h ↦ h.factorsThroughLocalization.map_eq _)
 
@@ -29,6 +31,8 @@ def leftHomotopyClassToHom : LeftHomotopyClass X Y → (L.obj X ⟶ L.obj Y) :=
 lemma leftHomotopyClassToHom_mk (f : X ⟶ Y) :
     leftHomotopyClassToHom L (.mk f) = L.map f := rfl
 
+/-- The map `RightHomotopyClass X Y → (L.obj X ⟶ L.obj Y)` when `L` is
+a localization functor with respect to `weakEquivalences C`. -/
 def rightHomotopyClassToHom : RightHomotopyClass X Y → (L.obj X ⟶ L.obj Y) :=
   Quot.lift L.map (fun _ _ h ↦ h.factorsThroughLocalization.map_eq _)
 
@@ -48,7 +52,11 @@ lemma bijective_leftHomotopyClassToHom_iff_bijective_rightHomotopyClassToHom
     simp
   simp [this]
 
-lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
+section
+
+variable [IsCofibrant X] [IsFibrant Y]
+
+lemma bijective_rightHomotopyClassToHom :
     Function.Bijective (rightHomotopyClassToHom L : RightHomotopyClass X Y → _) := by
   wlog _ : IsCofibrant Y generalizing Y
   · obtain ⟨Y', _, p, _, _⟩ := CofibrantObject.π.exists_resolution Y
@@ -89,9 +97,31 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
   rw [this]
   exact Equiv.bijective _
 
-lemma bijective_leftHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
+lemma bijective_leftHomotopyClassToHom :
     Function.Bijective (leftHomotopyClassToHom L : LeftHomotopyClass X Y → _) := by
   rw [bijective_leftHomotopyClassToHom_iff_bijective_rightHomotopyClassToHom]
   exact bijective_rightHomotopyClassToHom L X Y
+
+lemma map_surjective_of_isLocalization :
+    Function.Surjective (L.map : (X ⟶ Y) → _) := by
+  intro f
+  obtain ⟨⟨f⟩, rfl⟩ := (bijective_leftHomotopyClassToHom L X Y).2 f
+  exact ⟨f, rfl⟩
+
+lemma RightHomotopyRel.iff_map_eq {f g : X ⟶ Y} :
+    RightHomotopyRel f g ↔ L.map f = L.map g := by
+  refine ⟨fun h ↦ (RightHomotopyRel.factorsThroughLocalization C h).map_eq L,
+    fun h ↦ ?_⟩
+  rw [← RightHomotopyClass.mk_eq_mk_iff]
+  exact (bijective_rightHomotopyClassToHom L X Y).1 (by simpa)
+
+lemma LeftHomotopyRel.iff_map_eq {f g : X ⟶ Y} :
+    LeftHomotopyRel f g ↔ L.map f = L.map g := by
+  refine ⟨fun h ↦ (LeftHomotopyRel.factorsThroughLocalization C h).map_eq L,
+    fun h ↦ ?_⟩
+  rw [← LeftHomotopyClass.mk_eq_mk_iff]
+  exact (bijective_leftHomotopyClassToHom L X Y).1 (by simpa)
+
+end
 
 end HomotopicalAlgebra
