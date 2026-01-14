@@ -188,10 +188,10 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
 /-- A family of `indicatorConstLp` functions is continuous in the parameter,
 if `μ (s y ∆ s x)` tends to zero as `y` tends to `x` for all `x`. -/
 theorem continuous_indicatorConstLp_set [Fact (1 ≤ p)] {X : Type*} [TopologicalSpace X]
-    {s : X → Set α} {hs : ∀ x, MeasurableSet (s x)} {hμsa : ∀ x, μ (s x) ≠ ∞} (hp : p ≠ ∞)
+    {s : X → Set α} {hs : ∀ x, MeasurableSet (s x)} {hμs : ∀ x, μ (s x) ≠ ∞} (hp : p ≠ ∞)
     (h : ∀ x, Tendsto (fun y ↦ μ (s y ∆ s x)) (𝓝 x) (𝓝 0)) :
-    Continuous fun x ↦ indicatorConstLp p (hs x) (.inr <| hμsa x) c :=
-  continuous_iff_continuousAt.2 fun x ↦ tendsto_indicatorConstLp_set (hμt := hμsa) hp (h x)
+    Continuous fun x ↦ indicatorConstLp p (hs x) (.inr <| hμs x) c :=
+  continuous_iff_continuousAt.2 fun x ↦ tendsto_indicatorConstLp_set (hμt := hμs) hp (h x)
 
 @[simp]
 theorem indicatorConstLp_empty :
