@@ -86,8 +86,8 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
-@[to_dual isRefl']
-instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
+@[to_dual stdRefl']
+instance WCovBy.stdRefl : @Std.Refl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 @[to_dual self]

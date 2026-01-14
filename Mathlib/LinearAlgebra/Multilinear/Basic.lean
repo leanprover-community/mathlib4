@@ -6,13 +6,14 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 # Multilinear maps
@@ -866,6 +867,9 @@ variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 addition and scalar multiplication. -/
 instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
+
+instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
 
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul

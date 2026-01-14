@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fin.Basic
 
 /-!
 # Cycles of a list
