@@ -19,7 +19,7 @@ when the target space is a standard Borel space, any Markov kernel can be repres
 of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemma 4.22 in
 "Foundations of Modern Probability" by Olav Kallenberg, 2021.
 
-## Statements
+## Auxiliary lemmas
 
 * `ProbabilityTheory.Kernel.unitInterval_representation`:
   for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
@@ -30,12 +30,18 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
 
+## Main theorems
 * `ProbabilityTheory.Kernel.representation`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
   This is a consequence of `ProbabilityTheory.Kernel.embedding_representation` and the fact that
   any standard Borel space can be embedded in `ℝ`, and then composed with `unitInterval.sigmoid`.
+
+* `ProbabilityTheory.Kernel.representation_measure`:
+  for a probability measure `μ` on a standard Borel space `β`,
+  there exists a measurable function `f : I → β` such that `volume.map f = μ`.
+  This is a consequence of `ProbabilityTheory.Kernel.representation`.
 -/
 
 @[expose] public section
@@ -139,5 +145,13 @@ theorem representation {β : Type*} [Nonempty β] [MeasurableSpace β] [Standard
     (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → I → β), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a :=
   κ.embedding_representation (measurableEmbedding_sigmoid_comp_embeddingReal β)
+
+theorem representation_measure {β : Type*} {mβ : MeasurableSpace β}
+    [Nonempty β] [StandardBorelSpace β]
+    (μ : Measure β) [IsProbabilityMeasure μ] :
+    ∃ (f : I → β), Measurable f ∧ volume.map f = μ := by
+  obtain ⟨f, hf_meas, hf_map⟩ := Kernel.representation (Kernel.const Unit μ)
+  specialize hf_map ⟨⟩
+  exact ⟨f ⟨⟩, by fun_prop, by simpa⟩
 
 end ProbabilityTheory.Kernel
