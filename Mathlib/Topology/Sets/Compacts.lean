@@ -723,7 +723,7 @@ instance instBoundedOrder : BoundedOrder (CompactOpens α) :=
 section Compl
 variable [T2Space α]
 
-instance instHasCompl : HasCompl (CompactOpens α) where
+instance instCompl : Compl (CompactOpens α) where
   compl s := ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩
 
 instance instHImp : HImp (CompactOpens α) where
