@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser,
+  Fengyang Wang
 -/
 module
 
@@ -45,8 +46,8 @@ def s : Multiset ℕ := {0, 0, 0}
 
 ## TODO
 
-* Define `HasMulAntidiagonal` (for monoids).
-  For `PNat`, we will recover the set of divisors of a strictly positive integer.
+* Define a `HasMulAntidiagonal` instance for `PNat` using `Nat.divisorsAntidiagonal`.
+  This will recover the set of divisor pairs of a strictly positive integer.
 -/
 
 @[expose] public section
@@ -199,5 +200,93 @@ abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h
     simp [← h]
+
+/-! ## Multiplicative Antidiagonal -/
+
+/-- The class of multiplicative monoids with a multiplicative antidiagonal -/
+@[to_additive existing HasAntidiagonal]
+class HasMulAntidiagonal (M : Type*) [Monoid M] where
+  /-- The multiplicative antidiagonal of `n` is the finset of pairs `(i, j)` such that
+  `i * j = n`. -/
+  mulAntidiagonal : M → Finset (M × M)
+  /-- A pair belongs to `mulAntidiagonal n` iff the product of its components equals `n`. -/
+  mem_mulAntidiagonal {n} {a} : a ∈ mulAntidiagonal n ↔ a.fst * a.snd = n
+
+export HasMulAntidiagonal (mulAntidiagonal mem_mulAntidiagonal)
+
+attribute [simp] mem_mulAntidiagonal
+
+variable {M : Type*}
+
+/-- All `HasMulAntidiagonal` instances are equal -/
+instance [Monoid M] : Subsingleton (HasMulAntidiagonal M) where
+  allEq := by
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    congr with n xy
+    rw [ha, hb]
+
+@[to_additive existing hasAntidiagonal_congr]
+lemma hasMulAntidiagonal_congr (M : Type*) [Monoid M]
+    [H1 : HasMulAntidiagonal M] [H2 : HasMulAntidiagonal M] :
+    H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
+
+@[to_additive existing swap_mem_antidiagonal]
+theorem swap_mem_mulAntidiagonal [CommMonoid M] [HasMulAntidiagonal M] {n : M} {xy : M × M} :
+    xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
+  simp [mul_comm]
+
+@[to_additive existing map_prodComm_antidiagonal]
+theorem map_prodComm_mulAntidiagonal [CommMonoid M] [HasMulAntidiagonal M] {n : M} :
+    (mulAntidiagonal n).map (Equiv.prodComm M M) = mulAntidiagonal n :=
+  Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
+
+/-- See also `Finset.map_prodComm_mulAntidiagonal`. -/
+@[to_additive existing map_swap_antidiagonal]
+theorem map_swap_mulAntidiagonal [CommMonoid M] [HasMulAntidiagonal M] {n : M} :
+    (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
+  map_prodComm_mulAntidiagonal
+
+section CancelMonoid
+variable [CancelMonoid M] [HasMulAntidiagonal M] {p q : M × M} {n : M}
+
+/-- A point in the multiplicative antidiagonal is determined by its first coordinate. -/
+@[to_additive existing antidiagonal_congr]
+theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
+    p = q ↔ p.1 = q.1 := by
+  refine ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((mul_right_inj q.fst).mp ?_)⟩
+  rw [mem_mulAntidiagonal] at hp hq
+  rw [hq, ← h, hp]
+
+/-- A point in the multiplicative antidiagonal is determined by its first coordinate
+(subtype version). -/
+@[to_additive existing antidiagonal_subtype_ext]
+theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
+  Subtype.ext ((mulAntidiagonal_congr p.prop q.prop).mpr h)
+
+end CancelMonoid
+
+section CancelCommMonoid
+variable [CancelCommMonoid M] [HasMulAntidiagonal M] {p q : M × M} {n : M}
+
+/-- A point in the multiplicative antidiagonal is determined by its second coordinate. -/
+@[to_additive existing antidiagonal_congr']
+lemma mulAntidiagonal_congr' (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
+    p = q ↔ p.2 = q.2 := by
+  rw [← Prod.swap_inj]
+  exact mulAntidiagonal_congr (swap_mem_mulAntidiagonal.2 hp) (swap_mem_mulAntidiagonal.2 hq)
+
+end CancelCommMonoid
+
+/-- The disjoint union of multiplicative antidiagonals `Σ (n : M), mulAntidiagonal n` is equivalent
+to the product `M × M`. -/
+@[to_additive existing sigmaAntidiagonalEquivProd]
+def sigmaMulAntidiagonalEquivProd [Monoid M] [HasMulAntidiagonal M] :
+    (Σ n : M, mulAntidiagonal n) ≃ M × M where
+  toFun x := x.2
+  invFun x := ⟨x.1 * x.2, x, mem_mulAntidiagonal.mpr rfl⟩
+  left_inv := by
+    rintro ⟨n, ⟨k, l⟩, h⟩
+    rw [mem_mulAntidiagonal] at h
+    exact Sigma.subtype_ext h rfl
 
 end Finset
