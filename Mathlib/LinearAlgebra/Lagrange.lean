@@ -463,22 +463,17 @@ theorem coeff_eq_sum
     rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
     field_simp
   · cases hd : P.degree; · simp
-    case coe d =>
-      suffices d < #s from WithBot.coe_lt_coe.mpr this
-      rw [hd, ← WithBot.coe_one, ← WithBot.coe_add, Nat.cast_withBot, WithBot.coe_le_coe] at hP
-      omega
+    case coe d => rwa [← hd]
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
-    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
   lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
   rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
-  replace hP := WithBot.coe_eq_coe.mp hP
+  replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
   have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
   rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
-  apply coeff_eq_sum hvs
-  rw [← hdeg, ← WithBot.coe_one, ← WithBot.coe_add, ← hP, Nat.cast_id]
-  rfl
+  exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; omega)
 
 end Interpolate
 
