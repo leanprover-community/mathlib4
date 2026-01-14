@@ -39,7 +39,7 @@ variable
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
-To register a `C^n` manifold for a general `n`, one should replace `[IsManifold ∞ I M]` with
+To register a `C^n` manifold for a general `n`, one should replace `[IsManifold I ∞ M]` with
 `[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
 tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 as there are
 automatic instances for these cases). One can require whatever regularity one wants in the
