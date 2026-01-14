@@ -314,11 +314,7 @@ The logarithmic counting function is monotonous.
 theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
     MonotoneOn (logCounting f e) (Ioi 0) := by
   unfold logCounting
-  by_cases h : e = ⊤
-  · simp only [h]
-    apply locallyFinsuppWithin.logCounting_mono (negPart_nonneg _)
-  · simp only [h]
-    apply locallyFinsuppWithin.logCounting_mono (posPart_nonneg _)
+  all_goals simpa [h] using locallyFinsuppWithin.logCounting_mono (by positivity))
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
