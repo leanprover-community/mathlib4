@@ -217,7 +217,7 @@ noncomputable def DiagramWithUniqueTerminal.single (j : J) :
   toDiagram := .single j
   top := j
   isTerminal := by
-    refine .ofExistsUnique ⟨⟨⟩⟩ (fun _ h ↦ ?_) (fun _ h₁ _ _ h₂ h₃ ↦ ? _) (fun _ _ _ h ↦ ?_)
+    refine .ofExistsUnique ⟨⟨⟩⟩ (fun _ h ↦ ?_) (fun _ h₁ _ _ h₂ h₃ ↦ ?_) (fun _ _ _ h ↦ ?_)
     · simp only [Diagram.single_P, ObjectProperty.singleton_iff] at h
       subst h
       exact ⟨𝟙 _, ⟨⟨⟩⟩⟩
