@@ -76,7 +76,7 @@ theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _
 
 /-- The Laurent expansion of rational functions about a value. -/
 def laurent : RatFunc R →ₐ[R] RatFunc R :=
-  RatFunc.mapAlgHom (.ofLinearMap (taylor r) (taylor_one _) (taylor_mul _))
+  RatFunc.mapAlgHom (AlgHom.ofLinearMap (taylor r) (taylor_one _) (taylor_mul _))
     (taylor_mem_nonZeroDivisors _)
 
 theorem laurent_div :
