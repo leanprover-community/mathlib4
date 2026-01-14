@@ -126,6 +126,14 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
 
+@[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ dom_empty)⟩
+
+@[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ cod_empty)⟩
+
 @[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
 @[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
 
@@ -322,6 +330,10 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 @[deprecated (since := "2025-07-06")]
 alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
 
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
+
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
 to elements of `S`. Other generalization of `Function.preimage`. -/
@@ -361,7 +373,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a

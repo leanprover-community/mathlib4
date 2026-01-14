@@ -26,7 +26,7 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-theorem IsRefl.swap (r) [IsRefl α r] : IsRefl α (swap r) :=
+theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   ⟨refl_of r⟩
 
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
@@ -48,13 +48,13 @@ theorem IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap 
   ⟨fun a b => by simpa [Function.swap, or_comm, or_left_comm] using trichotomous_of r a b⟩
 
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
-  { @IsRefl.swap α r _, @IsTrans.swap α r _ with }
+  { Std.Refl.swap r, IsTrans.swap r with }
 
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
-  { @Std.Irrefl.swap α r _, @IsTrans.swap α r _ with }
+  { Std.Irrefl.swap r, IsTrans.swap r with }
 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  { @IsPreorder.swap α r _, @Std.Antisymm.swap α r _ with }
+  { IsPreorder.swap r, Std.Antisymm.swap r with }
 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
@@ -257,7 +257,8 @@ variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
 @[to_dual /-- Inducts on a well-founded `>` relation. -/]
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+theorem induction {motive : α → Prop} (a : α)
+    (ind : ∀ x, (∀ y, y < x → motive y) → motive x) : motive a :=
   IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
@@ -340,17 +341,18 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) :=
-  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
-    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
-    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
-
-/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
+@[to_dual]
+instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
+    intro a a' ha b
+    induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
+    induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
+    refine Acc.intro (a', b) fun x hx => ?_
+    obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
+    · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
+    · exact ihb x.2 hb x.1 (ha'.trans ha)
 
 namespace Set
 
@@ -377,7 +379,7 @@ end Set
 
 namespace Order.Preimage
 
-instance instIsRefl [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
+instance instRefl [Std.Refl r] {f : β → α} : Std.Refl (f ⁻¹'o r) :=
   ⟨fun _ => refl_of r _⟩
 
 instance instIrrefl [Std.Irrefl r] {f : β → α} : Std.Irrefl (f ⁻¹'o r) :=
@@ -445,17 +447,17 @@ lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 
 @[refl, simp]
-lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
+lemma subset_refl [@Std.Refl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 
-lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _
+lemma subset_rfl [@Std.Refl α (· ⊆ ·)] : a ⊆ a := refl _
 
-lemma subset_of_eq [IsRefl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
+lemma subset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
 
-lemma superset_of_eq [IsRefl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
+lemma superset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
 
-lemma ne_of_not_subset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
+lemma ne_of_not_subset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
 
-lemma ne_of_not_superset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
+lemma ne_of_not_superset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
 
 @[trans]
 lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
@@ -478,10 +480,11 @@ alias HasSubset.Subset.antisymm := subset_antisymm
 
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
-theorem subset_antisymm_iff [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] : a = b ↔ a ⊆ b ∧ b ⊆ a :=
+theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
+    a = b ↔ a ⊆ b ∧ b ⊆ a :=
   ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
 
-theorem superset_antisymm_iff [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
+theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ b ⊆ a ∧ a ⊆ b :=
   ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
 
@@ -591,7 +594,7 @@ alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
   ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
 
-theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
+theorem subset_iff_ssubset_or_eq [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a ⊆ b ↔ a ⊂ b ∨ a = b :=
   ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
 
@@ -618,8 +621,8 @@ end SubsetSsubset
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 
 
-@[to_dual instIsReflGe]
-instance [Preorder α] : IsRefl α (· ≤ ·) :=
+@[to_dual instReflGe]
+instance instReflLe [Preorder α] : @Std.Refl α (· ≤ ·) :=
   ⟨le_refl⟩
 
 @[to_dual instIsTransGe]
