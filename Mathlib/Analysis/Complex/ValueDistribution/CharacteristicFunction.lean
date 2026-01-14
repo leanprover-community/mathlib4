@@ -69,15 +69,14 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
 The characteristic function is even.
 -/
 theorem characteristic_even {a : WithTop E} :
-    Function.Even (characteristic f a) := Function.Even.add proximity_even logCounting_even
+    (characteristic f a).Even := proximity_even.add logCounting_even
 
 /--
 For `1 ≤ r`, the characteristic function is non-negative.
 -/
 theorem characteristic_nonneg {r : ℝ} {a : WithTop E} (hr : 1 ≤ r) :
-    0 ≤ characteristic f a r := by
-  simp only [characteristic, Pi.add_apply]
-  exact add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
+    0 ≤ characteristic f a r := 
+  add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
 
 /--
 The characteristic function is asymptotically non-negative.
