@@ -102,24 +102,24 @@ theorem pow_idealOfVars (n : ℕ) :
     rw [add_comm, hz, map_add, degree_single, Nat.add_le_add_iff_left] at x_deg
     exact ⟨z, x_deg, ⟨single i 1, by simp, by rw [hz, add_comm]⟩⟩
 
-/-- The `n`th power of `idealOfVars` is spanned by all monomials of total degree `n`. -/
+/-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    .span ((fun x ↦ monomial x 1) '' {x | x.sum (fun _ => id) = n}) := by
+    .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
     Set.image_pow_eq_image_finsupp_prod]
-  simp [monomial_eq]
+  simp [monomial_eq, Set.preimage, degree, sum]
 
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
-    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ x.sum (fun _ => id) := by
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
-  simp [restrictSupportIdeal, mem_restrictSupport_iff, Set.subset_def, sum, degree]
+  simp [restrictSupportIdeal, mem_restrictSupport_iff, Set.subset_def]
 
 theorem mem_pow_idealOfVars_iff' (n : ℕ) (p : MvPolynomial σ R) :
-    p ∈ idealOfVars σ R ^ n ↔ ∀ x, x.sum (fun _ => id) < n → p.coeff x = 0 := by
+    p ∈ idealOfVars σ R ^ n ↔ ∀ x, degree x < n → p.coeff x = 0 := by
   grind only [mem_pow_idealOfVars_iff, mem_support_iff]
 
 theorem monomial_mem_pow_idealOfVars_iff (n : ℕ) (x : σ →₀ ℕ) {r : R} (h : r ≠ 0) :
-    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ x.sum fun _ => id := by
+    monomial x r ∈ idealOfVars σ R ^ n ↔ n ≤ degree x := by
   classical
   grind only [mem_pow_idealOfVars_iff, mem_support_iff, coeff_monomial]
 
