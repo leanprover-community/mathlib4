@@ -69,6 +69,8 @@ scoped notation:70 a:70 " ⋆ₘ " b:71 => apply a b
 /-- Notation for additive Cauchy product convolution. -/
 scoped[CauchyProduct] notation:70 a:70 " ⋆ " b:71 => CauchyProduct.apply a b
 
+open scoped CauchyProduct
+
 @[to_additive (dont_translate := R) CauchyProduct.apply_eq]
 theorem apply_eq (a b : M → R) (n : M) :
     (a ⋆ₘ b) n = ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2 := rfl
