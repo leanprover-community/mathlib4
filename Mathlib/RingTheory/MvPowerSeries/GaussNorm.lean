@@ -3,8 +3,11 @@
  Released under Apache 2.0 license as described in the file LICENSE.
  Authors: William Coram
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
+
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-!
 # Gauss norm for multivariate power series
