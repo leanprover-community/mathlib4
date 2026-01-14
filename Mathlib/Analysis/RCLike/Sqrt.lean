@@ -27,7 +27,7 @@ noncomputable def Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
 @[simp] theorem Complex.sqrt_zero : (0 : ℂ).sqrt = 0 := by simp [sqrt]
 @[simp] theorem Complex.sqrt_one : (1 : ℂ).sqrt = 1 := by simp [sqrt]
 
-theorem Complex.sqrt_eq_re_add_ite {a : ℂ} :
+theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
     a.sqrt = √((‖a‖ + a.re) / 2) + (if 0 ≤ a.im then 1 else -1) * √((‖a‖ - a.re) / 2) * I := by
   rw [← cpow_inv_two_re, sqrt]
   by_cases! h : 0 ≤ a.im
@@ -51,9 +51,9 @@ theorem RCLike.sqrt_eq_ite {a : 𝕜} :
   · simp [abs_of_nonneg ha', ← two_mul]
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
 
-theorem RCLike.sqrt_eq_re_add_ite {a : 𝕜} :
+theorem RCLike.sqrt_eq_real_add_ite {a : 𝕜} :
     sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
-  rw [sqrt, Complex.sqrt_eq_re_add_ite]
+  rw [sqrt, Complex.sqrt_eq_real_add_ite]
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
   · rw [← re_add_im a]
     simp [h, im_eq_zero]
