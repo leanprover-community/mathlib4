@@ -371,7 +371,7 @@ def _root_.RCLike.complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
 
 @[simp] theorem _root_.RCLike.toAdddMonoidHom_complexRingEquiv {𝕜 : Type*} [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) :
-    (RCLike.complexRingEquiv h).toAddMonoidHom = RCLike.map 𝕜 ℂ := rfl
+    (RCLike.complexRingEquiv h : 𝕜 →+ ℂ) = RCLike.map 𝕜 ℂ := rfl
 
 open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
