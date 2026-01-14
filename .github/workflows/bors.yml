@@ -509,6 +509,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
+        timeout-minutes: 30
         run: |
           cd pr-branch
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
@@ -652,34 +653,7 @@ jobs:
           lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
-      # Instead we run it in a cron job on master: see `lean4checker.yml`.
-      # Output is posted to the zulip topic
-      # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
-
-      - name: checkout lean4checker
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        shell: bash
-        run: |
-          git clone https://github.com/leanprover/lean4checker
-          cd lean4checker
-          # Read lean-toolchain file and checkout appropriate branch
-          TOOLCHAIN=$(cat ../lean-toolchain)
-          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
-            VERSION=${TOOLCHAIN#leanprover/lean4:}
-            git checkout "$VERSION"
-          else
-            git checkout master
-          fi
-
-      - name: run leanchecker on itself
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        run: |
-          cd lean4checker
-          # Build lean4checker using the same toolchain
-          cp ../lean-toolchain .
-          lake build
-          lake -q exe lean4checker Lean4Checker
-
+      # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
     name: Lint style
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'

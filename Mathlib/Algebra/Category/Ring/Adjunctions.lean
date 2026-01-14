@@ -101,7 +101,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
     naturality S T f := by
       ext : 2
       apply MonoidAlgebra.ringHom_ext <;>
-        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, - Under.w] }
+        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, -Under.w] }
   left_triangle_components G := by
     ext : 2
     apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]
