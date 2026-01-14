@@ -218,11 +218,9 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
 lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
     signedDist v (AffineMap.lineMap p q c₁) (AffineMap.lineMap p q c₂) =
       (c₂ - c₁) * signedDist v p q := by
-  simp only [AffineMap.apply_lineMap, ContinuousAffineMap.apply_lineMap,
-    ContinuousAffineMap.lineMap_apply', signedDist_self]
-  simp only [AffineMap.lineMap_apply_module', sub_zero, smul_eq_mul, add_zero, zero_sub,
-    signedDist_anticomm, add_sub_cancel_left]
-  rw [← signedDist_anticomm v p, mul_neg, ← neg_mul, ← add_mul, sub_eq_add_neg]
+  trans c₂ * signedDist v p q + c₁ * signedDist v q p
+  · simp [AffineMap.lineMap_apply_ring']
+  · rw [sub_mul, ← signedDist_anticomm v p, mul_neg, sub_eq_add_neg]
 
 lemma signedDist_lineMap_left (c : ℝ) :
     signedDist v (AffineMap.lineMap p q c) p = -c * signedDist v p q := by
