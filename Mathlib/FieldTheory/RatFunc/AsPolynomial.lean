@@ -88,13 +88,13 @@ theorem aeval_X_left_eq_algebraMap (p : K[X]) :
   induction p using Polynomial.induction_on' <;> simp_all
 
 @[simp]
-lemma liftRingHom_C {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (x : K) :
-    liftRingHom φ hφ (C x) = φ (.C x) :=
+lemma liftRingHom_C {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L] (φ : F)
+  (hφ : K[X]⁰ ≤ L⁰.comap φ) (x : K) : liftRingHom φ hφ (C x) = φ (.C x) :=
   RatFunc.liftRingHom_algebraMap _ _ _
 
 @[simp]
-lemma liftRingHom_X {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
-    RatFunc.liftRingHom φ hφ X = φ (.X) :=
+lemma liftRingHom_X {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L] (φ : F)
+  (hφ : K[X]⁰ ≤ L⁰.comap φ) : RatFunc.liftRingHom φ hφ X = φ (.X) :=
   RatFunc.liftRingHom_algebraMap _ _ _
 
 end Domain
