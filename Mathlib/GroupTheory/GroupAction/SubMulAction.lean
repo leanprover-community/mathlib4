@@ -254,8 +254,8 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) rfl rfl
+  SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]
 theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
