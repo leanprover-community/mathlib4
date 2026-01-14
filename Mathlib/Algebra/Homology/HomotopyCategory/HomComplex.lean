@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Tactic.Linarith
 
 /-! The cochain complex of homomorphisms between cochain complexes
 
@@ -571,7 +570,7 @@ def HomComplex : CochainComplex AddCommGrpCat ℤ where
   X i := AddCommGrpCat.of (Cochain F G i)
   d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
-  d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
+  d_comp_d' _ _ _ _ _ := by ext; simp [δ_δ]
 
 namespace HomComplex
 
@@ -758,6 +757,16 @@ lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
     δ n m ((Cochain.ofHom f).comp z (zero_add n)) =
       (Cochain.ofHom f).comp (δ n m z) (zero_add m) := by
   rw [← Cocycle.ofHom_coe, δ_zero_cocycle_comp]
+
+/-- The precomposition of a cocycle with a morphism of cochain complexes. -/
+@[simps!]
+def Cocycle.precomp {n : ℤ} (z : Cocycle G K n) (f : F ⟶ G) : Cocycle F K n :=
+  Cocycle.mk ((Cochain.ofHom f).comp z (zero_add n)) _ rfl (by simp)
+
+/-- The postcomposition of a cocycle with a morphism of cochain complexes. -/
+@[simps!]
+def Cocycle.postcomp {n : ℤ} (z : Cocycle F G n) (f : G ⟶ K) : Cocycle F K n :=
+  Cocycle.mk (z.1.comp (Cochain.ofHom f) (add_zero n)) _ rfl (by simp)
 
 namespace Cochain
 

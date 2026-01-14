@@ -208,7 +208,7 @@ variable (R)
 def singleLinearMap [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) :
     α →ₗ[R] Matrix m n α where
   __ := singleAddMonoidHom i j
-  map_smul' _ _:= smul_single _ _ _ _ |>.symm
+  map_smul' _ _ := smul_single _ _ _ _ |>.symm
 
 section ext
 

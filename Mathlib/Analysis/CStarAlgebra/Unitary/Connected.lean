@@ -357,7 +357,7 @@ lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) 
     convert this |>.image (f := (u * ·)) (by fun_prop)
     ext v
     rw [← inv_mul_cancel u]
-    simp [- inv_mul_cancel, Subtype.dist_eq, dist_eq_norm, ← mul_sub]
+    simp [-inv_mul_cancel, Subtype.dist_eq, dist_eq_norm, ← mul_sub]
   refine ⟨1, by simpa, fun {u} hu ↦ ?_⟩
   have hu : ‖(u - 1 : A)‖ < δ := by simpa [Subtype.dist_eq, dist_eq_norm] using hu
   refine ⟨path 1 u (hu.trans hδ₂), fun t ↦ ?_⟩
