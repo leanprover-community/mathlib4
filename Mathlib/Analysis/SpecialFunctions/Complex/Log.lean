@@ -271,9 +271,6 @@ open scoped Real
 `target = {z | 0 < re z} ∪ {z | im z ≠ 0}` (a.k.a. `slitPlane`).
 This definition is used to prove that `Complex.log`
 is complex differentiable at all points but the negative real semi-axis.
-
-See also `expOpenPartialHomeomorphProd` above for a full covering trivialization of `exp`
-over `slitPlane`.
 -/
 noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   toFun := exp
@@ -294,7 +291,7 @@ noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
 
-@[deprecated (since := "2026-01-03")]
+@[deprecated (since := "2026-01-13")]
 alias expPartialHomeomorph := expOpenPartialHomeomorph
 
 end Complex
