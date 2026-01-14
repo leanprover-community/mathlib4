@@ -19,12 +19,6 @@ For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), convolution is 
 over the antidiagonal. This gives a purely algebraic ring structure without requiring
 topology or `tsum` convergence.
 
-## Main Definitions
-
-* `CauchyProduct.apply`: `(a ⋆ b) n = ∑ kl ∈ Finset.antidiagonal n, a kl.1 * b kl.2`
-* `CauchyProduct.one`: The multiplicative identity `δ₀`, where `δ₀(0) = 1` and `δ₀(g) = 0`
-  for `g ≠ 0`
-
 ## Main Results
 
 * `CauchyProduct.assoc`: Associativity via `Finset.sum_nbij'`
