@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.Module.Rat
 public import Mathlib.Tactic.GCongr
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Order properties of the average over a finset
 -/

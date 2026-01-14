@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Filtration
 
 @[expose] public section
 
-open IsLocalRing
+open IsLocalRing Module
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 variable [IsNoetherianRing R] [Module.Finite R M]
@@ -28,8 +28,8 @@ theorem IsHausdorff.of_isLocalRing [IsLocalRing R] (h : I ≠ ⊤) : IsHausdorff
 instance [IsLocalRing R] : IsHausdorff (maximalIdeal R) M :=
   .of_le_jacobson _ _ (maximalIdeal_le_jacobson _)
 
-theorem IsHausdorff.of_noZeroSMulDivisors [NoZeroSMulDivisors R M] (h : I ≠ ⊤) : IsHausdorff I M :=
-  ⟨fun x hx ↦ (I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors h).le (by simpa [SModEq.zero] using hx)⟩
+lemma IsHausdorff.of_isTorsionFree [IsDomain R] [IsTorsionFree R M] (h : I ≠ ⊤) : IsHausdorff I M :=
+  ⟨fun x hx ↦ (I.iInf_pow_smul_eq_bot_of_isTorsionFree h).le (by simpa [SModEq.zero] using hx)⟩
 
 theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :=
-  .of_noZeroSMulDivisors I R h
+  .of_isTorsionFree I R h
