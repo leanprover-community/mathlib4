@@ -693,8 +693,8 @@ lemma isBigO_nat_atTop_of_recurrence {f : ℕ → E''} {g : ℕ → F''}
     intro m hm
     calc ‖f m‖ = (‖f m‖ / ‖g m‖) * ‖g m‖ := by by_cases hm' : g m = 0 <;> grind [norm_eq_zero]
       _ ≤ C₁ * ‖g m‖ := by
-            gcongr
-            exact Finset.le_sup' (fun x => ‖f x‖ / ‖g x‖) (Finset.mem_def.mpr hm)
+        gcongr
+        exact Finset.le_sup' (fun x => ‖f x‖ / ‖g x‖) (Finset.mem_def.mpr hm)
   refine ⟨max C₀ C₁, ?_⟩
   filter_upwards [eventually_ge_atTop n₁] with n hn
   induction n using Nat.strongRecOn with
@@ -706,7 +706,7 @@ lemma isBigO_nat_atTop_of_recurrence {f : ℕ → E''} {g : ℕ → F''}
       grind
     · grind
 
-lemma isBigO_nat_atTop_of_recurrence_of_eventually_pos {f g : ℕ → ℝ}
+lemma isBigO_nat_atTop_of_induction_of_eventually_pos {f g : ℕ → ℝ}
     (hf : ∀ᶠ n in atTop, 0 ≤ f n) (hg : ∀ᶠ n in atTop, 0 < g n)
     (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
       (∀ m ∈ Finset.Ico n₀ n, f m ≤ C * g m) → f n ≤ C * g n) :
