@@ -54,6 +54,7 @@ Differences (discrete ↔ MeasureTheory):
 - Domain: `Monoid M` ↔ `AddGroup G`, no subtraction needed for discrete
 - Bilinear map: `E →ₗ[S] E' →ₗ[S] F` ↔ `E →L[𝕜] E' →L[𝕜] F`, no continuity needed
 - Associativity: `Summable` ↔ `AEStronglyMeasurable` + norm convolution conditions
+- Commutativity: `convolution_comm` ↔ `convolution_flip` (needs `IsAddLeftInvariant`)
 - `@[to_additive]`: Discrete supports both mul/add versions; MeasureTheory is additive only
 
 ## Main Results
