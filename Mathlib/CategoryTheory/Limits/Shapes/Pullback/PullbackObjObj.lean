@@ -253,31 +253,18 @@ end PullbackObjObj
 
 end
 
-/-- The pullback-hom of `f₁` and `f₃`. -/
+/-- The pullback-power of `f₁` and `f₃`. -/
 @[simp]
 noncomputable
-abbrev pullbackHom [HasPullbacks C₂]
+abbrev pullbackPower [HasPullbacks C₂]
     {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃) :=
   (Functor.PullbackObjObj.ofHasPullback G f₁ f₃).π
 
-notation3 f₁ " {" G "} " f₃:10 => Functor.pullbackHom G f₁ f₃
+notation3 f₁ " {" G "} " f₃:10 => Functor.pullbackPower G f₁ f₃
 
-namespace PullbackHom
+namespace PullbackPower
 
 section Functor
-
-variable (f₁ : Arrow C₁) {f₃ f₃' : Arrow C₃} (sq : f₃ ⟶ f₃')
-  (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
-  (sq₁₃' : G.PullbackObjObj f₁.hom f₃'.hom)
-
-/-
-@[simp]
-noncomputable
-def rightFunctor [HasPullbacks C₂] (f₃ : Arrow C₃) : (Arrow C₁)ᵒᵖ ⥤ Arrow C₂ where
-  obj f₁ := f₁.unop.hom {G} f₃.hom
-  map sq := rightFunctor_map G f₃ sq.unop (PullbackObjObj.ofHasPullback G _ f₃.hom)
-    (PullbackObjObj.ofHasPullback G _ f₃.hom)
--/
 
 variable (f₁ : (Arrow C₁)ᵒᵖ) {f₃ f₃' : Arrow C₃} (sq : f₃ ⟶ f₃')
   (sq₁₃ : G.PullbackObjObj f₁.unop.hom f₃.hom)
@@ -324,7 +311,7 @@ def rightBifunctor_map_right :
 
 @[simp]
 noncomputable
-def rightBifunctor_map :
+def rightBifunctor_map_app :
     Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
   left := (G.map sq.unop.right.op).app f₃.left
   right := rightBifunctor_map_right G f₃ sq sq₁₃ sq₁₃'
@@ -336,8 +323,8 @@ def rightBifunctor_map :
 noncomputable
 def iso_of_arrow_iso (iso : f₁.unop ≅ f₁'.unop) :
     Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
-  hom := rightBifunctor_map G f₃ iso.inv.op sq₁₃ sq₁₃'
-  inv := rightBifunctor_map G f₃ iso.hom.op sq₁₃' sq₁₃
+  hom := rightBifunctor_map_app G f₃ iso.inv.op sq₁₃ sq₁₃'
+  inv := rightBifunctor_map_app G f₃ iso.hom.op sq₁₃' sq₁₃
   hom_inv_id := by
     apply Arrow.hom_ext
     · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
@@ -351,27 +338,20 @@ def iso_of_arrow_iso (iso : f₁.unop ≅ f₁'.unop) :
 
 @[simp]
 noncomputable
-def rightBifunctor_map' [HasPullbacks C₂] {f₁ f₁' : (Arrow C₁)ᵒᵖ} (sq : f₁ ⟶ f₁') :
+def rightBifunctor_map [HasPullbacks C₂] {f₁ f₁' : (Arrow C₁)ᵒᵖ} (sq : f₁ ⟶ f₁') :
     rightFunctor G f₁ ⟶ rightFunctor G f₁' where
-  app f₃ := {
-    left := (G.map sq.unop.right.op).app f₃.left
-    right := rightBifunctor_map_right G f₃ sq (PullbackObjObj.ofHasPullback _ _ _)
-      (PullbackObjObj.ofHasPullback _ _ _)
-    w := by
-      apply pullback.hom_ext
-      · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-      · cat_disch
-  }
+  app f₃ := rightBifunctor_map_app G f₃ sq (PullbackObjObj.ofHasPullback _ _ _)
+    (PullbackObjObj.ofHasPullback _ _ _)
 
-@[simps!]
+@[simp]
 noncomputable
 def rightBifunctor [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂ where
   obj := rightFunctor G
-  map {X Y sq} := rightBifunctor_map' G sq
+  map := rightBifunctor_map G
 
 end Functor
 
-end PullbackHom
+end PullbackPower
 
 end Functor
 
