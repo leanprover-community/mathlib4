@@ -43,6 +43,9 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [zero_add]
+---
 info: 'rw [add_comm]' uses '⊢'!
 
 -/
@@ -76,6 +79,9 @@ warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the su
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
+info: Try this:
+  [apply] simp only [mul_zero, add_zero]
+---
 info: 'positivity' uses '⊢'!
 -/
 #guard_msgs in
@@ -101,7 +107,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
   abel!
 
 -- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
--- but require some simplication first.
+-- but require some simplification first.
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
@@ -115,6 +121,9 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: Try this:
+  [apply] simp only [Function.comp_apply, add_zero]
 ---
 info: 'fun_prop' uses '⊢'!
 -/

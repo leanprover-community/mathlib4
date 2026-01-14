@@ -19,7 +19,7 @@ public import Mathlib.Dynamics.PeriodicPts.Defs
 # Extra lemmas about periodic points
 -/
 
-@[expose] public section
+public section
 
 open Nat Set
 
@@ -30,9 +30,6 @@ open Function (Commute)
 
 theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
-
-@[deprecated (since := "2025-04-27")]
-alias directed_ptsOfPeriod_pNat := directed_ptsOfPeriod_pnat
 
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
@@ -69,8 +66,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices
-    ∀ {f g : α → α},
+  suffices ∀ {f g : α → α},
       Commute f g →
         Coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
@@ -106,16 +102,10 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq.symm)
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq)
 
-@[deprecated (since := "2025-04-27")]
-alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
-
 theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
   refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
   rw [Finite.injective_iff_surjective, ← range_eq_univ, ← univ_subset_iff, ← h]
   apply periodicPts_subset_range
-
-@[deprecated (since := "2025-04-27")]
-alias injective_iff_forall_mem_periodicPts := injective_iff_periodicPts_eq_univ
 
 theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
     Injective f ↔ f^[(card α)!] = id := by
@@ -161,7 +151,7 @@ theorem minimalPeriod_piMap_fintype [Fintype ι] :
 
 theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
     minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
-  simp [minimalPeriod_piMap]
+  simp only [minimalPeriod_piMap]
   by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
   · exact (Nat.sInf_mem h).2 i
   · simp [not_nonempty_iff_eq_empty.mp h]

@@ -16,7 +16,7 @@ This file describes multilinear maps on direct sums.
 ## Main results
 
 * `MultilinearMap.fromDirectSumEquiv` : If `ι` is a `Fintype`, `κ i` is a family of types
-  indexed by `ι` and we are given a `R`-module `M i j` for every `i : ι` and `j : κ i`, this is
+  indexed by `ι` and we are given an `R`-module `M i j` for every `i : ι` and `j : κ i`, this is
   the linear equivalence between `Π p : (i : ι) → κ i, MultilinearMap R (fun i ↦ M i (p i)) M'` and
   `MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'`.
 -/

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Behaviour of the total complex with respect to shifts
@@ -43,7 +44,7 @@ open CategoryTheory Category ComplexShape Limits
 
 namespace HomologicalComplex₂
 
-variable (C : Type*) [Category C] [Preadditive C]
+variable (C : Type*) [Category* C] [Preadditive C]
 
 /-- The shift on bicomplexes obtained by shifting the first indices (and changing the
 sign of differentials). -/
@@ -123,16 +124,16 @@ instance : ((shiftFunctor₁ C x ⋙ shiftFunctor₂ C y).obj K).HasTotal (up �
 /-- Auxiliary definition for `totalShift₁Iso`. -/
 noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     (((shiftFunctor₁ C x).obj K).total (up ℤ)).X n ≅ (K.total (up ℤ)).X n' where
-  hom := totalDesc _ (fun p q hpq => K.ιTotal (up ℤ) (p + x) q n' (by dsimp at hpq ⊢; omega))
+  hom := totalDesc _ (fun p q hpq => K.ιTotal (up ℤ) (p + x) q n' (by dsimp at hpq ⊢; lia))
   inv := totalDesc _ (fun p q hpq =>
     (K.XXIsoOfEq _ _ _ (Int.sub_add_cancel p x) rfl).inv ≫
       ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) (p - x) q n
-        (by dsimp at hpq ⊢; omega))
+        (by dsimp at hpq ⊢; lia))
   hom_inv_id := by
     ext p q h
     dsimp
     simp only [ι_totalDesc_assoc, CochainComplex.shiftFunctor_obj_X', ι_totalDesc, comp_id]
-    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by omega) rfl _ _
+    exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by lia) rfl _ _
   inv_hom_id := by
     ext
     dsimp
@@ -225,16 +226,16 @@ lemma totalShift₁Iso_hom_naturality [L.HasTotal (up ℤ)] :
 noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
     (((shiftFunctor₂ C y).obj K).total (up ℤ)).X n ≅ (K.total (up ℤ)).X n' where
   hom := totalDesc _ (fun p q hpq => (p * y).negOnePow • K.ιTotal (up ℤ) p (q + y) n'
-    (by dsimp at hpq ⊢; omega))
+    (by dsimp at hpq ⊢; lia))
   inv := totalDesc _ (fun p q hpq => (p * y).negOnePow •
     (K.XXIsoOfEq _ _ _ rfl (Int.sub_add_cancel q y)).inv ≫
-      ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) p (q - y) n (by dsimp at hpq ⊢; omega))
+      ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) p (q - y) n (by dsimp at hpq ⊢; lia))
   hom_inv_id := by
     ext p q h
     dsimp
     simp only [ι_totalDesc_assoc, Linear.units_smul_comp, ι_totalDesc, smul_smul,
       Int.units_mul_self, one_smul, comp_id]
-    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by omega) _ _
+    exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by lia) _ _
   inv_hom_id := by
     ext
     dsimp
@@ -353,7 +354,7 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
       (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
   ext n n₁ n₂ h
   dsimp at h ⊢
-  rw [Linear.comp_units_smul,ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
+  rw [Linear.comp_units_smul, ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
     ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
     Linear.units_smul_comp, Linear.comp_units_smul]
   dsimp [shiftFunctor₁₂CommIso]

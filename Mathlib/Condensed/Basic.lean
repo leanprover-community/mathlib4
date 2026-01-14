@@ -49,10 +49,10 @@ instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
 
 /--
-Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-valued
+Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u+1))
+abbrev CondensedSet := Condensed.{u} (Type (u + 1))
 
 namespace Condensed
 

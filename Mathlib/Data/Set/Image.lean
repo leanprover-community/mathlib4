@@ -121,8 +121,6 @@ theorem preimage_const_of_mem {b : β} {s : Set β} (h : b ∈ s) : (fun _ : α 
 theorem preimage_const_of_notMem {b : β} {s : Set β} (h : b ∉ s) : (fun _ : α => b) ⁻¹' s = ∅ :=
   eq_empty_of_subset_empty fun _ hx => h hx
 
-@[deprecated (since := "2025-05-23")] alias preimage_const_of_not_mem := preimage_const_of_notMem
-
 theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
     (fun _ : α => b) ⁻¹' s = if b ∈ s then univ else ∅ := by grind
 
@@ -311,8 +309,12 @@ theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
 
 theorem image_pair (f : α → β) (a b : α) : f '' {a, b} = {f a, f b} := by grind
 
+theorem _root_.Function.LeftInverse.mem_preimage_iff {f : α → β} {g : β → α} (hfg : LeftInverse g f)
+    {s : Set α} {x : α} : f x ∈ g ⁻¹' s ↔ x ∈ s := by
+  rw [Set.mem_preimage, hfg x]
+
 theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set α) :
-    f '' s ⊆ g ⁻¹' s := fun _ ⟨a, h, e⟩ => e ▸ ((I a).symm ▸ h : g (f a) ∈ s)
+    f '' s ⊆ g ⁻¹' s := fun _ ⟨_, h, e⟩ => e ▸ I.mem_preimage_iff.mpr h
 
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
@@ -747,7 +749,7 @@ theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range S
   IsCompl.of_le
     (by
       rintro y ⟨⟨x₁, rfl⟩, ⟨x₂, h⟩⟩
-      exact Sum.noConfusion h)
+      exact Sum.noConfusion rfl rfl (heq_of_eq h))
     (by rintro (x | y) - <;> [left; right] <;> exact mem_range_self _)
 
 @[simp]
@@ -1106,6 +1108,10 @@ theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s :
 
 protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Involutive (preimage f) :=
   hf.rightInverse.preimage_preimage
+
+theorem LeftInverse.image_eq {f : α → β} {g : β → α} (hfg : LeftInverse g f) (s : Set α) :
+    f '' s = range f ∩ g ⁻¹' s := by
+  rw [← image_preimage_eq_range_inter, hfg.preimage_preimage]
 
 end Function
 

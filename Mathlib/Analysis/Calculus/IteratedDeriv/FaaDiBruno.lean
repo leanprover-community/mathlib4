@@ -32,7 +32,7 @@ Before starting to work on these TODOs, please contact Yury Kudryashov
 who may have partial progress towards some of them.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped ContDiff
@@ -154,7 +154,7 @@ theorem iteratedDerivWithin_scomp_two
       derivWithin f s x ^ 2 • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 2 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_two hg hf ht hs hx hst]
-  simp [← derivWithin_fderivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+  simp [← toSpanSingleton_derivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
 
 theorem iteratedDeriv_scomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffAt 𝕜 2 f x) :
     iteratedDeriv 2 (g ∘ f) x
@@ -171,7 +171,7 @@ theorem iteratedDerivWithin_scomp_three
       3 • iteratedDerivWithin 2 f s x • derivWithin f s x • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 3 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_three hg hf ht hs hx hst]
-  simp [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
+  simp [← toSpanSingleton_derivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
         iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
   abel
 

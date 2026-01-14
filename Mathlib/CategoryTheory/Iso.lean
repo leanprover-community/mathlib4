@@ -6,7 +6,6 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -16,7 +15,7 @@ This file defines isomorphisms between objects of a category.
 ## Main definitions
 
 - `structure Iso` : a bundled isomorphism between two objects of a category;
-- `class IsIso` : an unbundled version of `iso`;
+- `class IsIso` : an unbundled version of `Iso`;
   note that `IsIso f` is a `Prop`, and only asserts the existence of an inverse.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`
@@ -71,7 +70,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-set_option linter.style.commandStart false in -- false positive, calc blocks
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -359,22 +358,22 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp, reassoc]
+@[simp, reassoc, push]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem inv_inv [IsIso f] : inv (inv f) = f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_inv (f : X ≅ Y) : inv f.inv = f.hom := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_hom (f : X ≅ Y) : inv f.hom = f.inv := by
   apply inv_eq_of_hom_inv_id
   simp
@@ -519,7 +518,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category* D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :
@@ -562,7 +561,7 @@ theorem mapIso_refl (F : C ⥤ D) (X : C) : F.mapIso (Iso.refl X) = Iso.refl (F.
 instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
   (F.mapIso (asIso f)).isIso_hom
 
-@[simp]
+@[simp, push ←]
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
   simp [← F.map_comp]
