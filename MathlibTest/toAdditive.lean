@@ -842,3 +842,7 @@ Note: This linter can be disabled with `set_option linter.translateOverwrite fal
 -/
 #guard_msgs in
 attribute [to_additive someOtherTranslation] abstractMul
+
+-- Test that we don't blindly translate the prefix of a name.
+def Mul.test : Nat := 5
+@[to_additive] def Mul.test' := Mul.test
