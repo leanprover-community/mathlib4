@@ -417,7 +417,7 @@ lemma fg_restrictScalars [Module.Finite R A] {S : Submodule A M} (hS : S.FG) :
   exact Module.Finite.trans A S
 
 @[simp]
-lemma fg_restrictedScalars_iff [Module.Finite R A] {S : Submodule A M} :
+lemma fg_restrictScalars_iff [Module.Finite R A] {S : Submodule A M} :
     (S.restrictScalars R).FG ↔ S.FG :=
   ⟨FG.of_restrictScalars R S, fg_restrictScalars R⟩
 
