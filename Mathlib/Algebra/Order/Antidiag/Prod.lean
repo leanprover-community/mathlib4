@@ -13,15 +13,21 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
-We define a type class `Finset.HasAntidiagonal A` which contains a function
-`antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
-is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
+We define type classes for finite antidiagonals:
+* `Finset.HasAntidiagonal A`: additive version with `antidiagonal : A → Finset (A × A)`
+  where `antidiagonal n` is the finset of all pairs adding to `n`.
+* `Finset.HasMulAntidiagonal M`: multiplicative version with `mulAntidiagonal : M → Finset (M × M)`
+  where `mulAntidiagonal n` is the finset of all pairs multiplying to `n`.
 
-When `A` is a canonically ordered additive monoid with locally finite order
-this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
-This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
-or even `ι →₀ A`  under the additional assumption `OrderedSub A`
-that make it a canonically ordered additive monoid.
+The multiplicative version is linked to the additive version via `@[to_additive]`.
+
+## Additive Antidiagonal
+
+When `A` is a canonically ordered additive monoid with locally finite order,
+`HasAntidiagonal` can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
+This applies in particular when `A` is `ℕ`, more generally `σ →₀ ℕ`,
+or even `ι →₀ A` under the additional assumption `OrderedSub A`
+that makes it a canonically ordered additive monoid.
 (In fact, we would just need an `AddMonoid` with a compatible order,
 finite `Iic`, such that if `a + b = n`, then `a, b ≤ n`,
 and any finiteness condition would be OK.)
