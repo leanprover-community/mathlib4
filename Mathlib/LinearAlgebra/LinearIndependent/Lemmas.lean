@@ -11,9 +11,11 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fin.Rotate
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.NormNum.Ineq
+
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Linear independence
@@ -55,7 +57,7 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 universe u' u
 
@@ -204,7 +206,7 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
     intro f hfsupp g hgsupp hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
     · rw [show f = 0 by simpa using hfsupp, show g = 0 by simpa using hgsupp]
-    haveI : IsRefl X r := ⟨fun _ => Set.Subset.refl _⟩
+    haveI : Std.Refl r := ⟨fun _ => Set.Subset.refl _⟩
     classical
     obtain ⟨I, _I_mem, hI⟩ : ∃ I ∈ c, (f.support ∪ g.support : Set ι) ⊆ I :=
       f.support.coe_union _ ▸ hc.directedOn.exists_mem_subset_of_finset_subset_biUnion hn <| by
@@ -288,8 +290,8 @@ lemma LinearIndependent.pair_symm_iff :
     LinearIndependent R ![x, -y] ↔ LinearIndependent R ![x, y] := by
   rw [pair_symm_iff, pair_neg_left_iff, pair_symm_iff]
 
-variable {S : Type*} [CommRing S] [Module S R] [Module S M]
-  [SMulCommClass S R M] [IsScalarTower S R M] [NoZeroSMulDivisors S R]
+variable {S : Type*} [CommRing S] [IsDomain S] [Module S R] [Module S M]
+  [SMulCommClass S R M] [IsScalarTower S R M] [IsTorsionFree S R]
   (a b c d : S)
 
 lemma LinearIndependent.pair_smul_iff {u : S} (hu : u ≠ 0) :
@@ -471,8 +473,8 @@ lemma linearIndependent_algHom_toLinearMap
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
 
-lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
-    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
+lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K] [IsDomain K]
+    [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [IsTorsionFree K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
 
