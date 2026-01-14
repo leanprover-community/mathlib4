@@ -65,10 +65,10 @@ Differences (discrete ↔ MeasureTheory):
 
 - `zero_convolution`, `convolution_zero`: zero laws
 - `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
-- Associativity (three API layers with increasing automation):
-  - `ringConvolution_assoc`: general, requires all hypotheses
-  - `completeUniformRingConvolution_assoc`: complete uniform ring, derives fiber summabilities
-  - `normedFieldConvolution_assoc`: `[NormedField F] [CompleteSpace F]`, fully automated
+- Associativity (three API layers with increasing specialization):
+  - `convolution_assoc`: most general, arbitrary bilinear maps `L`, `L₂`, `L₃`, `L₄`
+  - `ringConvolution_assoc`: specializes to `LinearMap.mul ℕ R`
+  - `completeUniformRingConvolution_assoc`: derives fiber summabilities
 - HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
   - `addFiber_eq_antidiagonal`: `addFiber x = ↑(Finset.antidiagonal x)`
   - `addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
@@ -543,65 +543,6 @@ theorem completeUniformRingConvolution_assoc (f g h : M → R)
   ext x; exact completeUniformRingConvolution_assoc_at f g h x (hTriple x) hConvFG hConvGH
 
 end CompleteUniformRingConvolutionAssoc
-
-section NormedFieldConvolutionAssoc
-
-variable {F : Type*} [NormedField F] [CompleteSpace F]
-
-/-- Ring convolution associativity for `[NormedField F] [CompleteSpace F]` at a point.
-Derives all hypotheses from `hTriple` plus non-zero conditions `hh`/`hf`. -/
-@[to_additive (dont_translate := F M) addNormedFieldConvolution_assoc_at]
-theorem normedFieldConvolution_assoc_at (f g h : M → F) (x : M)
-    (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ F) (LinearMap.mul ℕ F) f g h x)
-    (hh : ∀ cd : mulFiber x, h cd.1.2 ≠ 0)
-    (hf : ∀ ae : mulFiber x, f ae.1.1 ≠ 0) :
-    ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x := by
-  -- Derive left-sigma summability from hTriple via leftAssocEquiv
-  have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
-      f p.2.1.1 * g p.2.1.2 * h p.1.1.2 := by
-    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
-        (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr hTriple
-    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, mul_assoc]
-  -- Derive right-sigma summability from hTriple via rightAssocEquiv
-  have hSumR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
-      f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
-    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
-        (rightAssocEquiv x)) := (rightAssocEquiv x).summable_iff.mpr hTriple
-    convert this using 1
-  -- Derive fiber summabilities via sigma_factor (using CompleteSpace)
-  have hFiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
-      f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd => hSumL.sigma_factor cd
-  have hFiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
-      f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => hSumR.sigma_factor ae
-  -- Extract inner convolution summabilities via summable_mul_right_iff (using DivisionRing)
-  have hConvFG : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
-      f ab.1.1 * g ab.1.2 := fun cd =>
-    (summable_mul_right_iff (hh cd)).mp (hFiberL cd)
-  have hConvGH : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
-      g bd.1.1 * h bd.1.2 := fun ae =>
-    (summable_mul_left_iff (hf ae)).mp (hFiberR ae)
-  -- Derive continuity conditions via tsum_mul_right/tsum_mul_left (using ContinuousMul)
-  have hcontL : ∀ cd : mulFiber x,
-      (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
-      ∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd =>
-    ((hConvFG cd).tsum_mul_right (h cd.1.2)).symm
-  have hcontR : ∀ ae : mulFiber x,
-      f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
-      ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae =>
-    ((hConvGH ae).tsum_mul_left (f ae.1.1)).symm
-  exact ringConvolution_assoc_at f g h x hTriple hFiberL hFiberR hcontL hcontR
-
-/-- Ring convolution associativity for `[NormedField F] [CompleteSpace F]`.
-Derives all hypotheses from `hTriple` plus non-zero conditions `hh`/`hf`. -/
-@[to_additive (dont_translate := F M) addNormedFieldConvolution_assoc]
-theorem normedFieldConvolution_assoc (f g h : M → F)
-    (hTriple : TripleConvolutionExists (LinearMap.mul ℕ F) (LinearMap.mul ℕ F) f g h)
-    (hh : ∀ x (cd : mulFiber x), h cd.1.2 ≠ 0)
-    (hf : ∀ x (ae : mulFiber x), f ae.1.1 ≠ 0) :
-    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
-  ext x; exact normedFieldConvolution_assoc_at f g h x (hTriple x) (hh x) (hf x)
-
-end NormedFieldConvolutionAssoc
 
 end Associativity
 
