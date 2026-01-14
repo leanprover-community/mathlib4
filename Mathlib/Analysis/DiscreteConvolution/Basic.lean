@@ -45,8 +45,8 @@ theorem addRingConvolution_eq_measureTheory_convolution [Countable M]
 ```
 
 Parallel API:
-- `ConvolutionExistsAt`, `convolution_zero`,
-  `zero_convolution`, `convolution_add`, `convolution_assoc`.
+- `ConvolutionExistsAt`, `ConvolutionExists`, `convolution_zero`,
+  `zero_convolution`, `convolution_assoc`.
 - Convolution associativity has the same bilinearity hypothesis:
   `hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z)`.
 
@@ -58,7 +58,8 @@ Differences (discrete ↔ MeasureTheory):
 
 ## Main Results
 
-- `convolution_zero`, `convolution_add`: zero and distributivity laws
+- `zero_convolution`, `convolution_zero`: zero laws
+- `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
 - Associativity:
   - `convolution_assoc_at`: pointwise, uses `assocEquiv`, derives compatibility from bilinearity
   - `convolution_assoc`: applies above with triple summability
