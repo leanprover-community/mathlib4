@@ -42,7 +42,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
+variable {C : Type*} [Category* C] [Preadditive C] (K K' : ChainComplex C ℕ) (f : K ⟶ K')
   {Δ Δ' Δ'' : SimplexCategory}
 
 /-- `Isδ₀ i` is a simple condition used to check whether a monomorphism `i` in

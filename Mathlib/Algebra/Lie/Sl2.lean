@@ -32,7 +32,7 @@ about `sl₂`.
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
-open LieModule Set
+open LieModule Module Set
 
 variable {L} in
 /-- An `sl₂` triple within a Lie ring `L` is a triple of elements `h`, `e`, `f` obeying relations
@@ -41,7 +41,7 @@ structure IsSl2Triple (h e f : L) : Prop where
   h_ne_zero : h ≠ 0
   lie_e_f : ⁅e, f⁆ = h
   lie_h_e_nsmul : ⁅h, e⁆ = 2 • e
-  lie_h_f_nsmul : ⁅h, f⁆ = - (2 • f)
+  lie_h_f_nsmul : ⁅h, f⁆ = -(2 • f)
 
 namespace IsSl2Triple
 
@@ -87,7 +87,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
 lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
-    HasPrimitiveVectorWith t m μ  where
+    HasPrimitiveVectorWith t m μ where
   ne_zero := hm
   lie_h := hm'
   lie_e := by
@@ -143,7 +143,7 @@ lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
 namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f}
-local notation "ψ" n => ((toEnd R L M f) ^ n) m
+local notation "ψ " n => ((toEnd R L M f) ^ n) m
 
 -- Although this is true by definition, we include this lemma (and the assumption) to mirror the API
 -- for `lie_h_pow_toEnd_f` and `lie_e_pow_succ_toEnd_f`.
@@ -182,7 +182,7 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
 
 /-- The eigenvalue of a primitive vector must be a natural number if the representation is
 finite-dimensional. -/
-lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R] :
+lemma exists_nat [IsNoetherian R M] [IsTorsionFree R M] [IsDomain R] [CharZero R] :
     ∃ n : ℕ, μ = n := by
   suffices ∃ n : ℕ, (ψ n) = 0 by
     obtain ⟨n, hn₁, hn₂⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists P.ne_zero this
@@ -199,8 +199,7 @@ lemma exists_nat [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZ
     (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
       Module.End.hasEigenvector_iff])).finite
 
-lemma pow_toEnd_f_ne_zero_of_eq_nat
-    [CharZero R] [NoZeroSMulDivisors R M]
+lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) {i} (hi : i ≤ n) : (ψ i) ≠ 0 := by
   intro H
   induction i
@@ -214,8 +213,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
     exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
-lemma pow_toEnd_f_eq_zero_of_eq_nat
-    [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]
+lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M] [IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) : (ψ (n + 1)) = 0 := by
   by_contra h
   have : t.HasPrimitiveVectorWith (ψ (n + 1)) (n - 2 * (n + 1) : R) :=

@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Batteries.Logic
-public import Batteries.Tactic.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Lemma
@@ -164,8 +163,8 @@ and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
 @[elab_as_elim] protected def strongRec (n : ℤ) : motive n := by
   refine if hnm : n < m then lt n hnm else ge n (by lia) (n.inductionOn' m lt ?_ ?_)
   · intro _n _ ih l _
-    exact if hlm : l < m then lt l hlm else ge l (by omega) fun k _ ↦ ih k (by omega)
-  · exact fun n _ hn l _ ↦ hn l (by omega)
+    exact if hlm : l < m then lt l hlm else ge l (by lia) fun k _ ↦ ih k (by lia)
+  · exact fun n _ hn l _ ↦ hn l (by lia)
 
 variable {lt ge}
 lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dif_pos _
@@ -300,8 +299,7 @@ lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c �
 /-! ### sign -/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
-  have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> lia
+  lia
 
 /-! ### toNat -/
 
@@ -319,9 +317,6 @@ lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) 
 
 lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
 
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
-
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
@@ -335,5 +330,8 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 @[simp] lemma gcd_negSucc_ofNat (m n : ℕ) : gcd (negSucc m) n = (m + 1).gcd n := by simp [gcd]
 @[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
     (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
+
+theorem gcd_left_comm (a b c : ℤ) : gcd a (gcd b c) = gcd b (gcd a c) := by
+  rw [← gcd_assoc, ← gcd_assoc, gcd_comm a b]
 
 end Int

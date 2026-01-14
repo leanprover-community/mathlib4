@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Semicontinuity.Defs
 
 /-!
 # Functions of bounded variation
@@ -146,7 +147,7 @@ theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
   constructor
   · rintro h x xs y ys
-    rw [← le_zero_iff, ← h]
+    rw [← nonpos_iff_eq_zero, ← h]
     exact edist_le f xs ys
   · rintro h
     dsimp only [eVariationOn]
@@ -447,10 +448,10 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     by_cases hn₀ : n = 0
     · simp [hn₀]
     rw [← Icc_add_Icc (b := E n)]
-    · rw [← ih (by intros; apply hn <;> lia), Finset.sum_range_succ]
+    · rw [← ih (by intros; apply hn <;> omega), Finset.sum_range_succ]
     · apply hE; lia
     · apply hE; lia
-    · apply hn <;> lia
+    · apply hn <;> omega
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     ∑ i ∈ Finset.range n, eVariationOn f (Icc (I i) (I (i + 1)))

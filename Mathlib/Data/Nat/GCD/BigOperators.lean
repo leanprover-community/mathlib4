@@ -12,7 +12,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

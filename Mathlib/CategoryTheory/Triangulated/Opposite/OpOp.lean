@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 open Opposite Pretriangulated.Opposite Limits
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace Pretriangulated
 
@@ -106,8 +106,7 @@ instance : (opOp C).CommShift ℤ where
   commShiftIso_add p q := by
     ext X
     refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
-    simp [
-      ← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
+    simp [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
       fun X n ↦ iso_hom_app X n (-n) (add_neg_cancel n),
       shiftFunctor_op_map _ q (-q),
       shiftFunctorAdd'_op_inv_app _ p q (p + q) rfl (-p) (-q) (-(p + q))

@@ -323,6 +323,11 @@ lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
     mk₀ (addEquiv₀ f) = f :=
   addEquiv₀.left_inv f
 
+@[simp]
+lemma mk₀_eq_zero_iff {M N : C} (f : M ⟶ N) :
+    Ext.mk₀ f = 0 ↔ f = 0 :=
+  Ext.addEquiv₀.symm.map_eq_zero_iff (x := f)
+
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
@@ -431,7 +436,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} whe
         dsimp
         symm
         apply Ext.comp_assoc
-        all_goals omega }
+        all_goals lia }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     simp

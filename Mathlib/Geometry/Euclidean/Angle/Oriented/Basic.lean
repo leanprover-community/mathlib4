@@ -362,7 +362,7 @@ swapped is `π`. -/
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {x y : V} : o.oangle x y = π ↔ o.oangle y x = π := by
   rw [oangle_rev, neg_eq_iff_eq_neg, Real.Angle.neg_coe_pi]
 
-/-- The oriented angle between two vectors is `π` if and only they are nonzero and the first is
+/-- The oriented angle between two vectors is `π` if and only if they are nonzero and the first is
 on the same ray as the negation of the second. -/
 theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
     o.oangle x y = π ↔ x ≠ 0 ∧ y ≠ 0 ∧ SameRay ℝ x (-y) := by

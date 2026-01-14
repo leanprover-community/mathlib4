@@ -22,7 +22,7 @@ differ by the sign `(-1) ^ (p + q)`.
 This is implemented using a structure `Functor.CommShift₂` which does not depend
 on the preadditive structure on `D`: instead of signs, elements in `(CatCenter D)ˣ`
 are used. These elements are part of a `CommShift₂Setup` structure which extends
-a `TwistShiftData` structure (see the file `CategoryTheory.Shift.Twist`).
+a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`).
 
 ## TODO (@joelriou)
 * Show that `G : C₁ ⥤ C₂ ⥤ D` satisfies `Functor.CommShift₂Int` iff the uncurried
@@ -36,8 +36,8 @@ the twisted shift.
 
 namespace CategoryTheory
 
-variable {C₁ C₁' C₂ C₂' D : Type*} [Category C₁] [Category C₁']
-  [Category C₂] [Category C₂'] [Category D]
+variable {C₁ C₁' C₂ C₂' D : Type*} [Category* C₁] [Category* C₁']
+  [Category* C₂] [Category* C₂'] [Category* D]
 
 variable (D) in
 /-- Given a category `D` equipped with a shift by an additive monoid `M`, this
@@ -66,7 +66,7 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    cutsat
+    lia
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 

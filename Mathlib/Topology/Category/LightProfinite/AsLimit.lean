@@ -95,7 +95,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n + 1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
@@ -115,7 +115,7 @@ lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
   S.asLimitCone.w (homOfLE h).op
 
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
-    S.transitionMapLE h ∘ S.proj m  = S.proj n := by
+    S.transitionMapLE h ∘ S.proj m = S.proj n := by
   rw [← S.proj_comp_transitionMapLE h]
   rfl
 

@@ -30,7 +30,7 @@ limits, see `sequentialFunctor_initial`.
 
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category* C] (J : Type*) [Countable J]
 
 namespace CategoryTheory.Limits
 
@@ -227,7 +227,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 @[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
+proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--

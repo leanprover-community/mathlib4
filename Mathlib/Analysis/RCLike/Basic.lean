@@ -13,6 +13,7 @@ public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -144,9 +145,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 @[rclike_simps]
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
-
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
 
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
@@ -359,6 +357,7 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
@@ -969,6 +968,10 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
 
+lemma instMulPosReflectLE : MulPosReflectLE K := PosMulReflectLE.toMulPosReflectLE
+
+scoped[ComplexOrder] attribute [instance] RCLike.instMulPosReflectLE
+
 end Order
 
 section CleanupLemmas
@@ -1178,7 +1181,7 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
 @[simps]
 noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  norm_map' z := by rw [← re_add_im z]; simp [-re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific

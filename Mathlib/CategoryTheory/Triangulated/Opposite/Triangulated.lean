@@ -19,7 +19,7 @@ that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -27,7 +27,7 @@ open Preadditive Limits
 
 namespace Pretriangulated
 
-variable (C : Type*) [Category C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace Opposite

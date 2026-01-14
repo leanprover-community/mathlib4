@@ -191,7 +191,7 @@ theorem ofDigits_append_replicate_zero {b k : ℕ} (l : List ℕ) :
   simp
 
 theorem ofDigits_reverse_cons {b : ℕ} (l : List ℕ) (d : ℕ) :
-    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b^l.length * d := by
+    ofDigits b (d :: l).reverse = ofDigits b l.reverse + b ^ l.length * d := by
   simp only [List.reverse_cons]
   rw [ofDigits_append]
   simp
@@ -521,7 +521,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
   | succ f ih =>
     grind
 
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) : n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
   exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
 

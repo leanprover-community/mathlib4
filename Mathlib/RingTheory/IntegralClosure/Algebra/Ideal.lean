@@ -23,7 +23,7 @@ This the definitition that `x` is integral over `I` in https://stacks.math.colum
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 
@@ -68,7 +68,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', if_pos hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
-    simp [q, Nat.lt_succ_iff, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
+    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :
@@ -79,7 +79,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R
   refine exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral ?_
   induction hx using Submodule.span_induction with
   | zero => simp [isIntegral_zero]
-  | add x y _ _ hx hy  => simpa [add_mul] using hx.add hy
+  | add x y _ _ hx hy => simpa [add_mul] using hx.add hy
   | mem x h =>
     obtain ⟨x, hx, rfl⟩ := h
     simpa using isIntegral_algebraMap (R := A) (A := S[X])
@@ -96,7 +96,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_of_mem_map [Algebra.IsIntegral R S]
   obtain ⟨p, hp, e, h⟩ := exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map hx
   refine ⟨p, hp, e, fun i hi ↦ ?_⟩
   obtain hi | hi := hi.lt_or_gt
-  · exact Ideal.pow_le_self (by cutsat) (h _)
+  · exact Ideal.pow_le_self (by lia) (h _)
   · simp [coeff_eq_zero_of_natDegree_lt hi]
 
 end Polynomial

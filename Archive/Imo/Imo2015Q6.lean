@@ -85,7 +85,7 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
   | t + 1 => by
     intro x hx
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hx
-    obtain ⟨y, my, ey⟩ := hx
+    obtain ⟨y, my, rfl⟩ := hx
     suffices y ∈ Icc 1 2015 by rw [mem_Icc] at this ⊢; lia
     rw [mem_insert, mem_erase] at my; rcases my with h | ⟨h₁, h₂⟩
     · exact h ▸ ha.1 t
@@ -95,8 +95,6 @@ lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/

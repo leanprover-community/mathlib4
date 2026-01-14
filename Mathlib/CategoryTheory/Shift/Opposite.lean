@@ -56,7 +56,7 @@ open Limits Category
 
 section
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C : Type*) [Category* C] (A : Type*) [AddMonoid A] [HasShift C A]
 
 namespace HasShift
 
@@ -139,7 +139,7 @@ lemma oppositeShiftFunctorAdd'_hom_app :
 
 end
 
-variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
+variable {C D : Type*} [Category* C] [Category* D] (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A] (F : C ⥤ D)
 
 /--
@@ -221,7 +221,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
-    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
@@ -249,7 +249,7 @@ instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
       comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
     rfl
 
-variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
+variable {E : Type*} [Category* E] [HasShift E A] (G : D ⥤ E)
 
 /-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
 composition of `OppositeShift.functor F` and `OppositeShift.functor G`.

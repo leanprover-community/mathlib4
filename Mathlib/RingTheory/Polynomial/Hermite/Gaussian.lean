@@ -29,7 +29,7 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
