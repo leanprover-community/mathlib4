@@ -67,13 +67,13 @@ Differences (discrete ↔ MeasureTheory):
 - `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
 - Associativity (three API layers with increasing automation):
   - `ringConvolution_assoc`: general, requires all hypotheses
-  - `topologicalRingConvolution_assoc`: topological ring + complete, derives fiber summabilities
+  - `completeUniformRingConvolution_assoc`: complete uniform ring, derives fiber summabilities
   - `normedFieldConvolution_assoc`: `[NormedField F] [CompleteSpace F]`, fully automated
 - HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
   - `addFiber_eq_antidiagonal`: `addFiber x = ↑(Finset.antidiagonal x)`
   - `addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
   - `addRingConvolution_eq_cauchyProduct`: bridge to `CauchyProduct`
-- CauchyProduct (see `Mathlib.Analysis.DiscreteConvolution.CauchyProduct`):
+- CauchyProduct (see `Mathlib.Algebra.BigOperators.CauchyProduct`):
   - Purely algebraic finite-sum convolution (no topology needed)
   - `CauchyProduct.assoc`, `one_mul`, `mul_one`, `comm`: ring axioms via `Finset.sum_nbij'`
 
@@ -490,16 +490,16 @@ theorem ringConvolution_assoc (f g h : M → R)
 
 end RingConvolutionAssoc
 
-section TopologicalRingConvolutionAssoc
+section CompleteUniformRingConvolutionAssoc
 
 variable {R : Type*}
 variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalSemiring R]
 variable [T2Space R] [CompleteSpace R]
 
-/-- Ring convolution associativity for topological rings at a point.
+/-- Ring convolution associativity for complete uniform rings at a point.
 Derives `hFiberL`/`hFiberR` from `hTriple`; requires inner convolution summabilities. -/
-@[to_additive (dont_translate := R M) addTopologicalRingConvolution_assoc_at]
-theorem topologicalRingConvolution_assoc_at (f g h : M → R) (x : M)
+@[to_additive (dont_translate := R M) addCompleteUniformRingConvolution_assoc_at]
+theorem completeUniformRingConvolution_assoc_at (f g h : M → R) (x : M)
     (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h x)
     (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
     (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
@@ -532,17 +532,17 @@ theorem topologicalRingConvolution_assoc_at (f g h : M → R) (x : M)
     ((hConvGH ae.1.2).tsum_mul_left (f ae.1.1)).symm
   exact ringConvolution_assoc_at f g h x hTriple hFiberL hFiberR hcontL hcontR
 
-/-- Ring convolution associativity for topological rings.
+/-- Ring convolution associativity for complete uniform rings.
 Derives `hFiberL`/`hFiberR` from `hTriple`; requires inner convolution summabilities. -/
-@[to_additive (dont_translate := R M) addTopologicalRingConvolution_assoc]
-theorem topologicalRingConvolution_assoc (f g h : M → R)
+@[to_additive (dont_translate := R M) addCompleteUniformRingConvolution_assoc]
+theorem completeUniformRingConvolution_assoc (f g h : M → R)
     (hTriple : TripleConvolutionExists (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h)
     (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
     (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
     (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
-  ext x; exact topologicalRingConvolution_assoc_at f g h x (hTriple x) hConvFG hConvGH
+  ext x; exact completeUniformRingConvolution_assoc_at f g h x (hTriple x) hConvFG hConvGH
 
-end TopologicalRingConvolutionAssoc
+end CompleteUniformRingConvolutionAssoc
 
 section NormedFieldConvolutionAssoc
 
