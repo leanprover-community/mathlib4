@@ -55,6 +55,15 @@ theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp 
   rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
 
+theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
+    log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
+  rw [log, norm_exp, Real.log_exp, arg_exp]
+
+theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
+    log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
+  rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
+  simp [mul_assoc]
+
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
