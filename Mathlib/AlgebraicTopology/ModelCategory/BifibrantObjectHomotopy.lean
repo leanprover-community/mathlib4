@@ -20,9 +20,164 @@ open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable (C : Type*) [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
 
 namespace BifibrantObject
+
+variable (C) in
+/-- The homotopy relation on the category of bifibrant objects. -/
+def homRel : HomRel (BifibrantObject C) :=
+  fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
+
+lemma homRel_iff_rightHomotopyRel {X Y : BifibrantObject C} {f g : X ⟶ Y} :
+    homRel C f g ↔ RightHomotopyRel f.hom g.hom := Iff.rfl
+
+lemma homRel_iff_leftHomotopyRel {X Y : BifibrantObject C} {f g : X ⟶ Y} :
+    homRel C f g ↔ LeftHomotopyRel f.hom g.hom := by
+  rw [homRel_iff_rightHomotopyRel, leftHomotopyRel_iff_rightHomotopyRel]
+
+instance : HomRel.IsStableUnderPostcomp (homRel C) where
+  comp_right _ h := h.postcomp _
+
+instance : HomRel.IsStableUnderPrecomp (homRel C) where
+  comp_left _ _ _ h := h.precomp _
+
+instance : Congruence (homRel C) where
+  equivalence :=
+    { refl _ := .refl _
+      symm h := .symm h
+      trans h₁ h₂ := .trans h₁ h₂ }
+
+variable (C) in
+/-- The homotopy category of bifibrant objects. -/
+abbrev π := Quotient (BifibrantObject.homRel C)
+
+/-- The quotient functor from the category of bifibrant objects to its
+homotopy category. -/
+def toπ : BifibrantObject C ⥤ π C := Quotient.functor _
+
+lemma toπ_obj_surjective : Function.Surjective (toπ (C := C)).obj :=
+  fun ⟨_⟩ ↦ ⟨_, rfl⟩
+
+instance : Functor.Full (toπ (C := C)) := by dsimp [toπ]; infer_instance
+
+lemma toπ_map_eq {X Y : BifibrantObject C} {f g : X ⟶ Y}
+    (h : homRel C f g) :
+    toπ.map f = toπ.map g :=
+  CategoryTheory.Quotient.sound _ h
+
+lemma toπ_map_eq_iff {X Y : BifibrantObject C} (f g : X ⟶ Y) :
+    toπ.map f = toπ.map g ↔ homRel C f g :=
+  Quotient.functor_map_eq_iff _ _ _
+
+section
+
+variable {D : Type*} [Category* D]
+
+lemma inverts_iff_factors (F : BifibrantObject C ⥤ D) :
+    (weakEquivalences _).IsInvertedBy F ↔
+    ∀ ⦃K L : BifibrantObject C⦄ (f g : K ⟶ L),
+      homRel C f g → F.map f = F.map g := by
+  refine ⟨fun H K L f g h ↦ ?_, fun h X Y f hf ↦ ?_⟩
+  · obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
+    have := isCofibrant_of_cofibration P.ι
+    have : IsIso (F.map (homMk P.ι)) := H _ (by
+      rw [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
+      exact inferInstanceAs (WeakEquivalence P.ι))
+    simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
+      show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp]
+    congr 1
+    simp [← cancel_epi (F.map (homMk P.ι)), ← Functor.map_comp]
+  · rw [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty] at hf
+    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.whitehead f.hom
+    refine ⟨F.map (homMk g'), ?_, ?_⟩
+    all_goals
+      rw [← F.map_comp, ← F.map_id]
+      apply h
+      assumption
+
+/-- The strict universal property of the localization with respect
+to weak equivalences for the quotient functor
+`toπ : BifibrantObject C ⥤ BifibrantObject.π C`. -/
+def strictUniversalPropertyFixedTargetToπ :
+    Localization.StrictUniversalPropertyFixedTarget
+      toπ (weakEquivalences (BifibrantObject C)) D where
+  inverts := by
+    rw [inverts_iff_factors]
+    intro K L f g h
+    exact CategoryTheory.Quotient.sound _ h
+  lift F hF := CategoryTheory.Quotient.lift _ F
+    (by rwa [inverts_iff_factors] at hF)
+  fac F hF := rfl
+  uniq _ _ h := Quotient.lift_unique' _ _ _ h
+
+end
+
+instance : toπ.IsLocalization (weakEquivalences (BifibrantObject C)) :=
+  .mk' _ _ strictUniversalPropertyFixedTargetToπ strictUniversalPropertyFixedTargetToπ
+
+instance {X Y : BifibrantObject C} (f : X ⟶ Y) [hf : WeakEquivalence f] :
+    IsIso (toπ.map f) :=
+  Localization.inverts toπ (weakEquivalences _) f (by rwa [weakEquivalence_iff] at hf)
+
+variable (C) in
+/-- The inclusion `BifibrantObject C ⥤ C`, as a localizer morphism. -/
+def localizerMorphism :
+    LocalizerMorphism (weakEquivalences (BifibrantObject C)) (weakEquivalences C) where
+  functor := ι
+  map := by rfl
+
+section
+
+variable {X Y : C} [IsCofibrant X] [IsCofibrant Y] [IsFibrant X] [IsFibrant Y]
+
+/-- Right homotopy classes of maps between bifibrant objects identify
+to morphisms in the homotopy category `BifibrantObject.π`. -/
+def π.homEquivRight :
+    RightHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) where
+  toFun := Quot.lift (fun f ↦ toπ.map (homMk f)) (fun _ _ h ↦ by rwa [toπ_map_eq_iff])
+  invFun := Quot.lift (fun f ↦ .mk f.hom) (fun _ _ h ↦ by
+    simpa [RightHomotopyClass.mk_eq_mk_iff] using h)
+  left_inv := by rintro ⟨f⟩; rfl
+  right_inv := by rintro ⟨f⟩; rfl
+
+@[simp]
+lemma π.homEquivRight_apply (f : X ⟶ Y) :
+    π.homEquivRight (.mk f) = toπ.map (homMk f) := rfl
+
+@[simp]
+lemma π.homEquivRight_symm_apply (f : X ⟶ Y) :
+    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
+
+/-- Left homotopy classes of maps between bifibrant objects identify
+to morphisms in the homotopy category `BifibrantObject.π`. -/
+def π.homEquivLeft :
+    LeftHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) :=
+  leftHomotopyClassEquivRightHomotopyClass.trans π.homEquivRight
+
+@[simp]
+lemma π.homEquivLeft_apply (f : X ⟶ Y) :
+    π.homEquivLeft (.mk f) = toπ.map (homMk f) := by
+  simp [homEquivLeft]
+
+@[simp]
+lemma π.homEquivLeft_symm_apply (f : X ⟶ Y) :
+    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
+
+end
+
+open Functor in
+instance : (localizerMorphism C).IsLocalizedEquivalence := by
+  sorry
+
+instance {D : Type*} [Category* D] (L : C ⥤ D)
+    [L.IsLocalization (weakEquivalences C)] :
+    (ι ⋙ L).IsLocalization (weakEquivalences (BifibrantObject C)) :=
+  inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)
+
+end BifibrantObject
+
+/-namespace BifibrantObject
 
 def homRel : HomRel (BifibrantObject C) :=
   fun _ _ f g ↦ RightHomotopyRel f.hom g.hom
@@ -148,43 +303,6 @@ def π.toπCompιFibrantObject :
 
 end
 
-section
-
-variable {C} {X Y : C} [IsCofibrant X] [IsCofibrant Y] [IsFibrant X] [IsFibrant Y]
-
-def π.homEquivRight :
-    RightHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) where
-  toFun := Quot.lift (fun f ↦ toπ.map (homMk f)) (fun _ _ h ↦ by rwa [toπ_map_eq_iff])
-  invFun := Quot.lift (fun f ↦ .mk f.hom) (fun _ _ h ↦ by
-    rw [compClosure_homRel] at h
-    rwa [RightHomotopyClass.mk_eq_mk_iff])
-  left_inv := by rintro ⟨f⟩; rfl
-  right_inv := by rintro ⟨f⟩; rfl
-
-@[simp]
-lemma π.homEquivRight_apply (f : X ⟶ Y) :
-    π.homEquivRight (.mk f) = toπ.map (homMk f) := rfl
-
-@[simp]
-lemma π.homEquivRight_symm_apply (f : X ⟶ Y) :
-    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
-
-def π.homEquivLeft :
-    LeftHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) :=
-  leftHomotopyClassEquivRightHomotopyClass.trans π.homEquivRight
-
-@[simp]
-lemma π.homEquivLeft_apply (f : X ⟶ Y) :
-    π.homEquivLeft (.mk f) = toπ.map (homMk f) := by
-  simp [homEquivLeft]
-
-@[simp]
-lemma π.homEquivLeft_symm_apply (f : X ⟶ Y) :
-    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
-
-end
-
-end BifibrantObject
 
 namespace CofibrantObject
 
@@ -483,6 +601,6 @@ instance {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalen
     CofibrantObject.ι ⋙ L).IsLocalization _
   infer_instance
 
-end BifibrantObject
+end BifibrantObject-/
 
 end HomotopicalAlgebra

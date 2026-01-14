@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
+public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -65,10 +65,8 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
     simp
   wlog _ : IsFibrant X generalizing X
   · obtain ⟨X', i, _, _, _⟩ : ∃ (X' : C) (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i ∧
-      IsFibrant X' :=
-      ⟨(CofibrantObject.bifibrantResolutionObj (.mk X)).obj,
-        (CofibrantObject.iBifibrantResolutionObj (.mk X)).hom,
-        inferInstance, inferInstance, inferInstance⟩
+        IsFibrant X' :=
+      ⟨_, FibrantObject.π.iResolutionObj X, inferInstance, inferInstance, inferInstance⟩
     have _ := isCofibrant_of_cofibration i
     have hX' := this X' inferInstance
     have := Localization.inverts L (weakEquivalences _) i
@@ -93,12 +91,7 @@ lemma bijective_rightHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
 
 lemma bijective_leftHomotopyClassToHom [IsCofibrant X] [IsFibrant Y] :
     Function.Bijective (leftHomotopyClassToHom L : LeftHomotopyClass X Y → _) := by
-  have : (leftHomotopyClassToHom L : LeftHomotopyClass X Y → _) =
-      rightHomotopyClassToHom L ∘ leftHomotopyClassEquivRightHomotopyClass := by
-    ext f
-    obtain ⟨f, rfl⟩ := f.mk_surjective
-    simp
-  rw [this]
-  exact (bijective_rightHomotopyClassToHom L X Y).comp (Equiv.bijective _)
+  rw [bijective_leftHomotopyClassToHom_iff_bijective_rightHomotopyClassToHom]
+  exact bijective_rightHomotopyClassToHom L X Y
 
 end HomotopicalAlgebra
