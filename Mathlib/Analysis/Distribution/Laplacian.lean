@@ -14,7 +14,7 @@ We define the Laplacian on Schwartz functions.
 
 ## Main definitions
 
-* `LineDeriv.laplacian`: The abstract definition of a Laplacian as a sum over the second
+* `LineDeriv.laplacianCLM`: The abstract definition of a Laplacian as a sum over the second
   derivatives.
 * `SchwartzMap.instLaplacian`: The Laplacian for `𝓢(E, F)` as an instance of the notation type-class
   `Laplacian`.
@@ -23,6 +23,20 @@ We define the Laplacian on Schwartz functions.
 * `SchwartzMap.laplacian_eq_sum`: The Laplacian is equal to the sum of second derivatives in any
   orthonormal basis.
 * `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian.
+
+## Implementation notes
+The abstract definition `LineDeriv.laplacianCLM` does not provide an instance of `Laplacian` because
+the type-class system is not able to infer the inner product space `E`. In order to avoid duplicated
+definitions, we do not define `LineDeriv.laplacian` and subsequently every concrete instance of
+`LineDeriv` has to provide an instance for `Laplacian` and a proof that
+`LineDeriv.laplacianCLM _ _ _ f = Δ f`, for example see `SchwartzMap.laplacianCLM_eq'` and
+`SchwartzMap.laplacian_eq_sum'` below.
+
+We also note that since `LineDeriv` merely notation and not tied to `fderiv`, it is not possible to
+prove the independence of the basis in the definition of the Laplacian in the abstract setting.
+In the case of sufficiently smooth functions, this follows from an equality of `lineDerivOp` and
+`fderiv`, see for example `SchwartzMap.coe_laplacian_eq_sum` and in the case of distributions, this
+follows from duality.
 
 -/
 
