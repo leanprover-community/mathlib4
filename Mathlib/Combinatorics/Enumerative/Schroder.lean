@@ -12,12 +12,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Abs
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.OfScientific
-import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Schröder numbers
