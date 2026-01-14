@@ -379,7 +379,7 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | .fvar fvarId       => if dontTranslate.contains fvarId then return e else failure
-    | .sort _            => return e
+    | .sort 0            => return e
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
