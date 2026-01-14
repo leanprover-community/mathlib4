@@ -1,0 +1,16 @@
+name: splice-bot
+
+on:
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  call-splice-bot:
+    uses: leanprover-community/SpliceBot/.github/workflows/splice.yaml@master
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      # optional branch to which the PR will point — defaults to "master"
+      base_ref: master
+    secrets: inherit
