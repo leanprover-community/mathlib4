@@ -609,11 +609,7 @@ theorem Ioc_diff_right : Ioc a b \ {b} = Ioo a b :=
 theorem Icc_diff_both : Icc a b \ {a, b} = Ioo a b := by
   rw [insert_eq, ← diff_diff, Icc_diff_left, Ioc_diff_right]
 
-@[simp]
-theorem Ici_diff_left : Ici a \ {a} = Ioi a :=
-  ext fun x => by simp [lt_iff_le_and_ne, eq_comm]
-
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp) Ici_diff_left]
 theorem Iic_diff_right : Iic a \ {a} = Iio a :=
   ext fun x => by simp [lt_iff_le_and_ne]
 
