@@ -47,6 +47,7 @@ lemma constantCoeff_largeSchroderSeries :
     constantCoeff largeSchroderSeries = 1 := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_largeSchroderSeries, largeSchroder_zero]
 
+-- TODO implicit n, hn : n ≠ 0, also below
 @[simp]
 lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
     coeff n (X * largeSchroderSeries) = largeSchroder (n - 1) := by

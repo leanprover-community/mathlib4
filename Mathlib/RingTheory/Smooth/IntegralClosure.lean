@@ -182,5 +182,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalization
   · apply IsLocalization.algHom_ext M; ext
   · ext x
     dsimp [toIntegralClosure]
-    simp [← Algebra.TensorProduct.right_algebraMap_apply]
+    -- TODO review
+    simp [← Algebra.TensorProduct.right_algebraMap_apply, ← @Subalgebra.algebraMap_def]
     rfl
