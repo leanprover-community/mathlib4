@@ -522,7 +522,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
   have hV' e : IsOpen (V' e) := (hV e).2.inter (φ e).open_source
   have : ⋃ e, V' e ∈ nhdsSet (f ⁻¹' {x}) :=
     (isOpen_iUnion hV').mem_nhdsSet.2 fun e he ↦ mem_iUnion_of_mem ⟨e, he⟩ ⟨(hV e).1, (hφ _).1⟩
-  -- since f is a closed map, the union of the Vₑ' contains the preimage of a neighborhood U ∋ x
+  -- since f is a closed map, the union of the Vₑ' contains the preimage of a neighborhood U of x
   have ⟨W, hWx, hWV⟩ := isClosedMap_iff_comap_nhds_le.mp hf this
   cases isEmpty_or_nonempty (f ⁻¹' {x})
   · exact .of_preimage_eq_empty _ hWx (by simpa using hWV)
