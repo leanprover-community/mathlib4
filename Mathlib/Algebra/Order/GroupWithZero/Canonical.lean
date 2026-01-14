@@ -36,11 +36,6 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 
 variable {α β : Type*}
 
--- TODO: This instance has nothing to do in this file
-instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
-
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
     PosMulStrictMono α, OrderBot α where
