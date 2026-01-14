@@ -40,11 +40,17 @@ lemma continuous_compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc t
     Continuous (compProj t₀ α) :=
   α.continuous.comp continuous_projIcc
 
-lemma ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace F] {g : E → F}
+lemma _root_.ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace F] {g : E → F}
     {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
     Continuous (fun τ ↦ g (compProj t₀ α τ)) :=
   hg.comp_continuous (continuous_compProj t₀ α) (fun _ ↦ hα trivial)
+
+lemma compProj_update {n : ℕ} {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x : C(Icc tmin tmax, E)) (τ : ℝ) :
+    (fun j => compProj t₀ (update dα i x j) τ) =
+      update (fun j => compProj t₀ (dα j) τ) i (compProj t₀ x τ) := by
+  ext j; simp only [Function.update_apply, compProj]; split_ifs <;> rfl
 
 variable [NormedSpace ℝ E]
 
@@ -72,8 +78,16 @@ lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
     Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) :=
-  continuous_eval.comp ((ContinuousOn.continuous_comp_compProj hg t₀ hα).prodMk
+  continuous_eval.comp ((hg.continuous_comp_compProj t₀ hα).prodMk
     (continuous_pi fun j => continuous_compProj t₀ (dα j)))
+
+/-- The integrand is interval integrable. -/
+lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E))
+    (a b : Icc tmin tmax) :
+    IntervalIntegrable (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) volume a b :=
+  (continuous_integrand hg t₀ hα dα).intervalIntegrable a b
 
 variable [CompleteSpace E]
 
@@ -114,181 +128,50 @@ lemma integralCM_def {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : 
     integralCM hg t₀ α =
       fun dα ↦ if hα : MapsTo α univ u then integralCMAux hg t₀ hα dα else 0 := rfl
 
-lemma integralCM_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+lemma integralCM_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
     integralCM hg t₀ α = integralCMAux hg t₀ hα := by
   simp [integralCM_def, dif_pos hα]
 
-lemma integralCM_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+lemma integralCM_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
     (hα : ¬MapsTo α univ u) :
     integralCM hg t₀ α = fun _ ↦ 0 := by
   simp [integralCM_def, dif_neg hα]
 
--- rename `x`, `y`
+-- TODO: Should this proof and `integralCM_update_smul` be pushed up to `integralFun`?
 lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x y : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (x + y)) =
       integralCM hg t₀ α (update dα i x) + integralCM hg t₀ α (update dα i y) := by
   by_cases hα : MapsTo α univ u
-  · simp only [integralCM_if_pos _ _ hα]
-    ext t
-    -- unfold the bundled maps, reduce to a statement about integrals
-    rw [ContinuousMap.add_apply]
+  · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.add_apply]
+    intro t
+    simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
+    rw [← integral_add (intervalIntegrable_integrand hg t₀ hα _ t₀ t)
+        (intervalIntegrable_integrand hg t₀ hα _ t₀ t),
+      integral_congr fun τ _ => ?_]
+    simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_add ..
+  · simp [integralCM_if_neg hα]
 
-    -- abbreviations for the three integrands
-    let fxy : ℝ → E :=
-      fun τ =>
-        g (compProj t₀ α τ) (fun j => compProj t₀ (update dα i (x + y) j) τ)
-    let fx : ℝ → E :=
-      fun τ =>
-        g (compProj t₀ α τ) (fun j => compProj t₀ (update dα i x j) τ)
-    let fy : ℝ → E :=
-      fun τ =>
-        g (compProj t₀ α τ) (fun j => compProj t₀ (update dα i y j) τ)
-
-    have hfx_cont : Continuous fx := by
-      simpa [fx] using continuous_integrand hg t₀ hα (update dα i x)
-    have hfy_cont : Continuous fy := by
-      simpa [fy] using continuous_integrand hg t₀ hα (update dα i y)
-
-    have hfx_int : IntervalIntegrable fx volume (t₀ : ℝ) (t : ℝ) :=
-      (continuous_integrand hg t₀ hα (update dα i x)).intervalIntegrable t₀ t
-    have hfy_int : IntervalIntegrable fy volume (t₀ : ℝ) (t : ℝ) :=
-      (continuous_integrand hg t₀ hα (update dα i y)).intervalIntegrable t₀ t
-
-    -- pointwise additivity of the integrand in the i-th slot
-    have h_point : ∀ τ, fxy τ = fx τ + fy τ := by
-      intro τ
-      -- base vector in E^n at time τ
-      let v : Fin n → E := fun j => compProj t₀ (dα j) τ
-
-      have harg_xy :
-          (fun j => compProj t₀ (update dα i (x + y) j) τ) =
-            Function.update v i (compProj t₀ (x + y) τ) := by
-        funext j
-        by_cases hji : j = i
-        · subst hji; simp [v]
-        · simp [v, hji]
-
-      have harg_x :
-          (fun j => compProj t₀ (update dα i x j) τ) =
-            Function.update v i (compProj t₀ x τ) := by
-        funext j
-        by_cases hji : j = i
-        · subst hji; simp [v]
-        · simp [v, hji]
-
-      have harg_y :
-          (fun j => compProj t₀ (update dα i y j) τ) =
-            Function.update v i (compProj t₀ y τ) := by
-        funext j
-        by_cases hji : j = i
-        · subst hji; simp [v]
-        · simp [v, hji]
-
-      have hcomp_add : compProj t₀ (x + y) τ = compProj t₀ x τ + compProj t₀ y τ := by
-        simp [compProj]
-
-      -- now use multilinearity of `g (compProj t₀ α τ)` in the i-th coordinate
-      have hmul :
-          g (compProj t₀ α τ) (Function.update v i (compProj t₀ (x + y) τ)) =
-            g (compProj t₀ α τ) (Function.update v i (compProj t₀ x τ)) +
-            g (compProj t₀ α τ) (Function.update v i (compProj t₀ y τ)) := by
-        -- `map_update_add` lives on `MultilinearMap`, so go via `toMultilinearMap`
-        simpa [hcomp_add] using
-          ((g (compProj t₀ α τ)).toMultilinearMap.map_update_add
-            (m := v) (i := i) (x := compProj t₀ x τ) (y := compProj t₀ y τ))
-
-      -- rewrite back to the original `fun j => compProj ...`
-      simpa [fxy, fx, fy, harg_xy, harg_x, harg_y] using hmul
-
-    -- finish by rewriting the integrand, then using `integral_add`
-    calc
-      ∫ τ in (t₀ : ℝ)..(t : ℝ), fxy τ
-          = ∫ τ in (t₀ : ℝ)..(t : ℝ), (fx τ + fy τ) := by
-              refine intervalIntegral.integral_congr ?_
-              intro τ hτ
-              exact h_point τ
-      _ = (∫ τ in (t₀ : ℝ)..(t : ℝ), fx τ) + (∫ τ in (t₀ : ℝ)..(t : ℝ), fy τ) := by
-            simpa using (intervalIntegral.integral_add hfx_int hfy_int)
-  · simp [integralCM_if_neg _ _ hα]
-
--- rename `x`
 lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (c : ℝ) (x : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (c • x)) = c • integralCM hg t₀ α (update dα i x) := by
   by_cases hα : MapsTo α univ u
-  · simp only [integralCM_if_pos _ _ hα]
-    ext t
-
-    -- abbreviate the two integrands
-    let fcx : ℝ → E :=
-      fun τ =>
-        g (compProj t₀ α τ) (fun j => compProj t₀ (update dα i (c • x) j) τ)
-    let fx : ℝ → E :=
-      fun τ =>
-        g (compProj t₀ α τ) (fun j => compProj t₀ (update dα i x j) τ)
-
-    -- (You likely already have a lemma / helper from the previous proof.)
-    -- We need intervalIntegrable fx to use `integral_smul`.
-    -- One convenient way: prove `Continuous fx` as in your `update_add` proof, then:
-    have hx_int : IntervalIntegrable fx volume t₀ t :=
-      (continuous_integrand hg t₀ hα (update dα i x)).intervalIntegrable t₀ t
-
-    -- pointwise: fcx τ = c • fx τ (multilinearity in slot i)
-    have h_point : ∀ τ, fcx τ = c • fx τ := by
-      intro τ
-      let v : Fin n → E := fun j => compProj t₀ (dα j) τ
-
-      have harg_cx :
-          (fun j => compProj t₀ (update dα i (c • x) j) τ) =
-            Function.update v i (compProj t₀ (c • x) τ) := by
-        funext j
-        by_cases hji : j = i
-        · subst hji; simp [v]
-        · simp [v, hji]
-
-      have harg_x :
-          (fun j => compProj t₀ (update dα i x j) τ) =
-            Function.update v i (compProj t₀ x τ) := by
-        funext j
-        by_cases hji : j = i
-        · subst hji; simp [v]
-        · simp [v, hji]
-
-      have hcomp_smul : compProj t₀ (c • x) τ = c • compProj t₀ x τ := by
-        simp [compProj]
-
-      -- multilinearity in the i-th coordinate
-      have hmul :
-          g (compProj t₀ α τ) (Function.update v i (compProj t₀ (c • x) τ)) =
-            c • g (compProj t₀ α τ) (Function.update v i (compProj t₀ x τ)) := by
-        -- `map_update_smul` is on `MultilinearMap`, so go via `toMultilinearMap`
-        simpa [hcomp_smul] using
-          ((g (compProj t₀ α τ)).toMultilinearMap.map_update_smul
-            (m := v) (i := i) (c := c) (x := compProj t₀ x τ))
-
-      simpa [fcx, fx, harg_cx, harg_x] using hmul
-
-    -- now integrate: ∫ fcx = ∫ (c•fx) = c • ∫ fx
-    calc
-      ∫ τ in (t₀ : ℝ)..(t : ℝ), fcx τ
-          = ∫ τ in (t₀ : ℝ)..(t : ℝ), (c • fx τ) := by
-              refine intervalIntegral.integral_congr ?_
-              intro τ hτ
-              simpa using h_point τ
-      _ = c • ∫ τ in (t₀ : ℝ)..(t : ℝ), fx τ := by
-            simpa using (intervalIntegral.integral_smul c hx_int)
-  · simp [integralCM_if_neg _ _ hα]
+  · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.smul_apply]
+    intro t
+    simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
+    rw [← intervalIntegral.integral_smul, integral_congr fun τ _ => ?_]
+    simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_smul ..
+  · simp [integralCM_if_neg hα]
 
 lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     Continuous (integralCM hg t₀ α) := by
   by_cases hα : MapsTo α univ u
-  · simp only [integralCM_if_pos _ _ hα]
+  · simp only [integralCM_if_pos hα]
     -- Let X be the parameter space for dα
     let X := Fin n → C(Icc tmin tmax, E)
     let fparam : (X × (Icc tmin tmax)) → ℝ → E :=
@@ -307,7 +190,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
 
     -- First, show τ ↦ g (compProj t₀ α τ) is continuous (only depends on τ).
     have hg_comp : Continuous (fun τ : ℝ => g (compProj t₀ α τ)) :=
-      ContinuousOn.continuous_comp_compProj hg t₀ hα
+      hg.continuous_comp_compProj t₀ hα
 
     -- Next: joint continuity of the integrand (dα, τ) ↦ g(compProj α τ) (…evaluations of dα…)
     have hIntegrand :
@@ -346,15 +229,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
       have hgq : Continuous (fun q : X × ℝ => g (compProj t₀ α q.2)) :=
         hg_comp.comp continuous_snd
 
-      -- Now combine with continuity of evaluation (h,m) ↦ h m for ContinuousMultilinearMap
-      have hEval :
-          Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2) := by
-        -- NOTE: if this lemma name doesn’t resolve, import `Mathlib/Analysis/NormedSpace/Multilinear`
-        simpa using
-          (continuous_eval :
-            Continuous (fun p : (E [×n]→L[ℝ] E) × (Fin n → E) => p.1 p.2))
-
-      exact hEval.comp (hgq.prodMk hm)
+      exact continuous_eval.comp (hgq.prodMk hm)
 
     -- Lift the integrand continuity to include the extra (ignored) `t : Icc` parameter.
     have hIntegrand' :
@@ -377,7 +252,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
       -- Use the library lemma for parametric interval integrals of continuous integrands.
       -- (Depending on your imports/version, you may need the primed/unprimed variant.)
       simpa [integralFun] using
-        intervalIntegral.continuous_parametric_intervalIntegral_of_continuous
+        continuous_parametric_intervalIntegral_of_continuous
           (a₀ := (t₀ : ℝ))
           (s := fun p : X × Icc tmin tmax => (p.2 : ℝ))
           (f := fparam)
@@ -386,7 +261,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
 
     -- Finish by rewriting the uncurried map in terms of `integralCM`.
     simpa [integralCM, integralCM, integralFun] using huncurry
-  · simpa [integralCM_if_neg _ _ hα] using continuous_const
+  · simpa [integralCM_if_neg hα] using continuous_const
 
 /--
 The integral as a continuous multilinear map on the space of continuous curves, which will allow us
@@ -490,7 +365,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       ∫ τ in (t₀ : ℝ)..(p.2 : ℝ), g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) τ)
         (fun i => compProj t₀ (p.1.2 i) τ)) := by
     simpa [fparam] using
-      intervalIntegral.continuous_parametric_intervalIntegral_of_continuous
+      continuous_parametric_intervalIntegral_of_continuous
         (a₀ := (t₀ : ℝ))
         (s := fun p : (S × X) × Icc tmin tmax => (p.2 : ℝ))
         (f := fparam)
@@ -501,7 +376,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   have hCont : Continuous (fun p : S × X => (integralCMLM hg t₀ ↑p.1) p.2) := by
     apply ContinuousMap.continuous_of_continuous_uncurry
     convert hIntegralCont using 2 with ⟨⟨α, dα⟩, t⟩
-    simp only [Function.uncurry_apply_pair, integralCMLM, integralCM_if_pos _ _ α.2]
+    simp only [Function.uncurry_apply_pair, integralCMLM, integralCM_if_pos α.2]
     rfl
 
   -- Use joint continuity at (α₀, dα) to get uniform bound over B
@@ -649,7 +524,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     rw [ContinuousMap.dist_lt_iff hε2]
     intro t
 
-    simp only [integralCMLM, integralCM_if_pos hg t₀ α₀.2, integralCM_if_pos hg t₀ α.2]
+    simp only [integralCMLM, integralCM_if_pos α₀.2, integralCM_if_pos α.2]
 
     -- Now the goal is:
     -- dist ((integralCMAux hg t₀ α₀.2 dα) t) ((integralCMAux hg t₀ α.2 dα) t) < ε/2
@@ -770,8 +645,8 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
         _ = ε / 4 := hε'_eq
         _ < ε / 2 := by linarith
 
-    · exact continuous_integrand hg t₀ α₀.2 dα |>.intervalIntegrable ..
-    · exact continuous_integrand hg t₀ α.2 dα |>.intervalIntegrable ..
+    · exact intervalIntegrable_integrand hg t₀ α₀.2 dα ..
+    · exact intervalIntegrable_integrand hg t₀ α.2 dα ..
 
   -- Now construct the neighborhood V
   -- key gives us V ∈ 𝓝 (↑α₀) in the ambient space C(Icc, E)
