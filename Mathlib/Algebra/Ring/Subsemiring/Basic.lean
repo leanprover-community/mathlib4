@@ -903,11 +903,11 @@ instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] 
     SMulCommClass α S β :=
   inferInstance
 
-instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [MulAction R M] :
     SMulCommClass R (↥(Subsemiring.center R)) M :=
   inferInstanceAs <| SMulCommClass R ↥(Submonoid.center R) M
 
-instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [MulAction R M] :
     SMulCommClass (↥(Subsemiring.center R)) R M :=
   inferInstanceAs <| SMulCommClass ↥(Submonoid.center R) R M
 
