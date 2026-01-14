@@ -468,7 +468,7 @@ theorem coeff_eq_sum
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
-  lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
+  lift P.degree to ℕ using (by contrapose! hP; simp [hP]) with deg hdeg
   rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
   replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
   have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
