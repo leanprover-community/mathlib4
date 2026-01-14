@@ -24,7 +24,7 @@ open ComplexOrder
 /-- The square root of a complex number. -/
 noncomputable abbrev Complex.sqrt (a : ℂ) : ℂ := a ^ (2⁻¹ : ℂ)
 
-theorem Complex.sqrt_eq_re_add_ite (a : ℂ) :
+theorem Complex.sqrt_eq_re_add_ite {a : ℂ} :
     a.sqrt = √((‖a‖ + a.re) / 2) + (if 0 ≤ a.im then 1 else -1) * √((‖a‖ - a.re) / 2) * I := by
   rw [← cpow_inv_two_re]
   by_cases! h : 0 ≤ a.im
@@ -35,7 +35,7 @@ theorem Complex.sqrt_eq_re_add_ite (a : ℂ) :
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := map ℂ 𝕜 (map 𝕜 ℂ a).sqrt
 
-theorem RCLike.sqrt_eq_ite (a : 𝕜) :
+theorem RCLike.sqrt_eq_ite {a : 𝕜} :
     sqrt a = if h : im (I : 𝕜) = 1 then (complexRingEquiv h).symm (complexRingEquiv h a).sqrt
       else √(re a) := by
   rw [sqrt, eq_comm]
@@ -48,7 +48,7 @@ theorem RCLike.sqrt_eq_ite (a : 𝕜) :
   · simp [abs_of_nonneg ha', ← two_mul]
   simp [abs_of_nonpos ha'.le, Real.sqrt_eq_zero', ha'.le]
 
-theorem RCLike.sqrt_eq_re_add_ite (a : 𝕜) :
+theorem RCLike.sqrt_eq_re_add_ite {a : 𝕜} :
     sqrt a = √((‖a‖ + re a) / 2) + (if 0 ≤ im a then 1 else -1) * √((‖a‖ - re a) / 2) * I := by
   rw [sqrt, Complex.sqrt_eq_re_add_ite]
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := 𝕜)
@@ -59,19 +59,19 @@ theorem RCLike.sqrt_eq_re_add_ite (a : 𝕜) :
 @[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
 @[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
 
-theorem Complex.re_sqrt_ofReal (a : ℝ) :
+theorem Complex.re_sqrt_ofReal {a : ℝ} :
     (sqrt (a : ℂ)).re = √a := by
   simp only [cpow_inv_two_re, norm_real, Real.norm_eq_abs, ofReal_re]
   grind
 
-theorem RCLike.re_sqrt_ofReal (a : ℝ) :
+theorem RCLike.re_sqrt_ofReal {a : ℝ} :
     re (sqrt (a : 𝕜)) = √a := by
   aesop (add simp [sqrt, Complex.re_sqrt_ofReal])
 
-@[simp] theorem RCLike.sqrt_real (a : ℝ) :
+@[simp] theorem RCLike.sqrt_real {a : ℝ} :
     sqrt a = √a := by simp [← re_sqrt_ofReal (𝕜 := ℝ)]
 
-@[simp] theorem RCLike.sqrt_complex (a : ℂ) :
+@[simp] theorem RCLike.sqrt_complex {a : ℂ} :
     sqrt a = a.sqrt := by simp [sqrt]
 
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
@@ -81,9 +81,11 @@ theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
   rw [← re_add_im (α : ℂ).sqrt, re_sqrt_ofReal]
   simp [sqrt, cpow_inv_two_im_eq_sqrt, abs_of_nonneg hα]
 
-theorem RCLike.sqrt_map {a : ℂ} (h : im (I : 𝕜) = 1) :
-    sqrt (map ℂ 𝕜 a) = map ℂ 𝕜 a.sqrt := by
-  aesop (add simp [RCLike.sqrt])
+theorem RCLike.sqrt_map {𝕜' : Type*} [RCLike 𝕜'] {a : 𝕜} (h : im (I : 𝕜) = im (I : 𝕜')) :
+    sqrt (map 𝕜 𝕜' a) = map 𝕜 𝕜' (sqrt a) := by
+  have := I_eq_zero_or_im_I_eq_one (K := 𝕜)
+  have := I_eq_zero_or_im_I_eq_one (K := 𝕜')
+  aesop (add simp [RCLike.sqrt, im_eq_zero])
 
 theorem Complex.sqrt_map {a : 𝕜} (h : RCLike.im (RCLike.I : 𝕜) = 1) :
     (RCLike.map 𝕜 ℂ a).sqrt = RCLike.map 𝕜 ℂ (RCLike.sqrt a) := by
