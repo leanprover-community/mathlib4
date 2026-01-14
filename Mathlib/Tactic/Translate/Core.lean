@@ -402,7 +402,8 @@ where
         let decl := decl.setType (← visit decl.type)
         visitLambda (fvars.push x) (lctx.addDecl decl) b
     | e => do
-      let e ← visit (e.instantiateRev fvars); withLCtx lctx {} do mkLambdaFVars fvars e
+      let e ← visit (e.instantiateRev fvars)
+      withLCtx lctx {} do mkLambdaFVars fvars e
   visitForall (fvars : Array Expr) (lctx : LocalContext) :
       Expr → MonadCacheT ExprStructEq Expr MetaM Expr
     | .forallE n d b c =>
@@ -411,7 +412,8 @@ where
         let decl := decl.setType (← visit decl.type)
         visitForall (fvars.push x) (lctx.addDecl decl) b
     | e => do
-      let e ← visit (e.instantiateRev fvars); withLCtx lctx {} do mkForallFVars fvars e
+      let e ← visit (e.instantiateRev fvars)
+      withLCtx lctx {} do mkForallFVars fvars e
   visitLet (fvars : Array Expr) (lctx : LocalContext) :
       Expr → MonadCacheT ExprStructEq Expr MetaM Expr
     | .letE n t v b nondep =>
