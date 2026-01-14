@@ -193,7 +193,7 @@ end Rel
 
 section Total
 
-variable [IsRefl α r]
+variable [Std.Refl r]
 
 theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y ∨ y ≺ x :=
   (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
@@ -224,8 +224,6 @@ lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
   | inr h' => exact h'
   | inl h' => simpa [lt_iff_le_not_ge, h'] using h
 
-@[deprecated (since := "2025-05-11")] alias IsChain.le_of_not_lt := IsChain.le_of_not_gt
-
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
   ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
@@ -233,8 +231,6 @@ lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
 lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
   (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
-
-@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
@@ -267,8 +263,8 @@ protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s
   simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
   exact singleton_ne_empty x (h IsChain.singleton).symm
 
-protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s ≠ ∅ := by
-  grind [not_nonempty_iff, IsMaxChain.isEmpty_iff]
+protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s.Nonempty :=
+  not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff
 
 theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩

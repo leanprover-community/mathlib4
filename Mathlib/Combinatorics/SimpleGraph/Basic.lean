@@ -142,6 +142,10 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
+instance {V : Type u} [DecidableEq V] (r : V → V → Prop)
+    [DecidableRel r] : DecidableRel (SimpleGraph.fromRel r).Adj :=
+  inferInstanceAs (DecidableRel fun a b ↦ a ≠ b ∧ (r a b ∨ r b a))
+
 /-- Two vertices are adjacent in the complete bipartite graph on two vertex types
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
@@ -344,11 +348,27 @@ theorem completeGraph_eq_top (V : Type u) : completeGraph V = ⊤ :=
 theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
   rfl
 
+variable {G}
+
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
+  simp [← le_bot_iff, le_iff_adj]
+
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
+
+variable (G)
+
 @[simps]
 instance (V : Type u) : Inhabited (SimpleGraph V) :=
   ⟨⊥⟩
 
-instance [Subsingleton V] : Unique (SimpleGraph V) where
+instance uniqueOfSubsingleton [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
@@ -393,6 +413,28 @@ theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
 
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
+
+/-- All vertices are in the support of the complete graph if there is more than one vertex. -/
+@[simp]
+theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
+  Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
+
+/-- The support of the empty graph is empty. -/
+@[simp]
+theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
+  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+
+/-- Only the empty graph has empty support. -/
+@[simp]
+theorem support_eq_bot_iff : G.support = ∅ ↔ G = ⊥ :=
+  ⟨fun h ↦ eq_bot_iff_forall_not_adj.mpr fun v w nadj ↦
+    Set.ext_iff.mp (SetRel.dom_eq_empty_iff.mp h) (v, w) |>.mp nadj |>.elim,
+   (· ▸ support_bot)⟩
+
+/-- The support of a graph is empty if there at most one vertex. -/
+@[simp]
+theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
+  uniqueOfSubsingleton.uniq G ▸ support_bot
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
@@ -517,12 +559,6 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
-theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
-  simp [← le_bot_iff, le_iff_adj]
-
-theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  simp [← top_le_iff, le_iff_adj]
-
 variable (G G₁ G₂)
 
 theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) :
@@ -641,6 +677,9 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
 
 end FromEdgeSet
 
+theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
+  simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
+
 /-! ### Incidence set -/
 
 
@@ -692,8 +731,6 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
   Iff.rfl
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_neighborSet_self := notMem_neighborSet_self
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -755,14 +792,8 @@ theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbo
 theorem notMem_commonNeighbors_left (v w : V) : v ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.1 rfl
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_left := notMem_commonNeighbors_left
-
 theorem notMem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w := fun h =>
   ne_of_adj G h.2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_commonNeighbors_right := notMem_commonNeighbors_right
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=

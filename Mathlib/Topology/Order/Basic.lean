@@ -462,7 +462,7 @@ theorem exists_Icc_mem_subset_of_mem_nhdsGE {a : α} {s : Set α} (hs : s ∈ �
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
-  · rcases(nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+  · rcases (nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
@@ -747,37 +747,21 @@ theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
   countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
 
-instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
-  by_cases h : ∃ (x : α), IsTop x
-  · rcases h with ⟨x, hx⟩
-    rw [atTop_eq_pure_of_isTop hx]
-    exact isCountablyGenerated_pure x
-  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
-    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
-    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
-      intro s
-      have : (s : Set α) ≠ ∅ := by
-        intro H
-        apply b_ne
-        convert s.2
-        exact H.symm
-      exact Iff.mp notMem_singleton_empty this
-    choose a ha using A
-    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
-      apply atTop_eq_generate_of_not_bddAbove
-      intro ⟨x, hx⟩
-      simp only [IsTop, not_exists, not_forall, not_le] at h
-      rcases h x with ⟨y, hy⟩
-      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
-        hb.exists_subset_of_mem_open hy isOpen_Ioi
-      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
-      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
-      exact lt_irrefl _ (I.trans_lt J)
+  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
+    have : atTop = generate (Ici '' s) := by
+      refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
+      simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
+      obtain ⟨y, hy, hxy⟩ := hs.exists_mem_open isOpen_Ioi (h x)
+      exact (hx hy).not_gt hxy
     rw [this]
-    exact ⟨_, (countable_range _).image _, rfl⟩
+    exact ⟨_, s_count.image _, rfl⟩
+  · rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
 
-instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atBot [SeparableSpace α] :
     IsCountablyGenerated (atBot : Filter α) :=
   @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 
