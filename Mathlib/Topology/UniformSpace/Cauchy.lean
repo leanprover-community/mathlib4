@@ -477,7 +477,7 @@ end DiscreteUniformity
 def TotallyBounded (s : Set α) : Prop :=
   ∀ d ∈ 𝓤 α, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, { x | (x, y) ∈ d }
 
-/-- A filter `f` is totally bounded if for every entourage `d`, the `d`-neigborhood of some finite
+/-- A filter `f` is totally bounded if for every entourage `d`, the `d`-neighborhood of some finite
 set is in `f`. -/
 protected def Filter.TotallyBounded (f : Filter α) :=
   ∀ d : SetRel α α, d ∈ 𝓤 α → ∃ t : Set α, t.Finite ∧ d.preimage t ∈ f
