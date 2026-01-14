@@ -734,6 +734,8 @@ theorem mker_spanSingleton :
 
 /-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Aˣ`.
 See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+/- Note: `assert_not_exists Submodule.hasQuotient` in `Mathlib.RingTheory.Ideal.Operations`
+forbids importing `Function.MulExact` into this file. -/
 theorem ker_unitsMap_spanSingleton :
     (Units.map (Submodule.spanSingleton R).toMonoidHom).ker =
     (Units.map (algebraMap R A).toMonoidHom).range := by

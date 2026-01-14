@@ -5,10 +5,8 @@ Authors: Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.Directed
-public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Data.Set.Accumulate
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # Dissipate
@@ -100,8 +98,8 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
 lemma dissipate_zero (s : ℕ → Set β) : dissipate s 0 = s 0 := by
   simp [dissipate_def]
 
-/-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
-larger than `n`)such that `s m ⊆ dissipate s n`. -/
+/-- For a directed set of sets `s : ℕ → Set α` (i.e. `∀ i j, ∃ k, s k ⊆ s i ∩ s j`) and `n : ℕ`,
+there exists `m : ℕ` (maybe larger than `n`) such that `s m ⊆ dissipate s n`. -/
 lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
   (hd : Directed (fun (x y : Set α) => y ⊆ x) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
   induction n with
@@ -121,14 +119,14 @@ lemma directed_dissipate {s : ℕ → Set α} :
 
 lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     (hd : Directed (fun (x y : Set α) => y ⊆ x) C) :
-    (∃ n, C n = ∅) ↔ (∃ n, dissipate C n = ∅) := by
-  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩ , ?_⟩
-  · exact subset_eq_empty (dissipate_subset (Nat.le_refl n)) hn
+    (∃ n, dissipate C n = ∅) ↔ (∃ n, C n = ∅) := by
+  refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩⟩
   · rw [← not_imp_not]
     push_neg
     intro h n
     obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
     exact Set.Nonempty.mono hm (h m)
+  · exact subset_eq_empty (dissipate_subset (Nat.le_refl n)) hn
 
 /-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
 `dissipate s n` belongs to `p`. -/
