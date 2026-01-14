@@ -313,10 +313,7 @@ theorem center_eq_bot_odd_ge_three (hodd : Odd n) (h3 : 3 ≤ n) :
   rcases x with i | i
   · have heq := sr.inj (hx (sr 0))
     simp only [zero_add, zero_sub] at heq
-    have hi : (2 : ZMod n) * i = 0 := by
-      calc 2 * i = i + i := two_mul i
-        _ = i + (-i) := by rw [← heq]
-        _ = 0 := add_neg_cancel i
+    have hi : (2 : ZMod n) * i = 0 := by simpa [two_mul, ←heq] using add_neg_cancel i
     simp [hunit.mul_right_eq_zero.mp hi]
   · have heq := sr.inj (hx (r 1))
     have h2 : (2 : ZMod n) = 0 := by
