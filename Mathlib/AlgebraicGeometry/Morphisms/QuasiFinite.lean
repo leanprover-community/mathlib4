@@ -3,9 +3,8 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Normalization
 import Mathlib.AlgebraicGeometry.Morphisms.Finite
-import Mathlib.RingTheory.ZariskiMain
+import Mathlib.RingTheory.QuasiFinite
 import Mathlib.RingTheory.RingHom.QuasiFinite
 
 open CategoryTheory Limits
@@ -108,6 +107,5 @@ instance [IsFinite f] : LocallyQuasiFinite f := by
   refine ((targetAffineLocally_affineAnd_eq_affineLocally
     RingHom.QuasiFinite.propertyIsLocal).le f ?_).2
   exact targetAffineLocally_affineAnd_le (fun hf ↦ .of_finite hf) f ‹_›
-
 
 end AlgebraicGeometry
