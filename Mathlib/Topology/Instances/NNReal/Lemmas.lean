@@ -10,6 +10,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Topology on `ℝ≥0`
@@ -231,6 +232,23 @@ theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddA
 theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
     (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
   ⟨iInf f, _root_.Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant⟩
+
+variable {ι : Type*} [Preorder ι] [Nonempty ι]
+
+/-- An antitone function `f : ι → ℝ≥0` has the finite limit `iInf f`. -/
+theorem tendsto_ciInf_of_antitone {f : ι → ℝ≥0} (h_ant : Antitone f) :
+    Tendsto f atTop (𝓝 (iInf f)) := by
+  have h_bdd : BddBelow (range fun i : ι ↦ (f i : ℝ)) := by
+    refine ⟨0, fun r ⟨i, hi⟩ ↦ ?_⟩
+    rw [← hi]
+    exact NNReal.coe_nonneg (f i)
+  rw [← tendsto_coe, coe_iInf]
+  exact Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant
+
+/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+@[deprecated tendsto_ciInf_of_antitone (since := "2026-01-14")]
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := ⟨iInf f, tendsto_ciInf_of_antitone h_ant⟩
 
 end Monotone
 
