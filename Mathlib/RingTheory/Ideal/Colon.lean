@@ -57,6 +57,10 @@ theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon ⊤ = I := by
 theorem colon_bot : colon ⊥ N = N.annihilator := by
   simp_rw [SetLike.ext_iff, mem_colon, mem_annihilator, mem_bot, forall_const]
 
+@[simp]
+theorem colon_eq_top : colon P N = ⊤ ↔ N ≤ P := by
+  simp_rw [Ideal.eq_top_iff_one, mem_colon, one_smul, SetLike.le_def]
+
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
 

@@ -39,7 +39,7 @@ section for_mathlib
 
 open Ideal
 
-theorem _root_.IsLocalization.map_inf {R : Type*} [CommSemiring R] (M : Submonoid R)
+theorem IsLocalization.map_inf {R : Type*} [CommSemiring R] (M : Submonoid R)
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] (I J : Ideal R) :
     (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
   refine le_antisymm (map_inf_le (algebraMap R S)) fun x hx ↦ ?_
@@ -67,19 +67,28 @@ lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submono
     IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
   rfl
 
-theorem _root_.Submodule.comap_finset_inf {R M M' : Type*} [Semiring R] [AddCommMonoid M]
+theorem Submodule.comap_finset_inf {R M M' : Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M')
     {ι : Type*} (s : Finset ι) (g : ι → Submodule R M') : (s.inf g).comap f =
       s.inf (Submodule.comap f ∘ g) := by
   simp [Finset.inf_eq_iInf]
 
-theorem _root_.Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
+theorem Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
     {ι : Type*} (s : Finset ι) (g : ι → Ideal S) : (s.inf g).comap f = s.inf (comap f ∘ g) := by
   exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
 
 @[simp]
-theorem _root_.Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] :
+theorem Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] :
     (I.primeCompl : Set R) = (I : Set R)ᶜ := rfl
+
+theorem Submodule.IsPrimary.isPrime_radical_colon {R M : Type*}
+    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} (hI : I.IsPrimary) :
+    (I.colon ⊤).radical.IsPrime := by
+  refine isPrime_iff.mpr <| hI.imp (by simp [radical_eq_top]) fun h x y ⟨n, hn⟩ ↦ ?_
+  simp_rw [← mem_colon_def, ← mem_radical_iff] at h
+  refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
+  simp only [mul_pow, mem_colon, mem_top, true_imp_iff, mul_smul] at hn ⊢
+  exact fun p ↦ (h (hn p)).resolve_right (mt mem_radical_of_pow_mem hx)
 
 end for_mathlib
 
@@ -95,6 +104,8 @@ def IsLasker : Prop :=
 variable {R M}
 
 namespace Submodule
+
+open Ideal
 
 lemma decomposition_erase_inf [DecidableEq (Submodule R M)] {I : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = I) :
@@ -138,9 +149,9 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
     suffices (I'.colon ⊤).radical = (J'.colon ⊤).radical by
       rw [← hI, ← hJ, this]
     · rw [← hI, colon_finset_inf,
-        Ideal.radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
       rw [hIJ, ← hJ, colon_finset_inf,
-        Ideal.radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     [DecidableEq (Submodule R M)] {I : Submodule R M} {s : Finset (Submodule R M)}
@@ -163,7 +174,7 @@ protected lemma IsMinimalPrimaryDecomposition.le_radical [DecidableEq (Ideal R)]
     {I : Ideal R} {t : Finset (Ideal R)}
     (ht : I.IsMinimalPrimaryDecomposition t) {q : Ideal R} (hq : q ∈ t) : I ≤ q.radical := by
   rw [← ht.inf_eq]
-  exact (Finset.inf_le hq).trans Ideal.le_radical
+  exact (Finset.inf_le hq).trans le_radical
 
 lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
     (h : IsLasker R M) (I : Submodule R M) :
@@ -172,34 +183,6 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
   obtain ⟨t, h1, h2, h3, h4⟩ :=
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
-
-theorem _root_.Ideal.eq_inf_of_isPrime_inf
-    {ι : Type*} {s : Finset ι} {f : ι → Ideal R} (hp : Ideal.IsPrime (s.inf f)) :
-    ∃ i ∈ s, f i = s.inf f :=
-  (hp.inf_le'.mp le_rfl).imp (fun _ ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
-
--- todo: see if `IsPrimary.mem_or_mem` can help golf
-theorem _root_.Submodule.IsPrimary.foobar {R M : Type*} [CommSemiring R] [AddCommMonoid M]
-    [Module R M] {I : Submodule R M} (hI : I.IsPrimary) : (I.colon ⊤).radical.IsPrime := by
-  rw [Ideal.isPrime_iff]
-  refine hI.imp ?_ ?_
-  · contrapose!
-    rw [Ideal.radical_eq_top, Ideal.eq_top_iff_one]
-    simp [mem_colon]
-    simp [eq_top_iff']
-  · simp only [← mem_colon_def, ← Ideal.mem_radical_iff]
-    rintro h x y ⟨n, hn⟩
-    rw [or_iff_not_imp_left]
-    intro hx
-    have h1 := @h (x ^ n)
-    replace hx : x ^ n ∉ (I.colon ⊤).radical := by
-      contrapose! hx
-      exact Ideal.mem_radical_of_pow_mem hx
-    simp [hx] at h1
-    simp [mem_colon, mul_pow, mul_smul] at hn
-    use n
-    simp only [mem_colon, mem_top]
-    grind
 
 open Ideal LinearMap in
 /-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald. -/
@@ -222,7 +205,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
   constructor <;> intro hp
   · obtain ⟨q, hqt, rfl⟩ := hp
     obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
-    use (ht.primary hqt).foobar
+    use (ht.primary hqt).isPrime_radical_colon
     use x
     symm
     rw [key1, ← Finset.insert_erase hqt, Finset.inf_insert]
@@ -266,14 +249,14 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
     (downward_closed : ∀ q ∈ t, ∀ r ∈ s, (q.colon ⊤).radical ≤ (r.colon ⊤).radical → q ∈ s) :
     (localized₀ (⨅ q ∈ s,
-      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
+      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
       (q.colon ⊤).radical.primeCompl) (LocalizedModule.mkLinearMap (⨅ q ∈ s,
-      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
+      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
       (q.colon ⊤).radical.primeCompl) M) I).comap (LocalizedModule.mkLinearMap (⨅ q ∈ s,
-      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
+      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
       (q.colon ⊤).radical.primeCompl) M) = ⨅ q ∈ s, q := by
   let S := ⨅ q ∈ s,
-    have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).foobar;
+    have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
     (q.colon ⊤).radical.primeCompl
   let f := LocalizedModule.mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
@@ -309,7 +292,7 @@ theorem IsMinimalPrimaryDecomposition.foobar {R M : Type*} [CommRing R] [AddComm
     intro hqt
     suffices ((q.colon ⊤) : Set R) ⊆ ⋃ r ∈ s, (r.colon ⊤).radical by
       obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
-        ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).foobar).mp this
+        ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp this
       exact downward_closed q hqt r hrs (Ideal.radical_le_radical_iff.mpr h)
     contrapose! hq
     rw [Set.not_subset_iff_exists_mem_notMem] at hq
