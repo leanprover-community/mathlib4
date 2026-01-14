@@ -642,7 +642,7 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive one_nsmul, simp]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 
 @[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
