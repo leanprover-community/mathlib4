@@ -225,11 +225,11 @@ theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
 
 theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)
     (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
-  Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
+  .of_fg <| fg_adjoin_of_finite hf hi
 
 theorem Algebra.finite_adjoin_simple_of_isIntegral {x : B} (hi : IsIntegral R x) :
     Module.Finite R (adjoin R {x}) :=
-  Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
+  .of_fg hi.fg_adjoin_singleton
 
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (s : Set A)) :=

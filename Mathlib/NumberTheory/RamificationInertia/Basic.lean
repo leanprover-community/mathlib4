@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Finiteness.Quotient
@@ -114,6 +115,10 @@ theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
   ramificationIdx_spec (by simp) (by simpa using h)
 
+theorem ramificationIdx_bot' (hp : p ≠ ⊥) (hf : Function.Injective f) :
+    ramificationIdx f p ⊥ = 0 :=
+  ramificationIdx_of_not_le <| le_bot_iff.not.mpr <| (map_eq_bot_iff_of_injective hf).not.mpr hp
+
 theorem ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
     (hnle : ¬map f p ≤ P ^ (e + 1)) : ramificationIdx f p P ≠ 0 := by
   rwa [ramificationIdx_spec hle hnle]
@@ -190,6 +195,15 @@ lemma ramificationIdx_eq_one_of_map_localization
   · exact hp this
   · exact IsLocalization.injective _ hp'
 
+theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
+    ramificationIdx f p (map f p) = 1 := by
+  refine ramificationIdx_spec (by simp) fun h ↦ ?_
+  have : map f p ^ 1 = (map f p) ^ 2 := by
+    rw [pow_one]
+    exact le_antisymm h <| pow_le_self two_ne_zero
+  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
+  simp_all
+
 namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
@@ -233,7 +247,7 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
 
-theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [NoZeroSMulDivisors R S]
+theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [IsDomain R] [IsTorsionFree R S]
     (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
     ramificationIdx (algebraMap R S) p P ≠ 0 :=
   IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
@@ -384,7 +398,7 @@ More precisely, we avoid quotients in this statement and instead require that `b
 -/
 theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [Module.Finite R S]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Algebra.IsAlgebraic R S]
-    [NoZeroSMulDivisors R K] (hp : p ≠ ⊤) (b : Set S)
+    [IsTorsionFree R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
     Submodule.span K (algebraMap S L '' b) = ⊤ := by
   have hRL : Function.Injective (algebraMap R L) := by

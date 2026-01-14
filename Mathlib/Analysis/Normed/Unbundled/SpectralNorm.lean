@@ -729,7 +729,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   letI N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e  := by simp
+      smul_zero e := by simp
       smul_add k e_1 e_ := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
       zero_smul e := by simp [zero_smul]
