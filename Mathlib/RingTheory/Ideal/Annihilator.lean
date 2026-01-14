@@ -48,6 +48,16 @@ variable {I} in
 theorem ann_eq_top : I.ann m = ⊤ ↔ m ∈ I := by
   rw [eq_top_iff_one, mem_ann_iff, one_smul]
 
+theorem ann_inf : (I ⊓ J).ann m = I.ann m ⊓ J.ann m :=
+  rfl
+
+theorem ann_iInf {ι : Type*} (f : ι → Submodule R M) : (⨅ i, f i).ann m = ⨅ i, (f i).ann m := by
+  simp [Submodule.ext_iff, mem_ann_iff]
+
+theorem ann_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+    (s.inf f).ann m = s.inf (fun i ↦ (f i).ann m) := by
+  simp [Submodule.ext_iff, mem_ann_iff]
+
 theorem colon_top_le : I.colon ⊤ ≤ I.ann m :=
   fun _ hr ↦ mem_colon.mp hr m mem_top
 

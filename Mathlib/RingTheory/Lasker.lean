@@ -193,34 +193,23 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
     p ∈ (fun J : (Submodule R M) ↦ (J.colon ⊤).radical) '' t ↔
       p.IsPrime ∧ ∃ x : M, p = (I.ann x).radical := by
   classical
-  have key1 (x : M) : I.ann x = t.inf fun q ↦ q.ann x := by
-    simp [← ht.inf_eq, Ideal.ext_iff, Submodule.mem_ann_iff]
-  have key2 (x : M) : radical (I.ann x) = t.inf fun q ↦ radical (q.ann x) := by
-    simp [key1, ← radicalInfTopHom_apply, Function.comp_def]
-  have key3 (x : M) : ∀ q ∈ t, (q.ann x).radical = if x ∈ q then ⊤ else (q.colon ⊤).radical := by
-    intro q hq
+  have h {x} q (hq : q ∈ t) : (q.ann x).radical = if x ∈ q then ⊤ else (q.colon ⊤).radical := by
     split_ifs with hx
     · rwa [radical_eq_top, Submodule.ann_eq_top]
     · exact (ht.primary hq).radical_ann_of_notMem hx
-  constructor <;> intro hp
-  · obtain ⟨q, hqt, rfl⟩ := hp
+  replace h x : radical (I.ann x) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon ⊤).radical) := by
+    rw [← ht.inf_eq, ann_finset_inf, ← radicalInfTopHom_apply]
+    simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
+  constructor
+  · rintro ⟨q, hqt, rfl⟩
     obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
-    use (ht.primary hqt).isPrime_radical_colon
-    use x
-    symm
-    rw [key1, ← Finset.insert_erase hqt, Finset.inf_insert]
-    have key : ∀ q' ∈ t.erase q, q'.ann x = ⊤ := by
-      intro q' hq'
-      rw [Submodule.ann_eq_top]
-      rw [Submodule.mem_finsetInf] at hxt
-      exact hxt q' hq'
-    rw [Finset.inf_congr rfl key, Finset.inf_top, inf_top_eq]
-    symm
-    rw [key3 x q hqt, if_neg hxq]
-  · obtain ⟨hp, x, rfl⟩ := hp
-    have key : (I.ann x).radical = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon ⊤).radical) := by
-      rw [key2, Finset.inf_congr rfl (key3 x), Finset.inf_ite, Finset.inf_top, top_inf_eq]
-    rw [key] at hp ⊢
+    refine ⟨(ht.primary hqt).isPrime_radical_colon, x, ?_⟩
+    rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
+      eq_comm, inf_eq_left, Finset.le_inf_iff]
+    simp only [mem_finsetInf, Finset.mem_erase] at hxt
+    grind
+  · rintro ⟨hp, x, rfl⟩
+    rw [h] at hp ⊢
     obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
     exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
 
