@@ -304,12 +304,11 @@ instance instCommRing : CommRing (RatFunc K) :=
 
 variable {K}
 
-section LiftHom
+section MapHom
 
 open RatFunc
 
-variable {G₀ L R S F : Type*} [CommGroupWithZero G₀] [Field L] [CommRing R] [CommRing S]
-variable [FunLike F R[X] S[X]]
+variable {R S F : Type*} [CommRing R] [CommRing S] [FunLike F R[X] S[X]]
 
 open scoped Classical in
 /-- Lift a monoid homomorphism that maps polynomials `φ : R[X] →* S[X]`
@@ -384,15 +383,22 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
     (mapRingHom φ hφ : RatFunc R → RatFunc S) = map φ hφ :=
   rfl
 
--- TODO: Generalize to `FunLike` classes,
+end MapHom
+
+section LiftMonoidWithZeroHom
+
+variable {R G₀ F : Type*} [CommRing R] [CommGroupWithZero G₀] [FunLike F R[X] G₀]
+variable [MonoidWithZeroHomClass F R[X] G₀]
+
 /-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
-def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
+def liftMonoidWithZeroHom (φ : F) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
   toFun f :=
     RatFunc.liftOn f (fun p q => φ p / φ q) fun {p q p' q'} hq hq' h => by
       cases subsingleton_or_nontrivial R
       · rw [Subsingleton.elim p q, Subsingleton.elim p' q, Subsingleton.elim q' q]
+      dsimp
       rw [div_eq_div_iff, ← map_mul, mul_comm p, h, map_mul, mul_comm] <;>
         exact nonZeroDivisors.ne_zero (hφ ‹_›)
   map_one' := by
@@ -409,13 +415,13 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     simp_rw [← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_ofFractionRing_mk,
       map_zero, zero_div]
 
-theorem liftMonoidWithZeroHom_apply_ofFractionRing_mk (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ)
-    (n : R[X]) (d : R[X]⁰) :
+theorem liftMonoidWithZeroHom_apply_ofFractionRing_mk (φ : F) (hφ : R[X]⁰ ≤ G₀⁰.comap φ)
+  (n : R[X]) (d : R[X]⁰) :
     liftMonoidWithZeroHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftOn_ofFractionRing_mk _ _ _ _
 
-theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) (hφ : Function.Injective φ)
-    (hφ' : R[X]⁰ ≤ G₀⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
+theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : F) (hφ : Function.Injective φ)
+  (hφ' : R[X]⁰ ≤ G₀⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftMonoidWithZeroHom φ hφ') := by
   rintro ⟨x⟩ ⟨y⟩
   cases x using Localization.induction_on
@@ -428,10 +434,16 @@ theorem liftMonoidWithZeroHom_injective [Nontrivial R] (φ : R[X] →*₀ G₀) 
   · rwa [← map_mul, ← map_mul, hφ.eq_iff, mul_comm, mul_comm a'.fst] at this
   all_goals exact map_ne_zero_of_mem_nonZeroDivisors _ hφ (SetLike.coe_mem _)
 
+end LiftMonoidWithZeroHom
+
+section LiftRingHom
+
+variable {R L F : Type*} [CommRing R] [Field L] [FunLike F R[X] L] [RingHomClass F R[X] L]
+
 /-- Lift an injective ring homomorphism `R[X] →+* L` to a `RatFunc R →+* L`
 by mapping both the numerator and denominator and quotienting them. -/
-def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc R →+* L :=
-  { liftMonoidWithZeroHom φ.toMonoidWithZeroHom hφ with
+def liftRingHom (φ : F) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc R →+* L :=
+  { liftMonoidWithZeroHom φ hφ with
     map_add' := fun x y => by
       simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
       cases subsingleton_or_nontrivial R
@@ -443,8 +455,7 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc 
       obtain ⟨p, q⟩ := pq
       obtain ⟨p', q'⟩ := p'q'
       rw [← ofFractionRing_add, Localization.add_mk]
-      simp only [RingHom.toMonoidWithZeroHom_eq_coe,
-        liftMonoidWithZeroHom_apply_ofFractionRing_mk]
+      simp only [liftMonoidWithZeroHom_apply_ofFractionRing_mk]
       rw [div_add_div, div_eq_div_iff]
       · rw [mul_comm _ p, mul_comm _ p', mul_comm _ (φ p'), add_comm]
         simp only [map_add, map_mul, Submonoid.coe_mul]
@@ -452,13 +463,12 @@ def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : RatFunc 
         try simp only [← map_mul, ← Submonoid.coe_mul]
         exact nonZeroDivisors.ne_zero (hφ (SetLike.coe_mem _)) }
 
-theorem liftRingHom_apply_ofFractionRing_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
+theorem liftRingHom_apply_ofFractionRing_mk (φ : F) (hφ : R[X]⁰ ≤ L⁰.comap φ) (n : R[X])
     (d : R[X]⁰) : liftRingHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
 @[simp]
-lemma liftRingHom_ofFractionRing_algebraMap
-    (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
+lemma liftRingHom_ofFractionRing_algebraMap (φ : F) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
     RatFunc.liftRingHom φ hφ (ofFractionRing <| algebraMap R[X] _ x) = φ x := by
   rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
   simp
@@ -468,7 +478,7 @@ theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function
     Function.Injective (liftRingHom φ hφ') :=
   liftMonoidWithZeroHom_injective _ hφ
 
-end LiftHom
+end LiftRingHom
 
 variable (K)
 
@@ -571,8 +581,8 @@ theorem map_apply_div {R F : Type*} [CommRing R] [IsDomain R]
     exact one_ne_zero
   exact map_apply_div_ne_zero _ _ _ _ hq
 
-theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
-    (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
+theorem liftMonoidWithZeroHom_apply_div {L F : Type*} [CommGroupWithZero L] [FunLike F K[X] L]
+    [MonoidWithZeroHomClass F K[X] L] (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q := by
   rcases eq_or_ne q 0 with (rfl | hq)
   · simp only [div_zero, map_zero]
@@ -580,24 +590,27 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
     liftMonoidWithZeroHom_apply_ofFractionRing_mk]
 
 @[simp]
-theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
-    (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
+theorem liftMonoidWithZeroHom_apply_div' {L F : Type*} [CommGroupWithZero L] [FunLike F K[X] L]
+    [MonoidWithZeroHomClass F K[X] L] (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p) / liftMonoidWithZeroHom φ hφ (algebraMap _ _ q) =
       φ p / φ q := by
   rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
 
-theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
-    (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
+theorem liftRingHom_apply_div {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L]
+  (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
+    liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _
 
-theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
-    (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
+theorem liftRingHom_apply_div' {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L]
+  (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
+    liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
       φ p / φ q :=
   liftMonoidWithZeroHom_apply_div' _ hφ _ _
 
 @[simp]
-lemma liftRingHom_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
-    (x : K[X]) : liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
+lemma liftRingHom_algebraMap {L F : Type*} [Field L] [FunLike F K[X] L] [RingHomClass F K[X] L]
+  (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (x : K[X]) :
+    liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
   simpa using liftRingHom_apply_div' φ hφ x 1
 
 @[simp]
@@ -1077,8 +1090,8 @@ theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
   rw [← num_div_denom f, map_apply_div_ne_zero, num_div_denom f]
   exact denom_ne_zero _
 
-theorem liftMonoidWithZeroHom_apply {L : Type*} [CommGroupWithZero L] (φ : K[X] →*₀ L)
-    (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : RatFunc K) :
+theorem liftMonoidWithZeroHom_apply {L F : Type*} [CommGroupWithZero L] [FunLike F K[X] L]
+  [MonoidWithZeroHomClass F K[X] L] (φ : F) (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : RatFunc K) :
     liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom := by
   rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
 
