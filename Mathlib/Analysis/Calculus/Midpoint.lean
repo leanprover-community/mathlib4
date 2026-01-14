@@ -10,30 +10,103 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
+# The midpoint rule
+
+This file contains a definition of integration on `[[a, b]]` via the midpoint rule, along with
+an error bound in terms of a bound on the second derivative of the integrand.
+
+## Main results
+- `midpoint_error_le`: the convergence theorem for the midpoint rule.
+
+## References
+We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
+bound.
 -/
 
 @[expose] public section
 
-section
+open MeasureTheory Set Finset intervalIntegral Interval
 
-lemma eq1 {α : Type*} {β : Type*} [SemilatticeInf α] [LinearOrder β] {s : Finset β}
-    (hs : s.Nonempty) {f : β → α} (hf : Antitone f) : f (s.max' hs) = s.inf' hs f := by
-  apply le_antisymm
-  · exact s.le_inf' hs _ fun i hi ↦ hf (s.le_max' i hi)
-  · exact s.inf'_le _ (s.max'_mem hs)
+/-- Integration of `f` from `a` to `b` using the midpoint rule with `N+1` total evaluations of
+`f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
+evaluations.) -/
+noncomputable def midpoint_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
+  ((b - a) / N) * (∑ k ∈ range N, f (a + (k + 1/2) * (b - a) / N))
 
-lemma eq2 {α : Type*} {β : Type*} [SemilatticeSup α] [LinearOrder β] {s : Finset β}
-    (hs : s.Nonempty) {f : β → α} (hf : Antitone f) : f (s.min' hs) = s.sup' hs f := by
-  apply le_antisymm
-  · exact s.le_sup' _ (s.min'_mem hs)
-  · exact s.sup'_le hs _ fun i hi ↦ hf (s.min'_le i hi)
+/-- The absolute error of midpoint integration. -/
+noncomputable def midpoint_error (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
+  (midpoint_integral f N a b) - (∫ x in a..b, f x)
 
-end
+theorem midpoint_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
+    midpoint_integral f N a b = -(midpoint_integral f N b a) := by
+  unfold midpoint_integral
+  rw [neg_mul_eq_neg_mul, neg_div', neg_sub, ← sum_range_reflect]
+  congr 1
+  apply sum_congr rfl
+  intro k hk
+  congr 1
+  rw [tsub_tsub, add_comm 1, Nat.cast_sub (mem_range.mp hk)]
+  simpa [field] using by ring
 
-open MeasureTheory Set
+/-- The absolute error of the midpoint rule does not change when the endpoints are swapped. -/
+theorem midpoint_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
+    midpoint_error f N a b = -midpoint_error f N b a := by
+  unfold midpoint_error
+  rw [midpoint_integral_symm f N_nonzero a b, neg_sub', integral_symm]
 
-noncomputable section
-namespace NumericalIntegration
+/-- Just like exact integration, the midpoint integration from `a` to `a` is zero. -/
+@[simp]
+theorem midpoint_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : midpoint_integral f N a a = 0 := by
+  simp [midpoint_integral]
+
+/-- The error of the midpoint integration from `a` to `a` is zero. -/
+@[simp]
+theorem midpoint_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : midpoint_error f N a a = 0 := by
+  simp [midpoint_error]
+
+/-- An exact formula for integration with a single midpoint (the "midpoint rule"). -/
+@[simp]
+theorem midpoint_integral_one (f : ℝ → ℝ) (a b : ℝ) :
+    midpoint_integral f 1 a b = (b - a) * (f ((a + b) / 2)) := by
+  simpa [midpoint_integral] using by left; ring_nf
+
+/-- A basic midpoint equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
+general theorems are certainly possible, but many of them can be derived from repeated applications
+of this one. -/
+theorem sum_midpoint_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
+    (N_nonzero : 0 < N) : ∑ i ∈ range N, midpoint_integral f 1 (a + i * h) (a + (i + 1) * h)
+      = midpoint_integral f N a (a + N * h) := by
+  simp_rw [midpoint_integral_one, add_sub_add_left_eq_sub, ← sub_mul, midpoint_integral,
+    add_sub_cancel_left, one_mul, ← mul_sum, ← mul_div, show N * (h / N) = h by field]
+  ring_nf
+
+/-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
+theorem midpoint_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
+    midpoint_integral f N a (a + N * h) + midpoint_integral f 1 (a + N * h) (a + (N + 1) * h)
+      = midpoint_integral f (N + 1) a (a + (N + 1) * h) := by
+  rw [← Nat.cast_add_one, ← sum_midpoint_integral_adjacent_intervals N_nonzero,
+      ← sum_midpoint_integral_adjacent_intervals (Nat.add_pos_left N_nonzero 1),
+      sum_range_succ, Nat.cast_add_one]
+
+/-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and midpoint integration,
+it's natural to combine them into a similar formula for the error.  This theorem is in particular
+used in the proof of the general error bound. -/
+theorem sum_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N)
+    (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
+    ∑ i ∈ range N, midpoint_error f 1 (a + i * h) (a + (i + 1) * h)
+      = midpoint_error f N a (a + N * h) := by
+  unfold midpoint_error
+  rw [sum_sub_distrib, sum_midpoint_integral_adjacent_intervals N_nonzero]
+  norm_cast
+  rw [sum_integral_adjacent_intervals]
+  · simp
+  · intro k hk
+    suffices ∀ {k : ℕ}, k ≤ N → a + k * h ∈ [[a, a + N * h]] from
+      IntervalIntegrable.mono h_f_int (Set.uIcc_subset_uIcc (this hk.le) (this hk)) le_rfl
+    rcases le_total h 0 with h_neg | h_pos <;> intro k hk <;> rw [← Nat.cast_le (α := ℝ)] at hk
+    · simpa [Set.mem_uIcc] using .inr
+        ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
+    · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
 lemma useful {F : ℝ → ℝ} {h : ℝ} (x : ℝ) (hh : 0 < h) (hF : ContDiffOn ℝ 3 F (Icc x (x + h)))
     (hx : ContDiffAt ℝ 2 F x) : ∃ ξ1 ∈ Ioo x (x + h), F (x + h) - (F x + h * deriv F x +
@@ -61,10 +134,10 @@ theorem midpoint_aux {F : ℝ → ℝ} {h : ℝ} (hh : 0 < h) (hF : ContDiff ℝ
     this.contDiffAt
   obtain ⟨ξ, hξ_mem, hy⟩ : (iteratedDeriv 3 F ξ1 + iteratedDeriv 3 F (h - ζ)) / 2 ∈
       (iteratedDeriv 3 F) '' (uIcc ξ1 (h - ζ)) :=
-    intermediate_value_uIcc (hF.continuous_iteratedDeriv' 3).continuousOn (by grind [mem_uIcc])
+    intermediate_value_uIcc (hF.continuous_iteratedDeriv' 3).continuousOn (by grind [Set.mem_uIcc])
   norm_num [-one_div, sub_half] at hξ1 hζ hξ1_rem hζ_rem
   have hξ0h : ξ ∈ Ioo (0:ℝ) h := by
-    have : ξ ∈ Icc (min ξ1 (h - ζ)) (max ξ1 (h - ζ)) := by simpa [uIcc] using hξ_mem
+    have : ξ ∈ Icc (min ξ1 (h - ζ)) (max ξ1 (h - ζ)) := by simpa [Set.uIcc] using hξ_mem
     constructor
     · have lt : 0 < min ξ1 (h - ζ) := by simp [(half_pos hh).trans hξ1.1, hζ]
       linarith [this.1]
@@ -107,5 +180,3 @@ theorem midpoint_rule_error {f : ℝ → ℝ} {a b : ℝ} (hab : a < b) (hf : Co
     simpa [F] using hEq
   have hFh : F h = (∫ x in a..b, f x) := by simp [F, g, h, add_comm]
   simpa only [hFh, hDerivMid, hIter3] using hEq'
-
-end NumericalIntegration
