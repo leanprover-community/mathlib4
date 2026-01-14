@@ -3,15 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Lattice
-import Mathlib.RingTheory.Nilpotent.Defs
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Nilpotent elements
@@ -29,6 +29,8 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
   * `Commute.isNilpotent_sub`
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -118,7 +120,9 @@ theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical 
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
-  rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
+  rw [mul_pow]
+  gcongr
+  exact dvd_pow_self _ two_ne_zero
 
 namespace Commute
 
@@ -219,16 +223,14 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
+@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
+and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
-  induction' k with k ih
-  · rw [pow_zero] at hk
-    exact eq_zero_of_zero_eq_one hk.symm x
-  · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
-    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ', mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
-    · rfl
-    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
+  have : NoZeroDivisors R := by
+    obtain ⟨m, hm⟩ := exists_ne (0 : M)
+    constructor
+    rintro x y hxy
+    simpa [mul_smul, hm] using congr($hxy • m)
+  infer_instance

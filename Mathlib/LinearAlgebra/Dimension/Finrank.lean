@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.SetTheory.Cardinal.ToNat
+module
+
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Finite dimension of vector spaces
@@ -13,7 +15,7 @@ Definition of the rank of a module, or dimension of a vector space, as a natural
 
 ## Main definitions
 
-Defined is `Module.finrank`, the dimension of a finite dimensional space, returning a
+Defined is `Module.finrank`, the dimension of a finite-dimensional space, returning a
 `Nat`, as opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite
 dimension, its `finrank` is by convention set to `0`.
 
@@ -29,6 +31,8 @@ in `Dimension.lean`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -101,11 +105,14 @@ end Semiring
 
 end Module
 
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
+
 open Module
 
 namespace LinearEquiv
 
-/-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
+/-- The dimension of a finite-dimensional space is preserved under linear equivalence. -/
 theorem finrank_eq (f : M ≃ₗ[R] N) : finrank R M = finrank R N := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
@@ -137,7 +144,7 @@ namespace Algebra
 
 /-- If `S₀ / R₀` and `S₁ / R₁` are algebras, `i : R₀ ≃+* R₁` and `j : S₀ ≃+* S₁` are
 ring isomorphisms, such that `R₀ → R₁ → S₁` and `R₀ → S₀ → S₁` commute,
-then the finrank of `S₀ / R₀` is equal to the finrank of `S₁ / R₁`. -/
+then the `finrank` of `S₀ / R₀` is equal to the finrank of `S₁ / R₁`. -/
 theorem finrank_eq_of_equiv_equiv {R₀ S₀ : Type*} [CommSemiring R₀] [Semiring S₀] [Algebra R₀ S₀]
     {R₁ S₁ : Type*} [CommSemiring R₁] [Semiring S₁] [Algebra R₁ S₁] (i : R₀ ≃+* R₁) (j : S₀ ≃+* S₁)
     (hc : (algebraMap R₁ S₁).comp i.toRingHom = j.toRingHom.comp (algebraMap R₀ S₀)) :

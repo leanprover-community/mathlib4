@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
-# Non integrable functions
+# Non-integrable functions
 
 In this file we prove that the derivative of a function that tends to infinity is not interval
 integrable, see `not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter` and
@@ -35,6 +37,8 @@ latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b
 
 integrable function
 -/
+
+public section
 
 
 open scoped MeasureTheory Topology Interval NNReal ENNReal

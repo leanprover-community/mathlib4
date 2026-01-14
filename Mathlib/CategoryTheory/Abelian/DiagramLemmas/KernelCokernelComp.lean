@@ -3,13 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 /-!
 # Long exact sequence for the kernel and cokernel of a composition
 
 If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms in an
-abelian category, we construct a long exact sequence :
+abelian category, we construct a long exact sequence:
 `0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`.
 
 This is obtained by applying the snake lemma to the following morphism of
@@ -28,9 +30,11 @@ and `φ` is given by the following matrix:
 
 Indeed the snake lemma gives an exact sequence involving the kernels and cokernels
 of the vertical maps: in order to get the expected long exact sequence, it suffices
-to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ⋙ g)`.
+to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ≫ g)`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

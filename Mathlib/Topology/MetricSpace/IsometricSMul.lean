@@ -3,11 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Group actions by isometries
@@ -29,33 +30,28 @@ these two notions are equivalent. A group with a right-invariant metric can be a
 `NormedGroup`.
 -/
 
+@[expose] public section
+
 
 open Set
 
-open ENNReal Pointwise
+open scoped ENNReal Pointwise
 
 universe u v w
 
 variable (M : Type u) (G : Type v) (X : Type w)
 
 /-- An additive action is isometric if each map `x ↦ c +ᵥ x` is an isometry. -/
-class IsIsometricVAdd [PseudoEMetricSpace X] [VAdd M X] : Prop where
-  protected isometry_vadd : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
-
-@[deprecated (since := "2025-03-10")] alias IsometricVAdd := IsIsometricVAdd
+class IsIsometricVAdd (X : Type w) [PseudoEMetricSpace X] [VAdd M X] : Prop where
+  isometry_vadd (X) : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
 
 /-- A multiplicative action is isometric if each map `x ↦ c • x` is an isometry. -/
 @[to_additive]
-class IsIsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
-  protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
+class IsIsometricSMul (X : Type w) [PseudoEMetricSpace X] [SMul M X] : Prop where
+  isometry_smul (X) : ∀ c : M, Isometry ((c • ·) : X → X)
 
-@[deprecated (since := "2025-03-10")] alias IsometricSMul := IsIsometricSMul
-
--- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
-@[to_additive]
-theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
-    [IsIsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
-  IsIsometricSMul.isometry_smul c
+export IsIsometricSMul (isometry_smul)
+export IsIsometricVAdd (isometry_vadd)
 
 @[to_additive]
 instance (priority := 100) IsIsometricSMul.to_continuousConstSMul [PseudoEMetricSpace X] [SMul M X]
@@ -80,7 +76,7 @@ theorem edist_smul_left [SMul M X] [IsIsometricSMul M X] (c : M) (x y : X) :
 
 @[to_additive (attr := simp)]
 theorem ediam_smul [SMul M X] [IsIsometricSMul M X] (c : M) (s : Set X) :
-    EMetric.diam (c • s) = EMetric.diam s :=
+    Metric.ediam (c • s) = Metric.ediam s :=
   (isometry_smul _ _).ediam_image s
 
 @[to_additive]
@@ -132,9 +128,9 @@ namespace IsometryEquiv
 
 /-- If a group `G` acts on `X` by isometries, then `IsometryEquiv.constSMul` is the isometry of
 `X` given by multiplication of a constant element of the group. -/
-@[to_additive (attr := simps! toEquiv apply) "If an additive group `G` acts on `X` by isometries,
+@[to_additive (attr := simps! toEquiv apply) /-- If an additive group `G` acts on `X` by isometries,
 then `IsometryEquiv.constVAdd` is the isometry of `X` given by addition of a constant element of the
-group."]
+group. -/]
 def constSMul (c : G) : X ≃ᵢ X where
   toEquiv := MulAction.toPerm c
   isometry_toFun := isometry_smul X c
@@ -146,7 +142,7 @@ theorem constSMul_symm (c : G) : (constSMul c : X ≃ᵢ X).symm = constSMul c�
 variable [PseudoEMetricSpace G]
 
 /-- Multiplication `y ↦ x * y` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ x + y` as an `IsometryEquiv`."]
+@[to_additive (attr := simps! apply toEquiv) /-- Addition `y ↦ x + y` as an `IsometryEquiv`. -/]
 def mulLeft [IsIsometricSMul G G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulLeft c
   isometry_toFun := edist_mul_left c
@@ -157,7 +153,7 @@ theorem mulLeft_symm [IsIsometricSMul G G] (x : G) :
   constSMul_symm x
 
 /-- Multiplication `y ↦ y * x` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Addition `y ↦ y + x` as an `IsometryEquiv`."]
+@[to_additive (attr := simps! apply toEquiv) /-- Addition `y ↦ y + x` as an `IsometryEquiv`. -/]
 def mulRight [IsIsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.mulRight c
   isometry_toFun a b := edist_mul_right a b c
@@ -167,7 +163,7 @@ theorem mulRight_symm [IsIsometricSMul Gᵐᵒᵖ G] (x : G) : (mulRight x).symm
   ext fun _ => rfl
 
 /-- Division `y ↦ y / x` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Subtraction `y ↦ y - x` as an `IsometryEquiv`."]
+@[to_additive (attr := simps! apply toEquiv) /-- Subtraction `y ↦ y - x` as an `IsometryEquiv`. -/]
 def divRight [IsIsometricSMul Gᵐᵒᵖ G] (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divRight c
   isometry_toFun a b := edist_div_right a b c
@@ -180,7 +176,7 @@ variable [IsIsometricSMul G G] [IsIsometricSMul Gᵐᵒᵖ G]
 
 /-- Division `y ↦ x / y` as an `IsometryEquiv`. -/
 @[to_additive (attr := simps! apply symm_apply toEquiv)
-  "Subtraction `y ↦ x - y` as an `IsometryEquiv`."]
+  /-- Subtraction `y ↦ x - y` as an `IsometryEquiv`. -/]
 def divLeft (c : G) : G ≃ᵢ G where
   toEquiv := Equiv.divLeft c
   isometry_toFun := edist_div_left c
@@ -188,7 +184,7 @@ def divLeft (c : G) : G ≃ᵢ G where
 variable (G)
 
 /-- Inversion `x ↦ x⁻¹` as an `IsometryEquiv`. -/
-@[to_additive (attr := simps! apply toEquiv) "Negation `x ↦ -x` as an `IsometryEquiv`."]
+@[to_additive (attr := simps! apply toEquiv) /-- Negation `x ↦ -x` as an `IsometryEquiv`. -/]
 def inv : G ≃ᵢ G where
   toEquiv := Equiv.inv G
   isometry_toFun := edist_inv_inv
@@ -312,8 +308,8 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
 /-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
 multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about
 normed spaces. -/
-@[to_additive "Given an additive isometric action of `G` on `X`, the image of a bounded set in `X`
-under translation by `c : G` is bounded"]
+@[to_additive /-- Given an additive isometric action of `G` on `X`, the image of a bounded set in
+`X` under translation by `c : G` is bounded. -/]
 theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsIsometricSMul G X] {s : Set X}
     (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
   (isometry_smul X c).lipschitz.isBounded_image hs

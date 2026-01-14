@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes
@@ -40,6 +42,8 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
+@[expose] public section
+
 noncomputable section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
@@ -57,7 +61,7 @@ Below we define `c.next` and `c.prev` which provide these related elements.
 @[ext]
 structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
-    on homological complexes when `Rel i j` holds. -/
+  on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
   /-- There is at most one nonzero differential from `X i`. -/
   next_eq : ∀ {i j j'}, Rel i j → Rel i j' → j = j'

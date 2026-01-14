@@ -3,15 +3,19 @@ Copyright (c) 2025 Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yan
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# The cocartesian monoidal category structure on commutative `R`-algebras
+# The co-Cartesian monoidal category structure on commutative `R`-algebras
 
-This file provides the cocartesian-monoidal category structure on `CommAlgCat R` constructed
+This file provides the co-Cartesian-monoidal category structure on `CommAlgCat R` constructed
 explicitly using the tensor product.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits TensorProduct Opposite
 open Algebra.TensorProduct

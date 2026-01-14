@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.BoolIndicator
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Set.BoolIndicator
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
 
 A clopen set is a set that is both closed and open.
 -/
+
+public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -123,9 +127,6 @@ theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)
 protected theorem Topology.IsQuotientMap.isClopen_preimage {f : X → Y} (hf : IsQuotientMap f)
     {s : Set Y} : IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isClosed_preimage hf.isOpen_preimage
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.isClopen_preimage := IsQuotientMap.isClopen_preimage
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by

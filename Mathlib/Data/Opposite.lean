@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Opposites
@@ -15,10 +17,12 @@ opposite category, with all arrows reversed.
 
 -/
 
+@[expose] public section
+
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable (α : Sort u)
 
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
@@ -37,7 +41,7 @@ attribute [pp_nodot] Opposite.unop
 /-- Make sure that `Opposite.op a` is pretty-printed as `op a` instead of `{ unop := a }` or
 `⟨a⟩`. -/
 @[app_unexpander Opposite.op]
-protected def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
+protected meta def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
   | s => pure s
 
 @[inherit_doc]
@@ -101,13 +105,8 @@ instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 
 instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
-/-- A deprecated alias for `Opposite.rec`. -/
-@[deprecated Opposite.rec (since := "2025-04-04")]
-protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
-
-/-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.
-Note: This is not an instance, because it tends to mislead typeclass search. -/
-lemma small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
+/-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small. -/
+instance small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
   obtain ⟨S, ⟨e⟩⟩ := Small.equiv_small (α := X)
   exact ⟨S, ⟨equivToOpposite.symm.trans e⟩⟩
 

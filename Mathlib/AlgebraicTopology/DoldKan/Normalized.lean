@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
 
@@ -25,6 +27,8 @@ with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
   CategoryTheory.Subobject CategoryTheory.Idempotents DoldKan
@@ -37,7 +41,7 @@ namespace DoldKan
 
 universe v
 
-variable {A : Type*} [Category A] [Abelian A] {X : SimplicialObject A}
+variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
 
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
@@ -67,17 +71,17 @@ def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
 
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
-    PInftyToNormalizedMooreComplex X ≫ inclusionOfMooreComplexMap X = PInfty := by aesop_cat
+    PInftyToNormalizedMooreComplex X ≫ inclusionOfMooreComplexMap X = PInfty := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
-    PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by aesop_cat
+    PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem inclusionOfMooreComplexMap_comp_PInfty (X : SimplicialObject A) :

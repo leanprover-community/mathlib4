@@ -6,7 +6,7 @@ Authors: Manuel Candales
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -21,7 +21,7 @@ for all real numbers `x`,`y`, `z`, each different from 1, and satisfying `xyz = 
 (b) Prove that equality holds above for infinitely many triples of rational numbers `x`, `y`, `z`,
 each different from 1, and satisfying `xyz = 1`.
 
-# Solution
+## Solution
 (a) Since `xyz = 1`, we can apply the substitution `x = a/b`, `y = b/c`, `z = c/a`.
 Then we define `m = c-b`, `n = b-a` and rewrite the inequality as `LHS - 1 ≥ 0`
 using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proof.
@@ -40,19 +40,19 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     have := h.symm ▸ one_ne_zero
     simpa [not_or] using this
   have : z * (y * x) = 1 := by rw [← h]; ac_rfl
-  field_simp [*]
+  simp [field, mul_assoc, *]
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp
-  have hm_ne_zero : m ≠ 0 := by contrapose! hy; field_simp; assumption
-  have hn_ne_zero : n ≠ 0 := by contrapose! hx; field_simp; assumption
+  have hm_ne_zero : m ≠ 0 := by contrapose! hy; simpa [field]
+  have hn_ne_zero : n ≠ 0 := by contrapose! hx; simpa [field]
   have hmn_ne_zero : m + n ≠ 0 := by contrapose! hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
   rw [ge_iff_le, ← sub_nonneg]
   convert sq_nonneg ((c * (m ^ 2 + n ^ 2 + m * n) - m * (m + n) ^ 2) / (m * n * (m + n)))
-  field_simp [hc_sub_sub]; ring
+  simp [field, hc_sub_sub]; ring
 
 def rationalSolutions :=
   {s : ℚ × ℚ × ℚ | ∃ x y z : ℚ, s = (x, y, z) ∧ x ≠ 1 ∧ y ≠ 1 ∧ z ≠ 1 ∧ x * y * z = 1 ∧
@@ -68,21 +68,21 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
     have key_gt_zero : t ^ 2 + t + 1 > 0 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
-    have h₂ : x ≠ 1 := by rw [hx_t]; field_simp; linarith [key_gt_zero]
-    have h₃ : y ≠ 1 := by rw [hy_t]; field_simp; linarith [key_gt_zero]
+    have h₂ : x ≠ 1 := by rw [hx_t]; simp [field]; linarith [key_gt_zero]
+    have h₃ : y ≠ 1 := by rw [hy_t]; simp [field]; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]
-    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
+    have h₅ : x * y * z = 1 := by rw [hx_t, hy_t, hz_t]; field
     have h₆ : x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 = 1 := by
       have hx1 : (x - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / t ^ 4 := by
-        field_simp; rw [hx_t]; field_simp; ring
+        rw [hx_t]; field
       have hy1 : (y - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 / (t + 1) ^ 4 := by
-        field_simp; rw [hy_t]; field_simp; ring
+        rw [hy_t]; field
       have hz1 : (z - 1) ^ 2 = (t ^ 2 + t + 1) ^ 2 := by rw [hz_t]; ring
       calc
         x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 =
             (x ^ 2 * t ^ 4 + y ^ 2 * (t + 1) ^ 4 + z ^ 2) / (t ^ 2 + t + 1) ^ 2 := by
-          rw [hx1, hy1, hz1]; field_simp
-        _ = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
+          rw [hx1, hy1, hz1]; field
+        _ = 1 := by rw [hx_t, hy_t, hz_t]; field
     exact ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩
   have hW_inf : Set.Infinite W := by
     let g : ℚ × ℚ × ℚ → ℚ := fun s => -s.2.2

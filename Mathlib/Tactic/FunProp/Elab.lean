@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Core
+module
+
+public import Mathlib.Tactic.FunProp.Core
 
 /-!
 ## `funProp` tactic syntax
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta Elab Tactic
@@ -44,7 +48,7 @@ def funPropTac : Tactic
       withReducible <| forallTelescopeReducing (← whnfR goalType) fun _ type => do
         unless (← getFunProp? type).isSome do
           let hint :=
-            if let .some n := type.getAppFn.constName?
+            if let some n := type.getAppFn.constName?
             then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
@@ -62,7 +66,7 @@ def funPropTac : Tactic
       let namesToUnfold : Array Name :=
         match names with
         | none => #[]
-        | .some ns => ns.getElems.map (fun n => n.getId)
+        | some ns => ns.getElems.map (fun n => n.getId)
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 
@@ -75,7 +79,7 @@ def funPropTac : Tactic
         morTheorems        := morTheoremsExt.getState env
         transitionTheorems := transitionTheoremsExt.getState env }
       let (r?, s) ← funProp goalType ctx |>.run s
-      if let .some r := r? then
+      if let some r := r? then
         goal.assign r.proof
       else
         let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
@@ -102,7 +106,7 @@ Continuous
   continuous_add_left, args: [5], priority: 1000
   continuous_add_right, args [4], priority: 1000
   ...
-Diferentiable
+Differentiable
   Differentiable.add, args: [4,5], priority: 1000
   Differentiable.add_const, args: [4], priority: 1000
   Differentiable.const_add, args: [5], priority: 1000

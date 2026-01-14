@@ -3,10 +3,12 @@ Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras
@@ -27,6 +29,8 @@ Instances constructed from this result:
 - The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
 
 -/
+
+@[expose] public section
 
 /-- Given `R →+* A`, then `char A ∣ char R`. -/
 theorem CharP.dvd_of_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
@@ -57,9 +61,9 @@ theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom h p
 
-theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
-    [Nontrivial A] (p : ℕ) [CharP R p] : CharP A p :=
-  charP_of_injective_algebraMap (algebraMap R A).injective p
+theorem charP_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] (p : ℕ) [CharP R p] : CharP A p :=
+  charP_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) p
 
 /-- If a ring homomorphism `R →+* A` is injective and `R` has characteristic zero
 then so does `A`. -/
@@ -113,6 +117,10 @@ as `R`. -/
 lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom h q
+
+theorem ExpChar.of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
+  expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
 /-!
 As an application, a `ℚ`-algebra has characteristic zero.

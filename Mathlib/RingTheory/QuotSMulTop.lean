@@ -3,9 +3,11 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Reducing a module modulo an element of the ring
@@ -20,6 +22,8 @@ of fiddling with simple tensors.
 
 module, commutative algebra
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -44,13 +48,13 @@ protected def congr (e : M' ≃ₗ[R] M'') : QuotSMulTop r M' ≃ₗ[R] QuotSMul
 noncomputable def equivQuotTensor :
     QuotSMulTop r M ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
-   (quotTensorEquivQuotSMul M _).symm
+    (quotTensorEquivQuotSMul M _).symm
 
 /-- Reducing a module modulo `r` is the same as right tensoring with `R/(r)`. -/
 noncomputable def equivTensorQuot :
     QuotSMulTop r M ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
-   (tensorQuotEquivQuotSMul M _).symm
+    (tensorQuotEquivQuotSMul M _).symm
 
 variable {M}
 

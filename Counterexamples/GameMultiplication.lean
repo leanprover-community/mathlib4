@@ -4,8 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 
+import Mathlib.Data.Fintype.Fin
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Counterexamples.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Multiplication of pre-games can't be lifted to the quotient

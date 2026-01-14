@@ -3,10 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.Semiconj
-import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Data.Bracket
+module
+
+public import Mathlib.Algebra.Ring.Semiconj
+public import Mathlib.Algebra.Ring.Units
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Data.Bracket
 
 /-!
 # Semirings and rings
@@ -19,6 +21,8 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -99,11 +103,25 @@ theorem sub_left : Commute a c → Commute b c → Commute (a - b) c :=
 
 end
 
+section Semiring
+
+variable [Semiring R]
+
+protected lemma add_sq {a b : R} (h : Commute a b) :
+    (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
+  simp [sq, add_mul, mul_add, two_mul, h.eq, add_assoc]
+
+end Semiring
+
 section Ring
 variable [Ring R] {a b : R}
 
 protected lemma sq_sub_sq (h : Commute a b) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   rw [sq, sq, h.mul_self_sub_mul_self_eq]
+
+protected lemma sub_sq {a b : R} (h : Commute a b) :
+    (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2 := by
+  simp [sq, add_mul, sub_mul, mul_sub, two_mul, h.eq, ← sub_add, ← sub_sub]
 
 variable [NoZeroDivisors R]
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Pointwise actions on sets in Pi types
@@ -17,6 +19,8 @@ This file contains lemmas about pointwise actions on sets in Pi types.
 set multiplication, set addition, pointwise addition, pointwise multiplication, pi
 
 -/
+
+public section
 
 open Pointwise
 

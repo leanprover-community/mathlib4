@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.Copy
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 
 /-!
 # Open sets
@@ -44,6 +46,8 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 - Rename `TopologicalSpace.Opens` to `Open`?
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
+
+@[expose] public section
 
 
 open Filter Function Order Set
@@ -125,7 +129,7 @@ theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _r
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The Galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
@@ -204,6 +208,10 @@ theorem coe_finset_sup (f : ι → Opens α) (s : Finset ι) : (↑(s.sup f) : S
 @[simp, norm_cast]
 theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
+
+@[simp, norm_cast]
+lemma coe_disjoint {s t : Opens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
+  simp [disjoint_iff, ← SetLike.coe_set_eq]
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
@@ -332,7 +340,7 @@ lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (�
     IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.1, isOpenMap_sigmaMk _ U.2⟩) '' B i) := by
   convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
-  aesop
+  simp
 
 lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
     IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by

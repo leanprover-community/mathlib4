@@ -3,7 +3,9 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 ## Ultrametric spaces
@@ -33,6 +35,8 @@ TODO: Generalize to ultrametric uniformities
 
 ultrametric, nonarchimedean
 -/
+
+@[expose] public section
 
 variable {X : Type*}
 
@@ -71,19 +75,13 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans_lt (max_lt h' (dist_comm x _ ▸ h))
 
-lemma mem_ball_iff {x y : X} {r : ℝ} : y ∈ ball x r ↔ x ∈ ball y r := by
-  cases lt_or_ge 0 r with
-  | inl hr =>
-    constructor <;> intro h <;>
-    rw [← ball_eq_of_mem h] <;>
-    simp [hr]
-  | inr hr => simp [ball_eq_empty.mpr hr]
+@[deprecated (since := "2025-08-16")] alias mem_ball_iff := mem_ball_comm
 
 lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
-  wlog hrs : r ≤ s generalizing x y r s
+  wlog! hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (ball x r) (ball y s) |>.symm.imp (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
     have hx := ball_subset_ball hrs (x := x)
@@ -103,21 +101,14 @@ lemma closedBall_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ closedBall x r) :
   constructor <;> intro h' <;>
   exact (dist_triangle_max _ _ _).trans (max_le h' (dist_comm x _ ▸ h))
 
-lemma mem_closedBall_iff {x y : X} {r : ℝ} :
-    y ∈ closedBall x r ↔ x ∈ closedBall y r := by
-  cases le_or_gt 0 r with
-  | inl hr =>
-    constructor <;> intro h <;>
-    rw [← closedBall_eq_of_mem h] <;>
-    simp [hr]
-  | inr hr => simp [closedBall_eq_empty.mpr hr]
+@[deprecated (since := "2025-08-16")] alias mem_closedBall_iff := mem_closedBall_comm
 
 lemma closedBall_subset_trichotomy :
     closedBall x r ⊆ closedBall y s ∨ closedBall y s ⊆ closedBall x r ∨
     Disjoint (closedBall x r) (closedBall y s) := by
-  wlog hrs : r ≤ s generalizing x y r s
+  wlog! hrs : r ≤ s generalizing x y r s
   · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
-    exact this y x s r (lt_of_not_ge hrs).le
+    exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y s) |>.symm.imp
       (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem

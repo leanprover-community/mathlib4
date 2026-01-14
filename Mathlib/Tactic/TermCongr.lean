@@ -3,10 +3,12 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.CongrExclamation
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Basic
 
 /-! # `congr(...)` congruence quotations
 
@@ -46,6 +48,8 @@ no way to inform `simp` about the expected RHS, which could cause `simp` to fail
 it eagerly wants to solve for instance arguments. The current version is able to use the
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
+
+public meta section
 
 universe u
 
@@ -104,8 +108,8 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
-@[reducible, nolint unusedArguments]
+See `CongrResult` below. -/
+@[reducible, nolint unusedArguments, expose]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
 /-- For error reporting purposes, make the hole pretty print as its value.
@@ -245,9 +249,9 @@ def ensureIff (pf : Expr) : MetaM Expr := do
 inductive CongrType
   | eq | heq
 
-/-- A congruence lemma between two expressions.
-The proof is generated dynamically, depending on whether the resulting lemma should be
-an `Eq` or a `HEq`.
+/--
+A congruence lemma between two expressions. The proof is generated dynamically, depending on
+whether the resulting lemma should be an `Eq` or a `HEq`.
 If generating a proof impossible, then the generator can throw an error.
 This can be due to either an `Eq` proof being impossible
 or due to the lhs/rhs not being defeq to the lhs/rhs of the generated proof,
@@ -255,10 +259,10 @@ which can happen for user-supplied congruence holes.
 
 This complexity is to support two features:
 
-1. The user is free to supply Iff, Eq, and HEq lemmas in congurence holes,
+1. The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
    and we're able to transform them into whatever is appropriate for a
    given congruence lemma.
-2. If the congrence hole is a metavariable, then we can specialize that
+2. If the congruence hole is a metavariable, then we can specialize that
    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/
@@ -317,7 +321,7 @@ def CongrResult.trans (res1 res2 : CongrResult) : CongrResult where
         | .eq => do mkEqTrans (← res1.eq) (← res2.eq)
         | .heq => do mkHEqTrans (← res1.heq) (← res2.heq)
 
-/-- Make a `CongrResult` from a LHS, a RHS, and a proof of an Iff, Eq, or HEq.
+/-- Make a `CongrResult` from an LHS, an RHS, and a proof of an Iff, Eq, or HEq.
 The proof is allowed to have a metavariable for its type.
 Validates the inputs and throws errors in the `pf?` function.
 

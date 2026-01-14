@@ -3,10 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Meta.ExprLens
-import ProofWidgets.Component.MakeEditLink
-import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-import Mathlib.Tactic.Widget.SelectInsertParamsClass
+module
+
+public meta import Lean.Meta.ExprLens
+public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 
@@ -15,6 +18,8 @@ generating tactic calls based on selected sub-expressions in the main goal.
 
 There are also some minor helper functions.
 -/
+
+public meta section
 
 open Lean Meta Server
 
@@ -37,7 +42,8 @@ def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
   | [s] => s
-  | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
+  | head::tail => head ++ "?_" ++
+      "?_".toSlice.intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
 
@@ -74,41 +80,41 @@ We also make sure `mkCmdStr` is executed in the right context.
 -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
-   MetaM (String × String × Option (String.Pos × String.Pos)))
-  (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
-  (params : Params) → RequestM (RequestTask Html) :=
-fun params ↦ RequestM.asTask do
-let doc ← RequestM.readDoc
-if h : 0 < (goals params).size then
-  let mainGoal := (goals params)[0]
-  let mainGoalName := mainGoal.mvarId.name
-  let all := if onlyOne then "The selected sub-expression" else "All selected sub-expressions"
-  let be_where := if onlyGoal then "in the main goal." else "in the main goal or its context."
-  let errorMsg := s!"{all} should be {be_where}"
-  let inner : Html ← (do
-    if onlyOne && (selectedLocations params).size > 1 then
-      return <span>{.text "You should select only one sub-expression"}</span>
-    for selectedLocation in selectedLocations params do
-      if selectedLocation.mvarId.name != mainGoalName then
-        return <span>{.text errorMsg}</span>
-      else if onlyGoal then
-        if !(selectedLocation.loc matches (.target _)) then
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)))
+    (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
+    (params : Params) → RequestM (RequestTask Html) :=
+  fun params ↦ RequestM.asTask do
+  let doc ← RequestM.readDoc
+  if h : 0 < (goals params).size then
+    let mainGoal := (goals params)[0]
+    let mainGoalName := mainGoal.mvarId.name
+    let all := if onlyOne then "The selected sub-expression" else "All selected sub-expressions"
+    let be_where := if onlyGoal then "in the main goal." else "in the main goal or its context."
+    let errorMsg := s!"{all} should be {be_where}"
+    let inner : Html ← (do
+      if onlyOne && (selectedLocations params).size > 1 then
+        return <span>{.text "You should select only one sub-expression"}</span>
+      for selectedLocation in selectedLocations params do
+        if selectedLocation.mvarId.name != mainGoalName then
           return <span>{.text errorMsg}</span>
-    if (selectedLocations params).isEmpty then
-      return <span>{.text helpMsg}</span>
-    mainGoal.ctx.val.runMetaM {} do
-      let md ← mainGoal.mvarId.getDecl
-      let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
-      Meta.withLCtx lctx md.localInstances do
-        let (linkText, newCode, range?) ← mkCmdStr (selectedLocations params) md.type.consumeMData
-          params
-        return .ofComponent
-          MakeEditLink
-          (.ofReplaceRange doc.meta (replaceRange params) newCode range?)
-          #[ .text linkText ])
-  return <details «open»={true}>
-      <summary className="mv2 pointer">{.text title}</summary>
-      <div className="ml1">{inner}</div>
-    </details>
-else
-  return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.
+        else if onlyGoal then
+          if !(selectedLocation.loc matches (.target _)) then
+            return <span>{.text errorMsg}</span>
+      if (selectedLocations params).isEmpty then
+        return <span>{.text helpMsg}</span>
+      mainGoal.ctx.val.runMetaM {} do
+        let md ← mainGoal.mvarId.getDecl
+        let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
+        Meta.withLCtx lctx md.localInstances do
+          let (linkText, newCode, range?) ← mkCmdStr (selectedLocations params) md.type.consumeMData
+            params
+          return .ofComponent
+            MakeEditLink
+            (.ofReplaceRange doc.meta (replaceRange params) newCode range?)
+            #[ .text linkText ])
+    return <details «open»={true}>
+        <summary className="mv2 pointer">{.text title}</summary>
+        <div className="ml1">{inner}</div>
+      </details>
+  else
+    return <span>{.text "There is no goal to solve!"}</span> -- This shouldn't happen.

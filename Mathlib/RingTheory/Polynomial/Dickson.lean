@@ -3,13 +3,15 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.Polynomial.Chebyshev
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Dickson polynomials
@@ -46,6 +48,8 @@ When `a=0` they are just the family of monomials `X ^ n`.
 * Prove that the adjacency matrices of simply laced Dynkin diagrams are precisely the adjacency
   matrices of simple connected graphs which annihilate `dickson 2 1`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -128,7 +132,6 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 
 variable (R)
 
--- Porting note: Added 2 new theorems for convenience
 private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 

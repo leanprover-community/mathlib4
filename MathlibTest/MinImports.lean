@@ -76,8 +76,7 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 #min_imports in uses_norm_num
 
 /--
-info: import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.Lemma
+info: import Mathlib.Tactic.Lemma
 import Mathlib.Data.Nat.Notation
 ---
 info: theorem hi.extracted_1_1 (n : ℕ) : n = n := sorry
@@ -124,9 +123,9 @@ set_option linter.minImports false
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Mathlib.Data.Int.Notation]
 
-New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+New imports: [Mathlib.Data.Int.Notation]
 
 
 Note: This linter can be disabled with `set_option linter.minImports false`
@@ -143,9 +142,9 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Mathlib.Data.Int.Notation]
 
-New imports: [Init.Guard, Mathlib.Data.Int.Notation]
+New imports: [Mathlib.Data.Int.Notation]
 
 
 Note: This linter can be disabled with `set_option linter.minImports false`
@@ -168,9 +167,9 @@ Note: This linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+[Mathlib.Tactic.NormNum.Basic]
 
-New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
+New imports: [Mathlib.Tactic.NormNum.Basic]
 
 Now redundant: [Mathlib.Tactic.Linter.MinImports]
 
@@ -211,13 +210,6 @@ def propose_to_move_this_def : ℕ := 0
 -- This theorem depends on a local definition, so should not be moved.
 #guard_msgs in
 theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
-
--- This definition depends on definitions in two different files, so should not be moved.
-#guard_msgs in
-theorem theorem_with_multiple_dependencies : True :=
-  let _ := Mathlib.Meta.FunProp.funPropAttr
-  let _ := Mathlib.Meta.NormNum.evalNatDvd
-  trivial
 
 -- Private declarations shouldn't get a warning by default.
 private theorem private_theorem : (0 : ℕ) = 0 := rfl

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Basic results on bases
@@ -22,6 +24,8 @@ There are also various lemmas on bases on specific spaces (such as empty or sing
 * `Basis.mk`: construct a basis out of `v : ι → M` such that `LinearIndependent v` and
   `span (range v) = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ordinal
 
@@ -54,7 +58,7 @@ theorem repr_support_subset_of_mem_span (s : Set ι) {m : M}
 
 theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.repr m).support ⊆ s :=
   ⟨repr_support_subset_of_mem_span _ _, fun h ↦
-    span_mono (image_subset _ h) (mem_span_repr_support b _)⟩
+    span_mono (Set.image_mono h) (mem_span_repr_support b _)⟩
 
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
@@ -67,6 +71,12 @@ protected theorem mem_span (x : M) : x ∈ span R (range b) :=
 @[simp]
 protected theorem span_eq : span R (range b) = ⊤ :=
   eq_top_iff.mpr fun x _ => b.mem_span x
+
+theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
+    p = ⊤ ↔ ∀ i, b i ∈ p := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  replace h : range b ⊆ p := by rintro - ⟨i, rfl⟩; exact h i
+  simpa using span_mono (R := R) h
 
 theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   obtain ⟨x, y, ne⟩ : ∃ x y : M, x ≠ y := Nontrivial.exists_pair_ne
@@ -161,6 +171,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       simp
     rwa [h_x_eq_y]
 
+@[simp]
 protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
   congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
 
@@ -217,6 +228,11 @@ theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.sing
 theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 
+@[simp]
+theorem coe_singleton {ι R : Type*} [Unique ι] [Semiring R] :
+    ⇑(Basis.singleton ι R) = 1 := by
+  ext; simp
+
 end Singleton
 
 section Empty
@@ -233,6 +249,14 @@ instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
 
 end Empty
 
+section Module.IsTorsionFree
+
+-- Can't be an instance because the basis can't be inferred.
+protected lemma isTorsionFree (b : Basis ι R M) :
+    Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)
+
+end Module.IsTorsionFree
+
 section NoZeroSMulDivisors
 
 -- Can't be an instance because the basis can't be inferred.
@@ -240,8 +264,7 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
-        ← map_zero (linearCombination R b)] at hcx
+      rw [← b.linearCombination_repr x, ← map_smul, ← map_zero (linearCombination R b)] at hcx
       have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
@@ -254,8 +277,8 @@ end NoZeroSMulDivisors
 
 section Singleton
 
-theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
+theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩

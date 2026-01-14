@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Algebraic elements and integral elements
@@ -33,7 +35,9 @@ is algebraic and that every algebraic element over a field is integral.
   remains transcendental over any algebraic `R`-subalgebra that has no zero divisors.
 -/
 
-assert_not_exists LocalRing
+@[expose] public section
+
+assert_not_exists IsLocalRing
 
 universe u v w
 
@@ -155,9 +159,6 @@ theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsI
       integralNormalization_aeval_eq_zero px fun _ ↦ (map_eq_zero_iff _ inj).mp⟩
   exact ⟨_, a_ne_zero, Algebra.smul_def a z ▸ x_integral⟩
 
-@[deprecated (since := "2024-11-30")]
-alias _root_.exists_integral_multiple := exists_integral_multiple
-
 variable (R) in
 theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
     [alg : Algebra.IsAlgebraic R A] (s : Finset A) :
@@ -226,6 +227,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
+  have := Algebra.nontrivial_of_isAlgebraic R S
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
@@ -320,8 +322,6 @@ variable (R S A) [NoZeroDivisors S]
 @[stacks 09GJ] theorem IsAlgebraic.trans [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
-
-@[deprecated (since := "2025-02-08")] alias IsAlgebraic.trans' := IsAlgebraic.trans
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
@@ -641,3 +641,19 @@ open Cardinal in
 end Algebra.IsAlgebraic
 
 end Polynomial
+
+section FractionRing
+
+open Algebra Module
+open scoped nonZeroDivisors
+
+attribute [local instance] FractionRing.liftAlgebra
+
+instance [IsDomain R] [IsDomain S] [IsTorsionFree R S] [Module.Finite R S] :
+    FiniteDimensional (FractionRing R) (FractionRing S) := by
+  obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := S)
+  exact Module.finite_def.mpr <|
+    (span_eq_top_localization_localization (FractionRing R) R⁰ (FractionRing S) hs) ▸
+      Submodule.fg_span (Set.toFinite _)
+
+end FractionRing

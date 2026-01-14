@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Order.Hom.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.Analysis.Normed.Order.Hom.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
@@ -19,6 +21,8 @@ that shows that this distance instance is propositionally equal to the one that 
 hom-based `AddGroupSeminormClass.toSeminormedAddGroup f` construction. To help at use site,
 the argument is an autoparam that resolves by definitional equality when using these constructions.
 -/
+
+public section
 
 variable {F α : Type*} [FunLike F α ℝ]
 

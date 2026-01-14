@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Order.AddTorsor
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.AddTorsor
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Antidiagonal for scalar multiplication
@@ -18,6 +20,8 @@ and an element in `t` that scalar-multiply to `a`.
 * VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
 -/
 
+@[expose] public section
+
 variable {G P : Type*}
 
 namespace Set
@@ -26,10 +30,10 @@ section SMul
 
 variable [SMul G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
 
-/-- `smulAntidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that scalar multiply to `a`. -/
-@[to_additive "`vaddAntidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that vector-add to `a`."]
+/-- `smulAntidiagonal s t a` is the set of all pairs of an element in `s` and an element in `t`
+that scalar multiply to `a`. -/
+@[to_additive /-- `vaddAntidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that vector-add to `a`. -/]
 def smulAntidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a }
 
@@ -95,7 +99,7 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1
 
 @[to_additive VAddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s t a).Finite := by
-  refine Set.not_infinite.1 fun h => ?_
+  by_contra! h
   have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
     fun f ↦ hs fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).1⟩
   have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=

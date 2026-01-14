@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+module
+
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Equivalence of Formulas
@@ -17,6 +19,8 @@ import Mathlib.ModelTheory.Satisfiability
 - Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
 -/
+
+@[expose] public section
 
 universe u v w w'
 
@@ -45,7 +49,7 @@ namespace Imp
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⟹[T] φ := fun _ _ _ => id
 
-instance : IsRefl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
+instance : @Std.Refl (L.BoundedFormula α n) T.Imp := ⟨Imp.refl⟩
 
 @[trans]
 protected theorem trans {φ ψ θ : L.BoundedFormula α n} (h1 : φ ⟹[T] ψ) (h2 : ψ ⟹[T] θ) :
@@ -132,7 +136,7 @@ protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
   fun M v xs => by rw [BoundedFormula.realize_iff]
 
-instance : IsRefl (L.BoundedFormula α n) T.Iff :=
+instance : @Std.Refl (L.BoundedFormula α n) T.Iff :=
   ⟨Iff.refl⟩
 
 @[symm]
@@ -141,7 +145,7 @@ protected theorem symm {φ ψ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
   exact h M v xs
 
-instance : IsSymm (L.BoundedFormula α n) T.Iff :=
+instance : Std.Symm (α := L.BoundedFormula α n) T.Iff :=
   ⟨fun _ _ => Iff.symm⟩
 
 @[trans]

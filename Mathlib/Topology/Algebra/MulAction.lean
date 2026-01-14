@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -29,6 +31,8 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
+
+@[expose] public section
 
 open Topology Pointwise
 
@@ -122,8 +126,8 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
   continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
-@[to_additive "If an additive action is central, then its right action is continuous when its left
-action is."]
+@[to_additive /-- If an additive action is central, then its right action is continuous when its
+left action is. -/]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
@@ -165,21 +169,19 @@ Then the action of `N` on `X` is continuous as well.
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
 However, this version also works for semilinear maps and `f = Units.val`. -/
 @[to_additive
-  "Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
+  /-- Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
 Suppose that `g : Y → X` is an additive action homomorphism in the following sense:
 there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
 Then the action of `N` on `X` is continuous as well.
 
 In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
-However, this version also works for `f = AddUnits.val`."]
+However, this version also works for `f = AddUnits.val`. -/]
 lemma Topology.IsInducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
     (hg : IsInducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
     ContinuousSMul N Y where
   continuous_smul := by
     simpa only [hg.continuous_iff, Function.comp_def, hsmul]
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
-
-@[deprecated (since := "2024-10-28")] alias Inducing.continuousSMul := IsInducing.continuousSMul
 
 @[to_additive]
 instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
@@ -250,15 +252,14 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
-  -- unification instead.
-  @ContinuousSMul.mk M X _ _ (_) <| by
+  let _ := sInf ts
+  { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
-            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
+            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht)) }
 
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}

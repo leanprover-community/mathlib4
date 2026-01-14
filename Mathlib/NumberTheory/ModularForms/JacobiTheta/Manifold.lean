@@ -3,9 +3,11 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 
 /-!
 # Manifold differentiability of the Jacobi theta function
@@ -17,6 +19,8 @@ differentiability.
 
 Prove smoothness (in terms of `Smooth`).
 -/
+
+public section
 
 
 open scoped UpperHalfPlane Manifold

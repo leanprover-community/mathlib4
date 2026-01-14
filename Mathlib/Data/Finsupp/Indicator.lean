@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Building finitely supported functions off finsets
@@ -14,6 +16,8 @@ This file defines `Finsupp.indicator` to help create finsupps from finsets.
 
 * `Finsupp.indicator`: Turns a map from a `Finset` into a `Finsupp` from the entire type.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -42,8 +46,6 @@ theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i 
 
 theorem indicator_of_notMem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
   @dif_neg _ (id _) hi _ _ _
-
-@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
 
 variable (s i)
 

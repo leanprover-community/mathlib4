@@ -3,11 +3,15 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 # Morphisms of quivers
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u u₁ u₂
 
@@ -22,7 +26,7 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
 
 namespace Prefunctor
 
--- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
 lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
     (Prefunctor.mk obj map).obj X = obj X := rfl

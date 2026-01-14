@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Conjugate morphisms by isomorphisms
@@ -20,6 +22,8 @@ using
 and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
 which are defined in  `CategoryTheory.HomCongr`.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -67,12 +71,12 @@ theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
-/-- `conj` defines a group isomorphisms between groups of automorphisms -/
+-- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
+/-- `conj` defines a group isomorphism between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
+theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by cat_disch
 
 @[simp]
 theorem conjAut_hom (f : Aut X) : (α.conjAut f).hom = α.conj f.hom :=

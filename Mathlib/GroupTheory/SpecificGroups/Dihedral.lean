@@ -3,12 +3,14 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.CardCommute
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -19,6 +21,8 @@ For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n
 represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of the
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -35,6 +39,7 @@ namespace DihedralGroup
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Multiplication of the dihedral group.
 -/
 private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
@@ -43,20 +48,26 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
   | sr i, r j => sr (i + j)
   | sr i, sr j => r (j - i)
 
+set_option backward.privateInPublic true in
 /-- The identity `1` is the rotation by `0`.
 -/
 private def one : DihedralGroup n :=
   r 0
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
 /-- The inverse of an element of the dihedral group.
 -/
 private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
 -/
 instance : Group (DihedralGroup n) where
@@ -109,16 +120,17 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 @[simp]
-theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
-theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
+set_option backward.privateInPublic true in
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -129,6 +141,8 @@ private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
@@ -162,7 +176,7 @@ theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by
   simp
 
-/-- If `0 < n`, then `sr i` has order 2.
+/-- `sr i` has order 2.
 -/
 @[simp]
 theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
@@ -170,7 +184,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · rw [sq, sr_mul_self]
   · simp [← r_zero]
 
-/-- If `0 < n`, then `r 1` has order `n`.
+/-- `r 1` has order `n`.
 -/
 @[simp]
 theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
@@ -189,7 +203,7 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
     rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
     exact absurd h2.symm (orderOf_pos _).ne
 
-/-- If `0 < n`, then `i : ZMod n` has order `n / gcd n i`.
+/-- If `0 < n`, then `r i` has order `n / gcd n i`.
 -/
 theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val := by
   conv_lhs => rw [← ZMod.natCast_zmod_val i]
@@ -259,10 +273,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
           using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
           using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h
@@ -275,13 +289,6 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
       | .inr (.inr (.inl k)) =>
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨_, _⟩)) => rfl }
-
-@[deprecated (since := "2025-05-07")] alias OddCommuteEquiv := oddCommuteEquiv
-
-@[deprecated (since := "2025-05-07")] alias
-OddCommuteEquiv_apply := DihedralGroup.oddCommuteEquiv_apply
-@[deprecated (since := "2025-05-07")] alias
-OddCommuteEquiv_symm_apply := DihedralGroup.oddCommuteEquiv_symm_apply
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
 lemma card_commute_odd (hn : Odd n) :
