@@ -237,9 +237,6 @@ theorem IncompRel.ne [Std.Refl r] {a b : α} (h : IncompRel r a b) : a ≠ b := 
   rintro rfl
   exact h.1 <| refl_of r a
 
-theorem IncompRel.ne' [Std.Refl r] {a b : α} (h : IncompRel r a b) : b ≠ a :=
-  h.ne.symm
-
 end Relation
 
 section LE
