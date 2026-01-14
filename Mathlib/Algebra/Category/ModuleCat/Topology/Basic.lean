@@ -75,6 +75,7 @@ instance : Category (TopModuleCat R) where
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where

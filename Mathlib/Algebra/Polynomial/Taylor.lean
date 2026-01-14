@@ -178,6 +178,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)

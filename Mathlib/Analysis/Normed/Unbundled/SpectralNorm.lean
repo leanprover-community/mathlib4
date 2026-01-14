@@ -527,6 +527,7 @@ theorem isPowMul_spectralNorm_of_finiteDimensional_normal [IsUltrametricDist K] 
   rw [spectralNorm_eq_invariantExtension K L]
   exact isPowMul_invariantExtension K L
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The spectral norm is a `K`-algebra norm on `L` when `L/K` is finite and normal.
   See also `spectralAlgNorm` for a more general construction. -/
 def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraNorm K L where
@@ -667,6 +668,7 @@ theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := b
     _root_.map_add]
   apply isNonarchimedean_spectralNorm_of_finiteDimensional_normal
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 variable (K L) in
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
 def spectralAlgNorm : AlgebraNorm K L where

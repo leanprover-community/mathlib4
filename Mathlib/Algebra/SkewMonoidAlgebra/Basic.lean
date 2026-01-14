@@ -259,6 +259,7 @@ theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
   simp [← toFinsupp_inj]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
@@ -481,6 +482,7 @@ section mapDomain
 
 variable {G' G'' : Type*} (f : G → G') {g : G' → G''} (v : SkewMonoidAlgebra k G)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `f : G → G'` and `v : SkewMonoidAlgebra k G`, `mapDomain f v : SkewMonoidAlgebra k G'`
 is the finitely supported additive homomorphism whose value at `a : G'` is the sum of `v x` over
 all `x` such that `f x = a`.
@@ -1087,6 +1089,7 @@ variable (k G)
 
 variable [Monoid G] [MulSemiringAction G k]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The embedding of a monoid into its skew monoid algebra. -/
 def of : G →* SkewMonoidAlgebra k G where
   toFun a      := single a 1
