@@ -347,7 +347,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [M
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]

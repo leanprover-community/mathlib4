@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Image
+public import Mathlib.Util.Delaborators
 
 /-!
 # Directed indexed families and sets
