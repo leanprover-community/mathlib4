@@ -137,3 +137,9 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 run_meta
   Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
   Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+
+instance Prop.le : LE Prop :=
+  ⟨(· → ·)⟩
+
+@[to_dual le_of_imp']
+theorem Prop.le_of_imp (_h : a ≤ b) {p q : Prop} : (p → q) → p ≤ q := id
