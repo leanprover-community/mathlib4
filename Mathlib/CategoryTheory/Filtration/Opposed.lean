@@ -89,8 +89,11 @@ end DecFiltration
 This is Deligne's ambient setting for §1.2.
 -/
 structure BifilteredObject (C : Type u) [Category.{v} C] where
+  /-- The underlying object. -/
   obj : C
+  /-- The first decreasing filtration. -/
   F : DecFiltration obj
+  /-- The second decreasing filtration. -/
   G : DecFiltration obj
 
 namespace BifilteredObject
@@ -104,6 +107,7 @@ We use the pullback formulation: `f` preserves `F` if `A.F n ≤ (pullback f).ob
 which is equivalent to saying the image of `A.F n` under `f` is contained in `B.F n`.
 -/
 structure Hom [HasPullbacks C] (A B : BifilteredObject C) where
+  /-- The underlying morphism in `C`. -/
   hom : (A : C) ⟶ (B : C)
   compatF : ∀ n : ℤ, A.F n ≤ (Subobject.pullback hom).obj (B.F n)
   compatG : ∀ n : ℤ, A.G n ≤ (Subobject.pullback hom).obj (B.G n)

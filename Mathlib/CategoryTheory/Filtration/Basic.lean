@@ -3,6 +3,7 @@ Copyright (c) 2026 Matteo Cipollina,Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
+
 module
 
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -56,7 +57,7 @@ variable {A : C}
 instance : CoeFun (DecFiltration A) (fun _ => ℤ → Subobject A) where
   coe F := F.F
 
-@[simp] lemma antitone (F : DecFiltration A) : Antitone (F : ℤ → Subobject A) :=
+lemma antitone (F : DecFiltration A) : Antitone (F : ℤ → Subobject A) :=
   F.antitone'
 
 /-- A filtration is *finite* if it is bounded above by `⊤` and bounded below by `⊥`.
@@ -91,7 +92,7 @@ noncomputable def gr [Abelian C] (F : DecFiltration A) (n : ℤ) : C :=
   cokernel ((F (n + 1)).ofLE (F n) le')
 
 /-- The canonical inclusion `F^{n+1}(A) ⟶ F^n(A)`. -/
-noncomputable def grι [Abelian C] (F : DecFiltration A) (n : ℤ) :
+noncomputable def grι (F : DecFiltration A) (n : ℤ) :
     (F (n + 1) : C) ⟶ (F n : C) :=
   (F (n + 1)).ofLE (F n) (F.antitone (by omega))
 
