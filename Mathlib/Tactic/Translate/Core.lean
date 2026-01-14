@@ -379,6 +379,9 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | .fvar fvarId       => if dontTranslate.contains fvarId then return e else failure
+    /- We do not translate the order on `Prop`.
+    TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
+    `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
     | .sort 0            => return e
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
