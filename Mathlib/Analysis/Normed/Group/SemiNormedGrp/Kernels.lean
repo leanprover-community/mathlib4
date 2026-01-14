@@ -115,7 +115,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
             (fun c => ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
             (fun _ => SemiNormedGrp.hom_ext <| NormedAddGroupHom.ker.incl_comp_lift _ _ (this _))
-            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl}
+            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl }
 
 instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGrp :=
   @hasEqualizers_of_hasLimit_parallelPair SemiNormedGrp _ fun {_ _ f g} =>

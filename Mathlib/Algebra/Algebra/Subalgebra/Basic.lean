@@ -469,7 +469,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_one' := Subtype.ext <| by simp
     map_mul' _ _ := Subtype.ext <| by simp
     map_zero' := Subtype.ext <| by simp
-    map_add' _ _ := Subtype.ext <| by simp}
+    map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 

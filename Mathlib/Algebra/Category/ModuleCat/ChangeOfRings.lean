@@ -261,7 +261,7 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
     (X₁ := (restrictScalars e.toRingHom).obj ((restrictScalars e.symm.toRingHom).obj M))
     (X₂ := M)
     { __ := AddEquiv.refl M
-      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
+      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r) }) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
 
 instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :

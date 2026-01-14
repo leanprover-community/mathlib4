@@ -208,7 +208,7 @@ instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
     toFun := fun x ↦ c * f x
     mono' := f.mono.const_mul c.2
-    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1}
+    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1 }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _

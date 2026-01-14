@@ -108,7 +108,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
             naturality g₁ g₂ φ := by
               simpa [uliftFunctor, uliftYoneda,
                 restrictedULiftYoneda, ← ULift.down_inj] using
-                (congr_fun (f.naturality φ.left.op) (ULift.up g₂.hom)).symm }}
+                (congr_fun (f.naturality φ.left.op) (ULift.up g₂.hom)).symm } }
     refine ⟨(F.denseAt Y).desc c, ?_⟩
     ext ⟨X⟩ ⟨x⟩
     have := (F.denseAt Y).fac c (.mk x)

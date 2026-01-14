@@ -343,7 +343,7 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
     toFun := fun ⟨m, j⟩ ↦ ⟨m, j⟩
     invFun := fun ⟨m, j⟩ ↦ ⟨⟨m, this m j⟩, j⟩
     left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]}
+    right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
   rw [← Equiv.finite_iff f]
   exact Finite.instSigma
 

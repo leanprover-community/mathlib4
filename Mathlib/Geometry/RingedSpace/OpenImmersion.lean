@@ -735,7 +735,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding 
     [H : ∀ x : X.1, IsIso (f.hom.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
-      apply (config := {allowSynthFailures := true})
+      apply (config := { allowSynthFailures := true })
         TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.hom.base).obj X.sheaf from ⟨f.hom.c⟩)
       rintro ⟨_, y, hy, rfl⟩
@@ -1091,9 +1091,9 @@ instance forgetToPresheafedSpace_reflectsPullback_of_right :
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
+  apply (config := { allowSynthFailures := true }) Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
-  apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
+  apply (config := { allowSynthFailures := true }) Functor.ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace)
   erw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]

@@ -114,7 +114,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     { app := fun X ↦ (app X).inv
       naturality := fun {X Y} f ↦ by
         rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
-          Category.comp_id, Iso.hom_inv_id_assoc]}
+          Category.comp_id, Iso.hom_inv_id_assoc] }
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where

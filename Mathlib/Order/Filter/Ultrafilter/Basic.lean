@@ -79,7 +79,7 @@ open Ultrafilter
 
 lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
     (atTop : Filter α) = pure x :=
-  {top := x, le_top := hx : OrderTop α}.atTop_eq
+  { top := x, le_top := hx : OrderTop α }.atTop_eq
 
 lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
