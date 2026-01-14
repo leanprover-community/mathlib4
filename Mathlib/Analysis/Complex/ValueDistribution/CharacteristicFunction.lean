@@ -75,7 +75,7 @@ theorem characteristic_even {a : WithTop E} :
 For `1 ≤ r`, the characteristic function is non-negative.
 -/
 theorem characteristic_nonneg {r : ℝ} {a : WithTop E} (hr : 1 ≤ r) :
-    0 ≤ characteristic f a r := 
+    0 ≤ characteristic f a r :=
   add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
 
 /--
