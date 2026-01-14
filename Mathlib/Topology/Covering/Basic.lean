@@ -512,16 +512,22 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
     IsEvenlyCovered f x (f ⁻¹' {x}) := by
   have : DiscreteTopology (f ⁻¹' {x}) :=
     (IsDiscrete.of_openPartialHomeomorph f subset_rfl h).1
+  /- for each preimage e of x, choose a homeomorphism φₑ
+    from a neighborhood of e to its image -/
   choose φ hφ using fun e : f ⁻¹' {x} ↦ h e e.2
+  -- separately, choose pairwise disjoint neighborhoods Vₑ by Hausdorff-ness
   have ⟨V, hV, disj⟩ := fin.t2_separation
+  -- let Vₑ' be the intersection Vₑ ∩ dom(φₑ)
   let V' (e : f ⁻¹' {x}) := V e ∩ (φ e).source
   have hV' e : IsOpen (V' e) := (hV e).2.inter (φ e).open_source
   have : ⋃ e, V' e ∈ nhdsSet (f ⁻¹' {x}) :=
     (isOpen_iUnion hV').mem_nhdsSet.2 fun e he ↦ mem_iUnion_of_mem ⟨e, he⟩ ⟨(hV e).1, (hφ _).1⟩
+  -- since f is a closed map, the union of the Vₑ' contains the preimage of a neighborhood U ∋ x
   have ⟨W, hWx, hWV⟩ := isClosedMap_iff_comap_nhds_le.mp hf this
   cases isEmpty_or_nonempty (f ⁻¹' {x})
   · exact .of_preimage_eq_empty _ hWx (by simpa using hWV)
   have ⟨U, hUW, hU, hxU⟩ := mem_nhds_iff.mp hWx
+  -- show that the intersection of U with the images of Vₑ' is evenly covered
   let U' := U ∩ ⋂ e : f ⁻¹' {x}, f '' (V' e)
   have : Finite (f ⁻¹' {x}) := fin
   have hU' : IsOpen U' := hU.inter <| isOpen_iInter_of_finite fun e ↦ by
