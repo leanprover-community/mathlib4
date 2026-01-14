@@ -374,7 +374,10 @@ scoped[Modular] notation "𝒟" => ModularGroup.fd
 @[inherit_doc ModularGroup.fdo]
 scoped[Modular] notation "𝒟ᵒ" => ModularGroup.fdo
 
+/-- A set intermediate between the open and the closed fundamental domain. -/
 def fd' : Set ℍ := {z | 1 < normSq (z : ℂ) ∧ |z.re| ≤ (1 : ℝ) / 2}
+
+@[inherit_doc]
 scoped[Modular] notation "𝒟'" => ModularGroup.fd'
 
 lemma fdo_sub_fd' : fdo ≤ fd' := fun _ hτ ↦ ⟨hτ.1, hτ.2.le⟩
