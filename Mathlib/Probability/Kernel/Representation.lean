@@ -123,9 +123,7 @@ lemma unitInterval_representation (κ : Kernel α I) [IsMarkovKernel κ] :
       push_neg at h
       simp only [sSup_le_iff, f] at hξ
       specialize hξ y h
-      replace hξ : y.1 ≤ x.1 := hξ
-      have : y.1 > x.1 := hy
-      linarith
+      grind
 
 lemma embedding_representation {β : Type*} [Nonempty β] [MeasurableSpace β] {g : β → I}
     (hg : MeasurableEmbedding g) (κ : Kernel α β) [IsMarkovKernel κ] :
