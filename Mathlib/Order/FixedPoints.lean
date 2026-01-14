@@ -246,6 +246,7 @@ instance : SemilatticeSup (fixedPoints f) where
 
 instance : SemilatticeInf (fixedPoints f) where
   inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
+  __ := OrderDual.instSemilatticeInf (fixedPoints f.dual)
 
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
 instance completeLattice : CompleteLattice (fixedPoints f) where
