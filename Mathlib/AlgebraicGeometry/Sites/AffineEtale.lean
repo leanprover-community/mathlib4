@@ -5,13 +5,21 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib
-
-@[expose] public section
+public import Mathlib.AlgebraicGeometry.Sites.Etale
 
 /-!
 # Affine étale site
+
+In this file we define the small affine étale site of a scheme `S`. The underlying
+category is the category of commutative rings `R` equipped with an étale structure
+morphism `Spec R ⟶ S`.
+
+## Main results
+- `AlgebraicGeometry.Scheme.AffineEtale.sheafEquiv`: The category of sheaves on the
+  small affine étale site is equivalent to the category of schemes on the small étale site.
 -/
+
+@[expose] public section
 
 universe u
 
