@@ -89,7 +89,7 @@ lemma span_generators_eq_top (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) 
   simpa only [eq_top_iff, ← Submodule.span_span_of_tower R≥0 R (h_simp.generators : Set M),
     h_simp.span_generators] using h_gen.symm.le
 
-/-- The generators of a simplicial generating cone is a basis for the module. -/
+/-- The generators of a simplicial generating cone form a basis for the module. -/
 noncomputable def toBasis (h_simp : C.IsSimplicial) (h_gen : C.IsGenerating) :
     Module.Basis h_simp.generators R M :=
   Module.Basis.mk h_simp.linearIndependent_generators <| by
