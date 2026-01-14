@@ -392,13 +392,13 @@ theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (ofNat(n) : K) = n :=
   stdPart_natCast n
 
 @[simp]
-theorem stdPart_of_archimedean (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
+theorem stdPart_map_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
   rw [stdPart, dif_pos]
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
 
 @[simp]
 theorem stdPart_real (r : ℝ) : stdPart r = r :=
-  stdPart_of_archimedean (.id ℝ) r
+  stdPart_map_real (.id ℝ) r
 
 theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
     FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
