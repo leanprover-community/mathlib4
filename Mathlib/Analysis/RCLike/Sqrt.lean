@@ -59,8 +59,8 @@ theorem RCLike.sqrt_eq_re_add_ite {a : 𝕜} :
     simp [h, im_eq_zero]
   aesop
 
-@[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt, Complex.sqrt]
-@[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt, Complex.sqrt]
+@[simp] theorem RCLike.sqrt_zero : sqrt (0 : 𝕜) = 0 := by simp [sqrt]
+@[simp] theorem RCLike.sqrt_one : sqrt (1 : 𝕜) = 1 := by simp [sqrt]
 
 theorem Complex.re_sqrt_ofReal {a : ℝ} :
     (sqrt (a : ℂ)).re = √a := by
