@@ -38,20 +38,6 @@ variable [Ring R]
   [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃]
 
-section Add
-
-open LineDeriv
-
-variable (E) in
-/-- The Laplacian defined by iterated `lineDerivOp`.
-
-This is not an instance of `Laplacian`, because it is not possible to infer `E` in general. For each
-concrete case there should be such an instance. -/
-def laplacian [AddCommGroup V₃] (f : V₁) : V₃ :=
-  ∑ i, ∂_{stdOrthonormalBasis ℝ E i} (∂_{stdOrthonormalBasis ℝ E i} f)
-
-end Add
-
 section ContinuousLinearMap
 
 variable
@@ -66,10 +52,6 @@ variable (R E V₁) in
 def laplacianCLM : V₁ →L[R] V₃ :=
   ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
     lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
-
-@[simp]
-theorem laplacianCLM_apply (f : V₁) : laplacianCLM R E V₁ f = laplacian E f := by
-  simp [laplacianCLM, laplacian]
 
 end ContinuousLinearMap
 
@@ -87,13 +69,19 @@ variable [NormedSpace ℝ F]
 open Laplacian LineDeriv
 
 instance instLaplacian : Laplacian 𝓢(E, F) 𝓢(E, F) where
-  laplacian := LineDeriv.laplacian E
+  laplacian := laplacianCLM ℝ E 𝓢(E, F)
 
-@[simp]
-theorem laplacian_eq (f : 𝓢(E, F)) : LineDeriv.laplacian E f = Δ f := rfl
+theorem laplacianCLM_eq' (f : 𝓢(E, F)) : laplacianCLM ℝ E 𝓢(E, F) f = Δ f := rfl
 
 theorem laplacian_eq_sum' (f : 𝓢(E, F)) :
-    Δ f = ∑ i, ∂_{stdOrthonormalBasis ℝ E i} (∂_{stdOrthonormalBasis ℝ E i} f) := rfl
+    Δ f = ∑ i, ∂_{stdOrthonormalBasis ℝ E i} (∂_{stdOrthonormalBasis ℝ E i} f) := by
+  simp [← laplacianCLM_eq', laplacianCLM]
+
+variable (𝕜) in
+@[simp]
+theorem laplacianCLM_eq [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
+    laplacianCLM 𝕜 E 𝓢(E, F) f = Δ f := by
+  simp [laplacianCLM, laplacian_eq_sum']
 
 theorem coe_laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢(E, F)) :
     Δ (f : E → F) = ∑ i, ∂_{b i} (∂_{b i} f) := by
