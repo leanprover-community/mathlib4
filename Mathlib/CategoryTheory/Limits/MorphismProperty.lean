@@ -92,7 +92,7 @@ instance hasColimitsOfShape_of_closedUnderColimitsOfShape [HasColimitsOfShape J 
 
 end MorphismProperty.Comma
 
-section
+section CostructuredArrow
 
 variable {A : Type*} [Category* A] {L : A ⥤ T}
 
@@ -127,7 +127,51 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
-end
+lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
+    [PreservesLimitsOfShape WalkingCospan L] (X : T)
+    [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
+    [P.HasOfPostcompProperty P] :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
+  limitsOfShape_le := by
+    rintro Y ⟨pres, hpres⟩
+    have h : IsPullback (L.map (pres.π.app .left).left) (L.map (pres.π.app .right).left)
+        (L.map (pres.diag.map WalkingCospan.Hom.inl).left)
+          (L.map (pres.diag.map WalkingCospan.Hom.inr).left) :=
+      IsPullback.of_isLimit_cone <| isLimitOfPreserves
+        (CategoryTheory.CostructuredArrow.toOver L X ⋙ CategoryTheory.Over.forget X) pres.isLimit
+    rw [MorphismProperty.costructuredArrowObj_iff]
+    rw [show Y.hom = L.map (pres.π.app .left).left ≫ (pres.diag.obj .left).hom by simp]
+    apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (hpres _)
+    exact P.of_postcomp _ (pres.diag.obj WalkingCospan.one).hom (hpres .one)
+      (by simpa using hpres .right)
+
+namespace MorphismProperty.CostructuredArrow
+
+variable (X : T) [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
+  [P.HasOfPostcompProperty P] [HasPullbacks A] [HasPullbacks T]
+  [PreservesLimitsOfShape WalkingCospan L]
+
+noncomputable instance createsLimitsOfShape_walkingCospan :
+    CreatesLimitsOfShape WalkingCospan (CostructuredArrow.forget P ⊤ L X) := by
+  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
+  · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
+
+instance hasPullbacks : HasPullbacks (P.CostructuredArrow ⊤ L X) := by
+  apply (config := { allowSynthFailures := true }) hasLimitsOfShape_of_closedUnderLimitsOfShape
+  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
+  · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
+
+instance : PreservesLimitsOfShape WalkingCospan (CostructuredArrow.toOver P L X) :=
+  have : PreservesLimitsOfShape WalkingCospan
+      (CostructuredArrow.toOver P L X ⋙ Over.forget P ⊤ X) :=
+    inferInstanceAs <| PreservesLimitsOfShape WalkingCospan <|
+      CostructuredArrow.forget P ⊤ L X ⋙ CategoryTheory.CostructuredArrow.toOver L X
+  preservesLimitsOfShape_of_reflects_of_preserves _ (Over.forget _ _ X)
+
+end MorphismProperty.CostructuredArrow
+
+end CostructuredArrow
 
 section
 
@@ -144,16 +188,8 @@ Without the cancellation property, this does not in general. Consider for exampl
 `P = Function.Surjective` on `Type`. -/
 instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan where
-  limitsOfShape_le := by
-    rintro Y ⟨p⟩
-    have h := IsPullback.of_isLimit_cone <|
-        Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) p.isLimit
-    rw [MorphismProperty.overObj_iff,
-      show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
-    apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (p.prop_diag_obj _)
-    exact P.of_postcomp _ (p.diag.obj WalkingCospan.one).hom (p.prop_diag_obj .one)
-      (by simpa using p.prop_diag_obj .right)
+    (P.overObj (X := X)).IsClosedUnderLimitsOfShape WalkingCospan :=
+  CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
 
 end
 
@@ -190,19 +226,14 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] :
-    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) := by
-  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
-  · apply Over.closedUnderLimitsOfShape_pullback
+    CreatesLimitsOfShape WalkingCospan (Over.forget P ⊤ X) :=
+  CostructuredArrow.createsLimitsOfShape_walkingCospan _ _
 
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `P.Over ⊤ X` has pullbacks -/
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
-    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) := by
-  apply (config := { allowSynthFailures := true })
-    hasLimitsOfShape_of_closedUnderLimitsOfShape
-  · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
-  · apply Over.closedUnderLimitsOfShape_pullback
+    [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
+  CostructuredArrow.hasPullbacks _ _
 
 end MorphismProperty.Over
 
