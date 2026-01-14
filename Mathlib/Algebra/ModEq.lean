@@ -115,6 +115,12 @@ protected theorem add (hab : a ≡ b [PMOD p]) (hcd : c ≡ d [PMOD p]) :
   use k + m, l + n
   rw [add_nsmul, add_add_add_comm, hab, hcd, add_nsmul, add_add_add_comm]
 
+protected theorem add_left (c : M) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
+  modEq_rfl.add h
+
+protected theorem add_right (c : M) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
+  h.add modEq_rfl
+
 protected theorem of_nsmul {n : ℕ} : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨k, l, h⟩ =>
   ⟨k * n, l * n, by simpa [mul_nsmul']⟩
 
@@ -178,11 +184,11 @@ protected alias ⟨add_left_cancel, _⟩ := ModEq.add_iff_left
 
 protected alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
 
-protected theorem add_left (c : M) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
-  modEq_rfl.add h
+protected theorem add_left_cancel' (c : M) : c + a ≡ c + b [PMOD p] → a ≡ b [PMOD p] :=
+  modEq_rfl.add_left_cancel
 
-protected theorem add_right (c : M) (h : a ≡ b [PMOD p]) : a + c ≡ b + c [PMOD p] :=
-  h.add modEq_rfl
+protected theorem add_right_cancel' (c : M) : a + c ≡ b + c [PMOD p] → a ≡ b [PMOD p] :=
+  modEq_rfl.add_right_cancel
 
 end ModEq
 
@@ -288,12 +294,6 @@ protected theorem sub_left (c : G) (h : a ≡ b [PMOD p]) : c - a ≡ c - b [PMO
 protected theorem sub_right (c : G) (h : a ≡ b [PMOD p]) : a - c ≡ b - c [PMOD p] :=
   h.sub modEq_rfl
 
-protected theorem add_left_cancel' (c : G) : c + a ≡ c + b [PMOD p] → a ≡ b [PMOD p] :=
-  modEq_rfl.add_left_cancel
-
-protected theorem add_right_cancel' (c : G) : a + c ≡ b + c [PMOD p] → a ≡ b [PMOD p] :=
-  modEq_rfl.add_right_cancel
-
 protected theorem sub_left_cancel' (c : G) : c - a ≡ c - b [PMOD p] → a ≡ b [PMOD p] :=
   modEq_rfl.sub_left_cancel
 
@@ -361,8 +361,11 @@ alias ⟨ModEq.nsmul_cases, _⟩ := AddCommGroup.modEq_nsmul_cases
 end AddCommGroup
 
 @[simp]
-theorem modEq_iff_int_modEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
+theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
   simp [modEq_iff_zsmul, dvd_iff_exists_eq_mul_left, Int.modEq_iff_dvd, eq_comm]
+
+@[deprecated (since := "2026-01-13")]
+alias modEq_iff_int_modEq := modEq_iff_intModEq
 
 @[simp]
 theorem modEq_iff_natModEq {a b n : ℕ} : a ≡ b [PMOD n] ↔ a ≡ b [MOD n] := by
