@@ -66,6 +66,9 @@ def apply (a b : M → R) : M → R :=
 /-- Notation for multiplicative Cauchy product convolution. -/
 scoped notation:70 a:70 " ⋆ₘ " b:71 => apply a b
 
+/-- Notation for additive Cauchy product convolution. -/
+scoped[CauchyProduct] notation:70 a:70 " ⋆ " b:71 => CauchyProduct.apply a b
+
 @[to_additive (dont_translate := R) CauchyProduct.apply_eq]
 theorem apply_eq (a b : M → R) (n : M) :
     (a ⋆ₘ b) n = ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2 := rfl
@@ -180,14 +183,5 @@ theorem mul_smul (c : R) (a b : M → R) : a ⋆ₘ (c • b) = c • (a ⋆ₘ 
 end Comm
 
 end MulCauchyProduct
-
-/-! ### Additive notation -/
-
-namespace CauchyProduct
-
-/-- Notation for additive Cauchy product convolution. -/
-scoped notation:70 a:70 " ⋆ " b:71 => apply a b
-
-end CauchyProduct
 
 end
