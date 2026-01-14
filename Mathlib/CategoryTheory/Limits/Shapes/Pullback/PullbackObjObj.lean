@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
-#
+# Pushout-products and pullback-powers
 
 Let `F : C₁ ⥤ C₂ ⥤ C₃`. Given morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₂ : X₂ ⟶ Y₂` in `C₂`, we introduce a structure
