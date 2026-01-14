@@ -642,6 +642,18 @@ theorem smul_mem_rootSet [CommRing S] [Algebra S R] {G : Type*}
     (g : G) {x : R} (hx : x ∈ f.rootSet R) : g • x ∈ f.rootSet R := by
   simp [mem_rootSet', aeval_smul, aeval_eq_zero_of_mem_rootSet hx, (mem_rootSet'.mp hx).1]
 
+theorem smul_mem_rootSet_iff_of_isUnit [CommRing S] [Algebra S R] {G : Type*}
+    [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
+    {g : G} (hg : IsUnit g) {x : R} : g • x ∈ f.rootSet R ↔ x ∈ f.rootSet R := by
+  refine ⟨?_, smul_mem_rootSet g⟩
+  obtain ⟨g, rfl⟩ := hg
+  exact fun hx ↦ inv_smul_smul g x ▸ smul_mem_rootSet _ hx
+
+theorem smul_mem_rootSet_iff [CommRing S] [Algebra S R] {G : Type*}
+    [Group G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
+    {g : G} {x : R} : g • x ∈ f.rootSet R ↔ x ∈ f.rootSet R :=
+  smul_mem_rootSet_iff_of_isUnit (Group.isUnit g)
+
 instance [CommRing S] [Algebra S R] (G : Type*)
     [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
