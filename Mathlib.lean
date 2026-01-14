@@ -58,6 +58,7 @@ public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.Algebra.Azumaya.Matrix
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.BigOperators.Balance
+public import Mathlib.Algebra.BigOperators.CauchyProduct
 public import Mathlib.Algebra.BigOperators.Expect
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.BigOperators.Fin
@@ -1784,7 +1785,6 @@ public import Mathlib.Analysis.Convex.TotallyBounded
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
-public import Mathlib.Analysis.DiscreteConvolution.Basic
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
@@ -6884,6 +6884,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.InfiniteSum.DiscreteConvolution
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Topology.Algebra.InfiniteSum.Field
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
@@ -6897,6 +6898,10 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+public import Mathlib.Topology.Algebra.InfiniteSum.test.DiscreteConvolutionTestAPI
+public import Mathlib.Topology.Algebra.InfiniteSum.test.LpOneBanachAlgebraTestAPI
+public import Mathlib.Topology.Algebra.InfiniteSum.test.TypeBarrierDemo
+public import Mathlib.Topology.Algebra.InfiniteSum.test.test
 public import Mathlib.Topology.Algebra.IntermediateField
 public import Mathlib.Topology.Algebra.IsOpenUnits
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic

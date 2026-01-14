@@ -11,6 +11,10 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Data.Set.MulAntidiagonal
 public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Algebra.BigOperators.CauchyProduct
 
 /-!
 # Discrete Convolution
@@ -61,10 +65,17 @@ Differences (discrete ↔ MeasureTheory):
 
 - `zero_convolution`, `convolution_zero`: zero laws
 - `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
-- Associativity:
-  - `convolution_assoc_at`: pointwise, uses `assocEquiv`, derives compatibility from bilinearity
-  - `convolution_assoc`: applies above with triple summability
-  - `ringConvolution_assoc_at`, `ringConvolution_assoc`: for ring multiplication `f ⋆ₘ g`
+- Associativity (three API layers with increasing automation):
+  - `ringConvolution_assoc`: general, requires all hypotheses
+  - `topologicalRingConvolution_assoc`: topological ring + complete, derives fiber summabilities
+  - `normedFieldConvolution_assoc`: `[NormedField F] [CompleteSpace F]`, fully automated
+- HasAntidiagonal bridge (for finite support, e.g., ℕ, ℕ × ℕ):
+  - `addFiber_eq_antidiagonal`: `addFiber x = ↑(Finset.antidiagonal x)`
+  - `addConvolution_eq_sum_antidiagonal`: `tsum` reduces to `Finset.sum`
+  - `addRingConvolution_eq_cauchyProduct`: bridge to `CauchyProduct`
+- CauchyProduct (see `Mathlib.Analysis.DiscreteConvolution.CauchyProduct`):
+  - Purely algebraic finite-sum convolution (no topology needed)
+  - `CauchyProduct.assoc`, `one_mul`, `mul_one`, `comm`: ring axioms via `Finset.sum_nbij'`
 
 ## Notation
 
@@ -314,6 +325,8 @@ section Associativity
 
 variable [Monoid M] [CommSemiring S]
 
+/-! Only the right-associated form `L₃ (f a) (L₄ (g b) (h c))` is needed as a witness,
+the left-associated form's summability is derived via `assocEquiv` and `hL` -/
 section TripleConvolutionExistence
 
 variable {E E' E'' F' G : Type*}
@@ -477,7 +490,246 @@ theorem ringConvolution_assoc (f g h : M → R)
 
 end RingConvolutionAssoc
 
+section TopologicalRingConvolutionAssoc
+
+variable {R : Type*}
+variable [Ring R] [UniformSpace R] [IsUniformAddGroup R]
+variable [IsTopologicalRing R] [T2Space R] [CompleteSpace R]
+
+/-- Ring convolution associativity for topological rings at a point.
+Derives `hFiberL`/`hFiberR` from `hTriple`; requires inner convolution summabilities. -/
+@[to_additive (dont_translate := R M) addTopologicalRingConvolution_assoc_at]
+theorem topologicalRingConvolution_assoc_at (f g h : M → R) (x : M)
+    (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h x)
+    (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
+    (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
+    ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x := by
+  -- Derive left-sigma summability from hTriple via leftAssocEquiv
+  have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
+      f p.2.1.1 * g p.2.1.2 * h p.1.1.2 := by
+    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
+        (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr hTriple
+    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, mul_assoc]
+  -- Derive right-sigma summability from hTriple via rightAssocEquiv
+  have hSumR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
+      f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
+    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
+        (rightAssocEquiv x)) := (rightAssocEquiv x).summable_iff.mpr hTriple
+    convert this using 1
+  -- Derive fiber summabilities via sigma_factor (using CompleteSpace)
+  have hFiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
+      f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd => hSumL.sigma_factor cd
+  have hFiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
+      f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => hSumR.sigma_factor ae
+  -- Derive continuity conditions via tsum_mul_right/tsum_mul_left (using ContinuousMul)
+  have hcontL : ∀ cd : mulFiber x,
+      (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
+      ∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd =>
+    ((hConvFG cd.1.1).tsum_mul_right (h cd.1.2)).symm
+  have hcontR : ∀ ae : mulFiber x,
+      f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
+      ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae =>
+    ((hConvGH ae.1.2).tsum_mul_left (f ae.1.1)).symm
+  exact ringConvolution_assoc_at f g h x hTriple hFiberL hFiberR hcontL hcontR
+
+/-- Ring convolution associativity for topological rings.
+Derives `hFiberL`/`hFiberR` from `hTriple`; requires inner convolution summabilities. -/
+@[to_additive (dont_translate := R M) addTopologicalRingConvolution_assoc]
+theorem topologicalRingConvolution_assoc (f g h : M → R)
+    (hTriple : TripleConvolutionExists (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h)
+    (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
+    (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
+    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
+  ext x; exact topologicalRingConvolution_assoc_at f g h x (hTriple x) hConvFG hConvGH
+
+end TopologicalRingConvolutionAssoc
+
+section NormedFieldConvolutionAssoc
+
+variable {F : Type*} [NormedField F] [CompleteSpace F]
+
+/-- Ring convolution associativity for `[NormedField F] [CompleteSpace F]` at a point.
+Derives all hypotheses from `hTriple` plus non-zero conditions `hh`/`hf`. -/
+@[to_additive (dont_translate := F M) addNormedFieldConvolution_assoc_at]
+theorem normedFieldConvolution_assoc_at (f g h : M → F) (x : M)
+    (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ F) (LinearMap.mul ℕ F) f g h x)
+    (hh : ∀ cd : mulFiber x, h cd.1.2 ≠ 0)
+    (hf : ∀ ae : mulFiber x, f ae.1.1 ≠ 0) :
+    ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x := by
+  -- Derive left-sigma summability from hTriple via leftAssocEquiv
+  have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
+      f p.2.1.1 * g p.2.1.2 * h p.1.1.2 := by
+    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
+        (leftAssocEquiv x)) := (leftAssocEquiv x).summable_iff.mpr hTriple
+    convert this using 1; ext ⟨⟨⟨c, d⟩, _⟩, ⟨⟨a, b⟩, _⟩⟩; simp [leftAssocEquiv, mul_assoc]
+  -- Derive right-sigma summability from hTriple via rightAssocEquiv
+  have hSumR : Summable fun p : Σ ae : mulFiber x, mulFiber ae.1.2 =>
+      f p.1.1.1 * (g p.2.1.1 * h p.2.1.2) := by
+    have : Summable ((fun p : tripleFiber x => f p.1.1 * (g p.1.2.1 * h p.1.2.2)) ∘
+        (rightAssocEquiv x)) := (rightAssocEquiv x).summable_iff.mpr hTriple
+    convert this using 1
+  -- Derive fiber summabilities via sigma_factor (using CompleteSpace)
+  have hFiberL : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
+      f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd => hSumL.sigma_factor cd
+  have hFiberR : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
+      f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae => hSumR.sigma_factor ae
+  -- Extract inner convolution summabilities via summable_mul_right_iff (using DivisionRing)
+  have hConvFG : ∀ cd : mulFiber x, Summable fun ab : mulFiber cd.1.1 =>
+      f ab.1.1 * g ab.1.2 := fun cd =>
+    (summable_mul_right_iff (hh cd)).mp (hFiberL cd)
+  have hConvGH : ∀ ae : mulFiber x, Summable fun bd : mulFiber ae.1.2 =>
+      g bd.1.1 * h bd.1.2 := fun ae =>
+    (summable_mul_left_iff (hf ae)).mp (hFiberR ae)
+  -- Derive continuity conditions via tsum_mul_right/tsum_mul_left (using ContinuousMul)
+  have hcontL : ∀ cd : mulFiber x,
+      (∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2) * h cd.1.2 =
+      ∑' ab : mulFiber cd.1.1, f ab.1.1 * g ab.1.2 * h cd.1.2 := fun cd =>
+    ((hConvFG cd).tsum_mul_right (h cd.1.2)).symm
+  have hcontR : ∀ ae : mulFiber x,
+      f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
+      ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2) := fun ae =>
+    ((hConvGH ae).tsum_mul_left (f ae.1.1)).symm
+  exact ringConvolution_assoc_at f g h x hTriple hFiberL hFiberR hcontL hcontR
+
+/-- Ring convolution associativity for `[NormedField F] [CompleteSpace F]`.
+Derives all hypotheses from `hTriple` plus non-zero conditions `hh`/`hf`. -/
+@[to_additive (dont_translate := F M) addNormedFieldConvolution_assoc]
+theorem normedFieldConvolution_assoc (f g h : M → F)
+    (hTriple : TripleConvolutionExists (LinearMap.mul ℕ F) (LinearMap.mul ℕ F) f g h)
+    (hh : ∀ x (cd : mulFiber x), h cd.1.2 ≠ 0)
+    (hf : ∀ x (ae : mulFiber x), f ae.1.1 ≠ 0) :
+    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
+  ext x; exact normedFieldConvolution_assoc_at f g h x (hTriple x) (hh x) (hf x)
+
+end NormedFieldConvolutionAssoc
+
 end Associativity
+
+/-! ### HasAntidiagonal Bridge
+
+For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), the additive fiber `addFiber x` is finite
+and equals `Finset.antidiagonal x`. The `tsum` in `addConvolution` reduces to `Finset.sum`. -/
+
+section Antidiagonal
+
+variable [AddMonoid M] [Finset.HasAntidiagonal M]
+
+/-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/
+theorem addFiber_eq_antidiagonal (x : M) : addFiber x = ↑(Finset.antidiagonal x) := by
+  ext ⟨a, b⟩
+  simp only [Finset.mem_coe, Finset.mem_antidiagonal, mem_addFiber]
+
+/-- The additive fiber is finite when `HasAntidiagonal` is available. -/
+theorem addFiber_finite (x : M) : (addFiber x).Finite := by
+  rw [addFiber_eq_antidiagonal]
+  exact (Finset.antidiagonal x).finite_toSet
+
+variable {S : Type*} [CommSemiring S]
+variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
+variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
+variable [TopologicalSpace F]
+
+/-- For `HasAntidiagonal` types, additive convolution equals a finite sum over the antidiagonal. -/
+theorem addConvolution_eq_sum_antidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
+    (x : M) : (f ⋆₊[L] g) x = ∑ ab ∈ Finset.antidiagonal x, L (f ab.1) (g ab.2) := by
+  simp only [addConvolution_apply]
+  rw [← (Finset.antidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
+  exact (Equiv.setCongr (addFiber_eq_antidiagonal x)).tsum_eq
+    (fun ab => (L (f ab.1.1)) (g ab.1.2))
+
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+/-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+This version uses `LinearMap.mul R R` and requires `[CommSemiring R]`. -/
+theorem addMulConvolution_eq_sum_antidiagonal (f g : M → R) (x : M) :
+    (f ⋆₊ₘ g) x = ∑ ab ∈ Finset.antidiagonal x, f ab.1 * g ab.2 :=
+  addConvolution_eq_sum_antidiagonal (LinearMap.mul R R) f g x
+
+end Antidiagonal
+
+/-! ### HasAntidiagonal Ring Convolution
+
+For `HasAntidiagonal` types, ring convolution with `[Semiring R]` (using `LinearMap.mul ℕ R`)
+reduces to `Finset.sum`. This provides the bridge to `CauchyProduct` and enables
+associativity with **no hypotheses** - the "fully automated" version for finite types. -/
+
+section AntidiagonalRing
+
+variable [AddMonoid M] [Finset.HasAntidiagonal M]
+variable {R : Type*} [Semiring R] [TopologicalSpace R]
+
+/-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
+This version uses `LinearMap.mul ℕ R` and only requires `[Semiring R]`. -/
+theorem addRingConvolution_eq_sum_antidiagonal (f g : M → R) (x : M) :
+    (f ⋆₊ₘ g) x = ∑ ab ∈ Finset.antidiagonal x, f ab.1 * g ab.2 :=
+  addConvolution_eq_sum_antidiagonal (LinearMap.mul ℕ R) f g x
+
+end AntidiagonalRing
+
+/-! ### CauchyProduct Bridge
+For types with `Finset.HasAntidiagonal` (e.g., ℕ, ℕ × ℕ), `addRingConvolution` equals
+`CauchyProduct.apply`. This allows deriving ring axioms from the purely algebraic
+`CauchyProduct` proofs. See `Mathlib.Analysis.DiscreteConvolution.CauchyProduct` for
+the standalone algebraic formulation. -/
+
+section CauchyProductBridge
+
+variable [AddMonoid M] [Finset.HasAntidiagonal M]
+variable {R : Type*} [Semiring R] [TopologicalSpace R]
+
+/-- `addRingConvolution` equals `CauchyProduct.apply` for `HasAntidiagonal` types. -/
+theorem addRingConvolution_eq_cauchyProduct (f g : M → R) (x : M) :
+    (f ⋆₊ₘ g) x = CauchyProduct.apply f g x :=
+  addRingConvolution_eq_sum_antidiagonal f g x
+
+/-- Ring convolution associativity for `HasAntidiagonal` types - no hypotheses needed.
+This is the "fully automated" associativity for finite antidiagonal types like ℕ, ℕ × ℕ. -/
+theorem addRingConvolution_assoc_of_hasAntidiagonal (f g h : M → R) :
+    (f ⋆₊ₘ g) ⋆₊ₘ h = f ⋆₊ₘ (g ⋆₊ₘ h) := by
+  funext x
+  simp only [addRingConvolution_eq_sum_antidiagonal]
+  exact congrFun (CauchyProduct.assoc f g h) x
+
+end CauchyProductBridge
+
+/-! ### CauchyProduct Identity Bridge -/
+
+section CauchyProductIdentityBridge
+
+variable [AddMonoid M] [DecidableEq M] [Finset.HasAntidiagonal M]
+variable {R : Type*} [Semiring R] [TopologicalSpace R]
+
+/-- Identity left law for `HasAntidiagonal` types via `CauchyProduct`. -/
+theorem one_addRingConvolution (f : M → R) :
+    CauchyProduct.one ⋆₊ₘ f = f := by
+  funext x
+  simp only [addRingConvolution_eq_sum_antidiagonal]
+  exact congrFun (CauchyProduct.one_mul f) x
+
+/-- Identity right law for `HasAntidiagonal` types via `CauchyProduct`. -/
+theorem addRingConvolution_one (f : M → R) :
+    f ⋆₊ₘ CauchyProduct.one = f := by
+  funext x
+  simp only [addRingConvolution_eq_sum_antidiagonal]
+  exact congrFun (CauchyProduct.mul_one f) x
+
+end CauchyProductIdentityBridge
+
+/-! ### CauchyProduct Commutativity Bridge -/
+
+section CauchyProductCommBridge
+
+variable [AddCommMonoid M] [Finset.HasAntidiagonal M]
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
+/-- Commutativity for `HasAntidiagonal` types via `CauchyProduct`. -/
+theorem addRingConvolution_comm_of_hasAntidiagonal (f g : M → R) :
+    f ⋆₊ₘ g = g ⋆₊ₘ f := by
+  funext x
+  simp only [addRingConvolution_eq_sum_antidiagonal]
+  exact congrFun (CauchyProduct.comm f g) x
+
+end CauchyProductCommBridge
 
 end DiscreteConvolution
 
