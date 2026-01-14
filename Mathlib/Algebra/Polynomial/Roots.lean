@@ -637,11 +637,15 @@ theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
   ext x
   simp_all
 
+theorem smul_mem_rootSet [CommRing S] [Algebra S R]
+    {G : Type*} [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] {f : S[X]}
+    (g : G) {x : R} (hx : x ∈ f.rootSet R) : g • x ∈ f.rootSet R := by
+  simp [mem_rootSet', aeval_smul, aeval_eq_zero_of_mem_rootSet hx, (mem_rootSet'.mp hx).1]
+
 instance [CommRing S] [Algebra S R]
     (G : Type*) [Monoid G] [MulSemiringAction G R] [SMulCommClass G S R] (f : S[X]) :
     MulAction G (f.rootSet R) where
-  smul g x := ⟨g • x.1, by
-    simp [mem_rootSet', aeval_smul, aeval_eq_zero_of_mem_rootSet x.2, (mem_rootSet'.mp x.2).1]⟩
+  smul g x := ⟨g • x.1, smul_mem_rootSet g x.2⟩
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
