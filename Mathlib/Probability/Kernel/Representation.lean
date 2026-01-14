@@ -157,7 +157,7 @@ theorem unitInterval_representation {β : Type*} [Nonempty β] [MeasurableSpace 
   κ.embedding_representation (measurableEmbedding_sigmoid_comp_embeddingReal β)
 
 theorem representation_not_countable {β ι : Type*} [Nonempty β] [MeasurableSpace β]
-    [StandardBorelSpace β] [Nonempty ι] [MeasurableSpace ι] [StandardBorelSpace ι]
+    [StandardBorelSpace β] [MeasurableSpace ι] [StandardBorelSpace ι]
     (hι : ¬Countable ι) (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → ι → β), Measurable (uncurry f) ∧ ∀ a, (volume.map <|
       (f a) ∘ PolishSpace.measurableEquivOfNotCountable unitInterval_not_countable hι) = κ a := by
