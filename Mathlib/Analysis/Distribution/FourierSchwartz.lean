@@ -37,7 +37,10 @@ variable
 section definition
 
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
-Schwartz space. -/
+Schwartz space.
+
+This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
+-/
 def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
   · intro f g x
@@ -88,11 +91,16 @@ def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
 instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
   fourier f := fourierTransformCLM ℂ f
 
-lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
-
-instance instFourierModule : FourierModule 𝕜 𝓢(V, E) 𝓢(V, E) where
+instance instFourierAdd : FourierAdd 𝓢(V, E) 𝓢(V, E) where
   fourier_add := ContinuousLinearMap.map_add _
+
+instance instFourierSMul : FourierSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
   fourier_smul := (fourierTransformCLM 𝕜).map_smul
+
+instance instContinuousFourier : ContinuousFourier 𝓢(V, E) 𝓢(V, E) where
+  continuous_fourier := ContinuousLinearMap.continuous _
+
+lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
 
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
@@ -102,15 +110,20 @@ instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) whe
   fourierInv := (compCLMOfContinuousLinearEquiv ℂ (LinearIsometryEquiv.neg ℝ (E := V)))
       ∘L (fourierTransformCLM ℂ)
 
+instance instFourierInvAdd : FourierInvAdd 𝓢(V, E) 𝓢(V, E) where
+  fourierInv_add := ContinuousLinearMap.map_add _
+
+instance instFourierInvSMul : FourierInvSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
+  fourierInv_smul := ((compCLMOfContinuousLinearEquiv 𝕜 (D := V) (E := V) (F := E)
+    (LinearIsometryEquiv.neg ℝ (E := V))) ∘L (fourierTransformCLM 𝕜)).map_smul
+
+instance instContinuousFourierInv : ContinuousFourierInv 𝓢(V, E) 𝓢(V, E) where
+  continuous_fourierInv := ContinuousLinearMap.continuous _
+
 lemma fourierInv_coe (f : 𝓢(V, E)) :
     𝓕⁻ f = 𝓕⁻ (f : V → E) := by
   ext x
   exact (fourierInv_eq_fourier_neg f x).symm
-
-instance instFourierInvModule : FourierInvModule 𝕜 𝓢(V, E) 𝓢(V, E) where
-  fourierInv_add := ContinuousLinearMap.map_add _
-  fourierInv_smul := ((compCLMOfContinuousLinearEquiv 𝕜 (D := V) (E := V) (F := E)
-    (LinearIsometryEquiv.neg ℝ (E := V))) ∘L (fourierTransformCLM 𝕜)).map_smul
 
 variable [CompleteSpace E]
 
@@ -134,18 +147,14 @@ alias fourier_inversion := FourierTransform.fourierInv_fourier_eq
 @[deprecated (since := "2025-11-13")]
 alias fourier_inversion_inv := FourierTransform.fourier_fourierInv_eq
 
-/-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
-Schwartz space. -/
-def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
-  __ := FourierTransform.fourierEquiv 𝕜 𝓢(V, E) 𝓢(V, E)
-  continuous_toFun := (fourierTransformCLM 𝕜).continuous
-  continuous_invFun := ContinuousLinearMap.continuous _
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLE := FourierTransform.fourierCLE
 
-@[simp]
-lemma fourierTransformCLE_apply (f : 𝓢(V, E)) : fourierTransformCLE 𝕜 f = 𝓕 f := rfl
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLE_apply := FourierTransform.fourierCLE_apply
 
-@[simp]
-lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) : (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := rfl
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLE_symm_apply := FourierTransform.fourierCLE_symm_apply
 
 end definition
 
@@ -178,6 +187,25 @@ theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
   integral_bilin_fourier_eq f g (ContinuousLinearMap.mul ℂ ℂ)
 
+/-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint.
+
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕⁻ f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+  convert (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
+  · exact (FourierTransform.fourier_fourierInv_eq g).symm
+  · exact (FourierTransform.fourier_fourierInv_eq f).symm
+
+/-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f • g = ∫ f • 𝓕⁻ g`, i.e., it is self-adjoint. -/
+theorem integral_fourierInv_smul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, F)) :
+    ∫ ξ, 𝓕⁻ f ξ • g ξ = ∫ x, f x • 𝓕⁻ g x :=
+  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.lsmul ℂ ℂ)
+
+/-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint. -/
+theorem integral_fourierInv_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
+    ∫ ξ, 𝓕⁻ f ξ * g ξ = ∫ x, f x * 𝓕⁻ g x :=
+  integral_bilin_fourierInv_eq f g (ContinuousLinearMap.mul ℂ ℂ)
+
 theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   simpa [fourierInv_coe] using VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
@@ -188,7 +216,7 @@ alias integral_sesq_fourierIntegral_eq := integral_sesq_fourier_eq
 
 /-- Plancherel's theorem for Schwartz functions.
 
-Version where the multiplication is replaced by a general bilinear form `M`. -/
+Version where the inner product is replaced by a general sesquilinear form `M`. -/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
   simpa using integral_sesq_fourier_eq f (𝓕 g) M
