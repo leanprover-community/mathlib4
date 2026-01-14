@@ -15,7 +15,7 @@ The `vecPerm` simproc computes the new entries of a vector after applying a perm
 
 -/
 
-public meta section
+meta section
 
 open Lean Elab Meta Simp Qq
 
@@ -25,7 +25,7 @@ namespace FinVec
 Takes an expression representing a vector `Fin n → α` and returns the corresponding
 list `List α`. Fails if the vector is not constucted using `Matrix.vecCons` and `Matrix.vecEmpty`.
 -/
-private partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
+partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     (vec : Q(Fin $n → $α)) : MetaM (Option <| List Q($α)) := do
   match n, vec with
   | ~q(Nat.succ $m), ~q(Matrix.vecCons $lastOut $prevVec) =>
@@ -36,12 +36,11 @@ private partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
 vector `Fin n → α`.
 -/
-private partial def vecOfListQ {u : Level} {α : Q(Type u)}
+partial def vecOfListQ {u : Level} {α : Q(Type u)}
     (n : Q(ℕ)) (vec : Q(List $α)) : MetaM Q(Fin $n → $α) := do
   match n, vec with
   | ~q(Nat.succ $prev), ~q($head :: $rest) =>
-    let prevVec ← vecOfListQ prev rest
-    return q(Matrix.vecCons $head $prevVec)
+    return q(Matrix.vecCons $head $(← vecOfListQ prev rest))
   | ~q(0), ~q([]) => return q(Matrix.vecEmpty)
 
 /--
@@ -58,7 +57,7 @@ private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
     | none => current
 
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
-list of term of type `Fin n`. This is meant to be used when `perm` corresponds to a permutation
+list of term of type `Fin n`. This is meant to be used when `perm corresponds to a permutation
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     MetaM (Option <| List Nat) :=
