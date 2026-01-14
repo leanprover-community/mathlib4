@@ -344,24 +344,6 @@ theorem memSobolev_zero_two_iff_fourierTransform {f : 𝓢'(E, F)} :
 
 open scoped BoundedContinuousFunction
 
-theorem BoundedContinuousFunction.memLp_top (u : E →ᵇ ℂ) : MemLp u ⊤ (volume : Measure E) := by
-  constructor
-  · fun_prop
-  · apply MeasureTheory.eLpNormEssSup_lt_top_of_ae_bound (C := ‖u‖)
-    filter_upwards with x
-    exact BoundedContinuousFunction.norm_coe_le_norm u x
-
-theorem foo {p q r : ℝ≥0∞} [p.HolderTriple q r] [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    {g : E → ℂ} (hg₁ : g.HasTemperateGrowth) (hg₂ : MemLp g p) (f : Lp F q (volume : Measure E)) :
-    Lp.toTemperedDistribution ((ContinuousLinearMap.lsmul ℂ ℂ).holder r (hg₂.toLp _) f) =
-    smulLeftCLM F g f := by
-  ext u
-  simp only [Lp.toTemperedDistribution_apply, smulLeftCLM_apply_apply]
-  apply integral_congr_ae
-  filter_upwards [(ContinuousLinearMap.lsmul ℂ ℂ).coeFn_holder (r := r) (hg₂.toLp _) f,
-    hg₂.coeFn_toLp] with x h_holder hg'
-  simp [h_holder, hg', hg₁, smul_smul, mul_comm]
-
 theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁ : g.HasTemperateGrowth)
     (hg₂ : ∃ C, ∀ x, ‖g x‖ ≤ C) {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev s 2 (fourierMultiplierCLM F g f) := by
@@ -369,9 +351,9 @@ theorem memSobolev_fourierMultiplierCLM_bounded {s : ℝ} {g : E → ℂ} (hg₁
   obtain ⟨f', hf⟩ := hf
   obtain ⟨C, hC⟩ := hg₂
   set g' : E →ᵇ ℂ := BoundedContinuousFunction.ofNormedAddCommGroup g hg₁.1.continuous C hC
-  use (ContinuousLinearMap.lsmul ℂ ℂ).holderL volume ⊤ 2 2 (g'.memLp_top.toLp _) f'
-  rw [ContinuousLinearMap.holderL_apply_apply, foo (by apply hg₁),
-    ← hf, fourierMultiplierCLM_apply, fourier_fourierInv_eq,
+  use (g'.memLp_top.toLp _ (μ := volume)) • f'
+  rw [MeasureTheory.Lp.toTemperedDistribution_smul_eq (by apply hg₁), ← hf,
+    fourierMultiplierCLM_apply, fourier_fourierInv_eq,
     smulLeftCLM_smulLeftCLM_apply hg₁ (by fun_prop),
     smulLeftCLM_smulLeftCLM_apply (by fun_prop) (by apply hg₁)]
   congr 2

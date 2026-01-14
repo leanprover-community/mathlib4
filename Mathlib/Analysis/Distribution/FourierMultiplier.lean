@@ -24,12 +24,9 @@ variable [RCLike 𝕜]
 
 open FourierTransform
 
-variable [CompleteSpace F]
-
 variable (F) in
 def fourierMultiplierCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
-  (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM F g) ∘L
-    fourierTransformCLM 𝕜
+  fourierInvCLM 𝕜 𝓢(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM 𝕜 𝓢(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → 𝕜) (f : 𝓢(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
@@ -42,18 +39,6 @@ theorem fourierMultiplierCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) 
   simp_rw [fourierMultiplierCLM_apply]
   congr 1
   exact smulLeftCLM_ofReal 𝕜 hg (𝓕 f)
-
-@[simp]
-theorem fourierMultiplierCLM_const_apply (f : 𝓢(E, F)) (c : 𝕜) :
-    fourierMultiplierCLM F (fun _ ↦ c) f = c • f := by
-  ext
-  simp [fourierMultiplierCLM_apply]
-
-theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → 𝕜}
-    (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
-    fourierMultiplierCLM F g₁ (fourierMultiplierCLM F g₂ f) =
-    fourierMultiplierCLM F (g₁ * g₂) f := by
-  simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
 
 theorem fourierMultiplierCLM_smul_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜)
     (f : 𝓢(E, F)) :
@@ -71,6 +56,20 @@ theorem fourierMultiplierCLM_sum {g : ι → E → 𝕜} {s : Finset ι}
     fourierMultiplierCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, fourierMultiplierCLM F (g i) := by
   ext1 f
   simpa [fourierMultiplierCLM_apply, smulLeftCLM_sum hg] using map_sum _ _ _
+
+variable [CompleteSpace F]
+
+@[simp]
+theorem fourierMultiplierCLM_const (c : 𝕜) :
+    fourierMultiplierCLM F (fun (_ : E) ↦ c) = c • ContinuousLinearMap.id _ _ := by
+  ext f x
+  simp [fourierMultiplierCLM_apply]
+
+theorem fourierMultiplierCLM_fourierMultiplierCLM_apply {g₁ g₂ : E → 𝕜}
+    (hg₁ : g₁.HasTemperateGrowth) (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    fourierMultiplierCLM F g₁ (fourierMultiplierCLM F g₂ f) =
+    fourierMultiplierCLM F (g₁ * g₂) f := by
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
 
 open LineDeriv Laplacian Real
 
@@ -115,7 +114,7 @@ open FourierTransform
 
 variable (F) in
 def fourierMultiplierCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  fourierTransformInvCLM E F ∘L (smulLeftCLM F g) ∘L fourierTransformCLM E F
+  fourierInvCLM ℂ 𝓢'(E, F) ∘L (smulLeftCLM F g) ∘L fourierCLM ℂ 𝓢'(E, F)
 
 theorem fourierMultiplierCLM_apply (g : E → ℂ) (f : 𝓢'(E, F)) :
     fourierMultiplierCLM F g f = 𝓕⁻ (smulLeftCLM F g (𝓕 f)) := by
@@ -166,7 +165,10 @@ theorem fourierMultiplierCLM_sum {g : ι → E → ℂ} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     fourierMultiplierCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, fourierMultiplierCLM F (g i) := by
   ext f u
-  simp [SchwartzMap.smulLeftCLM_sum hg, UniformConvergenceCLM.sum_apply, fourier_sum (R := ℂ)]
+  have : 𝓕 (∑ x ∈ s, (SchwartzMap.smulLeftCLM ℂ (g x)) (𝓕⁻ u)) =
+      ∑ x ∈ s, 𝓕 ((SchwartzMap.smulLeftCLM ℂ (g x)) (𝓕⁻ u)) :=
+    map_sum (fourierCLM ℂ 𝓢(E, ℂ)) (fun i ↦ SchwartzMap.smulLeftCLM ℂ (g i) (𝓕⁻ u)) s
+  simp [SchwartzMap.smulLeftCLM_sum hg, UniformConvergenceCLM.sum_apply, this]
 
 open LineDeriv Laplacian Real
 

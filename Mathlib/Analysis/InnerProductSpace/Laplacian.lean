@@ -259,28 +259,6 @@ theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
 
 /-!
-<<<<<<< HEAD
-## Smoothness of Δ
--/
-
-@[fun_prop]
-theorem _root_.ContDiff.contDiff_laplacian {n m : ℕ∞} (h : ContDiff ℝ m f) (hn : n + 2 ≤ m) :
-    ContDiff ℝ n (Δ f) := by
-  rw [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis]
-  apply ContDiff.sum
-  intro i hi
-  simp_rw [iteratedFDeriv_two_apply]
-  refine ContDiff.clm_apply ?_ (by fun_prop)
-  refine ContDiff.clm_apply ?_ (by fun_prop)
-  apply (ContDiff.fderiv_right _ (le_refl _)).comp (by fun_prop)
-  apply h.fderiv_right
-  norm_cast
-  convert hn using 1
-  grind
-
-/-!
-=======
->>>>>>> master
 ## 𝕜-Linearity of Δ on Continuously Differentiable Functions
 -/
 

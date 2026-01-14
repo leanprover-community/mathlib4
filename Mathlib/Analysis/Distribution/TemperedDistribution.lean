@@ -369,10 +369,6 @@ instance instFourierSMul : FourierSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
 instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
   continuous_fourier := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).cont
 
-instance instFourierModule : FourierModule ℂ 𝓢'(E, F) 𝓢'(E, F) where
-  fourier_add := (fourierTransformCLM E F).map_add
-  fourier_smul := (fourierTransformCLM E F).map_smul
-
 @[simp]
 theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
@@ -396,10 +392,6 @@ instance instFourierInvSMul : FourierInvSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
 
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F) where
   continuous_fourierInv := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).cont
-
-instance instFourierInvModule : FourierInvModule ℂ 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv_add := (fourierTransformInvCLM E F).map_add
-  fourierInv_smul := (fourierTransformInvCLM E F).map_smul
 
 @[simp]
 theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
@@ -447,12 +439,10 @@ open LineDeriv Real
 theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
   ext u
-  simp only [fourierTransform_apply, lineDerivOp_apply_apply,
-    UniformConvergenceCLM.smul_apply, smulLeftCLM_apply_apply,
-    SchwartzMap.lineDerivOp_fourier_eq, neg_smul, FourierTransform.fourier_neg (R := ℂ),
-    fourier_smul, map_smul, neg_neg]
-  rw [← smulLeftCLM_ofReal ℂ (by fun_prop)]
-  rfl
+  have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
+  have f_neg : ∀ (x : 𝓢(E, ℂ)), 𝓕 (-x) = -𝓕 x :=
+    (fourierCLM ℂ 𝓢(E, ℂ)).map_neg
+  simp [SchwartzMap.lineDerivOp_fourier_eq, ← smulLeftCLM_ofReal ℂ this, f_neg]
 
 end Fourier
 
