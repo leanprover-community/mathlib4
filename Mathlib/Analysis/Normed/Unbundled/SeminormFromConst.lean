@@ -24,12 +24,12 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 
 ## Main Results
-* `seminormFromConst_isNonarchimedean` : the function `seminormFromConst' hf1 hc hpm`
+* `seminormFromConst_isNonarchimedean` : the function `seminormFromConst' c f`
   is nonarchimedean when f is nonarchimedean.
-* `seminormFromConst_isPowMul` : the function `seminormFromConst' hf1 hc hpm`
+* `seminormFromConst_isPowMul` : the function `seminormFromConst' c f`
   is power-multiplicative.
-* `seminormFromConst_const_mul` : for every `x : R`, `seminormFromConst' hf1 hc hpm (c * x)`
-  equals the product `seminormFromConst' hf1 hc hpm c * SeminormFromConst' hf1 hc hpm x`.
+* `seminormFromConst_const_mul` : for every `x : R`, `seminormFromConst' c f (c * x)`
+  equals the product `seminormFromConst' c f c * seminormFromConst' c f x`.
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
@@ -114,14 +114,13 @@ def seminormFromConst' (c : R) (f : RingSeminorm R) (x : R) : ℝ :=
 
 /-- We prove that `seminormFromConst' c f x` is the limit of the sequence
   `seminormFromConst_seq c f x` as `n` tends to infinity. -/
-theorem seminormFromConst_isLimit (x : R) :
+theorem tendsTo_seminormFromConst_atTop (x : R) :
     Tendsto (seminormFromConst_seq c f x) atTop (𝓝 (seminormFromConst' c f x)) :=
   Real.tendsto_ciInf_of_bddBelow_antitone (seminormFromConst_bddBelow c f x)
     (seminormFromConst_seq_antitone hf1 hc hpm x)
 
-/-- `seminormFromConst' c f 1 = 1`. -/
 theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
-  apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm 1)
+  apply tendsto_nhds_unique_of_eventuallyEq (tendsTo_seminormFromConst_atTop hf1 hc hpm 1)
     tendsto_const_nhds
   simp only [EventuallyEq, eventually_atTop, ge_iff_le]
   exact ⟨1, seminormFromConst_seq_one hc hpm⟩
@@ -129,31 +128,32 @@ theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
 /-- The function `seminormFromConst` is a `RingSeminorm` on `R`. -/
 def seminormFromConst : RingSeminorm R where
   toFun     := seminormFromConst' c f
-  map_zero' := tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm 0)
+  map_zero' := tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm 0)
     (by simpa [seminormFromConst_seq_zero c (map_zero _)] using tendsto_const_nhds)
   add_le' x y := by
-    apply le_of_tendsto_of_tendsto' (seminormFromConst_isLimit hf1 hc hpm (x + y))
-      ((seminormFromConst_isLimit hf1 hc hpm x).add (seminormFromConst_isLimit hf1 hc hpm y))
+    apply le_of_tendsto_of_tendsto' (tendsTo_seminormFromConst_atTop hf1 hc hpm (x + y)) <|
+      (tendsTo_seminormFromConst_atTop hf1 hc hpm x).add
+        (tendsTo_seminormFromConst_atTop hf1 hc hpm y)
     intro n
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
     simp only [seminormFromConst_seq, ← add_div]
     gcongr
   neg' x := by
-    apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
-      (seminormFromConst_isLimit hf1 hc hpm x)
+    apply tendsto_nhds_unique_of_eventuallyEq (tendsTo_seminormFromConst_atTop hf1 hc hpm (-x))
+      (tendsTo_seminormFromConst_atTop hf1 hc hpm x)
     simp only [EventuallyEq, eventually_atTop]
     use 0
     simp only [seminormFromConst_seq, neg_mul, map_neg_eq_map, zero_le, implies_true]
   mul_le' x y := by
     have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x * y) (2 * n)) atTop
         (𝓝 (seminormFromConst' c f (x * y))) := by
-      apply (seminormFromConst_isLimit hf1 hc hpm (x * y)).comp
+      apply (tendsTo_seminormFromConst_atTop hf1 hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
           simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
       · rintro n; use n; lia
-    refine le_of_tendsto_of_tendsto' hlim ((seminormFromConst_isLimit hf1 hc hpm x).mul
-      (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
+    refine le_of_tendsto_of_tendsto' hlim ((tendsTo_seminormFromConst_atTop hf1 hc hpm x).mul
+      (tendsTo_seminormFromConst_atTop hf1 hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
     rw [div_mul_div_comm, ← pow_add, two_mul,
       div_le_div_iff_of_pos_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _), pow_add,
@@ -164,15 +164,15 @@ theorem seminormFromConst_def (x : R) :
     seminormFromConst hf1 hc hpm x = seminormFromConst' c f x :=
   rfl
 
-/-- `seminormFromConst' c f 1 ≤ 1`. -/
 theorem seminormFromConst_one_le : seminormFromConst' c f 1 ≤ 1 :=
   le_of_eq (seminormFromConst_one hf1 hc hpm)
 
 /-- The function `seminormFromConst' c f` is nonarchimedean. -/
 theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
     IsNonarchimedean (seminormFromConst' c f) := fun x y ↦ by
-  apply le_of_tendsto_of_tendsto' (seminormFromConst_isLimit hf1 hc hpm (x + y))
-    ((seminormFromConst_isLimit hf1 hc hpm x).max (seminormFromConst_isLimit hf1 hc hpm y))
+  apply le_of_tendsto_of_tendsto' (tendsTo_seminormFromConst_atTop hf1 hc hpm (x + y)) <|
+    (tendsTo_seminormFromConst_atTop hf1 hc hpm x).max
+      (tendsTo_seminormFromConst_atTop hf1 hc hpm y)
   intro n
   have hmax : f ((x + y) * c ^ n) ≤ max (f (x * c ^ n)) (f (y * c ^ n)) := by
     simp only [add_mul, hna _ _]
@@ -185,17 +185,17 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
   simp only [seminormFromConst']
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x ^ m) (m * n)) atTop
       (𝓝 (seminormFromConst' c f (x ^ m))) := by
-    apply (seminormFromConst_isLimit hf1 hc hpm (x ^ m)).comp
+    apply (tendsTo_seminormFromConst_atTop hf1 hc hpm (x ^ m)).comp
       (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
     rintro n; use n; exact le_mul_of_one_le_left' hm
   apply tendsto_nhds_unique hlim
-  convert (seminormFromConst_isLimit hf1 hc hpm x).pow m using 1
+  convert (tendsTo_seminormFromConst_atTop hf1 hc hpm x).pow m using 1
   ext n
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 
 /-- The function `seminormFromConst' c f` is bounded above by `f`. -/
 theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' c f x ≤ f x := by
-  apply le_of_tendsto (seminormFromConst_isLimit hf1 hc hpm x)
+  apply le_of_tendsto (tendsTo_seminormFromConst_atTop hf1 hc hpm x)
   simp only [eventually_atTop, ge_iff_le]
   use 1
   intro n hn
@@ -214,7 +214,7 @@ theorem seminormFromConst_apply_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
           mul_div_assoc, div_self (pow_ne_zero n hc), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
-  tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm x) hlim
+  tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm x) hlim
 
 /-- If `x : R` is multiplicative for `f`, then it is multiplicative for
   `seminormFromConst' c f`. -/
@@ -228,10 +228,9 @@ theorem seminormFromConst_isMul_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f 
         fun n ↦ f x * seminormFromConst_seq c f y n := by
       ext n
       simp only [seminormFromConst_seq, mul_assoc, hx, mul_div_assoc]
-    simpa [hseq] using (seminormFromConst_isLimit hf1 hc hpm y).const_mul _
-  tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (x * y)) hlim
+    simpa [hseq] using (tendsTo_seminormFromConst_atTop hf1 hc hpm y).const_mul _
+  tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm (x * y)) hlim
 
-/-- `seminormFromConst' c f c = f c`. -/
 theorem seminormFromConst_apply_c : seminormFromConst' c f c = f c :=
   have hlim : Tendsto (seminormFromConst_seq c f c) atTop (𝓝 (f c)) := by
     have hseq : seminormFromConst_seq c f c = fun _n ↦ f c := by
@@ -241,7 +240,7 @@ theorem seminormFromConst_apply_c : seminormFromConst' c f c = f c :=
         div_self (pow_ne_zero n hc), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
-  tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm c) hlim
+  tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm c) hlim
 
 /-- For every `x : R`, `seminormFromConst' c f (c * x)` equals the product
   `seminormFromConst' c f c * SeminormFromConst' c f x`. -/
@@ -250,11 +249,11 @@ theorem seminormFromConst_const_mul (x : R) :
       seminormFromConst' c f c * seminormFromConst' c f x := by
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f x (n + 1)) atTop
       (𝓝 (seminormFromConst' c f x)) := by
-    apply (seminormFromConst_isLimit hf1 hc hpm x).comp
+    apply (tendsTo_seminormFromConst_atTop hf1 hc hpm x).comp
       (tendsto_atTop_atTop_of_monotone add_left_mono _)
     rintro n; use n; lia
   rw [seminormFromConst_apply_c hf1 hc hpm]
-  apply tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (c * x))
+  apply tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm (c * x))
   have hterm : seminormFromConst_seq c f (c * x) =
       fun n ↦ f c * seminormFromConst_seq c f x (n + 1) := by
     simp only [seminormFromConst_seq_def]
