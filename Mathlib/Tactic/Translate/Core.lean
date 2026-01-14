@@ -555,14 +555,13 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  if let some value := decl.value? (allowOpaque := true) then
-    let mut value := value
-    if let some b := t.unfoldBoundaries? then
-      value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
-    value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
-    if let some b := t.unfoldBoundaries? then
-      value ← b.unfoldInsertions value
-    decl := decl.updateValue value
+  let mut value := decl.value! (allowOpaque := true)
+  if let some b := t.unfoldBoundaries? then
+    value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+  value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
+  if let some b := t.unfoldBoundaries? then
+    value ← b.unfoldInsertions value
+  decl := decl.updateValue value
   let mut type := decl.type
   if let some b := t.unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
