@@ -157,7 +157,7 @@ lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
   apply Module.Finite.iff_fg.mp
   let k (g : t) : I →ₗ[R] (I.map (algebraMap R (Localization.Away g.val))) :=
     Algebra.idealMap I (S := Localization.Away g.val)
-  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ Module.Finite.iff_fg.mpr (H g))
+  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ .of_fg (H g))
 
 end Ideal
 

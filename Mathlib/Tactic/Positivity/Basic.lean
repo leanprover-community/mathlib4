@@ -331,7 +331,7 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
       pure (.positive pa')
-    | _ => pure .none
+    | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')

@@ -43,7 +43,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
-pushout cones is also available in this file.
+pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
