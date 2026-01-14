@@ -242,7 +242,7 @@ instance : SemilatticeSup (fixedPoints f) where
   sup x y := f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
   le_sup_left _ _ := Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
   le_sup_right _ _ := Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
-  sup_le _ _ _ := hxz hyz => f.nextFixed_le _ <| sup_le hxz hyz
+  sup_le _ _ _ hxz hyz := f.nextFixed_le _ <| sup_le hxz hyz
 
 instance : SemilatticeInf (fixedPoints f) where
   inf x y := f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y)
