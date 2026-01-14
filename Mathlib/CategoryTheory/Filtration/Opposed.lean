@@ -9,9 +9,8 @@ module
 public import Mathlib.CategoryTheory.Filtration.Basic
 
 /-!
-co-authored with Jonathan Washburn
 
-PR 2: Opposed filtrations (Deligne, *Théorie de Hodge II*, §1.2.1–§1.2.3).
+## Opposed filtrations (Deligne, *Théorie de Hodge II*, §1.2.1–§1.2.3).
 
 This file defines the iterated graded pieces for a pair of filtrations and the predicate
 that two filtrations are `n`-opposed.
@@ -25,7 +24,7 @@ We define `Gr_F^p Gr_G^q(A)` directly by the symmetric Zassenhaus quotient formu
 
 `(F^p ∩ G^q) / ( (F^{p+1} ∩ G^q) + (F^p ∩ G^{q+1}) )`.
 
-In a later PR (PR 3), one proves the Zassenhaus isomorphisms and the splitting lemma
+In a later PR we will prove the Zassenhaus isomorphisms and the splitting lemma
 (Deligne 1.2.5).
 -/
 
