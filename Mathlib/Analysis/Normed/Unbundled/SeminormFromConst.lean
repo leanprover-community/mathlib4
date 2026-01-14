@@ -174,7 +174,6 @@ theorem seminormFromConst_def (x : R) :
 theorem seminormFromConst_one_le : seminormFromConst' c f 1 ≤ 1 :=
   le_of_eq (seminormFromConst_one hf1 hc hpm)
 
-/-- The function `seminormFromConst' c f` is nonarchimedean. -/
 theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
     IsNonarchimedean (seminormFromConst' c f) := fun x y ↦ by
   apply le_of_tendsto_of_tendsto' (tendsTo_seminormFromConst_atTop hf1 hc hpm (x + y)) <|
@@ -187,7 +186,6 @@ theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
   unfold seminormFromConst_seq
   apply hmax.imp <;> intro <;> gcongr
 
-/-- The function `seminormFromConst' c f` is power-multiplicative. -/
 theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x m hm ↦ by
   simp only [seminormFromConst']
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x ^ m) (m * n)) atTop
@@ -249,8 +247,6 @@ theorem seminormFromConst_apply_c : seminormFromConst' c f c = f c :=
     exact tendsto_const_nhds
   tendsto_nhds_unique (tendsTo_seminormFromConst_atTop hf1 hc hpm c) hlim
 
-/-- For every `x : R`, `seminormFromConst' c f (c * x)` equals the product
-  `seminormFromConst' c f c * SeminormFromConst' c f x`. -/
 theorem seminormFromConst_const_mul (x : R) :
     seminormFromConst' c f (c * x) =
       seminormFromConst' c f c * seminormFromConst' c f x := by
