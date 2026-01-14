@@ -132,7 +132,7 @@ noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
 @[inherit_doc]
-scoped[InnerProductSpace] notation "Δ[" s "]" f:60 => laplacianWithin f s
+scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 
 noncomputable
 instance instLaplacian : Laplacian (E → F) (E → F) where
@@ -259,6 +259,7 @@ theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
 
 /-!
+<<<<<<< HEAD
 ## Smoothness of Δ
 -/
 
@@ -278,6 +279,8 @@ theorem _root_.ContDiff.contDiff_laplacian {n m : ℕ∞} (h : ContDiff ℝ m f)
   grind
 
 /-!
+=======
+>>>>>>> master
 ## 𝕜-Linearity of Δ on Continuously Differentiable Functions
 -/
 

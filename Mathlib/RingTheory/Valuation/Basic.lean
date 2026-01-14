@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
 
@@ -117,7 +118,7 @@ variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZer
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     congr
 
 instance : ValuationClass (Valuation R Γ₀) R Γ₀ where

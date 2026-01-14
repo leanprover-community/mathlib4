@@ -218,56 +218,6 @@ end
 
 section BilinearMap
 
-namespace ContinuousLinearMap
-
-/-! We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
-  If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
-  `(f _).map_add` and similar.
-
-We have to assume that `F` and `G` are normed spaces in this section, to use
-`ContinuousLinearMap.toNormedAddCommGroup`, but we don't need to assume this for the first
-argument of `f`.
--/
-
-
-variable {R : Type*}
-variable {𝕜₂ 𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NontriviallyNormedField 𝕜₂]
-variable {M : Type*} [TopologicalSpace M]
-variable {σ₁₂ : 𝕜 →+* 𝕜₂}
-variable {G' : Type*} [SeminormedAddCommGroup G'] [NormedSpace 𝕜₂ G'] [NormedSpace 𝕜' G']
-variable [SMulCommClass 𝕜₂ 𝕜' G']
-
-section Semiring
-
-variable [Semiring R] [AddCommMonoid M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
-
-theorem map_add₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
-    f (x + x') y = f x y + f x' y := by rw [f.map_add, add_apply]
-
-theorem map_zero₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (y : F) : f 0 y = 0 := by
-  rw [f.map_zero, zero_apply]
-
-theorem map_smulₛₗ₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (c : R) (x : M) (y : F) :
-    f (c • x) y = ρ₁₂ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
-
-end Semiring
-
-section Ring
-
-variable [Ring R] [AddCommGroup M] [Module R M] {ρ₁₂ : R →+* 𝕜'}
-
-theorem map_sub₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x x' : M) (y : F) :
-    f (x - x') y = f x y - f x' y := by rw [f.map_sub, sub_apply]
-
-theorem map_neg₂ (f : M →SL[ρ₁₂] F →SL[σ₁₂] G') (x : M) (y : F) : f (-x) y = -f x y := by
-  rw [f.map_neg, neg_apply]
-
-end Ring
-
-theorem map_smul₂ (f : E →L[𝕜] F →L[𝕜] G) (c : 𝕜) (x : E) (y : F) : f (c • x) y = c • f x y := by
-  rw [f.map_smul, smul_apply]
-
-end ContinuousLinearMap
 
 variable (𝕜) in
 /-- A map `f : E × F → G` satisfies `IsBoundedBilinearMap 𝕜 f` if it is bilinear and
