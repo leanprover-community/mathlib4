@@ -218,6 +218,22 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 
+section Monotone
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+@[deprecated _root_.Real.tendsto_ciSup_of_bddAbove_monotone (since := "2026-01-14")]
+theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
+  ⟨iSup f, _root_.Real.tendsto_ciSup_of_bddAbove_monotone h_bdd h_mon⟩
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+@[deprecated _root_.Real.tendsto_ciInf_of_bddBelow_antitone (since := "2026-01-14")]
+theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
+  ⟨iInf f, _root_.Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant⟩
+
+end Monotone
+
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
   (NNReal.powOrderIso n hn).map_ciSup' _
 
