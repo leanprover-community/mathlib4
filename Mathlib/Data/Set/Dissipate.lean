@@ -141,4 +141,5 @@ lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
     rw [dissipate_succ] at *
     apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
 
+
 end Set
