@@ -402,7 +402,7 @@ theorem coe_one : (↑(1 : FractionalIdeal S P) : Submodule R P) = 1 := by
   rw [coe_one_eq_coeSubmodule_top, coeSubmodule_top]
 
 @[simp]
-theorem mem_one {x : P} : x ∈ (1 : FractionalIdeal S P) ↔ ∃ y, (algebraMap R P) y = x := by
+theorem mem_one {x : P} : x ∈ (1 : FractionalIdeal S P) ↔ ∃ y, algebraMap R P y = x := by
   rw [← mem_coe]
   simp
 
