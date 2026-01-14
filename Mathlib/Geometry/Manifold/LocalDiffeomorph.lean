@@ -547,7 +547,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
   set φ₁ := diffeoExtChartAt n hp
   set ψ₀ := extChartAt J (f p)
   set ψ₁ := diffeoExtChartAt n hfp
-  -- define U, an open set where we can easily show that g is ContDiff
+  -- define U ⊆ E, an open set where we can easily show that g is ContDiff
   set U : Set E := φ₁ '' (φ₁.source ∩ f ⁻¹' ψ₁.source)
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
@@ -589,13 +589,12 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
   -- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
   -- restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
   set homeo := (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen _ hUV
-  have homeo_source_sub_UV : homeo.source ⊆ U ∩ V := by
-    rw[(ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen_source _ hUV]
-    exact inter_subset_right
+  have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
+    (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
     have : homeo.source ⊆ U := subset_trans homeo_source_sub_UV inter_subset_left
-    refine ContDiffWithinAt.mono (hg₀.contDiffWithinAt (this hx)) this
+    exact ContDiffWithinAt.mono (hg₀.contDiffWithinAt (this hx)) this
   -- upgrade to a PartialDiffeomorph using the properties of U and V
   set coord_diffeo : PartialDiffeomorph 𝓘(𝕜, E) 𝓘(𝕜, F) E F n := {
     toPartialEquiv := homeo.toPartialEquiv
