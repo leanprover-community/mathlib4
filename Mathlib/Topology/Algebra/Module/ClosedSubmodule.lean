@@ -311,18 +311,10 @@ def mapEquiv : ClosedSubmodule R N where
 lemma mapEquiv_apply : (s.mapEquiv f).toSubmodule = s.toSubmodule.map f.toLinearMap := rfl
 
 @[simp]
-lemma mem_mapEquiv_iff (x : M) : f x ∈ (s.mapEquiv f) ↔ x ∈ s := by
-  rw [mapEquiv]
-  simp only [mem_mk, Submodule.mem_map_equiv, ContinuousLinearEquiv.coe_symm_toLinearEquiv,
-    ContinuousLinearEquiv.symm_apply_apply]
-  exact Iff.of_eq rfl
+lemma mem_mapEquiv_iff (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s :=
+  Submodule.mem_map_equiv (e := f.toLinearEquiv) s.toSubmodule
 
-lemma mem_mapEquiv_iff' (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s := by
-  have := f.right_inv x
-  simp only [LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.coe_symm_toLinearEquiv,
-    AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    ContinuousLinearEquiv.coe_toLinearEquiv] at this
-  rw [← this, mem_mapEquiv_iff f s (f.symm x)]
+lemma mem_mapEquiv_iff' (x : M) : f x ∈ (s.mapEquiv f) ↔ x ∈ s := by
   simp
 
 @[simp]
