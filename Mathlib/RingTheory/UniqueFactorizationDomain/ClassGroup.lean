@@ -31,7 +31,7 @@ open IsLocalization IsFractionRing
 
 section CommRing
 
-variable (R : Type*) [CommRing R]
+variable {R : Type*} [CommRing R]
 
 section Domain
 variable [IsDomain R]
