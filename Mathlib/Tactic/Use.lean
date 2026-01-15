@@ -5,9 +5,9 @@ Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.WithoutCDot
 public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 # The `use` tactic

@@ -392,7 +392,7 @@ instance (priority := 1100) id : Algebra R R where
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
   toSMul := instSMulOfMul
-  __ := ({RingHom.id R with toFun x := x}).toAlgebra
+  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
