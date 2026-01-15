@@ -5,8 +5,6 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rel.Separated
-public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
