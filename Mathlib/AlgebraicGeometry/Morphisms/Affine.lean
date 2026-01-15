@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 
 /-!
 
@@ -81,6 +82,12 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
   simp
+
+/-- An affine morphism contravariantly induces a functor between `AffineZariskiSite`. -/
+@[simps] def Scheme.AffineZariskiSite.preimage [IsAffineHom f] :
+    Y.AffineZariskiSite ⥤ X.AffineZariskiSite where
+  obj U := ⟨f ⁻¹ᵁ U.1, U.2.preimage f⟩
+  map {U V} f := homOfLE <| by obtain ⟨r, hr⟩ := f; exact ⟨f.app _ r, by simp_all [toOpens, ← hr]⟩
 
 lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
   IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap

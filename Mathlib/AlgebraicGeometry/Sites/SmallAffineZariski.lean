@@ -39,7 +39,7 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-variable {X : Scheme.{u}}
+variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /--
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -85,6 +85,12 @@ variable (X) in
 def toOpensFunctor : X.AffineZariskiSite ⥤ X.Opens := toOpens_mono.functor
 
 instance : (toOpensFunctor X).Faithful where
+
+/-- An open immersion covariantly induces a functor between `AffineZariskiSite`. -/
+@[simps] def image [IsOpenImmersion f] : X.AffineZariskiSite ⥤ Y.AffineZariskiSite where
+  obj U := ⟨f ''ᵁ U.1, U.2.image_of_isOpenImmersion f⟩
+  map {U V} f := homOfLE <| by obtain ⟨r, hr⟩ := f; exact ⟨(f.appIso V.1).inv r,
+    by simp_all [toOpens, ← hr, image_basicOpen]⟩
 
 section GrothendieckTopology
 

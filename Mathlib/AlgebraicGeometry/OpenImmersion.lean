@@ -246,6 +246,12 @@ lemma appIso_inv_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U V
 
 end Scheme.Hom
 
+/-- The presheaf of an open subcheme is isomorphic to the restriction of the presheaf. -/
+@[simps! hom_app inv_app]
+noncomputable def IsOpenImmersion.presheafIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    X.presheaf ≅ f.opensFunctor.op ⋙ Y.presheaf :=
+  .symm <| NatIso.ofComponents (f.appIso ·.unop) fun f ↦ by simp [Scheme.Hom.appIso_hom']
+
 /-- The open sets of an open subscheme corresponds to the open sets containing in the image. -/
 @[simps]
 def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
