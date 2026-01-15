@@ -385,8 +385,6 @@ theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
     V i ⟂ V j :=
   hV.pairwise hij
 
-open ClosedSubmodule
-
 namespace ClosedSubmodule
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
