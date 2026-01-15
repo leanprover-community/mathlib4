@@ -315,7 +315,7 @@ instance instSup : Max (L.DefinableSet A α) :=
 instance instInf : Min (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 
-instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance instCompl : Compl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 
 instance instSDiff : SDiff (L.DefinableSet A α) :=

@@ -358,10 +358,6 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
   rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     ← h.ext_iff, eq_comm (a := σ)]
 
-@[deprecated (since := "2025-07-08")]
-alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
-NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
-
 variable (k w)
 
 lemma nat_card_stabilizer_eq_one_or_two :

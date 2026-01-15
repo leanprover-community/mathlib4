@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # CW complexes

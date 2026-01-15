@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
@@ -19,6 +20,8 @@ The `Algebra.adjoin` operation and complete lattice structure can be found in
 -/
 
 @[expose] public section
+
+open Module
 
 universe u u' v w w'
 
@@ -332,6 +335,9 @@ theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S)
 
 end
 
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  S.toSubmodule.instIsTorsionFree
+
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c} {x : S} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
@@ -465,7 +471,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_one' := Subtype.ext <| by simp
     map_mul' _ _ := Subtype.ext <| by simp
     map_zero' := Subtype.ext <| by simp
-    map_add' _ _ := Subtype.ext <| by simp}
+    map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -872,6 +878,10 @@ theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
   SetLike.ext'_iff.mp S.rangeS_algebraMap
+
+instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
+  .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
+    (by simp [smul_def])
 
 instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
   ⟨fun {c} x h =>

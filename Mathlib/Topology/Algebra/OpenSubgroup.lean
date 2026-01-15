@@ -443,7 +443,7 @@ instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
   { instSemilatticeInfOpenNormalSubgroup,
     instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+    toPartialOrder := instPartialOrderOpenNormalSubgroup }
 
 end OpenNormalSubgroup
 

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Finite places of number fields
@@ -62,7 +63,7 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
       Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, - exp_neg,
+    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, -exp_neg,
       ← (v.valuation K).map_eq_zero_iff, hπ]
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
@@ -81,7 +82,7 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [hπ, ← exp_zero, - exp_neg,
+    simp [hπ, ← exp_zero, -exp_neg,
           ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
