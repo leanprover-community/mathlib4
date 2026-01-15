@@ -299,13 +299,19 @@ theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
 
 theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
+  simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff']
   refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
   · rintro _ ⟨h, x, ⟨⟩⟩ r h'
-    refine ⟨x, ne_of_eq_of_ne (one_smul R x).symm ?_, h'⟩
-    exact (Ideal.ne_top_iff_one _).mp h.ne_top
+    refine ⟨x, ?_, by simpa using h'⟩
+    rintro rfl
+    rw [colon_singleton_zero] at h
+    exact h.1 rfl
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
-    exact Set.mem_biUnion hP (hx h')
+    rw [Ideal.IsPrime.radical_le_iff hP.1] at hx
+    rw [isAssociatedPrime_iff'] at hP
+    refine Set.mem_biUnion hP (hx ?_)
+    rwa [mem_colon_singleton]
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
@@ -317,28 +323,32 @@ variable {R M}
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
     (⊤ : Submodule R M).annihilator ≤ I := by
   obtain ⟨hI, x, rfl⟩ := h
-  rw [← Submodule.annihilator_span_singleton]
-  exact Submodule.annihilator_mono le_top
+  intro y hy
+  refine Ideal.le_radical ?_
+  simp only [mem_annihilator, mem_top, forall_const] at hy
+  specialize hy x
+  simpa
 
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h
-  have : x ≠ 0 := by
-    rintro rfl
-    apply hJ.1
-    rwa [toSpanSingleton_zero, ker_zero] at e
+  refine le_antisymm ?_ ?_; swap
+  · rw [hJ.radical_le_iff, e]
+    intro x hx
+    use 1
+    simp [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem.mpr hx]
+  rw [e, Ideal.radical_le_radical_iff]
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
-  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I := by
-    intro y
-    rw [e, mem_ker, toSpanSingleton_apply, ← map_smul, smul_eq_mul, mul_comm,
-      Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
-  apply le_antisymm
-  · intro y hy
-    exact ((Ideal.isPrimary_iff.1 hI).2 <| e.mp hy).resolve_left
-      ((Submodule.Quotient.mk_eq_zero I).not.mp this)
-  · rw [hJ.radical_le_iff]
-    intro y hy
-    exact e.mpr (I.mul_mem_left x hy)
+  intro y hy
+  simp only [Ideal.Quotient.mkₐ_eq_mk, mem_colon_singleton, Algebra.smul_def,
+    Ideal.Quotient.algebraMap_eq, ← map_mul, mem_bot, Ideal.Quotient.eq_zero_iff_mem] at hy
+  have := (hI.mem_or_mem hy).resolve_left
+  simp only [Set.top_eq_univ, colon_univ] at this
+  apply this
+  intro hx
+  rw [Ideal.Quotient.mkₐ_eq_mk, Ideal.Quotient.eq_zero_iff_mem.mpr hx,
+    colon_singleton_zero, Ideal.radical_top] at e
+  exact hJ.1 e
 
 theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.IsPrimary) :
     associatedPrimes R (R ⧸ I) = {I.radical} := by

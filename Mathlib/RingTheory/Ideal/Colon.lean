@@ -164,6 +164,9 @@ theorem _root_.Ideal.mem_colon_span_singleton {I : Ideal R} {x r : R} :
     r ∈ I.colon (Ideal.span {x}) ↔ r * x ∈ I := by
   simp
 
+theorem colon_singleton_zero : N.colon {0} = ⊤ := by
+  simp
+
 end CommSemiring
 
 section Ring
