@@ -386,8 +386,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
   -- so we get the end pos for both types of docstrings and take their minimum as the first.
   let firstMDDocModPos := match mdDocs[0]? with
-                          | none     => fm.positions.back!
-                          | some doc => fm.ofPosition doc.declarationRange.endPos
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
   let firstVersoDocModPos := match versoDocs[0]? with
   | none     => fm.positions.back!
   | some doc => fm.ofPosition doc.declarationRange.endPos
