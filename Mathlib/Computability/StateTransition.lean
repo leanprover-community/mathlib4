@@ -23,13 +23,7 @@ defined by a function `σ → Option σ`, where `σ` is the type of states.
 
 assert_not_exists MonoidWithZero
 
-open List (Vector)
 open Relation
-
-open Nat (iterate)
-
-open Function (update iterate_succ iterate_succ_apply iterate_succ' iterate_succ_apply'
-  iterate_zero_apply)
 
 namespace StateTransition
 
