@@ -173,9 +173,9 @@ variable [CommMonoid M] [Finset.HasMulAntidiagonal M] [CommSemiring R]
 @[to_additive (dont_translate := R) CauchyProduct.comm]
 theorem comm (a b : M → R) : a ⋆ₘ b = b ⋆ₘ a := by
   ext n; simp only [apply_eq]
-  rw [← Finset.map_swap_mulAntidiagonal (n := n), Finset.sum_map]
+  rw [← Finset.MulAntidiag.map_swap (n := n), Finset.sum_map]
   simp only [Function.Embedding.coeFn_mk, Prod.fst_swap,
-    Prod.snd_swap, Finset.map_swap_mulAntidiagonal, mul_comm]
+    Prod.snd_swap, Finset.MulAntidiag.map_swap, mul_comm]
 
 @[to_additive (dont_translate := R) CauchyProduct.mul_smul]
 theorem mul_smul (c : R) (a b : M → R) : a ⋆ₘ (c • b) = c • (a ⋆ₘ b) := by
