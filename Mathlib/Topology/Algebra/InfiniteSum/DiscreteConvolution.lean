@@ -638,8 +638,8 @@ end MulAntidiagonalRing
 
 For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, ring convolution
 equals the corresponding CauchyProduct. This allows deriving ring axioms from the purely
-algebraic CauchyProduct proofs. See `Mathlib.Algebra.BigOperators.CauchyProduct` for
-the standalone algebraic formulation. -/
+algebraic CauchyProduct proofs (essentially alias of the `CauchyProduct` theorems).
+See `Mathlib.Algebra.BigOperators.CauchyProduct` for the standalone algebraic formulation. -/
 
 section CauchyProductBridge
 
@@ -684,15 +684,21 @@ theorem ringConvolution_one [DecidableEq M] (f : M → R) :
 
 end CauchyProductBridge
 
+section CauchyProductAssocBridge
+
+variable [CommMonoid M] [Finset.HasMulAntidiagonal M]
+variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
+
 /-- Commutativity: `f ⋆ᵣ g = g ⋆ᵣ f` via `MulCauchyProduct.comm`. -/
 @[to_additive (dont_translate := R) addRingConvolution_comm_of_hasAntidiagonal
   /-- Commutativity: `f ⋆ᵣ₊ g = g ⋆ᵣ₊ f` via `CauchyProduct.comm`. -/]
-theorem ringConvolution_comm_of_hasMulAntidiagonal [CommMonoid M] [Finset.HasMulAntidiagonal M]
-    {R : Type*} [CommSemiring R] [TopologicalSpace R] (f g : M → R) :
+theorem ringConvolution_comm_of_hasMulAntidiagonal (f g : M → R) :
     f ⋆ᵣ g = g ⋆ᵣ f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.comm f g) x
+
+end CauchyProductAssocBridge
 
 end DiscreteConvolution
 
