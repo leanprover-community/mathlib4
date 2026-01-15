@@ -78,7 +78,7 @@ noncomputable def hom :
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       dsimp [mappingConeCompTriangle, map]
-      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p+1) p (p+2) (by lia) (by lia)])
+      simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p + 1) p (p + 2) (by lia) (by lia)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
 is the canonical morphism (which is a homotopy equivalence) from the mapping cone of
@@ -89,7 +89,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by lia) (by lia)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p (by lia) (by lia)])
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n

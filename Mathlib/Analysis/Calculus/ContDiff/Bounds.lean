@@ -18,7 +18,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
   derivative of `f` is bounded by `D ^ i`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -101,10 +101,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
           iteratedFDerivWithin 𝕜 n (fun y => B.precompR Du (f y)
             (fderivWithin 𝕜 g s y) + B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s x := by
       apply iteratedFDerivWithin_congr (fun y hy => ?_) hx
-      have L : (1 : WithTop ℕ∞) ≤ n.succ := by
-        simpa only [ENat.coe_one, Nat.one_le_cast] using Nat.succ_pos n
-      exact B.fderivWithin_of_bilinear (hf.differentiableOn L y hy) (hg.differentiableOn L y hy)
-        (hs y hy)
+      exact B.fderivWithin_of_bilinear (hf.differentiableOn (by positivity) y hy)
+        (hg.differentiableOn (by positivity) y hy) (hs y hy)
     rw [← norm_iteratedFDerivWithin_fderivWithin hs hx, J]
     have A : ContDiffOn 𝕜 n (fun y => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s :=
       (B.precompR Du).isBoundedBilinearMap.contDiff.comp₂_contDiffOn
@@ -406,13 +404,11 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         LinearIsometryEquiv.norm_map]
     _ = ‖iteratedFDerivWithin 𝕜 n (fun y : E => ContinuousLinearMap.compL 𝕜 E Fu Gu
         (fderivWithin 𝕜 g t (f y)) (fderivWithin 𝕜 f s y)) s x‖ := by
-      have L : (1 : WithTop ℕ∞) ≤ n.succ := by
-        simpa only [ENat.coe_one, Nat.one_le_cast] using n.succ_pos
       congr 1
       refine iteratedFDerivWithin_congr (fun y hy => ?_) hx _
       apply fderivWithin_comp _ _ _ hst (hs y hy)
-      · exact hg.differentiableOn L _ (hst hy)
-      · exact hf.differentiableOn L _ hy
+      · exact hg.differentiableOn (by positivity) _ (hst hy)
+      · exact hf.differentiableOn (by positivity) _ hy
     -- bound it using the fact that the composition of linear maps is a bilinear operation,
     -- for which we have bounds for the`n`-th derivative.
     _ ≤ ∑ i ∈ Finset.range (n + 1),

@@ -377,7 +377,7 @@ Single Variable Complex Analysis:
     power series expansion of elementary functions:
       cos: 'Complex.hasSum_cos'
       sin: 'Complex.hasSum_sin'
-      log: ''
+      log: 'Complex.hasSum_taylorSeries_log'
   Functions on one complex variable:
     holomorphic functions: 'DifferentiableOn'
     Cauchy-Riemann conditions: ''
@@ -409,7 +409,7 @@ Topology:
     continuous functions: 'Continuous'
     homeomorphisms: 'Homeomorph'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
-    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'UniformSpace.isCompact_iff_isSeqCompact'
+    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'isCompact_iff_isSeqCompact'
     connectedness: 'ConnectedSpace'
     connected components: 'connectedComponent'
     path connectedness: 'IsPathConnected'
@@ -535,7 +535,7 @@ Measures and integral calculus:
     Fejer theorem: ''
     Parseval theorem: 'tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourier_eq'
-    Fourier transform on $\mathrm{L}^2(\R^d)$: ''
+    Fourier transform on $\mathrm{L}^2(\R^d)$: 'MeasureTheory.Lp.fourierTransformₗᵢ'
     Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
     Fourier inversion formula: 'Continuous.fourierInv_fourier_eq'
 
@@ -608,11 +608,11 @@ Distribution calculus:
     stability by multiplication by a slowly growing smooth function: 'SchwartzMap.bilinLeftCLM'
     Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
-    convolution of two functions of $\mathcal{S}(\R^d)$: ''
+    convolution of two functions of $\mathcal{S}(\R^d)$: 'SchwartzMap.convolution'
   Tempered distributions:
     definition: 'TemperedDistribution'
-    derivation of tempered distributions: ''
-    multiplication by a function $C^\infty$ of slow growth: ''
+    derivation of tempered distributions: 'TemperedDistribution.instLineDeriv'
+    multiplication by a function $C^\infty$ of slow growth: 'TemperedDistribution.smulLeftCLM'
     $L^2$ functions and Riesz representation: ''
     $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''

@@ -480,4 +480,26 @@ abbrev coalgebra [AddCommMonoid B] [Module R B] [Coalgebra R B] (e : A ≃ B) :
         ← LinearMap.comp_assoc, TensorProduct.map_map, ← TensorProduct.map_comp]
       simpa [LinearMap.comp_assoc, -coassoc_apply] using coassoc_apply (R := R) (A := B) _ }
 
+variable (R) in
+/-- Transfer `Coalgebra.IsCocomm` across an `Equiv`. -/
+lemma coalgebraIsCocomm [AddCommMonoid B] [Module R B] [Coalgebra R B] [IsCocomm R B] (e : A ≃ B) :
+    letI := e.addCommMonoid
+    letI := e.module R
+    letI := e.coalgebra R
+    IsCocomm R A :=
+  letI := e.addCommMonoid
+  letI := e.module R
+  letI := e.coalgebra R
+  { comm_comp_comul := by
+      -- TODO: Implement a version of `reassoc` for `LinearMap`.
+      -- This would be useful for `TensorProduct.map_map` to trigger.
+      have (f : A →ₗ[R] B ⊗[R] B) :
+        TensorProduct.map (e.linearEquiv R) (e.linearEquiv R) ∘ₗ
+          TensorProduct.map (e.linearEquiv R).symm.toLinearMap (e.linearEquiv R).symm.toLinearMap
+            ∘ₗ f = f := by
+        simp [← LinearMap.comp_assoc, ← TensorProduct.map_comp]
+      simp [tensorProductComm_def, coalgebra, coalgebraStruct, LinearEquiv.coe_trans,
+        LinearMap.comp_assoc, this]
+      simp [← LinearMap.comp_assoc] }
+
 end Equiv

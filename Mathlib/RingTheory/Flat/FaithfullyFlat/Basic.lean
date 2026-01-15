@@ -473,7 +473,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
 @[simp]
 theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
-    (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
+    (1 : A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
   constructor; swap
   · rintro rfl; rw [tmul_zero]
   intro h
