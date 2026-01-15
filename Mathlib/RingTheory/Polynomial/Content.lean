@@ -280,8 +280,10 @@ theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
 theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     [Module.IsTorsionFree R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
+  nontriviality S
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero ?_ hp
+  have : IsDomain R := { Module.nontrivial R S with }
   rwa [(FaithfulSMul.algebraMap_injective R S).ne_iff' (map_zero _), Ne, content_eq_zero_iff]
 
 theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
