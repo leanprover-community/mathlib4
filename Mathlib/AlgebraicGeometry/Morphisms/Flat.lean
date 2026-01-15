@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Christian Merten, Andrew Yang
 -/
 module
 
@@ -181,7 +181,6 @@ We show that this map is
 
 -/
 
-
 variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
   (H : IsPullback g iY iX f)
   {US : S.Opens} {UT : T.Opens}
@@ -252,7 +251,8 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ).toRingHom by
     ext1 x; simpa using congr($this (e₁.hom x))
   ext1
-  · have H₁ : e₁.inv.hom.comp (algebraMap Γ(T, UT) _) = (pushout.inr (C := CommRingCat) _ _).hom :=
+  · have H₁ : e₁.inv.hom.comp Algebra.TensorProduct.includeLeftRingHom =
+        (pushout.inr (C := CommRingCat) _ _).hom :=
       congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inr_isoPushout_hom).hom)
     have H₂ (x j) : e₂ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
         (pushout.inr (C := CommRingCat) _ _ x) := congr(pushoutSection H hUST (UX := VX j) _ rfl
