@@ -86,13 +86,8 @@ lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
   aesop (add simp mem_colon)
 
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
-lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
-  (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
-    simpa [iInf_bool_eq, Set.iUnion_const] using
-      (iInf_colon_iUnion (ι₁ := Bool) (f := fun | true => N₁ | false => N₂) (ι₂ := PUnit.{0})
-      (g := fun _ => S))
-  _ = N₁.colon S ⊓ ⊤ := by rw[colon_eq_top_of_subset N₂ S h]
-  _ = N₁.colon S := inf_top_eq (N₁.colon S)
+lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
+  aesop (add simp mem_colon)
 
 end Semiring
 
