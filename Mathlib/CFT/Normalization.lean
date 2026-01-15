@@ -204,35 +204,4 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
       Category.comp_id]
     exact congr(CommRingCat.ofHom $(ψ.comp_algebraMap.symm))
 
-noncomputable
-def Scheme.Hom.normalizationCoprodIso {U V : Scheme} (iU : U ⟶ X) (iV : V ⟶ X) (f : X ⟶ Y)
-    [QuasiCompact f] [QuasiSeparated f]
-    [QuasiCompact iU] [QuasiSeparated iU] [QuasiCompact iV] [QuasiSeparated iV]
-    (e : IsColimit (BinaryCofan.mk iU iV)) :
-    (iU ≫ f).normalization ⨿ (iV ≫ f).normalization ≅ f.normalization where
-  hom := coprod.desc
-      ((iU ≫ f).normalizationDesc (iU ≫ f.toNormalization) f.fromNormalization (by simp))
-      ((iV ≫ f).normalizationDesc (iV ≫ f.toNormalization) f.fromNormalization (by simp))
-  inv := f.normalizationDesc ((e.coconePointUniqueUpToIso (colimit.isColimit _)).hom ≫
-      coprod.map (iU ≫ f).toNormalization (iV ≫ f).toNormalization)
-      (coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization) <| by
-    simp only [← Iso.inv_comp_eq, Category.assoc]
-    apply coprod.hom_ext <;> simp
-  hom_inv_id := by
-    ext
-    · refine Scheme.Hom.normalization.hom_ext _ _ _
-        (coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization) ?_ (by simp) (by simp)
-      have H : iU ≫ (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).hom = coprod.inl :=
-        e.comp_coconePointUniqueUpToIso_hom (colimit.isColimit (pair U V)) ⟨.left⟩
-      simp [reassoc_of% H]
-    · refine Scheme.Hom.normalization.hom_ext _ _ _
-        (coprod.desc (iU ≫ f).fromNormalization (iV ≫ f).fromNormalization) ?_ (by simp) (by simp)
-      have H : iV ≫ (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).hom = coprod.inr :=
-        e.comp_coconePointUniqueUpToIso_hom (colimit.isColimit (pair U V)) ⟨.right⟩
-      simp [reassoc_of% H]
-  inv_hom_id := by
-    refine Scheme.Hom.normalization.hom_ext _ _ _ f.fromNormalization ?_ (by simp) (by simp)
-    rw [← cancel_epi (e.coconePointUniqueUpToIso (colimit.isColimit (pair U V))).inv]
-    apply coprod.hom_ext <;> simp
-
 end AlgebraicGeometry

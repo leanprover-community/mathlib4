@@ -226,7 +226,7 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     rw [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)]
     contrapose H; exact Ideal.mul_mem_right s₃ _ (Ideal.pow_mem_of_mem _ H m hm0)
   have : q's.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers s₂) _ _ ‹_› hq's
-  have : q's.LiesOver q' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ _ ‹_› hq's).symm⟩
+  have : q's.LiesOver q' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› hq's).symm⟩
   have : q's.LiesOver p := .trans _ q' _
   have := hs₁ (q's.comap (e.symm.toAlgHom.comp (IsScalarTower.toAlgHom _ _ _)).toRingHom)
     inferInstance (by
@@ -530,7 +530,7 @@ lemma exists_etale_isIdempotentElem_forall_liesOver_eq.{u, v}
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])
-  have : Pf.LiesOver P := ⟨(IsLocalization.comap_map_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
+  have : Pf.LiesOver P := ⟨(IsLocalization.comap_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])).symm⟩
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
@@ -547,7 +547,7 @@ lemma exists_etale_isIdempotentElem_forall_liesOver_eq.{u, v}
     change f ∉ P'.under _
     rwa [← P'.over_def P]
   have : P'f.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint _ _ _ ‹_› hP'f
-  have : P'f.LiesOver P' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ _ ‹_› hP'f).symm⟩
+  have : P'f.LiesOver P' := ⟨(IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› hP'f).symm⟩
   have : P'f.LiesOver P := .trans _ P' _
   have : P'f.LiesOver Pf := ⟨congr($(PrimeSpectrum.localization_comap_injective
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
