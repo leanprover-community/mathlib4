@@ -361,9 +361,6 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
-variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
-variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
-
 /-- A natural transformation between functors `Mat_ C ⥤ D` is determined by its
 components on objects coming from `C` via `embedding C`. -/
 @[ext]
@@ -464,8 +461,6 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
       dsimp
       simpa using α.hom.naturality (f j k)
 
-variable {C : Type u₁} [Category.{v₁} C] [Preadditive C]
-variable {D : Type u₁} [Category.{v₁} D] [Preadditive D] [HasFiniteBiproducts D]
 variable (F : C ⥤ D) [Functor.Additive F]
 variable (L : Mat_ C ⥤ D)
 
