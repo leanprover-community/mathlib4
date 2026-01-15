@@ -55,7 +55,7 @@ variable [Module R M] [Module R₂ M]
 variable {x y : M}
 variable (b : Basis ι R M)
 
-theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submodule R M)
     (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
     N = ⊥ := by
   rw [Submodule.eq_bot_iff]
@@ -64,7 +64,6 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
-  obtain ⟨_, hi⟩ := i
   simp only [Fin.default_eq_zero, Finset.univ_unique,
     Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
@@ -157,9 +156,9 @@ lemma mem_center_iff {A}
 
 section RestrictScalars
 
-variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
+variable {S : Type*} [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [AddCommGroup M]
 variable [Algebra R S] [Module S M] [Module R M]
-variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
+variable [IsScalarTower R S M] [IsTorsionFree R S] (b : Basis ι S M)
 variable (R)
 
 open Submodule

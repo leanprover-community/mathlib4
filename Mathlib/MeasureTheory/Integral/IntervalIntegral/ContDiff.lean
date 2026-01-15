@@ -14,7 +14,7 @@ We give versions of the second fundamental theorem of calculus under the strong 
 that the function is `C^1` on the interval. This is restrictive, but satisfied in many situations.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

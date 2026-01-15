@@ -181,7 +181,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
     else
       `({$i:ident | $p})
   -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
-  else if t.isAppOfArity ``HasCompl.compl 3 then
+  else if t.isAppOfArity ``Compl.compl 3 then
     let #[_, _, s₀] := t.getAppArgs | failure
     -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
     if s₀.isAppOfArity ``Singleton.singleton 4 then

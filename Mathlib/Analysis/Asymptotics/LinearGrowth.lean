@@ -440,9 +440,8 @@ lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendst
     0 ≤ linearGrowthInf (u ∘ v) := by
   simp only [ne_eq, funext_iff, not_forall] at h'
   obtain ⟨m, hum⟩ := h'
-  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n := by
-    apply (eventually_map (P := fun n : ℕ ↦ u m ≤ u n)).2
-    exact (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
+  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n :=
+    (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
   apply (linearGrowthInf_eventually_monotone um_uvn).trans'
   rcases eq_or_ne (u m) ⊤ with hum' | hum'
   · rw [hum', ← Pi.top_def, linearGrowthInf_top]; exact le_top
