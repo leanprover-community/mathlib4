@@ -314,6 +314,7 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
   simp only [coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
     (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
   isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
