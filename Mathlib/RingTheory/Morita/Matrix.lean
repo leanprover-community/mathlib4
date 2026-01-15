@@ -128,13 +128,13 @@ def MatrixModCat.unitIso (i : ι) :
     simp [fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
 
 /-- The linear equiv induced by the equality `toMatrixModCat (toModuleCat M) = Mⁿ` -/
-def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) :
+def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι) :
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     haveI : IsScalarTower R (Matrix ι ι R) M :=
     { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
         rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
-    M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R (ι := ι) M default) where
-  toFun m i := ⟨(single default i 1 : Matrix ι ι R) • m, (single default i 1 : Matrix ι ι R) • m, by
+    M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
+  toFun m i := ⟨(single j i 1 : Matrix ι ι R) • m, (single j i 1 : Matrix ι ι R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
   map_add' _ _ := by simpa using funext fun _ ↦ by rfl
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
@@ -150,7 +150,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) :
     rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
     simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
     split_ifs with h <;> simp [h]
-  invFun m := ∑ i, single i (default : ι) (1 : R) • m i
+  invFun m := ∑ i, single i j (1 : R) • m i
   left_inv m := by simp [← SemigroupAction.mul_smul, ← Finset.sum_smul, sum_single_one]
   right_inv v := by
     dsimp
@@ -162,19 +162,19 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) :
     simp [← SemigroupAction.mul_smul, ← hy]
 
 /-- the natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat` -/
-def MatrixModCat.counitIso :
-    MatrixModCat.toModuleCat R ι ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
-  NatIso.ofComponents (fun X ↦ ((toModuleCatFromModuleCatLinearEquiv R ι X).symm).toModuleIso) <| by
+def MatrixModCat.counitIso (i : ι) :
+    MatrixModCat.toModuleCat R i ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
+  NatIso.ofComponents (fun X ↦ ((toModuleCatFromModuleCatLinearEquiv R X i).symm).toModuleIso) <| by
     intros
     ext
     simp [toModuleCatFromModuleCatLinearEquiv]
 
 @[simps, stacks 074D]
-def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
+def moritaEquivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι
-  inverse := MatrixModCat.toModuleCat R ι
-  unitIso := MatrixModCat.unitIso R ι |>.symm
-  counitIso := MatrixModCat.counitIso R ι
+  inverse := MatrixModCat.toModuleCat R i
+  unitIso := MatrixModCat.unitIso R i |>.symm
+  counitIso := MatrixModCat.counitIso R i
   functor_unitIso_comp X := by
     ext1
     simp only [Functor.id_obj, ModuleCat.toMatrixModCat_obj_carrier,
@@ -188,9 +188,9 @@ def moritaEquivalentToMatrix : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
 
 open ModuleCat.Algebra in
 @[simps, stacks 074D]
-def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
+def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
-  eqv := moritaEquivalentToMatrix R ι
+  eqv := moritaEquivalentToMatrix R i
   linear.map_smul {X Y} f r := by
     ext (v : ι → X)
     simp only [moritaEquivalentToMatrix_functor, ModuleCat.toMatrixModCat_obj_carrier,
@@ -202,5 +202,5 @@ def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
     change _ = ((algebraMap R₀ (Matrix ι ι R) r) • ((ModuleCat.Hom.hom f).mapMatrixModule ι v)) i
     simp [Matrix.algebraMap_matrix_apply]
 
-theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] :
-    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨⟨moritaEquivMatrix R ι R₀⟩⟩
+theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
+    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨⟨moritaEquivMatrix R R₀ i⟩⟩
