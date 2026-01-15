@@ -147,7 +147,7 @@ private def mulTripleAntidiagonal (s t u : Set S) (a : S) : Set (S × S × S) :=
   {x | x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a}
 
 set_option backward.privateInPublic true in
-@[to_additive (attr := simp)]
+@[to_additive]
 private theorem mem_mulTripleAntidiagonal {s t u : Set S} {a : S} {x : S × S × S} :
     x ∈ mulTripleAntidiagonal s t u a ↔
       x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a :=
@@ -164,7 +164,7 @@ def tripleFiber (x : M) : Set (M × M × M) :=
 @[to_additive mem_tripleAddFiber]
 theorem mem_tripleFiber {x : M} {abc : M × M × M} :
     abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by
-  simp [tripleFiber, mulTripleAntidiagonal]
+  simp only [tripleFiber, mem_mulTripleAntidiagonal, Set.mem_univ, true_and]
 
 set_option backward.privateInPublic true in
 /-- Left association equivalence for reindexing nested sums. -/
@@ -201,10 +201,11 @@ private def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ 
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
 set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Equivalence between left and right associated nested fiber sums. -/
-@[to_additive addAssocEquiv
+@[to_additive (attr := irreducible) addAssocEquiv
   /-- Equivalence between left and right associated nested fiber sums. -/]
-private def assocEquiv (x : M) :
+def assocEquiv (x : M) :
     (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ (Σ ae : mulFiber x, mulFiber ae.1.2) :=
   (leftAssocEquiv x).trans (rightAssocEquiv x).symm
 
