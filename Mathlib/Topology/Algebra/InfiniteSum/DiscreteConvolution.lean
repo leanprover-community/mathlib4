@@ -655,29 +655,27 @@ theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
   ringConvolution_eq_sum_mulAntidiagonal f g x
 
-/-- Ring convolution associativity for `HasMulAntidiagonal` types - no hypotheses needed.
-This is the "fully automated" associativity for finite antidiagonal types. -/
+/-- Associativity: `(f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h)` via `MulCauchyProduct.assoc`. -/
 @[to_additive (dont_translate := R) addRingConvolution_assoc_of_hasAntidiagonal
-  /-- Ring convolution associativity for `HasAntidiagonal` types - no hypotheses needed.
-  This is the "fully automated" associativity for finite antidiagonal types like ℕ, ℕ × ℕ. -/]
+  /-- Associativity: `(f ⋆ᵣ₊ g) ⋆ᵣ₊ h = f ⋆ᵣ₊ (g ⋆ᵣ₊ h)` via `CauchyProduct.assoc`. -/]
 theorem ringConvolution_assoc_of_hasMulAntidiagonal (f g h : M → R) :
     (f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h) := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.assoc f g h) x
 
-/-- Identity left law for `HasMulAntidiagonal` types. -/
+/-- Identity left: `MulCauchyProduct.one ⋆ᵣ f = f` via `MulCauchyProduct.one_mul`. -/
 @[to_additive (dont_translate := R) one_addRingConvolution
-  /-- Identity left law for `HasAntidiagonal` types. -/]
+  /-- Identity left: `CauchyProduct.one ⋆ᵣ₊ f = f` via `CauchyProduct.one_mul`. -/]
 theorem one_ringConvolution [DecidableEq M] (f : M → R) :
     MulCauchyProduct.one ⋆ᵣ f = f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.one_mul f) x
 
-/-- Identity right law for `HasMulAntidiagonal` types. -/
+/-- Identity right: `f ⋆ᵣ MulCauchyProduct.one = f` via `MulCauchyProduct.mul_one`. -/
 @[to_additive (dont_translate := R) addRingConvolution_one
-  /-- Identity right law for `HasAntidiagonal` types. -/]
+  /-- Identity right: `f ⋆ᵣ₊ CauchyProduct.one = f` via `CauchyProduct.mul_one`. -/]
 theorem ringConvolution_one [DecidableEq M] (f : M → R) :
     f ⋆ᵣ MulCauchyProduct.one = f := by
   funext x
@@ -686,19 +684,15 @@ theorem ringConvolution_one [DecidableEq M] (f : M → R) :
 
 end CauchyProductBridge
 
-section CauchyProductCommBridge
-
-/-- Commutativity for `HasMulAntidiagonal` types. -/
+/-- Commutativity: `f ⋆ᵣ g = g ⋆ᵣ f` via `MulCauchyProduct.comm`. -/
 @[to_additive (dont_translate := R) addRingConvolution_comm_of_hasAntidiagonal
-  /-- Commutativity for `HasAntidiagonal` types. -/]
+  /-- Commutativity: `f ⋆ᵣ₊ g = g ⋆ᵣ₊ f` via `CauchyProduct.comm`. -/]
 theorem ringConvolution_comm_of_hasMulAntidiagonal [CommMonoid M] [Finset.HasMulAntidiagonal M]
     {R : Type*} [CommSemiring R] [TopologicalSpace R] (f g : M → R) :
     f ⋆ᵣ g = g ⋆ᵣ f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.comm f g) x
-
-end CauchyProductCommBridge
 
 end DiscreteConvolution
 
