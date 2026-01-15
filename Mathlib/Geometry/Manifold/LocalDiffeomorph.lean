@@ -127,6 +127,8 @@ protected def symm : PartialDiffeomorph J I N M n where
   contMDiffOn_toFun := Φ.contMDiffOn_invFun
   contMDiffOn_invFun := Φ.contMDiffOn_toFun
 
+-- todo : trans shouldn't need the models with corners as explicit arguments. This also prevents
+-- us from using dot notation (how to remove these?)
 protected def trans : PartialDiffeomorph I K M P n where
   toPartialEquiv := ((Φ.toOpenPartialHomeomorph).trans (Ψ.toOpenPartialHomeomorph)).toPartialEquiv
   open_source := ((Φ.toOpenPartialHomeomorph).trans (Ψ.toOpenPartialHomeomorph)).open_source
@@ -147,6 +149,7 @@ protected theorem mdifferentiableAt (hn : n ≠ 0) {x : M} (hx : x ∈ Φ.source
     MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
+-- not really sure what to call this/where to put it
 protected def auxModelPartialHomeo {p : M} (hp : IsInteriorPoint I p) :
     OpenPartialHomeomorph H E where
   toFun := I.toFun
@@ -541,6 +544,10 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
     (hp : IsInteriorPoint I p) (hfp : IsInteriorPoint J (f p))
     (hf' : (mfderiv I J f p).ker = ⊥ ∧ (mfderiv I J f p).range = ⊤) :
     IsLocalDiffeomorphAt I J n f p := by
+  -- todo : change hf to only require ContMDiffOn some open set containing p (should be easy change)
+  -- question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
+  -- the hf' hypothesis and the process of using it to obtain g' seems a bit awkward
+
   -- write the function in coordinates and obtain coordinate charts
   set g : E → F := writtenInExtChartAt I J p f with g_def
   set φ₀ := extChartAt I p
@@ -588,6 +595,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
     ).isOpen_inter_preimage U_open (ContinuousLinearEquiv.isOpen)
   -- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
   -- restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
+  -- todo : refactor this part to a separate function since it could be independently useful
   set homeo := (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen _ hUV
   have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
     (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
@@ -620,7 +628,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
   -- compose with the charts to obtain our partial diffeomorphism M → N
   set diffeo := PartialDiffeomorph.trans _ _ (PartialDiffeomorph.trans _ _ φ₁ coord_diffeo) ψ₁.symm
   use diffeo
-  -- rote verification of remaining conditions, mostly just unwrapping definitions
+  -- rote verification of remaining conditions, mostly just unwrapping definitions (todo: clean up)
   constructor
   · show p ∈ diffeo.source
     simp[diffeo, PartialDiffeomorph.trans, toOpenPartialHomeomorph, coord_diffeo, homeo, U, V,
