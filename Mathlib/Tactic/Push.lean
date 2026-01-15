@@ -334,7 +334,7 @@ macro "push_neg" cfg:optConfig : conv => `(conv| push $cfg Not)
 
 /--
 `#push head e`, where `head` is a constant and `e` is an expression,
-will print the `push head` form of `e`.
+prints the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
@@ -344,7 +344,7 @@ macro (name := pushCommand) tk:"#push" cfg:optConfig disch?:(discharger)? ppSpac
 
 /--
 `#push_neg e`, where `e` is an expression,
-which will print the `push_neg` form of `e`.
+prints the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
