@@ -142,7 +142,7 @@ lemma summable_right_one_div_linear_sub_one_div_linear_succ (a : ℤ) :
 
 /- Acting by `S` (which sends `z` to `-z ⁻¹`) swaps the sums and pulls out a factor of
 `(z ^ 2)⁻¹`. -/
-private lemma aux_sum_Ico_S_indentity (N : ℕ) :
+private lemma aux_sum_Ico_S_identity (N : ℕ) :
     ((z : ℂ) ^ 2)⁻¹ * (∑ x ∈ Ico (-N : ℤ) N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + n) ^ 2)⁻¹) =
     ∑' (n : ℤ), ∑ x ∈ Ico (-N : ℤ) N, (((n : ℂ) * z + x) ^ 2)⁻¹ := by
   simp_rw [inv_neg, mul_neg]
@@ -160,7 +160,7 @@ lemma tendsto_double_sum_S_act :
   simp only [HasSum, symmetricIco, tendsto_map'_iff, modular_S_smul, ← Nat.map_cast_int_atTop] at *
   apply this.congr (fun N ↦ ?_)
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk, ← mul_sum]
-    using (aux_sum_Ico_S_indentity z N)
+    using (aux_sum_Ico_S_identity z N)
 
 lemma tsum_symmetricIco_tsum_eq_S_act :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, 1 / ((m : ℂ) * z + n) ^ 2 =

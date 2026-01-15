@@ -156,9 +156,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
         ((G2Term_prod_summable z).prod_factor _)
         (summable_right_one_div_linear_sub_one_div_linear_succ z a)]
       exact tsum_congr (fun b ↦ by simp [eisSummand, G2Term, aux_identity z a b, zpow_ofNat])
-    · conv =>
-        enter [1, N]
-        rw [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z N, add_zero]
+    · simp_rw [tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z , add_zero]
       exact (G2Term_prod_summable z).prod
   · grind [(G2Term_prod_summable z).prod.congr]
   · exact summable_zero.congr
@@ -191,7 +189,7 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
 
 private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     ∑' m : ℤ, ∑' n : ℤ, G2Term z ![m, n] := by
-  rw [ ← (finTwoArrowEquiv _).symm.tsum_eq]
+  rw [← (finTwoArrowEquiv _).symm.tsum_eq]
   exact Summable.tsum_prod' (G2Term_prod_summable z) ((G2Term_prod_summable z).prod_factor)
 
 private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
