@@ -40,12 +40,12 @@ documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 Examples:
 
 ```lean
-example : Continuous (fun x : ℝ => x * sin x) := by fun_prop
+example : Continuous (fun x : ℝ ↦ x * sin x) := by fun_prop
 ```
 
 ```lean
 -- Specify a discharger to solve `ContinuousAt`/`Within`/`On` goals:
-example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun_prop (disch:=assumption)
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by fun_prop (disch := assumption)
 ```
 
 -/
