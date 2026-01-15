@@ -292,3 +292,13 @@ instance : Lattice (ClosedSubmodule R N) where
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
 
 end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace
