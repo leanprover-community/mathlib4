@@ -203,7 +203,7 @@ theorem leadingCoeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     grw [coeff_le_of_bounded (le_of_eq hd.symm) hPbnd, hPdeg]
     norm_num
 
-theorem coeff_eq_of_bounded_iff {n : ℕ} {P : ℝ[X]}
+theorem coeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
   convert sumNodes_eq_sumNodes_T_iff
