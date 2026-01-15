@@ -394,12 +394,12 @@ theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Se
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y (hy : _ < r) ↦ by rw [EMetric.mem_ball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
+    MapsTo (f : α → β) (Metric.eball x r) (Metric.eball (f x) (ratio f * r)) :=
+  fun y (hy : _ < r) ↦ by rw [Metric.mem_eball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
-    MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
+    MapsTo (f : α → β) (Metric.closedEBall x r') (Metric.closedEBall (f x) (ratio f * r')) :=
   fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :

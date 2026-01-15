@@ -230,11 +230,11 @@ namespace EMetric
 variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
-  isOpen_ball.measure_pos μ ⟨x, mem_ball_self hr.bot_lt⟩
+theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (Metric.eball x r) :=
+  Metric.isOpen_eball.measure_pos μ ⟨x, Metric.mem_eball_self hr.bot_lt⟩
 
-theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
+theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (Metric.closedEBall x r) :=
+  (measure_ball_pos μ x hr).trans_le (measure_mono Metric.eball_subset_closedEBall)
 
 end EMetric
 

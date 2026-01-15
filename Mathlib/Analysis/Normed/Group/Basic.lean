@@ -444,7 +444,7 @@ theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, 
 
 @[to_additive]
 theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
-  rw [Metric.inseparable_iff, dist_one_right]
+  rw [Metric.inseparable_iff_dist, dist_one_right]
 
 @[to_additive]
 lemma dist_one_left (a : E) : dist 1 a = ‖a‖ := by rw [dist_comm, dist_one_right]
@@ -940,8 +940,8 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
   rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
 
 @[to_additive]
-theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
-  rw [EMetric.mem_ball, edist_one_eq_enorm]
+theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ Metric.eball 1 r ↔ ‖a‖ₑ < r := by
+  rw [Metric.mem_eball, edist_one_eq_enorm]
 
 end ENorm
 

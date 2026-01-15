@@ -142,12 +142,12 @@ theorem right_inv {f : α → β} {g : β → α} (h : Isometry f) (hg : RightIn
   fun x y => by rw [← h, hg _, hg _]
 
 theorem preimage_emetric_closedBall (h : Isometry f) (x : α) (r : ℝ≥0∞) :
-    f ⁻¹' EMetric.closedBall (f x) r = EMetric.closedBall x r := by
+    f ⁻¹' Metric.closedEBall (f x) r = Metric.closedEBall x r := by
   ext y
   simp [h.edist_eq]
 
 theorem preimage_emetric_ball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
-    f ⁻¹' EMetric.ball (f x) r = EMetric.ball x r := by
+    f ⁻¹' Metric.eball (f x) r = Metric.eball x r := by
   ext y
   simp [h.edist_eq]
 
@@ -160,11 +160,11 @@ theorem ediam_range (hf : Isometry f) : Metric.ediam (range f) = Metric.ediam (u
   exact hf.ediam_image univ
 
 theorem mapsTo_emetric_ball (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (EMetric.ball x r) (EMetric.ball (f x) r) :=
+    MapsTo f (Metric.eball x r) (Metric.eball (f x) r) :=
   (hf.preimage_emetric_ball x r).ge
 
 theorem mapsTo_emetric_closedBall (hf : Isometry f) (x : α) (r : ℝ≥0∞) :
-    MapsTo f (EMetric.closedBall x r) (EMetric.closedBall (f x) r) :=
+    MapsTo f (Metric.closedEBall x r) (Metric.closedEBall (f x) r) :=
   (hf.preimage_emetric_closedBall x r).ge
 
 /-- The injection from a subtype is an isometry -/
@@ -498,22 +498,22 @@ theorem ediam_preimage (h : α ≃ᵢ β) (s : Set β) : Metric.ediam (h ⁻¹' 
 
 @[simp]
 theorem preimage_emetric_ball (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
-    h ⁻¹' EMetric.ball x r = EMetric.ball (h.symm x) r := by
+    h ⁻¹' Metric.eball x r = Metric.eball (h.symm x) r := by
   rw [← h.isometry.preimage_emetric_ball (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem preimage_emetric_closedBall (h : α ≃ᵢ β) (x : β) (r : ℝ≥0∞) :
-    h ⁻¹' EMetric.closedBall x r = EMetric.closedBall (h.symm x) r := by
+    h ⁻¹' Metric.closedEBall x r = Metric.closedEBall (h.symm x) r := by
   rw [← h.isometry.preimage_emetric_closedBall (h.symm x) r, h.apply_symm_apply]
 
 @[simp]
 theorem image_emetric_ball (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
-    h '' EMetric.ball x r = EMetric.ball (h x) r := by
+    h '' Metric.eball x r = Metric.eball (h x) r := by
   rw [← h.preimage_symm, h.symm.preimage_emetric_ball, symm_symm]
 
 @[simp]
 theorem image_emetric_closedBall (h : α ≃ᵢ β) (x : α) (r : ℝ≥0∞) :
-    h '' EMetric.closedBall x r = EMetric.closedBall (h x) r := by
+    h '' Metric.closedEBall x r = Metric.closedEBall (h x) r := by
   rw [← h.preimage_symm, h.symm.preimage_emetric_closedBall, symm_symm]
 
 /-- The (bundled) homeomorphism associated to an isometric isomorphism. -/

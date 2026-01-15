@@ -57,7 +57,7 @@ theorem notConvergentSeq_antitone [Preorder ι] : Antitone (notConvergentSeq f g
 theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
-  simp_rw [EMetric.tendsto_atTop, ae_iff] at hfg
+  simp_rw [Metric.tendsto_atTop_iff_edist, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]

@@ -109,6 +109,7 @@ theorem CauchySeq.of_dist_le_tendsto_zero {s : β → α} (b : β → ℝ)
 
 /-- If the distance between `s n` and `s m`, `n, m ≥ N` is bounded above by `b N`
 and `b` converges to zero, then `s` is a Cauchy sequence. -/
+@[deprecated CauchySeq.of_dist_le_tendsto_zero (since := "2026-01-14")]
 theorem CauchySeq.of_dist_le_tendsto_zero' {s : β → α} (b : β → ℝ)
     (h : ∀ n m N : β, N ≤ n → N ≤ m → dist (s n) (s m) ≤ b N) (h₀ : Tendsto b atTop (𝓝 0)) :
     CauchySeq s :=
@@ -161,7 +162,8 @@ theorem cauchySeq_iff_dist_le_tendsto_zero {s : ℕ → α} :
     refine lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ ?_) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
-   fun ⟨b, _, b_bound, b_lim⟩ => CauchySeq.of_dist_le_tendsto_zero' b b_bound b_lim⟩
+   fun ⟨b, _, b_bound, b_lim⟩ =>
+     .of_dist_le_tendsto_zero b (fun n m hle ↦ b_bound _ _ _ le_rfl hle) b_lim⟩
 
 lemma Metric.exists_subseq_bounded_of_cauchySeq (u : ℕ → α) (hu : CauchySeq u) (b : ℕ → ℝ)
     (hb : ∀ n, 0 < b n) :

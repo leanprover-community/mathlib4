@@ -61,7 +61,7 @@ lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomCla
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : ∀ x y, Inseparable x y → f x = f y :=
   fun x y h ↦ eq_of_sub_eq_zero <| by
     rw [← map_sub]
-    rw [Metric.inseparable_iff, dist_eq_norm] at h
+    rw [Metric.inseparable_iff_dist, dist_eq_norm] at h
     exact hf (x - y) h
 
 /-- The lift of a group hom to the separation quotient as a group hom. -/

@@ -32,7 +32,7 @@ variable {x : γ} {s : Set γ}
 
 -- see Note [lower instance priority]
 instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
-  t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
+  t0 _ _ h := eq_of_dist_eq_zero h.dist_eq_zero
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -46,7 +46,7 @@ theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
 abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
-  eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
+  eq_of_dist_eq_zero hdist := (Metric.inseparable_iff_dist.2 hdist).eq
 
 -- see Note [lower instance priority]
 /-- A metric space induces an emetric space -/

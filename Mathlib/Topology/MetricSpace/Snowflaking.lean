@@ -311,51 +311,51 @@ instance : PseudoEMetricSpace (Snowflaking X α hα₀ hα₁) where
 
 @[simp]
 theorem preimage_ofSnowflaking_emetricBall (x : X) (r : ℝ≥0∞) :
-    ofSnowflaking ⁻¹' EMetric.ball x r =
-      EMetric.ball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
+    ofSnowflaking ⁻¹' Metric.eball x r =
+      Metric.eball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
   simp (disch := positivity) [ENNReal.rpow_lt_rpow_iff]
 
 @[simp]
 theorem image_toSnowflaking_emetricBall (x : X) (r : ℝ≥0∞) :
-    toSnowflaking '' EMetric.ball x r =
-      EMetric.ball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
+    toSnowflaking '' Metric.eball x r =
+      Metric.eball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   rw [image_toSnowflaking_eq_preimage, preimage_ofSnowflaking_emetricBall]
 
 @[simp]
 theorem preimage_toSnowflaking_emetricBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
-    toSnowflaking ⁻¹' EMetric.ball x d = EMetric.ball x.ofSnowflaking (d ^ α⁻¹) := by
+    toSnowflaking ⁻¹' Metric.eball x d = Metric.eball x.ofSnowflaking (d ^ α⁻¹) := by
   rw [toSnowflaking.preimage_eq_iff_eq_image, image_toSnowflaking_emetricBall,
     toSnowflaking_ofSnowflaking, ENNReal.rpow_inv_rpow hα₀.ne']
 
 @[simp]
 theorem image_ofSnowflaking_emetricBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
-    ofSnowflaking '' EMetric.ball x d = EMetric.ball x.ofSnowflaking (d ^ α⁻¹) := by
+    ofSnowflaking '' Metric.eball x d = Metric.eball x.ofSnowflaking (d ^ α⁻¹) := by
   rw [image_ofSnowflaking_eq_preimage, preimage_toSnowflaking_emetricBall]
 
 @[simp]
 theorem preimage_ofSnowflaking_emetricClosedBall (x : X) (r : ℝ≥0∞) :
-    ofSnowflaking ⁻¹' EMetric.closedBall x r =
-      EMetric.closedBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
+    ofSnowflaking ⁻¹' Metric.closedEBall x r =
+      Metric.closedEBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
   simp (disch := positivity) [ENNReal.rpow_le_rpow_iff]
 
 @[simp]
 theorem image_toSnowflaking_emetricClosedBall (x : X) (r : ℝ≥0∞) :
-    toSnowflaking '' EMetric.closedBall x r =
-      EMetric.closedBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
+    toSnowflaking '' Metric.closedEBall x r =
+      Metric.closedEBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   rw [image_toSnowflaking_eq_preimage, preimage_ofSnowflaking_emetricClosedBall]
 
 @[simp]
 theorem preimage_toSnowflaking_emetricClosedBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
-    toSnowflaking ⁻¹' EMetric.closedBall x d = EMetric.closedBall x.ofSnowflaking (d ^ α⁻¹) := by
+    toSnowflaking ⁻¹' Metric.closedEBall x d = Metric.closedEBall x.ofSnowflaking (d ^ α⁻¹) := by
   rw [toSnowflaking.preimage_eq_iff_eq_image, image_toSnowflaking_emetricClosedBall,
     toSnowflaking_ofSnowflaking, ENNReal.rpow_inv_rpow hα₀.ne']
 
 @[simp]
 theorem image_ofSnowflaking_emetricClosedBall (x : Snowflaking X α hα₀ hα₁) (d : ℝ≥0∞) :
-    ofSnowflaking '' EMetric.closedBall x d =
-      EMetric.closedBall x.ofSnowflaking (d ^ α⁻¹) := by
+    ofSnowflaking '' Metric.closedEBall x d =
+      Metric.closedEBall x.ofSnowflaking (d ^ α⁻¹) := by
   rw [image_ofSnowflaking_eq_preimage, preimage_toSnowflaking_emetricClosedBall]
 
 @[simp]
