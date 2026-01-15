@@ -251,7 +251,7 @@ def isColimitGluedCocone : IsColimit d.gluedCocone := by
       have := Over.w ((d.isColimit i).desc (Functor.mapCocone _ s))
       dsimp at this
       dsimp
-      simp only [glued, Category.assoc, Scheme.IsLocallyDirected.openCover_f, 𝒱]
+      simp only [glued, Category.assoc, 𝒱]
       rw [pullback.condition, reassoc_of% this]
       simp
   · intro s a
