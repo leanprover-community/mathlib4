@@ -104,7 +104,7 @@ variable [CommRing R] [CommRing A] [Nontrivial A]
   rw [finrank_eq_card_basis b₁, finrank_eq_card_basis b₂]
 
 variable (R) in
-lemma finrank_span_eq_finrank_span [IsPrincipalIdealRing R] [IsDomain R] [NoZeroSMulDivisors R M]
+lemma finrank_span_eq_finrank_span [IsPrincipalIdealRing R] [IsDomain R] [IsTorsionFree R M]
     (s : Set M) [Module.Finite R (span R s)] :
     finrank A (span A s) = finrank R (span R s) := by
   rw [← span_span_of_tower R, finrank_span_eq_finrank]
