@@ -59,8 +59,6 @@ Height, absolute value
 
 namespace Height
 
-universe u
-
 /-!
 ### Families of admissible absolute values
 
