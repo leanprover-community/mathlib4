@@ -359,6 +359,16 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
 
+@[ext high]
+lemma ringHom_ext {C : Type*} [Semiring C] {f g : A ⊗[R] B →+* C}
+    (h₁ : f.comp includeLeftRingHom = g.comp includeLeftRingHom)
+    (h₂ : f.comp includeRight.toRingHom = g.comp includeRight.toRingHom) : f = g := by
+  ext x
+  induction x with
+  | zero => simp
+  | add x y _ _ => simp_all
+  | tmul x y => simpa [← map_mul] using congr($h₁ x * $h₂ y)
+
 end ext
 
 end Semiring

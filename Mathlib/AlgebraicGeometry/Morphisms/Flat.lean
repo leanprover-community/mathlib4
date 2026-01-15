@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
@@ -152,5 +153,276 @@ lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   rw [HasRingHomProperty.Spec_iff (P := @Flat),
     RingHom.FaithfullyFlat.iff_flat_and_comap_surjective, surjective_iff]
   rfl
+
+section sections
+
+/-!
+## Sections of fibered products
+
+Suppose we are given the following cartesian square:
+```
+Y --g-→ X
+|       |
+iY      iX
+↓       |
+T --f-→ S
+```
+Let `Uₛ` be an open of `S`, `Uₓ` and `Uₜ` be opens of `X` and `T` mapping into `Uₛ`.
+One could obtain a canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
+
+We show that this map is
+1. bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
+2. injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
+3. bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
+4. injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
+  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
+5. bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
+  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
+
+-/
+
+
+variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
+  (H : IsPullback g iY iX f)
+  {US : S.Opens} {UT : T.Opens}
+  {UX : X.Opens} (hUST : UT ≤ f ⁻¹ᵁ US) (hUSX : UX ≤ iX ⁻¹ᵁ US)
+  {UY : Y.Opens} (hUY : UY = g ⁻¹ᵁ UX ⊓ iY ⁻¹ᵁ UT)
+
+/-- The canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
+This is an isomorphism under various circumstances. -/
+abbrev pushoutSection : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ⟶ Γ(Y, UY) :=
+  pushout.desc (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*]))
+    (by simp only [Scheme.Hom.appLE_comp_appLE, H.w])
+
+lemma isIso_pushoutSection_iff :
+    IsIso (pushoutSection H hUST hUSX hUY) ↔ IsPushout (iX.appLE US UX hUSX) (f.appLE US UT hUST)
+      (g.appLE UX UY (by simp [*])) (iY.appLE UT UY (by simp [*])) :=
+  ⟨fun _ ↦ .of_iso (.of_hasPushout _ _) (.refl _) (.refl _) (.refl _)
+    (asIso (pushoutSection H hUST hUSX hUY)) (by simp) (by simp) (by simp) (by simp),
+    fun h ↦ inferInstanceAs (IsIso h.isoPushout.inv)⟩
+
+attribute [local simp] IsAffineOpen.isoSpec_hom in
+attribute [local simp← ] Scheme.Hom.resLE_eq_morphismRestrict in
+lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
+    (hUX : IsAffineOpen UX) : IsIso (pushoutSection H hUST hUSX hUY) := by
+  refine (isIso_pushoutSection_iff ..).mpr (IsPullback.of_map_of_faithful Scheme.Spec ?_).unop
+  have : IsAffine _ := hUS
+  have : IsAffine _ := hUT
+  have : IsAffine _ := hUX
+  have hUY' : IsAffineOpen UY :=
+    .of_isIso (Scheme.Hom.isPullback_resLE H hUST hUSX hUY).isoPullback.hom
+  exact .of_iso (Scheme.Hom.isPullback_resLE H hUST hUSX hUY).flip hUY'.isoSpec hUT.isoSpec
+    hUX.isoSpec hUS.isoSpec (by simp) (by simp) (by simp) (by simp)
+
+open TensorProduct in
+lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
+    (hV : ∀ i, IsIso (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl))
+    (hT : (f.appLE US UT hUST).hom.Flat) :
+    Mono (pushoutSection H hUST hUSX hUY) := by
+  have (i : _) : VX i ≤ iX ⁻¹ᵁ US := by clear hV; aesop
+  classical
+  algebraize [(iX.appLE US UX hUSX).hom, (f.appLE US UT hUST).hom]
+  let (i : _) := (iX.appLE US (VX i) (by aesop)).hom.toAlgebra
+  let ψ : Γ(X, UX) →ₐ[Γ(S, US)] Π i, Γ(X, VX i) := Pi.algHom _ _ fun i ↦
+    ⟨(X.presheaf.map (homOfLE (hVU ▸ le_iSup VX i)).op).hom, fun r ↦ by
+      dsimp [RingHom.algebraMap_toAlgebra]
+      simp only [← CommRingCat.comp_apply, Scheme.Hom.appLE_map]⟩
+  have hψ : Function.Injective ψ := by
+    intro s t est
+    apply X.IsSheaf.section_ext fun x hx ↦ ?_
+    simp only [← hVU, Opens.mem_iSup] at hx
+    obtain ⟨i, hxi⟩ := hx
+    exact ⟨_, _, hxi, congr($est i)⟩
+  let ψY : Γ(Y, UY) →+* Π i, Γ(Y, g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT) := Pi.ringHom fun i ↦
+      (Y.presheaf.map (homOfLE (by subst hUY hVU; gcongr; exact le_iSup _ _)).op).hom
+  rw [@ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  refine .of_comp (f := ψY) ?_
+  have hψ' : Function.Injective (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ) :=
+    Module.Flat.lTensor_preserves_injective_linearMap ψ.toLinearMap hψ
+  cases nonempty_fintype ι
+  let e₁ : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
+      .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
+    (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm
+  let e₂ : (Γ(T, UT) ⊗[Γ(S, US)] Π i, Γ(X, VX i)) ≃+* Π i, Γ(Y, g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT) :=
+    (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).toRingEquiv.trans (RingEquiv.piCongrRight fun i ↦
+      (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.commRingCatIsoToRingEquiv.trans
+      (asIso (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl)).commRingCatIsoToRingEquiv)
+  convert (e₂.injective.comp hψ').comp e₁.commRingCatIsoToRingEquiv.injective
+  suffices (ψY.comp (pushoutSection H hUST hUSX hUY).hom).comp e₁.inv.hom = e₂.toRingHom.comp
+      (Algebra.TensorProduct.map (AlgHom.id Γ(T, UT) Γ(T, UT)) ψ).toRingHom by
+    ext1 x; simpa using congr($this (e₁.hom x))
+  ext1
+  · have H₁ : e₁.inv.hom.comp (algebraMap Γ(T, UT) _) = (pushout.inr (C := CommRingCat) _ _).hom :=
+      congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inr_isoPushout_hom).hom)
+    have H₂ (x j) : e₂ (x ⊗ₜ[↑Γ(S, US)] 1) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+        (pushout.inr (C := CommRingCat) _ _ x) := congr(pushoutSection H hUST (UX := VX j) _ rfl
+        ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
+          ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inr_isoPushout_hom) x))
+    simp only [RingHom.comp_assoc, H₁]
+    ext x j
+    simp [ψY, H₂, ← CommRingCat.comp_apply, -CommRingCat.hom_comp, -ConcreteCategory.comp_apply,
+      pushoutSection]
+  · have H₁ : e₁.inv.hom.comp Algebra.TensorProduct.includeRight.toRingHom =
+        (pushout.inl (C := CommRingCat) _ _).hom :=
+      congr($((CommRingCat.isPushout_tensorProduct _ _ _).flip.inl_isoPushout_hom).hom)
+    have H₂ (x j) : e₂ (1 ⊗ₜ[↑Γ(S, US)] x) j = pushoutSection H hUST (UX := VX j) (by aesop) rfl
+        (pushout.inl (C := CommRingCat) _ _ (x j)) := congr(pushoutSection H hUST (UX := VX j) _ rfl
+        ($((CommRingCat.isPushout_tensorProduct ↑Γ(S, US)
+          ↑Γ(T, UT) ↑Γ(X, VX j)).flip.inl_isoPushout_hom) (x j)))
+    simp only [RingHom.comp_assoc, H₁]
+    ext x j
+    simp [ψY, H₂, ← CommRingCat.comp_apply, -CommRingCat.hom_comp, -ConcreteCategory.comp_apply,
+      pushoutSection, ψ]
+
+lemma isIso_pushoutSection_of_iSup_eq
+    {ι : Type u} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
+    (hV : ∀ i, IsIso (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl))
+    (hV' : ∀ i j, Mono (pushoutSection H hUST
+      (show VX i ⊓ VX j ≤ _ from inf_le_left.trans (by clear hV; aesop)) rfl))
+    (hT : (f.appLE US UT hUST).hom.Flat) :
+    IsIso (pushoutSection H hUST hUSX hUY) := by
+  classical
+  let D := Pairwise.diagram VX
+  have h : iSup D.obj = UX := by
+    refine le_antisymm (iSup_le_iff.mpr ?_) ?_
+    · subst hVU; rintro (i | ⟨i, j⟩); exacts [le_iSup VX _, inf_le_left.trans (le_iSup VX _)]
+    · subst hVU; exact iSup_le_iff.mpr fun i ↦ le_iSup D.obj (.single i)
+  let c₀ : Cocone D := (colimit.cocone _).extend
+    (eqToIso (Y := UX) (by simpa [CompleteLattice.colimit_eq_iSup])).hom
+  let F := Under.lift _ ((Functor.const _).map (iX.appLE US UX hUSX) ≫
+    ((X.presheaf.mapCone c₀.op).π)) ⋙ Under.pushout (f.appLE US UT hUST) ⋙ Under.forget _
+  let G : X.Opens ⥤ Y.Opens :=
+    { obj U := g ⁻¹ᵁ U ⊓ iY ⁻¹ᵁ UT, map h := homOfLE (by gcongr; exact h.le) }
+  let αF : F ⟶ D.op ⋙ G.op ⋙ Y.presheaf :=
+  { app i := (pushout.congrHom (by simp) rfl).hom ≫
+      pushoutSection H hUST (by grw [← hUSX, ← h]; exact le_iSup D.obj i.unop) rfl }
+  let c : Cone F := (Under.pushout (f.appLE US UT hUST) ⋙ Under.forget _).mapCone
+    (Under.liftCone (X.presheaf.mapCone c₀.op) _)
+  have := CommRingCat.Under.preservesFiniteLimits_of_flat _ hT
+  cases nonempty_fintype ι
+  let hc : IsLimit c :=
+    haveI HX := ((TopCat.Presheaf.isSheaf_iff_isSheafPreservesLimitPairwiseIntersections
+      _).mp X.IsSheaf VX).preserves (c := c₀.op)
+    haveI HX := (HX (IsColimit.extendIso _ (colimit.isColimit _)).op).some
+    isLimitOfPreserves (Under.pushout _ ⋙ Under.forget _) (Under.isLimitLiftCone _ _ HX)
+  let c'₀ : Cocone (D ⋙ G) := (colimit.cocone _).extend
+    (eqToIso (Y := UY) (by
+      simp only [colimit.cocone_x, CompleteLattice.colimit_eq_iSup]
+      eta_expand
+      dsimp [G]
+      rw [← iSup_inf_eq, ← Scheme.Hom.preimage_iSup, h, hUY])).hom
+  let c' : Cone (D.op ⋙ G.op ⋙ Y.presheaf) := Y.presheaf.mapCone c'₀.op
+  let hc' : IsLimit c' := by
+    letI e : D ⋙ G ≅ Pairwise.diagram fun i ↦ g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT :=
+      NatIso.ofComponents (fun | .single i => .refl _ | .pair i j => eqToIso (by
+        dsimp [D, G]; rw [Scheme.Hom.preimage_inf, inf_inf_distrib_right]))
+    haveI HX := ((TopCat.Presheaf.isSheaf_iff_isSheafPreservesLimitPairwiseIntersections _).mp
+      Y.IsSheaf (fun i ↦ g ⁻¹ᵁ VX i ⊓ iY ⁻¹ᵁ UT)).preserves
+        (c := ((Cocones.precompose e.inv).obj c'₀).op)
+    exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerRight (NatIso.op e.symm) Y.presheaf) _)
+      ((HX ((IsColimit.precomposeInvEquiv e _).symm
+        (IsColimit.extendIso _ (colimit.isColimit _))).op).some.ofIsoLimit (Cones.ext (.refl _)))
+  have HαF₂ (i j : _) : Mono (αF.app (.op <| .pair i j)) := by infer_instance
+  let f₁ : c.pt ⟶ c'.pt := hc'.lift ((Cones.postcompose αF).obj c)
+  let f₂ : c'.pt ⟶ c.pt := hc.lift ⟨c'.pt, ⟨fun
+    | .op (.single i) => c'.π.app _ ≫ inv (αF.app (.op <| .single i))
+    | .op (.pair i j) => c'.π.app (.op (.single i)) ≫ inv (αF.app (.op <| .single i)) ≫
+        F.map (Quiver.Hom.op <| Pairwise.Hom.left i j), by
+    rintro ⟨i⟩ ⟨j⟩ f
+    obtain ⟨i | ⟨i, j⟩ | ⟨i, j⟩ | ⟨i, j⟩, rfl⟩ :=
+      (show Function.Surjective Quiver.Hom.op from Quiver.Hom.opEquiv.surjective) f
+    · simp [show Pairwise.Hom.id_single i = 𝟙 (Pairwise.single i) from rfl]
+    · simp [show Pairwise.Hom.id_pair i j = 𝟙 (Pairwise.pair i j) from rfl]
+    · simp
+    · rw [← cancel_mono (αF.app _)]
+      simpa using (c'.w (Quiver.Hom.op <| Pairwise.Hom.left i j)).trans
+        (c'.w (Quiver.Hom.op <| Pairwise.Hom.right i j)).symm⟩⟩
+  let e : c.pt ≅ c'.pt := by
+    refine ⟨f₁, f₂, hc.hom_ext ?_, hc'.hom_ext ?_⟩
+    · rintro ⟨i | ⟨i, j⟩⟩ <;> simp [f₁, f₂]
+    · rintro ⟨i | ⟨i, j⟩⟩
+      · simp [f₁, f₂]
+      · simpa [f₁, f₂] using c'.w (Quiver.Hom.op <| Pairwise.Hom.left i j)
+  convert e.isIso_hom using 1
+  · refine hc'.hom_ext fun i ↦ ?_
+    rw [hc'.fac]
+    ext1
+    · simp [αF, c, Under.liftCone, c', c₀]
+    · simp [αF, c, c']
+
+lemma mono_pushoutSection_of_isCompact_of_flat_right [Flat f]
+    (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT) (hUX : IsCompact (X := X) UX) :
+    Mono (pushoutSection H hUST hUSX hUY) := by
+  classical
+  obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
+  have := hI.to_subtype
+  exact mono_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
+    eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2)
+    (Flat.flat_of_affine_subset ⟨_, hUS⟩ ⟨_, hUT⟩ _)
+
+lemma mono_pushoutSection_of_isCompact_of_flat_left [Flat iX]
+    (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX) (hUT : IsCompact (X := T) UT) :
+    Mono (pushoutSection H hUST hUSX hUY) := by
+  suffices Mono (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
+    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert this; cat_disch
+  exact mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUX hUT
+
+lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat f]
+    (hUS : IsAffineOpen US) (hUT : IsAffineOpen UT)
+    (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX) :
+    IsIso (pushoutSection H hUST hUSX hUY) := by
+  classical
+  obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
+  have hIUX (i : I) : i.1 ≤ UX := by rw [e]; intro i; aesop
+  have := hI.to_subtype
+  exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
+    eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2) (fun i j ↦
+    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.2
+    i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
+    (Flat.flat_of_affine_subset ⟨_, hUS⟩ ⟨_, hUT⟩ _)
+
+lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat iX]
+    (hUS : IsAffineOpen US) (hUX : IsAffineOpen UX)
+    (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT) :
+    IsIso (pushoutSection H hUST hUSX hUY) := by
+  suffices IsIso (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
+    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert this; cat_disch
+  exact isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS hUX hUT hUT'
+
+lemma mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat iX]
+    (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT)
+    (hUX : IsCompact (X := X) UX) (hf : (f.appLE US UT hUST).hom.Flat) :
+    Mono (pushoutSection H hUST hUSX hUY) := by
+  obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUX
+  have := hI.to_subtype
+  exact mono_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
+    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_right _ _ _ _ hUS i.1.2 hUT hUT') hf
+
+lemma mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat f]
+    (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT)
+    (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX)
+    (hiX : (iX.appLE US UX hUSX).hom.Flat) :
+    Mono (pushoutSection H hUST hUSX hUY) := by
+  suffices Mono (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
+    rw [← mono_comp_iff_of_isIso (pushoutSymmetry _ _).hom]; convert this; cat_disch
+  exact mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat _ _ _ _ hUS hUX hUX' hUT hiX
+
+include H in
+lemma isIso_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat [Flat f]
+    (hUS : IsAffineOpen US) (hUT : IsCompact (X := T) UT) (hUT' : IsQuasiSeparated (α := T) UT)
+    (hUX : IsCompact (X := X) UX) (hUX' : IsQuasiSeparated (α := X) UX)
+    (hiX : (iX.appLE US UX hUSX).hom.Flat) :
+    IsIso (pushoutSection H hUST hUSX hUY) := by
+  suffices IsIso (pushoutSection H.flip hUSX hUST (hUY.trans (inf_comm _ _))) by
+    rw [← isIso_comp_left_iff (pushoutSymmetry _ _).hom]; convert this; cat_disch
+  obtain ⟨I, hI, e⟩ := isCompact_iff_finite_and_eq_biUnion_affineOpens.mp hUT
+  have hIUT (i : I) : i.1 ≤ UT := by rw [e]; intro i; aesop
+  have := hI.to_subtype
+  exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
+    (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_right _ _ _ _ hUS i.1.2 hUX hUX')
+    (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat _ _ _ _ hUS hUX hUX'
+    (hUT' _ _ (hIUT _) i.1.1.2 i.1.2.isCompact (hIUT _) j.1.1.2 j.1.2.isCompact) hiX) hiX
+
+end sections
 
 end AlgebraicGeometry
