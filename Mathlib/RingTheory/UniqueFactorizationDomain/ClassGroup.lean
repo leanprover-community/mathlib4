@@ -27,7 +27,7 @@ which are known to be Normalized GCD Domains.
 
 open scoped nonZeroDivisors Pointwise BigOperators
 
-open IsLocalization IsFractionRing
+open IsLocalization IsFractionRing FractionalIdeal
 
 section CommRing
 
@@ -116,9 +116,11 @@ theorem NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
-  have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := isUnit_num.mpr ⟨I, rfl⟩
-  have hJprin : J.IsPrincipal := ideal_isPrincipal_of_isUnit_fractionalIdeal J hJunit
-  exact isPrincipal_of_num_isPrincipal (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
+  have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) :=
+    FractionalIdeal.isUnit_num.mpr ⟨I, rfl⟩
+  have hJprin : J.IsPrincipal := Ideal.isPrincipal_of_isUnit_fractionalIdeal J hJunit
+  exact FractionalIdeal.isPrincipal_of_num_isPrincipal
+    (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
 
 /-- In a normalized GCD Domain, every class in the ideal class group is `1`. -/
 theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 :=
@@ -139,7 +141,7 @@ noncomputable instance UniqueFactorizationMonoid.instSubsingletonClassGroup :
     Subsingleton (ClassGroup R) :=
   letI : NormalizedGCDMonoid R :=
     Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
-  NormalizedGCDMonoid.instSubsingletonClassGroup R
+  NormalizedGCDMonoid.instSubsingletonClassGroup
 
 end UFD
 end
