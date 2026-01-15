@@ -312,6 +312,8 @@ lemma Ψ_two : W.Ψ 2 = W.ψ₂ := by
 lemma Ψ_three : W.Ψ 3 = C W.Ψ₃ := by
   simp [Ψ, show ¬Even (3 : ℤ) by decide]
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- `IsLeftCancelMulZero R[X][Y]` timeout
 @[simp]
 lemma Ψ_four : W.Ψ 4 = C W.preΨ₄ * W.ψ₂ := by
   simp [Ψ, show ¬Odd (4 : ℤ) by decide]
