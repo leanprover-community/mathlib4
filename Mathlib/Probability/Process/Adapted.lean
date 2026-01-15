@@ -19,7 +19,7 @@ some basic facts about them.
 
 * `MeasureTheory.Adapted`: a sequence of functions `u` is said to be adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-measurable
-* `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be adapted to a
+* `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be strongly adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-strongly measurable
 * `MeasureTheory.ProgMeasurable`: a sequence of functions `u` is said to be progressively
   measurable with respect to a filtration `f` if at each point in time `i`, `u` restricted to
