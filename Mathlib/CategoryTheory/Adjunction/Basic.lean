@@ -524,8 +524,8 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
     unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
-      (associator _ _ _ ).inv) G ≫ (associator _ _ _).hom
-    counit := (associator _ _ _ ).inv ≫ whiskerRight ((associator _ _ _ ).hom ≫
+      (associator _ _ _).inv) G ≫ (associator _ _ _).hom
+    counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
       whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]

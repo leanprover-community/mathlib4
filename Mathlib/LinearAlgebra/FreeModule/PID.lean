@@ -326,7 +326,7 @@ noncomputable def Submodule.basisOfPidOfLESpan {ι : Type*} [Finite ι] {b : ι 
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
     have := exists_maximal_linearIndepOn R s
@@ -355,7 +355,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       simpa using ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : LinearMap.ker φ = ⊥ := @LinearMap.ker_lsmul R M _ _ _ _ _ hA
+    have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
     let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
     have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`
@@ -373,30 +373,29 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     exact ⟨n, b.map ψ.symm⟩
 
 theorem Module.free_of_finite_type_torsion_free [_root_.Finite ι] {s : ι → M}
-    (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Module.Free R M := by
+    (hs : span R (range s) = ⊤) [IsTorsionFree R M] : Module.Free R M := by
   cases nonempty_fintype ι
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree hs
   exact Module.Free.of_basis b
 
 /-- A finite type torsion free module over a PID admits a basis. -/
 noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
-    [NoZeroSMulDivisors R M] : Σ n : ℕ, Basis (Fin n) R M :=
+    [IsTorsionFree R M] : Σ n : ℕ, Basis (Fin n) R M :=
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
 
-instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
+instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [IsTorsionFree R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σ n, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 
 instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
-    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+    [hI₂ : IsTorsionFree R I] : Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
-  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  have : IsTorsionFree R (restrictScalars R I) := hI₂
   change Module.Free R (restrictScalars R I)
   exact Module.free_of_finite_type_torsion_free'
 
-theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
-    Module.Free R M ↔ NoZeroSMulDivisors R M :=
+theorem Module.free_iff_isTorsionFree [Module.Finite R M] : Free R M ↔ IsTorsionFree R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 end StrongRankCondition
