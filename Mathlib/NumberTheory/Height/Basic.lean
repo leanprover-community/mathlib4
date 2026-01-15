@@ -40,8 +40,9 @@ We define the following variants.
 * `Height.mulHeight₁ x` and `Height.logHeight₁ x` for `x : K`.
   This is the height of an element of `K`.
 * `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
-  of a tuple of elements of `K` representing a point in projective space.
-  It is invariant under scaling by nonzero elements of `K` (for `x ≠ 0`).
+  of a tuple of elements of `K` representing a point in projective space. When `x = 0`, we
+  define the multiplicative height to be `1` (so the loarithmic height is `0`).
+  It is invariant under scaling by nonzero elements of `K`.
 * `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
 * (TODO)
@@ -154,6 +155,8 @@ lemma zero_le_logHeight₁ (x : K) : 0 ≤ logHeight₁ x :=
 We define the multiplicative height of a nonzero tuple `x : ι → K` as the product of the maxima
 of `v` on `x`, as `v` runs through the relevant absolute values of `K`. As usual, the
 logarithmic height is the logarithm of the multiplicative height.
+When `x = 0`, we define the multiplicative height to be `1`; this is a convenient "junk value",
+which allows to avoid the condition `x ≠ 0` in most of the results.
 
 For a finitely supported function `x : ι →₀ K`, we define the height as the height of `x`
 restricted to its support.
@@ -161,20 +164,42 @@ restricted to its support.
 
 variable {ι : Type*}
 
-/-- The multiplicative height of a tuple of elements of `K`. -/
+/-- The multiplicative height of a tuple of elements of `K`.
+For the zero tuple we take the junk value `1`. -/
 def mulHeight (x : ι → K) : ℝ :=
-  (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i)
+  have : Decidable (x = 0) := Classical.propDecidable _
+  if x = 0 then 1 else
+    (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i)
 
-lemma mulHeight_eq (x : ι → K) :
+lemma mulHeight_eq {x : ι → K} (hx : x ≠ 0) :
     mulHeight x =
-      (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i) :=
-  rfl
+      (archAbsVal.map fun v ↦ ⨆ i, v (x i)).prod * ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i) := by
+  simp [mulHeight, hx]
+
+@[simp]
+lemma mulHeight_zero : mulHeight (0 : ι → K) = 1 := by
+  simp [mulHeight]
+
+@[simp]
+lemma mulHeight_one : mulHeight (1 : ι → K) = 1 := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · rw [show (1 : ι → K) = 0 from Subsingleton.elim ..]
+    exact mulHeight_zero
+  · have hx : (1 : ι → K) ≠ 0 := by simp
+    simp [mulHeight_eq hx]
 
 /-- The multiplicative height does not change under re-indexing. -/
 lemma mulHeight_comp_equiv {ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
     mulHeight (x ∘ e) = mulHeight x := by
   have H (v : AbsoluteValue K ℝ) : ⨆ i, v (x (e i)) = ⨆ i, v (x i) := e.iSup_congr (congrFun rfl)
-  simp only [mulHeight_eq, Function.comp_apply, H]
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · have hx' : x ∘ e ≠ 0 := by
+      contrapose! hx
+      rw [show x = (x ∘ e) ∘ e.symm by simp [Function.comp_assoc]]
+      ext1 i
+      simp [hx]
+    simp [mulHeight_eq hx, mulHeight_eq hx', Function.comp_apply, H]
 
 lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
   let e : Fin 2 ≃ Fin 2 := Equiv.swap 0 1
@@ -233,20 +258,24 @@ private lemma mulSupport_max_nonarchAbsVal_finite (x : K) :
   ext1 i
   fin_cases i <;> simp
 
-/-- The multiplicative height of a (nonzero) tuple does not change under scaling. -/
-lemma mulHeight_smul_eq_mulHeight {x : ι → K} {c : K} (hc : c ≠ 0) :
+/-- The multiplicative height of a tuple does not change under scaling. -/
+lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
     mulHeight (c • x) = mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · rw [smul_zero]
   have : Nonempty ι := (Function.ne_iff.mp hx).nonempty
-  simp only [mulHeight_eq, Pi.smul_apply, smul_eq_mul, map_mul,
+  have hcx : c • x ≠ 0 := by simp [hc, hx]
+  simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
   rw [finprod_mul_distrib (mulSupport_finite hc) (mulSupport_iSup_nonarchAbsVal_finite hx),
     mul_mul_mul_comm, product_formula hc, one_mul]
 
-lemma one_le_mulHeight {x : ι → K} (hx : x ≠ 0) : 1 ≤ mulHeight x := by
+lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
-  rw [← mulHeight_smul_eq_mulHeight <| inv_ne_zero hi, mulHeight_eq]
+  have hx' : (x i)⁻¹ • x ≠ 0 := by simp [hi, hx]
+  rw [← mulHeight_smul_eq_mulHeight _ <| inv_ne_zero hi, mulHeight_eq hx']
   refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod fun vx h ↦ ?_) ?_
   · simp only [Pi.smul_apply, smul_eq_mul, AbsoluteValue.map_mul, map_inv₀, Multiset.mem_map] at h
     obtain ⟨v, -, rfl⟩ := h
@@ -255,42 +284,53 @@ lemma one_le_mulHeight {x : ι → K} (hx : x ≠ 0) : 1 ≤ mulHeight x := by
   · refine one_le_finprod fun v ↦ le_ciSup_of_le (Finite.bddAbove_range _) i ?_
     simp [inv_mul_cancel₀ <| v.val.ne_zero_iff.mpr hi]
 
-lemma mulHeight_pos {x : ι → K} (hx : x ≠ 0) : 0 < mulHeight x :=
-  zero_lt_one.trans_le <| one_le_mulHeight hx
+lemma mulHeight_pos (x : ι → K) : 0 < mulHeight x :=
+  zero_lt_one.trans_le <| one_le_mulHeight x
 
-lemma mulHeight.ne_zero {x : ι → K} (hx : x ≠ 0) : mulHeight x ≠ 0 :=
-  (mulHeight_pos hx).ne'
+lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
+  (mulHeight_pos x).ne'
 
-lemma zero_le_logHeight {x : ι → K} (hx : x ≠ 0) : 0 ≤ logHeight x :=
-  log_nonneg <| one_le_mulHeight hx
+lemma zero_le_logHeight {x : ι → K} : 0 ≤ logHeight x :=
+  log_nonneg <| one_le_mulHeight x
 
-/-- The logarithmic height of a (nonzero) tuple does not change under scaling. -/
-lemma logHeight_smul_eq_logHeight {x : ι → K} {c : K} (hc : c ≠ 0) :
+/-- The logarithmic height of a tuple does not change under scaling. -/
+lemma logHeight_smul_eq_logHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
     logHeight (c • x) = logHeight x := by
-  simp only [logHeight_eq_log_mulHeight, mulHeight_smul_eq_mulHeight hc]
+  simp only [logHeight_eq_log_mulHeight, mulHeight_smul_eq_mulHeight x hc]
 
 lemma mulHeight₁_eq_mulHeight (x : K) : mulHeight₁ x = mulHeight ![x, 1] := by
   have H (v : AbsoluteValue K ℝ) (x : K) : v x ⊔ 1 = ⨆ i, v (![x, 1] i) := by
     have (i : Fin 2) : v (![x, 1] i) = ![v x, 1] i := by fin_cases i <;> simp
     simpa [this] using max_eq_iSup (v x) 1
-  simp only [mulHeight₁_eq, mulHeight_eq, H]
+  have hx : ![x, 1] ≠ 0 := by simp
+  simp only [mulHeight₁_eq, mulHeight_eq hx, H]
 
 lemma logHeight₁_eq_logHeight (x : K) : logHeight₁ x = logHeight ![x, 1] := by
   simp only [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_eq_mulHeight x]
 
-lemma mulHeight₁_div_eq_mulHeight (x : K) {y : K} (hy : y ≠ 0) :
+lemma mulHeight₁_div_eq_mulHeight (x y : K) :
     mulHeight₁ (x / y) = mulHeight ![x, y] := by
-  rw [mulHeight₁_eq_mulHeight, ← mulHeight_smul_eq_mulHeight hy]
-  simp [mul_div_cancel₀ x hy]
+  rcases eq_or_ne y 0 with rfl | hy
+  · simp only [div_zero, mulHeight₁_zero]
+    rcases eq_or_ne x 0 with rfl | hx
+    · rw [show (![0, 0] : Fin 2 → K) = 0 by simp]
+      simp
+    · have := mulHeight_smul_eq_mulHeight ![1, 0] hx
+      simp only [Matrix.smul_cons, smul_eq_mul, mul_one, mul_zero, Matrix.smul_empty] at this
+      rw [this, mulHeight_swap, ← mulHeight₁_eq_mulHeight, mulHeight₁_zero]
+  · rw [mulHeight₁_eq_mulHeight, ← mulHeight_smul_eq_mulHeight _ hy]
+    simp [mul_div_cancel₀ x hy]
 
-lemma logHeight₁_div_eq_logHeight (x : K) {y : K} (hy : y ≠ 0) :
+lemma logHeight₁_div_eq_logHeight (x y : K) :
     logHeight₁ (x / y) = logHeight ![x, y] := by
-  rw [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_div_eq_mulHeight x hy]
+  rw [logHeight₁_eq_log_mulHeight₁, logHeight_eq_log_mulHeight, mulHeight₁_div_eq_mulHeight x y]
 
-/-- The multiplicative height of the coordinate-wise `n`th power of a (nonzero) tuple
+/-- The multiplicative height of the coordinate-wise `n`th power of a tuple
 is the `n`th power of its multiplicative height. -/
-lemma mulHeight_pow {x : ι → K} (hx : x ≠ 0) (n : ℕ) :
+lemma mulHeight_pow (x : ι → K) (n : ℕ) :
     mulHeight (x ^ n) = mulHeight x ^ n := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · cases n <;> simp
   have : Nonempty ι := (Function.ne_iff.mp hx).nonempty
   have H (v : AbsoluteValue K ℝ) : ⨆ i : ι, v ((x ^ n) i) = (⨆ i, v (x i)) ^ n := by
     simp only [Pi.pow_apply, map_pow]
@@ -298,13 +338,14 @@ lemma mulHeight_pow {x : ι → K} (hx : x ≠ 0) (n : ℕ) :
     norm_cast
     exact (pow_left_mono n).map_ciSup_of_continuousAt (continuous_pow n).continuousAt
       (Finite.bddAbove_range _) |>.symm
-  simp only [mulHeight_eq, H, mul_pow, finprod_pow <| mulSupport_iSup_nonarchAbsVal_finite hx,
-    ← Multiset.prod_map_pow]
+  have hxn : x ^ n ≠ 0 := by simp [hx]
+  simp only [mulHeight_eq hx, mulHeight_eq hxn, H, mul_pow,
+    finprod_pow <| mulSupport_iSup_nonarchAbsVal_finite hx, ← Multiset.prod_map_pow]
 
-/-- The logarithmic height of the coordinate-wise `n`th power of a (nonzero) tuple
+/-- The logarithmic height of the coordinate-wise `n`th power of a tuple
 is `n` times its logarithmic height. -/
-lemma logHeight_pow {x : ι → K} (hx : x ≠ 0) (n : ℕ) : logHeight (x ^ n) = n * logHeight x := by
-  simp [logHeight_eq_log_mulHeight, mulHeight_pow hx]
+lemma logHeight_pow (x : ι → K) (n : ℕ) : logHeight (x ^ n) = n * logHeight x := by
+  simp [logHeight_eq_log_mulHeight, mulHeight_pow x n]
 
 /-- The multiplicative height of the inverse of a field element `x`
 is the same as the multiplicative height of `x`. -/
@@ -313,7 +354,7 @@ lemma mulHeight₁_inv (x : K) : mulHeight₁ (x⁻¹) = mulHeight₁ x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · have H : x • ![x⁻¹, 1] = ![1, x] := funext fun i ↦ by fin_cases i <;> simp [hx]
-    rw [← mulHeight_smul_eq_mulHeight hx, H, mulHeight_swap]
+    rw [← mulHeight_smul_eq_mulHeight _ hx, H, mulHeight_swap]
 
 /-- The logarithmic height of the inverse of a field element `x`
 is the same as the logarithmic height of `x`. -/
@@ -324,7 +365,7 @@ lemma logHeight₁_inv (x : K) : logHeight₁ (x⁻¹) = logHeight₁ x := by
 is the `n`th power of the multiplicative height of `x`. -/
 lemma mulHeight₁_pow (x : K) (n : ℕ) : mulHeight₁ (x ^ n) = mulHeight₁ x ^ n := by
   have hx : ![x, 1] ≠ 0 := Function.ne_iff.mpr ⟨1, by simp⟩
-  simp only [mulHeight₁_eq_mulHeight, ← mulHeight_pow hx]
+  simp only [mulHeight₁_eq_mulHeight, ← mulHeight_pow _ n]
   congr 1
   ext1 i
   fin_cases i <;> simp
