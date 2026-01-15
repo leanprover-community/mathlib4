@@ -447,22 +447,12 @@ theorem stdPart_eq (f : ℝ →+*o K) {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr 
     stdPart x = r := by
   have hx : 0 ≤ mk x := by
     apply mk_nonneg_of_le_of_le_of_archimedean f (hl (r - 1) _) (hr (r + 1) _) <;> simp
-  by_contra h
-  obtain h | h := lt_or_gt_of_ne h
+  obtain h | rfl | h := lt_trichotomy (stdPart x) r
   · obtain ⟨s, hs, hs'⟩ := exists_between h
-    apply (mk_sub_pos_iff f hx).not.2 hs.ne <|
-      (mk_sub_stdPart_pos f hx).trans_le (mk_antitoneOn _ _ _)
-    · simpa using hl _ hs'
-    · simpa using hl _ h
-    · rw [sub_le_sub_iff_left]
-      exact f.monotone' hs.le
-  · obtain ⟨s, hs', hs⟩ := exists_between h
-    apply (mk_sub_pos_iff f hx).not.2 hs.ne' <|
-      (mk_sub_stdPart_pos f hx).trans_le (mk_monotoneOn _ _ _)
-    · simpa using hr _ h
-    · simpa using hr _ hs'
-    · rw [sub_le_sub_iff_left]
-      exact f.monotone' hs.le
+    cases (le_stdPart_of_le f hx (hl _ hs')).not_gt hs
+  · rfl
+  · obtain ⟨s, hs, hs'⟩ := exists_between h
+    cases (stdPart_le_of_le f hx (hr _ hs)).not_gt hs'
 
 theorem stdPart_eq_sInf (f : ℝ →+*o K) (x : K) : stdPart x = sInf {r | x < f r} := by
   obtain hx | hx := le_or_gt 0 (mk x)
