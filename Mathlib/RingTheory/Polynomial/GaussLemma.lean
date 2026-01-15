@@ -252,7 +252,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _) _
     rw [Polynomial.map_mul, Polynomial.map_mul, Polynomial.map_mul, hc, hd, map_C, map_C, hab]
     ring
-  have ⟨_⟩ := nonempty_normalizedGCDMonoid_iff_gcdMonoid (α := R).mpr ‹_›
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   obtain ⟨u, hu⟩ :
     Associated (c * d)
       (content (integerNormalization R⁰ a) * content (integerNormalization R⁰ b)) := by
@@ -287,7 +287,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)
     rw [Polynomial.map_mul, Polynomial.map_mul, hs, hr, mul_assoc, mul_comm r]
     simp
-  have ⟨_⟩ := nonempty_normalizedGCDMonoid_iff_gcdMonoid (α := R).mpr ‹_›
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   grw [← hp.dvd_primPart_iff_dvd, (associated_primPart_mul ..).dvd_iff_dvd_right,
     hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
   · exact h

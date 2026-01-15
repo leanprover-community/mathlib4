@@ -1306,6 +1306,9 @@ theorem nonempty_normalizedGCDMonoid_iff_gcdMonoid {α} [CommMonoidWithZero α] 
     have := Classical.arbitrary (NormalizationMonoid α)
     classical exact ⟨normalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
 
+instance (α) [CommMonoidWithZero α] [Nonempty (GCDMonoid α)] : Nonempty (NormalizedGCDMonoid α) :=
+  nonempty_normalizedGCDMonoid_iff_gcdMonoid.mpr ‹_›
+
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
 abbrev gcdMonoidOfExistsLCM [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : GCDMonoid α :=
