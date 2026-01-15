@@ -33,8 +33,6 @@ variable {S : Scheme.{u}}
 /--
 A cover of a scheme is quasi-compact if every affine open of the base can be covered
 by a finite union of images of quasi-compact opens of the components.
-
-Note: This is available with dot notation after `open AlgebraicGeometry`.
 -/
 @[stacks 022B, mk_iff]
 class QuasiCompactCover (𝒰 : PreZeroHypercover.{v} S) : Prop where

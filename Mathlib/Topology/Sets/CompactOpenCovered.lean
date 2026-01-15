@@ -114,10 +114,10 @@ lemma of_isCompact_of_forall_exists [TopologicalSpace S] {U : Set S} (hU : IsCom
   choose Us hU' hUx hUo hU'' using H
   refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
   · refine subset_antisymm (fun x ↦ ?_) fun x hx ↦ ?_
-    · simp [Opens.«forall»]
+    · simp [Opens.forall]
       aesop
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
-  · simp [Opens.«forall»]
+  · simp [Opens.forall]
     grind
 
 lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
