@@ -12,9 +12,36 @@ public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 -- public import Mathlib.RingTheory.SimpleRing.Principal
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
 
 @[expose] public section
 
+namespace DirichletCharacter
+
+variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+
+theorem conductor_le_of_mem_conductorSet {m : ℕ} (hm : m ∈ χ.conductorSet) :
+  χ.conductor ≤ m := Nat.sInf_le hm
+
+example [NeZero n] (m₁ m₂ : ℕ) (hm₁ : m₁ ∈ χ.conductorSet) (hm₂ : m₂ ∈ χ.conductorSet) :
+    m₁.gcd m₂ ∈ χ.conductorSet := by
+  have h₁ : m₁ ∣ n := hm₁.dvd
+  have h₂ : m₂ ∣ n := hm₂.dvd
+  have h : m₁.gcd m₂ ∣ n :=  Nat.dvd_trans (Nat.gcd_dvd_left m₁ m₂) h₁
+  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₁] at hm₁
+  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₂] at hm₂
+  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h]
+
+  refine le_trans ?_ (sup_le hm₁ hm₂)
+  intro x hx
+  rw [Subgroup.mem_sup_of_normal_left]
+  sorry
+
+
+
+
+
+end DirichletCharacter
 section IsPrimitiveRoot
 
 theorem IsPrimitiveRoot.isOfFinOrder {M : Type*} [CommMonoid M] {ζ : M} {k : ℕ} [NeZero k]
@@ -50,6 +77,20 @@ theorem Ideal.mapEquiv_apply {R S : Type*} {F : Type*} [CommSemiring R] [CommSem
     Ideal.mapEquiv f I = Ideal.mapHom f I := rfl
 
 end Ideal
+
+section restrictNormal
+
+theorem AlgEquiv.restrictNormal_apply {F : Type*} [Field F] {K₁ : Type*} [Field K₁] [Algebra F K₁]
+    (L : IntermediateField F K₁) [Normal F L] (σ : Gal(K₁/F)) (x : L) :
+    restrictNormal σ L x = σ x := AlgEquiv.restrictNormal_commutes σ L x
+
+theorem AlgEquiv.restrictNormal_eq_one_iff {F : Type*} [Field F] {K₁ : Type*} [Field K₁]
+    [Algebra F K₁] (L : IntermediateField F K₁) [Normal F L] (σ : Gal(K₁/F)) :
+    restrictNormal σ L = 1 ↔ ∀ x ∈ L, σ x = x := by
+  simp_rw [AlgEquiv.ext_iff, one_apply, Subtype.forall, Subtype.ext_iff,
+    AlgEquiv.restrictNormal_apply]
+
+end restrictNormal
 
 section Int
 

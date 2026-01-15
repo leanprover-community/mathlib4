@@ -34,7 +34,7 @@ theorem not_prime_dvd_pow_sub_one : ¬ p ∣ p ^ f - 1 := by
   exact dvd_pow_self p (NeZero.ne f)
 
 theorem inertiaDeg_eq [P.LiesOver 𝒑] : 𝒑.inertiaDeg P = f := by
-  rw [IsCyclotomicExtension.Rat.inertiaDeg_of_not_dvd  _ _ _ (not_prime_dvd_pow_sub_one p f),
+  rw [IsCyclotomicExtension.Rat.inertiaDeg_eq_of_not_dvd  _ _ _ (not_prime_dvd_pow_sub_one p f),
     ZMod.orderOf_mod_self_pow_sub_one (Nat.Prime.one_lt hp.out) (NeZero.pos f)]
 
 theorem absNorm_eq [P.LiesOver 𝒑] : absNorm P = p ^ f := by
@@ -597,11 +597,6 @@ theorem n𝓢_mod_eq_one_iff (σ : Gal(L/ℚ)) :
   · rw [← orderOf_dvd_iff_pow_eq_one, ← hζ.eq_orderOf]
     exact Nat.dvd_mul_right p (p ^ f - 1)
 
-example (σ : Gal(L/ℚ)) :
-    σ • 𝓟 = 𝓟 ↔ n𝓢 p f L σ % (p ^ f - 1) = 1 := by
-
-  sorry
-
 theorem map_GaussSum [P.LiesOver 𝒑] (σ : Gal(L/ℚ)) (hσ : σ • ζ = ζ) :
     σ • (GaussSum p f P L hζ 1) = GaussSum p f P L hζ (n𝓢 p f L σ) := by
   simp_rw [GaussSum, gaussSum, Finset.smul_sum, smul_mul']
@@ -676,7 +671,7 @@ theorem ramificationIdx_eq_sub_one' [NeZero P] [𝓟.LiesOver P] [P.LiesOver �
   have : 𝓟.LiesOver 𝒑 := Ideal.LiesOver.trans 𝓟 P 𝒑
   have := ramificationIdx_algebra_tower (Q := 𝓟) (P := P) (p := 𝒑) ?_ ?_ ?_
   · rwa [ramificationIdx_eq_sub_one p f,
-      IsCyclotomicExtension.Rat.ramificationIdx_of_not_dvd p K P (not_prime_dvd_pow_sub_one p f),
+      IsCyclotomicExtension.Rat.ramificationIdx_eq_of_not_dvd p K P (not_prime_dvd_pow_sub_one p f),
       one_mul, eq_comm] at this
   · apply map_ne_bot_of_ne_bot
     exact NeZero.ne P
@@ -1026,10 +1021,28 @@ theorem GSV_eq_exp_neg_GSVN [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : GSV 
     ← GSV_eq_GSV₀]
   exact GSV_le_one p f P L 𝓟 hζ a
 
-open UniqueFactorizationMonoid in
+open UniqueFactorizationMonoid Classical IntermediateField in
 example [𝓟.LiesOver P] [P.LiesOver 𝒑] :
-    ∏ σ : Gal(L/ℚ), (σ • 𝓟) ^ GSVN p f P L 𝓟 hζ (n𝓢 p f L σ⁻¹) =
+    ∏ σ : Gal(L/ℚ) with σ • ζ = ζ, (σ • 𝓟) ^ GSVN p f P L 𝓟 hζ (n𝓢 p f L σ⁻¹) =
       Ideal.span {GaussSum p f P L hζ 1} := by
+  convert_to ∏ σ : Gal(L/ℚ) with σ ∈ ℚ⟮(ζ: L)⟯.fixingSubgroup, (σ • 𝓟) ^ GSVN p f P L 𝓟 hζ (n𝓢 p f L σ⁻¹) = _
+  · congr
+    ext σ
+    simp
+    constructor
+    · intro h x hx
+      rw [mem_adjoin_simple_iff] at hx
+      obtain ⟨r, s, rfl⟩ := hx
+      rw [map_div₀]
+      rw [← Polynomial.aeval_algHom_apply, ← Polynomial.aeval_algHom_apply]
+      have := algebraMap.coe_smul' σ ζ L
+      simp only [AlgEquiv.smul_def] at this
+      rw [← this, h]
+    · intro h
+      specialize h (ζ : L) ?_
+
+      sorry
+
   classical
   have : 𝓟.LiesOver 𝒑 := LiesOver.trans 𝓟 P 𝒑
   have hp' : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
@@ -1045,20 +1058,38 @@ example [𝓟.LiesOver P] [P.LiesOver 𝒑] :
     simp_rw [Multiset.count_sum', Multiset.count_nsmul]
     have h₂ {σ : Gal(L/ℚ)}: Irreducible (σ • 𝓟) :=
       irreducible_iff_prime.mpr <| prime_of_isPrime ((smul_ne_zero_iff_ne _).mpr hP) inferInstance
-    have h₃ : (∃ σ : Gal(L/ℚ), v.asIdeal = σ • 𝓟) ↔ v.asIdeal.LiesOver 𝒑 := sorry
+    have h₃ : (∃ (σ : Gal(L/ℚ)) (hσ : σ • ζ = ζ),
+      v.asIdeal = σ • 𝓟) ↔ v.asIdeal.LiesOver 𝒑 := sorry
     conv_lhs =>
       enter [2, σ]
       rw [normalizedFactors_irreducible h₂, normalize_eq, Multiset.count_singleton]
     by_cases hv : v.asIdeal.LiesOver 𝒑
-    · obtain ⟨σ, hσ⟩  := h₃.mpr hv
-      simp_rw [hσ]
-      rw [← Finset.univ.sum_erase_add _ (Finset.mem_univ σ), if_pos rfl, mul_one]
+    · obtain ⟨σ, hσ₀, hσ⟩  := h₃.mpr hv
+      simp_rw [hσ, mul_ite, mul_zero, mul_one]
+      have {τ : Gal(L/ℚ)} : τ • ζ = ζ → σ • 𝓟 = τ • 𝓟 →
+          GSVN p f P L 𝓟 hζ (n𝓢 p f L τ⁻¹) =  GSVN p f P L 𝓟 hζ (n𝓢 p f L σ⁻¹) := by
+        intro hτ₁ hτ₂
+        rw [← Nat.cast_inj (R := ℤ), ← neg_inj, ← WithZero.exp_inj, ← GSV_eq_exp_neg_GSVN,
+          ← GSV_eq_exp_neg_GSVN, ← Val_smul_GaussSum, ← Val_smul_GaussSum]
+        simp_rw [hτ₂]
+        all_goals sorry
+
+      -- simp_rw +contextual [this _, dite_eq_ite]
+      rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
+      rw [Finset.sum_filter, Finset.sum_filter]
+      simp_rw +contextual [this _, Finset.sum_ite, Finset.sum_const_zero, add_zero]
+      rw [Finset.sum_const, _root_.smul_eq_mul]
       have := Val_smul_GaussSum p f P L 𝓟 hζ σ ?_ ?_
       rw [intValuation_if_neg _ h₀] at this
       rw [GSV_eq_exp_neg_GSVN, WithZero.exp_inj, neg_inj] at this
       rw [count_associates_factors_eq] at this
       rw [Nat.cast_inj] at this
       rw [this]
+      have : Finset.card {τ ∈ {τ : Gal(L/ℚ) | τ • ζ = ζ} | σ • 𝓟 = τ • 𝓟} = f := by
+        let H := ℚ⟮(ζ: L)⟯.fixingSubgroup
+        convert_to Nat.card {τ ∈ H | σ • 𝓟 = τ • 𝓟} = f
+        · sorry
+
 
 
       sorry

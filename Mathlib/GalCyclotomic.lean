@@ -3,10 +3,11 @@ module
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
+public import Mathlib.Duality
 public import Mathlib.Misc
 public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
-public import Mathlib.Duality
+public import Mathlib.FieldTheory.PrimeField
 
 @[expose] public section
 
@@ -37,6 +38,8 @@ theorem galEquiv_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) 
   apply FaithfulSMul.algebraMap_injective (𝓞 K) K
   apply galEquiv_apply_of_pow_eq n K σ <| by rw [← Subalgebra.coe_pow, hx, OneMemClass.coe_one]
 
+section restrict
+
 variable {m : ℕ} [NeZero m] (F : Type*) [Field F] [NumberField F]
   [hF : IsCyclotomicExtension {m} ℚ F] [Algebra F K]
 
@@ -60,21 +63,17 @@ theorem galEquiv_restrictNormal [IsGalois ℚ F] (h : m ∣ n) :
       (ZMod.unitsMap h).comp (galEquiv n K).toMonoidHom :=
   MonoidHom.ext fun σ ↦ galEquiv_restrictNormal_apply n K F h σ
 
+end restrict
+
 def subgroupGalEquivDirichletCharSubgroup :
     Subgroup Gal(K/ℚ) ≃o (Subgroup (DirichletCharacter R n))ᵒᵈ :=
-  (galEquiv n K).mapSubgroup.trans <|
-    (CommGroup.subgroupOrderIsoSubgroupMonoidHom (ZMod n)ˣ R).trans
-      MulChar.mulEquivToUnitHom.mapSubgroup.symm.dual
+  (galEquiv n K).mapSubgroup.trans <| subgroupOrderIsoSubgroupMulChar (ZMod n) R
 
 @[simp]
 theorem mem_subgroupGalEquivDirichletCharSubgroup_iff (χ : DirichletCharacter R n)
     (H : Subgroup Gal(K/ℚ)) :
     χ ∈ (subgroupGalEquivDirichletCharSubgroup n K R H).ofDual ↔
-      ∀ σ ∈ H, χ (galEquiv n K σ) = 1 := by
-  revert χ
-  rw [← MulChar.mulEquivToUnitHom.symm.forall_congr_right,
-    ← (galEquiv n K).monoidHomCongrLeft.forall_congr_right]
-  simp [subgroupGalEquivDirichletCharSubgroup]
+      ∀ σ ∈ H, χ (galEquiv n K σ) = 1 := by simp [subgroupGalEquivDirichletCharSubgroup]
 
 @[simp]
 theorem mem_subgroupGalEquivDirichletCharSubgroup_symm_iff (σ : Gal(K/ℚ))
@@ -82,17 +81,61 @@ theorem mem_subgroupGalEquivDirichletCharSubgroup_symm_iff (σ : Gal(K/ℚ))
     σ ∈ (subgroupGalEquivDirichletCharSubgroup n K R).symm (OrderDual.toDual Y) ↔
       ∀ χ ∈ Y, χ (galEquiv n K σ) = 1 := by
   unfold subgroupGalEquivDirichletCharSubgroup
-  simp only [MulEquiv.symm_mapSubgroup, OrderIso.symm_trans_apply, OrderIso.dual_symm_apply,
-    MulEquiv.symm_symm, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv,
-    CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff]
-  revert Y
-  rw [← MulChar.mulEquivToUnitHom.symm.mapSubgroup.forall_congr_right]
-  simp
+  simp only [OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup, MulEquiv.coe_mapSubgroup,
+    Subgroup.mem_map_equiv, MulEquiv.symm_symm, mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
+
+variable [IsGalois ℚ K]
+
+def intermediateFieldEquivSubgroupChar :
+    IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
+  IsGalois.intermediateFieldEquivSubgroup.trans <|
+      (subgroupGalEquivDirichletCharSubgroup n K R).dual.trans (OrderIso.dualDual _).symm
+
+theorem mem_intermediateFieldEquivSubgroupChar {F : IntermediateField ℚ K}
+    {χ : DirichletCharacter R n} :
+    χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔
+      ∀ σ : Gal(K/ℚ), (∀ x ∈ F, σ x = x) → χ (galEquiv n K σ) = 1 := by
+  simp [← IntermediateField.mem_fixingSubgroup_iff, intermediateFieldEquivSubgroupChar]
+
+theorem intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension (F : IntermediateField ℚ K)
+    {m : ℕ} [NeZero m] [IsGalois ℚ F] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n) :
+    intermediateFieldEquivSubgroupChar n K R F =
+      (MulChar.subgroupOrderIsoSubgroupMulChar (ZMod n) R (ZMod.unitsMap hdiv).ker).ofDual := by
+  ext χ
+  simp [mem_intermediateFieldEquivSubgroupChar, mem_subgroupOrderIsoSubgroupMulChar_iff,
+    MonoidHom.mem_ker, ← (galEquiv n K).forall_congr_right, MulEquiv.toEquiv_eq_coe,
+    EquivLike.coe_coe, (galEquiv_restrictNormal_apply n K F hdiv _).symm,
+    EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff]
+
+example (F : IntermediateField ℚ K) {p k : ℕ} [hp : Fact (p.Prime)] [IsGalois ℚ F]
+    [IsCyclotomicExtension {p ^ (k + 1)} ℚ F] (hdiv : p ^ (k + 1) ∣ n) :
+    intermediateFieldEquivSubgroupChar n K R F =
+      {χ : DirichletCharacter R n | p ∣ χ.conductor} := by
+  rw [intermediateFieldEquivSubgroupChar_of_isCyclotomicExtension n K R F hdiv]
+  ext χ
+  simp only [SetLike.mem_coe, mem_subgroupOrderIsoSubgroupMulChar_iff, Set.mem_setOf_eq]
+  have : p ∣ χ.conductor ↔ χ.FactorsThrough (p ^ (k + 1)) := by
+    refine ⟨?_, ?_⟩
+    · intro h
+      sorry
+    · intro h
+      rw [← DirichletCharacter.mem_conductorSet_iff] at h
+
+      sorry
+  rw [this]
+  have := DirichletCharacter.factorsThrough_iff_ker_unitsMap (χ := χ) hdiv
+  simp_rw [this, ← MulChar.coe_toUnitHom, Units.val_eq_one, ← MonoidHom.mem_ker, SetLike.le_def]
+
+#exit
 
 def intermediateFieldEquivSubgroupChar [IsGalois ℚ K] :
     IntermediateField ℚ K ≃o Subgroup (DirichletCharacter R n) :=
   IsGalois.intermediateFieldEquivSubgroup.trans <|
     (subgroupGalEquivDirichletCharSubgroup n K R).dual.trans (OrderIso.dualDual _).symm
+
+
+
+
 
 theorem forall_mem_intermediateFieldEquivSubgroupChar_iff [IsAbelianGalois ℚ K] (σ : Gal(K/ℚ))
     (L : IntermediateField ℚ K) :

@@ -91,6 +91,7 @@ theorem IsPrimitiveRoot.exists_teichmuller_eq [NeZero n] {ζ : R} (hζ : IsPrimi
     ∃ x : (R ⧸ I)ˣ, teichmuller h x = ζ := by
   have : (hζ.isUnit (NeZero.ne _)).unit ∈ rootsOfUnity n R := by
     rw! [mem_rootsOfUnity, ← IsUnit.unit_pow, hζ.pow_eq_one, IsUnit.unit_one]
+    rfl
   refine ⟨rootsOfUnity.mapQuot n I ⟨(hζ.isUnit (NeZero.ne n)).unit, this⟩, ?_⟩
   rw [teichmuller_apply, dif_pos (Units.isUnit _), IsUnit.unit_of_val_units,
     ← MulEquiv.ofBijective_apply _ h, MulEquiv.symm_apply_apply, IsUnit.unit_spec]

@@ -4,6 +4,8 @@ public import Mathlib.GroupTheory.FiniteAbelian.Duality
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.Algebra.Group.Submonoid.Units
 
+#exit
+
 -- theorem Equiv.forall_mem_iff {α β : Type*} (s : Set α) (e : α ≃ β) (p : α → Prop) :
 --     (∀ x ∈ s, p x) ↔ ∀ x ∈ e '' s, p (e.symm x) := by
 --   constructor
