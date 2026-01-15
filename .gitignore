@@ -4,3 +4,5 @@
 .cache
 # `lake` stores its files here:
 .lake
+# Claude Code
+.claude/
