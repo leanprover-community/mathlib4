@@ -708,8 +708,6 @@ variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {
 
 theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f g h i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) := by
-  -- This is made slightly awkward because `C` and `D` have different universes,
-  -- and so the relevant `WalkingCospan` diagrams live in different universes too!
   refine
     IsPullback.of_isLimit' (F.map_commSq s.toCommSq)
       (IsLimit.equivOfNatIsoOfIso (cospanCompIso F h i) _ _ (WalkingCospan.ext ?_ ?_ ?_)

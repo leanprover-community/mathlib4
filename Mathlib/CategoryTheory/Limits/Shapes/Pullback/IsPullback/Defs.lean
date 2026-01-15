@@ -213,7 +213,6 @@ theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
 theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.inv ≫ snd = pullback.snd _ _ := by simp [Iso.inv_comp_eq]
 
-
 end IsPullback
 
 namespace IsPushout
@@ -347,7 +346,6 @@ theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
 @[reassoc (attr := simp)]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
     inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
-
 
 end IsPushout
 

@@ -56,9 +56,6 @@ that is both a pullback square and a pushout square.
 structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop
     extends IsPullback f g h i, IsPushout f g h i
 
--- Lean should make these parent projections as `lemma`, not `def`.
--- attribute [nolint defLemma docBlame] BicartesianSq.toIsPushout
-
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 open ZeroObject
