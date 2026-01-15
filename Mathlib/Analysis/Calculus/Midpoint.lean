@@ -108,75 +108,135 @@ theorem sum_midpoint_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h :
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
-lemma useful {F : ℝ → ℝ} {h : ℝ} (x : ℝ) (hh : 0 < h) (hF : ContDiffOn ℝ 3 F (Icc x (x + h)))
-    (hx : ContDiffAt ℝ 2 F x) : ∃ ξ1 ∈ Ioo x (x + h), F (x + h) - (F x + h * deriv F x +
-    1 / 2 * h ^ 2 * iteratedDeriv 2 F x) = iteratedDeriv 3 F ξ1 * h ^ 3 / 6 := by
-  have hm : x < x + h := by simpa using (half_lt_self hh)
-  have hm_mem : x ∈ Icc x (x + h) := ⟨le_rfl, le_of_lt hm⟩
-  have hUD : UniqueDiffOn ℝ (Icc x (x + h)) := uniqueDiffOn_Icc hm
-  obtain ⟨ξ1, hξ1, hξ1_rem⟩ :=
-    taylor_mean_remainder_lagrange_iteratedDeriv (n := 2) (f := F) hm (by fun_prop)
+lemma useful {F : ℝ → ℝ} {a b : ℝ} (hh : a < b)
+    (hf : ContDiffOn ℝ 2 F (Icc a b))
+    (hf' : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc a b)) (Ioo a b)) :
+    ∃ ξ1 ∈ Ioo a b, F b - (F a + (b - a) * derivWithin F (Icc a b) a +
+    1 / 2 * (b - a) ^ 2 * iteratedDerivWithin 2 F (Icc a b) a)
+    = iteratedDerivWithin 3 F (Icc a b) ξ1 * (b - a) ^ 3 / 6 := by
+  have hm_mem : a ∈ Icc a b := ⟨le_rfl, Std.le_of_lt hh⟩
+  have hUD : UniqueDiffOn ℝ (Icc a b) := uniqueDiffOn_Icc hh
+  obtain ⟨ξ1, hξ1, hξ1_rem⟩ := taylor_mean_remainder_lagrange (n := 2) (f := F) hh hf hf'
   norm_num [sub_half] at hξ1_rem
   refine ⟨ξ1, hξ1, ?_⟩
-  simp only [one_div, ← hξ1_rem, sub_right_inj]
-  congr
-  · refine Eq.symm (DifferentiableAt.derivWithin ?_ (hUD x hm_mem))
-    exact hx.differentiableAt (by norm_num)
-  · exact Eq.symm (iteratedDerivWithin_eq_iteratedDeriv hUD hx hm_mem)
+  linarith
 
-theorem midpoint_aux {F : ℝ → ℝ} {h : ℝ} (hh : 0 < h) (hF : ContDiff ℝ 3 F) :
-    ∃ ξ ∈ Ioo (0 : ℝ) h, F h - F 0 - (deriv F (h/2)) * h = (h^3 / 24) * (iteratedDeriv 3 F ξ) := by
-  obtain ⟨ξ1, hξ1, hξ1_rem⟩ := useful (h/2) (half_pos hh) (F := F) (by fun_prop) (by
-    have hcdW2 : ContDiff ℝ 2 F := by fun_prop
-    fun_prop)
-  have : ContDiff ℝ 2 (fun x ↦ F (h - x)) := by fun_prop
-  obtain ⟨ζ, hζ, hζ_rem⟩ := useful (F := fun x => F (h - x)) (h/2) (half_pos hh) (by fun_prop)
-    this.contDiffAt
-  obtain ⟨ξ, hξ_mem, hy⟩ : (iteratedDeriv 3 F ξ1 + iteratedDeriv 3 F (h - ζ)) / 2 ∈
-      (iteratedDeriv 3 F) '' (uIcc ξ1 (h - ζ)) :=
-    intermediate_value_uIcc (hF.continuous_iteratedDeriv' 3).continuousOn (by grind [Set.mem_uIcc])
-  norm_num [-one_div, sub_half] at hξ1 hζ hξ1_rem hζ_rem
-  have hξ0h : ξ ∈ Ioo (0:ℝ) h := by
-    have : ξ ∈ Icc (min ξ1 (h - ζ)) (max ξ1 (h - ζ)) := by simpa [Set.uIcc] using hξ_mem
-    constructor
-    · have lt : 0 < min ξ1 (h - ζ) := by simp [(half_pos hh).trans hξ1.1, hζ]
-      linarith [this.1]
-    · have lt : max ξ1 (h - ζ) < h := by simp [(half_pos hh).trans hζ.1, hξ1]
-      linarith [this.2]
-  refine ⟨ξ, hξ0h, ?_⟩
+open scoped Topology
+
+open Filter
+
+theorem midpoint_aux {F : ℝ → ℝ} {h M : ℝ} (hh : 0 < h)
+    (hf : ContDiffOn ℝ 2 F (Icc 0 h))
+    (hf' : DifferentiableOn ℝ (iteratedDerivWithin 2 F (Icc 0 h)) (Ioo 0 h))
+    (fpp_bound : ∀ x, |iteratedDerivWithin 3 F (Icc 0 h) x| ≤ M) :
+    |F h - F 0 - (derivWithin F (Icc 0 h) (h/2)) * h| ≤ (h^3 / 24) * M := by
+  have h1 : h/2 < h := by linarith
+  have h2 : 0 < h/2 := by linarith
+  have t1 : ContDiffOn ℝ 2 F (Icc (h/2) h) := hf.mono (by grind)
+  have t2' : ContDiffOn ℝ 2 (fun x ↦ F (h - x)) (Set.Icc 0 h) := by
+    have h_mapsTo : Set.MapsTo (fun x : ℝ ↦ h - x) (Set.Icc 0 h) (Set.Icc 0 h) := by
+      intro x hx
+      simp at hx
+      simpa using ⟨by linarith, by linarith⟩
+    exact hf.comp (contDiff_const.sub contDiff_id).contDiffOn h_mapsTo
+  have t2 : ContDiffOn ℝ 2 (fun x ↦ F (h - x)) (Set.Icc (h / 2) h) := t2'.mono (by grind)
+  have eq2 {y : ℝ} (hy : y ∈ Icc (h/2) h) {φ : ℝ → ℝ} (m : ℕ) (hm : ContDiffAt ℝ m φ y):
+    iteratedDerivWithin m φ (Icc (h / 2) h) y = iteratedDerivWithin m φ (Set.Icc 0 h) y := by
+    rw [iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc hh) hm (by grind),
+      iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h1) hm (by grind)]
+  have hf1' {φ : ℝ → ℝ} (m : ℕ) (hφ : ContDiffOn ℝ m φ (Icc 0 h))
+      (hφ' : DifferentiableOn ℝ (iteratedDerivWithin m φ (Icc 0 h)) (Ioo 0 h)) :
+      DifferentiableOn ℝ (iteratedDerivWithin m φ (Icc (h/2) h)) (Ioo (h/2) h) := by
+    have hd : DifferentiableOn ℝ (iteratedDerivWithin m φ (Set.Icc 0 h)) (Set.Ioo (h / 2) h) :=
+      hφ'.mono (by grind)
+    refine hd.congr ?_
+    intro y hy
+    refine Real.ext_cauchy (congrArg Real.cauchy (eq2 (by grind) m ?_))
+    exact (hφ.contDiffWithinAt (by grind)).contDiffAt
+        (by simp only [Set.mem_Ioo, Icc_mem_nhds_iff] at hy ⊢; exact ⟨by linarith, by linarith⟩)
+  have hf2' : DifferentiableOn ℝ (iteratedDerivWithin 2 (fun x ↦ F (h - x)) (Set.Icc (h / 2) h))
+      (Set.Ioo (h / 2) h) := by
+    refine hf1' 2 ?_ ?_
+    · exact ContDiffOn.congr t2' fun x ↦ congrFun rfl
+    · have : (iteratedDerivWithin 2 (fun x ↦ F (h - x)) (Set.Icc 0 h))
+        = fun x ↦ (iteratedDerivWithin 2 F (Set.Icc 0 h)) (h - x) := by
+
+        sorry
+      simp [this]
+
+      -- #check DifferentiableOn.sub (differentiable_const h) differentiable_id
+      -- #check (differentiable_const.sub differentiable_id).contDiffOn
+      sorry
+  obtain ⟨ξ1, hξ1, hξ1_rem⟩ := useful h1 (F := F) t1 (hf1' 2 hf hf')
+  obtain ⟨ζ, hζ, hζ_rem⟩ := useful h1 (F := fun x => F (h - x)) t2 hf2'
+  have eq1 : derivWithin F (Set.Icc (h / 2) h) (h / 2) = derivWithin F (Set.Icc 0 h) (h / 2) := by
+
+    sorry
+  have eq2 : iteratedDerivWithin 2 F (Set.Icc (h / 2) h) (h / 2)
+      = iteratedDerivWithin 2 F (Set.Icc 0 h) (h / 2) := by
+    refine eq2 (y := h/2) (by grind) ?_ ?_
+
+    
+    sorry
+  have eq3 : derivWithin (fun x ↦ F (h - x)) (Set.Icc (h / 2) h) (h / 2)
+    = derivWithin (fun x ↦ F (h - x)) (Set.Icc 0 h) (h / 2) := by
+    sorry
+  have eq4 : iteratedDerivWithin 2 (fun x ↦ F (h - x)) (Set.Icc (h / 2) h) (h / 2)
+      = iteratedDerivWithin 2 (fun x ↦ F (h - x)) (Set.Icc 0 h) (h / 2) := by
+
+    sorry
+  have eq5 : iteratedDerivWithin 3 (fun x ↦ F (h - x)) (Set.Icc (h / 2) h) ζ
+    = iteratedDerivWithin 3 (fun x ↦ F (h - x)) (Set.Icc 0 h) ζ := by
+    sorry
+  norm_num [-one_div, sub_half, eq1, eq2, eq3, eq4] at hξ1 hζ hξ1_rem hζ_rem
   calc
-  _ = F h - (F (h/2) + h / 2 * deriv F (h/2) + 1 / 2 * (h/2) ^ 2 * iteratedDeriv 2 F (h/2))
-      - (F 0 - (F (h/2) + h/2 * deriv (fun x ↦ F (h - x)) (h/2) +
-      1 / 2 * (h/2) ^ 2 * iteratedDeriv 2 (fun x ↦ F (h - x)) (h/2))) := by
-    simp [iteratedDeriv_comp_const_sub, deriv_comp_const_sub, sub_half, field]
-    ring
-  _ = h ^ 3 / 48 * iteratedDeriv 3 F ξ1 + h ^ 3 / 48 * iteratedDeriv 3 F (h - ζ) := by
-    rw [hξ1_rem, hζ_rem]
-    simpa [field, mul_assoc, iteratedDeriv_comp_const_sub] using by norm_num
-  _ = _ := by grind
+  _ = |F h - (F (h/2) + h / 2 * derivWithin F (Icc 0 h) (h/2)
+    + 1 / 2 * (h/2) ^ 2 * iteratedDerivWithin 2 F (Icc 0 h) (h/2))
+      - (F 0 - (F (h/2) + h/2 * derivWithin (fun x ↦ F (h - x)) (Icc 0 h) (h/2) +
+      1 / 2 * (h/2) ^ 2 * iteratedDerivWithin 2 (fun x ↦ F (h - x)) (Icc 0 h) (h/2)))| := by
+    rw [iteratedDerivWithin_comp_const_sub (hx := by grind) (uniqueDiffOn_Icc hh) hf]
+    simpa [derivWithin_comp_const_sub, sub_half, field] using by ring_nf
+  _ = |h ^ 3 / 48 * iteratedDerivWithin 3 F (Icc 0 h) ξ1
+    + h ^ 3 / 48 * iteratedDerivWithin 3 F (Icc 0 h) (h - ζ)| := by
+    -- rw [hξ1_rem, hζ_rem]
+    -- congr 1
+    -- simp [eq5, field, mul_assoc, iteratedDerivWithin_comp_const_sub]
+    sorry
 
-theorem midpoint_rule_error {f : ℝ → ℝ} {a b : ℝ} (hab : a < b) (hf : ContDiff ℝ 2 f) :
-    ∃ ξ ∈ Ioo a b, (∫ x in a..b, f x) - f ((a + b) / 2) * (b - a)
-      = (b - a)^3 / 24 * (iteratedDeriv 2 f ξ) := by
-  set h : ℝ := b - a with hdef
-  set g : ℝ → ℝ := fun x => f (x + a) with gdef
-  let F : ℝ → ℝ := fun x => ∫ t in (0 : ℝ)..x, g t
-  have hg : ContDiff ℝ 2 g := by fun_prop
-  have hFderiv : deriv F = g := by
-    funext x
-    simpa [F] using hg.continuous.deriv_integral g 0 x
-  have hFcont : ContDiff ℝ 3 F := (contDiff_succ_iff_deriv (n := 2) (f₂ := F)).2
-      ⟨intervalIntegral.differentiable_integral_of_continuous hg.continuous, by simp,
-      by simpa [hFderiv] using hg⟩
-  rcases midpoint_aux (F := F) (sub_pos.mpr hab) hFcont with ⟨ξ0, hξ0, hEq⟩
-  refine ⟨a + ξ0, by grind, ?_⟩
-  have hDerivMid : deriv F (h / 2) = f ((a + b) / 2) := by
-    simp [hFderiv, g, add_comm, hdef]
-    ring_nf
-  have hIter3 : iteratedDeriv 3 F ξ0 = iteratedDeriv 2 f (a + ξ0) := by calc
-    _ = iteratedDeriv 2 (deriv F) ξ0 := congrArg (fun u ↦ u ξ0) iteratedDeriv_succ'
-    _ = _ := by rw [hFderiv, gdef, iteratedDeriv_comp_add_const, add_comm]
-  have hEq' : F h - deriv F (h / 2) * h = (h^3 / 24) * iteratedDeriv 3 F ξ0 := by
-    simpa [F] using hEq
-  have hFh : F h = (∫ x in a..b, f x) := by simp [F, g, h, add_comm]
-  simpa only [hFh, hDerivMid, hIter3] using hEq'
+  _ ≤ _ := by sorry
+  /-
+
+
+
+  -/
+
+-- theorem midpoint_rule_error {f : ℝ → ℝ} {a b : ℝ} (hab : a < b)
+--     (h_df : DifferentiableOn ℝ f (Icc a b))
+--     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
+--     (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b) :
+--     ∃ ξ ∈ Ioo a b, (∫ x in a..b, f x) - f ((a + b) / 2) * (b - a)
+--       = (b - a)^3 / 24 * (iteratedDeriv 2 f ξ) := by
+--   set h : ℝ := b - a with hdef
+--   set g : ℝ → ℝ := fun x => f (x + a) with gdef
+--   let F : ℝ → ℝ := fun x => ∫ t in (0 : ℝ)..x, g t
+--   have : ContinuousOn f (Set.Icc a b) := by
+--     fun_prop
+--   have hg : ContinuousOn g (Icc 0 h) := by
+--     simp [gdef]
+--     sorry
+--   have hFderiv : deriv F = g := by
+--     funext x
+--     sorry-- simpa [F] using hg.deriv_integral g 0 x
+--   have hFcont : ContDiffOn ℝ 3 F (Icc 0 h) := sorry
+--   rcases midpoint_aux (F := F) (sub_pos.mpr hab) hFcont with ⟨ξ0, hξ0, hEq⟩
+--   refine ⟨a + ξ0, by grind, ?_⟩
+--   have hDerivMid : deriv F (h / 2) = f ((a + b) / 2) := by
+--     simp [hFderiv, g, add_comm, hdef]
+--     ring_nf
+--   have hIter3 : iteratedDeriv 3 F ξ0 = iteratedDeriv 2 f (a + ξ0) := by calc
+--     _ = iteratedDeriv 2 (deriv F) ξ0 := congrArg (fun u ↦ u ξ0) iteratedDeriv_succ'
+--     _ = _ := by rw [hFderiv, gdef, iteratedDeriv_comp_add_const, add_comm]
+--   have hEq' : F h - deriv F (h / 2) * h = (h^3 / 24) * iteratedDeriv 3 F ξ0 := by
+--     simpa [F] using hEq
+--   have hFh : F h = (∫ x in a..b, f x) := by simp [F, g, h, add_comm]
+--   simpa only [hFh, hDerivMid, hIter3] using hEq'

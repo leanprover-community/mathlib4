@@ -113,6 +113,24 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
+lemma key {φ φ' : ℝ → ℝ} {a b : ℝ} (a_lt_b : a < b)
+    (h : ∀ x ∈ Icc a b, HasDerivWithinAt φ (φ' x) (Icc a b) x) (h0 : φ a = 0)
+    {c : ℝ} {n : ℕ} (h_bound : ∀ t ∈ Icc a b, |φ' t| ≤ c * (t - a) ^ n)
+    (hφ' : IntervalIntegrable φ' volume a b) :
+    ∀ t ∈ Icc a b, |φ t| ≤ c / (n + 1) * (t - a) ^ (n + 1) := by
+  intro t ht
+  have hs : Icc a t ⊆ Icc a b := Icc_subset_Icc_right ht.2
+  have hs'' : uIcc a t ⊆ uIcc a b := by rwa [uIcc_of_lt a_lt_b, uIcc_of_le ht.1]
+  replace hφ' := hφ'.mono hs'' le_rfl
+  have key := integral_eq_sub_of_hasDerivAt_of_le (f := φ) (f' := φ') ht.1
+    (fun x hx ↦ (h x (hs hx)).continuousWithinAt.mono hs)
+    (fun x hx ↦ (h x (hs (mem_Icc_of_Ioo hx))).hasDerivAt (Icc_mem_nhds_iff.mpr (by grind))) hφ'
+  rw [h0, sub_zero] at key
+  grw [← key, abs_integral_le_integral_abs ht.1, integral_mono_on ht.1 hφ'.abs
+    (Continuous.intervalIntegrable (by fun_prop) a t) fun x hx ↦ h_bound x (hs hx),
+    integral_comp_sub_right (c * · ^ n), ← mul_div_right_comm, mul_div_assoc]
+  simp
+
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
 the general error bound later on. -/
 private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
@@ -121,7 +139,6 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
     (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (Icc a b) x| ≤ ζ) :
     |trapezoidal_error f 1 a b| ≤ (b - a) ^ 3 * ζ / 12 := by
-  rw [mul_div_assoc, mul_comm]
   let g (t : ℝ) := trapezoidal_error f 1 a t
   -- Hand-computed expressions for g' and g''.
   let dg (t : ℝ) := (1 / 2) * (f a + f t) + ((t - a) / 2) * (derivWithin f (Icc a b) t) - f t
@@ -154,25 +171,9 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   have bound_ddg (x : ℝ) (hx : x ∈ Icc a b) : |ddg x| ≤ (ζ / 2) * ((x - a) ^ 1) := by
     simp_rw [pow_one, ddg, abs_mul, abs_div, abs_two]
     grw [fpp_bound x, abs_of_nonneg (sub_nonneg.mpr hx.1), div_mul_comm]
-  have key {φ φ' : ℝ → ℝ} (h : ∀ x ∈ Icc a b, HasDerivWithinAt φ (φ' x) (Icc a b) x) (h0 : φ a = 0)
-      {c : ℝ} {n : ℕ} (h_bound : ∀ t ∈ Icc a b, |φ' t| ≤ c * (t - a) ^ n)
-      (hφ' : IntervalIntegrable φ' volume a b) :
-      ∀ t ∈ Icc a b, |φ t| ≤ c / (n + 1) * (t - a) ^ (n + 1) := by
-    intro t ht
-    have hs : Icc a t ⊆ Icc a b := Icc_subset_Icc_right ht.2
-    have hs' : Ioo a t ⊆ Ioo a b := Ioo_subset_Ioo_right ht.2
-    have hs'' : uIcc a t ⊆ uIcc a b := by rwa [uIcc_of_lt a_lt_b, uIcc_of_le ht.1]
-    replace hφ' := hφ'.mono hs'' le_rfl
-    have key := integral_eq_sub_of_hasDerivAt_of_le (f := φ) (f' := φ') ht.1
-      (fun x hx ↦ (h x (hs hx)).continuousWithinAt.mono hs)
-      (fun x hx ↦ (h x (hs (mem_Icc_of_Ioo hx))).hasDerivAt (Icc_mem_nhds_iff.mpr (hs' hx))) hφ'
-    rw [h0, sub_zero] at key
-    grw [← key, abs_integral_le_integral_abs ht.1, integral_mono_on ht.1 hφ'.abs
-      (Continuous.intervalIntegrable (by fun_prop) a t) fun x hx ↦ h_bound x (hs hx),
-      integral_comp_sub_right (c * · ^ n), ← mul_div_right_comm, mul_div_assoc]
-    simp
-  have bound_dg := key h_ddg (by ring) bound_ddg (h_ddf_integrable.continuousOn_mul (by fun_prop))
-  have bound_g := key h_dg (trapezoidal_error_eq f 1 a) bound_dg
+  have bound_dg :=
+    key a_lt_b h_ddg (by ring) bound_ddg (h_ddf_integrable.continuousOn_mul (by fun_prop))
+  have bound_g := key a_lt_b h_dg (trapezoidal_error_eq f 1 a) bound_dg
     (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
   exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 

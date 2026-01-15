@@ -132,6 +132,11 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
+theorem iteratedDerivWithin_comp_const_sub (hf : ContDiffOn 𝕜 n f s) (c : 𝕜) :
+  iteratedDerivWithin n (fun z => f (c - z)) s x =
+  (-1 : 𝕜) ^ n • iteratedDerivWithin n f s (c - x) := by
+  sorry
+
 end
 
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
