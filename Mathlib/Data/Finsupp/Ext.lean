@@ -21,7 +21,7 @@ These have been moved to their own file to avoid depending on submonoids when de
 * `Finsupp.addHom_ext`: additive homomorphisms that are equal on each `single` are equal everywhere
 -/
 
-@[expose] public section
+public section
 
 variable {α M N : Type*}
 

@@ -26,7 +26,8 @@ assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
 
 universe u v w x
 
-open Pointwise
+open Module
+open scoped Pointwise
 
 namespace Submodule
 
@@ -408,8 +409,8 @@ instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
-    [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
-  Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
+    [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
+  (I.restrictScalars R).instIsTorsionFree
 
 theorem span_mul_span (S T : Set R) [(span S).IsTwoSided] :
     span S * span T = span (S * T) :=
@@ -850,9 +851,6 @@ theorem disjoint_powers_iff_notMem (y : R) (hI : I.IsRadical) :
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
 
-@[deprecated (since := "2025-05-23")]
-alias disjoint_powers_iff_not_mem := disjoint_powers_iff_notMem
-
 variable (I J)
 
 theorem radical_sup : radical (I ⊔ J) = radical (radical I ⊔ radical J) :=
@@ -1016,6 +1014,10 @@ theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Fins
 theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
+
+theorem eq_inf_of_isPrime_inf {s : Finset ι} {f : ι → Ideal R} (hp : IsPrime (s.inf f)) :
+    ∃ i ∈ s, f i = s.inf f :=
+  (hp.inf_le'.mp le_rfl).imp (fun _ ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
 
 theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
     (hx : x ∈ I) : y ∉ I := fun hy ↦
@@ -1383,7 +1385,3 @@ lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [Co
   choose m a b ha hb heq using hs
   refine ⟨a, by rwa [Set.range_subset_iff], fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
   exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩)) (mem_sup_right <| hb _)
-
-@[deprecated (since := "2025-05-13")]
-alias Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup :=
-  Ideal.exists_subset_radical_span_sup_of_subset_radical_sup

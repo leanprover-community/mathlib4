@@ -27,7 +27,7 @@ to specialize API about long exact sequences to group homology.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

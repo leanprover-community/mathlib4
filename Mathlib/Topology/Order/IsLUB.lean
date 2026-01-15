@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.LeftRightNhds
 # Properties of LUB and GLB in an order topology
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -228,10 +228,13 @@ theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
     ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup' (α := αᵒᵈ) hf
 
+section ConditionallyCompleteLinearOrder
+
+variable {α : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+
 /-- A closed interval in a conditionally complete linear order is compact.
 Also see general API on `CompactIccSpace`. -/
-protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
-    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] (a b : α) :
+protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc (a b : α) :
     IsCompact (Icc a b) := by
   simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff]
   refine (le_or_gt a b).elim (fun _ f hfab ↦ ?_) (by simp [·])
@@ -252,6 +255,29 @@ protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
   have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
   exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
 
+lemma upperClosure_eq_Ici_csInf {s : Set α} (h₁ : s.Nonempty) (h₂ : BddBelow s) (hs : IsClosed s) :
+    upperClosure s = Ici (sInf s) :=
+  Set.ext fun _ ↦ ⟨fun ⟨_, h, h'⟩ ↦ csInf_le_of_le h₂ h h',
+    (⟨_, (isGLB_csInf h₁ h₂).mem_of_isClosed h₁ hs, ·⟩)⟩
+
+lemma lowerClosure_eq_Iic_csSup {s : Set α} (h₁ : s.Nonempty) (h₂ : BddAbove s) (hs : IsClosed s) :
+    lowerClosure s = Iic (sSup s) :=
+  upperClosure_eq_Ici_csInf (α := αᵒᵈ) h₁ h₂ hs
+
+protected lemma IsClosed.upperClosure {s : Set α} (hs : IsClosed s) :
+    IsClosed (upperClosure s : Set α) := by
+  obtain rfl | h₁ := s.eq_empty_or_nonempty
+  · simp
+  by_cases h₂ : BddBelow s
+  · exact upperClosure_eq_Ici_csInf h₁ h₂ hs ▸ isClosed_Ici
+  · exact upperClosure_eq_bot h₂ ▸ isClosed_univ
+
+protected lemma IsClosed.lowerClosure {s : Set α} (hs : IsClosed s) :
+    IsClosed (lowerClosure s).1 :=
+  IsClosed.upperClosure (α := αᵒᵈ) hs
+
+end ConditionallyCompleteLinearOrder
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
@@ -268,10 +294,6 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
-
-@[deprecated (since := "2025-05-23")]
-alias IsLUB.exists_seq_strictMono_tendsto_of_not_mem :=
-  IsLUB.exists_seq_strictMono_tendsto_of_notMem
 
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
@@ -350,10 +372,6 @@ theorem IsGLB.exists_seq_strictAnti_tendsto_of_notMem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (notMem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_strictMono_tendsto_of_notMem (α := αᵒᵈ) htx notMem ht
-
-@[deprecated (since := "2025-05-23")]
-alias IsGLB.exists_seq_strictAnti_tendsto_of_not_mem :=
-  IsGLB.exists_seq_strictAnti_tendsto_of_notMem
 
 theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :

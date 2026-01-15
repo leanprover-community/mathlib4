@@ -63,7 +63,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) (LinearMap.flip (innerₛₗ 𝕜)) T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 
 end Real
@@ -220,6 +220,21 @@ theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommG
 
 end LinearMap
 
+@[simp] theorem InnerProductSpace.isSymmetric_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsSymmetric := fun _ _ ↦ by simp [inner_smul_left, inner_smul_right, mul_comm]
+
+open ContinuousLinearMap in
+theorem InnerProductSpace.isSymmetricProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    (rankOne 𝕜 x x).IsSymmetricProjection where
+  isSymmetric := isSymmetric_rankOne_self x
+  isIdempotentElem := isIdempotentElem_rankOne_self hx |>.toLinearMap
+
+theorem LinearMap.IsSymmetric.toLinearMap_symm {T : E ≃ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.symm.IsSymmetric := fun x y ↦ by simpa using hT (T.symm x) (T.symm y) |>.symm
+
+@[simp] theorem LinearEquiv.isSymmetric_symm_iff {T : E ≃ₗ[𝕜] E} :
+    T.symm.IsSymmetric ↔ T.IsSymmetric := ⟨.toLinearMap_symm, .toLinearMap_symm⟩
+
 end Seminormed
 
 section Normed
@@ -343,11 +358,8 @@ theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmet
 
 end LinearMap
 
-open ContinuousLinearMap in
-/-- An idempotent operator `T` is symmetric iff `(range T)ᗮ = ker T`. -/
-theorem ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
-    {T : E →L[𝕜] E} (h : IsIdempotentElem T) :
-    T.IsSymmetric ↔ (LinearMap.range T)ᗮ = LinearMap.ker T :=
-  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range h.toLinearMap
+@[deprecated (since := "2025-12-28")] alias
+  ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range :=
+  LinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range
 
 end Normed

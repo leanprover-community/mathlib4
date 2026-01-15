@@ -386,8 +386,6 @@ theorem tmul_eq_smul_one_tmul {S : Type*} [Semiring S] [Module R S] [SMulCommCla
     (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
   nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
 
-@[deprecated (since := "2025-07-08")] alias tsmul_eq_smul_one_tuml := tmul_eq_smul_one_tmul
-
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
@@ -1505,3 +1503,21 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor Q = -f.rTensor Q := by
 end LinearMap
 
 end Ring
+
+namespace Equiv
+variable {R A A' B B' : Type*} [CommSemiring R]
+  [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
+
+variable (R) in
+open TensorProduct in
+lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
+    letI := eA.addCommMonoid
+    letI := eB.addCommMonoid
+    letI := eA.module R
+    letI := eB.module R
+    TensorProduct.comm R A B = .trans
+      (congr (eA.linearEquiv R) (eB.linearEquiv R)) (.trans
+      (TensorProduct.comm R A' B') <| congr (eB.linearEquiv R).symm (eA.linearEquiv R).symm) := by
+  ext x; induction x <;> simp [*]
+
+end Equiv

@@ -19,6 +19,14 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic
 
+/-- An `(attr := ...)` argument for applying the same attributes to multiple declarations. -/
+syntax optAttrArg := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
+
+/-- Elaborate an `(attr := ...)` argument. -/
+def elabOptAttrArg : TSyntax ``optAttrArg → TermElabM (Array Attribute)
+  | `(optAttrArg| (attr := $[$attrs],*)) => elabAttrs attrs
+  | _ => pure #[]
+
 /-- A helper function for constructing a related declaration from an existing one.
 
 This is currently used by the attributes `reassoc` and `elementwise`,
@@ -51,7 +59,7 @@ Arguments:
   and go-to-def on `ref` will not go to the definition of `ref`.
 -/
 def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
-    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
+    (attrs : TSyntax ``optAttrArg)
     (construct : Expr → List Name → MetaM (Expr × List Name))
     (docstringPrefix? : Option String := none)
     (hoverInfo : Bool := false) :
@@ -84,9 +92,8 @@ def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
   | some doc, none | none, some doc => addDocStringCore tgt doc
   | some docPre, some docPost => addDocStringCore tgt s!"{docPre}\n\n---\n\n{docPost}"
   inferDefEqAttr tgt
-  let attrs := match attrs? with | some attrs => attrs | none => #[]
   Term.TermElabM.run' do
-    let attrs ← elabAttrs attrs
+    let attrs ← elabOptAttrArg attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
     if hoverInfo then

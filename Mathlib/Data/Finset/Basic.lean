@@ -169,9 +169,6 @@ theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (s.erase a
 theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
   rw [subset_insert_iff, erase_eq_of_notMem h]
 
-@[deprecated (since := "2025-05-23")]
-alias subset_insert_iff_of_not_mem := subset_insert_iff_of_notMem
-
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
@@ -256,9 +253,6 @@ theorem sdiff_insert_insert_of_mem_of_notMem {s t : Finset α} {x : α} (hxs : x
     insert x (s \ insert x t) = s \ t := by
   grind
 
-@[deprecated (since := "2025-05-23")]
-alias sdiff_insert_insert_of_mem_of_not_mem := sdiff_insert_insert_of_mem_of_notMem
-
 theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
   grind
 
@@ -334,9 +328,6 @@ theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     (s.disjUnion t h).filter p = (s.filter p).disjUnion (t.filter p) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
-
-@[deprecated (since := "2025-06-11")]
-alias filter_disj_union := filter_disjUnion
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).filter p =
