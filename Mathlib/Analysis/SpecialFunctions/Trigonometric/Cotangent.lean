@@ -235,7 +235,7 @@ theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
   ring
 
 /-- The series representation of the cosecant function. -/
-theorem lemma_abadeuleulmit1 {z : ℂ} (hz : z ∈ integerComplement) :
+theorem div_sin_series_rep {z : ℂ} (hz : z ∈ integerComplement) :
     (π / sin (π * z)) =
     (1 / z) + ∑' (n : ℕ+), (-1) ^ (n : ℕ) * ((1 / (z - n) : ℂ) + (1 / (z + n) : ℂ)) := by
   have hsummable {z : ℂ} (hz : z ∈ integerComplement) :
