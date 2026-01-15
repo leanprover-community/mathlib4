@@ -17,7 +17,7 @@ must agree on all nonzero arguments. See `LSeries_eq_iff_of_abscissaOfAbsConv_lt
 and `LSeries_injOn`.
 -/
 
-@[expose] public section
+public section
 
 open LSeries Complex
 

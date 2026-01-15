@@ -504,27 +504,27 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     (∀ ⦃C⦄, M.IsCircuit C → e ∉ C) ∧ e ∈ M.E,
     ∀ X, e ∈ M.closure X ↔ e ∈ X,
     ¬ M.Spanning (M.E \ {e}) ] := by
-  tfae_have 1 <-> 2 := Iff.rfl
-  tfae_have 1 <-> 3 := singleton_isCocircuit.symm
-  tfae_have 1 <-> 4 := by
+  tfae_have 1 ↔ 2 := Iff.rfl
+  tfae_have 1 ↔ 3 := singleton_isCocircuit.symm
+  tfae_have 1 ↔ 4 := by
     simp_rw [← dual_isLoop_iff_isColoop, isLoop_iff_forall_mem_compl_isBase]
     refine ⟨fun h B hB ↦ ?_, fun h B hB ↦ h hB.compl_isBase_of_dual⟩
     obtain ⟨-, heB : e ∈ B⟩ := by simpa using h (M.E \ B) hB.compl_isBase_dual
     assumption
-  tfae_have 3 -> 5 := fun h ↦
+  tfae_have 3 → 5 := fun h ↦
     ⟨fun C hC heC ↦ hC.inter_isCocircuit_ne_singleton h (e := e) (by simpa), h.subset_ground rfl⟩
-  tfae_have 5 -> 4 := by
+  tfae_have 5 → 4 := by
     refine fun ⟨h, heE⟩ B hB ↦ by_contra fun heB ↦ ?_
     rw [← hB.closure_eq] at heE
     obtain ⟨C, -, hC, heC⟩ := (mem_closure_iff_exists_isCircuit heB).1 heE
     exact h hC heC
-  tfae_have 5 <-> 6 := by
+  tfae_have 5 ↔ 6 := by
     refine ⟨fun h X ↦ ⟨fun heX ↦ by_contra fun heX' ↦ ?_, fun heX ↦ M.mem_closure_of_mem' heX h.2⟩,
       fun h ↦ ⟨fun C hC heC ↦ ?_, M.closure_subset_ground _ <| (h {e}).2 rfl⟩⟩
     · obtain ⟨C, -, hC, heC⟩ := (mem_closure_iff_exists_isCircuit heX').1 heX
       exact h.1 hC heC
     · simpa [hC.mem_closure_diff_singleton_of_mem heC] using h (C \ {e})
-  tfae_have 1 <-> 7 := by
+  tfae_have 1 ↔ 7 := by
     wlog he : e ∈ M.E
     · exact iff_of_false (fun h ↦ he h.mem_ground) <| by simp [he, M.ground_spanning]
     rw [spanning_iff_compl_coindep diff_subset, ← dual_isLoop_iff_isColoop, ← singleton_dep,

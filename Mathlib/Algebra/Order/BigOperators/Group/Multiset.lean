@@ -18,7 +18,7 @@ This file contains the results concerning the interaction of multiset big operat
 groups.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

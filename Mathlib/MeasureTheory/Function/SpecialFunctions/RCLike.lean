@@ -13,7 +13,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

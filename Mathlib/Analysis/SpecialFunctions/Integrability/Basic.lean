@@ -16,7 +16,7 @@ This file establishes basic facts about the interval integrability of special fu
 powers and the logarithm.
 -/
 
-@[expose] public section
+public section
 
 open Interval MeasureTheory Real Set
 

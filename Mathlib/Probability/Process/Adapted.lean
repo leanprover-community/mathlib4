@@ -11,13 +11,12 @@ public import Mathlib.Topology.Instances.Discrete
 /-!
 # Adapted and progressively measurable processes
 
-This file defines some standard definition from the theory of stochastic processes including
-filtrations and stopping times. These definitions are used to model the amount of information
-at a specific time and are the first step in formalizing stochastic processes.
+This file defines the related notions of a process `u` being `StronglyAdapted` or `ProgMeasurable`
+(progressively measurable) with respect to a filtration `f`, and proves some basic facts about them.
 
 ## Main definitions
 
-* `MeasureTheory.Adapted`: a sequence of functions `u` is said to be adapted to a
+* `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be strongly adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-strongly measurable
 * `MeasureTheory.ProgMeasurable`: a sequence of functions `u` is said to be progressively
   measurable with respect to a filtration `f` if at each point in time `i`, `u` restricted to
@@ -26,7 +25,8 @@ at a specific time and are the first step in formalizing stochastic processes.
 
 ## Main results
 
-* `Adapted.progMeasurable_of_continuous`: a continuous adapted process is progressively measurable.
+* `StronglyAdapted.progMeasurable_of_continuous`: a continuous strongly adapted process is
+  progressively measurable.
 
 ## Tags
 
@@ -36,7 +36,6 @@ adapted, progressively measurable
 
 @[expose] public section
 
-
 open Filter Order TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
@@ -45,67 +44,71 @@ namespace MeasureTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι] {f : Filtration ι m}
 
-section Adapted
+section StronglyAdapted
 
 variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] {u v : (i : ι) → Ω → β i}
 
-/-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
-`u i` is `f i`-measurable. -/
-def Adapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
+
+/-- A sequence of functions `u` is strongly adapted to a filtration `f` if for all `i`,
+`u i` is `f i`-strongly measurable. -/
+def StronglyAdapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
   ∀ i : ι, StronglyMeasurable[f i] (u i)
 
-namespace Adapted
+namespace StronglyAdapted
 
 @[to_additive]
 protected theorem mul [∀ i, Mul (β i)] [∀ i, ContinuousMul (β i)]
-    (hu : Adapted f u) (hv : Adapted f v) :
-    Adapted f (u * v) := fun i => (hu i).mul (hv i)
+    (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
+    StronglyAdapted f (u * v) := fun i => (hu i).mul (hv i)
 
 @[to_additive]
 protected theorem div [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
-    (hu : Adapted f u) (hv : Adapted f v) :
-    Adapted f (u / v) := fun i => (hu i).div (hv i)
+    (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
+    StronglyAdapted f (u / v) := fun i => (hu i).div (hv i)
 
 @[to_additive]
-protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : Adapted f u) :
-    Adapted f u⁻¹ := fun i => (hu i).inv
+protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : StronglyAdapted f u) :
+    StronglyAdapted f u⁻¹ := fun i => (hu i).inv
 
 protected theorem smul [∀ i, SMul ℝ (β i)] [∀ i, ContinuousConstSMul ℝ (β i)]
-    (c : ℝ) (hu : Adapted f u) :
-    Adapted f (c • u) := fun i => (hu i).const_smul c
+    (c : ℝ) (hu : StronglyAdapted f u) :
+    StronglyAdapted f (c • u) := fun i => (hu i).const_smul c
 
-protected theorem stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
-  (hf i).mono (f.le i)
+protected theorem stronglyMeasurable {i : ι} (hf : StronglyAdapted f u) :
+    StronglyMeasurable[m] (u i) := (hf i).mono (f.le i)
 
-theorem stronglyMeasurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) :
+theorem stronglyMeasurable_le {i j : ι} (hf : StronglyAdapted f u) (hij : i ≤ j) :
     StronglyMeasurable[f j] (u i) := (hf i).mono (f.mono hij)
 
-end Adapted
+end StronglyAdapted
 
-theorem adapted_const' (f : Filtration ι m) (x : (i : ι) → β i) : Adapted f fun i _ ↦ x i :=
+theorem stronglyAdapted_const' (f : Filtration ι m) (x : (i : ι) → β i) :
+    StronglyAdapted f fun i _ ↦ x i :=
   fun _ ↦ stronglyMeasurable_const
 
-theorem adapted_const {β : Type*} [TopologicalSpace β] (f : Filtration ι m) (x : β) :
-    Adapted f fun _ _ ↦ x :=
-  adapted_const' _ _
+theorem stronglyAdapted_const {β : Type*} [TopologicalSpace β] (f : Filtration ι m) (x : β) :
+    StronglyAdapted f fun _ _ ↦ x :=
+  stronglyAdapted_const' _ _
 
 variable (β) in
-theorem adapted_zero' [∀ i, Zero (β i)] (f : Filtration ι m) : Adapted f (0 : (i : ι) → Ω → β i) :=
+theorem stronglyAdapted_zero' [∀ i, Zero (β i)] (f : Filtration ι m) :
+    StronglyAdapted f (0 : (i : ι) → Ω → β i) :=
   fun i ↦ @stronglyMeasurable_zero Ω (β i) (f i) _ _
 
-theorem adapted_zero (β : Type*) [TopologicalSpace β] [Zero β] (f : Filtration ι m) :
-    Adapted f (0 : ι → Ω → β) :=
+theorem stronglyAdapted_zero (β : Type*) [TopologicalSpace β] [Zero β] (f : Filtration ι m) :
+    StronglyAdapted f (0 : ι → Ω → β) :=
   fun i ↦ @stronglyMeasurable_zero Ω β (f i) _ _
 
-theorem Filtration.adapted_natural [∀ i, MetrizableSpace (β i)] [mβ : ∀ i, MeasurableSpace (β i)]
-    [∀ i, BorelSpace (β i)] (hum : ∀ i, StronglyMeasurable[m] (u i)) :
-    Adapted (Filtration.natural u hum) u := by
+theorem Filtration.stronglyAdapted_natural [∀ i, MetrizableSpace (β i)]
+    [mβ : ∀ i, MeasurableSpace (β i)] [∀ i, BorelSpace (β i)]
+    (hum : ∀ i, StronglyMeasurable[m] (u i)) :
+    StronglyAdapted (Filtration.natural u hum) u := by
   intro i
   refine StronglyMeasurable.mono ?_ (le_iSup₂_of_le i (le_refl i) le_rfl)
   rw [stronglyMeasurable_iff_measurable_separable]
   exact ⟨measurable_iff_comap_le.2 le_rfl, (hum i).isSeparable_range⟩
 
-end Adapted
+end StronglyAdapted
 
 variable {β : Type*} [TopologicalSpace β] {u v : ι → Ω → β}
 
@@ -126,7 +129,7 @@ namespace ProgMeasurable
 
 variable [MeasurableSpace ι]
 
-protected theorem adapted (h : ProgMeasurable f u) : Adapted f u := by
+protected theorem stronglyAdapted (h : ProgMeasurable f u) : StronglyAdapted f u := by
   intro i
   have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
     rfl
@@ -191,27 +194,65 @@ theorem progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U atTop (𝓝 u)) : ProgMeasurable f u :=
   progMeasurable_of_tendsto' atTop h h_tendsto
 
-/-- A continuous and adapted process is progressively measurable. -/
-theorem Adapted.progMeasurable_of_continuous [TopologicalSpace ι] [MetrizableSpace ι]
+/-- A continuous and strongly adapted process is progressively measurable. -/
+theorem StronglyAdapted.progMeasurable_of_continuous [TopologicalSpace ι] [MetrizableSpace ι]
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
-    [PseudoMetrizableSpace β] (h : Adapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) :
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) :
     ProgMeasurable f u := fun i =>
   @stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable _ _ (Set.Iic i) _ _ _ _ _ _ _
     (f i) _ (fun ω => (hu_cont ω).comp continuous_induced_dom) fun j => (h j).mono (f.mono j.prop)
 
-/-- For filtrations indexed by a discrete order, `Adapted` and `ProgMeasurable` are equivalent.
-This lemma provides `Adapted f u → ProgMeasurable f u`.
-See `ProgMeasurable.adapted` for the reverse direction, which is true more generally. -/
-theorem Adapted.progMeasurable_of_discrete [TopologicalSpace ι] [DiscreteTopology ι]
+/-- For filtrations indexed by a discrete order, `StronglyAdapted` and `ProgMeasurable` are
+equivalent. This lemma provides `StronglyAdapted f u → ProgMeasurable f u`.
+See `ProgMeasurable.stronglyAdapted` for the reverse direction, which is true more generally. -/
+theorem StronglyAdapted.progMeasurable_of_discrete [TopologicalSpace ι] [DiscreteTopology ι]
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
-    [PseudoMetrizableSpace β] (h : Adapted f u) : ProgMeasurable f u :=
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u) : ProgMeasurable f u :=
   h.progMeasurable_of_continuous fun _ => continuous_of_discreteTopology
 
 -- this dot notation will make more sense once we have a more general definition for predictable
-theorem Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n => u (n + 1))
-    (hu0 : StronglyMeasurable[f 0] (u 0)) : Adapted f u := fun n =>
+theorem Predictable.stronglyAdapted {f : Filtration ℕ m} {u : ℕ → Ω → β}
+    (hu : StronglyAdapted f fun n => u (n + 1)) (hu0 : StronglyMeasurable[f 0] (u 0)) :
+    StronglyAdapted f u := fun n =>
   match n with
   | 0 => hu0
   | n + 1 => (hu n).mono (f.mono n.le_succ)
+
+section Deprications
+
+@[deprecated (since := "2025-12-19")] alias Adapted := StronglyAdapted
+
+@[deprecated (since := "2025-12-19")] alias Adapted.mul := StronglyAdapted.mul
+
+@[deprecated (since := "2025-12-19")] alias Adapted.div := StronglyAdapted.div
+
+@[deprecated (since := "2025-12-19")] alias Adapted.smul := StronglyAdapted.smul
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.stronglyMeasurable := StronglyAdapted.stronglyMeasurable
+
+@[deprecated (since := "2025-12-19")] alias adapted_const' := stronglyAdapted_const'
+
+@[deprecated (since := "2025-12-19")] alias adapted_const := stronglyAdapted_const
+
+@[deprecated (since := "2025-12-19")] alias adapted_zero' := stronglyAdapted_zero'
+
+@[deprecated (since := "2025-12-19")] alias adapted_zero := stronglyAdapted_zero
+
+@[deprecated (since := "2025-12-19")]
+alias Filtration.adapted_natural := Filtration.stronglyAdapted_natural
+
+@[deprecated (since := "2025-12-19")] alias ProgMeasurable.adapted := ProgMeasurable.stronglyAdapted
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.progMeasurable_of_continuous := StronglyAdapted.progMeasurable_of_continuous
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.progMeasurable_of_discrete := StronglyAdapted.progMeasurable_of_discrete
+
+@[deprecated (since := "2025-12-19")]
+alias Predictable.adapted := Predictable.stronglyAdapted
+
+end Deprications
 
 end MeasureTheory
