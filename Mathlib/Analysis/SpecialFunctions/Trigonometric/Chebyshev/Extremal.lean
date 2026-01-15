@@ -74,7 +74,7 @@ lemma strictAntiOn_node (n : ℕ) :
 
 lemma node_lt {n i j : ℕ} (hj : j ≤ n) (hij : i < j) :
     node n j < node n i :=
-  (strictAntiOn_node n) (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr (by grind)))
+  strictAntiOn_node n (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr (by grind)))
     (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr hj)) hij
 
 lemma zero_lt_prod_node_sub_node {n i : ℕ} (hi : i ≤ n) :
