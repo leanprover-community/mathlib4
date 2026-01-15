@@ -362,7 +362,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
     finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
-  have _i : IsAddTorsionFree M := .of_noZeroSMulDivisors L M
+  have _i : IsAddTorsionFree M := .of_isTorsionFree L M
   rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
 
 @[simp]
