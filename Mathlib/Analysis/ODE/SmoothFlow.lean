@@ -208,7 +208,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     Continuous (integralCM hg t₀ α) := by
   by_cases hα : MapsTo α univ u
-  · simp only [integralCM_if_pos hα]
+  · rw [integralCM_if_pos hα]
     let X := Fin n → C(Icc tmin tmax, E)
     let fparam : (X × Icc tmin tmax) → ℝ → E :=
       fun p τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (p.1 i) τ)
@@ -217,7 +217,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
       (continuous_induced_dom.comp continuous_snd)
     exact (continuous_integrand_pi₂ hg t₀ hα).comp
       ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
-  · simp only [integralCM_if_neg hα]
+  · rw [integralCM_if_neg hα]
     exact continuous_const
 
 /--
@@ -228,7 +228,8 @@ def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : Cont
     (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
   toFun := integralCM hg t₀ α
-  -- why convert? `instDecidableEqFin` isn't being recognised as a `DecidableEq (Fin n)`
+  -- `ContinuousMultilinearMap` asks for a proof for arbitrary `[DecidableEq ι]`, which is why we
+  -- need `convert` here
   map_update_add' dα i α₁ α₂ := by convert integralCM_update_add hg t₀ α dα i α₁ α₂
   map_update_smul' dα i c α₁ := by convert integralCM_update_smul hg t₀ α dα i c α₁
   cont := continuous_integralCM ..
