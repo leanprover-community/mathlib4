@@ -241,7 +241,7 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
 def Ring.baseType {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (e : Q($α)) := NormNum.Result e
 
-def Ring.ringCompute {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) :
+instance Ring.ringCompute {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) :
     RingCompute (Ring.baseType sα) sα where
   evalAdd x y zx zy := do
     let res ← zx.add zy q(inferInstance)
@@ -1511,8 +1511,20 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} (sα :
       let ⟨c, vc, p⟩ ← evalMul sα va vb
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
-  -- | ``HSMul.hSMul, rα, _ => match rα, e with
-  --   | _, ~q(($a : ℕ) • ($b : «$α»)) =>
+  | ``HSMul.hSMul, rα, _ => match rα, e with
+    | _, ~q(@HSMul.hSMul $R $α' _ $inst $r $a) =>
+      if ! (← isDefEq α α') then
+        throwError "HSmul not implemented"
+      -- TODO: special case Nat and Int for performance?
+      have : u_2 =QL u := ⟨⟩
+      have : $α =Q $α' := ⟨⟩
+      have a : Q($α) := a
+      let sR ← synthInstanceQ q(CommSemiring $R)
+      let cR ← mkCache sR
+      let ⟨_, vr, pr⟩ ← eval (bt := Ring.baseType sR) sR cR q($r)
+      let ⟨_, va, pa⟩ ← eval (bt := bt) sα c q($a)
+      let _ ← RingCompute.evalCast
+      sorry
   --     let ⟨_, va, pa⟩ ← eval sℕ .nat a
   --     let ⟨_, vb, pb⟩ ← eval sα c b
   --     let ⟨c, vc, p⟩ ← evalNSMul sα va vb
@@ -1523,7 +1535,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} (sα :
   --     let ⟨c, vc, p⟩ ← evalZSMul sα rα va vb
   --     assumeInstancesCommute
   --     pure ⟨c, vc, q(zsmul_congr $pa $pb $p)⟩
-  --   | _, _ => els
+    | _, _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
