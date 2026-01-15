@@ -21,7 +21,7 @@ explicit universal objects.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -43,7 +43,7 @@ variable [DivisionRing α]
 private def operate : (Σ n, Operands s n → closure s) → closure s
   | ⟨.inl 0, f⟩ => f false + f true
   | ⟨.inl 1, f⟩ => f false * f true
-  | ⟨.inl 2, f⟩ => - f ()
+  | ⟨.inl 2, f⟩ => -f ()
   | ⟨.inl 3, f⟩ => (f ())⁻¹
   | ⟨.inl 4, _⟩ => 0
   | ⟨.inl 5, _⟩ => 1
@@ -74,12 +74,12 @@ lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
   (Cardinal.mk_le_of_surjective <| surjective_ofWType s).trans <| by
     convert WType.cardinalMk_le_max_aleph0_of_finite' using 1
     · rw [lift_uzero, mk_sum, lift_uzero]
-      have : lift.{u,0} #(Fin 6) < ℵ₀ := lift_lt_aleph0.mpr (lt_aleph0_of_finite _)
-      obtain h|h := lt_or_ge #s ℵ₀
+      have : lift.{u, 0} #(Fin 6) < ℵ₀ := lift_lt_aleph0.mpr (lt_aleph0_of_finite _)
+      obtain h | h := lt_or_ge #s ℵ₀
       · rw [max_eq_right h.le, max_eq_right]
         exact (add_lt_aleph0 this h).le
       · rw [max_eq_left h, add_eq_right h (this.le.trans h), max_eq_left h]
-    rintro (n|_)
+    rintro (n | _)
     · fin_cases n <;> (dsimp only [id_eq]; infer_instance)
     infer_instance
 

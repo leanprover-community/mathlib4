@@ -28,7 +28,7 @@ The obvious functor `Q W : C ⥤ W.Localization` satisfies the universal propert
 of the localization. Indeed, if `G : C ⥤ D` sends morphisms in `W` to isomorphisms
 in `D` (i.e. we have `hG : W.IsInvertedBy G`), then there exists a unique functor
 `G' : W.Localization ⥤ D` such that `Q W ≫ G' = G`. This `G'` is `lift G hG`.
-The expected property of `lift G hG` if expressed by the lemma `fac` and the
+The expected property of `lift G hG` is expressed by the lemma `fac` and the
 uniqueness is expressed by `uniq`.
 
 ## References
@@ -182,7 +182,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
 
 variable (W) in
 /-- The canonical bijection between objects in a category and its
-localization with respect to a morphism_property `W` -/
+localization with respect to a `MorphismProperty` `W` -/
 @[simps]
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
@@ -215,7 +215,7 @@ theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     induction p with
     | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     | @cons X₂ X₃ p g hp =>
-      let p' : X₁ ⟶X₂ := p
+      let p' : X₁ ⟶ X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
@@ -300,7 +300,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
 @[simps!]
 def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
-  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ ≫ eqToHom (by rw [fac]))
+  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ.hom ≫ eqToHom (by rw [fac]))
   map_id G :=
     natTrans_hcomp_injective
       (by
@@ -343,12 +343,16 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
         exact fac G hG
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
         ext
-        apply NatTransExtension.app_eq)
+        dsimp
+        -- Why does `rw` work but not `simp`?
+        rw [NatTransExtension.app_eq, InducedCategory.eqToHom_hom,
+          InducedCategory.eqToHom_hom]
+        simp)
 
 end WhiskeringLeftEquivalence
 
-/-- The equivalence of categories `(W.localization ⥤ D) ≌ (W.FunctorsInverting D)`
-induced by the composition with `W.Q : C ⥤ W.localization`. -/
+/-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
+induced by the composition with `W.Q : C ⥤ W.Localization`. -/
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D

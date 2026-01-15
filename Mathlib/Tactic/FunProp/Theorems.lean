@@ -10,6 +10,9 @@ public meta import Mathlib.Tactic.FunProp.Types
 public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Types
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
@@ -170,6 +173,8 @@ structure FunctionTheorem where
   form : TheoremForm
   deriving Inhabited, BEq
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
 set_option linter.style.docString.empty false in

@@ -25,7 +25,7 @@ principal.
   that is a unique factorisation domain, is also a principal ideal domain.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [CommRing R]
@@ -74,10 +74,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne {P : Idea
           hQp
             (isPrime_of_prime
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
-
-@[deprecated (since := "2025-05-23")]
-alias Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne :=
-  Ideal.eq_span_singleton_of_mem_of_notMem_sq_of_notMem_prime_ne
 
 -- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
 theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type*}
@@ -194,7 +190,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
 section
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
-variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
+variable [Algebra R S] [Module.IsTorsionFree R S] [Module.Finite R S]
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]

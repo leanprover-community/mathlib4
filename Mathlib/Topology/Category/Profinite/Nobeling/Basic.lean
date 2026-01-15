@@ -218,7 +218,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
     Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π :=
-  { app := fun s ↦ TopCat.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
+  { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
       simp only [Functor.const_obj_obj,
@@ -226,24 +226,31 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
         (leOfHom h.unop)]
       rfl }
 
+/-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
+@[simps!]
+noncomputable def spanFunctorIsoIndexFunctor
+    [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
+    spanFunctor hC ≅ indexFunctor hC :=
+  NatIso.ofComponents
+    (fun s ↦ CompHausLike.isoOfBijective (ConcreteCategory.ofHom (iso_map C (· ∈ unop s)))
+      (iso_map_bijective C (· ∈ unop s))) (by
+        rintro ⟨s⟩ ⟨t⟩ ⟨⟨⟨f⟩⟩⟩
+        ext x
+        have : iso_map C (· ∈ t) ∘ ProjRestricts C f =
+            IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
+          ext _ i; exact dif_pos i.prop
+        exact congr_fun this x)
+
 /-- `spanCone` is a limit cone. -/
 noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
-    CategoryTheory.Limits.IsLimit (spanCone hC) := by
-  refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
-    (fun s ↦ (CompHausLike.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) ?_))
-  · intro ⟨s⟩ ⟨t⟩ ⟨⟨⟨f⟩⟩⟩
-    ext x
-    have : iso_map C (· ∈ t) ∘ ProjRestricts C f = IndexFunctor.map C f ∘ iso_map C (· ∈ s) := by
-      ext _ i; exact dif_pos i.prop
-    exact congr_fun this x
-  · intro ⟨s⟩
-    ext x
-    have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
-      ext _ i; exact dif_pos i.prop
-    erw [← this]
-    rfl
+    CategoryTheory.Limits.IsLimit (spanCone hC) :=
+  IsLimit.postcomposeHomEquiv (spanFunctorIsoIndexFunctor hC) _
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
+      ext
+      have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
+        ext _ i; exact dif_pos i.prop
+      exact congr_fun this.symm _)))
 
 end Projections
 

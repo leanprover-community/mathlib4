@@ -71,20 +71,20 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
-    Splits f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by
+    Splits f ↔ (⊤ : Subalgebra K L) = ⊥ where
+  mp h := by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, h.map_roots, Algebra.adjoin_le_iff]
     intro y hy
     classical
     rw [Multiset.toFinset_map, Finset.mem_coe, Finset.mem_image] at hy
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
-    exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
-        fun h => by
-      rw [← Polynomial.map_id (p := f), ← RingEquiv.toRingHom_refl, ← RingEquiv.self_trans_symm
-        (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h),
-        RingEquiv.toRingHom_trans, ← map_map]
-      apply (splits L f).map⟩
+    exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _
+  mpr h := by
+    rw [← Polynomial.map_id (p := f), ← RingEquiv.toRingHom_refl, ← RingEquiv.self_trans_symm
+      (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h),
+      RingEquiv.toRingHom_trans, ← map_map]
+    apply (splits L f).map
 
 theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
     Splits (mapAlg F L f) := by
@@ -120,7 +120,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)
-    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩, hf.splits_of_dvd (map_ne_zero hf0)
+    ⟨IsAlgebraic.isIntegral ⟨f, hf0, this⟩, hf.of_dvd (map_ne_zero hf0)
       ((map_dvd_map' _).mpr (minpoly.dvd K y this))⟩)) Algebra.toTop
 
 theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensional K L := by

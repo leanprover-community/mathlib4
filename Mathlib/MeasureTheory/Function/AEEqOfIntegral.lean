@@ -44,7 +44,7 @@ Generally useful lemmas which are not related to integrals:
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter

@@ -14,11 +14,11 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 # 1-hypercovers
 
 Given a Grothendieck topology `J` on a category `C`, we define the type of
-`1`-hypercovers of an object `S : C`. They consists of a covering family
+`1`-hypercovers of an object `S : C`. They consist of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` and, for each tuple `(i₁, i₂)`
 of elements of `I₀`, a "covering `Y j` of the fibre product of `X i₁` and
 `X i₂` over `S`", a condition which is phrased here without assuming that
-the fibre product actually exist.
+the fibre product actually exists.
 
 The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
 `1`-hypercover of `S`, and `F` is a sheaf, then `F.obj (op S)`
@@ -35,7 +35,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {A : Type*} [Category A]
+variable {C : Type u} [Category.{v} C] {A : Type*} [Category* A]
 
 /-- The categorical data that is involved in a `1`-hypercover of an object `S`. This
 consists of a family of morphisms `f i : X i ⟶ S` for `i : I₀`, and for each
