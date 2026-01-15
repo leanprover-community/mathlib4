@@ -30,7 +30,8 @@ section Semiring
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 variable {N N₁ N₂ : Submodule R M} {S S₁ S₂ : Set M}
 
-/-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`. -/
+/-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`.
+We treat it as an infix in lemma names. -/
 def colon (N : Submodule R M) (S : Set M) : Ideal R where
   carrier := {r : R | (r • S : Set M) ⊆ N}
   add_mem' ha hb :=
