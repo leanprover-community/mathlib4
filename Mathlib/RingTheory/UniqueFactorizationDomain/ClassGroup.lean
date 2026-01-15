@@ -92,8 +92,8 @@ is principal. -/
 theorem Ideal.isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
-  obtain ⟨K, x, hx0, hIK⟩ := Ideal.exists_mul_eq_span_singleton_of_isUnit_coe (R := R) I hI
-  exact Ideal.isPrincipal_of_exists_mul_eq_span_singleton (R := R) (J := I) (K := K) hx0 hIK
+  obtain ⟨K, x, hx0, hIK⟩ := Ideal.exists_mul_eq_span_singleton_of_isUnit_coe I hI
+  exact Ideal.isPrincipal_of_exists_mul_eq_span_singleton hx0 hIK
 
 @[expose] public section
 
