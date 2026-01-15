@@ -8,11 +8,12 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
-@[expose] public noncomputable section
-
 /-!
 # Embedding the upper half-plane into the projective line
 -/
+
+@[expose] public noncomputable section
+
 open UpperHalfPlane
 open Matrix GeneralLinearGroup
 
