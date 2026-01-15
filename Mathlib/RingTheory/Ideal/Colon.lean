@@ -64,6 +64,8 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
   ext x
   simp [mem_colon, mem_annihilator]
 
+@[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
+
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| (mem_colon).mp hrns s₁ <| hs hs₁
 
