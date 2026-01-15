@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Henselian
@@ -44,7 +45,7 @@ open TensorProduct Module
 open TwoSidedIdeal in
 @[stacks 074B]
 lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
-    [isCentral_A : Algebra.IsCentral K A] [IsSimpleRing B] (I : TwoSidedIdeal (A ⊗[K] B))
+    [isCentral_A : Algebra.IsCentral K A] (I : TwoSidedIdeal (A ⊗[K] B))
     (hAB : letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
       (I.comap f).map f = ⊥) : I = ⊥ := by
   set f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
@@ -106,7 +107,8 @@ lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
       choose k hk using this
       set key : B := 𝓑 j + ∑ i ∈ s.attach, k i i.2 • 𝓑 i
       have hkey : key = 0 := by
-        refine (map_eq_zero_iff _ f.toRingHom.injective).mp ?_
+        refine (map_eq_zero_iff _ (Algebra.TensorProduct.includeRight_injective <|
+          FaithfulSMul.algebraMap_injective K A)).mp ?_
         refine eq_bot_iff.mp hAB <| TwoSidedIdeal.mem_map_of_mem <|
           (TwoSidedIdeal.mem_comap _).mpr ?_
         rw [← Finset.sum_attach] at hT'2
@@ -155,6 +157,8 @@ lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : 
     rw [SetLike.mem_coe, TwoSidedIdeal.mem_comap] at hx
     exact hx
 
+/-- This is slightly more general than stacks 074C which generalizes "skew field"
+  to "simple ring". -/
 @[stacks 074C]
 instance TensorProduct.simple {A B : Type*} [Ring A] [IsSimpleRing A] [Algebra K A] [Ring B]
     [Algebra K B] [Algebra.IsCentral K A] [isSimple_B : IsSimpleRing B] :
