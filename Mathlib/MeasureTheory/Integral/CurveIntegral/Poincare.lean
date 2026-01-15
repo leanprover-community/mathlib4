@@ -32,7 +32,7 @@ A 1-form represented this way is closed
 iff its Fréchet derivative `dω : E → E →L[𝕜] E →L[𝕜] F` is symmetric, `dω a x y = dω a y x`.
 -/
 
-@[expose] public section
+public section
 
 open scoped unitInterval Interval Pointwise Topology
 open AffineMap Filter Function MeasureTheory Set
@@ -225,7 +225,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
 /-- The curve integral of a closed 1-form along the boundary of the image of a unit square
 under a smooth map is zero. We may ignore the behavior on a countable set.
 
-This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
+This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
     (φ : (γ₁ : C(I, E)).Homotopy γ₂)
@@ -250,7 +250,7 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
 /-- The curve integral of a closed 1-form along the boundary of the image of a unit square
 under a smooth map is zero.
 
-This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
+This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     {ω : E → E →L[𝕜] F} {dω : E → E →L[ℝ] E →L[𝕜] F}
     (φ : (γ₁ : C(I, E)).Homotopy γ₂)
@@ -268,7 +268,7 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
 /-- The curve integral of a closed 1-form along the boundary of the image of a unit square
 under a smooth map is zero, a version stated in terms of `DiffContOnC1`.
 
-This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
+This theorem is stated in terms of a `C^2` homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
     {ω : E → E →L[𝕜] F} (φ : (γ₁ : C(I, E)).Homotopy γ₂)
     (hφt : ∀ a ∈ Ioo 0 1, ∀ b ∈ Ioo 0 1, φ (a, b) ∈ t)

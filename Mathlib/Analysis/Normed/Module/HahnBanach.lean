@@ -29,7 +29,7 @@ linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be inter
 of `𝕜`).
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -98,10 +98,10 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [this]
     apply ext
-    · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, map_add, zero_sub,
+    · simp only [add_zero, smul_eq_mul, I_re, ofReal_im, map_add, zero_sub,
         I_im', zero_mul, ofReal_re, sub_zero, mul_neg, ofReal_neg,
         mul_re, mul_zero, sub_neg_eq_add, map_smul]
-    · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, map_add, zero_sub, I_im',
+    · simp only [smul_eq_mul, I_re, ofReal_im, map_add, zero_sub, I_im',
         zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
         sub_neg_eq_add, map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
@@ -123,15 +123,15 @@ Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.
 -/
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
-    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
+    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  set b := Module.finBasis 𝕜 (LinearMap.range f)
+  set b := Module.finBasis 𝕜 f.range
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
     (f.codRestrict _ <| LinearMap.mem_range_self _)
   choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
-  use (LinearMap.range f).subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
+  use f.range.subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
   ext x
   simp [fi, e, hgf]
 

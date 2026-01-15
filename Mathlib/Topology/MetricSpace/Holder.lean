@@ -40,11 +40,10 @@ Hölder continuity, Lipschitz continuity
 
 variable {X Y Z : Type*}
 
-open Filter Set
+open Filter Set Metric
+open scoped NNReal ENNReal Topology
 
-open NNReal ENNReal Topology
-
-section Emetric
+section EMetric
 
 variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
@@ -134,30 +133,30 @@ protected theorem continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : Contin
 protected theorem mono (hf : HolderOnWith C r f s) (ht : t ⊆ s) : HolderOnWith C r f t :=
   fun _ hx _ hy => hf.edist_le (ht hx) (ht hy)
 
-theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : EMetric.diam s ≤ d) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
-    hf.edist_le_of_le hx hy <| (EMetric.edist_le_diam_of_mem hx hy).trans hd
+theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : ediam s ≤ d) :
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+  ediam_image_le_iff.2 fun _ hx _ hy =>
+    hf.edist_le_of_le hx hy <| (edist_le_ediam_of_mem hx hy).trans hd
 
 theorem ediam_image_le (hf : HolderOnWith C r f s) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * ediam s ^ (r : ℝ) :=
   hf.ediam_image_le_of_le le_rfl
 
 theorem ediam_image_le_of_subset (hf : HolderOnWith C r f s) (ht : t ⊆ s) :
-    EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
+    ediam (f '' t) ≤ (C : ℝ≥0∞) * ediam t ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le
 
 theorem ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s) {d : ℝ≥0∞}
-    (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+    (hd : ediam t ≤ d) : ediam (f '' t) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le_of_le hd
 
 theorem ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
-    (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+    (hd : ediam t ≤ d) : ediam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   hf.ediam_image_le_of_subset_of_le inter_subset_right <|
-    (EMetric.diam_mono inter_subset_left).trans hd
+    (ediam_mono inter_subset_left).trans hd
 
 theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :
-    EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
+    ediam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * ediam t ^ (r : ℝ) :=
   hf.ediam_image_inter_le_of_le le_rfl
 
 /-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
@@ -276,9 +275,8 @@ protected theorem continuous (hf : HolderWith C r f) (h0 : 0 < r) : Continuous f
   (hf.uniformContinuous h0).continuous
 
 theorem ediam_image_le (hf : HolderWith C r f) (s : Set X) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
-    hf.edist_le_of_le <| EMetric.edist_le_diam_of_mem hx hy
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * ediam s ^ (r : ℝ) :=
+  ediam_image_le_iff.2 fun _ hx _ hy => hf.edist_le_of_le <| edist_le_ediam_of_mem hx hy
 
 lemma const {y : Y} :
     HolderWith C r (Function.const X y) := fun x₁ x₂ => by
@@ -334,7 +332,7 @@ lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
 
 end HolderWith
 
-end Emetric
+end EMetric
 
 section PseudoMetric
 
@@ -410,21 +408,21 @@ namespace HolderWith
 lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
     HolderWith (C + C') r (f + g) := by
   intro x₁ x₂
-  simp only [Pi.add_apply, coe_add]
+  simp only [Pi.add_apply, ENNReal.coe_add]
   grw [edist_add_add_le, hf x₁ x₂, hg x₁ x₂]
   rw [add_mul]
 
 lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
   refine edist_smul_le _ _ _ |>.trans ?_
-  rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
+  rw [ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr
   exact hf x₁ x₂
 
 lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
     (ha : ‖a‖₊ ≠ 0) :
     HolderWith (C * ‖a‖₊) r (a • f) ↔ HolderWith C r f := by
-  simp_rw [HolderWith, coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
+  simp_rw [HolderWith, ENNReal.coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
     mul_comm (C : ℝ≥0∞), mul_assoc,
     ENNReal.mul_le_mul_iff_right (ENNReal.coe_ne_zero.mpr ha) ENNReal.coe_ne_top, mul_comm]
 

@@ -40,6 +40,8 @@ bilinear, tensor, tensor product
 
 @[expose] public section
 
+set_option linter.style.longFile 1700
+
 section Semiring
 
 variable {R R₂ R₃ R' R'' : Type*}
@@ -255,6 +257,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
+set_option backward.privateInPublic true in
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -382,8 +385,6 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 theorem tmul_eq_smul_one_tmul {S : Type*} [Semiring S] [Module R S] [SMulCommClass R S S]
     (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
   nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
-
-@[deprecated (since := "2025-07-08")] alias tsmul_eq_smul_one_tuml := tmul_eq_smul_one_tmul
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
@@ -1262,6 +1263,22 @@ lemma lTensor_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (
 
 variable {M}
 
+theorem lTensor_comp_comm (f : M →ₗ[R] P) :
+    lTensor N f ∘ₗ TensorProduct.comm R M N = TensorProduct.comm R P N ∘ₗ rTensor N f :=
+  TensorProduct.map_comp_comm_eq _ _
+
+theorem rTensor_comp_comm (f : M →ₗ[R] P) :
+    rTensor N f ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R N P ∘ₗ lTensor N f :=
+  TensorProduct.map_comp_comm_eq _ _
+
+theorem lTensor_comm (f : M →ₗ[R] P) (x : M ⊗[R] N) :
+    lTensor N f (TensorProduct.comm R M N x) = TensorProduct.comm R P N (rTensor N f x) :=
+  congr($(LinearMap.lTensor_comp_comm f) _)
+
+theorem rTensor_comm (f : M →ₗ[R] P) (x : N ⊗[R] M) :
+    rTensor N f (TensorProduct.comm R N M x) = TensorProduct.comm R N P (lTensor N f x) :=
+  congr($(LinearMap.rTensor_comp_comm f) _)
+
 @[simp]
 theorem rTensor_pow (f : M →ₗ[R] M) (n : ℕ) : f.rTensor N ^ n = (f ^ n).rTensor N := by
   have h := TensorProduct.map_pow f (id : N →ₗ[R] N) n
@@ -1486,3 +1503,21 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor Q = -f.rTensor Q := by
 end LinearMap
 
 end Ring
+
+namespace Equiv
+variable {R A A' B B' : Type*} [CommSemiring R]
+  [AddCommMonoid A'] [AddCommMonoid B'] [Module R A'] [Module R B']
+
+variable (R) in
+open TensorProduct in
+lemma tensorProductComm_def (eA : A ≃ A') (eB : B ≃ B') :
+    letI := eA.addCommMonoid
+    letI := eB.addCommMonoid
+    letI := eA.module R
+    letI := eB.module R
+    TensorProduct.comm R A B = .trans
+      (congr (eA.linearEquiv R) (eB.linearEquiv R)) (.trans
+      (TensorProduct.comm R A' B') <| congr (eB.linearEquiv R).symm (eA.linearEquiv R).symm) := by
+  ext x; induction x <;> simp [*]
+
+end Equiv

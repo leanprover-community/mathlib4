@@ -15,7 +15,7 @@ public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 # Cardinal of Arrow
 
 We obtain various results about the cardinality of `Arrow C`. For example,
-If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
+if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
 
@@ -31,7 +31,7 @@ lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
   · intro
     refine ⟨?_, fun a b ↦ ?_⟩
     · have := Finite.of_injective (fun (a : C) ↦ Arrow.mk (𝟙 a))
-        (fun _ _  ↦ congr_arg Comma.left)
+        (fun _ _ ↦ congr_arg Comma.left)
       apply Fintype.ofFinite
     · have := Finite.of_injective (fun (f : a ⟶ b) ↦ Arrow.mk f)
         (fun f g h ↦ by
@@ -39,7 +39,7 @@ lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
           congr)
       apply Fintype.ofFinite
   · rintro ⟨_⟩
-    have := Fintype.ofEquiv  _ (Arrow.equivSigma C).symm
+    have := Fintype.ofEquiv _ (Arrow.equivSigma C).symm
     infer_instance
 
 instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
@@ -61,6 +61,9 @@ lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w
 lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
   hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
+
+instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
+  Finite.of_equiv _ (Arrow.discreteEquiv X).symm
 
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=

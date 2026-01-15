@@ -16,10 +16,10 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean`;
 
 * The category `AlgCat R` of `R`-algebras is defined in the file
-  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
+  `Mathlib/Algebra/Category/AlgCat/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -392,7 +392,7 @@ instance (priority := 1100) id : Algebra R R where
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
   toSMul := instSMulOfMul
-  __ := ({RingHom.id R with toFun x := x}).toAlgebra
+  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
@@ -411,7 +411,7 @@ theorem map_eq_id : algebraMap R R = RingHom.id _ :=
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 
-@[simp]
+@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
   rfl
 

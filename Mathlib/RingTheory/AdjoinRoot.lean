@@ -400,9 +400,9 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
 theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
-    (hf' : f.degree ≠ 0) : NoZeroSMulDivisors R (AdjoinRoot f) :=
+    (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
+  isTorsionFree_iff_algebraMap_injective.mpr (of.injective_of_degree_ne_zero hf')
 
 end Prime
 
@@ -776,7 +776,7 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
-If `R` is a integrally closed domain and `x` is integral, this is an isomorphism,
+If `R` is an integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
   liftAlgHom _ (Algebra.ofId R <| adjoin R {x}) ⟨x, self_mem_adjoin_singleton R x⟩
@@ -1060,3 +1060,26 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
+
+/-- If `p : R[X]` is monic, then there exists a finite free extension of `R` that splits `p`. -/
+lemma Polynomial.Monic.exists_splits_map.{u}
+    {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+    ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S) (_ : Module.Finite R S) (_ : Module.Free R S)
+      (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | h n IH =>
+  by_cases hpu : IsUnit p
+  · obtain rfl := hp.eq_one_of_isUnit hpu
+    exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, by simp⟩
+  obtain ⟨q, hq⟩ : X - C (AdjoinRoot.root p) ∣ p.map (algebraMap _ _) := by
+    simp [dvd_iff_isRoot, -AdjoinRoot.algebraMap_eq]
+  have hqm : q.Monic := .of_mul_monic_left (monic_X_sub_C (.root _)) (hq ▸ hp.map _)
+  have := hp.free_adjoinRoot
+  have := hp.finite_adjoinRoot
+  have : Nontrivial (AdjoinRoot p) := Ideal.Quotient.nontrivial_iff.mpr (by simpa)
+  obtain ⟨S, _, _, _, _, _, hS⟩ := IH _
+    (by rw [← hn, ← hp.natDegree_map (algebraMap R (AdjoinRoot p)), hq,
+      Monic.natDegree_mul (monic_X_sub_C _) hqm]; simp) hqm rfl
+  algebraize [(algebraMap (AdjoinRoot p) S).comp (algebraMap R (AdjoinRoot p))]
+  refine ⟨S, ‹_›, ‹_›, .trans (AdjoinRoot p) _, .trans (S := AdjoinRoot p), ‹_›, ?_⟩
+  rw [IsScalarTower.algebraMap_eq R (AdjoinRoot p), ← Polynomial.map_map, hq, Polynomial.map_mul]
+  exact .mul (by simp) hS
