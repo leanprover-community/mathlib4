@@ -23,6 +23,9 @@ we in fact have `x i = 0` for all `i`.
 
 variable (R : Type*)
 
+/--
+A ring is formally real if, whenever `∑ i, x i ^ 2 = 0`, we in fact have `x i = 0` for all `i`.
+-/
 class IsFormallyReal [AddCommMonoid R] [Mul R] : Prop where
   eq_zero_of_sum_eq_zero : ∀ {s : Multiset R}, (s.map (fun a ↦ a * a)).sum = 0 → ∀ a ∈ s, a = 0
 

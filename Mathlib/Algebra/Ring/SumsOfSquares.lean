@@ -29,7 +29,7 @@ We introduce a predicate for sums of squares in a ring.
 
 @[expose] public section
 
--- TODO : upstream
+-- TODO : find home
 @[to_additive]
 theorem Submonoid.closure_eq_image_multiset_prod {M : Type*} [CommMonoid M] (s : Set M) :
     ↑(closure s) = Multiset.prod '' {m : Multiset M | ∀ x ∈ m, x ∈ s} := by
