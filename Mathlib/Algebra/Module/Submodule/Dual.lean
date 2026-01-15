@@ -34,7 +34,7 @@ See also `PointedCone.dual`.
 
 assert_not_exists TopologicalSpace Real Cardinal
 
-open Module Function LinearMap Pointwise Set OrderDual
+open Module Set LinearMap
 
 namespace Submodule
 
@@ -56,6 +56,7 @@ def dual : Submodule R N where
 
 @[simp] theorem dual_empty : dual p ∅ = ⊤ := by ext; simp
 
+open Pointwise in
 @[simp] theorem dual_zero : dual p 0 = ⊤ := by ext; simp
 
 @[simp] theorem dual_ker : dual p (ker p) = ⊤ := by ext; simp +contextual
