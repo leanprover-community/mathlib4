@@ -124,21 +124,7 @@ theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : 
 
 /-- A variant for arbitrary sets in commutative semirings -/
 theorem bot_colon' : (⊥ : Submodule R M).colon S = (span R S).annihilator := by
-  ext r
-  rw [mem_colon, mem_annihilator]
-  constructor
-  · intro hr m hm
-    refine Submodule.span_induction
-      (p := fun (x : M) (hx : x ∈ span R S) ↦ r • x = 0) ?_ ?_ ?_ ?_ hm
-    · intro s hs
-      simpa [Submodule.mem_bot] using hr s hs
-    · exact smul_zero r
-    · intro _ _ _ _ hrx hry
-      rw [smul_add, hrx, hry, zero_add]
-    · intro _ _ _ hrx
-      rw [smul_smul, mul_comm, ← smul_smul, hrx, smul_zero]
-  · intro hr s hs
-    simpa [mem_bot] using hr s (mem_span_of_mem hs)
+  aesop (add simp [mem_colon, mem_annihilator_span])
 
 @[deprecated (since := "2026-01-11")] alias colon_bot' := bot_colon'
 
