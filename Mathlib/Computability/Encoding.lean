@@ -225,7 +225,7 @@ def finEncodingList (α : Type 0) [Fintype α] : FinEncoding (List α) where
   ΓFin := inferInstance
 
 /--
-Given `finEncoding` of `α` and `β`,
+Given `FinEncoding` of `α` and `β`,
 constructs a `finEncoding` of `α × β` by concatenating the encodings,
 mapping the symbols from the first encoding with `Sum.inl`
 and those from the second with `Sum.inr`.
