@@ -56,6 +56,34 @@ namespace GlobalSyntax
 local instance : ToString Syntax.Range where
   toString := fun | {start, stop} => s!"({start}, {stop})"
 
+local instance : ToString RangesToKinds where
+  toString := fun
+  | {toKinds := toKs, mod2 := m2} =>
+    let sorted := toKs.toArray.qsort (·.1.start < ·.1.start)
+    s!"mod2: {m2.toArray.qsort}\n\n\
+    toKinds:\n* {"\n* ".intercalate (sorted.map (s!"{·}")).toList}"
+
+abbrev startersEnders : NameMap Name := .ofArray (cmp := Name.quickCmp) #[
+    (``Parser.Command.namespace, ``Parser.Command.end),
+    (``Parser.Command.open, ``Parser.Command.end),
+    (``Parser.Command.section, ``Parser.Command.end),
+    (``Parser.Command.variable, ``Parser.Command.end),
+  ]
+
+def cancellingPairs (h : Array (Syntax.Range × Name)) :
+    Array (Syntax.Range × Syntax.Range) := Id.run do
+  if this : h.size ≤ 1 then return #[] else
+  let mut pairs := #[]
+  let mut curr := h[0]
+  for i in [:h.size - 1] do
+    curr := h[i]!
+    let next := h[i + 1]!
+    if let some ender := startersEnders.get? curr.2 then
+      if next.2 == ender then
+      pairs := pairs.push (curr.1, next.1)
+    curr := next
+  return pairs
+
 -- Note that we explicitly avoid `withSetOptionIn`, since we want to inspect the outermost
 -- commands.
 @[inherit_doc Mathlib.Linter.linter.globalSyntax]
@@ -68,13 +96,17 @@ def globalSyntaxLinter : Linter where run stx := do
     let fm ← getFileMap
     let (_, pos, _) ← parseImports fm.source
     let posStx := fm.ofPosition pos
-    dbg_trace "current {pos}"
-    toKindsRef.modify (·.insert ⟨0, posStx⟩ `Module)
-  if let some rg := stx.getRange? then
+    --dbg_trace "current {pos} -- {posStx}"
+    toKindsRef.modify (fun r => {r with toKinds := r.toKinds.insert ⟨0, posStx⟩ `Module})
+  if let some rg := stx.getRangeWithTrailing? then
     toKindsRef.modify (·.insert rg stx.getKind)
-  dbg_trace "mod2: {(← toKindsRef.get).mod2.toArray.qsort}"
-  dbg_trace "toKinds: {(← toKindsRef.get).toKinds.toArray.qsort (·.1.start < ·.1.start)}"
-  --Linter.logLint linter.globalSyntax stx m!"Superfluous pair"
+  let kindsRef ← toKindsRef.get
+  --dbg_trace kindsRef
+  for (rg1, rg2) in cancellingPairs <| kindsRef.toKinds.toArray.qsort (·.1.start < ·.1.start) do
+    logInfoAt (.ofRange rg1) "This command"
+    logInfoAt (.ofRange rg2) "is cancelled by this one!"
+  --if kindsRef.mod2.size == 2 then
+  --  Linter.logLint linter.globalSyntax stx m!"Superfluous pair"
 
 initialize addLinter globalSyntaxLinter
 
