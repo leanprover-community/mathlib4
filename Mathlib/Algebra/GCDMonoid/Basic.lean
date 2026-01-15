@@ -77,8 +77,8 @@ class NormalizationMonoid (α : Type*) [MonoidWithZero α] where
   /-- The condition that ensures associated elements are normalized to the same element. -/
   normUnit_mul_units {a : α} (u : αˣ) : a ≠ 0 → normUnit (a * u) = u⁻¹ * normUnit a
 
-/-- Construct a `NormalizationMonoid` from a left inverse of quotient map `α → Associates α`. -/
-noncomputable abbrev NormalizationMonoid.ofLeftInverse {α : Type*} [MonoidWithZero α]
+/-- Construct a `NormalizationMonoid` from a right inverse of `Associates.mk`. -/
+noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWithZero α]
     [IsLeftCancelMulZero α] (out : Associates α → α)
     (mk_out : ∀ a, Associates.mk (out a) = a) (out_one : out 1 = 1) :
     NormalizationMonoid α :=
@@ -97,7 +97,7 @@ noncomputable abbrev NormalizationMonoid.ofLeftInverse {α : Type*} [MonoidWithZ
 instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
     Nonempty (NormalizationMonoid α) := .intro <| by
   classical
-  exact .ofLeftInverse
+  exact .ofRightInverse
     (fun a ↦ by classical exact if a = 1 then 1 else a.out)
     (fun _ ↦ by dsimp; split_ifs with h <;> simp [h]) (by simp)
 
