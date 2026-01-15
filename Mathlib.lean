@@ -1896,6 +1896,7 @@ public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 public import Mathlib.Analysis.Normed.Affine.AsymptoticCone
+public import Mathlib.Analysis.Normed.Affine.Ceva
 public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Analysis.Normed.Affine.Isometry
@@ -3335,6 +3336,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
+public import Mathlib.Combinatorics.Tiling.Tile
 public import Mathlib.Combinatorics.Young.SemistandardTableau
 public import Mathlib.Combinatorics.Young.YoungDiagram
 public import Mathlib.Computability.Ackermann
@@ -3695,6 +3697,7 @@ public import Mathlib.Data.List.NatAntidiagonal
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.OffDiag
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Palindrome
 public import Mathlib.Data.List.PeriodicityLemma
@@ -4488,6 +4491,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
@@ -4965,6 +4969,7 @@ public import Mathlib.MeasureTheory.Group.AddCircle
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Group.FoelnerFilter
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 public import Mathlib.MeasureTheory.Group.Integral
@@ -6295,6 +6300,7 @@ public import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.RingHom.Integral
 public import Mathlib.RingTheory.RingHom.Locally
 public import Mathlib.RingTheory.RingHom.OpenImmersion
+public import Mathlib.RingTheory.RingHom.QuasiFinite
 public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.StandardSmooth
 public import Mathlib.RingTheory.RingHom.Surjective
