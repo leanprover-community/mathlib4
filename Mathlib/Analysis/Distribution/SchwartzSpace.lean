@@ -1520,3 +1520,5 @@ end integration_by_parts
 
 
 end SchwartzMap
+
+set_option linter.style.longFile 1700
