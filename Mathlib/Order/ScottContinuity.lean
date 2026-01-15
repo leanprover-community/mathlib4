@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 module
 
 import Mathlib.Order.Bounds.Image
+public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 
@@ -164,6 +165,46 @@ lemma ScottContinuousOn.snd {D} : ScottContinuousOn D (Prod.snd : α × β → �
   intro d hd₁ hd₂ hd₃ a ha
   simp only [isLUB_prod] at ha
   exact ha.2
+
+@[simp, fun_prop]
+lemma ScottContinuousOn.inl : ScottContinuousOn D (Sum.inl : α → α ⊕ β) := by
+  intro d hd₁ hd₂ hd₃ a hda
+  rw [IsLUB, IsLeast, upperBounds]
+  constructor
+  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+      Sum.inl_le_inl_iff]
+    intro b hb
+    apply hda.1 hb
+  · intro x hx
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf_eq] at hx
+    cases x with
+    | inl x =>
+      simp only [Sum.inl_le_inl_iff] at ⊢ hx
+      apply hda.2 hx
+    | inr x =>
+      specialize hx hd₂.some hd₂.some_mem
+      simp only [Sum.not_inl_le_inr] at hx
+
+@[simp, fun_prop]
+lemma ScottContinuousOn.inr : ScottContinuousOn D (Sum.inr : α → β ⊕ α) := by
+  intro d hd₁ hd₂ hd₃ a hda
+  rw [IsLUB, IsLeast, upperBounds]
+  constructor
+  · simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mem_setOf_eq,
+      Sum.inr_le_inr_iff]
+    intro b hb
+    apply hda.1 hb
+  · intro x hx
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf_eq] at hx
+    cases x with
+    | inl x =>
+      specialize hx hd₂.some hd₂.some_mem
+      simp only [Sum.not_inr_le_inl] at hx
+    | inr x =>
+      simp only [Sum.inr_le_inr_iff] at ⊢ hx
+      apply hda.2 hx
 
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
