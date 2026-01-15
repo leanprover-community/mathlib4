@@ -39,7 +39,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-/-- For `n ≠ 0` and `i ≤ n`, node n i is one of the extremal points of the Chebyhsev T
+/-- For `n ≠ 0` and `i ≤ n`, `node n i` is one of the extremal points of the Chebyhsev `T`
 polynomial over the interval `[-1, 1]`. -/
 noncomputable def node (n i : ℕ) : ℝ := cos (i * π / n)
 
