@@ -119,53 +119,39 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     exact Ideal.mem_map_of_mem (algebraMap S (Localization.Away g)) hmem
   -- `Ω[Localization.AtPrime p⁄R]` is projective, so free over the local ring `Sₚ` and
   -- a basis extends to a neighbourhood `D(g)`.
-  let v (s : S) : (Ω[Localization.AtPrime p⁄R]) :=
+  let v (s : S) : Ω[Localization.AtPrime p⁄R] :=
     map R R S (Localization.AtPrime p) (D R S s)
   have hv : Submodule.span (Localization.AtPrime p) (Set.range v) = ⊤ :=
     span_range_map_derivation_of_isLocalization R _ (Localization.AtPrime p) p.primeCompl
-  have : Algebra.EssFiniteType R (Localization.AtPrime p) :=
-    Algebra.EssFiniteType.comp R S (Localization.AtPrime p)
-  have : Module.FinitePresentation (Localization.AtPrime p) (Ω[Localization.AtPrime p⁄R]) :=
-    Module.finitePresentation_of_projective (Localization.AtPrime p) (Ω[Localization.AtPrime p⁄R])
   obtain ⟨κ, a, b, hb⟩ := Module.exists_basis_of_span_of_flat v hv
-  let e : (κ →₀ S) →ₗ[S] (Ω[S ⁄R]) :=
-    Finsupp.basisSingleOne.constr S (fun i : κ ↦ D R S (a i))
+  let e : (κ →₀ S) →ₗ[S] Ω[S⁄R] :=
+    Finsupp.linearCombination S fun i : κ ↦ D R S (a i)
   let l₁ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.AtPrime p) :=
     Finsupp.mapRange.linearMap (Algebra.linearMap S (Localization.AtPrime p))
-  have : IsLocalizedModule p.primeCompl l₁ := inferInstance
-  let l₂ : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.AtPrime p⁄R]) := map R R S (Localization.AtPrime p)
-  have : IsLocalizedModule p.primeCompl l₂ := inferInstance
-  let eₚ : (κ →₀ Localization.AtPrime p) →ₗ[Localization.AtPrime p] (Ω[Localization.AtPrime p⁄R]) :=
+  let l₂ : Ω[S⁄R] →ₗ[S] Ω[Localization.AtPrime p⁄R] := map R R S (Localization.AtPrime p)
+  let eₚ : (κ →₀ Localization.AtPrime p) →ₗ[Localization.AtPrime p] Ω[Localization.AtPrime p⁄R] :=
     IsLocalizedModule.mapExtendScalars p.primeCompl l₁ l₂ (Localization.AtPrime p) e
   have : eₚ = b.repr.symm := by
-    refine Finsupp.basisSingleOne.ext fun i ↦ ?_
-    have : Finsupp.basisSingleOne i = l₁ (Finsupp.basisSingleOne i) := by simp [l₁]
-    simp only [this, IsLocalizedModule.mapExtendScalars_apply_apply, IsLocalizedModule.map_apply,
-      Module.Basis.constr_basis, map_D, Module.Basis.coe_repr_symm, eₚ, l₂, e]
-    simp [l₁, hb, v]
-  have heₚ : Function.Bijective eₚ := by
-    rw [this]
-    exact b.repr.symm.bijective
+    ext i
+    trans IsLocalizedModule.map p.primeCompl l₁ l₂ e <| l₁ <| Finsupp.single i 1
+    · simp [eₚ, -IsLocalizedModule.map_apply, l₁]
+    · simp [l₂, e, hb, v]
+  have heₚ : Function.Bijective eₚ := this ▸ b.repr.symm.bijective
   have : Finite κ := Module.Finite.finite_basis b
   obtain ⟨g, hg, h⟩ := Module.FinitePresentation.exists_notMem_bijective e p l₁ l₂ heₚ
   let l₁ₜ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.Away g) :=
     Finsupp.mapRange.linearMap (Algebra.linearMap S _)
-  let l₂ₜ : (Ω[S⁄R]) →ₗ[S] (Ω[Localization.Away g⁄R]) :=
+  let l₂ₜ : Ω[S⁄R] →ₗ[S] Ω[Localization.Away g⁄R] :=
     map R R S (Localization.Away g)
   rw [← IsLocalizedModule.map_bijective_iff_localizedModuleMap_bijective l₁ₜ l₂ₜ] at h
-  let eₜ' : (κ →₀ Localization.Away g) →ₗ[Localization.Away g] (Ω[Localization.Away g⁄R]) :=
+  let eₜ' : (κ →₀ Localization.Away g) →ₗ[Localization.Away g] Ω[Localization.Away g⁄R] :=
     IsLocalizedModule.mapExtendScalars (Submonoid.powers g) l₁ₜ l₂ₜ (Localization.Away g) e
   use g, hg
-  have : Subsingleton (H1Cotangent R (Localization.Away g)) :=
-    IsLocalizedModule.subsingleton_of_subsingleton (Submonoid.powers g)
-      (Algebra.H1Cotangent.map R R S (Localization.Away g))
-  have : FinitePresentation R (Localization.Away g) :=
-    .trans R S (Localization.Away g)
   refine .of_basis_kaehlerDifferential (.ofRepr (LinearEquiv.ofBijective eₜ' h).symm) ?_
   rintro - ⟨i, rfl⟩
   use algebraMap S (Localization.Away g) (a i)
   have : Finsupp.single i 1 = l₁ₜ (Finsupp.basisSingleOne i) := by simp [l₁ₜ]
-  simp [eₜ', this, -Finsupp.coe_basisSingleOne, l₂ₜ, e]
+  simp [eₜ', this, l₂ₜ, e]
 
 variable (R S) in
 /-- If `S` is `R`-smooth, there exists a cover by basic opens `D(sᵢ)` such that
@@ -173,14 +159,8 @@ variable (R S) in
 theorem Smooth.exists_span_eq_top_isStandardSmooth [Smooth R S] :
     ∃ (s : Set S), Ideal.span s = ⊤ ∧ ∀ x ∈ s, IsStandardSmooth R (Localization.Away x) := by
   choose f hf₁ hf₂ using IsSmoothAt.exists_notMem_isStandardSmooth R (S := S)
-  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, ?_⟩
-  · rw [← PrimeSpectrum.iSup_basicOpen_eq_top_iff, _root_.eq_top_iff]
-    rintro p -
-    rw [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.coe_mk, Set.mem_iUnion]
-    use p
-    apply hf₁
-  · simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    intro p
-    apply hf₂
+  refine ⟨Set.range (fun p : PrimeSpectrum S ↦ f p.asIdeal), ?_, by grind⟩
+  simp [← PrimeSpectrum.iSup_basicOpen_eq_top_iff, TopologicalSpace.Opens.ext_iff, Set.ext_iff]
+  grind
 
 end Algebra

@@ -185,6 +185,9 @@ theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     g.comp (FormallySmooth.liftOfSurjective f g hg hg') = f :=
   AlgHom.ext (FormallySmooth.liftOfSurjective_apply f g hg hg')
 
+instance [EssFiniteType R A] [FormallySmooth R A] : Module.FinitePresentation A Ω[A⁄R] :=
+  Module.finitePresentation_of_projective A Ω[A⁄R]
+
 end FormallySmooth
 
 namespace Extension
