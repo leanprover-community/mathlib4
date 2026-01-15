@@ -29,7 +29,7 @@ combinatorial contexts.
 
 ## Main results
 
-* `largeSchroder_even` : The large Schröder numbers are positive and even for `n > 0`.
+* `even_largeSchroder` : The large Schröder numbers are positive and even for `n > 0`.
 * `smallSchroder_succ` : A recursive formula for small Schröder numbers:
   `S (n + 1) = 2 * S n + ∑ i < n, S i * S (n - i)`.
 
@@ -69,7 +69,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
     have : k < n + 1 := by simp at hk; lia
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
 
-/-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder n` -/
+/-- The small Schröder number is equal to : `largeSchroder n = 2 * smallSchroder n, 1 ≤ n -/
 def smallSchroder : ℕ → ℕ
   | 0 => 1
   | n => largeSchroder n / 2
@@ -79,10 +79,7 @@ def smallSchroder : ℕ → ℕ
 
 lemma smallSchroder_eq_largeSchroder_div_two (hn : 0 < n) :
     smallSchroder n = largeSchroder n / 2 := by
-  rw [smallSchroder]
-  intro x
-  subst x
-  exact not_succ_le_zero 0 hn
+  rw [smallSchroder]; intro x; subst x; exact not_succ_le_zero 0 hn
 
 lemma two_mul_smallSchroder (hn : 0 < n) : 2 * smallSchroder n = largeSchroder n := by
   rw [smallSchroder_eq_largeSchroder_div_two hn,
