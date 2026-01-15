@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Finite
-import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-import Mathlib.RingTheory.QuasiFinite.Basic
-import Mathlib.RingTheory.RingHom.QuasiFinite
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.RingTheory.RingHom.QuasiFinite
 
 /-!
 # Quasi-finite morphisms
@@ -19,6 +21,8 @@ Note that this does not require `f` to be quasi-compact nor locally of finite ty
 
 We prove that this is stable under composition and base change, and is right cancellative.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
