@@ -144,24 +144,12 @@ theorem bot_colon' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihi
 
 @[simp]
 theorem colon_span : N.colon (span R S) = N.colon S := by
-  ext r
-  constructor
-  · intro h
-    refine mem_colon.mpr ?_
-    intro s hs
-    exact mem_colon.mp h s (Submodule.subset_span hs)
-  · intro h
-    refine mem_colon.mpr ?_
-    intro s hs
-    refine Submodule.span_induction
-      (p := fun (x : M) (hx : x ∈ span R S) ↦ r • x ∈ N) ?_ ?_ ?_ ?_ hs
-    · intro x hx
-      exact mem_colon.mp h x hx
-    · simp [smul_zero]
-    · intro x y hx hy hrx hry
-      simpa [smul_add] using N.add_mem hrx hry
-    · intro a x hx hrx
-      simpa [smul_comm r a x] using N.smul_mem a hrx
+  refine (colon_mono le_rfl subset_span).antisymm fun r h ↦ mem_colon.mpr fun s hs ↦ ?_
+  induction hs using Submodule.span_induction with
+  | mem => aesop (add simp mem_colon)
+  | zero => simp
+  | add => aesop
+  | smul => simp_all [smul_mem, smul_comm r]
 
 @[simp]
 theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S :=
