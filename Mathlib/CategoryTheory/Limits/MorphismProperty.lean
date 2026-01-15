@@ -5,12 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
@@ -234,6 +230,24 @@ noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
 instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposition]
     [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] : HasPullbacks (P.Over ⊤ X) :=
   CostructuredArrow.hasPullbacks _ _
+
+variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
+  [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+
+noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
+  createsFiniteLimitsOfCreatesTerminalAndPullbacks _
+
+instance : PreservesFiniteLimits (Over.forget P ⊤ X) :=
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks (Over.forget P ⊤ X)
+
+instance {X Y : T} (f : X ⟶ Y) : PreservesFiniteLimits (pullback P ⊤ f) where
+  preservesFiniteLimits J _ _ := by
+    have : PreservesLimitsOfShape J
+        (MorphismProperty.Over.pullback P ⊤ f ⋙ MorphismProperty.Over.forget _ _ _) :=
+      inferInstanceAs <| PreservesLimitsOfShape J <|
+        Over.forget _ _ _ ⋙ CategoryTheory.Over.pullback f
+    exact preservesLimitsOfShape_of_reflects_of_preserves
+      (MorphismProperty.Over.pullback P ⊤ f) (MorphismProperty.Over.forget _ _ _)
 
 end MorphismProperty.Over
 
