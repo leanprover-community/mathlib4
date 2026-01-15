@@ -65,13 +65,9 @@ hf.directedOn_range.le_sSup <| Set.mem_range_self _
 protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
 hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 
-protected lemma DirectedOn.sSup_le_sSup (hd : DirectedOn (· ≤ ·) d) (hd' : DirectedOn (· ≤ ·) d') :
-    d ⊆ d' → sSup d ≤ sSup d' := by
-  intro h
-  apply hd.sSup_le
-  intro a h_a
-  apply hd'.le_sSup
-  exact Set.mem_of_subset_of_mem h h_a
+protected lemma DirectedOn.sSup_le_sSup (hd : DirectedOn (· ≤ ·) d) (hd' : DirectedOn (· ≤ ·) d')
+    (h : d ⊆ d') : sSup d ≤ sSup d' :=
+  hd.sSup_le fun _ ha ↦ hd'.le_sSup <| Set.mem_of_subset_of_mem h ha
 
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas

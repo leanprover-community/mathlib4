@@ -63,13 +63,9 @@ end Cardinal
 
 namespace OrdinalApprox
 
-namespace CompletePartialOrder
-
 universe u
 variable {α : Type u}
 variable [CompletePartialOrder α] (f : α →o α) (x : α)
-
-open Function fixedPoints Cardinal Order OrderHom
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the least fixed point greater than
@@ -79,6 +75,22 @@ def lfpApprox (a : Ordinal.{u}) : α :=
   sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
 termination_by a
 decreasing_by exact h
+
+variable {β : Type u}
+variable [CompleteLattice β] (g : β →o β) (y : β)
+
+set_option linter.unusedVariables false in
+/-- The ordinal-indexed sequence approximating the greatest fixed point greater than
+an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
+`gfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
+def gfpApprox (a : Ordinal.{u}) : β :=
+  sInf ({ g (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {y})
+termination_by a
+decreasing_by exact h
+
+open Function fixedPoints Cardinal Order OrderHom
+
+
 
 theorem directedOn_lfpApprox (a : Ordinal.{u}) (h : x ≤ f x) :
     DirectedOn (· ≤ ·) ({ f (lfpApprox f x b) | (b : Ordinal) (h : b < a) } ∪ {x}) := by
@@ -134,7 +146,7 @@ theorem directedOn_lfpApprox (a : Ordinal.{u}) (h : x ≤ f x) :
       · rw [h_z, h_y]
         trivial
 
-theorem lfpApprox_monotone (h_f : x ≤ f x) : Monotone (lfpApprox f x) := by
+theorem lfpApprox_monotone_of_le (h_f : x ≤ f x) : Monotone (lfpApprox f x) := by
   intro a b h
   rw [lfpApprox, lfpApprox]
   apply DirectedOn.sSup_le_sSup (directedOn_lfpApprox _ _ _ h_f) (directedOn_lfpApprox _ _ _ h_f)
@@ -145,12 +157,12 @@ theorem lfpApprox_monotone (h_f : x ≤ f x) : Monotone (lfpApprox f x) := by
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
-theorem le_lfpApprox {a : Ordinal} (h_f : x ≤ f x) : x ≤ lfpApprox f x a := by
+theorem le_lfpApprox_of_le {a : Ordinal} (h_f : x ≤ f x) : x ≤ lfpApprox f x a := by
   rw [lfpApprox]
   apply (directedOn_lfpApprox _ _ _ h_f).le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
+theorem lfpApprox_add_one_of_le (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   apply le_antisymm
   · conv => left; rw [lfpApprox]
@@ -161,9 +173,9 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     apply And.intro
     · apply le_trans h
       apply Monotone.imp f.monotone
-      exact le_lfpApprox f x h
+      exact le_lfpApprox_of_le f x h
     · intro a' h'
-      apply f.2; apply lfpApprox_monotone f x h; exact h'
+      apply f.2; apply lfpApprox_monotone_of_le f x h; exact h'
   · conv => right; rw [lfpApprox]
     apply (directedOn_lfpApprox _ _ _ h).le_sSup
     simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop]
@@ -172,7 +184,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     simp only [Set.mem_setOf_eq]
     use a
 
-theorem lfpApprox_mono_left (f g : α →o α) (h_f : x ≤ f x) (h_g : x ≤ g x) :
+theorem lfpApprox_mono_left_of_le (f g : α →o α) (h_f : x ≤ f x) (h_g : x ≤ g x) :
     f ≤ g → lfpApprox f x ≤ lfpApprox g x := by
   intro h a
   induction a using Ordinal.induction with
@@ -189,7 +201,7 @@ theorem lfpApprox_mono_left (f g : α →o α) (h_f : x ≤ f x) (h_g : x ≤ g 
       right
       exact h_y
 
-theorem lfpApprox_mono_mid {x₁ x₂ : α} (h_f₁ : x₁ ≤ f x₁) (h_f₂ : x₂ ≤ f x₂) :
+theorem lfpApprox_mono_mid_of_le {x₁ x₂ : α} (h_f₁ : x₁ ≤ f x₁) (h_f₂ : x₂ ≤ f x₂) :
     x₁ ≤ x₂ → lfpApprox f x₁ ≤ lfpApprox f x₂ := by
   intro h a
   induction a using Ordinal.induction with
@@ -219,15 +231,15 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
     apply (directedOn_lfpApprox _ _ _ h_init).sSup_le
     simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq,
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    apply And.intro (le_lfpApprox f x h_init)
+    apply And.intro (le_lfpApprox_of_le f x h_init)
     intro a' ha'b
     by_cases! haa : a' < a
-    · rw [← lfpApprox_add_one f x h_init]
-      apply lfpApprox_monotone f x h_init
+    · rw [← lfpApprox_add_one_of_le f x h_init]
+      apply lfpApprox_monotone_of_le f x h_init
       simp only [Ordinal.add_one_eq_succ, succ_le_iff]
       exact haa
     · rw [IH a' ha'b haa, h]
-  · exact lfpApprox_monotone f x h_init h_ab
+  · exact lfpApprox_monotone_of_le f x h_init h_ab
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
@@ -249,8 +261,8 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
     lfpApprox f x c ∈ fixedPoints f := by
   have lfpApprox_mem_fixedPoint :
       lfpApprox f x a ∈ fixedPoints f := by
-    rw [mem_fixedPoints_iff, ← lfpApprox_add_one f x h_init]
-    exact Monotone.eq_of_ge_of_le (lfpApprox_monotone f x h_init)
+    rw [mem_fixedPoints_iff, ← lfpApprox_add_one_of_le f x h_init]
+    exact Monotone.eq_of_ge_of_le (lfpApprox_monotone_of_le f x h_init)
       h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
   rw [lfpApprox_eq_of_mem_fixedPoints f x h_init]
   · exact lfpApprox_mem_fixedPoint
@@ -271,7 +283,7 @@ theorem lfpApprox_ord_mem_fixedPoint (h_init : x ≤ f x) :
 
 /-- Every value of the approximation is less or equal than every fixed point of `f`
 greater or equal than the initial value -/
-theorem lfpApprox_le_of_mem_fixedPoints {a : α} (h_init : x ≤ f x)
+theorem lfpApprox_le_of_mem_fixedPoints_of_le {a : α} (h_init : x ≤ f x)
     (h_a : a ∈ fixedPoints f) (h_le_init : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
   induction i using Ordinal.induction with
   | h i IH =>
@@ -289,62 +301,22 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α} (h_init : x ≤ f x)
       rw [h_y]
       exact h_le_init
 
-end CompletePartialOrder
-
-namespace CompleteLattice
-
-universe u
-variable {α : Type u}
-variable [CompleteLattice α] (f : α →o α) (x : α)
-
-open Function fixedPoints Cardinal Order OrderHom
-
-set_option linter.unusedVariables false in
-/-- The ordinal-indexed sequence approximating the least fixed point greater than
-an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
-`lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
-def lfpApprox (a : Ordinal.{u}) : α :=
-  sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
-termination_by a
-decreasing_by exact h
-
-theorem lfpApprox_eq (a : Ordinal) :
-    lfpApprox f x a = CompletePartialOrder.lfpApprox f x a := by
-  induction a using Ordinal.induction with
-  | h i ih =>
-    unfold lfpApprox CompletePartialOrder.lfpApprox
-    apply congrArg
-    apply Set.union_congr_right
-    <;> {
-      apply Set.subset_union_of_subset_left
-      rintro y ⟨a, h_a, h_y⟩
-      use a, h_a
-      rw [← h_y]
-      apply congrArg
-      rw [ih a h_a]
-    }
-
-theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
+theorem lfpApprox_monotone : Monotone (lfpApprox g y) := by
   intro a b h
   rw [lfpApprox, lfpApprox]
-  gcongr sSup (?_ ∪ {x})
+  gcongr sSup (?_ ∪ {y})
   simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
   intro a' h'
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
-theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
+theorem le_lfpApprox {a : Ordinal} : y ≤ lfpApprox g y a := by
   rw [lfpApprox]
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
-    lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
-  rw [lfpApprox_eq, lfpApprox_eq]
-  exact CompletePartialOrder.lfpApprox_add_one f x h a
-
-theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
+theorem lfpApprox_mono_left : Monotone (lfpApprox : (β →o β) → _) := by
   intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -361,7 +333,7 @@ theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
       simp only [OrderHom.toFun_eq_coe]
       exact g.monotone (ih i' h_lt)
 
-theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
+theorem lfpApprox_mono_mid : Monotone (lfpApprox g) := by
   intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
@@ -375,41 +347,12 @@ theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
       apply le_sup_of_le_right
       apply le_sSup_of_le
       · use i'
-      · exact f.monotone (ih i' h_i')
-
-/-- The approximations of the least fixed point stabilize at a fixed point of `f` -/
-theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_ab : a ≤ b)
-    (h : lfpApprox f x a ∈ fixedPoints f) : lfpApprox f x b = lfpApprox f x a := by
-  rw [lfpApprox_eq, lfpApprox_eq]
-  rw [lfpApprox_eq] at h
-  exact CompletePartialOrder.lfpApprox_eq_of_mem_fixedPoints f x h_init h_ab h
-
-/-- There are distinct indices smaller than the successor of the domain's cardinality
-yielding the same value -/
-theorem exists_lfpApprox_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
-    a ≠ b ∧ lfpApprox f x a = lfpApprox f x b := by
-  conv => right; intro a; right; right; intro b; rw [lfpApprox_eq, lfpApprox_eq]
-  exact CompletePartialOrder.exists_lfpApprox_eq_lfpApprox f x
-
-/-- If the sequence of ordinal-indexed approximations takes a value twice,
-then it actually stabilised at that value. -/
-lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
-    (h_init : x ≤ f x) (h_ab : a < b) (h_ac : a ≤ c) (h_fab : lfpApprox f x a = lfpApprox f x b) :
-    lfpApprox f x c ∈ fixedPoints f := by
-  rw [lfpApprox_eq]
-  rw [lfpApprox_eq, lfpApprox_eq] at h_fab
-  exact CompletePartialOrder.lfpApprox_mem_fixedPoints_of_eq f x h_init h_ab h_ac h_fab
-
-/-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
-theorem lfpApprox_ord_mem_fixedPoint (h_init : x ≤ f x) :
-    lfpApprox f x (ord <| succ #α) ∈ fixedPoints f := by
-  rw [lfpApprox_eq]
-  exact CompletePartialOrder.lfpApprox_ord_mem_fixedPoint f x h_init
+      · exact g.monotone (ih i' h_i')
 
 /-- Every value of the approximation is less or equal than every fixed point of `f`
 greater or equal than the initial value -/
-theorem lfpApprox_le_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
+theorem lfpApprox_le_of_mem_fixedPoints {a : β}
+    (h_a : a ∈ fixedPoints g) (h_le_init : y ≤ a) (i : Ordinal) : lfpApprox g y i ≤ a := by
   induction i using Ordinal.induction with
   | h i IH =>
     rw [lfpApprox]
@@ -421,91 +364,80 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     | inl h_y =>
       let ⟨j, h_j_lt, h_j⟩ := h_y
       rw [← h_j, ← h_a]
-      exact f.monotone' (IH j h_j_lt)
+      exact g.monotone' (IH j h_j_lt)
     | inr h_y =>
       rw [h_y]
       exact h_le_init
 
 /-- The approximation sequence converges at the successor of the domain's cardinality
 to the least fixed point if starting from `⊥` -/
-theorem lfpApprox_ord_eq_lfp : lfpApprox f ⊥ (ord <| succ #α) = f.lfp := by
+theorem lfpApprox_ord_eq_lfp : lfpApprox g ⊥ (ord <| succ #β) = g.lfp := by
   apply le_antisymm
-  · have h_lfp : ∃ y : fixedPoints f, f.lfp = y := by use ⊥; exact rfl
+  · have h_lfp : ∃ y : fixedPoints g, g.lfp = y := by use ⊥; exact rfl
     let ⟨y, h_y⟩ := h_lfp; rw [h_y]
-    exact lfpApprox_le_of_mem_fixedPoints f ⊥ y.2 bot_le (ord <| succ #α)
-  · have h_fix : ∃ y : fixedPoints f, lfpApprox f ⊥ (ord <| succ #α) = y := by
+    exact lfpApprox_le_of_mem_fixedPoints g ⊥ y.2 bot_le (ord <| succ #β)
+  · have h_fix : ∃ y : fixedPoints g, lfpApprox g ⊥ (ord <| succ #β) = y := by
       simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
-        lfpApprox_ord_mem_fixedPoint f ⊥ bot_le
+        lfpApprox_ord_mem_fixedPoint g ⊥ bot_le
     let ⟨x, h_x⟩ := h_fix; rw [h_x]
-    exact lfp_le_fixed f x.prop
+    exact lfp_le_fixed g x.prop
 
 /-- Some approximation of the least fixed point starting from `⊥` is the least fixed point. -/
-theorem lfp_mem_range_lfpApprox : f.lfp ∈ Set.range (lfpApprox f ⊥) := by
-  use ord <| succ #α
-  exact lfpApprox_ord_eq_lfp f
-
-set_option linter.unusedVariables false in
-/-- The ordinal-indexed sequence approximating the greatest fixed point greater than
-an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
-`gfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
-def gfpApprox (a : Ordinal.{u}) : α :=
-  sInf ({ f (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
-termination_by a
-decreasing_by exact h
+theorem lfp_mem_range_lfpApprox : g.lfp ∈ Set.range (lfpApprox g ⊥) := by
+  use ord <| succ #β
+  exact lfpApprox_ord_eq_lfp g
 
 -- By unsealing these recursive definitions we can relate them
 -- by definitional equality
 unseal gfpApprox lfpApprox
 
-theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
-  lfpApprox_monotone f.dual x
+theorem gfpApprox_antitone : Antitone (gfpApprox g y) :=
+  lfpApprox_monotone g.dual y
 
-theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
-  le_lfpApprox f.dual x
+theorem gfpApprox_le {a : Ordinal} : gfpApprox g y a ≤ y :=
+  le_lfpApprox g.dual y
 
-theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
-  lfpApprox_add_one f.dual x h a
+theorem gfpApprox_add_one_of_le (h : g y ≤ y) (a : Ordinal) :
+    gfpApprox g y (a + 1) = g (gfpApprox g y a) :=
+  lfpApprox_add_one_of_le g.dual y h a
 
-theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
+theorem gfpApprox_mono_left : Monotone (gfpApprox : (β →o β) → _) := by
   intro f g h
   have : g.dual ≤ f.dual := h
   exact lfpApprox_mono_left this
 
-theorem gfpApprox_mono_mid : Monotone (gfpApprox f) :=
-  fun _ _ h => lfpApprox_mono_mid f.dual h
+theorem gfpApprox_mono_mid : Monotone (gfpApprox g) :=
+  fun _ _ h => lfpApprox_mono_mid g.dual h
 
 /-- The approximations of the greatest fixed point stabilize at a fixed point of `f` -/
-theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_ab : a ≤ b)
-    (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
-  lfpApprox_eq_of_mem_fixedPoints f.dual x h_init h_ab h
+theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : g y ≤ y) (h_ab : a ≤ b)
+    (h : gfpApprox g y a ∈ fixedPoints g) : gfpApprox g y b = gfpApprox g y a :=
+  lfpApprox_eq_of_mem_fixedPoints g.dual y h_init h_ab h
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
 yielding the same value -/
-theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
-    a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
-  exists_lfpApprox_eq_lfpApprox f.dual x
+theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #β, ∃ b < ord <| succ #β,
+    a ≠ b ∧ gfpApprox g y a = gfpApprox g y b :=
+  exists_lfpApprox_eq_lfpApprox g.dual y
 
 /-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
-lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
-    gfpApprox f x (ord <| succ #α) ∈ fixedPoints f :=
-  lfpApprox_ord_mem_fixedPoint f.dual x h_init
+lemma gfpApprox_ord_mem_fixedPoint (h_init : g y ≤ y) :
+    gfpApprox g y (ord <| succ #β) ∈ fixedPoints g :=
+  lfpApprox_ord_mem_fixedPoint g.dual y h_init
 
 /-- Every value of the approximation is greater or equal than every fixed point of `f`
 less or equal than the initial value -/
-lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
-  lfpApprox_le_of_mem_fixedPoints f.dual x h_a h_le_init i
+lemma le_gfpApprox_of_mem_fixedPoints {a : β}
+    (h_a : a ∈ fixedPoints g) (h_le_init : a ≤ y) (i : Ordinal) : a ≤ gfpApprox g y i :=
+  lfpApprox_le_of_mem_fixedPoints g.dual y h_a h_le_init i
 
 /-- The approximation sequence converges at the successor of the domain's cardinality
 to the greatest fixed point if starting from `⊥` -/
-theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = f.gfp :=
-  lfpApprox_ord_eq_lfp f.dual
+theorem gfpApprox_ord_eq_gfp : gfpApprox g ⊤ (ord <| succ #β) = g.gfp :=
+  lfpApprox_ord_eq_lfp g.dual
 
 /-- Some approximation of the least fixed point starting from `⊤` is the greatest fixed point. -/
-theorem gfp_mem_range_gfpApprox : f.gfp ∈ Set.range (gfpApprox f ⊤) :=
-  lfp_mem_range_lfpApprox f.dual
-
-end CompleteLattice
+theorem gfp_mem_range_gfpApprox : g.gfp ∈ Set.range (gfpApprox g ⊤) :=
+  lfp_mem_range_lfpApprox g.dual
 
 end OrdinalApprox
