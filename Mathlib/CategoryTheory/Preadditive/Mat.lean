@@ -321,9 +321,8 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     · intro b _ hb
       dsimp
       rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dif_neg hb.symm, zero_comp]
-    · intro h
-      simp at h
-    simp
+    · simp
+    · simp
   inv_hom_id := by
     apply biproduct.hom_ext
     intro i
@@ -449,16 +448,13 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
           (biproduct.mapIso fun i => (embeddingLiftIso F).symm.app (M.X i)) ≪≫
             (additiveObjIsoBiproduct (lift F) M).symm)
     fun f => by
-      dsimp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom]
-      simp only [additiveObjIsoBiproduct_naturality_assoc]
-      simp only [biproduct.matrix_map_assoc, Category.assoc]
-      simp only [additiveObjIsoBiproduct_naturality']
-      simp only [biproduct.map_matrix_assoc]
+      simp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom,
+        additiveObjIsoBiproduct_naturality_assoc, biproduct.matrix_map_assoc,
+        Category.assoc, additiveObjIsoBiproduct_naturality', biproduct.map_matrix_assoc]
       congr 3
       ext j k
       apply biproduct.hom_ext
       rintro ⟨⟩
-      dsimp
       simpa using α.hom.naturality (f j k)
 
 variable (F : C ⥤ D) [Functor.Additive F]
