@@ -117,6 +117,10 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {N : Submodule R M} {S : Set M}
 
+@[deprecated mem_colon (since := "2026-01-15")]
+theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
+  mem_colon
+
 /-- A variant for arbitrary sets in commutative semirings -/
 theorem bot_colon' : (⊥ : Submodule R M).colon S = (span R S).annihilator := by
   aesop (add simp [mem_colon, mem_annihilator_span])
