@@ -82,7 +82,8 @@ theorem sumZeroes_T_zero {n : ℕ} (hn : n ≠ 0) : sumZeroes n (T ℝ 0) = π :
 
 theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k) :
     sumZeroes n (T ℝ k) = 0 := by
-  wlog! hn : n ≠ 0; · simp [sumZeroes, hn]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [sumZeroes]
   suffices ∑ i ∈ range n, 2 * cos (k * ((2 * i + 1) / (2 * n) * π)) = 0 by
     rw [sumZeroes, mul_eq_zero_iff_left (by aesop)]
     rw [← mul_sum, mul_eq_zero_iff_left (by norm_num)] at this
