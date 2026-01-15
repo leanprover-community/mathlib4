@@ -3845,6 +3845,7 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Nat.Nth
 public import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Data.Nat.Order.Lemmas
+public import Mathlib.Data.Nat.OrderOf
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.Nat.Pairing
 public import Mathlib.Data.Nat.PartENat
