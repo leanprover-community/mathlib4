@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Martin Winter, Yaël Dillies. All rights reserved.
+Copyright (c) 2025 Martin Winter. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Martin Winter, Yaël Dillies
+Authors: Martin Winter
 -/
 module
 
@@ -9,26 +9,12 @@ public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Pi
 
 /-!
-# The algebraic dual of a cone
+# The algebraic dual of a submodule
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
-`0 ≤ p x y` for all `x ∈ s`.
+`Submodule.dual p s` to be the submodule in `N` consisting of all points `y` such that
+`0 = p x y` for all `x ∈ s`.
 
-When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
-When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
-dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
-
-## Implementation notes
-
-We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
-always contains `0`, i.e. is a pointed cone.
-Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
-`ConvexCone.dual`.
-
-## TODO
-
-Deduce from `dual_flip_dual_dual_flip` that polyhedral cones are invariant under taking double duals
 -/
 
 @[expose] public section
