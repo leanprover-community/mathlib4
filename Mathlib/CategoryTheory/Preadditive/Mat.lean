@@ -380,7 +380,7 @@ theorem natTrans_ext
       biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
   have : η.app M ≫ G.map p = θ.app M ≫ G.map p := by
     rw [← η.naturality p, ← θ.naturality p, h]
-  simpa [p, Category.assoc, additiveObjIsoBiproduct_hom_π] using this
+  simpa [p, additiveObjIsoBiproduct_hom_π] using this
 
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
