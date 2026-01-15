@@ -424,13 +424,14 @@ lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 
   | succ m hm =>
     have H := cuspFunction_mul (hf.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
       (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
-    have := iteratedDerivWithin_mul hsO hs (m + 1) (hf.of_le le_top) (hg.of_le le_top)
+    have := iteratedDerivWithin_mul hs hsO.uniqueDiffOn (n := m + 1)
+      (((hf.contDiffWithinAt hs).of_le le_top)) (((hg.contDiffWithinAt hs).of_le le_top))
     simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1) _ hsO hs] at this
     conv at this =>
       enter [2,2,n]
       rw [← iteratedDeriv_eq_iteratedDerivWithin n _ hsO hs,
         ← iteratedDeriv_eq_iteratedDerivWithin (m + 1 - n) _ hsO hs]
-    simp only [qExpansion_coeff,  H, PowerSeries.coeff_mul, this, Nat.succ_eq_add_one]
+    simp only [qExpansion_coeff, H, PowerSeries.coeff_mul, this]
     have h0 : ((m + 1)! : ℂ) ≠ 0 := by
       simp [Nat.factorial_ne_zero (m + 1)]
     rw [inv_mul_eq_iff_eq_mul₀ h0, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
@@ -476,7 +477,7 @@ lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (qExpansion h (a • f)) = (a • qExpansion h f) := by
   ext m
   simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk,
-    cuspFunction_smul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, IteratedDeriv_smul]
+    cuspFunction_smul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, IteratedDeriv_const_smul]
   grind [Pi.smul_apply, smul_eq_mul]
 
 lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
