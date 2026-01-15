@@ -148,8 +148,7 @@ end ComplexContinuousExpComp
 namespace Real
 
 @[continuity, fun_prop]
-theorem continuous_exp : Continuous exp := by
-  unfold Real.exp; fun_prop
+theorem continuous_exp : Continuous exp := by fun_prop [Real.exp]
 
 theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s := by fun_prop
 
