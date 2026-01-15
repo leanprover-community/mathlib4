@@ -34,17 +34,14 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 abbrev CoFG (S : Submodule R M) : Prop := Module.Finite R (M ⧸ S)
 
 /-- A submodule of a noetherian module is CoFG. -/
-theorem CoFG.of_isNoetherian [IsNoetherian R M] {S : Submodule R M} : S.CoFG :=
+@[simp] theorem CoFG.of_isNoetherian [IsNoetherian R M] {S : Submodule R M} : S.CoFG :=
   Module.Finite.quotient R S
 
 /-- A submodule of a finitely generated module is CoFG. -/
 alias CoFG.of_finite := CoFG.of_isNoetherian
 
 /-- The top submodule is CoFG. -/
-@[simp] theorem cofg_top : (⊤ : Submodule R M).CoFG := inferInstance
-
-/-- The bottom submodule of a finite module is CoFG. -/
-@[simp] theorem cofg_bot [Module.Finite R M] : (⊥ : Submodule R M).CoFG := inferInstance
+@[simp] theorem CoFG.top : (⊤ : Submodule R M).CoFG := inferInstance
 
 /-- If the bottom submodule is CoFG, then the module is finite. -/
 theorem _root_.Module.Finite.of_cofg_bot (h : (⊥ : Submodule R M).CoFG) : Module.Finite R M
@@ -75,7 +72,7 @@ theorem CoFG.of_cofg_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.C
   exact hS.sup T
 
 /-- If a family of submodules contains a CoFG submodule then the supremum of the family is CoFG. -/
-theorem sSup_cofg {s : Set (Submodule R M)} (hs : ∃ S ∈ s, S.CoFG) : (sSup s).CoFG := by
+theorem CoFG.sSup {s : Set (Submodule R M)} (hs : ∃ S ∈ s, S.CoFG) : (sSup s).CoFG := by
   obtain ⟨S, hS, hcofg⟩ := hs
   rw [right_eq_sup.mpr <| le_sSup hS]
   exact hcofg.sup _
@@ -102,24 +99,24 @@ section IsNoetherianRing
 variable [IsNoetherianRing R]
 
 /-- Over a noetherian ring the intersection of two CoFG submodules is CoFG. -/
-theorem inf_cofg {S T : Submodule R M} (hS : S.CoFG) (hT : T.CoFG) :
+theorem CoFG.inf {S T : Submodule R M} (hS : S.CoFG) (hT : T.CoFG) :
       (S ⊓ T).CoFG := by
   rw [← Submodule.ker_mkQ S, ← Submodule.ker_mkQ T, ← LinearMap.ker_prod]
   exact ker_cofg _
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-theorem sInf_cofg {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
+theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
     (sInf (s : Set (Submodule R M))).CoFG := by classical
   induction s using Finset.induction with
   | empty => simp
   | insert w s hws hs' =>
     simp only [Finset.mem_insert, forall_eq_or_imp, Finset.coe_insert, sInf_insert] at *
-    exact inf_cofg hs.1 (hs' hs.2)
+    exact hs.1.inf (hs' hs.2)
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-theorem sInf_cofg' {s : Set (Submodule R M)} (hs : s.Finite) (hcofg : ∀ S ∈ s, S.CoFG) :
-    (sInf s).CoFG := by
-  rw [← hs.coe_toFinset] at hcofg ⊢; exact sInf_cofg hcofg
+theorem CoFG.sInf' {s : Set (Submodule R M)} (hs : s.Finite) (hcofg : ∀ S ∈ s, S.CoFG) :
+    (InfSet.sInf s).CoFG := by
+  rw [← hs.coe_toFinset] at hcofg ⊢; exact CoFG.sInf hcofg
 
 end IsNoetherianRing
 
