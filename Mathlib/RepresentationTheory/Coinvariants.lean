@@ -385,7 +385,7 @@ equipping a module with the trivial representation. -/
 noncomputable def coinvariantsAdjunction : coinvariantsFunctor k G ⊣ trivialFunctor k G where
   unit := { app X := {
     hom := (coinvariantsMk k G).app X
-    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] }}
+    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] } }
   counit := { app X := desc (B := trivial k G X) (𝟙 _) }
 
 @[simp]

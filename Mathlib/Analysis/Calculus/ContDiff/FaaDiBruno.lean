@@ -121,7 +121,7 @@ namespace OrderedFinpartition
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
   length := n
-  partSize _ :=  1
+  partSize _ := 1
   partSize_pos _ := _root_.zero_lt_one
   emb m _ := m
   emb_strictMono _ := Subsingleton.strictMono _
@@ -779,7 +779,7 @@ one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
 def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
-    E[×n]→L[𝕜] G where
+    E [×n]→L[𝕜] G where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ f (c.applyOrderedFinpartition p v))
       (fun v i x y ↦ by
@@ -810,7 +810,7 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
+      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by
@@ -820,14 +820,14 @@ def compAlongOrderedFinpartitionₗ :
         ext v
         simp [applyOrderedFinpartition_update_left])
   map_add' _ _ := rfl
-  map_smul' _ _ :=  rfl
+  map_smul' _ _ := rfl
 
 variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
 and continuously multilinearly on `p`. -/
 noncomputable def compAlongOrderedFinpartitionL :
     (F [×c.length]→L[𝕜] G) →L[𝕜]
-      ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by
+      ContinuousMultilinearMap 𝕜 (fun i ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) := by
   refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 fun f p ↦ ?_
   simp only [one_mul, compAlongOrderedFinpartitionₗ_apply_apply]
   apply norm_compAlongOrderedFinpartition_le
