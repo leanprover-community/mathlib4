@@ -231,11 +231,11 @@ variable {ι}
 
 /-- The (sup metric) diameter of a standard simplex is less than or equal to 1. -/
 theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
-    Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
-      (dist_pi_le_iff zero_le_one).2 fun i ↦ by
-        have hx := mem_Icc_of_mem_stdSimplex hx i
-        have hy := mem_Icc_of_mem_stdSimplex hy i
-        grind [Real.dist_eq]
+  Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
+    (dist_pi_le_iff zero_le_one).2 fun i ↦ by
+      have hx := mem_Icc_of_mem_stdSimplex hx i
+      have hy := mem_Icc_of_mem_stdSimplex hy i
+      grind [Real.dist_eq]
 
 /-- The (sup metric) diameter of a standard simplex indexed by a subsingleton is 0. -/
 @[simp]
@@ -252,7 +252,7 @@ theorem diam_stdSimplex [Nontrivial ι] : Metric.diam (stdSimplex ℝ ι) = 1 :=
   obtain ⟨i, j, hij⟩ := exists_pair_ne ι
   classical
   rw [show (1 : ℝ) = dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) by
-        simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
+    simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
   exact Metric.dist_le_diam_of_mem (bounded_stdSimplex _)
     (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
