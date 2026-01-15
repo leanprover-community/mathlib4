@@ -83,11 +83,7 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
 /-- If `S ⊆ N`, then the colon ideal `N.colon S` is the whole ring. -/
 lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
     N.colon S = ⊤ := by
-  refine top_unique ?_
-  intro x _
-  refine mem_colon.2 ?_
-  intro p h_p
-  exact smul_mem N x (h h_p)
+  aesop (add simp mem_colon)
 
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := calc
