@@ -91,10 +91,12 @@ structure SpectralSequenceMkData where
       i₀ r' pq ≤ i₀ r pq
   monotone_i₃ (r r' : ℤ) (pq : κ) (hr : r₀ ≤ r := by lia) (hrr' : r ≤ r' := by lia) :
       i₃ r pq ≤ i₃ r' pq
-  i₀_prev' (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by lia) :
-      i₀ (r + 1) pq = i₁ pq'
-  i₃_next' (r : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hr : r₀ ≤ r := by lia):
-      i₃ (r + 1) pq' = i₂ pq
+  i₀_prev (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by lia)
+      (hr : r₀ ≤ r := by lia) :
+      i₀ r' pq = i₁ pq'
+  i₃_next (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by lia)
+      (hr : r₀ ≤ r := by lia) :
+      i₃ r' pq' = i₂ pq
 
 namespace SpectralSequenceMkData
 
@@ -108,22 +110,8 @@ lemma i₃_le (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ �
     data.i₃ r pq ≤ data.i₃ r' pq :=
   data.monotone_i₃ r r' pq
 
-lemma i₀_prev (r r' : ℤ) (pq pq' : κ) (hpq : (c r).Rel pq pq')
-    (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
-    data.i₀ r' pq = data.i₁ pq' := by
-  subst hrr'
-  exact data.i₀_prev' r pq pq' hpq
-
-lemma i₃_next (r r' : ℤ) (pq pq' : κ)
-    (hpq : (c r).Rel pq pq') (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
-    data.i₃ r' pq' = data.i₂ pq := by
-  subst hrr'
-  exact data.i₃_next' r pq pq' hpq
-
 lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
-    {i₀' i₀ : ι}
-    (hi₀' : i₀' = data.i₀ r' pq')
-    (hi₀ : i₀ = data.i₀ r pq') :
+    {i₀' i₀ : ι} (hi₀' : i₀' = data.i₀ r' pq') (hi₀ : i₀ = data.i₀ r pq') :
     i₀' ≤ i₀ := by
   rw [hi₀', hi₀]
   exact data.antitone_i₀ r r' pq'
@@ -173,8 +161,8 @@ def mkDataE₂Cohomological :
   hc₁₃ := by rintro r pq hr rfl _; simp; lia
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
-  i₀_prev' := by rintro r hr pq rfl _; dsimp; lia
-  i₃_next' := by rintro r hr pq rfl _; dsimp; lia
+  i₀_prev := by rintro r r' hr pq rfl _ _; dsimp; lia
+  i₃_next := by rintro r r' hr pq rfl _ _; dsimp; lia
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
@@ -200,10 +188,10 @@ def mkDataE₂CohomologicalNat :
     lia
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
-  i₀_prev' r pq pq' hpq hr := by
+  i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     lia
-  i₃_next' r pq pq' hpq hr := by
+  i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     lia
 
@@ -250,13 +238,13 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     rw [Fin.mk_le_mk]
     apply Fin.clamp_le_clamp
     lia
-  i₀_prev' := by
-    rintro r ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hr
+  i₀_prev := by
+    rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
     dsimp at h₁ h₂ ⊢
     lia
-  i₃_next' := by
-    rintro r ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hr
+  i₃_next := by
+    rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext
     dsimp at h₁ h₂ ⊢
     grind
@@ -287,10 +275,10 @@ def mkDataE₂HomologicalNat :
     lia
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia
-  i₀_prev' r pq pq' hpq hr := by
+  i₀_prev r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     lia
-  i₃_next' r pq pq' hpq hr := by
+  i₃_next r r' pq pq' hpq hrr' hr := by
     simp only [ComplexShape.spectralSequenceNat_rel_iff] at hpq
     lia
 
