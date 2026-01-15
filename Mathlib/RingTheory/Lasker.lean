@@ -77,17 +77,15 @@ theorem Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R �
   exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
 
 @[simp]
-theorem Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] :
-    (I.primeCompl : Set R) = (I : Set R)ᶜ := rfl
+theorem Submodule.coe_eq_univ {R M : Type*}
+    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} :
+    (I : Set M) = Set.univ ↔ I = ⊤ := by
+  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
 
 theorem Submodule.IsPrimary.isPrime_radical_colon {R M : Type*}
     [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} (hI : I.IsPrimary) :
     (I.colon Set.univ).radical.IsPrime := by
-  refine isPrime_iff.mpr <| hI.imp (by -- cleanup!
-    simp [radical_eq_top]
-    contrapose!
-    intro h
-    exact SetLike.coe_injective h) fun h x y ⟨n, hn⟩ ↦ ?_
+  refine isPrime_iff.mpr <| hI.imp (by simp [radical_eq_top]) fun h x y ⟨n, hn⟩ ↦ ?_
   simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
   refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
   simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
@@ -139,7 +137,8 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
     ∃ t : Finset (Submodule R M), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ {I ∈ s | (I.colon Set.univ).radical = (J.colon Set.univ).radical})).image
+  refine ⟨(s.image (fun J ↦ {I ∈ s | (I.colon Set.univ).radical =
+      (J.colon Set.univ).radical})).image
     fun t ↦ t.inf id, ?_, ?_, ?_⟩
   · ext
     grind [Finset.inf_image, Submodule.mem_finsetInf]
