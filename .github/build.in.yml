@@ -499,6 +499,7 @@ jobs:
       - name: kill stray runLinter processes
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         continue-on-error: true
+        shell: bash
         run: |
           echo "Checking for runLinter processes..."
           if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
@@ -559,6 +560,7 @@ jobs:
           fi
 
       - name: list stray runLinter processes
+        shell: bash
         if: always()
         run: |
           echo "Checking for runLinter processes..."
