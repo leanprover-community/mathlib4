@@ -14,7 +14,7 @@ In this file we prove that a set in the base field has the unique differentiabil
 iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set
 open scoped Topology
@@ -53,8 +53,6 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
     exact squeeze_zero (fun n ↦ by positivity) B u_lim
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_eq_univ := tangentConeAt_eq_univ
 
 /-- In one dimension, a point is a point of unique differentiability of a set
 iff it is an accumulation point of the set. -/

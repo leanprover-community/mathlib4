@@ -126,6 +126,14 @@ def cod : Set β := {b | ∃ a, a ~[R] b}
 @[simp] lemma dom_empty : (∅ : SetRel α β).dom = ∅ := by aesop
 @[simp] lemma cod_empty : (∅ : SetRel α β).cod = ∅ := by aesop
 
+@[simp] lemma dom_eq_empty_iff : R.dom = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ dom_empty)⟩
+
+@[simp] lemma cod_eq_empty_iff : R.cod = ∅ ↔ R = (∅ : SetRel α β) :=
+  ⟨fun h ↦ Set.eq_empty_iff_forall_notMem.mpr <| by simp_all [Set.eq_empty_iff_forall_notMem],
+   (· ▸ cod_empty)⟩
+
 @[simp] lemma dom_univ [Nonempty β] : dom (.univ : SetRel α β) = .univ := by aesop
 @[simp] lemma cod_univ [Nonempty α] : cod (.univ : SetRel α β) = .univ := by aesop
 
@@ -263,8 +271,20 @@ lemma image_union : image R (s₁ ∪ s₂) = image R s₁ ∪ image R s₂ := b
 
 @[deprecated (since := "2025-07-06")] alias preimage_eq_codom_of_domain_subset := image_union
 
+variable (R) in
+lemma image_iUnion (s : ι → Set α) : image R (⋃ i, s i) = ⋃ i, image R (s i) := by aesop
+
+variable (R) in
+lemma image_sUnion (S : Set (Set α)) : image R (⋃₀ S) = ⋃ s ∈ S, image R s := by aesop
+
 variable (R t₁ t₂) in
 lemma preimage_union : preimage R (t₁ ∪ t₂) = preimage R t₁ ∪ preimage R t₂ := by aesop
+
+variable (R) in
+lemma preimage_iUnion (t : ι → Set β) : preimage R (⋃ i, t i) = ⋃ i, preimage R (t i) := by aesop
+
+variable (R) in
+lemma preimage_sUnion (T : Set (Set β)) : preimage R (⋃₀ T) = ⋃ t ∈ T, preimage R t := by aesop
 
 variable (s) in
 @[simp] lemma image_id : image .id s = s := by aesop
@@ -310,6 +330,10 @@ lemma inter_cod_subset_image_preimage : t ∩ R.cod ⊆ image R (R.preimage t) :
 @[deprecated (since := "2025-07-06")]
 alias image_preimage_subset_inter_codom := inter_cod_subset_image_preimage
 
+lemma image_eq_biUnion : R.image s = ⋃ x ∈ s, {y | x ~[R] y} := by aesop
+
+lemma preimage_eq_biUnion : R.preimage t = ⋃ y ∈ t, {x | x ~[R] y} := by aesop
+
 variable (R t) in
 /-- Core of a set `S : Set β` w.R.t `R : SetRel α β` is the set of `x : α` that are related *only*
 to elements of `S`. Other generalization of `Function.preimage`. -/
@@ -349,7 +373,7 @@ variable {R R₁ R₂ : SetRel α α} {S : SetRel β β} {a b c : α}
 
 variable (R) in
 /-- A relation `R` is reflexive if `a ~[R] a`. -/
-protected abbrev IsRefl : Prop := IsRefl α (· ~[R] ·)
+protected abbrev IsRefl : Prop := Std.Refl (· ~[R] ·)
 
 variable (R) in
 protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
@@ -368,6 +392,9 @@ instance isRefl_univ : SetRel.IsRefl (.univ : SetRel α α) where
 
 instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
   refl _ := ⟨R₁.rfl, R₂.rfl⟩
+
+instance IsRefl.comp [R₁.IsRefl] [R₂.IsRefl] : (R₁.comp R₂).IsRefl where
+  refl _ := ⟨_, R₁.rfl, R₂.rfl⟩
 
 protected lemma IsRefl.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ, R.IsRefl) :
     SetRel.IsRefl (⋂₀ ℛ) where
@@ -410,7 +437,7 @@ lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht
 
 variable (R) in
 /-- A relation `R` is symmetric if `a ~[R] b ↔ b ~[R] a`. -/
-protected abbrev IsSymm : Prop := IsSymm α (· ~[R] ·)
+protected abbrev IsSymm : Prop := Std.Symm (· ~[R] ·)
 
 variable (R) in
 protected lemma symm [R.IsSymm] (hab : a ~[R] b) : b ~[R] a := symm_of (· ~[R] ·) hab
@@ -523,12 +550,12 @@ instance isTrans_symmetrize [R.IsTrans] : R.symmetrize.IsTrans where
 
 variable (R) in
 /-- A relation `R` is irreflexive if `¬ a ~[R] a`. -/
-protected abbrev IsIrrefl : Prop := IsIrrefl α (· ~[R] ·)
+protected abbrev IsIrrefl : Prop := Std.Irrefl (· ~[R] ·)
 
 variable (R a) in
 protected lemma irrefl [R.IsIrrefl] : ¬ a ~[R] a := irrefl_of (· ~[R] ·) _
 
-instance {R : α → α → Prop} [IsIrrefl α R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
+instance {R : α → α → Prop} [Std.Irrefl R] : SetRel.IsIrrefl {(a, b) | R a b} := ‹_›
 
 variable (R) in
 /-- A relation `R` on a type `α` is well-founded if all elements of `α` are accessible within `R`.
@@ -563,6 +590,10 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 @[simp] lemma graph_id : graph (id : α → α) = .id := by aesop
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
+
+/-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
+def tupleGraph (f : (α → β) → β) : Set (Option α → β) :=
+  { v | f (v ∘ some) = v none }
 
 end Function
 

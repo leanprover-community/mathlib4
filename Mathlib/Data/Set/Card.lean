@@ -138,8 +138,6 @@ theorem encard_ne_add_one (a : α) :
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
-@[deprecated (since := "2025-05-23")] alias encard_insert_of_not_mem := encard_insert_of_notMem
-
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
   induction s, h using Set.Finite.induction_on with
   | empty => simp
@@ -179,6 +177,13 @@ theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ 
 theorem encard_prod {s : Set α} {t : Set β} : (s ×ˢ t).encard = s.encard * t.encard := by
   unfold encard
   simp [ENat.card_congr (Equiv.Set.prod ..)]
+
+@[simp]
+theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i : α, Set (ι i)} :
+    (Set.pi Set.univ s).encard = ∏ i, (s i).encard := by
+  simp only [encard, ENat.card]
+  rw [Cardinal.mk_congr (Equiv.Set.univPi s)]
+  simp [Cardinal.prod_eq_of_fintype]
 
 section Lattice
 
@@ -662,8 +667,6 @@ section InsertErase
   rw [← Nat.cast_inj (R := ℕ∞), (hs.insert a).cast_ncard_eq, Nat.cast_add, Nat.cast_one,
     hs.cast_ncard_eq, encard_insert_of_notMem h]
 
-@[deprecated (since := "2025-05-23")] alias ncard_insert_of_not_mem := ncard_insert_of_notMem
-
 theorem ncard_insert_of_mem {a : α} (h : a ∈ s) : ncard (insert a s) = s.ncard := by
   rw [insert_eq_of_mem h]
 
@@ -845,6 +848,9 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   simp_rw [← _root_.Nat.card_coe_set_eq]
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 
+theorem ncard_congr' {S : Set α} {T : Set β} (f : S ≃ T) : Set.ncard S = Set.ncard T :=
+  Cardinal.toNat_congr f
+
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
@@ -997,9 +1003,6 @@ theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=
   diff_nonempty_of_ncard_lt_ncard h hs
 
-@[deprecated (since := "2025-05-23")]
-alias exists_mem_not_mem_of_ncard_lt_ncard := exists_mem_notMem_of_ncard_lt_ncard
-
 @[simp] theorem ncard_inter_add_ncard_diff_eq_ncard (s t : Set α)
     (hs : s.Finite := by toFinite_tac) : (s ∩ t).ncard + (s \ t).ncard = s.ncard := by
   rw [← ncard_union_eq (disjoint_of_subset_left inter_subset_right disjoint_sdiff_right)
@@ -1023,6 +1026,10 @@ theorem ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff (hs : s.Finite := by toFinit
 theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
   rw [← ncard_univ, ← ncard_union_eq (@disjoint_compl_right _ _ s) hs hsc, union_compl_self]
+
+theorem ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
+    (hsc : sᶜ.Finite := by toFinite_tac) : sᶜ.ncard = Nat.card α - s.ncard := by
+  rw [← ncard_add_ncard_compl s hs hsc, Nat.add_sub_cancel_left]
 
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
@@ -1166,6 +1173,19 @@ theorem ncard_le_one_of_subsingleton [Subsingleton α] (s : Set α) : s.ncard �
   rw [ncard_eq_toFinset_card]
   exact Finset.card_le_one_of_subsingleton _
 
+theorem one_lt_ncard_iff_nontrivial [Finite s] :
+    1 < s.ncard ↔ s.Nontrivial := by
+  rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
+
+theorem one_lt_ncard_iff_nontrivial_and_finite :
+    1 < s.ncard ↔ s.Nontrivial ∧ s.Finite := by
+  refine ⟨fun hs ↦ ?_, fun ⟨hs_nontrivial, hs_finite⟩ ↦ ?_⟩
+  · have := finite_of_ncard_pos (Nat.zero_lt_of_lt hs)
+    rw [← Set.finite_coe_iff] at this
+    exact ⟨one_lt_ncard_iff_nontrivial.mp hs, this⟩
+  · rw [← Set.finite_coe_iff] at hs_finite
+    rwa [one_lt_ncard_iff_nontrivial]
+
 theorem one_lt_ncard (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.one_lt_card, Finite.mem_toFinset]
@@ -1179,7 +1199,7 @@ lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s 
     (he : Even (s.ncard)) : 1 < s.ncard := by
   rw [← Set.ncard_pos hs] at hn
   have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
-  cutsat
+  lia
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by

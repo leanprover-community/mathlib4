@@ -71,7 +71,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.RightInverse,Function.LeftInverse]
+    dsimp [Function.RightInverse, Function.LeftInverse]
     subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
@@ -136,7 +136,7 @@ def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (
 def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
 
-/-- Transport a term of type `is_initial` across an isomorphism. -/
+/-- Transport a term of type `IsInitial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
     { hom := { hom := i.hom }
@@ -236,12 +236,12 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
 noncomputable
-def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
+def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category* J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
     IsLimit c ≃ IsTerminal c.pt :=
   (IsLimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isLimitEmptyConeEquiv _ _ _ (.refl _))
@@ -265,13 +265,13 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram,
 then a cocone over `F` is colimiting iff the cocone point is initial. -/
 noncomputable
-def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category J] [IsEmpty J]
+def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category* J] [IsEmpty J]
     {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c.pt :=
   (IsColimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isColimitEmptyCoconeEquiv _ _ _ (.refl _))

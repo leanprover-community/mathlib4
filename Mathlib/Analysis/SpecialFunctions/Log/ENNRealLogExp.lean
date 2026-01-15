@@ -163,18 +163,18 @@ end Continuity
 
 section Measurability
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_log : Measurable log := continuous_log.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ennreal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
     {f : α → EReal} (hf : Measurable f) :
     Measurable fun x ↦ exp (f x) := measurable_exp.comp hf

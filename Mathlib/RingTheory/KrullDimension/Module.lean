@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Module
 
 # Krull Dimension of Module
 
-In this file we define `Module.supportDim R M` for a `R`-module `M` as
+In this file we define `Module.supportDim R M` for an `R`-module `M` as
 the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
 `M` is finitely generated.
 
