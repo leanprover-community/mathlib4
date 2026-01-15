@@ -67,8 +67,8 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     Nat.succ_eq_add_one, sum_range_succ]
   simp only [coeff_largeSchroderSeries, coeff_X_mul_largeSchroderSeries n hn, tsub_self,
     largeSchroder_zero, mul_one]
-  have : ∑ x ∈ range n, (coeff x) (X * largeSchroderSeries) * largeSchroder (n - x)  =
-    ∑ x ∈ range n, if 0 < x then largeSchroder (x - 1) * largeSchroder (n - x) else 0 := by
+  have : ∑ x ∈ range n, (coeff x) (X * largeSchroderSeries) * largeSchroder (n - x) =
+      ∑ x ∈ range n, if 0 < x then largeSchroder (x - 1) * largeSchroder (n - x) else 0 := by
     apply sum_congr rfl
     intro x a
     simp_all only [mem_range]

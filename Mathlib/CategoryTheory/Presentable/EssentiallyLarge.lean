@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 
 /-!
 # Accessible categories are essentially large

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
