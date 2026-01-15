@@ -166,7 +166,6 @@ theorem mem_tripleFiber {x : M} {abc : M × M × M} :
     abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by
   simp only [tripleFiber, mem_mulTripleAntidiagonal, Set.mem_univ, true_and]
 
-set_option backward.privateInPublic true in
 /-- Left association equivalence for reindexing nested sums. -/
 @[to_additive leftAddAssocEquiv /-- Left association equivalence for reindexing nested sums. -/]
 private def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
@@ -182,7 +181,6 @@ private def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ t
     simp only [mem_mulFiber] at hab; subst hab; rfl
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
-set_option backward.privateInPublic true in
 /-- Right association equivalence for reindexing nested sums. -/
 @[to_additive rightAddAssocEquiv
   /-- Right association equivalence for reindexing nested sums. -/]
@@ -200,12 +198,10 @@ private def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ 
     simp only [mem_mulFiber] at hbd; subst hbd; rfl
   right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Equivalence between left and right associated nested fiber sums. -/
-@[to_additive (attr := irreducible) addAssocEquiv
+@[to_additive addAssocEquiv
   /-- Equivalence between left and right associated nested fiber sums. -/]
-def assocEquiv (x : M) :
+private def assocEquiv (x : M) :
     (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ (Σ ae : mulFiber x, mulFiber ae.1.2) :=
   (leftAssocEquiv x).trans (rightAssocEquiv x).symm
 
