@@ -121,12 +121,9 @@ theorem NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit
   exact isPrincipal_of_num_isPrincipal (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
 
 /-- In a normalized GCD Domain, every class in the ideal class group is `1`. -/
-theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 := by
-  refine ClassGroup.induction (R := R) (K := FractionRing R) (P := fun y => y = 1) ?_ x
-  intro I
-  -- `mk I = 1` iff `I` is principal as a submodule.
-  refine (ClassGroup.mk_eq_one_iff (R := R) (K := FractionRing R) (I := I)).2 ?_
-  exact fractionalIdeal_isPrincipal_of_isUnit (R := R) I
+theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 :=
+  ClassGroup.induction (FractionRing R)
+    (fun I ↦ ClassGroup.mk_eq_one_iff.mpr (fractionalIdeal_isPrincipal_of_isUnit I)) x
 
 /-- The ideal class group of a normalized GCD Domain is trivial. -/
 instance NormalizedGCDMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
