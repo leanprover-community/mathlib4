@@ -357,3 +357,13 @@ lemma mapEquiv_sup_eq_sup_mapEquiv (f : M ≃L[R] N) {s t : ClosedSubmodule R M}
     ← ContinuousLinearEquiv.image_closure, Set.mem_image]
 
 end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace
