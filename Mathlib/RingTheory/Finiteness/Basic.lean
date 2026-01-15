@@ -178,7 +178,7 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
     exact le_iSup _ _
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
-theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
+theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
@@ -190,6 +190,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       apply CompleteLattice.isCompactElement_finsetSup
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
+      rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
       -- s is the Sup of the spans of its elements.
       have sSup' : s = sSup (sp '' ↑s) := by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
