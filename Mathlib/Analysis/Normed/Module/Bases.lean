@@ -160,14 +160,30 @@ def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → 
 
 namespace CanonicalProjections
 
-lemma bf_eval {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (j i : ℕ) :
-    biorthogonal_functionals h j (e i) = if j = i then (1 : 𝕜) else 0 := by
-    by_cases hji: j = i
-    · rw [hji]
+theorem bf_eval {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (i j : ℕ) :
+    biorthogonal_functionals h i (e j) = if i = j then (1 : 𝕜) else 0 := by
+    by_cases hij: i = j
+    · rw [hij]
       simp only
-      exact ((biorthogonal_property h) i).1
-    · rw [if_neg hji]; push_neg at hji
-      exact ((biorthogonal_property h) j).2 i hji.symm
+      exact ((biorthogonal_property h) j).1
+    · rw [if_neg hij]; push_neg at hij
+      exact ((biorthogonal_property h) i).2 j hij.symm
+
+theorem canonical_projection_on_basis_element {e : ℕ → X}
+    (h : SchauderBasis 𝕜 X e) (n i : ℕ) :
+    (CanonicalProjections h n) (e i) = if i < n then e i else 0 := by
+    let bf := biorthogonal_functionals h
+    have : (CanonicalProjections h n) (e i) = ∑ j ∈ Finset.range n, bf j (e i) • e j := by
+        rw [CanonicalProjections]; simp [bf]
+    rw [this]
+    have hsum: (∑ j ∈ Finset.range n, bf j (e i) • e j) =
+        ∑ j ∈ Finset.range n, (if j = i then (1 : 𝕜) else 0) • e j := by
+        apply Finset.sum_congr rfl
+        intro j hj
+        rw [bf_eval h j i]
+    rw [hsum]
+    simp [Finset.sum_ite_eq']
+
 
 theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
     Module.finrank 𝕜 (range (CanonicalProjections h n)) = n := by
@@ -180,33 +196,9 @@ theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
             constructor
             · exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, rfl⟩
             · intro _ hm; exact (Finset.mem_filter.mp hm).2
-
-         -- TODO make it a thm
-        have : CanonicalProjections h n (e i) = e i := by
-            have : i ∈ Finset.range n := Finset.mem_range.mpr hi
-            calc
-              CanonicalProjections h n (e i) = ∑ j ∈ Finset.range n, (bf j (e i)) • e j := by
-                rw [CanonicalProjections]; simp [bf];
-              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j +
-                    ∑ j ∈ (Finset.range n).filter (fun j => j ≠ i), (bf j (e i))  • e j := by
-                rw [Finset.sum_filter_add_sum_filter_not];
-              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i)) • e j +
-                    ∑ j ∈ (Finset.range n).filter (fun j => j ≠ i), 0 := by
-                congr 1
-                apply Finset.sum_congr rfl
-                intro j hj
-                have hji: j ≠ i := (Finset.mem_filter.mp hj).2
-                rw [bf_eval h j i, if_neg hji]
-                exact zero_smul 𝕜 (e j)
-              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j + 0 := by
-                rw [Finset.sum_const_zero]
-              _ =  ∑ j ∈ (Finset.range n).filter (fun j => j = i), (bf j (e i))  • e j := by
-                rw [add_zero]
-              _ = ∑ j ∈ {i}, (bf j (e i))  • e j := by rw [Finset.sum_congr z.symm fun _ _ => rfl]
-              _ = (bf i (e i)) • e i := by rw [Finset.sum_singleton]
-              _ = 1 • e i := by rw [((biorthogonal_property h) i).1]; simp
-              _ = e i := by rw [one_smul]
-
+        have : (CanonicalProjections h n) (e i) = e i := by
+            rw [canonical_projection_on_basis_element h n i]
+            simp [hi]
         exact ⟨e i, this⟩
     have basisofrange: range (CanonicalProjections h n) ≃ₗ[𝕜]
         Submodule.span 𝕜 ({ e i | i < n }) := by  sorry
