@@ -89,6 +89,30 @@ lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
   aesop (add simp mem_colon)
 
+@[simp]
+lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma iInf_colon (ι : Sort*) (f : ι → Submodule R M) : (⨅ i, f i).colon S = ⨅ i, (f i).colon S := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma top_colon : (⊤ : Submodule R M).colon S = ⊤ := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_union : N.colon (S₁ ∪ S₂) = N.colon S₁ ⊓ N.colon S₂ := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_iUnion (ι : Sort*) (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ i, N.colon (f i) := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
+  aesop (add simp mem_colon)
+
 end Semiring
 
 section CommSemiring
