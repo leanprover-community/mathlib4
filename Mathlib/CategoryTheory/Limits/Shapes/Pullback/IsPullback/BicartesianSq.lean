@@ -7,36 +7,24 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
-# Pullback and pushout squares, and bi-Cartesian squares
+# Bi-Cartesian squares
 
-We provide another API for pullbacks and pushouts.
-
-`IsPullback fst snd f g` is the proposition that
+`BicartesianSq f g h i` is the proposition that
 ```
-  P --fst--> X
+  W ---f---> X
   |          |
- snd         f
+  g          h
   |          |
   v          v
-  Y ---g---> Z
+  Y ---i---> Z
 
 ```
-is a pullback square.
+is a pullback square *and* a pushout square.
 
-(And similarly for `IsPushout`.)
-
-We provide the glue to go back and forth to the usual `IsLimit` API for pullbacks, and prove
-`IsPullback (pullback.fst f g) (pullback.snd f g) f g`
-for the usual `pullback f g` provided by the `HasLimit` API.
-
-We don't attempt to restate everything we know about pullbacks in this language,
-but do restate the pasting lemmas.
-
-We define bi-Cartesian squares, and
-show that the pullback and pushout squares for a biproduct are bi-Cartesian.
+We show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
 
 @[expose] public section
