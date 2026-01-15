@@ -338,7 +338,8 @@ instance : StrongNormalizationMonoid k⟦X⟧ where
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm
 
 theorem normUnit_X : normUnit (X : k⟦X⟧) = 1 := by
-  simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero]
+  simp [normUnit, ← Units.val_eq_one, Unit_of_divided_by_X_pow_order_nonzero,
+    StrongNormalizationMonoid.normUnit]
 
 theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
   simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]

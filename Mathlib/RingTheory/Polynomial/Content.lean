@@ -500,6 +500,11 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
 
 end NormalizedGCDMonoid
 
+noncomputable instance (priority := 100) [StrongNormalizedGCDMonoid R] :
+    StrongNormalizedGCDMonoid R[X] where
+  __ := inferInstanceAs (NormalizedGCDMonoid R[X])
+  __ := inferInstanceAs (StrongNormalizationMonoid R[X])
+
 noncomputable instance (priority := 100) [GCDMonoid R] : GCDMonoid R[X] :=
   letI := Classical.decEq R
   gcdMonoidOfExistsLCM exists_lcm
