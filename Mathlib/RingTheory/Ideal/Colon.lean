@@ -143,7 +143,7 @@ theorem bot_colon' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihi
 @[deprecated (since := "2026-01-11")] alias colon_bot' := bot_colon'
 
 @[simp]
-theorem colon_span : N.colon (Submodule.span R S) = N.colon S := by
+theorem colon_span : N.colon (span R S) = N.colon S := by
   ext r
   constructor
   · intro h
