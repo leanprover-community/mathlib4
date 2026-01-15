@@ -6,6 +6,7 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
+public import Mathlib.Data.Sum.Order
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.Iterate
@@ -155,6 +156,101 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 @[simp] lemma pair_zip_pair (a₁ a₂ : α) (b₁ b₂ : β) (ha hb) :
     (pair a₁ a₂ ha).zip (pair b₁ b₂ hb) = pair (a₁, b₁) (a₂, b₂) (Prod.le_def.2 ⟨ha, hb⟩) := by
   unfold Chain; ext n : 2; cases n <;> rfl
+
+/-- Left injection for chains of sums. -/
+@[simps!]
+def inl (c : Chain α) : Chain (α ⊕ β) :=
+  c.map ⟨.inl, by
+    intro x y h
+    simp only [Sum.inl_le_inl_iff, h]⟩
+
+@[simp]
+lemma inl_coe' (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
+
+/-- Right injection for chains of sums. -/
+@[simps!]
+def inr (c : Chain β) : Chain (α ⊕ β) :=
+  c.map ⟨.inr, by
+    intro x y h
+    simp only [Sum.inr_le_inr_iff, h]⟩
+
+@[simp]
+lemma inr_coe' (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
+
+/-- Projects left values out of a chain.
+If the chain contains right values, then a default value is returned. -/
+@[simps!]
+def projl [hA : Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
+  toFun n := Sum.elim id (fun _ ↦ default) (c n)
+  monotone' := by
+    refine monotone_nat_of_le_succ fun n ↦ ?_
+    have hc := c.monotone (Nat.le_add_right n 1)
+    cases hn : c n with
+    | inl x =>
+      cases hn' : c (n + 1) with
+      | inl y =>
+        simp only [hn, hn', Sum.inl_le_inl_iff] at hc
+        simp only [Sum.elim_inl, id_eq, hc]
+      | inr y => simp only [hn, hn', Sum.not_inl_le_inr] at hc
+    | inr x =>
+      cases hn' : c (n + 1) with
+      | inl y => simp only [hn, hn', Sum.not_inr_le_inl] at hc
+      | inr y => simp only [Sum.elim_inr, le_refl]
+
+/-- Projects right values out of a chain.
+If the chain contains left values, then a default value is returned. -/
+@[simps!]
+def projr [hB : Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
+  projl (c.map
+    ⟨ Sum.swap
+    , by
+      intro x y h
+      cases h with
+      | inl h => simp only [Sum.swap_inl, ge_iff_le, Sum.inr_le_inr_iff, h]
+      | inr h => simp only [Sum.swap_inr, ge_iff_le, Sum.inl_le_inl_iff, h]
+    ⟩)
+
+/-- Splits a chain of sums into a sum of chains. -/
+def split (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
+  Sum.map
+    (fun d ↦ let : Inhabited α := ⟨d⟩; projl c)
+    (fun d ↦ let : Inhabited β := ⟨d⟩; projr c)
+    (c 0)
+
+@[simp]
+lemma elim_split (c : Chain (α ⊕ β)) : Sum.elim inl inr (split c) = c := by
+  apply OrderHom.ext
+  ext n
+  dsimp only [split]
+  have := c.monotone (Nat.zero_le n)
+  cases h₀ : c 0 with
+  | inl x =>
+    cases hₙ : c n with
+    | inl y => simp only [Sum.map_inl, Sum.elim_inl, inl_coe, projl_coe, hₙ, id_eq]
+    | inr y => simp only [h₀, hₙ, Sum.not_inl_le_inr] at this
+  | inr x =>
+    cases hₙ : c n with
+    | inl y => simp only [h₀, hₙ, Sum.not_inr_le_inl] at this
+    | inr y =>
+      simp only [
+        Sum.map_inr, Sum.elim_inr, inr_coe, projr_coe,
+        hₙ, Sum.swap_inr, Sum.elim_inl, id_eq]
+
+@[simp]
+lemma split_inl (c : Chain α) : split (inl c : Chain (α ⊕ β)) = .inl c := rfl
+
+@[simp]
+lemma split_inr (c : Chain β) : split (inr c : Chain (α ⊕ β)) = .inr c := rfl
+
+lemma split_cases
+    {p : Chain (α ⊕ β) → Prop}
+    (inl : ∀ c, p (inl c))
+    (inr : ∀ c, p (inr c))
+    (c : Chain (α ⊕ β)) : p c := by
+  rw [←elim_split c]
+  cases hc : c.split with
+  | inl c' => simp only [Sum.elim_inl, inl]
+  | inr c' => simp only [Sum.elim_inr, inr]
 
 end Chain
 
