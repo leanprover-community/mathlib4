@@ -155,8 +155,7 @@ theorem colon_span : N.colon (span R S) = N.colon S := by
 theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S :=
   Submodule.colon_span
 
-theorem mem_colon_span_singleton {x : M} {r : R} :
-    r ∈ N.colon (Submodule.span R {x}) ↔ r • x ∈ N := by
+theorem mem_colon_span_singleton {x : M} {r : R} : r ∈ N.colon (span R {x}) ↔ r • x ∈ N := by
   simp
 
 theorem _root_.Ideal.mem_colon_span_singleton {I : Ideal R} {x r : R} :
