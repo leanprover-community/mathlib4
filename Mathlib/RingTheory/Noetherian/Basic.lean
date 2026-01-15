@@ -357,3 +357,24 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun e h ↦ isNoetherianRing_of_ringEquiv _ (.piCongrLeft _ e)
   · infer_instance
   · exact fun ih ↦ isNoetherianRing_of_ringEquiv _ (.symm .piOptionEquivProd)
+
+namespace Submodule
+
+variable {R M N : Type*}
+variable [Ring R] [IsNoetherianRing R]
+variable [AddCommGroup M] [Module R M]
+variable [AddCommGroup N] [Module R N]
+
+/-- The intersection of a submodule with an FG submodule is FG. -/
+lemma inf_fg_right (S : Submodule R M) {T : Submodule R M} (hT : T.FG) : (S ⊓ T).FG :=
+  isNoetherian_submodule_right.mp (isNoetherian_of_fg_of_noetherian _ hT) S
+
+/-- The intersection of a submodule with an FG submodule is FG. -/
+lemma inf_fg_left {S : Submodule R M} (hS : S.FG) (T : Submodule R M) : (S ⊓ T).FG :=
+  isNoetherian_submodule_left.mp (isNoetherian_of_fg_of_noetherian _ hS) T
+
+/-- A submodule contained in an FG submodule is FG. -/
+lemma fg_of_le {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG :=
+    isNoetherian_submodule.mp (isNoetherian_of_fg_of_noetherian _ hT) _ hST
+
+end Submodule
