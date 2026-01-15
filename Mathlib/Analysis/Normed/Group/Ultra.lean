@@ -268,7 +268,7 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
-  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+  | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`

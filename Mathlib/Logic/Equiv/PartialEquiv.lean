@@ -75,7 +75,7 @@ open Lean Meta Elab Tactic
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attributes need a
 new file to become functional.
 -/
 
@@ -677,7 +677,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> grind [EqOnSource, EqOn]
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -754,6 +754,7 @@ theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.
 
 section Prod
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The product of two partial equivalences, as a partial equivalence on the product. -/
 def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α × γ) (β × δ) where
   source := e.source ×ˢ e'.source

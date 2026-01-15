@@ -205,16 +205,28 @@ partitions.
 instance (n : ℕ) : Fintype (Partition n) :=
   Fintype.ofSurjective (ofComposition n) ofComposition_surj
 
+/-- The finset of those partitions in which every part satisfies a certain condition. -/
+def restricted (n : ℕ) (p : ℕ → Prop) [DecidablePred p] : Finset n.Partition :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, p i
+
+/-- The finset of those partitions in which every part is used less than `m` times. -/
+def countRestricted (n : ℕ) (m : ℕ) : Finset n.Partition :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
+
 /-- The finset of those partitions in which every part is odd. -/
-def odds (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => ∀ i ∈ c.parts, ¬Even i
+def odds (n : ℕ) : Finset n.Partition := restricted n (¬ Even ·)
 
 /-- The finset of those partitions in which each part is used at most once. -/
-def distincts (n : ℕ) : Finset (Partition n) :=
+def distincts (n : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun c => c.parts.Nodup
 
+theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
+  congrm Finset.univ.filter fun x ↦ ?_
+  rw [Multiset.nodup_iff_count_le_one]
+  grind [Multiset.count_eq_zero]
+
 /-- The finset of those partitions in which every part is odd and used at most once. -/
-def oddDistincts (n : ℕ) : Finset (Partition n) :=
+def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
 end Partition

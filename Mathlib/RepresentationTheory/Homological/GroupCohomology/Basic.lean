@@ -52,7 +52,7 @@ specialized to `H⁰`, `H¹`, `H²`.
 Group cohomology is typically stated for `G`-modules, or equivalently modules over the group ring
 `ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
 Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
+definition. We avoid using instances `Module k[G] A` so that we do not run into
 possible scalar action diamonds.
 
 ## TODO
@@ -79,13 +79,6 @@ open CategoryTheory
 namespace groupCohomology
 
 variable [Monoid G]
-
-/-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
-`G`-representation. -/
-@[deprecated "We now use `(Rep.barComplex k G).linearYonedaObj k A instead"
-  (since := "2025-06-08")]
-abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  (Rep.standardComplex k G).linearYonedaObj k A
 
 end groupCohomology
 
@@ -135,8 +128,8 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
     simp only [d_eq]
-    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
+    slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
+    slice_lhs 2 4 => {rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]}
     simp
 
 variable {A n} in
@@ -200,9 +193,6 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
-
-@[deprecated (since := "2025-06-11")]
-noncomputable alias groupCohomologyπ := groupCohomology.π
 
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}

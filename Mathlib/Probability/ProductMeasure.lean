@@ -157,7 +157,7 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
     (μ (n + 1)).map (piSingleton n) = Measure.pi (fun i : Ioc n (n + 1) ↦ μ i) := by
   refine (Measure.pi_eq fun s hs ↦ ?_).symm
   have : Subsingleton (Ioc n (n + 1)) := by rw [Nat.Ioc_succ_singleton]; infer_instance
-  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by cutsat)⟩,
+  rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by lia)⟩,
     Measure.map_apply (by fun_prop) (.univ_pi hs)]
   congr 1 with x
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, forall_const, Subtype.forall,
@@ -180,12 +180,12 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
       all_goals fun_prop
     · have : (restrict₂ (Ioc_subset_Iic_self (a := a))) ∘ (IicProdIoc (X := X) n (n + 1)) =
           (IocProdIoc a n (n + 1)) ∘ (Prod.map (restrict₂ Ioc_subset_Iic_self) id) := rfl
-      rw [const_apply, partialTraj_succ_of_le (by cutsat), map_const, prod_const_comp, id_comp,
+      rw [const_apply, partialTraj_succ_of_le (by lia), map_const, prod_const_comp, id_comp,
         ← map_comp_right, this, map_comp_right, ← map_prod_map, hind, Kernel.map_id, map_apply,
         prod_apply, const_apply, const_apply, Measure.map_piSingleton,
         Measure.pi_prod_map_IocProdIoc]
       any_goals fun_prop
-      all_goals cutsat
+      all_goals lia
   · have : IsEmpty (Ioc a b) := by simpa [hba] using Subtype.isEmpty_false
     ext x s ms
     by_cases hs : s.Nonempty
@@ -263,7 +263,7 @@ which allows to extend it to the `σ`-algebra by Carathéodory's theorem. -/
 theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n ∈ measurableCylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ piContent μ (A n)) atTop (𝓝 0) := by
-  have : ∀ i, Nonempty (X i) := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
+  have : ∀ i, Nonempty (X i) := fun i ↦ nonempty_of_isProbabilityMeasure (μ i)
   have A_cyl n : ∃ s S, MeasurableSet S ∧ A n = cylinder s S :=
     (mem_measurableCylinders _).1 (A_mem n)
   choose s S mS A_eq using A_cyl
@@ -432,7 +432,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
-        (Subtype.val '' (s': Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
+        (Subtype.val '' (s' : Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
       rw [← Set.pi_iUnion_eq_iInter_pi, Set.iUnion_finset_eq_set]
       grind
     rw [this]

@@ -326,13 +326,13 @@ lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodul
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
   have := finrank_add_finrank_orthogonal hB₀ (W := W)
   rw [B.orthogonal_top_eq_bot hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
-  cutsat
+  lia
 
 lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     B.orthogonal (B.orthogonal W) = W := by
   apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
   simp only [finrank_orthogonal hB hB₀]
-  omega
+  lia
 
 variable {W : Submodule K V}
 

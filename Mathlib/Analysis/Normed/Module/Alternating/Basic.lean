@@ -600,7 +600,7 @@ which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] 
 def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
-    { toFun x :=  (f x).mkContinuous (C * ‖x‖) <| H x
+    { toFun x := (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' x y := by ext1; simp
       map_smul' c x := by ext1; simp }
     (max C 0) fun x ↦ by
@@ -623,7 +623,7 @@ variable {ι' : Type*} [Fintype ι']
 to `ContinuousAlternatingMap`s. -/
 def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G))
     (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
-    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
+    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G) :=
   mkContinuous
     { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
       map_update_add' m i x y := by ext1; simp

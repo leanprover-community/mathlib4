@@ -206,7 +206,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          omega
+          lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
