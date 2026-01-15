@@ -72,7 +72,7 @@ theorem CoFG.of_cofg_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.C
   exact hS.sup T
 
 /-- If a family of submodules contains a CoFG submodule then the supremum of the family is CoFG. -/
-theorem CoFG.sSup {s : Set (Submodule R M)} (hs : ∃ S ∈ s, S.CoFG) : (sSup s).CoFG := by
+protected theorem CoFG.sSup {s : Set (Submodule R M)} (hs : ∃ S ∈ s, S.CoFG) : (sSup s).CoFG := by
   obtain ⟨S, hS, hcofg⟩ := hs
   rw [right_eq_sup.mpr <| le_sSup hS]
   exact hcofg.sup _
@@ -89,7 +89,7 @@ theorem range_fg_iff_ker_cofg {f : M →ₗ[R] N} : (range f).FG ↔ (ker f).CoF
   exact Module.Finite.equiv_iff <| f.quotKerEquivRange.symm
 
 /-- The kernel of a linear map into a Noetherian module is CoFG. -/
-theorem ker_cofg [IsNoetherian R N] (f : M →ₗ[R] N) : (ker f).CoFG
+protected theorem CoFG.ker [IsNoetherian R N] (f : M →ₗ[R] N) : (ker f).CoFG
     := range_fg_iff_ker_cofg.mp <| IsNoetherian.noetherian _
 
 end LinearMap
@@ -102,10 +102,10 @@ variable [IsNoetherianRing R]
 theorem CoFG.inf {S T : Submodule R M} (hS : S.CoFG) (hT : T.CoFG) :
       (S ⊓ T).CoFG := by
   rw [← Submodule.ker_mkQ S, ← Submodule.ker_mkQ T, ← LinearMap.ker_prod]
-  exact ker_cofg _
+  exact CoFG.ker _
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
+protected theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
     (sInf (s : Set (Submodule R M))).CoFG := by classical
   induction s using Finset.induction with
   | empty => simp
@@ -114,8 +114,8 @@ theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.CoFG) :
     exact hs.1.inf (hs' hs.2)
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-theorem CoFG.sInf' {s : Set (Submodule R M)} (hs : s.Finite) (hcofg : ∀ S ∈ s, S.CoFG) :
-    (InfSet.sInf s).CoFG := by
+protected theorem CoFG.sInf' {s : Set (Submodule R M)} (hs : s.Finite) (hcofg : ∀ S ∈ s, S.CoFG) :
+    (sInf s).CoFG := by
   rw [← hs.coe_toFinset] at hcofg ⊢; exact CoFG.sInf hcofg
 
 end IsNoetherianRing
