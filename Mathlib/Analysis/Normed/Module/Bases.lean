@@ -41,8 +41,7 @@ variable {e : ℕ → X}
 
 namespace SchauderBasis
 
-def coord {e : ℕ → X}
-    (h : SchauderBasis 𝕜 X e) : ℕ → StrongDual 𝕜 X := Classical.choose h
+def coord {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → StrongDual 𝕜 X := Classical.choose h
 
 theorem coord_apply_eq (h : SchauderBasis 𝕜 X e) (i j : ℕ) :
     h.coord i (e j) = if i = j then 1 else 0 :=
@@ -116,57 +115,30 @@ theorem canonical_projection_on_basis_element
     rw [hsum]
     simp [Finset.sum_ite_eq']
 
-
 theorem dim_of_range (h : SchauderBasis 𝕜 X e) (n : ℕ) :
     Module.finrank 𝕜 (range (CanonicalProjection h n)) = n := by
-    have einrange: ∀ i, i < n → e i ∈ range (CanonicalProjection h n) := by
-        intro i hi
-        let bf := coord h
-         -- TODO make it a lemma
-        have z: (Finset.range n).filter (fun j => j = i) = {i} := by
-            apply Finset.eq_singleton_iff_unique_mem.mpr
-            constructor
-            · exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, rfl⟩
-            · intro _ hm; exact (Finset.mem_filter.mp hm).2
-        have : (CanonicalProjection h n) (e i) = e i := by
-            rw [canonical_projection_on_basis_element h n i]
-            simp [hi]
-        exact ⟨e i, this⟩
-    have range_eq_span : range (CanonicalProjection h n) = Submodule.span 𝕜 { e i | i < n } := by
-        apply le_antisymm
-        · -- range ⊆ span
-          intro x ⟨y, hy⟩
-          rw [← hy, CanonicalProjection]
-          simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply]
-          apply Submodule.sum_mem
-          intro i hi
-          apply Submodule.smul_mem
-          apply Submodule.subset_span
-          simp only [Finset.mem_range] at hi
-          exact ⟨i, hi, rfl⟩
-        · -- span ⊆ range
-          apply Submodule.span_le.mpr
-          intro x ⟨i, hi, hx⟩
-          rw [← hx]
-          exact einrange i hi
-    rw [range_eq_span]
-    have li : LinearIndependent 𝕜 (fun (i : Fin n) => e i) := by
-      apply LinearIndependent.comp h.linearIndependent
-      intro i j hij
-      exact Fin.ext hij
-    have span_eq : Submodule.span 𝕜 (Set.range (fun (i : Fin n) => e i)) =
-                   Submodule.span 𝕜 { e i | i < n } := by
-      congr 1
-      ext x
-      simp only [Set.mem_range, Set.mem_setOf_eq]
-      constructor
-      · intro ⟨i, hi⟩
-        exact ⟨i.val, i.isLt, hi⟩
-      · intro ⟨i, hi, hx⟩
-        exact ⟨⟨i, hi⟩, hx⟩
-    rw [← span_eq, ← li.finrank_span_eq_card, Fintype.card_fin]
-    exact this
-
+  let P := CanonicalProjection h n
+  have h_range : range P = Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
+    apply le_antisymm
+    · rintro y ⟨x, rfl⟩
+      rw [CanonicalProjection_apply]
+      apply Submodule.sum_mem
+      intros i hi
+      apply Submodule.smul_mem
+      apply Submodule.subset_span
+      use ⟨i, Finset.mem_range.mp hi⟩
+    · rw [Submodule.span_le]
+      rintro y ⟨i, hi, rfl⟩
+      use e i
+      rw [canonical_projection_on_basis_element h n i]
+      simp [i.isLt]
+  rw [h_range]
+  have li : LinearIndependent 𝕜 (fun i : Fin n => e i) := by
+    apply LinearIndependent.comp h.linearIndependent
+    intro i j hij
+    exact Fin.ext hij
+  rw [finrank_span_eq_card, Fintype.card_fin]
+  exact li
 
 theorem composition_eq_min (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
     CanonicalProjection h n ∘ CanonicalProjection h m = CanonicalProjection h (min n m) := by
@@ -236,9 +208,8 @@ theorem uniform_bound (h : SchauderBasis 𝕜 X e) :
         specialize hM (CanonicalProjection h n x) (Set.mem_range_self n)
         exact hM )
 
-
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
-    sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjections h n‖ ≤ C }
+    sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjection h n‖ ≤ C }
 
 
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
