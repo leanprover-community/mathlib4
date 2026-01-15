@@ -31,9 +31,7 @@ open List (Vector)
 
 open Function (update)
 
-open Relation
-
-open StateTransition
+open Relation StateTransition
 
 namespace Turing
 
