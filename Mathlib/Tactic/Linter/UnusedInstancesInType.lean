@@ -151,9 +151,9 @@ pluralizing as appropriate.
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
-    (declFilter : ConstantVal → Bool := fun _ => true) : CommandElabM Unit := do
+    (declFilter : ConstantVal → CommandElabM Bool := fun _ => pure true) : CommandElabM Unit := do
   for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter declFilter
+    let thms ← t.getTheorems (← getEnv) |>.filterM declFilter
     for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
         -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
@@ -219,7 +219,7 @@ def unusedDecidableInType : Linter where
     cmd.logUnusedInstancesInTheoremsWhere
       /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
       on decidable instances without using them in the type. -/
-      (declFilter := (!(`Decidable).isPrefixOf ·.name))
+      (declFilter := (return !(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
@@ -233,5 +233,56 @@ def unusedDecidableInType : Linter where
 initialize addLinter unusedDecidableInType
 
 end Decidable
+
+section Fact
+
+/--
+The `unusedFactInType` linter checks if a theorem's hypotheses include `Fact` instances
+which are not used in the remainder of the type. If so, it suggests removing the instances.
+
+This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
+
+Note: `set_option linter.unusedFactInType _ in <command>` currently only works at the
+outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
+-/
+public register_option linter.unusedFactInType : Bool := {
+  defValue := false
+  descr := "enable the unused `Fact` instance linter, which lints against `Fact` \
+    instances in the hypotheses of theorems which are not used in the type, and can therefore be \
+    removed."
+}
+
+/-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
+remainder of the type, and suggests replacing them with a use of `classical` in the proof or
+`open scoped Classical in` at the term level. -/
+def unusedFactInType : Linter where
+  run := /- withSetOptionIn -/ fun cmd => do
+    /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
+    until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313) -/
+    let mut override := false
+    if let `(command| set_option $opt:ident $val in $_:command) := cmd then
+      if opt.getId == `linter.unusedFactInType then
+        match val.raw with
+        | Syntax.atom _ "true" => override := true
+        | Syntax.atom _ "false" => return -- exit early
+        | _ => pure () -- invalid option value, should be caught during elaboration
+    unless override || getLinterValue linter.unusedFactInType (← getLinterOptions) do
+      return
+    cmd.logUnusedInstancesInTheoremsWhere (·.isAppOrForallOfConst `Fact)
+      (declFilter := fun c => liftCoreM <| notM <| isInstance c.name)
+      fun _ thm unusedParams => do
+        logLint linter.unusedFactInType (← getRef) m!"\
+          {thm.name.unusedInstancesMsg unusedParams}\n\n\
+          Consider replacing \
+          {
+          if unusedParams.size = 1 then
+            "this hypothesis with an ordinary, non-{.ofConstName `Fact} version of the assumption."
+          else
+            "these hypotheses with ordinary, non-{.ofConstName `Fact} versions of the assumptions."
+          }"
+
+initialize addLinter unusedFactInType
+
+end Fact
 
 end Mathlib.Linter.UnusedInstancesInType
