@@ -100,10 +100,41 @@ theorem uniformContinuous_coe : UniformContinuous ι :=
 theorem continuous_coe : Continuous ι :=
   pkg.uniformContinuous_coe.continuous
 
+theorem denseRange_coe₂ {β : Type*} [UniformSpace β]
+    (pkgα : AbstractCompletion α) (pkgβ : AbstractCompletion β) :
+    DenseRange fun x : α × β => (pkgα.coe x.1, pkgβ.coe x.2) :=
+  pkgα.dense.prodMap pkgβ.dense
+
 @[elab_as_elim]
 theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }) (ih : ∀ a, p (ι a)) :
     p a :=
   isClosed_property pkg.dense hp ih a
+
+@[elab_as_elim]
+theorem induction_on₂ {β : Type*} [UniformSpace β]
+    (pkgα : AbstractCompletion α) (pkgβ : AbstractCompletion β)
+    {p : pkgα.space → pkgβ.space → Prop} (a : pkgα.space) (b : pkgβ.space)
+    (hp : IsClosed { x : pkgα.space × pkgβ.space | p x.1 x.2 })
+    (ih : ∀ (a : α) (b : β), p (pkgα.coe a) (pkgβ.coe b)) :
+    p a b :=
+  have : ∀ x : pkgα.space × pkgβ.space, p x.1 x.2 :=
+    isClosed_property (denseRange_coe₂ pkgα pkgβ) hp fun ⟨a, b⟩ => ih a b
+  this (a, b)
+
+/-- The closure of a set in a complete space as an abstract completion. -/
+protected def closure [T0Space α] [CompleteSpace α] (s : Set α) : AbstractCompletion s where
+  space := closure s
+  coe x := ⟨x, subset_closure x.2⟩
+  uniformStruct := inferInstance
+  complete := isClosed_closure.isComplete.completeSpace_coe
+  separation := inferInstance
+  isUniformInducing := by
+    constructor
+    simp only [uniformity_subtype, Filter.comap_comap]
+    congr
+  dense := by
+    rw [DenseRange, Subtype.dense_iff]
+    exact closure_mono fun x hx ↦ by simp [hx, subset_closure hx]
 
 variable {β : Type uβ}
 
