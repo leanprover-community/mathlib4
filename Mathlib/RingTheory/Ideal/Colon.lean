@@ -123,7 +123,7 @@ theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : 
   mem_colon
 
 /-- A variant for arbitrary sets in commutative semirings -/
-theorem bot_colon' : colon (⊥ : Submodule R M) S = (Submodule.span R S).annihilator := by
+theorem bot_colon' : (⊥ : Submodule R M).colon S = (span R S).annihilator := by
   ext r
   rw [mem_colon, mem_annihilator]
   constructor
