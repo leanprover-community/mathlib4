@@ -53,7 +53,7 @@ protected def IsPrimary (S : Submodule R M) : Prop :=
 variable {S T : Submodule R M}
 
 protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
-    (h : (S.colon ⊤).radical = (T.colon ⊤).radical) :
+    (h : (S.colon Set.univ).radical = (T.colon Set.univ).radical) :
     (S ⊓ T).IsPrimary := by
   simp only [Submodule.IsPrimary, ← lt_top_iff_ne_top] at hS hT ⊢
   obtain ⟨hS₀, hS⟩ := hS
@@ -62,14 +62,14 @@ protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
   intro r x hrx
   specialize hS hrx.1
   specialize hT hrx.2
-  simp only [← mem_colon_def, ← Ideal.mem_radical_iff, h, colon_inf,
+  simp only [← mem_colon_iff_le, top_coe, ← Ideal.mem_radical_iff, h, inf_colon,
     Ideal.radical_inf, inf_idem] at hS hT ⊢
   exact and_or_right.mpr ⟨hS, hT⟩
 
 open Finset in
 lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
-    (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon ⊤).radical = ((f i).colon ⊤).radical) :
+    (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon Set.univ).radical = ((f i).colon Set.univ).radical) :
     (s.inf f).IsPrimary := by
   classical
   induction s using Finset.induction_on generalizing i with
@@ -79,7 +79,7 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : 
     · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]
-    have H : ∀ ⦃x : ι⦄, x ∈ s → ((f x).colon ⊤).radical = ((f y).colon ⊤).radical := by
+    have H : ∀ ⦃x⦄, x ∈ s → ((f x).colon Set.univ).radical = ((f y).colon Set.univ).radical := by
       intro x hx
       rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
     refine IsPrimary.inf (hs (by simp)) (IH hy ?_ H) ?_

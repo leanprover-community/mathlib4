@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Order.Irreducible
-public import Mathlib.RingTheory.Ideal.Annihilator
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
@@ -83,12 +82,24 @@ theorem Ideal.coe_primeCompl {R : Type*} [Semiring R] (I : Ideal R) [IsPrime I] 
 
 theorem Submodule.IsPrimary.isPrime_radical_colon {R M : Type*}
     [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} (hI : I.IsPrimary) :
-    (I.colon ⊤).radical.IsPrime := by
-  refine isPrime_iff.mpr <| hI.imp (by simp [radical_eq_top]) fun h x y ⟨n, hn⟩ ↦ ?_
-  simp_rw [← mem_colon_def, ← mem_radical_iff] at h
+    (I.colon Set.univ).radical.IsPrime := by
+  refine isPrime_iff.mpr <| hI.imp (by -- cleanup!
+    simp [radical_eq_top]
+    contrapose!
+    intro h
+    exact SetLike.coe_injective h) fun h x y ⟨n, hn⟩ ↦ ?_
+  simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
   refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
-  simp only [mul_pow, mem_colon, mem_top, true_imp_iff, mul_smul] at hn ⊢
+  simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
   exact fun p ↦ (h (hn p)).resolve_right (mt mem_radical_of_pow_mem hx)
+
+theorem _root_.Submodule.IsPrimary.radical_ann_of_notMem {R M : Type*}
+    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} {m : M}
+    (hI : I.IsPrimary) (hm : m ∉ I) :
+    (I.colon {m}).radical = (I.colon Set.univ).radical :=
+  le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦
+    (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
+    (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
 
 end for_mathlib
 
@@ -126,9 +137,9 @@ open scoped Function -- required for scoped `on` notation
 lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon ⊤).radical) := by
+      (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ {I ∈ s | (I.colon ⊤).radical = (J.colon ⊤).radical})).image
+  refine ⟨(s.image (fun J ↦ {I ∈ s | (I.colon Set.univ).radical = (J.colon Set.univ).radical})).image
     fun t ↦ t.inf id, ?_, ?_, ?_⟩
   · ext
     grind [Finset.inf_image, Submodule.mem_finsetInf]
@@ -146,7 +157,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
     obtain ⟨J', hJ', hJ⟩ := hJ
     simp only [Function.onFun, ne_eq]
     contrapose! hIJ
-    suffices (I'.colon ⊤).radical = (J'.colon ⊤).radical by
+    suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
     · rw [← hI, colon_finset_inf,
         radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
@@ -157,7 +168,7 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     [DecidableEq (Submodule R M)] {I : Submodule R M} {s : Finset (Submodule R M)}
     (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon ⊤).radical)) ∧
+      ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)) ∧
       (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
   obtain ⟨t, ht, ht', ht''⟩ := isPrimary_decomposition_pairwise_ne_radical hs hs'
   obtain ⟨u, hut, hu, hu'⟩ := decomposition_erase_inf ht
@@ -167,7 +178,7 @@ structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
     (I : Submodule R M) (t : Finset (Submodule R M)) where
   inf_eq : t.inf id = I
   primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
-  distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon ⊤).radical)
+  distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
 protected lemma IsMinimalPrimaryDecomposition.le_radical [DecidableEq (Ideal R)]
@@ -190,15 +201,17 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
     {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
     {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
     {p : Ideal R} :
-    p ∈ (fun J : (Submodule R M) ↦ (J.colon ⊤).radical) '' t ↔
-      p.IsPrime ∧ ∃ x : M, p = (I.ann x).radical := by
+    p ∈ (fun J : (Submodule R M) ↦ (J.colon Set.univ).radical) '' t ↔
+      p.IsPrime ∧ ∃ x : M, p = (I.colon {x}).radical := by
   classical
-  have h {x} q (hq : q ∈ t) : (q.ann x).radical = if x ∈ q then ⊤ else (q.colon ⊤).radical := by
+  have h {x} q (hq : q ∈ t) :
+      (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
     split_ifs with hx
-    · rwa [radical_eq_top, Submodule.ann_eq_top]
+    · rwa [radical_eq_top, Submodule.colon_eq_top_iff, Set.singleton_subset_iff]
     · exact (ht.primary hq).radical_ann_of_notMem hx
-  replace h x : radical (I.ann x) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon ⊤).radical) := by
-    rw [← ht.inf_eq, ann_finset_inf, ← radicalInfTopHom_apply]
+  replace h x :
+      radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
+    rw [← ht.inf_eq, colon_finset_inf, ← radicalInfTopHom_apply]
     simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
   constructor
   · rintro ⟨q, hqt, rfl⟩
@@ -237,21 +250,22 @@ theorem IsMinimalPrimaryDecomposition.foobar
     {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
     {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
-    (downward_closed : ∀ q ∈ t, ∀ r ∈ s, (q.colon ⊤).radical ≤ (r.colon ⊤).radical → q ∈ s) :
+    (downward_closed : ∀ q ∈ t, ∀ r ∈ s,
+      (q.colon Set.univ).radical ≤ (r.colon Set.univ).radical → q ∈ s) :
     let S := ⨅ q ∈ s,
-      have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
-      (q.colon ⊤).radical.primeCompl
+      have : (q.colon Set.univ).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
+      (q.colon Set.univ).radical.primeCompl
     (localized₀ S (mkLinearMap S M) I).comap (mkLinearMap S M) = ⨅ q ∈ s, q := by
   let S := ⨅ q ∈ s,
-    have : (q.colon ⊤).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
-    (q.colon ⊤).radical.primeCompl
+    have : (q.colon Set.univ).radical.IsPrime := (ht.primary (by aesop)).isPrime_radical_colon;
+    (q.colon Set.univ).radical.primeCompl
   let f := mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
   change (Submodule.localized₀ S f I).comap f = ⨅ q ∈ s, q
   rw [← ht.inf_eq, ← localized₀_frameHom_apply, map_finset_inf, Submodule.comap_finset_inf]
   simp only [Function.comp_def, id_eq, localized₀_frameHom_apply]
   rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
-  have key0 : ∀ q ∈ s, (S : Set R) ⊆ (q.colon ⊤).radicalᶜ := by
+  have key0 : ∀ q ∈ s, (S : Set R) ⊆ (q.colon Set.univ).radicalᶜ := by
     intro q hq
     simp only [S, Submonoid.coe_iInf]
     exact Set.iInter₂_subset q hq
@@ -276,7 +290,7 @@ theorem IsMinimalPrimaryDecomposition.foobar
     contrapose! hq
     rw [Finset.mem_sdiff, not_and_not_right]
     intro hqt
-    suffices ((q.colon ⊤) : Set R) ⊆ ⋃ r ∈ s, (r.colon ⊤).radical by
+    suffices ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s, (r.colon Set.univ).radical by
       obtain ⟨r, hrs, h⟩ := (Ideal.subset_union_prime
         ⊥ ⊥ fun q hq _ _ ↦ (ht.primary (hs hq)).isPrime_radical_colon).mp this
       exact downward_closed q hqt r hrs (Ideal.radical_le_radical_iff.mpr h)
@@ -288,7 +302,7 @@ theorem IsMinimalPrimaryDecomposition.foobar
     refine ⟨y • x, ?_, ⟨y, hy2⟩, ?_⟩
     · apply hy1
       apply Set.smul_mem_smul_set
-      exact mem_top
+      trivial
     · rw [h.mk'_eq_iff, ← LinearMap.map_smul_of_tower, Submonoid.mk_smul]
   rw [Finset.inf_congr rfl key2, Finset.inf_congr rfl key1]
   simp [Finset.inf_eq_iInf]
