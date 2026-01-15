@@ -126,11 +126,8 @@ theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 :=
     (fun I ↦ ClassGroup.mk_eq_one_iff.mpr (fractionalIdeal_isPrincipal_of_isUnit I)) x
 
 /-- The ideal class group of a normalized GCD Domain is trivial. -/
-instance NormalizedGCDMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) := by
-  refine ⟨fun x y => ?_⟩
-  calc
-    x = 1 := classGroup_eq_one (R := R) x
-    _ = y := (classGroup_eq_one (R := R) y).symm
+instance NormalizedGCDMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) :=
+  subsingleton_of_forall_eq 1 NormalizedGCDMonoid.classGroup_eq_one
 
 end NormalizedGCDMonoid
 section UFD
