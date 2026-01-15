@@ -101,25 +101,6 @@ theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy 
     (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
   map_prodComm_antidiagonal
 
-/-! ### Namespaced versions for use with `@[to_additive]` -/
-
-namespace Antidiag
-
-theorem swap_mem [AddCommMonoid A] [HasAntidiagonal A]
-    {n : A} {xy : A × A} : xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n :=
-  swap_mem_antidiagonal
-
-theorem map_prodComm [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
-    (antidiagonal n).map (Equiv.prodComm A A) = antidiagonal n :=
-  map_prodComm_antidiagonal
-
-@[simp]
-theorem map_swap [AddCommMonoid A] [HasAntidiagonal A] {n : A} :
-    (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
-  map_swap_antidiagonal
-
-end Antidiag
-
 section AddCancelMonoid
 variable [AddCancelMonoid A] [HasAntidiagonal A] {p q : A × A} {n : A}
 
@@ -257,18 +238,18 @@ lemma hasMulAntidiagonal_congr (M : Type*) [Monoid M]
 
 namespace MulAntidiag
 
-@[to_additive existing Antidiag.swap_mem]
+@[to_additive Antidiag.swap_mem]
 theorem swap_mem [CommMonoid M] [HasMulAntidiagonal M]
     {n : M} {xy : M × M} : xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
 
-@[to_additive existing Antidiag.map_prodComm]
+@[to_additive Antidiag.map_prodComm]
 theorem map_prodComm [CommMonoid M] [HasMulAntidiagonal M] {n : M} :
     (mulAntidiagonal n).map (Equiv.prodComm M M) = mulAntidiagonal n :=
   Finset.ext fun ⟨a, b⟩ => by simp [mul_comm]
 
 /-- See also `Finset.MulAntidiag.map_prodComm`. -/
-@[to_additive existing Antidiag.map_swap]
+@[to_additive Antidiag.map_swap]
 theorem map_swap [CommMonoid M] [HasMulAntidiagonal M] {n : M} :
     (mulAntidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = mulAntidiagonal n :=
   map_prodComm
