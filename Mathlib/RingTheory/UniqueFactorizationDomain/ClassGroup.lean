@@ -41,46 +41,14 @@ integral inverse up to a principal ideal. -/
 lemma Ideal.exists_mul_eq_span_singleton_of_isUnit_coe (J : Ideal R)
     (hJ : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
     ∃ (K : Ideal R) (x : R), x ≠ 0 ∧ J * K = Ideal.span ({x} : Set R) := by
-  classical
-  set Iinv : FractionalIdeal R⁰ (FractionRing R) :=
-    (J : FractionalIdeal R⁰ (FractionRing R))⁻¹
-  have hJinv :
-      (J : FractionalIdeal R⁰ (FractionRing R)) * Iinv = 1 := by
-    simpa [Iinv] using
-      (FractionalIdeal.mul_inv_cancel_iff_isUnit (K := FractionRing R)
-            (I := (J : FractionalIdeal R⁰ (FractionRing R)))).2
-        hJ
-  obtain ⟨a, K, ha0, hIinv⟩ := FractionalIdeal.exists_eq_spanSingleton_mul (I := Iinv)
-  have ha0' : algebraMap R (FractionRing R) a ≠ 0 := by
-    exact
-      IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
-        (mem_nonZeroDivisors_iff_ne_zero.2 ha0)
-  have hJK_frac :
-      (J : FractionalIdeal R⁰ (FractionRing R)) * (K : FractionalIdeal R⁰ (FractionRing R)) =
-        FractionalIdeal.spanSingleton (R⁰) (algebraMap R (FractionRing R) a) := by
-    set z : FractionRing R := algebraMap R (FractionRing R) a
-    have hJinv' :
-        (J : FractionalIdeal R⁰ (FractionRing R)) *
-            (FractionalIdeal.spanSingleton (R⁰) z⁻¹ *
-              (K : FractionalIdeal R⁰ (FractionRing R))) =
-          1 := by
-      simpa [Iinv, hIinv, z] using hJinv
-    have hmul :=
-      congrArg (fun t => FractionalIdeal.spanSingleton (R⁰) z * t) hJinv'
-    have h' :
-        ((FractionalIdeal.spanSingleton (R⁰) z) * (FractionalIdeal.spanSingleton (R⁰) z⁻¹)) *
-            ((J : FractionalIdeal R⁰ (FractionRing R)) *
-              (K : FractionalIdeal R⁰ (FractionRing R))) =
-          FractionalIdeal.spanSingleton (R⁰) z := by
-      simpa [mul_assoc, mul_left_comm, mul_comm] using hmul
-    have hzz :
-        (FractionalIdeal.spanSingleton (R⁰) z) * (FractionalIdeal.spanSingleton (R⁰) z⁻¹) = 1 := by
-      simp [FractionalIdeal.spanSingleton_mul_spanSingleton, mul_inv_cancel₀ ha0']
-    simpa [hzz, z, mul_assoc] using h'
-  refine ⟨K, a, ha0, ?_⟩
-  -- Descend to integral ideals via `coeIdeal` injectivity.
-  refine (FractionalIdeal.coeIdeal_inj (K := FractionRing R)).1 ?_
-  simpa [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton] using hJK_frac
+  obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (J : FractionalIdeal R⁰ (FractionRing R))⁻¹
+  refine ⟨K, a, ha0, (coeIdeal_inj (K := FractionRing R)).mp ?_⟩
+  rw [coeIdeal_mul, coeIdeal_span_singleton]
+  rw [← mul_inv_cancel_iff_isUnit] at hJ
+  replace ha0 := spanSingleton_mul_inv (R₁ := R) (FractionRing R)
+    (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (mem_nonZeroDivisors_iff_ne_zero.2 ha0))
+  replace h := congr(spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * J * $h.symm)
+  rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0, one_mul, mul_assoc, hJ, mul_one] at h
 
 lemma Ideal.isPrincipal_of_exists_mul_eq_span_singleton [NormalizedGCDMonoid R]
     {J K : Ideal R} {x : R} (hx0 : x ≠ 0)
