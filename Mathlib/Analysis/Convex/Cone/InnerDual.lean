@@ -147,14 +147,6 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set
 
 open RealInnerProductSpace
 
-namespace PointedCone
-
-end PointedCone
-
-namespace ProperCone
-
-end ProperCone
-
 section CompleteSpace
 
 variable [CompleteSpace H]

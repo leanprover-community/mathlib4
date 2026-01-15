@@ -192,7 +192,3 @@ instance : CommGroupWithZero (ValueGroup₀ f) where
 end CommGroupWithZero
 
 end MonoidWithZeroHom
-
-namespace MonoidHomWithZero
-
-end MonoidHomWithZero
