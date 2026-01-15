@@ -113,9 +113,12 @@ theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
     P.eval (node n i) * (c i) =
       ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * (c i)) :=
       negOnePow_mul_negOnePow_mul_cancel.symm
-    _ ≤ 1 * ((-1) ^ i * (c i)) :=
-      mul_le_mul_of_nonneg_right (negOnePow_mul_le (hPbnd _ node_mem_Icc))
-      (hcnonneg i (Finset.mem_Iic.mp hi))
+    _ ≤ 1 * ((-1) ^ i * (c i)) := by
+      gcongr
+      · apply hcnonneg i (by simpa using hi)
+      · apply le_of_abs_le
+        rw [abs_mul, abs_neg_one_pow, one_mul]
+        apply abs_le.mpr (hPbnd _ node_mem_Icc)
     _ = (T ℝ n).eval (node n i) * (c i) := by
       rw [eval_T_real_node hi, one_mul]
 
