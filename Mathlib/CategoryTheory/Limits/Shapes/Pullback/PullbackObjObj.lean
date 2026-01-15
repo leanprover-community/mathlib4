@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
-# Pushout-products and pullback-powers
+# Leibniz Constructions
 
 Let `F : C₁ ⥤ C₂ ⥤ C₃`. Given morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₂ : X₂ ⟶ Y₂` in `C₂`, we introduce a structure
@@ -17,6 +17,10 @@ and `f₂ : X₂ ⟶ Y₂` in `C₂`, we introduce a structure
 pushout of `(F.obj Y₁).obj X₂` and `(F.obj X₁).obj Y₂`
 along `(F.obj X₁).obj X₂`. If `sq₁₂ : F.PushoutObjObj f₁ f₂`,
 we have a canonical "inclusion" `sq₁₂.ι : sq₁₂.pt ⟶ (F.obj Y₁).obj Y₂`.
+
+If `C₃` has pushouts, then we define the Leibniz pushout (often called pushout-product) as the
+canonical inclusion `(PushoutObjObj.ofHasPushout F f₁ f₂).ι`. This defines a bifunctor
+`LeibnizPushout.leftBifunctor F : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃`.
 
 Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
 morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃`,
@@ -26,6 +30,18 @@ and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
 If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
 projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
 
+If `C₂` has pullbacks, then we define the Leibniz pullback (often called pullback-hom) as the
+canonical projection `(PullbackObjObj.ofHasPullback G f₁ f₃).π`. This defines a bifunctor
+`LeibnizPullback.rightBifunctor G : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`.
+
+## References
+
+* https://ncatlab.org/nlab/show/pushout-product
+* https://ncatlab.org/nlab/show/pullback-power
+
+## Tags
+
+pushout-product, pullback-hom, pullback-power, Leibniz
 -/
 
 @[expose] public section
@@ -107,8 +123,8 @@ end PushoutObjObj
 
 end
 
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the pushout-product
-  of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
+/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the Leibniz pushout
+  (pushout-product) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
   `pushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) ⟶ (F.obj Y₁).obj Y₂` induced by the diagram
 ```
   `(F.obj X₁).obj X₂` ----> `(F.obj Y₁).obj X₂`
@@ -120,14 +136,11 @@ end
 -/
 @[simp]
 noncomputable
-abbrev pushoutProduct [HasPushouts C₃]
+abbrev leibnizPushout [HasPushouts C₃]
     {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₂ Y₂ : C₂} (f₂ : X₂ ⟶ Y₂) :=
   (Functor.PushoutObjObj.ofHasPushout F f₁ f₂).ι
 
-/-- Notation for the pushout-product with respect to `F`. -/
-notation f₁ " [" F "] " f₂:10 => Functor.pushoutProduct F f₁ f₂
-
-namespace PushoutProduct
+namespace LeibnizPushout
 
 noncomputable section Functor
 
@@ -161,10 +174,10 @@ def leftFunctor_map :
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, and a morphism
   `f₁ : X₁ ⟶ Y₁` in `C₁`, this defines a functor `Arrow C₂ ⥤ Arrow C₃` by taking the
-  (left) pushout-product with `f₁`. -/
+  (left) Leibniz pushout with `f₁`. -/
 @[simp]
 def leftFunctor [HasPushouts C₃] (f₁ : Arrow C₁) : Arrow C₂ ⥤ Arrow C₃ where
-  obj f₂ := f₁.hom [F] f₂.hom
+  obj f₂ := F.leibnizPushout f₁.hom f₂.hom
   map sq := leftFunctor_map F f₁ sq (PushoutObjObj.ofHasPushout F _ _)
     (PushoutObjObj.ofHasPushout F _ _)
 
@@ -174,8 +187,8 @@ def leftFunctor [HasPushouts C₃] (f₁ : Arrow C₁) : Arrow C₂ ⥤ Arrow C�
 @[simps]
 def _root_.CategoryTheory.Functor.PushoutObjObj.ι_iso_of_iso_right (iso : f₂ ≅ f₂') :
     Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
-  hom := PushoutProduct.leftFunctor_map F f₁ iso.hom sq₁₂ sq₁₂'
-  inv := PushoutProduct.leftFunctor_map F f₁ iso.inv sq₁₂' sq₁₂
+  hom := LeibnizPushout.leftFunctor_map F f₁ iso.hom sq₁₂ sq₁₂'
+  inv := LeibnizPushout.leftFunctor_map F f₁ iso.inv sq₁₂' sq₁₂
   hom_inv_id := by
     apply Arrow.hom_ext
     · apply sq₁₂.isPushout.hom_ext
@@ -215,14 +228,14 @@ def leftBifunctor_map_app :
     all_goals simp [← NatTrans.comp_app, ← Functor.map_comp]
 
 /-- Given `f₁ f₁' : Arrow C₁` and a morphism `f₁ ⟶ f₁'`, this defines a natural transformation
-  between the (left) pushout-product functors induced by `f₁` and `f₁'`. -/
+  between the (left) Leibniz pushout functors induced by `f₁` and `f₁'`. -/
 @[simp]
 def leftBifunctor_map [HasPushouts C₃] {f₁ f₁' : Arrow C₁} (sq : f₁ ⟶ f₁') :
     leftFunctor F f₁ ⟶ leftFunctor F f₁' where
   app f₂ := leftBifunctor_map_app F f₂ sq (PushoutObjObj.ofHasPushout F _ _)
     (PushoutObjObj.ofHasPushout F _ _)
 
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the `pushoutProduct`
+/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the `leibnizPushout`
   construction defines a bifunctor `Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃`. -/
 @[simp]
 def leftBifunctor [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ where
@@ -235,8 +248,8 @@ def leftBifunctor [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ 
 @[simps]
 def _root_.CategoryTheory.Functor.PushoutObjObj.ι_iso_of_iso_left (iso : f₁ ≅ f₁') :
     Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
-  hom := PushoutProduct.leftBifunctor_map_app F f₂ iso.hom sq₁₂ sq₁₂'
-  inv := PushoutProduct.leftBifunctor_map_app F f₂ iso.inv sq₁₂' sq₁₂
+  hom := LeibnizPushout.leftBifunctor_map_app F f₂ iso.hom sq₁₂ sq₁₂'
+  inv := LeibnizPushout.leftBifunctor_map_app F f₂ iso.inv sq₁₂' sq₁₂
   hom_inv_id := by
     apply Arrow.hom_ext
     · apply sq₁₂.isPushout.hom_ext
@@ -250,7 +263,7 @@ def _root_.CategoryTheory.Functor.PushoutObjObj.ι_iso_of_iso_left (iso : f₁ �
 
 end Functor
 
-end PushoutProduct
+end LeibnizPushout
 
 section
 
@@ -303,8 +316,8 @@ end PullbackObjObj
 
 end
 
-/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the
-  pullback-power of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map
+/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the Leibniz
+  pullback (pullback-power) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map
   `(G.obj (op Y₁)).obj X₃ ⟶ pullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)` induced by
   the diagram
 ```
@@ -317,12 +330,9 @@ end
 -/
 @[simp]
 noncomputable
-abbrev pullbackPower [HasPullbacks C₂]
+abbrev leibnizPullback [HasPullbacks C₂]
     {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃) :=
   (Functor.PullbackObjObj.ofHasPullback G f₁ f₃).π
-
-/-- Notation for the pullback-power with respect to `G`. -/
-notation f₁ " {" G "} " f₃:10 => Functor.pullbackPower G f₁ f₃
 
 namespace PullbackPower
 
@@ -359,11 +369,11 @@ def rightFunctor_map :
 
 /-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, and a morphism
   `f₁ : X₁ ⟶ Y₁` in `C₁`, this defines a functor `Arrow C₃ ⥤ Arrow C₂` by taking the
-  (right) pullback-power with `f₁`. -/
+  (right) Leibniz pullback with `f₁`. -/
 @[simp]
 noncomputable
 def rightFunctor [HasPullbacks C₂] (f₁ : Arrow C₁) : Arrow C₃ ⥤ Arrow C₂ where
-  obj f₃ := f₁.hom {G} f₃.hom
+  obj f₃ := G.leibnizPullback f₁.hom f₃.hom
   map sq := rightFunctor_map G f₁ sq (PullbackObjObj.ofHasPullback _ _ _)
     (PullbackObjObj.ofHasPullback _ _ _)
 
@@ -418,7 +428,7 @@ def rightBifunctor_map_app :
     · cat_disch
 
 /-- Given `f₁ f₁' : Arrow C₁` and a morphism `f₁' ⟶ f₁`, this defines a natural transformation
-  between the (right) pullback-power functors induced by `f₁` and `f₁'`. -/
+  between the (right) Leibniz pullback functors induced by `f₁` and `f₁'`. -/
 @[simp]
 noncomputable
 def rightBifunctor_map [HasPullbacks C₂] {f₁ f₁' : Arrow C₁} (sq : f₁' ⟶ f₁) :
@@ -427,7 +437,7 @@ def rightBifunctor_map [HasPullbacks C₂] {f₁ f₁' : Arrow C₁} (sq : f₁'
     (PullbackObjObj.ofHasPullback _ _ _)
 
 /-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the
-  `pullbackPower` construction defines a bifunctor `(Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`. -/
+  `LeibnizPullback` construction defines a bifunctor `(Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`. -/
 @[simp]
 noncomputable
 def rightBifunctor [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂ where
