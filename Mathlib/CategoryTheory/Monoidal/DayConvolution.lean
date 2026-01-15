@@ -19,7 +19,7 @@ for the definition) along the tensor product of `C`.
 Such a functor is called a Day convolution of `F` and `G`, and
 although we do not show it yet, this operation defines a monoidal structure on `C ⥤ V`.
 
-We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundle the data
+We also define a typeclass `DayConvolutionUnit` on a functor `U : C ⥤ V` that bundles the data
 required to make it a unit for the Day convolution monoidal structure: said data is that of
 a map `𝟙_ V ⟶ U.obj (𝟙_ C)` that exhibits `U` as a pointwise left Kan extension of
 `fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`.
@@ -59,7 +59,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
 /-- A `DayConvolution` structure on functors `F G : C ⥤ V` is the data of
 a functor `F ⊛ G : C ⥤ V`, along with a unit `F ⊠ G ⟶ tensor C ⋙ F ⊛ G`
 that exhibits this functor as a pointwise left Kan extension of `F ⊠ G` along
-`tensor C`. This is a `class` used to prove various property of such extensions,
+`tensor C`. This is a `class` used to prove various properties of such extensions,
 but registering global instances of this class is probably a bad idea. -/
 class DayConvolution (F G : C ⥤ V) where
   /-- The chosen convolution between the functors. Denoted `F ⊛ G`. -/
@@ -399,7 +399,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left kan extension
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
   isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
-    ({app _ := can} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
+    ({ app _ := can } : Functor.fromPUnit.{0} (𝟙_ V) ⟶
       Functor.fromPUnit.{0} (𝟙_ C) ⋙ F) |>.IsPointwiseLeftKanExtension
 
 namespace DayConvolutionUnit
@@ -704,7 +704,7 @@ class LawfulDayConvolutionMonoidalCategoryStruct
   along `fromPUnit.{0} (𝟙_ C)`. -/
   isPointwiseLeftKanExtensionUnitUnit (C) (V) (D) :
     Functor.LeftExtension.mk _
-      ({app _ := unitUnit} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
+      ({ app _ := unitUnit } : Functor.fromPUnit.{0} (𝟙_ V) ⟶
         Functor.fromPUnit.{0} (𝟙_ C) ⋙ (ι.obj <| 𝟙_ D)) |>.IsPointwiseLeftKanExtension
   /-- The field `ι` interprets an element of `D` as a functor `C ⥤ V`. -/
   faithful_ι : ι.Faithful := by infer_instance
@@ -1232,7 +1232,7 @@ noncomputable def ofHasDayConvolutions
           (essImageDayConvolutionUnit.getIso).symm)
         (Functor.pointwiseLeftKanExtensionIsPointwiseLeftKanExtension
           (Functor.fromPUnit.{0} <| 𝟙_ C)
-          (Functor.fromPUnit.{0} <| 𝟙_ V))}
+          (Functor.fromPUnit.{0} <| 𝟙_ V)) }
 
 end InducedLawfulDayConvolutionMonoidalCategoryStructCore
 

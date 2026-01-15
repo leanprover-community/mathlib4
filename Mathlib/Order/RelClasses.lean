@@ -277,7 +277,8 @@ variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
 @[to_dual /-- Inducts on a well-founded `>` relation. -/]
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+theorem induction {motive : α → Prop} (a : α)
+    (ind : ∀ x, (∀ y, y < x → motive y) → motive x) : motive a :=
   IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
@@ -360,17 +361,18 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) :=
-  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
-    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
-    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
-
-/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
+@[to_dual]
+instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
+    intro a a' ha b
+    induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
+    induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
+    refine Acc.intro (a', b) fun x hx => ?_
+    obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
+    · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
+    · exact ihb x.2 hb x.1 (ha'.trans ha)
 
 namespace Set
 
