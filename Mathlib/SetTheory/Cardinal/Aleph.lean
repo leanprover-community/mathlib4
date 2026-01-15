@@ -585,7 +585,7 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
-    exact nat_le_aleph0
+    exact natCast_le_aleph0
   · simpa using preAleph_le_preBeth ω
 
 @[simp]

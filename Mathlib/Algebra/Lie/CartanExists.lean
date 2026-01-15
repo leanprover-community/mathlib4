@@ -377,7 +377,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
 lemma exists_isCartanSubalgebra_engel [Infinite K] :
     ∃ x : L, IsCartanSubalgebra (engel K x) := by
   apply exists_isCartanSubalgebra_engel_of_finrank_le_card
-  exact nat_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
+  exact natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
 
 end Field
 

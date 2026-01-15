@@ -1051,7 +1051,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   use Inhabited.default
   simp only [H]
   rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
-  exact nat_le_aleph0
+  exact natCast_le_aleph0
 
 end PingPongLemma
 

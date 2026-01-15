@@ -327,17 +327,17 @@ theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
 
 /-! ### Properties about `aleph0` -/
 
-@[simp] lemma nat_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by
+@[simp] lemma natCast_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by
   rw [← succ_le_iff, ← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
   exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩
 
-@[simp] lemma nat_le_aleph0 {n : ℕ} : (n : Cardinal.{u}) ≤ ℵ₀ := nat_lt_aleph0.le
+@[simp] lemma natCast_le_aleph0 {n : ℕ} : (n : Cardinal.{u}) ≤ ℵ₀ := natCast_lt_aleph0.le
 
-@[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := nat_lt_aleph0
-@[simp] lemma ofNat_le_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) ≤ ℵ₀ := nat_le_aleph0
+@[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := natCast_lt_aleph0
+@[simp] lemma ofNat_le_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) ≤ ℵ₀ := natCast_le_aleph0
 
 @[simp]
-theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using nat_lt_aleph0 (n := 1)
+theorem one_lt_aleph0 : 1 < ℵ₀ := by simpa using natCast_lt_aleph0 (n := 1)
 
 @[simp]
 theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
@@ -352,14 +352,14 @@ theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
       simp
     contrapose! h'
     haveI := Infinite.to_subtype h'
-    exact ⟨Infinite.natEmbedding S⟩, fun ⟨_, e⟩ => e.symm ▸ nat_lt_aleph0⟩
+    exact ⟨Infinite.natEmbedding S⟩, fun ⟨_, e⟩ => e.symm ▸ natCast_lt_aleph0⟩
 
 lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 1 := by
   obtain ⟨n, hn⟩ := Cardinal.lt_aleph0.mp h
   rw [hn, succ_natCast]
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c where
-  mp h _ := nat_le_aleph0.trans h
+  mp h _ := natCast_le_aleph0.trans h
   mpr h := le_of_not_gt fun hn => by
     rcases lt_aleph0.1 hn with ⟨n, rfl⟩
     exact (Nat.lt_succ_self _).not_ge (Nat.cast_le.1 (h (n + 1)))
@@ -368,7 +368,7 @@ theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
     rcases lt_aleph0.1 ha with ⟨n, rfl⟩
     rw [← nat_succ]
-    apply nat_lt_aleph0
+    apply natCast_lt_aleph0
 
 theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
   rw [Cardinal.isSuccLimit_iff]
@@ -389,7 +389,7 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
 theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
   refine ⟨aleph0_ne_zero, fun x hx ↦ ?_⟩
   obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
-  exact mod_cast nat_lt_aleph0
+  exact mod_cast natCast_lt_aleph0
 
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
@@ -453,7 +453,7 @@ instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
 
 theorem add_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a + b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_add]; apply nat_lt_aleph0
+  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_add]; apply natCast_lt_aleph0
 
 theorem add_lt_aleph0_iff {a b : Cardinal} : a + b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ :=
   ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩,
@@ -474,7 +474,7 @@ theorem nsmul_lt_aleph0_iff_of_ne_zero {n : ℕ} {a : Cardinal} (h : n ≠ 0) : 
 
 theorem mul_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a * b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_mul]; apply nat_lt_aleph0
+  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_mul]; apply natCast_lt_aleph0
 
 theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 ∨ a < ℵ₀ ∧ b < ℵ₀ := by
   refine ⟨fun h => ?_, ?_⟩
@@ -508,7 +508,7 @@ theorem mul_lt_aleph0_iff_of_ne_zero {a b : Cardinal} (ha : a ≠ 0) (hb : b ≠
 
 theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a ^ b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
-  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [power_natCast, ← Nat.cast_pow]; apply nat_lt_aleph0
+  | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [power_natCast, ← Nat.cast_pow]; apply natCast_lt_aleph0
 
 theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempty α :=
   calc
@@ -575,7 +575,7 @@ theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ �
 
 @[simp]
 theorem aleph0_add_nat (n : ℕ) : ℵ₀ + n = ℵ₀ :=
-  (add_le_aleph0.2 ⟨le_rfl, nat_le_aleph0⟩).antisymm le_self_add
+  (add_le_aleph0.2 ⟨le_rfl, natCast_le_aleph0⟩).antisymm le_self_add
 
 @[simp]
 theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_nat]
@@ -589,7 +589,7 @@ theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + ofNat(n) = ℵ�
   aleph0_add_nat n
 
 theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, m ≤ n ∧ c = m := by
-  lift c to ℕ using h.trans_lt nat_lt_aleph0
+  lift c to ℕ using h.trans_lt natCast_lt_aleph0
   exact ⟨c, mod_cast h, rfl⟩
 
 theorem mk_int : #ℤ = ℵ₀ :=
@@ -773,7 +773,7 @@ theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
     #s = n ↔ ∃ t : Finset α, (t : Set α) = s ∧ t.card = n := by
   constructor
   · intro h
-    lift s to Finset α using lt_aleph0_iff_set_finite.1 (h.symm ▸ nat_lt_aleph0)
+    lift s to Finset α using lt_aleph0_iff_set_finite.1 (h.symm ▸ natCast_lt_aleph0)
     simpa using h
   · rintro ⟨t, rfl, rfl⟩
     exact mk_coe_finset
