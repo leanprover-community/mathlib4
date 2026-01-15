@@ -27,7 +27,7 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-/-- Typeclass expressing that a morphism property contain identities. -/
+/-- Typeclass expressing that a morphism property contains identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)
@@ -360,6 +360,32 @@ instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
   of_postcomp _ _ hg hfg := W.of_precomp _ _ hg hfg
 
 instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
+
+instance : (⊤ : MorphismProperty C).HasOfPostcompProperty W where
+  of_postcomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasOfPrecompProperty W where
+  of_precomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasTwoOutOfThreeProperty where
+
+variable (P Q : MorphismProperty C)
+
+instance [P.HasOfPostcompProperty W] [Q.HasOfPostcompProperty W] :
+    (P ⊓ Q).HasOfPostcompProperty W where
+  of_postcomp f g hg hfg := ⟨P.of_postcomp f g hg hfg.1, Q.of_postcomp f g hg hfg.2⟩
+
+instance [P.HasOfPrecompProperty W] [Q.HasOfPrecompProperty W] :
+    (P ⊓ Q).HasOfPrecompProperty W where
+  of_precomp f g hg hfg := ⟨P.of_precomp f g hg hfg.1, Q.of_precomp f g hg hfg.2⟩
+
+instance [P.HasTwoOutOfThreeProperty] [Q.HasTwoOutOfThreeProperty] :
+    (P ⊓ Q).HasTwoOutOfThreeProperty := by
+  have : P.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : P.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : Q.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  have : Q.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  constructor
 
 end
 
