@@ -23,207 +23,164 @@ universe u
 
 open Filter Topology LinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-
+variable (𝕜 X)
 -- TODO use (.) functions instead of fun => when possible
 
-variable (𝕜 X) in
+
 /-- A Schauder basis is a sequence (e n) such that every element x of the space can be uniquely
 represented as a convergent series x = ∑' n, a n • e n for some coefficients a n in the field 𝕜. -/
 def SchauderBasis (e : ℕ → X) : Prop :=
-    ( ∃ f : ℕ → StrongDual 𝕜 X,
-        (∀ n : ℕ, (f n (e n) = 1 ∧ (∀ m ≠ n, f n (e m) = 0))) ∧
-        ∀ x : X, Summable (fun n => f n x • e n) ∧
-        (∑' n, f n x • e n = x) )
+  ∃ f : ℕ → StrongDual 𝕜 X,
+    (∀ i j, f i (e j) = if i = j then 1 else 0) ∧
+    ∀ x : X, Summable (fun n ↦ f n x • e n) ∧ (∑' n, f n x • e n = x)
+
+variable {𝕜 X}
+variable {e : ℕ → X}
 
 namespace SchauderBasis
 
-def biorthogonal_functionals {e : ℕ → X}
+def coord {e : ℕ → X}
     (h : SchauderBasis 𝕜 X e) : ℕ → StrongDual 𝕜 X := Classical.choose h
 
-omit [IsRCLikeNormedField 𝕜]
-theorem biorthogonal_property {e : ℕ → X}
-    (h : SchauderBasis 𝕜 X e) :
-    ∀ n : ℕ, (biorthogonal_functionals h n (e n) = 1 ∧
-        ∀ m ≠ n, biorthogonal_functionals h n (e m) = 0) :=
-    (Classical.choose_spec h).1
+theorem coord_apply_eq (h : SchauderBasis 𝕜 X e) (i j : ℕ) :
+    h.coord i (e j) = if i = j then 1 else 0 :=
+  (Classical.choose_spec h).1 i j
 
-omit [IsRCLikeNormedField 𝕜]
-theorem linear_independent {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
-  LinearIndependent 𝕜 e := by
-    apply linearIndependent_iff.mpr
-    rintro s hsum
-    have hsum : ∑ n ∈ s.support, s n • e n = 0 := hsum
-    apply Finsupp.support_eq_empty.mp
-    by_contra hnonempty
-    push_neg at hnonempty
-    let n := Classical.choose hnonempty
-    have hn: n ∈ s.support := Classical.choose_spec hnonempty
-    have : s n ≠ 0 := Finsupp.mem_support_iff.mp hn
-    let f := biorthogonal_functionals h n
-    -- have fem: ∀ m, m ≠ n → f (e m) = 0 := fun m hm => ((Classical.choose_spec h).1 n).2 m hm
-    have fsm0: ∀ m ∈ {m ∈ s.support | m ≠ n}, f (s m • e m) = 0 := by
-        intro m hm
-        calc
-            f (s m • e m) = s m • f (e m) := by rw [ContinuousLinearMap.map_smul]
-            _ = s m * f (e m) := by rw [smul_eq_mul]
-            _ = s m * 0 := by rw
-                [((biorthogonal_property h) n).2 m (by rw [Finset.mem_filter] at hm; exact hm.2)]
-            _ = 0 := by rw [mul_zero]
-    let ssuppn := s.support.filter (fun m => m = n)
-    let ssuppnn := s.support.filter (fun m => m ≠ n)
-    have fmsum0 : f (∑ m ∈ ssuppnn, s m • e m) = 0 := by
-        calc
-            f (∑ m ∈ ssuppnn, s m • e m) = ∑ m ∈ ssuppnn, f (s m • e m) := by rw [map_sum]
-            _ = ∑ m ∈ ssuppnn, 0 := by exact Finset.sum_congr rfl fsm0
-            _ = 0 := by rw [Finset.sum_const_zero]
-    -- TODO make it a lemma
-    have z: ssuppn = {n} := by
-        apply Finset.eq_singleton_iff_unique_mem.mpr
-        constructor
-        · exact Finset.mem_filter.mpr ⟨hn, rfl⟩
-        · intro _ hm; exact (Finset.mem_filter.mp hm).2
+theorem coord_apply_self (h : SchauderBasis 𝕜 X e) (i : ℕ) : h.coord i (e i) = 1 := by
+  rw [coord_apply_eq, if_pos rfl]
 
-    have : s n = 0 := by
-        calc
-            s n = s n * 1 := by rw [mul_one]
-            _ = s n * f (e n) := by rw [((biorthogonal_property h) n).1]
-            _ = s n • f (e n) := by rw [smul_eq_mul]
-            _ = f (s n • e n) := by rw [<-map_smul]
-            _ = f (∑ m ∈ {n}, s m • e m) := by rw [Finset.sum_singleton]
-            _ = f (∑ m ∈ ssuppn, s m • e m) :=
-                congrArg f (Finset.sum_congr z.symm fun _ _ => rfl)
-            _ = f (∑ m ∈ ssuppn, s m • e m) + 0 := by rw [add_zero]
-            _ = f (∑ m ∈ ssuppn, s m • e m) + f (∑ m ∈ ssuppnn, s m • e m) := by rw [fmsum0]
-            _ = f ((∑ m ∈ ssuppn, s m • e m) + (∑ m ∈ ssuppnn, s m • e m)) := by
-                rw [ContinuousLinearMap.map_add]
-            _ = f (∑ m ∈ s.support, s m • e m) :=
-                congrArg f (by rw [Finset.sum_filter_add_sum_filter_not])
-            _ = f 0 := by rw [hsum]
-            _ = 0 := ContinuousLinearMap.map_zero f
-    contradiction
+theorem coord_apply_ne (h : SchauderBasis 𝕜 X e) {i j : ℕ} (hne : i ≠ j) : h.coord i (e j) = 0 := by
+  rw [coord_apply_eq, if_neg hne]
+
+/-- The basis vectors are linearly independent. -/
+theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 e := by
+  rw [linearIndependent_iff]
+  intros l hl
+  ext k
+  have hsum : ∑ i ∈ l.support, l i • e i = 0 := hl
+  have h_app : h.coord k (∑ i ∈ l.support, l i • e i) = 0 := by
+    rw [hsum, map_zero]
+  rw [map_sum, Finset.sum_eq_single k] at h_app
+  · simpa [coord_apply_self] using h_app
+  · intros j _ hji
+    have : (h.coord k) (l j • e j) = l j • (h.coord k (e j)) := by
+        rw [ContinuousLinearMap.map_smul]
+    simp [this, coord_apply_ne h hji.symm]
+  · intro hi_notin_supp
+    have : l k = 0 := Finsupp.notMem_support_iff.mp hi_notin_supp
+    simp [this]
+
 
 def coeff {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) : ℕ → 𝕜 :=
-    fun n => biorthogonal_functionals h n x
+    fun n => coord h n x
 
 theorem coeff_summable {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
         Summable (fun n => coeff h x n • e n) := ((Classical.choose_spec h).2 x).1
 
-def repr {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) : X :=
-    ∑' n, (coeff h x n) • e n
+/-- The representation of x. -/
+def repr (h : SchauderBasis 𝕜 X e) (x : X) : X := ∑' n, h.coord n x • e n
 
-omit [IsRCLikeNormedField 𝕜]
 @[simp]
-theorem repr_self {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
-    repr h x = x := by
-    dsimp [repr, coeff]
-    exact ((Classical.choose_spec h).2 x).2
+theorem repr_eq_self (h : SchauderBasis 𝕜 X e) (x : X) : h.repr x = x :=
+  ((Classical.choose_spec h).2 x).2
 
+theorem summable (h : SchauderBasis 𝕜 X e) (x : X) : Summable (fun n ↦ h.coord n x • e n) :=
+  ((Classical.choose_spec h).2 x).1
 
+/-- A canonical projection P_n associated to a Schauder basis.
+    P_n x = ∑_{i < n} f_i(x) e_i -/
+def CanonicalProjection (h : SchauderBasis 𝕜 X e) (n : ℕ) : X →L[𝕜] X :=
+  ∑ i ∈ Finset.range n, (h.coord i).smulRight (e i)
 
-/-- A canonical projection associated to a Schauder basis. -/
-def CanonicalProjections {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → X →L[𝕜] X := by
-    intro n
-    -- TODO add lemma for constructing continuous linear maps from eval functionals smul vectors
-    let hi: ℕ → X →L[𝕜] X := by
-        intro i
-        let linear_map: X →ₗ[𝕜] X :=
-            { toFun := fun x => (biorthogonal_functionals h i x) • e i
-              map_add' := by
-                intros x y
-                have : biorthogonal_functionals h i (x + y) =
-                    biorthogonal_functionals h i x + biorthogonal_functionals h i y :=
-                    LinearMap.map_add (biorthogonal_functionals h i).toLinearMap x y
-                rw [this, add_smul]
-              map_smul' := by
-                intros c x
-                dsimp -- ? why is dsimp needed here
-                have : biorthogonal_functionals h i (c • x) =
-                    c * biorthogonal_functionals h i x :=
-                    LinearMap.map_smul (biorthogonal_functionals h i).toLinearMap c x
-                rw [this, mul_smul]
-                }
-        exact LinearMap.mkContinuous
-          linear_map
-          (‖(biorthogonal_functionals h i)‖ * ‖e i‖)
-          (by
-            intro x
-            calc
-              ‖linear_map x‖ = ‖(biorthogonal_functionals h i x) • e i‖ := rfl
-              _ = ‖biorthogonal_functionals h i x‖ * ‖e i‖ := norm_smul _ _
-              _ ≤ ‖(biorthogonal_functionals h i)‖ * ‖x‖ * ‖e i‖ := by
-                apply mul_le_mul_of_nonneg_right (ContinuousLinearMap.le_opNorm _ x) (norm_nonneg _)
-              _ = ‖(biorthogonal_functionals h i)‖ * ‖e i‖ * ‖x‖ := by ring)
+theorem CanonicalProjection_apply (h : SchauderBasis 𝕜 X e) (n : ℕ) (x : X) :
+    h.CanonicalProjection n x = ∑ i ∈ Finset.range n, h.coord i x • e i := by
+  simp [CanonicalProjection, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
 
-    exact (Finset.range n).sum (fun i => hi i)
 
 namespace CanonicalProjections
 
-theorem bf_eval {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (i j : ℕ) :
-    biorthogonal_functionals h i (e j) = if i = j then (1 : 𝕜) else 0 := by
-    by_cases hij: i = j
-    · rw [hij]
-      simp only
-      exact ((biorthogonal_property h) j).1
-    · rw [if_neg hij]; push_neg at hij
-      exact ((biorthogonal_property h) i).2 j hij.symm
-
-theorem canonical_projection_on_basis_element {e : ℕ → X}
+theorem canonical_projection_on_basis_element
     (h : SchauderBasis 𝕜 X e) (n i : ℕ) :
-    (CanonicalProjections h n) (e i) = if i < n then e i else 0 := by
-    let bf := biorthogonal_functionals h
-    have : (CanonicalProjections h n) (e i) = ∑ j ∈ Finset.range n, bf j (e i) • e j := by
-        rw [CanonicalProjections]; simp [bf]
+    (CanonicalProjection h n) (e i) = if i < n then e i else 0 := by
+    let bf := coord h
+    have : (CanonicalProjection h n) (e i) = ∑ j ∈ Finset.range n, bf j (e i) • e j := by
+        rw [CanonicalProjection]; simp [bf]
     rw [this]
     have hsum: (∑ j ∈ Finset.range n, bf j (e i) • e j) =
         ∑ j ∈ Finset.range n, (if j = i then (1 : 𝕜) else 0) • e j := by
         apply Finset.sum_congr rfl
         intro j hj
-        rw [bf_eval h j i]
+        rw [coord_apply_eq h j i]
     rw [hsum]
     simp [Finset.sum_ite_eq']
 
 
-theorem dim_of_range {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (n : ℕ) :
-    Module.finrank 𝕜 (range (CanonicalProjections h n)) = n := by
-    have einrange: ∀ i, i < n → e i ∈ range (CanonicalProjections h n) := by
+theorem dim_of_range (h : SchauderBasis 𝕜 X e) (n : ℕ) :
+    Module.finrank 𝕜 (range (CanonicalProjection h n)) = n := by
+    have einrange: ∀ i, i < n → e i ∈ range (CanonicalProjection h n) := by
         intro i hi
-        let bf := biorthogonal_functionals h
+        let bf := coord h
          -- TODO make it a lemma
         have z: (Finset.range n).filter (fun j => j = i) = {i} := by
             apply Finset.eq_singleton_iff_unique_mem.mpr
             constructor
             · exact Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hi, rfl⟩
             · intro _ hm; exact (Finset.mem_filter.mp hm).2
-        have : (CanonicalProjections h n) (e i) = e i := by
+        have : (CanonicalProjection h n) (e i) = e i := by
             rw [canonical_projection_on_basis_element h n i]
             simp [hi]
         exact ⟨e i, this⟩
-    have basisofrange: range (CanonicalProjections h n) ≃ₗ[𝕜]
-        Submodule.span 𝕜 ({ e i | i < n }) := by  sorry
-    rw [LinearEquiv.finrank_eq basisofrange]
-    have : Module.finrank 𝕜 (Submodule.span 𝕜 ({ e i | i < n })) = n := by sorry
+    have range_eq_span : range (CanonicalProjection h n) = Submodule.span 𝕜 { e i | i < n } := by
+        apply le_antisymm
+        · -- range ⊆ span
+          intro x ⟨y, hy⟩
+          rw [← hy, CanonicalProjection]
+          simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply]
+          apply Submodule.sum_mem
+          intro i hi
+          apply Submodule.smul_mem
+          apply Submodule.subset_span
+          simp only [Finset.mem_range] at hi
+          exact ⟨i, hi, rfl⟩
+        · -- span ⊆ range
+          apply Submodule.span_le.mpr
+          intro x ⟨i, hi, hx⟩
+          rw [← hx]
+          exact einrange i hi
+    rw [range_eq_span]
+    have li : LinearIndependent 𝕜 (fun (i : Fin n) => e i) := by
+      apply LinearIndependent.comp h.linearIndependent
+      intro i j hij
+      exact Fin.ext hij
+    have span_eq : Submodule.span 𝕜 (Set.range (fun (i : Fin n) => e i)) =
+                   Submodule.span 𝕜 { e i | i < n } := by
+      congr 1
+      ext x
+      simp only [Set.mem_range, Set.mem_setOf_eq]
+      constructor
+      · intro ⟨i, hi⟩
+        exact ⟨i.val, i.isLt, hi⟩
+      · intro ⟨i, hi, hx⟩
+        exact ⟨⟨i, hi⟩, hx⟩
+    rw [← span_eq, ← li.finrank_span_eq_card, Fintype.card_fin]
     exact this
 
 
-theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
-    CanonicalProjections h n ∘ CanonicalProjections h m = CanonicalProjections h (min n m) := by
+theorem composition_eq_min (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
+    CanonicalProjection h n ∘ CanonicalProjection h m = CanonicalProjection h (min n m) := by
     ext x
-    let bf := biorthogonal_functionals h
+    let bf := coord h
     have hinner: ∀ i j : ℕ, (bf i (bf j x • e j)) • e i = if i = j then (bf j x) • e i else 0 := by
-        intro i j
-        rw [ContinuousLinearMap.map_smul]
-        by_cases hij : i = j
-        · rw [hij]; rw [bf_eval h j j]; simp
-        · rw [bf_eval h i j]; simp
+        intro i j; rw [ContinuousLinearMap.map_smul, coord_apply_eq h i j]; simp
     calc
-        (CanonicalProjections h n ∘ CanonicalProjections h m) x
-            = CanonicalProjections h n (CanonicalProjections h m x) := by simp
-        _ = ∑ i ∈ Finset.range n, bf i (CanonicalProjections h m x) • e i := by
-            rw [CanonicalProjections]; simp [bf]
+        (CanonicalProjection h n ∘ CanonicalProjection h m) x
+            = CanonicalProjection h n (CanonicalProjection h m x) := by simp
+        _ = ∑ i ∈ Finset.range n, bf i (CanonicalProjection h m x) • e i := by
+            rw [CanonicalProjection]; simp [bf]
         _ = ∑ i ∈ Finset.range n, bf i (∑ j ∈ Finset.range m, bf j x • e j) • e i := by
-            rw [CanonicalProjections]; simp [bf]
+            rw [CanonicalProjection]; simp [bf]
         _ = ∑ i ∈ Finset.range n, (∑ j ∈ Finset.range m, (bf i (bf j x • e j))) • e i :=
             Finset.sum_congr rfl (fun j hj => by apply congrArg ( · • e j ); rw [map_sum])
         _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, (bf i (bf j x • e j)) • e i :=
@@ -246,29 +203,29 @@ theorem composition_eq_min {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (m n : �
               apply Finset.sum_ite_eq_of_mem'
               simp only [Finset.mem_range] at *
               exact hj.trans hnm
-        _ = CanonicalProjections h (min n m) x := by rw [CanonicalProjections]; simp [bf]
+        _ = CanonicalProjection h (min n m) x := by rw [CanonicalProjection]; simp [bf]
 
-theorem id_eq_limit {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
-    Tendsto (fun n => CanonicalProjections h n x) atTop (𝓝 x) := by
-    let bf := biorthogonal_functionals h
+theorem id_eq_limit (h : SchauderBasis 𝕜 X e) (x : X) :
+    Tendsto (fun n => CanonicalProjection h n x) atTop (𝓝 x) := by
+    let bf := coord h
     have tndto : Tendsto (fun n => (∑ i ∈ Finset.range n, coeff h x i • e i))
         atTop (𝓝 (∑' n, bf n x • e n)) := HasSum.tendsto_sum_nat (coeff_summable h x).hasSum
     have r: ∑' (n : ℕ), (bf n) x • e n = x := by
         nth_rw 2 [<-repr_self h x]
         dsimp [repr, coeff]
     rw [r] at tndto
-    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjections n) x := by
-        dsimp [CanonicalProjections, coeff]
+    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjection n) x := by
+        dsimp [CanonicalProjection, coeff]
         simp
     exact Filter.Tendsto.congr p tndto
 
 variable [CompleteSpace X]
 -- todo clean up proof
-theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
-    ∃ C : ℝ, ∀ n : ℕ, ‖CanonicalProjections h n‖ ≤ C := by
+theorem uniform_bound (h : SchauderBasis 𝕜 X e) :
+    ∃ C : ℝ, ∀ n : ℕ, ‖CanonicalProjection h n‖ ≤ C := by
     exact banach_steinhaus (by
         intro x
-        let f: ℕ → X := fun n => CanonicalProjections h n x
+        let f: ℕ → X := fun n => CanonicalProjection h n x
         have : Bornology.IsBounded (Set.range f) := by
            exact Metric.isBounded_range_of_tendsto _ (id_eq_limit h x )
         have : ∃ M : ℝ, ∀ x ∈ Set.range f, ‖x‖ ≤ M :=
@@ -276,7 +233,7 @@ theorem uniform_bound {e : ℕ → X} (h : SchauderBasis 𝕜 X e) :
         rcases this with ⟨M, hM⟩
         use M
         rintro n
-        specialize hM (CanonicalProjections h n x) (Set.mem_range_self n)
+        specialize hM (CanonicalProjection h n x) (Set.mem_range_self n)
         exact hM )
 
 
