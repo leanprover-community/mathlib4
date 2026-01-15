@@ -63,6 +63,15 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
   simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
     AlgHom.mem_range, exists_exists_eq_and]
 
+theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
+    [SMulCommClass M F E] (m : M) :
+    (∀ x ∈ adjoin F S, m • x = x) ↔ (∀ x ∈ S, m • x = x) := by
+  refine ⟨fun h x hx ↦ h _ <| mem_adjoin_of_mem F hx, fun h x hx ↦ ?_⟩
+  obtain ⟨r, s, rfl⟩ := (mem_adjoin_iff _ _).mp hx
+  rw [← MulSemiringAction.toAlgHom_apply F, map_div₀, MvPolynomial.comp_aeval_apply,
+    MvPolynomial.comp_aeval_apply]
+  simp_rw [MulSemiringAction.toAlgHom_apply, h _ (Subtype.prop _)]
+
 variable {F}
 
 section Supremum
