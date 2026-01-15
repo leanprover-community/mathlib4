@@ -176,7 +176,7 @@ theorem midpoint_aux {F : ℝ → ℝ} {h M : ℝ} (hh : 0 < h)
       = iteratedDerivWithin 2 F (Set.Icc 0 h) (h / 2) := by
     refine eq2 (y := h/2) (by grind) ?_ ?_
 
-    
+
     sorry
   have eq3 : derivWithin (fun x ↦ F (h - x)) (Set.Icc (h / 2) h) (h / 2)
     = derivWithin (fun x ↦ F (h - x)) (Set.Icc 0 h) (h / 2) := by
@@ -200,7 +200,7 @@ theorem midpoint_aux {F : ℝ → ℝ} {h M : ℝ} (hh : 0 < h)
     + h ^ 3 / 48 * iteratedDerivWithin 3 F (Icc 0 h) (h - ζ)| := by
     -- rw [hξ1_rem, hζ_rem]
     -- congr 1
-    -- simp [eq5, field, mul_assoc, iteratedDerivWithin_comp_const_sub]
+    simp [eq5, field, mul_assoc, iteratedDerivWithin_comp_const_sub]
     sorry
 
   _ ≤ _ := by sorry
