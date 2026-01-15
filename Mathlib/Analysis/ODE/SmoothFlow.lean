@@ -118,16 +118,13 @@ lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u :
   (continuous_integrand hg t₀ hα dα).intervalIntegrable a b
 
 /-- Parametric version of `continuous_integrand`: the integrand is jointly continuous
-in the parameter and the integration variable. -/
-lemma continuous_integrand₂ {X : Type*} [TopologicalSpace X] {n : ℕ}
-    {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
-    (t₀ : Icc tmin tmax) {fα : X → C(Icc tmin tmax, E)} (hfα : Continuous fα)
-    (hfα_mem : ∀ x, MapsTo (fα x) univ u) {fdα : X → Fin n → C(Icc tmin tmax, E)}
-    (hfdα : Continuous fdα) :
-    Continuous (fun p : X × ℝ ↦
-      g (compProj t₀ (fα p.1) p.2) (fun i ↦ compProj t₀ (fdα p.1 i) p.2)) :=
-  continuous_eval.comp ((hg.continuous_comp_compProj_pi₂ t₀ hfα hfα_mem).prodMk
-    (hfdα.continuous_compProj_pi_apply₂ t₀))
+in `dα` and the integration variable. -/
+lemma continuous_integrand_pi₂ {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+    Continuous (fun p : (Fin n → C(Icc tmin tmax, E)) × ℝ ↦
+      g (compProj t₀ α p.2) (fun i ↦ compProj t₀ (p.1 i) p.2)) :=
+  continuous_eval.comp (((hg.continuous_comp_compProj t₀ hα).comp continuous_snd).prodMk
+    (continuous_id.continuous_compProj_pi_apply₂ t₀))
 
 variable [CompleteSpace E]
 
@@ -215,17 +212,11 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     let X := Fin n → C(Icc tmin tmax, E)
     let fparam : (X × Icc tmin tmax) → ℝ → E :=
       fun p τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (p.1 i) τ)
-    refine ContinuousMap.continuous_of_continuous_uncurry
-      (f := fun dα : X ↦ integralCMAux hg t₀ hα dα) ?_
-    have hIntegrand : Continuous (fun q : (X × Icc tmin tmax) × ℝ ↦
-        g (compProj t₀ α q.2) (fun i ↦ compProj t₀ (q.1.1 i) q.2)) :=
-      (continuous_integrand₂ hg t₀ continuous_const (fun _ ↦ hα) continuous_id).comp
-        ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
-    simpa [integralFun, fparam, Function.uncurry] using
-      continuous_parametric_intervalIntegral_of_continuous (a₀ := (t₀ : ℝ))
-        (s := fun p : X × Icc tmin tmax ↦ (p.2 : ℝ)) (f := fparam)
-        (by simpa [Function.uncurry, fparam] using hIntegrand)
-        (continuous_induced_dom.comp continuous_snd)
+    apply ContinuousMap.continuous_of_continuous_uncurry
+    apply continuous_parametric_intervalIntegral_of_continuous _
+      (continuous_induced_dom.comp continuous_snd)
+    exact (continuous_integrand_pi₂ hg t₀ hα).comp
+      ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
   · simp only [integralCM_if_neg hα]
     exact continuous_const
 
