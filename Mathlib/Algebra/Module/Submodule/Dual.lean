@@ -192,7 +192,8 @@ theorem dual_id_map (S : Submodule R M) : dual p S = dual .id (map p S) := by ex
 theorem dual_eval (s : Set M) : dual p s = comap p.flip (dual (Dual.eval R M) s) := by ext; simp
 
 /-- The dual submodule w.r.t. the standard dual map is the dual annihilator. -/
-theorem dual_dualAnnihilator (S : Submodule R M) : dual (Dual.eval R M) S = S.dualAnnihilator := by
+theorem dual_dualAnnihilator (S : Submodule R M) :
+    dual (Dual.eval R M) S = S.dualAnnihilator := by
   ext x; simpa using ⟨fun h _ hw => (h hw).symm, fun h w hw => (h w hw).symm⟩
 
 variable (p) in
@@ -200,11 +201,13 @@ theorem dual_comap_dualAnnihilator (S : Submodule R M) :
     dual p S = comap p.flip S.dualAnnihilator := by rw [← dual_dualAnnihilator, dual_eval]
 
 /-- The dual submodule w.r.t. the identity map is the dual coannihilator. -/
-theorem dual_dualCoannihilator (S : Submodule R (Dual R M)) : dual .id S = S.dualCoannihilator := by
+theorem dual_dualCoannihilator (S : Submodule R (Dual R M)) :
+    dual .id S = S.dualCoannihilator := by
   ext x; simpa using ⟨fun h _ hw => (h hw).symm, fun h w hw => (h w hw).symm⟩
 
 variable (p) in
-theorem dual_map_dualCoannihilator (S : Submodule R M) : dual p S = (map p S).dualCoannihilator := by
+theorem dual_map_dualCoannihilator (S : Submodule R M) :
+    dual p S = (map p S).dualCoannihilator := by
   ext x; simpa using ⟨fun h _ hw => (h hw).symm, fun h w hw => (h w hw).symm⟩
 
 theorem subset_ker_of_mem_dual {s : Set M} {φ : Dual R M} (hφ : φ ∈ dual (Dual.eval R M) s) :
