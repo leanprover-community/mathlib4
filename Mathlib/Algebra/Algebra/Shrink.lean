@@ -30,4 +30,3 @@ def algEquiv [Small.{v} α] [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[
   (equivShrink α).symm.algEquiv _
 
 end Shrink
-

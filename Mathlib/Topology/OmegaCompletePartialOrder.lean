@@ -85,4 +85,3 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
   constructor
   · apply le_ωSup
   · apply ωSup_le
-

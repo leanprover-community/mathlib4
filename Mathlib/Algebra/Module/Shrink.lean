@@ -27,4 +27,3 @@ variable (R α) in
 def linearEquiv : Shrink.{v} α ≃ₗ[R] α := (equivShrink α).symm.linearEquiv _
 
 end Shrink
-
