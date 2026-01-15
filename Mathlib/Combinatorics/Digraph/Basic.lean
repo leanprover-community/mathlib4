@@ -136,7 +136,7 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
-instance hasCompl : HasCompl (Digraph V) where
+instance : Compl (Digraph V) where
   compl G := { Adj := fun v w ↦ ¬G.Adj v w }
 
 @[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl

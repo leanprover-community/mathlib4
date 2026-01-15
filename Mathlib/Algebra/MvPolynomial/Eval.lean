@@ -835,3 +835,17 @@ instance [FaithfulSMul R S] : FaithfulSMul (MvPolynomial σ R) (MvPolynomial σ 
 end Algebra
 
 end MvPolynomial
+
+section Algebra
+
+theorem Algebra.forall_mem_adjoin_smul_eq_self_iff (R : Type*) {A : Type*} [CommSemiring R]
+    [CommSemiring A] [Algebra R A] (S : Set A) {M : Type*} [Monoid M] [MulSemiringAction M A]
+    [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) := by
+  refine ⟨fun h x hx ↦ h _ <| mem_adjoin_of_mem hx, fun h x hx ↦ ?_⟩
+  obtain ⟨r, rfl⟩ := adjoin_eq_range R S ▸ hx
+  rw [← MulSemiringAction.toAlgHom_apply R, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+    MvPolynomial.comp_aeval_apply]
+  simp_rw [MulSemiringAction.toAlgHom_apply, h _ (Subtype.prop _)]
+
+end Algebra

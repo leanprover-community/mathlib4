@@ -422,7 +422,7 @@ private def widePullbackShapeEquivObj {J : Type*} :
   invFun
   | .of x => .some <| Discrete.as x
   | .star => .none
-  left_inv  x := by cases x <;> simp
+  left_inv x := by cases x <;> simp
   right_inv x := by cases x <;> simp
 
 set_option backward.privateInPublic true in
@@ -438,8 +438,7 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     cast (by
         have eq : x = y := PLift.down (ULift.down (down f))
         rw [eq]
-        rfl
-    ) (Hom.id (some y))
+        rfl) (Hom.id (some y))
   | none, some y => by cases f
   | some x, none => .term x
   | none, none => .id none
