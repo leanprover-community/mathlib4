@@ -76,10 +76,10 @@ protected theorem smul {𝕂 : Type*} [MeasurableSpace 𝕂]
     [∀ i, SMul 𝕂 (β i)] [∀ i, MeasurableSMul 𝕂 (β i)] (c : 𝕂) (hu : Adapted f u) :
     Adapted f (c • u) := fun i => (hu i).const_smul c
 
-protected theorem Measurable {i : ι} (hf : Adapted f u) : Measurable[m] (u i) :=
+protected theorem measurable {i : ι} (hf : Adapted f u) : Measurable[m] (u i) :=
   (hf i).mono (f.le i) (by rfl)
 
-theorem Measurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) : Measurable[f j] (u i) :=
+theorem measurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) : Measurable[f j] (u i) :=
   (hf i).mono (f.mono hij) (by rfl)
 
 end Adapted
