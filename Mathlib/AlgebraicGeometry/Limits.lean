@@ -303,6 +303,14 @@ lemma isCompl_opensRange_inl_inr :
   simp only [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
   rfl
 
+@[simp]
+lemma inl_ne_inr (x : X) (y : Y) : (coprod.inl : X ⟶ X ⨿ Y) x ≠ (coprod.inr : Y ⟶ X ⨿ Y) y :=
+  Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr X Y).disjoint ⟨x, rfl⟩ ⟨y, rfl⟩
+
+@[simp]
+lemma inr_ne_inl (x : X) (y : Y) : (coprod.inr : Y ⟶ X ⨿ Y) y ≠ (coprod.inl : X ⟶ X ⨿ Y) x :=
+  (inl_ne_inr _ _ _ _).symm
+
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union -/
 noncomputable
 def coprodMk : X ⊕ Y ≃ₜ (X ⨿ Y : Scheme.{u}) :=
@@ -384,6 +392,27 @@ lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
     (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback g coprod.inr coprod.inr (coprod.map f g) :=
   (isPullback_inl_inl_coprodMap g f).of_iso (.refl _) (.refl _) (coprod.braiding _ _)
     (coprod.braiding _ _) (by simp) (by simp) (by simp) (by simp)
+
+instance : FinitaryExtensive Scheme where
+  hasFiniteCoproducts.out := inferInstance
+  van_kampen' {X Y} c hc := by
+    suffices IsVanKampenColimit (BinaryCofan.mk (P := X ⨿ Y) coprod.inl coprod.inr) from
+      this.of_iso (hc.uniqueUpToIso (coprodIsCoprod _ _)).symm
+    refine BinaryCofan.isVanKampen_mk _ _ (fun _ _ ↦ coprodIsCoprod _ _) _
+      (fun _ _ ↦ pullbackIsPullback _ _) ?_ ?_
+    · intro X' Y' αX αY f h₁ h₂
+      have h₁' (x : _) := congr($h₁ x).symm
+      have h₂' (x : _) := congr($h₂ x).symm
+      dsimp at h₁ h₂ h₁' h₂'
+      refine ⟨(IsOpenImmersion.isPullback _ _ _ _ h₁.symm ?_).flip,
+        (IsOpenImmersion.isPullback _ _ _ _ h₂.symm ?_).flip⟩ <;>
+        ext x <;> obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x <;> simp_all
+    · dsimp
+      refine fun {Z} f ↦ (nonempty_isColimit_binaryCofanMk_of_isCompl _ _ ?_).some
+      rw [Scheme.Hom.opensRange_pullbackFst, Scheme.Hom.opensRange_pullbackFst]
+      convert (isCompl_range_inl_inr X Y).map (CompleteLatticeHom.setPreimage f)
+      simp only [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
+      rfl
 
 variable {X Y}
 
