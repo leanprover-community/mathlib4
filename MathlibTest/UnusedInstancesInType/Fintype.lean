@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.EquivFin
 
@@ -39,7 +38,6 @@ Note: This linter can be disabled with `set_option linter.unusedFintypeInType fa
 theorem foo₂ (a : Type) [∀ α : Type, Fintype α] (_ : Unit) [Fintype a] : True :=
   trivial
 
--- TODO: why the newline + indentation in the pretty-printing of the forall?
 /--
 warning: `foo₃` has the hypotheses:
   • [(α : Type) → Fintype α] (#2)
@@ -82,7 +80,7 @@ in the type, or not fire on *every* instance in these declarations. -/
 theorem fooUsing [Fintype (Nat → Nat)] : Uses (Fintype (Nat → Nat)) := trivial
 
 theorem fooUsing₁ [Fintype (Nat → Nat)] : Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 -- Should fire on parameter #1 but not parameter #2
 /--
@@ -97,17 +95,17 @@ Note: This linter can be disabled with `set_option linter.unusedFintypeInType fa
 #guard_msgs in
 theorem fooUsing₂ [Fintype Bool] [Fintype (Nat → Nat)] :
     Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 -- Note `optParam` test
 theorem fooUsing₃ [Fintype Bool] [Fintype (Nat → Nat)]
     (_ : Uses (Fintype Bool) := trivial) : Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 set_option linter.unusedFintypeInType false in
 theorem fooUsing₂' [Fintype Bool] [Fintype (Nat → Nat)] :
     Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 end used
 

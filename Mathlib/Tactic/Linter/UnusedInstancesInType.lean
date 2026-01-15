@@ -9,10 +9,11 @@ public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
-import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Lint.Basic
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Linters for Unused Instances in Types
@@ -248,7 +249,7 @@ section Fintype
 /--
 The `unusedFintypeInType` linter checks if a theorem's hypotheses include `Fintype` instances
 which are not used in the remainder of the type. If so, it suggests modifying the instances to
-`Finite _` or removing them entirely.
+`Finite _` and using `Fintype.ofFinite` in the proof, or removing them entirely.
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/

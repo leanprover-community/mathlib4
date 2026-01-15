@@ -1,6 +1,5 @@
 module
 
-import Mathlib.Init
 import MathlibTest.UnusedInstancesInType.Basic
 import Mathlib.Data.Fintype.EquivFin
 
@@ -33,7 +32,7 @@ set_option linter.unusedDecidableInType true in
 /-- Same as `foo`.-/
 theorem foo' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
     Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 end decidableTest
 
@@ -45,7 +44,7 @@ set_option linter.unusedFintypeInType true
 set_option linter.unusedFintypeInType false in
 theorem foo [Fintype Bool] [Fintype (Nat → Nat)] :
     Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
 
 set_option linter.unusedFintypeInType false
 
@@ -64,4 +63,4 @@ set_option linter.unusedFintypeInType true in
 /-- Same as `foo'`.-/
 theorem foo' [Fintype Bool] [Fintype (Nat → Nat)] :
     Uses (Fintype (Nat → Nat)) → True :=
-  fun _ =>  trivial
+  fun _ => trivial
