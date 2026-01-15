@@ -32,22 +32,22 @@ namespace Ring
 
 variable {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} {a : Q($arg)}
 
-/-- True if this represents an atomic expression. -/
-def ExBase.isAtom : ExBase sα a → Bool
-  | .atom _ => true
-  | _ => false
+-- /-- True if this represents an atomic expression. -/
+-- def ExBase.isAtom : ExBase sα a → Bool
+--   | .atom _ => true
+--   | _ => false
 
-/-- True if this represents an atomic expression. -/
-def ExProd.isAtom : ExProd sα a → Bool
-  | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
-  | _ => false
+-- /-- True if this represents an atomic expression. -/
+-- def ExProd.isAtom : ExProd sα a → Bool
+--   | .mul va₁ (.const 1 _) (.const 1 _) => va₁.isAtom
+--   | _ => false
 
-/-- True if this represents an atomic expression. -/
-def ExSum.isAtom : ExSum sα a → Bool
-  | .add va₁ va₂ => match va₂ with -- FIXME: this takes a while to compile as one match
-    | .zero => va₁.isAtom
-    | _ => false
-  | _ => false
+-- /-- True if this represents an atomic expression. -/
+-- def ExSum.isAtom : ExSum sα a → Bool
+--   | .add va₁ va₂ => match va₂ with -- FIXME: this takes a while to compile as one match
+--     | .zero => va₁.isAtom
+--     | _ => false
+--   | _ => false
 
 end Ring
 
@@ -76,6 +76,9 @@ attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 /-- Function elaborating `RingNF.Config`. -/
 declare_config_elab elabConfig Config
 
+local instance {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} :
+    Algebra.RingCompute (Algebra.Ring.baseType sα) sα := Algebra.Ring.ringCompute sα
+
 /--
 Evaluates an expression `e` into a normalized representation as a polynomial.
 
@@ -89,9 +92,10 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
   guard e.isApp -- all interesting ring expressions are applications
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let sα ← synthInstanceQ q(CommSemiring $α)
-  let c ← mkCache sα
-  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sα) c q($e) with
-  | none => eval sα c e -- `none` indicates that `eval` will find something algebraic.
+  let c ← Algebra.mkCache sα
+  let ⟨a, _, pa⟩ ← match
+    (← Algebra.isAtomOrDerivable (bt := Algebra.Ring.baseType sα) sα c q($e)) with
+  | none => Algebra.eval sα c e -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }

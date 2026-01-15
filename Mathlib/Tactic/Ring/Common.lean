@@ -108,8 +108,15 @@ ring subexpressions of type `ℤ`.
 -/
 def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
--- TODO: the base type of the exponent should be ℚ (or ℕ?) w/ norm_num instances on it.
-def btℕ (e : Q(ℕ)) : Type := NormNum.Result (u := 0) e
+structure Ring.baseType {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+    (e : Q($α)) where
+  value : ℚ
+  hyp : Option Expr
+  -- isNat? : Option (Σ n : Q(ℕ), Q(IsNat $e $n))
+
+def btℕ (e : Q(ℕ)) : Type := Ring.baseType sℕ q($e)
+
+instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
 
 universe u v
 
@@ -132,7 +139,6 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
   | atom {e} (id : ℕ) : ExBaseNat e
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
-
 
 /--
 A monomial, which is a product of powers of `ExBase` expressions,
@@ -222,8 +228,19 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
 
 class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) where
-  evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x + $y))
+  evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y →
+    MetaM ((Result baseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   evalMul (sα) : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x * $y))
+  evalCast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (smul : Q(SMul $β $α)) (x : Q($β)),
+    ExSum (Ring.baseType sβ) q($sβ) q($x) →
+    /- We require the latter proof because we don't have any facts about Algebra imported in this file.-/
+    MetaM (Σ y : Q($α), ExSum baseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
+  -- recursiveSMul : Bool
+  -- evalSMul (sα) :
+  -- ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+  --     (smul : Q(SMul $β $α)) (x : Q($β)) (y : Q($α)),
+  --   baseType x → baseType y
+  --   sorry
   evalNeg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → baseType x → MetaM (Result baseType q(-$x))
   evalPow (sα) : ∀ x : Q($α), baseType x → (lit : Q(ℕ)) →
     OptionT MetaM (Result baseType q($x ^ $lit))
@@ -232,67 +249,11 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum baseType sα) q($x))
   eq (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
   compare (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
-  isZero (sα) : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 0)
   isOne (sα) : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 1)
   -- cast (sα) : ∀ (_ : Q($α)), Σ b, baseType b
   one (sα) : baseType q((nat_lit 1).rawCast)
 
-@[reducible]
-def Ring.baseType {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
-    (e : Q($α)) := NormNum.Result e
 
-instance Ring.ringCompute {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) :
-    RingCompute (Ring.baseType sα) sα where
-  evalAdd x y zx zy := do
-    let res ← zx.add zy q(inferInstance)
-    return ⟨_, res, q(rfl)⟩
-  evalMul x y zx zy := do
-    let res ← zx.mul zy q(inferInstance)
-    return ⟨_, res, q(rfl)⟩
-  evalNeg x crα zx := do
-    let res ← zx.neg q(inferInstance)
-    return ⟨_, res, q(rfl)⟩
-  evalPow x zx lit := do
-    let rc ← (NormNum.evalPow.core q($x ^ $lit) q(HPow.hPow) q($x) lit lit q(sorry) sα zx).run
-    match rc with
-    | none => OptionT.fail
-    | some rc => return ⟨_, rc, q(rfl)⟩
-  evalInv czα sfα zx := do
-    match (← (Lean.observing? <| zx.inv _ czα :)) with
-    | some rc => return some ⟨_, rc, q(rfl)⟩
-    | none => return none
-  derive x := do
-    -- TODO: actually implement.
-    return ⟨_, .zero, q(sorry)⟩
-  eq zx zy := zx.toRat == zy.toRat
-  compare zx zy := compare zx.toRat zy.toRat
-  isZero zx := do match zx with
-  | .isNat _ lit pf =>
-    if lit.natLit! == 0 then
-      have : $lit =Q 0 := ⟨⟩
-      assumeInstancesCommute
-      return q($pf)
-    else
-      failure
-  | _ => none
-  isOne zx := do match zx with
-  | .isNat _ lit pf =>
-    if lit.natLit! == 1 then
-      have : $lit =Q 1 := ⟨⟩
-      assumeInstancesCommute
-      return q($pf)
-    else
-      failure
-  | _ => none
-  one :=
-    NormNum.Result.ofRawNat q(1 : $α)
-
-
-instance : RingCompute (u := 0) btℕ sℕ := Ring.ringCompute sℕ
-
-instance (e : Expr) : Inhabited <| btℕ e := by
-  rw [btℕ]
-  infer_instance
 
 instance : Inhabited (Σ e, (ExBaseNat) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSumNat) e) := ⟨_, .zero⟩
@@ -336,6 +297,188 @@ partial def ExProd.toExProdNat (e : Q(ℕ)) : ExProd btℕ sℕ e → Σ e', ExP
 partial def ExSum.toExSumNat (e : Q(ℕ)) : ExSum btℕ sℕ e → Σ e', ExSumNat e' := fun
   | .zero => ⟨_, .zero⟩
   | .add va vb => ⟨_, .add va.toExProdNat.2 vb.toExSumNat.2⟩
+
+end
+
+section
+
+variable (sα)
+
+/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
+def ExBase.toProd
+    {a : Q($α)} {b : Q(ℕ)}
+    (va : ExBase bt sα a) (vb : ExProdNat b) :
+    Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
+      ⟨_, .mul va vb (.const  (RingCompute.one sα (baseType := bt))),
+        /- TODO: Remove unsafe cast -/
+        (q(Eq.refl ($a ^ $b * (nat_lit 1).rawCast)):) ⟩
+
+/-- Embed `ExProd` in `ExSum` by adding 0. -/
+def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
+  .add v .zero
+
+
+section
+variable {R : Type*} [CommSemiring R] {a : R}
+
+theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
+  | ⟨e⟩ => by simp [e]
+
+theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
+  | ⟨e⟩ => by simp [e]
+
+theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
+    IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+  | ⟨e⟩ => by simp [e]
+
+theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
+    IsNNRat a n d → a = NNRat.rawCast n d + 0
+  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
+
+theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
+    IsRat a n d → a = Rat.rawCast n d + 0
+  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
+
+end
+
+section
+/--
+Constructs the expression corresponding to `.const n`.
+(The `.const` constructor does not check that the expression is correct.)
+-/
+def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd (Ring.baseType sα) sα e :=
+  let lit : Q(ℕ) := .lit (.natVal n)
+  ⟨q(($lit).rawCast : $α), .const ⟨n, none⟩⟩
+
+/--
+Constructs the expression corresponding to `.const (-n)`.
+(The `.const` constructor does not check that the expression is correct.)
+-/
+def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd (Ring.baseType sα) sα e :=
+  let lit : Q(ℕ) := mkRawNatLit n
+  ⟨q((Int.negOfNat $lit).rawCast : $α), .const ⟨(-n), none⟩⟩
+
+/--
+Constructs the expression corresponding to `.const q h` for `q = n / d`
+and `h` a proof that `(d : α) ≠ 0`.
+(The `.const` constructor does not check that the expression is correct.)
+-/
+def ExProd.mkNNRat (_ : Q(DivisionSemiring $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
+    (e : Q($α)) × ExProd (Ring.baseType sα) sα e :=
+  ⟨q(NNRat.rawCast $n $d : $α), .const ⟨q, h⟩⟩
+
+/--
+Constructs the expression corresponding to `.const q h` for `q = -(n / d)`
+and `h` a proof that `(d : α) ≠ 0`.
+(The `.const` constructor does not check that the expression is correct.)
+-/
+def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
+    (e : Q($α)) × ExProd (Ring.baseType sα) sα e :=
+  ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const ⟨q, h⟩⟩
+end
+
+
+def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
+    NormNum.Result e → Option (Result (ExSum (Ring.baseType sα) sα) e)
+  | .isNat _ (.lit (.natVal 0)) p => do
+    assumeInstancesCommute
+    pure ⟨_, .zero, q(cast_zero $p)⟩
+  | .isNat _ lit p => do
+    assumeInstancesCommute
+    have ⟨e', s⟩ := ExProd.mkNat sα lit.natLit!
+    have : $e' =Q ($lit).rawCast := ⟨⟩
+    pure ⟨_, s.toSum, q(cast_pos $p)⟩
+  /- In the following cases, Qq needs help identifying the `0` in the produced type with the `0`
+  in the expected type, which arise from different instances. -/
+  | .isNegNat rα lit p =>
+    pure ⟨_, (ExProd.mkNegNat sα rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
+  | .isNNRat dsα q n d p =>
+    pure ⟨_, (ExProd.mkNNRat sα dsα q n d q(IsNNRat.den_nz $p)).2.toSum, (q(cast_nnrat $p) : Expr)⟩
+  | .isNegNNRat dα q n d p =>
+    pure ⟨_, (ExProd.mkNegNNRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
+  | _ => none
+
+
+-- def Ring.evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} (z : NormNum.Result e) :
+--     Option (Result (ExSum (Ring.baseType sα) sα) e) := Id.run <| OptionT.run do
+--   return ⟨_, (ExProd.const (sα := sα) (baseType := Ring.baseType sα) z).toSum, q(by simp)⟩
+
+
+def Ring.ringCompute :
+    RingCompute (Ring.baseType sα) sα where
+  evalAdd a b za zb := do
+    let ⟨qa, ha⟩ := za
+    let ⟨qb, hb⟩ := zb
+    let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
+    let res ← ra.add rb
+    let isZero : Option Q(IsNat ($a + $b) 0) := match res with
+    | Result.isNat inst lit pf =>
+      if lit.natLit! == 0 then
+        -- WARNING: unsafe Qq
+        some pf
+      else
+        none
+    | _ => none
+    let ⟨qc, hc⟩ ← res.toRatNZ
+    let ⟨c, pc⟩ := res.toRawEq
+    /- TODO: Qq doesn't like this pc-/
+    return ⟨⟨q($c), ⟨qc, hc⟩, pc⟩, isZero⟩
+  evalMul a b za zb := do
+    let ⟨qa, ha⟩ := za
+    let ⟨qb, hb⟩ := zb
+    let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
+    let res ← ra.mul rb
+    let ⟨qc, hc⟩ ← res.toRatNZ
+    let ⟨c, pc⟩ := res.toRawEq
+    return ⟨q($c), ⟨qc, hc⟩, pc⟩
+  evalCast := sorry
+  evalNeg a crα za := do
+    let ⟨qa, ha⟩ := za
+    let ra := Result.ofRawRat qa a ha
+    let res ← ra.neg q(inferInstance)
+    let ⟨qc, hc⟩ ← res.toRatNZ
+    let ⟨c, pc⟩ := res.toRawEq
+    return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+  evalPow a za lit := do
+    let ⟨qa, ha⟩ := za
+    let ra := Result.ofRawRat qa a ha
+    let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
+      q(IsNat.raw_refl $lit) q(inferInstance) ra).run
+    match res with
+    | none => OptionT.fail
+    | some res =>
+      let ⟨qc, hc⟩ ← res.toRatNZ
+      let ⟨c, pc⟩ := res.toRawEq
+      return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+  evalInv {a} czα sfα za := do
+    let ⟨qa, ha⟩ := za
+    let ra := Result.ofRawRat qa a ha
+    match (← (Lean.observing? <| ra.inv _ czα :)) with
+    | some res =>
+      let ⟨qc, hc⟩ ← res.toRatNZ
+      let ⟨c, pc⟩ := res.toRawEq
+      return some ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+    | none => return none
+  derive x := do
+    let res ← NormNum.derive x
+    let ⟨_, va, pa⟩ ← evalCast sα res
+    return ⟨_, va, q($pa)⟩
+  eq zx zy := zx.value == zy.value
+  compare zx zy := compare zx.value zy.value
+  isOne {x} zx := do
+    let ⟨qx, hx⟩ := zx
+    if qx == 1 then
+      have : $x =Q Nat.rawCast 1 := ⟨⟩
+      assumeInstancesCommute
+      return q(⟨rfl⟩)
+    else
+      failure
+  one :=
+    ⟨1, none⟩
+
+
+
+instance : RingCompute (u := 0) btℕ sℕ := Ring.ringCompute sℕ
 
 end
 
@@ -437,54 +580,8 @@ end
 variable (sα)
 variable {R : Type*} [CommSemiring R]
 
--- /--
--- Constructs the expression corresponding to `.const n`.
--- (The `.const` constructor does not check that the expression is correct.)
--- -/
--- def ExProd.mkNat (n : ℕ) : (e : Q($α)) × ExProd bt sα e :=
---   let lit : Q(ℕ) := .lit (.natVal n)
---   ⟨q(($lit).rawCast : $α), .const n⟩
-
--- /--
--- Constructs the expression corresponding to `.const (-n)`.
--- (The `.const` constructor does not check that the expression is correct.)
--- -/
--- def ExProd.mkNegNat (_ : Q(Ring $α)) (n : ℕ) : (e : Q($α)) × ExProd sα e :=
---   let lit : Q(ℕ) := mkRawNatLit n
---   ⟨q((Int.negOfNat $lit).rawCast : $α), .const (-n) none⟩
-
--- /--
--- Constructs the expression corresponding to `.const q h` for `q = n / d`
--- and `h` a proof that `(d : α) ≠ 0`.
--- (The `.const` constructor does not check that the expression is correct.)
--- -/
--- def ExProd.mkNNRat (_ : Q(DivisionSemiring $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
---     (e : Q($α)) × ExProd sα e :=
---   ⟨q(NNRat.rawCast $n $d : $α), .const q h⟩
-
--- /--
--- Constructs the expression corresponding to `.const q h` for `q = -(n / d)`
--- and `h` a proof that `(d : α) ≠ 0`.
--- (The `.const` constructor does not check that the expression is correct.)
--- -/
--- def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(ℕ)) (h : Expr) :
---     (e : Q($α)) × ExProd sα e :=
---   ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const q h⟩
 
 section
-
-/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
-def ExBase.toProd
-    {a : Q($α)} {b : Q(ℕ)}
-    (va : ExBase bt sα a) (vb : ExProdNat b) :
-    Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
-      ⟨_, .mul va vb (.const  (RingCompute.one sα (baseType := bt))),
-        /- TODO: Remove unsafe cast -/
-        (q(Eq.refl ($a ^ $b * (nat_lit 1).rawCast)):) ⟩
-
-/-- Embed `ExProd` in `ExSum` by adding 0. -/
-def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
-  .add v .zero
 
 /-- Get the leading coefficient of an `ExProd`. -/
 def ExProd.coeff {e : Q($α)} :
@@ -535,9 +632,9 @@ def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) 
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za, .const zb => do
-    let ⟨_, zc, pf⟩ ← RingCompute.evalAdd (u := u) (sα := sα) _ _ za zb
-    match RingCompute.isZero sα zc with
-    | .some pf => pure <| .zero pf
+    let ⟨⟨_, zc, pf⟩, isZero⟩ ← RingCompute.evalAdd (u := u) (sα := sα) _ _ za zb
+    match isZero with
+    | .some pf => pure <| .zero q($pf)
     | .none =>
       assumeInstancesCommute
       pure <| .nonzero ⟨_, .const zc, q($pf)⟩
@@ -1293,23 +1390,23 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
     dsα := (← trySynthInstanceQ q(Semifield $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
-theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
-  | ⟨e⟩ => by simp [e]
+-- theorem cast_pos {n : ℕ} : IsNat (a : R) n → a = n.rawCast + 0
+--   | ⟨e⟩ => by simp [e]
 
-theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
-  | ⟨e⟩ => by simp [e]
+-- theorem cast_zero : IsNat (a : R) (nat_lit 0) → a = 0
+--   | ⟨e⟩ => by simp [e]
 
-theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
-    IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
-  | ⟨e⟩ => by simp [e]
+-- theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
+--     IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
+--   | ⟨e⟩ => by simp [e]
 
-theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
-    IsNNRat a n d → a = NNRat.rawCast n d + 0
-  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
+-- theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
+--     IsNNRat a n d → a = NNRat.rawCast n d + 0
+--   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
-theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
-    IsRat a n d → a = Rat.rawCast n d + 0
-  | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
+-- theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
+--     IsRat a n d → a = Rat.rawCast n d + 0
+--   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
 theorem toProd_pf (p : (a : R) = a') :
     a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
@@ -1477,7 +1574,7 @@ def isAtomOrDerivable
   match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  | ``HSMul.hSMul, _, _
+  -- | ``HSMul.hSMul, _, _
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _
   | ``Neg.neg, some _, _
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
