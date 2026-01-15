@@ -145,7 +145,7 @@ def encodingNatBool : Encoding ℕ where
   decode n := some (decodeNat n)
   decode_encode n := congr_arg _ (decode_encodeNat n)
 
-/-- A binary finEncoding of ℕ in bool. -/
+/-- A binary encoding of `ℕ` in `Bool`. -/
 def finEncodingNatBool : FinEncoding ℕ :=
   ⟨encodingNatBool, Bool.fintype⟩
 
