@@ -105,20 +105,15 @@ def globalSyntaxLinter : Linter where run stx := do
     let fm ← getFileMap
     let (_, pos, _) ← parseImports fm.source
     let posStx := fm.ofPosition pos
-    --dbg_trace "current {pos} -- {posStx}"
     toKindsRef.modify (fun r => {r with toKinds := r.toKinds.insert ⟨0, posStx⟩ `Module, importEnd := some posStx})
   if let some rg := stx.getRangeWithTrailing? then
     toKindsRef.modify (·.insert rg stx.getKind)
   let kindsRef ← toKindsRef.get
-  --dbg_trace kindsRef
-  --unless kindsRef.mod2.size == 2 && kindsRef.mod2.contains (← getFileMap).positions.back! do
   unless kindsRef.mod2.size == 2 && (kindsRef.mod2.toArray.qsort == #[0, kindsRef.importEnd.getD 0]) do
     return
   for (rg1, rg2) in cancellingPairs <| kindsRef.toKinds.toArray.qsort (·.1.start < ·.1.start) do
-    logInfoAt (.ofRange rg1) "This command"
-    logInfoAt (.ofRange rg2) "is cancelled by this one!"
-  --if kindsRef.mod2.size == 2 then
-  --  Linter.logLint linter.globalSyntax stx m!"Superfluous pair"
+    logLint linter.globalSyntax (.ofRange rg1) "This command"
+    logLint linter.globalSyntax (.ofRange rg2) "is cancelled by this one!"
 
 initialize addLinter globalSyntaxLinter
 
