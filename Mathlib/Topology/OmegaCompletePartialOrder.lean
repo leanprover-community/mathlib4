@@ -65,20 +65,6 @@ theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.m
 
 end Scott
 
-attribute [local instance] Scott.topologicalSpace
-
-section notBelow
-
-variable {α : Type*} [OmegaCompletePartialOrder α]
-
-set_option linter.deprecated false in
-/-- `notBelow` is an open set in `Scott α` used
-to prove the monotonicity of continuous functions -/
-def notBelow (y : Scott α) :=
-  { x | ¬x ≤ y }
-
-end notBelow
-
 open Scott hiding IsOpen IsOpen.isUpperSet
 
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
