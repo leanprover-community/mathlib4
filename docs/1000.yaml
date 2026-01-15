@@ -226,6 +226,9 @@ Q211981:
 
 Q213603:
   title: Ceva's theorem
+  decl: Affine.Triangle.prod_dist_div_dist_eq_one_of_mem_line_of_mem_line
+  authors: Joseph Myers
+  date: 2026-01-09
 
 Q220680:
   title: Banach fixed-point theorem
@@ -2085,6 +2088,9 @@ Q2266397:
 
 Q2267175:
   title: Tangent-secant theorem
+  decl: EuclideanGeometry.Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant
+  authors: Li Jiale
+  date: 2025
 
 Q2269888:
   title: Cohn's irreducibility criterion

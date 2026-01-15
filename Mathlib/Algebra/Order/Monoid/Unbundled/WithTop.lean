@@ -305,7 +305,7 @@ end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
-      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective }
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
