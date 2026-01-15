@@ -238,10 +238,13 @@ lemma qaryEntropy_nonpos_of_nonpos (hp : p ≤ 0) : qaryEntropy q p ≤ 0 :=
 /-- The q-ary entropy function is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
 @[fun_prop] lemma qaryEntropy_continuous : Continuous (qaryEntropy q) := by
+  -- TODO: why does this fail? fun_prop [qaryEntropy]
   unfold qaryEntropy; fun_prop
 
 @[fun_prop] lemma differentiableAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
-    DifferentiableAt ℝ (qaryEntropy q) p := by unfold qaryEntropy; fun_prop (disch := assumption)
+    DifferentiableAt ℝ (qaryEntropy q) p := by
+  -- TODO: why does this fail? fun_prop (disch := assumption) [qaryEntropy]
+  unfold qaryEntropy; fun_prop (disch := assumption)
 
 lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
