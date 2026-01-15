@@ -94,7 +94,7 @@ lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
   aesop (add simp mem_colon)
 
 @[simp]
-lemma iInf_colon (ι : Sort*) (f : ι → Submodule R M) : (⨅ i, f i).colon S = ⨅ i, (f i).colon S := by
+lemma iInf_colon {ι : Sort*} (f : ι → Submodule R M) : (⨅ i, f i).colon S = ⨅ i, (f i).colon S := by
   aesop (add simp mem_colon)
 
 @[simp]
@@ -106,7 +106,7 @@ lemma colon_union : N.colon (S₁ ∪ S₂) = N.colon S₁ ⊓ N.colon S₂ := b
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_iUnion (ι : Sort*) (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ i, N.colon (f i) := by
+lemma colon_iUnion {ι : Sort*} (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ i, N.colon (f i) := by
   aesop (add simp mem_colon)
 
 @[simp]
