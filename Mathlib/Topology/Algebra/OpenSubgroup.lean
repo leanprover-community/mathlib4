@@ -429,7 +429,9 @@ instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
 
 @[to_additive]
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  toSubgroup_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  { instSemilatticeInfOpenNormalSubgroup,
+    instSemilatticeSupOpenNormalSubgroup with
+    toPartialOrder := instPartialOrderOpenNormalSubgroup }
 
 end OpenNormalSubgroup
 
