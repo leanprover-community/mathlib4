@@ -107,7 +107,7 @@ private lemma negOnePow_mul_negOnePow_mul_cancel {α β : ℝ} {i : ℕ} :
 of `P` evaluated at the `n`'th order Chebyshev nodes, with coefficients taken from `c`. -/
 noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
 
-theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
+theorem sumNodes_le_sumNodes_T {n : ℕ} {c : ℕ → ℝ}
     (hcnonneg : ∀ i ≤ n, 0 ≤ (-1) ^ i * (c i))
     {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     sumNodes n c P ≤ sumNodes n c (T ℝ n) := by
@@ -123,7 +123,7 @@ theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
     _ = (T ℝ n).eval (node n i) * (c i) := by
       rw [eval_T_real_node hi, one_mul]
 
-theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
+theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
     (hcpos : ∀ i ≤ n, 0 < (-1) ^ i * (c i))
     {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     (sumNodes n c P = sumNodes n c (T ℝ n)) ↔ P = T ℝ n := by
@@ -187,7 +187,7 @@ private theorem coeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
 theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n ≤ 2 ^ (n - 1) := by
-  convert apply_le_apply_T_real
+  convert sumNodes_le_sumNodes_T
       (fun i hi => le_of_lt <| coeff_eq_sum_node_coeff_pos hi) hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_eq_coeff_T]
@@ -207,7 +207,7 @@ theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
 theorem coeff_eq_of_bounded_iff {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
-  convert apply_eq_apply_T_real_iff
+  convert sumNodes_eq_sumNodes_T_iff
       (fun i hi => coeff_eq_sum_node_coeff_pos hi) hPdeg hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_eq_coeff_T]
