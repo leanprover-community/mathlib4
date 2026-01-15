@@ -404,7 +404,7 @@ def orthogonal : ClosedSubmodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = (K.toSubmodule).orthogonal := rfl
+lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
 lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
 
@@ -415,7 +415,7 @@ theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := I
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
 theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
-  Submodule.mem_orthogonal' (K.toSubmodule) v
+  Submodule.mem_orthogonal' K.toSubmodule v
 
 variable {K}
 
