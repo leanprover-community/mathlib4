@@ -34,7 +34,7 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   `τ` in the upper half plane.
 * `qExpansionRingHom` defines the ring homomorphism from the graded ring of modular forms to power
   series given by taking `q`-expansions.
-* `qExpansion_coeffs_unique` shows that q-expansion coefficients are uniquely determined.
+* `qExpansion_coeff_unique` shows that q-expansion coefficients are uniquely determined.
 
 -/
 
@@ -339,7 +339,7 @@ open Metric Set
 
 open scoped Topology
 
-lemma periodic_tendto_ndhs_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.cuspFunction h f) 0) :
+lemma periodic_tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (Periodic.cuspFunction h f) 0) :
     Tendsto (fun x ↦ f (Periodic.invQParam h x)) (𝓝[≠] 0) (𝓝 (Periodic.cuspFunction h f 0)) := by
   apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
   rw [eventuallyEq_nhdsWithin_iff, eventually_iff_exists_mem]
@@ -353,8 +353,8 @@ theorem cuspFunction_mul_zero {f g : ℂ → ℂ} (hfcts : ContinuousAt (Periodi
     Periodic.cuspFunction h f 0 * Periodic.cuspFunction h g 0 := by
   rw [Periodic.cuspFunction, update_self]
   apply Filter.Tendsto.limUnder_eq
-  exact Filter.Tendsto.mul (periodic_tendto_ndhs_zero hfcts)
-    (periodic_tendto_ndhs_zero hgcts)
+  exact Filter.Tendsto.mul (periodic_tendsto_nhds_zero hfcts)
+    (periodic_tendsto_nhds_zero hgcts)
 
 lemma qExpansion_mul_coeff_zero {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
     (hgcts : ContinuousAt (cuspFunction h g) 0) :
@@ -402,8 +402,8 @@ lemma cuspFunction_add {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h
       simp
     simp only [Pi.add_apply, update_self] at *
     rw [this, Filter.Tendsto.limUnder_eq]
-    exact Tendsto.add (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendto_ndhs_zero hfcts)))
-      (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendto_ndhs_zero hgcts)))
+    exact Tendsto.add (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendsto_nhds_zero hfcts)))
+      (tendsto_nhds_limUnder (Exists.intro _ (periodic_tendsto_nhds_zero hgcts)))
 
 lemma cuspFunction_sub {f g : ℍ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
     (hgcts : ContinuousAt (cuspFunction h g) 0) :
@@ -583,7 +583,7 @@ private lemma hasSum_cuspFunction_of_hasSum_annulus [Γ.HasDetPlusMinusOne] [Dis
   simpa [← this] using h2
 
 -- This is a bit ugly, is there a nicer way to prove this?
-lemma cuspfFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ]
+lemma cuspFunction_zero_eq_const_coeff {k : ℤ} {F : Type*} [FunLike F ℍ ℂ]
      {h : ℝ} [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
      (c : ℕ → ℂ) (f : F) [ModularFormClass F Γ k]
      (hf : ∀ (τ : ℍ), HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) : cuspFunction h f 0 = c 0 := by
@@ -619,7 +619,7 @@ lemma hasSum_cuspFunction_of_hasSum [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ c m • q ^ m) (cuspFunction h f q) := by
   by_cases hq1 : q = 0
-  · simp_rw [hq1, cuspfFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
+  · simp_rw [hq1, cuspFunction_zero_eq_const_coeff hh hΓ c f hf, smul_eq_mul]
     rw [Summable.hasSum_iff (by simpa [← summable_nat_add_iff 1] using summable_zero),
       Summable.tsum_eq_zero_add (by simpa [← summable_nat_add_iff 1] using summable_zero)]
     simp
@@ -634,7 +634,7 @@ private lemma qParam_onto_annulus (r h : ℝ) (hr : 0 < r) (hr2 : r < 1) (hh : 0
     right
     refine ⟨div_neg_of_neg_of_pos (by simp [hh]) (Real.two_pi_pos), (Real.log_neg_iff hr).mpr hr2⟩
 
-lemma qExpansion_coeffs_unique [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (c : ℕ → ℂ) (hh : 0 < h)
+lemma qExpansion_coeff_unique [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ] (c : ℕ → ℂ) (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k]
     (hf : ∀ τ : ℍ, HasSum (fun m : ℕ ↦ (c m) • 𝕢 h τ ^ m) (f τ)) :
     c = (fun m ↦ (qExpansion h f).coeff m) := by
