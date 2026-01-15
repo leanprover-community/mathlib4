@@ -97,54 +97,38 @@ theorem directedOn_lfpApprox (a : Ordinal.{u}) (h : x ≤ f x) :
   induction a using Ordinal.induction with
   | h i ih =>
     rintro z (⟨b, h_b, h_z⟩ | h_z) y (⟨c, h_c, h_y⟩ | h_y)
-    · cases le_total b c
-      case inl h_bc =>
-        use y
-        apply And.intro (by left; use c)
-        apply And.intro ?_ (by rfl)
-        rw [← h_z, ← h_y]
+    · wlog h_bc : b ≤ c
+      · have h_cb : c ≤ b := le_of_lt <| not_le.mp h_bc
+        conv => right; intro _; right; rw [And.comm]
+        exact this _ _ h _ ih _ _ h_c h_y _ _ h_b h_z h_cb
+      · use y
+        simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, le_refl,
+          and_true, ← h_z, ← h_y]
+        apply And.intro (by right; use c)
         apply f.mono
         unfold lfpApprox
         apply DirectedOn.sSup_le_sSup (ih b h_b) (ih c h_c)
         grind only [= Set.subset_def, = Set.setOf_true, = Set.mem_union, usr Set.mem_setOf_eq]
-      case inr h_cb =>
-        use z
-        apply And.intro (by left; use b)
-        apply And.intro (by rfl)
-        simp only
-        rw [← h_z, ← h_y]
-        apply f.mono
-        unfold lfpApprox
-        apply DirectedOn.sSup_le_sSup (ih c h_c) (ih b h_b)
-        grind only [= Set.subset_def, = Set.setOf_true, = Set.mem_union, usr Set.mem_setOf_eq]
     · use z
-      apply And.intro (by left; use b)
-      apply And.intro (by rfl)
-      simp only
-      rw [← h_z, h_y]
-      apply le_trans h
-      apply f.mono
+      simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, le_refl,
+        true_and, ← h_z]
+      rw [h_y]
+      apply And.intro (by right; use b)
+      apply le_trans h (f.mono _)
       unfold lfpApprox
-      apply (ih b h_b).le_sSup
-      right
-      rfl
+      exact (ih b h_b).le_sSup (Or.inr rfl)
     · use y
-      apply And.intro (by left; use c)
-      apply And.intro ?_ (by rfl)
-      simp only
-      rw [← h_y, h_z]
-      apply le_trans h
-      apply f.mono
+      simp only [exists_prop, Set.union_singleton, ← h_y, Set.mem_insert_iff, Set.mem_setOf_eq,
+        le_refl, and_true]
+      rw [h_z]
+      apply And.intro (by right; use c)
+      apply le_trans h (f.mono _)
       unfold lfpApprox
-      apply (ih c h_c).le_sSup
-      right
-      rfl
+      exact (ih c h_c).le_sSup (Or.inr rfl)
     · use x
-      apply And.intro
-      · right
-        rfl
-      · rw [h_z, h_y]
-        trivial
+      rw [h_z, h_y]
+      simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or,
+        le_refl, and_self]
 
 theorem lfpApprox_monotone_of_le (h_f : x ≤ f x) : Monotone (lfpApprox f x) := by
   intro a b h
