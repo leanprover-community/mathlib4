@@ -327,18 +327,16 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
-      monotone' := monotone_cod.comp S.monotone}
-    ).comp
+      monotone' := monotone_cod.comp S.monotone }).comp
       ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).dom)
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
         (fun i ↦ (S i).toEquiv)
-        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
-      ).comp
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
-          monotone' := monotone_dom.comp S.monotone}).symm)
+          monotone' := monotone_dom.comp S.monotone }).symm)
 
 @[simp]
 theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl

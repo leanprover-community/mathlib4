@@ -79,7 +79,7 @@ instance [P.ContainsZero] : P.isoClosure.ContainsZero where
 end ObjectProperty
 
 /-- Given a functor `F : C ⥤ D`, this is the property of objects of `C`
-satisfies by those `X : C` such that `IsZero (F.obj X)`. -/
+satisfied by those `X : C` such that `IsZero (F.obj X)`. -/
 abbrev Functor.kernel (F : C ⥤ D) : ObjectProperty C :=
   ObjectProperty.inverseImage IsZero F
 

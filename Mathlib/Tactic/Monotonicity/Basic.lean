@@ -6,7 +6,7 @@ Authors: Simon Hudon
 module
 
 public meta import Lean.Elab.Tactic.SolveByElim
-public meta import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-! # Monotonicity tactic
 

@@ -25,6 +25,8 @@ In this file we define `NonUnitalStarSubalgebra`s and the usual operations on th
 
 @[expose] public section
 
+open Module
+
 namespace StarMemClass
 
 /-- If a type carries an involutive star, then any star-closed subset does too. -/
@@ -294,6 +296,9 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end
+
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c x} h =>
@@ -1055,7 +1060,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
-        exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl)  _ (by simp)
+        exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
       map_mul' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero,
