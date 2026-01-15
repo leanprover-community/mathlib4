@@ -114,21 +114,21 @@ noncomputable def extend : HomologicalComplex C c' where
   X i' := extend.X K (e.r i')
   d i' j' := extend.d K (e.r i') (e.r j')
   shape i' j' h := by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
+    obtain hi' | ⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi']
-    · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
+    · obtain hj' | ⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
       · rw [extend.d_none_eq_zero' K _ _ hj']
-      · rw [extend.d_eq K hi hj,K.shape, zero_comp, comp_zero]
+      · rw [extend.d_eq K hi hj, K.shape, zero_comp, comp_zero]
         obtain rfl := e.f_eq_of_r_eq_some hi
         obtain rfl := e.f_eq_of_r_eq_some hj
         intro hij
         exact h (e.rel hij)
   d_comp_d' i' j' k' _ _ := by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
+    obtain hi' | ⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi', zero_comp]
-    · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
+    · obtain hj' | ⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
       · rw [extend.d_none_eq_zero K _ _ hj', comp_zero]
-      · obtain hk'|⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
+      · obtain hk' | ⟨k, hk⟩ := (e.r k').eq_none_or_eq_some
         · rw [extend.d_none_eq_zero' K _ _ hk', comp_zero]
         · rw [extend.d_eq K hi hj, extend.d_eq K hj hk, assoc, assoc,
             Iso.inv_hom_id_assoc, K.d_comp_d_assoc, zero_comp, comp_zero]

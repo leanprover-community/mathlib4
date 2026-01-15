@@ -30,7 +30,7 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 period, periodic, periodicity, antiperiodic
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
