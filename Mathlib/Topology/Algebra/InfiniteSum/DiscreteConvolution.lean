@@ -45,7 +45,7 @@ Formally,
 ```
 theorem addRingConvolution_eq_measureTheory_convolution [Countable M]
     (f g : M → R) (hfg : ∀ x, Integrable (fun t => f t * g (x - t)) .count) :
-    (f ⋆₊ₘ g) = MeasureTheory.convolution f g (ContinuousLinearMap.mul ℝ R) .count
+    (f ⋆ᵣ₊ g) = MeasureTheory.convolution f g (ContinuousLinearMap.mul ℝ R) .count
 ```
 
 Parallel API:
@@ -86,8 +86,14 @@ Differences (discrete ↔ MeasureTheory):
 |--------------|-------------------------------------------------|
 | `f ⋆[L] g`   | `∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)`   |
 | `f ⋆₊[L] g`  | `∑' ab : addFiber x, L (f ab.1.1) (g ab.1.2)`   |
-| `f ⋆ₘ g`     | `∑' ab : mulFiber x, f ab.1.1 * g ab.1.2`       |
-| `f ⋆₊ₘ g`    | `∑' ab : addFiber x, f ab.1.1 * g ab.1.2`       |
+| `f ⋆ᵣ g`     | `∑' ab : mulFiber x, f ab.1.1 * g ab.1.2`       |
+| `f ⋆ᵣ₊ g`    | `∑' ab : addFiber x, f ab.1.1 * g ab.1.2`       |
+
+To use the simpler `⋆` notation, define a scoped notation in your file:
+```
+scoped notation:70 f:70 " ⋆ " g:71 => f ⋆ᵣ g   -- multiplicative
+scoped notation:70 f:70 " ⋆ " g:71 => f ⋆ᵣ₊ g  -- additive
+```
 -/
 
 @[expose] public section
@@ -267,22 +273,24 @@ variable [Monoid M] {R : Type*} [Semiring R] [TopologicalSpace R]
   /-- Additive convolution using ring multiplication. -/]
 def ringConvolution (f g : M → R) : M → R := convolution (LinearMap.mul ℕ R) f g
 
-/-- Notation for ring multiplication convolution. -/
-scoped notation:70 f:70 " ⋆ₘ " g:71 => ringConvolution f g
+/-- Notation `⋆ᵣ` for ring multiplication convolution (topological/infinite sum version).
+Users who want the simplest `⋆` notation can define their own scoped notation. -/
+scoped notation:70 f:70 " ⋆ᵣ " g:71 => ringConvolution f g
 
-/-- Notation for additive ring multiplication convolution. -/
-scoped notation:70 f:70 " ⋆₊ₘ " g:71 => addRingConvolution f g
+/-- Notation `⋆ᵣ₊` for additive ring multiplication convolution.
+Users who want the simplest `⋆` notation can define their own scoped notation. -/
+scoped notation:70 f:70 " ⋆ᵣ₊ " g:71 => addRingConvolution f g
 
 @[to_additive (dont_translate := R) addRingConvolution_apply]
 theorem ringConvolution_apply (f g : M → R) (x : M) :
-    (f ⋆ₘ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
+    (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
 @[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
-theorem zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ₘ f = 0 := by
+theorem zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ᵣ f = 0 := by
   ext x; simp only [ringConvolution_apply, Pi.zero_apply, zero_mul, tsum_zero]
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
-theorem ringConvolution_zero (f : M → R) : f ⋆ₘ (0 : M → R) = 0 := by
+theorem ringConvolution_zero (f : M → R) : f ⋆ᵣ (0 : M → R) = 0 := by
   ext x; simp only [ringConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
 
 end RingMul
@@ -317,7 +325,7 @@ section RingConvolutionComm
 variable [CommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) addRingConvolution_comm]
-theorem ringConvolution_comm (f g : M → R) : f ⋆ₘ g = g ⋆ₘ f :=
+theorem ringConvolution_comm (f g : M → R) : f ⋆ᵣ g = g ⋆ᵣ f :=
   convolution_comm (LinearMap.mul ℕ R) f g (fun x y => mul_comm x y)
 
 end RingConvolutionComm
@@ -451,7 +459,7 @@ section RingConvolutionAssoc
 
 variable {R : Type*} [Semiring R] [TopologicalSpace R] [T3Space R] [ContinuousAdd R]
 
-/-- Ring convolution associativity at a point: `((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x`.
+/-- Ring convolution associativity at a point: `((f ⋆ᵣ g) ⋆ᵣ h) x = (f ⋆ᵣ (g ⋆ᵣ h)) x`.
 
 Specializes `convolution_assoc_at` to `LinearMap.mul ℕ R`; bilinearity becomes `mul_assoc`. -/
 @[to_additive (dont_translate := R) addRingConvolution_assoc_at]
@@ -467,11 +475,11 @@ theorem ringConvolution_assoc_at (f g h : M → R) (x : M)
     (hcontR : ∀ ae : mulFiber x,
         f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
         ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2)) :
-    ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x :=
+    ((f ⋆ᵣ g) ⋆ᵣ h) x = (f ⋆ᵣ (g ⋆ᵣ h)) x :=
   convolution_assoc_at (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R)
     (LinearMap.mul ℕ R) (fun x y z => mul_assoc x y z) f g h x hTriple hFiberL hFiberR hcontL hcontR
 
-/-- Ring convolution associativity: `(f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h)`.
+/-- Ring convolution associativity: `(f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h)`.
 
 Specializes `convolution_assoc` to `LinearMap.mul ℕ R`; bilinearity becomes `mul_assoc`. -/
 @[to_additive (dont_translate := R) addRingConvolution_assoc]
@@ -487,7 +495,7 @@ theorem ringConvolution_assoc (f g h : M → R)
     (hcontR : ∀ x (ae : mulFiber x),
         f ae.1.1 * (∑' bd : mulFiber ae.1.2, g bd.1.1 * h bd.1.2) =
         ∑' bd : mulFiber ae.1.2, f ae.1.1 * (g bd.1.1 * h bd.1.2)) :
-    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) :=
+    (f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h) :=
   convolution_assoc (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) (LinearMap.mul ℕ R)
     (fun x y z => mul_assoc x y z) f g h hTriple hFiberL hFiberR hcontL hcontR
 
@@ -506,7 +514,7 @@ theorem completeUniformRingConvolution_assoc_at (f g h : M → R) (x : M)
     (hTriple : TripleConvolutionExistsAt (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h x)
     (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
     (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
-    ((f ⋆ₘ g) ⋆ₘ h) x = (f ⋆ₘ (g ⋆ₘ h)) x := by
+    ((f ⋆ᵣ g) ⋆ᵣ h) x = (f ⋆ᵣ (g ⋆ᵣ h)) x := by
   -- Derive left-sigma summability from hTriple via leftAssocEquiv
   have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       f p.2.1.1 * g p.2.1.2 * h p.1.1.2 := by
@@ -542,7 +550,7 @@ theorem completeUniformRingConvolution_assoc (f g h : M → R)
     (hTriple : TripleConvolutionExists (LinearMap.mul ℕ R) (LinearMap.mul ℕ R) f g h)
     (hConvFG : ∀ c : M, Summable fun ab : mulFiber c => f ab.1.1 * g ab.1.2)
     (hConvGH : ∀ e : M, Summable fun bd : mulFiber e => g bd.1.1 * h bd.1.2) :
-    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
+    (f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h) := by
   ext x; exact completeUniformRingConvolution_assoc_at f g h x (hTriple x) hConvFG hConvGH
 
 end CompleteUniformRingConvolutionAssoc
@@ -598,7 +606,7 @@ This version uses `LinearMap.mul R R` and requires `[CommSemiring R]`. -/
   /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
   This version uses `LinearMap.mul R R` and requires `[CommSemiring R]`. -/]
 theorem mulConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
-    (f ⋆ₘ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
+    (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
   convolution_eq_sum_mulAntidiagonal (LinearMap.mul R R) f g x
 
 end MulAntidiagonal
@@ -621,7 +629,7 @@ This version uses `LinearMap.mul ℕ R` and only requires `[Semiring R]`. -/
   /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal.
   This version uses `LinearMap.mul ℕ R` and only requires `[Semiring R]`. -/]
 theorem ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
-    (f ⋆ₘ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
+    (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
   convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
 end MulAntidiagonalRing
@@ -633,16 +641,18 @@ equals the corresponding CauchyProduct. This allows deriving ring axioms from th
 algebraic CauchyProduct proofs. See `Mathlib.Algebra.BigOperators.CauchyProduct` for
 the standalone algebraic formulation. -/
 
-section CauchyAssocProductBridge
+section CauchyProductBridge
+
+open scoped MulCauchyProduct
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- `ringConvolution` equals `MulCauchyProduct.apply` for `HasMulAntidiagonal` types. -/
+/-- `ringConvolution` (`⋆ᵣ`) equals `MulCauchyProduct.apply` (`⋆ᶜ`) for `HasMulAntidiagonal`. -/
 @[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
-  /-- `addRingConvolution` equals `CauchyProduct.apply` for `HasAntidiagonal` types. -/]
+  /-- `addRingConvolution` (`⋆ᵣ₊`) equals `CauchyProduct.apply` (`⋆ᶜ₊`) for `HasAntidiagonal`. -/]
 theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
-    (f ⋆ₘ g) x = MulCauchyProduct.apply f g x :=
+    (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
   ringConvolution_eq_sum_mulAntidiagonal f g x
 
 /-- Ring convolution associativity for `HasMulAntidiagonal` types - no hypotheses needed.
@@ -651,57 +661,44 @@ This is the "fully automated" associativity for finite antidiagonal types. -/
   /-- Ring convolution associativity for `HasAntidiagonal` types - no hypotheses needed.
   This is the "fully automated" associativity for finite antidiagonal types like ℕ, ℕ × ℕ. -/]
 theorem ringConvolution_assoc_of_hasMulAntidiagonal (f g h : M → R) :
-    (f ⋆ₘ g) ⋆ₘ h = f ⋆ₘ (g ⋆ₘ h) := by
+    (f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h) := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.assoc f g h) x
 
-end CauchyAssocProductBridge
-
-/-! ### MulCauchyProduct / CauchyProduct Identity Bridge -/
-
-section MulCauchyProductIdentityBridge
-
-variable [Monoid M] [DecidableEq M] [Finset.HasMulAntidiagonal M]
-variable {R : Type*} [Semiring R] [TopologicalSpace R]
-
-/-- Identity left law for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+/-- Identity left law for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) one_addRingConvolution
-  /-- Identity left law for `HasAntidiagonal` types via `CauchyProduct`. -/]
-theorem one_ringConvolution (f : M → R) :
-    MulCauchyProduct.one ⋆ₘ f = f := by
+  /-- Identity left law for `HasAntidiagonal` types. -/]
+theorem one_ringConvolution [DecidableEq M] (f : M → R) :
+    MulCauchyProduct.one ⋆ᵣ f = f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.one_mul f) x
 
-/-- Identity right law for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+/-- Identity right law for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) addRingConvolution_one
-  /-- Identity right law for `HasAntidiagonal` types via `CauchyProduct`. -/]
-theorem ringConvolution_one (f : M → R) :
-    f ⋆ₘ MulCauchyProduct.one = f := by
+  /-- Identity right law for `HasAntidiagonal` types. -/]
+theorem ringConvolution_one [DecidableEq M] (f : M → R) :
+    f ⋆ᵣ MulCauchyProduct.one = f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.mul_one f) x
 
-end MulCauchyProductIdentityBridge
+end CauchyProductBridge
 
-/-! ### MulCauchyProduct / CauchyProduct Commutativity Bridge -/
+section CauchyProductCommBridge
 
-section MulCauchyProductCommBridge
-
-variable [CommMonoid M] [Finset.HasMulAntidiagonal M]
-variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
-
-/-- Commutativity for `HasMulAntidiagonal` types via `MulCauchyProduct`. -/
+/-- Commutativity for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) addRingConvolution_comm_of_hasAntidiagonal
-  /-- Commutativity for `HasAntidiagonal` types via `CauchyProduct`. -/]
-theorem ringConvolution_comm_of_hasMulAntidiagonal (f g : M → R) :
-    f ⋆ₘ g = g ⋆ₘ f := by
+  /-- Commutativity for `HasAntidiagonal` types. -/]
+theorem ringConvolution_comm_of_hasMulAntidiagonal [CommMonoid M] [Finset.HasMulAntidiagonal M]
+    {R : Type*} [CommSemiring R] [TopologicalSpace R] (f g : M → R) :
+    f ⋆ᵣ g = g ⋆ᵣ f := by
   funext x
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.comm f g) x
 
-end MulCauchyProductCommBridge
+end CauchyProductCommBridge
 
 end DiscreteConvolution
 

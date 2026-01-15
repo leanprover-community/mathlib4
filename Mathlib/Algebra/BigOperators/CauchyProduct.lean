@@ -32,8 +32,14 @@ version `CauchyProduct` uses `Finset.antidiagonal`. The additive versions are ge
 
 ## Notation
 
-* `a ⋆ₘ b` : Multiplicative Cauchy product convolution (over `mulAntidiagonal`)
-* `a ⋆ b` : Additive Cauchy product convolution (over `antidiagonal`)
+* `a ⋆ᶜ b` : Multiplicative Cauchy product convolution (over `mulAntidiagonal`)
+* `a ⋆ᶜ₊ b` : Additive Cauchy product convolution (over `antidiagonal`)
+
+To use the simpler `⋆` notation, define a scoped notation in your file:
+```
+scoped notation:70 a:70 " ⋆ " b:71 => a ⋆ᶜ b   -- multiplicative
+scoped notation:70 a:70 " ⋆ " b:71 => a ⋆ᶜ₊ b  -- additive
+```
 
 ## Connection to DiscreteConvolution
 
@@ -63,34 +69,36 @@ variable [Monoid M] [Finset.HasMulAntidiagonal M] [Semiring R]
 def apply (a b : M → R) : M → R :=
   fun n => ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2
 
-/-- Notation for multiplicative Cauchy product convolution. -/
-scoped notation:70 a:70 " ⋆ₘ " b:71 => apply a b
+/-- Notation `⋆ᶜ` for multiplicative Cauchy product convolution (finite/algebraic version).
+Users who want the simplest `⋆` notation can define their own scoped notation. -/
+scoped notation:70 a:70 " ⋆ᶜ " b:71 => apply a b
 
-/-- Notation for additive Cauchy product convolution. -/
-scoped[CauchyProduct] notation:70 a:70 " ⋆ " b:71 => CauchyProduct.apply a b
+/-- Notation `⋆ᶜ₊` for additive Cauchy product convolution (finite/algebraic version).
+Users who want the simplest `⋆` notation can define their own scoped notation. -/
+scoped[CauchyProduct] notation:70 a:70 " ⋆ᶜ₊ " b:71 => CauchyProduct.apply a b
 
 open scoped CauchyProduct
 
 @[to_additive (dont_translate := R) CauchyProduct.apply_eq]
 theorem apply_eq (a b : M → R) (n : M) :
-    (a ⋆ₘ b) n = ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2 := rfl
+    (a ⋆ᶜ b) n = ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2 := rfl
 
 /-! ### Ring Axioms -/
 
 @[to_additive (dont_translate := R) CauchyProduct.left_distrib]
-theorem left_distrib (a b c : M → R) : a ⋆ₘ (b + c) = a ⋆ₘ b + a ⋆ₘ c := by
+theorem left_distrib (a b c : M → R) : a ⋆ᶜ (b + c) = a ⋆ᶜ b + a ⋆ᶜ c := by
   ext n; simp only [Pi.add_apply, apply_eq, mul_add, Finset.sum_add_distrib]
 
 @[to_additive (dont_translate := R) CauchyProduct.right_distrib]
-theorem right_distrib (a b c : M → R) : (a + b) ⋆ₘ c = a ⋆ₘ c + b ⋆ₘ c := by
+theorem right_distrib (a b c : M → R) : (a + b) ⋆ᶜ c = a ⋆ᶜ c + b ⋆ᶜ c := by
   ext n; simp only [apply_eq, Pi.add_apply, add_mul, Finset.sum_add_distrib]
 
 @[to_additive (dont_translate := R) (attr := simp) CauchyProduct.zero_mul]
-theorem zero_mul (a : M → R) : (0 : M → R) ⋆ₘ a = 0 := by
+theorem zero_mul (a : M → R) : (0 : M → R) ⋆ᶜ a = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.zero_mul, Finset.sum_const_zero]
 
 @[to_additive (dont_translate := R) (attr := simp) CauchyProduct.mul_zero]
-theorem mul_zero (a : M → R) : a ⋆ₘ (0 : M → R) = 0 := by
+theorem mul_zero (a : M → R) : a ⋆ᶜ (0 : M → R) = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.mul_zero, Finset.sum_const_zero]
 
 /-! ### Associativity via bijection on triple sums -/
@@ -98,7 +106,7 @@ theorem mul_zero (a : M → R) : a ⋆ₘ (0 : M → R) = 0 := by
 /-- Associativity of multiplicative Cauchy product, proved via bijection on sigma types. -/
 @[to_additive (dont_translate := R) CauchyProduct.assoc
   /-- Associativity of Cauchy product, proved via bijection on sigma types. -/]
-theorem assoc (a b c : M → R) : (a ⋆ₘ b) ⋆ₘ c = a ⋆ₘ (b ⋆ₘ c) := by
+theorem assoc (a b c : M → R) : (a ⋆ᶜ b) ⋆ᶜ c = a ⋆ᶜ (b ⋆ᶜ c) := by
   ext n
   simp only [apply_eq, Finset.sum_mul, Finset.mul_sum]
   rw [Finset.sum_sigma', Finset.sum_sigma']
@@ -113,7 +121,7 @@ theorem assoc (a b c : M → R) : (a ⋆ₘ b) ⋆ₘ c = a ⋆ₘ (b ⋆ₘ c) 
   · exact mul_assoc (a x.2.1) (b x.2.2) (c x.1.2)
 
 @[to_additive (dont_translate := R) CauchyProduct.smul_mul]
-theorem smul_mul (c : R) (a b : M → R) : (c • a) ⋆ₘ b = c • (a ⋆ₘ b) := by
+theorem smul_mul (c : R) (a b : M → R) : (c • a) ⋆ᶜ b = c • (a ⋆ᶜ b) := by
   ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_assoc]
 
 end Product
@@ -144,7 +152,7 @@ section IdentityMulAntidiagonal
 variable [Monoid M] [DecidableEq M] [Finset.HasMulAntidiagonal M] [Semiring R]
 
 @[to_additive (dont_translate := R) CauchyProduct.one_mul]
-theorem one_mul (a : M → R) : one ⋆ₘ a = a := by
+theorem one_mul (a : M → R) : one ⋆ᶜ a = a := by
   ext n; simp only [apply_eq, one]
   rw [Finset.sum_eq_single (1, n), Pi.single_eq_same, _root_.one_mul]
   · intro ⟨x, y⟩ hxy hne
@@ -153,7 +161,7 @@ theorem one_mul (a : M → R) : one ⋆ₘ a = a := by
   · simp [Finset.mem_mulAntidiagonal]
 
 @[to_additive (dont_translate := R) CauchyProduct.mul_one]
-theorem mul_one (a : M → R) : a ⋆ₘ one = a := by
+theorem mul_one (a : M → R) : a ⋆ᶜ one = a := by
   ext n; simp only [apply_eq, one]
   rw [Finset.sum_eq_single (n, 1), Pi.single_eq_same, _root_.mul_one]
   · intro ⟨x, y⟩ hxy hne
@@ -171,14 +179,14 @@ section Comm
 variable [CommMonoid M] [Finset.HasMulAntidiagonal M] [CommSemiring R]
 
 @[to_additive (dont_translate := R) CauchyProduct.comm]
-theorem comm (a b : M → R) : a ⋆ₘ b = b ⋆ₘ a := by
+theorem comm (a b : M → R) : a ⋆ᶜ b = b ⋆ᶜ a := by
   ext n; simp only [apply_eq]
   rw [← Finset.MulAntidiag.map_swap (n := n), Finset.sum_map]
   simp only [Function.Embedding.coeFn_mk, Prod.fst_swap,
     Prod.snd_swap, Finset.MulAntidiag.map_swap, mul_comm]
 
 @[to_additive (dont_translate := R) CauchyProduct.mul_smul]
-theorem mul_smul (c : R) (a b : M → R) : a ⋆ₘ (c • b) = c • (a ⋆ₘ b) := by
+theorem mul_smul (c : R) (a b : M → R) : a ⋆ᶜ (c • b) = c • (a ⋆ᶜ b) := by
   ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum]
   apply Finset.sum_congr rfl; intro kl _; ring
 
