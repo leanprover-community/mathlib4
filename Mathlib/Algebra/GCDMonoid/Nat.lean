@@ -48,7 +48,7 @@ theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
 
 instance : StrongNormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
-    (inferInstance : NormalizationMonoid ℕ) with
+    (inferInstance : StrongNormalizationMonoid ℕ) with
     normalize_gcd := fun _ _ => normalize_eq _
     normalize_lcm := fun _ _ => normalize_eq _ }
 

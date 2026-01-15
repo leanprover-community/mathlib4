@@ -80,6 +80,9 @@ attribute [local instance] Associated.setoid
 theorem Associated.of_eq [Monoid M] {a b : M} (h : a = b) : a ~ᵤ b :=
   ⟨1, by rwa [Units.val_one, mul_one]⟩
 
+@[nontriviality] theorem Associated.of_subsingleton [Subsingleton M] [Monoid M] (a b : M) :
+    Associated a b := .of_eq (Subsingleton.elim ..)
+
 theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
   ⟨u⁻¹, Units.mul_inv u⟩
 

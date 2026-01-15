@@ -59,7 +59,8 @@ theorem prod_normalizedFactors_eq {α} [CommMonoidWithZero α] [StrongNormalizat
     [UniqueFactorizationMonoid α] {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod
-  · rw [normalizedFactors, ← coe_normalize, ← map_multiset_prod, coe_normalize, normalize_idem]
+  · rw [normalizedFactors, ← coe_normalizeHom, ← map_multiset_prod, coe_normalizeHom,
+      normalize_idem]
   · exact normalize_eq_normalize_iff.mpr (dvd_dvd_iff_associated.mpr (prod_normalizedFactors ane0))
 
 theorem prime_of_normalized_factor {a : α} : ∀ x : α, x ∈ normalizedFactors a → Prime x := by

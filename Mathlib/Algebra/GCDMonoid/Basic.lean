@@ -67,26 +67,42 @@ divisibility, gcd, lcm, normalize
 
 variable {α : Type*}
 
-/-- Normalization monoid: the choice of a right inverse of the quotient map `α → Associates α`
-that maps 1 to 1. -/
-class NormalizationMonoid (α : Type*) [Monoid α] where
-  /-- Maps an element of `Associates` back to the normalized element of its associate class -/
-  out : Associates α → α
-  mk_out a : Associates.mk (out a) = a
-  out_one : out 1 = 1
+/-- Normalization monoid: multiplying with `normUnit` gives a normal form for associated
+elements. -/
+class NormalizationMonoid (α : Type*) [MonoidWithZero α] where
+  /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
+  normUnit : α → αˣ
+  normUnit_zero : normUnit 0 = 1
+  normUnit_one : normUnit 1 = 1
+  /-- The condition that ensures associated elements are normalized to the same element. -/
+  normUnit_mul_units {a : α} (u : αˣ) : a ≠ 0 → normUnit (a * u) = u⁻¹ * normUnit a
 
-instance (α) [Monoid α] : Nonempty (NormalizationMonoid α) := .intro
-  { out a := by classical exact if a = 1 then 1 else a.out
-    mk_out a := by
-      split_ifs
-      · simpa [eq_comm]
-      · simp
-    out_one := by simp }
+/-- Construct a `NormalizationMonoid` from a left inverse of quotient map `α → Associates α`. -/
+noncomputable abbrev NormalizationMonoid.ofLeftInverse {α : Type*} [MonoidWithZero α]
+    [IsLeftCancelMulZero α] (out : Associates α → α)
+    (mk_out : ∀ a, Associates.mk (out a) = a) (out_one : out 1 = 1) :
+    NormalizationMonoid α :=
+  have assoc a := (Associates.mk_eq_mk_iff_associated.mp <| mk_out (.mk a)).symm
+  let := Classical.dec
+  { normUnit a := if a = 0 then 1 else (assoc a).choose
+    normUnit_zero := if_pos rfl
+    normUnit_one := by
+      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec; simp
+    normUnit_mul_units {a} u ha := by
+      simp_rw [Units.mul_left_eq_zero, if_neg ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
+      rw [Units.val_mul, ← (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha).eq_iff,
+        (assoc a).choose_spec, ← mul_assoc, (assoc _).choose_spec,
+        Associates.mk_eq_mk_iff_associated.mpr (associated_mul_unit_right a u u.isUnit)] }
 
-alias Associates.out := NormalizationMonoid.out
+instance (α) [MonoidWithZero α] [IsLeftCancelMulZero α] :
+    Nonempty (NormalizationMonoid α) := .intro <| by
+  classical
+  exact .ofLeftInverse
+    (fun a ↦ by classical exact if a = 1 then 1 else a.out)
+    (fun _ ↦ by dsimp; split_ifs with h <;> simp [h]) (by simp)
 
 /-- Strong normalization monoid: multiplying with `normUnit` gives a normal form for associated
-elements. -/
+elements. It is stronger in that it ensures the normalization map is a monoid homomorphism. -/
 class StrongNormalizationMonoid (α : Type*) [CommMonoidWithZero α] where
   /-- `normUnit` assigns to each element of the monoid a unit of the monoid. -/
   normUnit : α → αˣ
@@ -97,31 +113,22 @@ class StrongNormalizationMonoid (α : Type*) [CommMonoidWithZero α] where
   /-- The proposition that `normUnit` maps units to their inverses. -/
   normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹
 
-export StrongNormalizationMonoid (normUnit normUnit_zero normUnit_mul normUnit_coe_units)
+export NormalizationMonoid (normUnit normUnit_zero normUnit_one normUnit_mul_units)
 
-attribute [simp] normUnit_coe_units normUnit_zero normUnit_mul
+attribute [simp] normUnit_zero normUnit_one
 
 section NormalizationMonoid
 
-variable [Monoid α] [NormalizationMonoid α]
+variable [MonoidWithZero α] [NormalizationMonoid α]
 
-@[simp] theorem Associates.mk_out (a : Associates α) : Associates.mk a.out = a :=
-  NormalizationMonoid.mk_out a
-
-@[simp] theorem Associates.out_one : (1 : Associates α).out = 1 := NormalizationMonoid.out_one
-
-theorem Associates.out_injective : (Associates.out : _ → α).Injective :=
-  fun a _ eq ↦ by rw [← Associates.mk_out a, eq, Associates.mk_out]
+@[simp] theorem normUnit_coe_units (u : αˣ) : normUnit u.1 = u⁻¹ := by
+  nontriviality α; convert normUnit_mul_units u one_ne_zero using 1 <;> simp
 
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
-def normalize : α → α := fun x ↦ Associates.out (.mk x)
-
-@[simp]
-theorem Associates.out_mk (a : α) : (Associates.mk a).out = normalize a :=
-  rfl
+def normalize (x : α) : α := x * normUnit x
 
 theorem associated_normalize (x : α) : Associated x (normalize x) :=
-  Associates.mk_eq_mk_iff_associated.mp <| by rw [normalize, Associates.mk_out]
+  ⟨_, rfl⟩
 
 theorem normalize_associated (x : α) : Associated (normalize x) x :=
   (associated_normalize _).symm
@@ -135,141 +142,120 @@ theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Ass
 theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
 
-@[simp]
-theorem normalize_zero {α} [MonoidWithZero α] [NormalizationMonoid α] : normalize (0 : α) = 0 := by
-  have ⟨u, h⟩ := associated_normalize (0 : α)
-  simpa using h.symm
+theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
+  rfl
 
-@[simp] theorem normalize_one : normalize (1 : α) = 1 := Associates.out_one
+@[simp] theorem normalize_zero : normalize (0 : α) = 0 := by simp [normalize]
 
-theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by
-  rw [normalize, Associates.mk_eq_one.mpr u.isUnit, Associates.out_one]
+@[simp] theorem normalize_one : normalize (1 : α) = 1 := by simp [normalize]
 
-theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x where
-  mp hx := Associates.mk_eq_one.mp <| by
-    have := congr(Associates.mk $hx)
-    rwa [normalize, Associates.mk_out] at this
-  mpr := fun ⟨u, hu⟩ ↦ hu ▸ normalize_coe_units u
-
-@[simp]
-theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by
-  rw [normalize, normalize, Associates.mk_out]
-
-@[simp]
-theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
-  Quotient.inductionOn a normalize_idem
-
-@[simp]
-theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
-  (normalize_associated b).dvd_iff_dvd_right
-
-@[simp]
-theorem normalize_dvd_iff {a b : α} : normalize a ∣ b ↔ a ∣ b :=
-  (normalize_associated a).dvd_iff_dvd_left
-
-section MonoidWithZero
-
-variable {α : Type*} [MonoidWithZero α] [NormalizationMonoid α]
+theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp [normalize]
 
 @[simp]
 theorem normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
   ⟨fun hx => (associated_zero_iff_eq_zero x).1 <| hx ▸ associated_normalize _, by
     rintro rfl; exact normalize_zero⟩
 
-@[simp]
-theorem Associates.out_top : (⊤ : Associates α).out = 0 :=
-  normalize_zero
-
-@[simp]
-theorem Associates.out_eq_zero_iff {a : Associates α} : a.out = 0 ↔ a = 0 :=
-  Quotient.inductionOn a (by simp)
-
-theorem Associates.out_zero : (0 : Associates α).out = 0 := by
-  simp
-
-theorem normalize_eq_normalize_iff_associated {x y : α} :
-    normalize x = normalize y ↔ Associated x y := by
-  rw [← Associates.mk_eq_mk_iff_associated, normalize, normalize, Associates.out_injective.eq_iff]
-
-theorem normalize_eq_normalize_iff [IsCancelMulZero α] {x y : α} :
-    normalize x = normalize y ↔ x ∣ y ∧ y ∣ x := by
-  rw [dvd_dvd_iff_associated, normalize_eq_normalize_iff_associated]
-
-theorem normalize_eq_normalize [IsCancelMulZero α] {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
-    normalize a = normalize b :=
-  normalize_eq_normalize_iff.mpr ⟨hab, hba⟩
-
-theorem dvd_antisymm_of_normalize_eq [IsCancelMulZero α] {a b : α}
-    (ha : normalize a = a) (hb : normalize b = b)
-    (hab : a ∣ b) (hba : b ∣ a) : a = b :=
-  ha ▸ hb ▸ normalize_eq_normalize hab hba
-
-theorem Associated.eq_of_normalized {a b : α} (h : Associated a b)
-    (ha : normalize a = a) (hb : normalize b = b) : a = b := by
-  rwa [← ha, ← hb, normalize_eq_normalize_iff_associated]
-
-end MonoidWithZero
-
-end NormalizationMonoid
-
-section StrongNormalizationMonoid
-
-variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
-
-@[simp]
-theorem normUnit_one : normUnit (1 : α) = 1 :=
-  normUnit_coe_units 1
-
-/-- Chooses an element of each associate class, by multiplying by `normUnit` -/
-protected def StrongNormalizationMonoid.normalize : α →*₀ α where
-  toFun x := x * normUnit x
-  map_zero' := by
-    simp only [normUnit_zero]
-    exact mul_one (0 : α)
-  map_one' := by rw [normUnit_one, one_mul]; rfl
-  map_mul' x y :=
-    (by_cases fun hx : x = 0 => by rw [hx, zero_mul, zero_mul, zero_mul]) fun hx =>
-      (by_cases fun hy : y = 0 => by rw [hy, mul_zero, zero_mul, mul_zero]) fun hy => by
-        simp only [normUnit_mul hx hy, Units.val_mul]; simp only [mul_assoc, mul_left_comm y]
-
-instance : NormalizationMonoid α where
-  out := Quotient.lift StrongNormalizationMonoid.normalize fun a _ ⟨u, hu⟩ => hu ▸ by
-    nontriviality α
-    obtain rfl | h := eq_or_ne a 0; · simp
-    dsimp [StrongNormalizationMonoid.normalize]
-    rw [normUnit_mul h u.ne_zero, Units.val_mul, mul_mul_mul_comm]
-    simp [normUnit_coe_units]
-  mk_out a := by
-    obtain ⟨a, rfl⟩ := Associates.mk_surjective a
-    dsimp [StrongNormalizationMonoid.normalize]
-    simp [← Associates.mk_mul_mk, Associates.mk_eq_one.mpr]
-  out_one := show Quotient.lift _ _ ⟦1⟧ = 1 by
-    rw [Quotient.lift_mk]
-    dsimp [StrongNormalizationMonoid.normalize]
-    rw [normUnit_one]
-    exact mul_one _
-
-theorem coe_normalize : StrongNormalizationMonoid.normalize (α := α) = normalize (α := α) :=
-  rfl
-
-theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
-  rfl
+theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x where
+  mp hx := Units.eq_inv_of_mul_eq_one_right hx ▸ Units.isUnit _
+  mpr := fun ⟨u, hu⟩ ↦ hu ▸ normalize_coe_units u
 
 @[simp]
 theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
   obtain rfl | h := eq_or_ne a 0
   · rw [normUnit_zero, zero_mul, normUnit_zero]
-  · rw [normUnit_mul h (Units.ne_zero _), normUnit_coe_units, mul_inv_eq_one]
+  · simp [normUnit_mul_units _ h]
 
-@[simp] theorem normalize_mul (x y : α) : normalize (x * y) = normalize x * normalize y :=
-  StrongNormalizationMonoid.normalize.map_mul x y
+@[simp]
+theorem normalize_idem (x : α) : normalize (normalize x) = normalize x := by simp [normalize_apply]
 
-end StrongNormalizationMonoid
+theorem normalize_eq_normalize_iff_associated {a b : α} :
+    normalize a = normalize b ↔ Associated a b where
+  mp h := (associated_normalize a).trans <| .trans (.of_eq h) (associated_normalize b).symm
+  mpr := by
+    rintro ⟨u, rfl⟩
+    nontriviality α
+    refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 ↦ ?_
+    simp [normalize, normUnit_mul_units _ ha, mul_assoc]
+
+theorem Associated.eq_of_normalized
+    {a b : α} (h : Associated a b) (ha : normalize a = a) (hb : normalize b = b) :
+    a = b := by
+  rw [← ha, normalize_eq_normalize_iff_associated.mpr h, hb]
+
+@[simp]
+theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
+  Units.dvd_mul_right
+
+@[simp]
+theorem normalize_dvd_iff {a b : α} : normalize a ∣ b ↔ a ∣ b :=
+  Units.mul_right_dvd
+
+section
+
+variable [IsLeftCancelMulZero α]
+
+theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
+    normalize a = normalize b :=
+  normalize_eq_normalize_iff_associated.mpr (associated_of_dvd_dvd hab hba)
+
+theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
+  ⟨fun h => ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
+    normalize_eq_normalize hxy hyx⟩
+
+theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : normalize b = b)
+    (hab : a ∣ b) (hba : b ∣ a) : a = b :=
+  ha ▸ hb ▸ normalize_eq_normalize hab hba
+
+end
+
+end NormalizationMonoid
 
 namespace Associates
 
-variable [CommMonoid α] [NormalizationMonoid α]
+variable [MonoidWithZero α] [NormalizationMonoid α]
+
+/-- Maps an element of `Associates` back to the normalized element of its associate class -/
+protected def out : Associates α → α :=
+  (Quotient.lift (normalize : α → α)) fun _ _ ⟨_, hu⟩ =>
+    hu ▸ normalize_eq_normalize_iff_associated.mpr ⟨_, rfl⟩
+
+@[simp]
+theorem out_mk (a : α) : (Associates.mk a).out = normalize a :=
+  rfl
+
+@[simp]
+theorem out_one : (1 : Associates α).out = 1 :=
+  normalize_one
+
+@[simp]
+theorem out_top : (⊤ : Associates α).out = 0 :=
+  normalize_zero
+
+@[simp]
+theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
+  Quotient.inductionOn a normalize_idem
+
+@[simp]
+theorem mk_out (a : Associates α) : Associates.mk a.out = a :=
+  Quotient.inductionOn a mk_normalize
+
+theorem out_injective : Function.Injective (Associates.out : _ → α) :=
+  Function.LeftInverse.injective mk_out
+
+@[simp]
+theorem out_eq_zero_iff {a : Associates α} : a.out = 0 ↔ a = 0 :=
+  Quotient.inductionOn a (by simp)
+
+theorem out_zero : (0 : Associates α).out = 0 := by
+  simp
+
+variable {α : Type*} [CommMonoidWithZero α] [NormalizationMonoid α]
+
+theorem out_mul' (a b : Associates α) : Associated (a * b).out (a.out * b.out) :=
+  Quotient.inductionOn₂ a b fun _ _ ↦ normalize_associated_iff.mpr <|
+    .mul_mul (associated_normalize _) (associated_normalize _)
 
 theorem dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ Associates.mk a ≤ b :=
   Quotient.inductionOn b <| by
@@ -279,17 +265,46 @@ theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associa
   Quotient.inductionOn b <| by
     simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
 
-theorem out_mul' (a b : Associates α) : Associated (a * b).out (a.out * b.out) :=
-  Quotient.inductionOn₂ a b fun _ _ ↦ normalize_associated_iff.mpr <|
-    .mul_mul (associated_normalize _) (associated_normalize _)
-
 end Associates
 
-theorem Associates.out_mul {α} [CommMonoidWithZero α] [StrongNormalizationMonoid α]
-    (a b : Associates α) : (a * b).out = a.out * b.out :=
-  Quotient.inductionOn₂ a b fun _ _ ↦ by
-    simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk]
-    apply StrongNormalizationMonoid.normalize.map_mul
+section StrongNormalizationMonoid
+
+variable [CommMonoidWithZero α] [StrongNormalizationMonoid α]
+
+instance : NormalizationMonoid α where
+  normUnit := StrongNormalizationMonoid.normUnit
+  normUnit_zero := StrongNormalizationMonoid.normUnit_zero
+  normUnit_one := StrongNormalizationMonoid.normUnit_coe_units 1
+  normUnit_mul_units u h := by
+    nontriviality α
+    exact (StrongNormalizationMonoid.normUnit_mul h u.ne_zero).trans <| by
+      rw [StrongNormalizationMonoid.normUnit_coe_units, mul_comm]
+
+@[simp] theorem normUnit_mul {a b : α} :
+    a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b :=
+  StrongNormalizationMonoid.normUnit_mul
+
+@[simp] theorem normalize_mul (x y : α) : normalize (x * y) = normalize x * normalize y := by
+  obtain rfl | hx := eq_or_ne x 0; · simp
+  obtain rfl | hy := eq_or_ne y 0; · simp
+  simp_rw [normalize, normUnit_mul hx hy]
+  ac_rfl
+
+/-- Chooses an element of each associate class, by multiplying by `normUnit` -/
+def normalizeHom : α →*₀ α where
+  toFun := normalize
+  map_zero' := normalize_zero
+  map_one' := normalize_one
+  map_mul' := normalize_mul
+
+theorem coe_normalizeHom : normalizeHom (α := α) = normalize (α := α) :=
+  rfl
+
+theorem Associates.out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
+  Quotient.inductionOn₂ a b fun _ _ => by
+    simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk, normalize_mul]
+
+end StrongNormalizationMonoid
 
 /-- GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
@@ -336,7 +351,8 @@ class StrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends
   /-- The LCM is normalized to itself. -/
   normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b
 
-export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd lcm_zero_left lcm_zero_right)
+export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd
+  gcd_mul_lcm lcm_zero_left lcm_zero_right)
 
 attribute [simp] lcm_zero_left lcm_zero_right
 
@@ -350,15 +366,10 @@ variable [CommMonoidWithZero α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
 instance [GCDMonoid α] : Nonempty (GCDMonoid α) := ⟨‹_›⟩
-instance [NormalizedGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) := ⟨‹_›⟩
-instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (NormalizationMonoid α) :=
-  h.elim fun _ ↦ inferInstance
-instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (GCDMonoid α) :=
-  h.elim fun _ ↦ inferInstance
-
+instance [h : Nonempty (GCDMonoid α)] : IsCancelMulZero α := h.elim fun _ ↦ inferInstance
 instance [StrongNormalizationMonoid α] : Nonempty (StrongNormalizationMonoid α) := ⟨‹_›⟩
 instance [StrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizedGCDMonoid α) := ⟨‹_›⟩
-instance [h : Nonempty (StrongNormalizedGCDMonoid α)] : Nonempty (NormalizedGCDMonoid α) :=
+instance [h : Nonempty (StrongNormalizedGCDMonoid α)] : Nonempty (GCDMonoid α) :=
   h.elim fun _ ↦ inferInstance
 instance [h : Nonempty (StrongNormalizedGCDMonoid α)] : Nonempty (StrongNormalizationMonoid α) :=
   h.elim fun _ ↦ inferInstance
@@ -372,9 +383,6 @@ theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
 @[simp]
 theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
-
-theorem gcd_mul_lcm [GCDMonoid α] : ∀ a b : α, Associated (gcd a b * lcm a b) (a * b) :=
-  GCDMonoid.gcd_mul_lcm
 
 section GCD
 
@@ -682,14 +690,14 @@ theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Subsingleton αˣ]
 
 theorem gcd_greatest {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
-    GCDMonoid.gcd a b = normalize d :=
-  haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
+    gcd a b = normalize d :=
+  haveI h := hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)
   gcd_eq_normalize h (GCDMonoid.dvd_gcd hda hdb)
 
 theorem gcd_greatest_associated {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] {a b d : α}
     (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : α, e ∣ a → e ∣ b → e ∣ d) :
-    Associated d (GCDMonoid.gcd a b) :=
-  haveI h := hd _ (GCDMonoid.gcd_dvd_left a b) (GCDMonoid.gcd_dvd_right a b)
+    Associated d (gcd a b) :=
+  haveI h := hd _ (gcd_dvd_left a b) (gcd_dvd_right a b)
   associated_of_dvd_dvd (GCDMonoid.dvd_gcd hda hdb) h
 
 theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
@@ -968,9 +976,9 @@ alias NormalizationMonoid.ofUniqueUnits := StrongNormalizationMonoid.ofUniqueUni
 @[deprecated (since := "2026-01-12")]
 alias uniqueNormalizationMonoidOfUniqueUnits:= uniqueStrongNormalizationMonoidOfUniqueUnits
 
-instance : Subsingleton (NormalizationMonoid α) where
-  allEq := fun ⟨u, hu, _⟩ ⟨v, hv, _⟩ => by
-    congr; ext a; rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated, hu, hv]
+instance : Unique (NormalizationMonoid α) where
+  default := inferInstance
+  uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
@@ -1267,6 +1275,12 @@ abbrev gcdMonoidOfExistsGCD [DecidableEq α]
     (fun a b => ((Classical.choose_spec (h a b) (Classical.choose (h a b))).2 dvd_rfl).2)
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
+theorem nonempty_gcdMonoid_iff {α} [CommMonoidWithZero α] :
+    Nonempty (GCDMonoid α) ↔
+      IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c where
+  mp := fun ⟨_⟩ ↦ ⟨inferInstance, fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
+  mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsGCD h⟩
+
 /-- Define a `NormalizedGCDMonoid` structure on a monoid just from the existence of a `gcd`. -/
 abbrev normalizedGCDMonoidOfExistsGCD [NormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : NormalizedGCDMonoid α :=
@@ -1283,6 +1297,14 @@ the existence of a `gcd`. -/
 abbrev strongNormalizedGCDMonoidOfExistsGCD [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsGCD h
+  __ := ‹StrongNormalizationMonoid α›
+
+theorem nonempty_normalizedGCDMonoid_iff_gcdMonoid {α} [CommMonoidWithZero α] :
+    Nonempty (NormalizedGCDMonoid α) ↔ Nonempty (GCDMonoid α) where
+  mp := fun ⟨_⟩ ↦ inferInstance
+  mpr := fun ⟨_⟩ ↦ by
+    have := Classical.arbitrary (NormalizationMonoid α)
+    classical exact ⟨normalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
 abbrev gcdMonoidOfExistsLCM [DecidableEq α]
@@ -1308,6 +1330,7 @@ the existence of a `lcm`. -/
 abbrev strongNormalizedGCDMonoidOfExistsLCM [StrongNormalizationMonoid α] [DecidableEq α]
     (h : ∀ a b : α, ∃ c : α, ∀ d : α, a ∣ d ∧ b ∣ d ↔ c ∣ d) : StrongNormalizedGCDMonoid α where
   __ := normalizedGCDMonoidOfExistsLCM h
+  __ := ‹StrongNormalizationMonoid α›
 
 end Constructors
 
@@ -1335,7 +1358,8 @@ instance (priority := 100) : StrongNormalizedGCDMonoid G₀ where
   normalize_lcm a b := if h : a = 0 ∨ b = 0 then by simp [if_pos h] else by simp [if_neg h]
 
 @[simp]
-theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by simp [normUnit, h0]
+theorem coe_normUnit {a : G₀} (h0 : a ≠ 0) : (↑(normUnit a) : G₀) = a⁻¹ := by
+  simp [normUnit, StrongNormalizationMonoid.normUnit, h0]
 
 theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp [normalize_apply, h0]
 

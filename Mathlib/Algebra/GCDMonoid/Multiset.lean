@@ -170,7 +170,7 @@ theorem gcd_map_mul {α} [CommMonoidWithZero α] [StrongNormalizedGCDMonoid α]
     rw [ih]
     apply ((normalize_associated a).mul_right _).gcd_eq_right
 
-theorem gcd_map_mul' (a : α) (s : Multiset α) :
+theorem associated_gcd_map_mul (a : α) (s : Multiset α) :
     Associated (s.map (a * ·)).gcd (a * s.gcd) := by
   refine s.induction_on ?_ fun b s ih ↦ ?_
   · simp_rw [map_zero, gcd_zero, mul_zero, Associated.of_eq]
@@ -211,7 +211,7 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
     (ht : s = t.map (s.gcd * ·)) : t.gcd = 1 := by
   rw [← normalize_gcd, normalize_eq_one, ← associated_one_iff_isUnit]
   refine .of_mul_left (.symm ?_) .rfl (a := s.gcd) ?_
-  · simpa using (Associated.of_eq <| congr(gcd $ht)).trans (gcd_map_mul' ..)
+  · simpa using (Associated.of_eq <| congr(gcd $ht)).trans (associated_gcd_map_mul ..)
   contrapose! hs
   exact s.gcd_eq_zero_iff.1 hs
 

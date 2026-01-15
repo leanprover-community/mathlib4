@@ -197,11 +197,49 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
   lia
 
-section StrongNormalizationMonoid
+section NormalizationMonoid
 
-variable [StrongNormalizationMonoid R]
+variable [NormalizationMonoid R]
 
-instance : StrongNormalizationMonoid R[X] where
+instance instNormalizationMonoid : NormalizationMonoid R[X] where
+  normUnit p :=
+    ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
+      rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
+  normUnit_zero := Units.ext (by simp)
+  normUnit_one := Units.ext (by simp)
+  normUnit_mul_units u h := Units.ext <| by
+    dsimp only [Units.val_mul]
+    obtain ⟨_, ⟨w, rfl⟩, h2⟩ := isUnit_iff.1 ⟨u, rfl⟩
+    rw [leadingCoeff_mul, ← h2, leadingCoeff_C, normUnit_mul_units _ (leadingCoeff_ne_zero.2 h),
+      Units.eq_inv_mul_iff_mul_eq, Units.val_mul, C_mul, ← mul_assoc, ← h2, ← C_mul]
+    simp
+
+@[simp]
+theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
+  simp [normUnit]
+
+@[simp]
+theorem leadingCoeff_normalize (p : R[X]) :
+    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
+
+theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
+  simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
+    Units.val_one, Polynomial.C.map_one, mul_one]
+
+theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
+    (normalize p).roots = p.roots := by
+  rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
+
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by
+  have := coe_normUnit (R := R) (p := X)
+  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+
+theorem X_eq_normalize : X = normalize (X : R[X]) := by
+  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+
+end NormalizationMonoid
+
+instance [StrongNormalizationMonoid R] : StrongNormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
       rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
@@ -220,43 +258,6 @@ instance : StrongNormalizationMonoid R[X] where
         rcases Polynomial.isUnit_iff.1 ⟨u, rfl⟩ with ⟨_, ⟨w, rfl⟩, h2⟩
         rw [← h2, leadingCoeff_C, normUnit_coe_units, ← C_mul, Units.mul_inv, C_1]
         rfl)
-
-@[simp]
-theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
-  simp [normUnit]
-
-@[simp]
-theorem leadingCoeff_normalize (p : R[X]) :
-    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
-
-theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
-  simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
-    Units.val_one, Polynomial.C.map_one, mul_one]
-
-theorem roots_normalize {R} [CommRing R] [IsDomain R] [StrongNormalizationMonoid R] {p : R[X]} :
-    (normalize p).roots = p.roots := by
-  rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
-
-theorem normUnit_X : normUnit (X : R[X]) = 1 := by
-  have := coe_normUnit (R := R) (p := X)
-  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
-
-theorem X_eq_normalize : X = normalize (X : R[X]) := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
-
-end StrongNormalizationMonoid
-
-section NormalizationMonoid
-
-variable [NormalizationMonoid R]
-
-/-- This is not an instance because it is not defeq to the `StrongNormalizationMonoid` instance. -/
-abbrev instNormalizationMonoid : NormalizationMonoid R[X] where
-  out := _
-  mk_out := _
-  out_one := _
-
-end NormalizationMonoid
 
 end IsDomain
 
@@ -726,7 +727,7 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
     map f (normalize p) = normalize (map f p) := by
   by_cases hp : p = 0
   · simp [hp]
-  · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
+  · simp [normalize_apply, Polynomial.map_mul, normUnit, StrongNormalizationMonoid.normUnit, hp]
 
 theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by

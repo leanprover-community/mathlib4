@@ -73,6 +73,7 @@ noncomputable abbrev UniqueFactorizationMonoid.toStrongNormalizedGCDMonoid (α :
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [StrongNormalizationMonoid α] :
     StrongNormalizedGCDMonoid α where
   __ := toNormalizedGCDMonoid α
+  __ := ‹StrongNormalizationMonoid α›
 
 instance (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     Nonempty (StrongNormalizedGCDMonoid α) := by
