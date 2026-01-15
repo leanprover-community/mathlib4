@@ -974,6 +974,22 @@ theorem MDifferentiable.mul (hp : MDifferentiable I 𝓘(𝕜, F') p)
     (hq : MDifferentiable I 𝓘(𝕜, F') q) : MDifferentiable I 𝓘(𝕜, F') (p * q) := fun x =>
   (hp x).mul (hq x)
 
+theorem MDifferentiableWithinAt.pow (hp : MDifferentiableWithinAt I 𝓘(𝕜, F') p s z)
+    (n : ℕ) : MDifferentiableWithinAt I 𝓘(𝕜, F') (p ^ n) s z := by
+  induction n with
+  | zero => simpa [pow_zero] using mdifferentiableWithinAt_const
+  | succ n hn => simpa [pow_succ] using hn.mul hp
+
+theorem MDifferentiableAt.pow (hp : MDifferentiableAt I 𝓘(𝕜, F') p z) (n : ℕ) :
+    MDifferentiableAt I 𝓘(𝕜, F') (p ^ n) z :=
+  mdifferentiableWithinAt_univ.mp (hp.mdifferentiableWithinAt.pow n)
+
+theorem MDifferentiableOn.pow (hp : MDifferentiableOn I 𝓘(𝕜, F') p s) (n : ℕ) :
+    MDifferentiableOn I 𝓘(𝕜, F') (p ^ n) s := fun x hx => (hp x hx).pow n
+
+theorem MDifferentiable.pow (hp : MDifferentiable I 𝓘(𝕜, F') p) (n : ℕ) :
+    MDifferentiable I 𝓘(𝕜, F') (p ^ n) := fun x => (hp x).pow n
+
 end AlgebraOverRing
 
 section AlgebraOverCommRing

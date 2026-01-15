@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 # Creating (co)limits
 
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
-(i.e. below) we can lift it to a cone "above", and further that `F` reflects
+(i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
 

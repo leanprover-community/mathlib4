@@ -98,7 +98,7 @@ theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
-instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
+instance : Compl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
 @[simp, grind =]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
