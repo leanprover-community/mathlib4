@@ -202,5 +202,5 @@ def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     change _ = ((algebraMap R₀ (Matrix ι ι R) r) • ((ModuleCat.Hom.hom f).mapMatrixModule ι v)) i
     simp [Matrix.algebraMap_matrix_apply]
 
-theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
-    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨⟨moritaEquivMatrix R R₀ i⟩⟩
+theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [h : Nonempty ι] :
+    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨⟨moritaEquivMatrix R R₀ h.some⟩⟩
