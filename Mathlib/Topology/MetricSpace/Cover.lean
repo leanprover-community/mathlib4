@@ -31,10 +31,10 @@ open Set
 open scoped NNReal
 
 namespace Metric
-variable {X : Type*}
+variable {X Y : Type*}
 
 section PseudoEMetricSpace
-variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
 instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
@@ -63,6 +63,23 @@ nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N
 
 lemma IsCover.mono_radius (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
   hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
+
+lemma IsCover.image_lipschitz {f : X → Y} {s : Set X} {N : Set X} {ε K₂ : ℝ≥0}
+  (hs : IsCover ε s N) (hf : LipschitzWith K₂ f) : IsCover (K₂ * ε) (f '' s) (f '' N) := by
+rintro y ⟨x, hx, hy_eq⟩
+obtain ⟨x₀, hx₀, hcover⟩ := hs hx
+refine ⟨f x₀, ⟨x₀, hx₀, by grind⟩, ?_⟩
+calc
+  edist y (f x₀) = edist (f x) (f x₀) := by grind
+  _ ≤ ↑K₂ * edist x x₀ := hf x x₀
+  _ ≤ ↑K₂ * ↑ε := mul_le_mul le_rfl hcover (zero_le _) (by simp only [zero_le])
+  _ = ↑(K₂ * ε) := Eq.symm (ENNReal.coe_mul K₂ ε)
+
+lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
+    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : Function.Surjective f) :
+    IsCover (K₂ * ε) s (f '' N) := by
+  have : IsCover (K₂ * ε) (f '' s.preimage f) (f '' N) := IsCover.image_lipschitz hs hf
+  simp_all only [image_preimage_eq]
 
 lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
