@@ -1,8 +1,8 @@
-import Mathlib.Init
+module
 
-set_option linter.mathlibStandardSet true
+import MathlibTest.UnusedInstancesInType.Basic
 
-section decidable
+set_option linter.unusedDecidableInType true
 
 section unused
 
@@ -75,8 +75,6 @@ section used
 /- The linter either should not fire on these declarations because the instance hypotheses are used
 in the type, or not fire on *every* instance in these declarations. -/
 
-def Uses (α : Sort u) (_ : α := by infer_instance) : Prop := True
-
 theorem fooUsing [DecidableEq (Nat → Nat)] : Uses (DecidableEq (Nat → Nat)) := trivial
 
 theorem fooUsing₁ [DecidableEq (Nat → Nat)] : Uses (DecidableEq (Nat → Nat)) → True :=
@@ -103,33 +101,3 @@ theorem fooUsing₃ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)]
   fun _ => trivial
 
 end used
-
-section setOptionIn
-
-/-! Test workaround for lean4#11313 -/
-
-set_option linter.unusedDecidableInType false in
-theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
-    Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ => trivial
-
-set_option linter.unusedDecidableInType false
-
-/--
-warning: `fooUsing₂''` has the hypothesis:
-  • [DecidablePred Nonempty] (#1)
-which is not used in the remainder of the type.
-
-Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
-
-Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
--/
-#guard_msgs in
-set_option linter.unusedDecidableInType true in
-theorem fooUsing₂'' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
-    Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ => trivial
-
-end setOptionIn
-
-end decidable
