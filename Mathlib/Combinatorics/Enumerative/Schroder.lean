@@ -77,11 +77,12 @@ def smallSchroder : ℕ → ℕ
 @[simp] lemma smallSchroder_zero : smallSchroder 0 = 1 := by simp [smallSchroder]
 @[simp] lemma smallSchroder_one : smallSchroder 1 = 1 := by simp [smallSchroder]
 
-lemma smallSchroder_eq_largeSchroder_div_two (hn : 0 < n) :
+lemma smallSchroder_eq_largeSchroder_div_two (hn : n ≠ 0) :
     smallSchroder n = largeSchroder n / 2 := by
-  rw [smallSchroder]; intro x; subst x; exact not_succ_le_zero 0 hn
+  rw [smallSchroder]
+  exact fun x ↦ (fun {a} h ↦ (iff_false_intro h).mp) hn x
 
-lemma two_mul_smallSchroder (hn : 0 < n) : 2 * smallSchroder n = largeSchroder n := by
+lemma two_mul_smallSchroder (hn : n ≠ 0) : 2 * smallSchroder n = largeSchroder n := by
   rw [smallSchroder_eq_largeSchroder_div_two hn,
     Nat.mul_div_cancel_left' (even_largeSchroder (by omega)).two_dvd]
 
