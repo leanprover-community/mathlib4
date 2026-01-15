@@ -5,11 +5,9 @@ Authors: Dagur Asgeirsson, Jack McKoen, Christian Merten, Joël Riou, Adam Topaz
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Monad.Comonadicity
+public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
@@ -34,30 +32,6 @@ noncomputable section
 open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
 variable {A B : Type u} [CommRing A] [CommRing B] {f : A →+* B}
-
-instance (M : ModuleCat.{u} A) [Module.Flat A M] : PreservesFiniteLimits <| tensorLeft M := by
-  have h2 := (Functor.preservesFiniteColimits_iff_forall_exact_map_and_epi (tensorLeft M)).mp
-    (inferInstanceAs <| PreservesFiniteColimits (tensorLeft M))
-  rw [Functor.preservesFiniteLimits_iff_forall_exact_map_and_mono]
-  refine fun S hS ↦ ⟨(h2 S hS).1, ?_⟩
-  have := hS.mono_f
-  rw [ModuleCat.mono_iff_injective] at this ⊢
-  exact Module.Flat.lTensor_preserves_injective_linearMap _ this
-
-lemma foo (M : ModuleCat.{u} A) : Module.Flat A M ↔ PreservesFiniteLimits (tensorLeft M) := by
-  refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
-  · have h2 := (Functor.preservesFiniteColimits_iff_forall_exact_map_and_epi (tensorLeft M)).mp
-      (inferInstanceAs <| PreservesFiniteColimits (tensorLeft M))
-    rw [Functor.preservesFiniteLimits_iff_forall_exact_map_and_mono]
-    refine fun S hS ↦ ⟨(h2 S hS).1, ?_⟩
-    have := hS.mono_f
-    rw [ModuleCat.mono_iff_injective] at this ⊢
-    exact Module.Flat.lTensor_preserves_injective_linearMap _ this
-  · constructor
-    intro P _ _ _ N hN
-    -- rw [← ModuleCat.mono_iff_injective]
-    sorry
-
 
 lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_flat (hf : f.Flat) :
     PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) := by
