@@ -140,7 +140,6 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
-
 /--
 A monomial, which is a product of powers of `ExBase` expressions,
 terminated by a (nonzero) constant coefficient.
@@ -232,6 +231,16 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y →
     MetaM ((Result baseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   evalMul (sα) : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x * $y))
+  evalCast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (smul : Q(SMul $β $α)) (x : Q($β)),
+    ExSum (Ring.baseType sβ) q($sβ) q($x) →
+    /- We require the latter proof because we don't have any facts about Algebra imported in this file.-/
+    MetaM (Σ y : Q($α), ExSum baseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
+  -- recursiveSMul : Bool
+  -- evalSMul (sα) :
+  -- ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+  --     (smul : Q(SMul $β $α)) (x : Q($β)) (y : Q($α)),
+  --   baseType x → baseType y
+  --   sorry
   evalNeg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → baseType x → MetaM (Result baseType q(-$x))
   evalPow (sα) : ∀ x : Q($α), baseType x → (lit : Q(ℕ)) →
     OptionT MetaM (Result baseType q($x ^ $lit))
@@ -422,6 +431,7 @@ def Ring.ringCompute :
     let ⟨qc, hc⟩ ← res.toRatNZ
     let ⟨c, pc⟩ := res.toRawEq
     return ⟨q($c), ⟨qc, hc⟩, pc⟩
+  evalCast := sorry
   evalNeg a crα za := do
     let ⟨qa, ha⟩ := za
     let ra := Result.ofRawRat qa a ha
