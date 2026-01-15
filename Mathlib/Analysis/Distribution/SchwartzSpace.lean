@@ -630,10 +630,12 @@ end CLM
 
 section EvalCLM
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedField 𝕜]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
+variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
-protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
+protected def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
     (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
   rintro ⟨k, n⟩
@@ -648,6 +650,10 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
       move_mul [‖m‖]
       gcongr
       apply le_seminorm
+
+@[simp]
+theorem evalCLM_apply_apply (f : 𝓢(E, F →L[ℝ] G)) (m : F) (x : E) :
+    SchwartzMap.evalCLM 𝕜 E G m f x = f x m := rfl
 
 end EvalCLM
 
@@ -773,6 +779,10 @@ theorem smulLeftCLM_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
     smulLeftCLM F (-g) = -smulLeftCLM F g := by
   ext f x
   simp [hg, hg.neg, neg_smul]
+
+theorem smulLeftCLM_fun_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ -g x) = -smulLeftCLM F g :=
+  smulLeftCLM_neg hg
 
 theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
@@ -980,6 +990,16 @@ def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
 
+variable [NontriviallyNormedField 𝕜'] [NormedAlgebra ℝ 𝕜'] [NormedSpace 𝕜' F]
+
+theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.HasTemperateGrowth)
+    (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    smulLeftCLM F u (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (smulLeftCLM F (u ∘ g.symm) f) := by
+  ext x
+  have hu' : (u ∘ g.symm).HasTemperateGrowth := by fun_prop
+  simp [smulLeftCLM_apply_apply hu, smulLeftCLM_apply_apply hu']
+
 end Comp
 
 section Derivatives
@@ -1031,21 +1051,21 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
+  lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
+  lineDerivOp_add m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
+  lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
+  continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM
@@ -1058,6 +1078,14 @@ theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineD
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
     ∂_{m} f x = fderiv ℝ f x m := rfl
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
@@ -1492,3 +1520,5 @@ end integration_by_parts
 
 
 end SchwartzMap
+
+set_option linter.style.longFile 1700

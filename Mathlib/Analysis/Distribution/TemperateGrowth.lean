@@ -286,6 +286,11 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
 @[fun_prop]
+lemma _root_.ContinuousLinearEquiv.hasTemperateGrowth (f : E ≃L[ℝ] F) :
+    Function.HasTemperateGrowth f :=
+  f.toContinuousLinearMap.hasTemperateGrowth
+
+@[fun_prop]
 theorem Complex.hasTemperateGrowth_ofReal : Complex.ofReal.HasTemperateGrowth :=
   (Complex.ofRealCLM).hasTemperateGrowth
 
