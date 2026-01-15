@@ -784,9 +784,8 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
       rwa [← mul_eq_zero, ← associated_zero_iff_eq_zero])
     (by rintro (rfl | rfl) <;> [apply lcm_zero_left; apply lcm_zero_right])
 
-@[simp]
 theorem lcm_ne_zero_iff [GCDMonoid α] {a b : α} : lcm a b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := by
-  simp [Ne, lcm_eq_zero_iff]
+  simp
 
 @[simp]
 theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) : normalize (lcm a b) = lcm a b :=

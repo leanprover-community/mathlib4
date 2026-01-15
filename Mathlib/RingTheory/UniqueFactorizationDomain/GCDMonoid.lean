@@ -69,6 +69,8 @@ noncomputable abbrev UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*
     normalize_gcd := fun a b => by apply normalize_out _
     normalize_lcm := fun a b => by apply normalize_out _ }
 
+/-- `toStrongNormalizedGCDMonoid` constructs a GCD monoid out of a strong normalization on a
+  unique factorization domain. -/
 noncomputable abbrev UniqueFactorizationMonoid.toStrongNormalizedGCDMonoid (α : Type*)
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [StrongNormalizationMonoid α] :
     StrongNormalizedGCDMonoid α where
