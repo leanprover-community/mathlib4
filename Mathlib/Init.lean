@@ -9,6 +9,7 @@ public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
 public import Mathlib.Tactic.Linter.EmptyLine
 public import Mathlib.Tactic.Linter.GlobalAttributeIn
+public import Mathlib.Tactic.Linter.GlobalSyntax
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
