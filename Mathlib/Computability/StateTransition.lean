@@ -6,10 +6,10 @@ Authors: Mario Carneiro, Pim Spelier, Daan van Gent
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Computability.Tape
-public import Mathlib.Data.Finset.Option
-public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.Fintype.Defs
+import Mathlib.Computability.Tape
+import Mathlib.Data.Finset.Option
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.PFun
 
 /-!
