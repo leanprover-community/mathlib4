@@ -51,132 +51,41 @@ lemma Ideal.exists_mul_eq_span_singleton_of_isUnit_coe (J : Ideal R)
   rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0, one_mul, mul_assoc, hJ, mul_one] at h
 
 lemma Ideal.isPrincipal_of_exists_mul_eq_span_singleton [NormalizedGCDMonoid R]
-    {J K : Ideal R} {x : R} (hx0 : x ≠ 0)
-    (hJK : J * K = Ideal.span ({x} : Set R)) :
+    {J K : Ideal R} {x : R} (hx0 : x ≠ 0) (hJK : J * K = span {x}) :
     J.IsPrincipal := by
   classical
-  have hxmemJK : x ∈ J * K := by
-    simpa [hJK] using (Ideal.subset_span (by simp : x ∈ ({x} : Set R)))
+  have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
   -- Shrink `K` to a finitely generated subideal `K'` witnessing `x ∈ J * K'`.
-  have hxmemJK_sub :
-      (x : R) ∈ (J : Submodule R R) * (K : Submodule R R) := by
-    simpa using hxmemJK
-  obtain ⟨T, T', hTJ, hT'K, hxTT'⟩ :=
-    Submodule.mem_span_mul_finite_of_mem_mul (P := (J : Submodule R R)) (Q := (K : Submodule R R))
-      hxmemJK_sub
-  let K' : Ideal R := Ideal.span (T' : Set R)
-  have hK'leK : K' ≤ K := by
-    refine Ideal.span_le.2 ?_
-    intro z hz
-    exact hT'K hz
-  have hxmemJK' : x ∈ J * K' := by
-    have hmulset : ((T : Set R) * (T' : Set R)) ⊆ ((J : Set R) * (K' : Set R)) := by
-      rintro z ⟨a, haT, b, hbT', rfl⟩
-      refine ⟨a, hTJ haT, b, ?_, rfl⟩
-      exact Ideal.subset_span hbT'
-    have hxspan' :
-        (x : R) ∈ Submodule.span R ((J : Set R) * (K' : Set R)) :=
-      (Submodule.span_mono hmulset) hxTT'
-    have :
-        (x : R) ∈ (J : Submodule R R) * (K' : Submodule R R) := by
-      simpa [Submodule.mul_eq_span_mul_set] using hxspan'
-    simpa using this
+  have : ∃ T : Finset R, (T : Set R) ⊆ K ∧ x ∈ J * span T := by
+    obtain ⟨S, T, hSJ, hTK, hx⟩ := Submodule.mem_span_mul_finite_of_mem_mul hxmemJK
+    refine ⟨T, hTK, ?_⟩
+    rw [← J.span_eq, span_mul_span]
+    exact span_mono (Set.mul_subset_mul_right hSJ) hx
+  obtain ⟨T, hTK, hxT⟩ := this
+  set K' : Ideal R := span T
   -- Let `g` be the gcd of the chosen generators of `K'`; then `K' ≤ (g)`.
-  let g : R := T'.gcd id
-  have hK'le_g : K' ≤ Ideal.span ({g} : Set R) := by
-    refine Ideal.span_le.2 ?_
-    intro z hz
-    have hgdvd : g ∣ z := by
-      simpa [g] using (Finset.gcd_dvd (s := T') (f := id) hz)
-    rcases hgdvd with ⟨t, ht⟩
-    refine (Ideal.mem_span_singleton').2 ⟨t, ?_⟩
-    simpa [mul_comm] using ht.symm
+  let g : R := T.gcd id
+  have hK' : K' ≤ span {g} := span_le.mpr fun z hz ↦ mem_span_singleton.mpr (Finset.gcd_dvd hz)
   -- Upgrade to `x ∈ J * (g)`, hence `(x) ≤ J * (g)`.
-  have hxmemJg : x ∈ J * Ideal.span ({g} : Set R) := by
-    have : J * K' ≤ J * Ideal.span ({g} : Set R) := Ideal.mul_mono_right hK'le_g
-    exact this hxmemJK'
-  have hspanx_le : Ideal.span ({x} : Set R) ≤ J * Ideal.span ({g} : Set R) :=
-    (Ideal.span_singleton_le_iff_mem (I := J * Ideal.span ({g} : Set R)) (x := x)).2 hxmemJg
-  -- Show `J * (g) ≤ (x)` by proving `x ∣ b * g` for all `b ∈ J`.
-  have hxdvd_bg : ∀ b ∈ J, x ∣ b * g := by
-    intro b hbJ
-    have hxdvd_bc : ∀ c ∈ T', x ∣ b * c := by
-      intro c hc
-      have hcK' : c ∈ K' := Ideal.subset_span hc
-      have hbc_mem : b * c ∈ J * K' := Ideal.mul_mem_mul hbJ hcK'
-      have hbc_mem' : b * c ∈ Ideal.span ({x} : Set R) := by
-        have hle : J * K' ≤ J * K := Ideal.mul_mono_right hK'leK
-        have : b * c ∈ J * K := hle hbc_mem
-        simpa [hJK] using this
-      rcases (Ideal.mem_span_singleton').1 hbc_mem' with ⟨t, ht⟩
-      refine ⟨t, ?_⟩
-      simpa [mul_comm, mul_left_comm, mul_assoc] using ht.symm
-    have hxgcd : x ∣ T'.gcd (fun c => b * c) := by
-      refine Finset.dvd_gcd ?_
-      intro c hc
-      exact hxdvd_bc c hc
-    have hxnorm : x ∣ normalize b * g := by
-      have hgcd_mul :
-          T'.gcd (fun c => b * c) = normalize b * T'.gcd (id : R → R) := by
-        simpa using (Finset.gcd_mul_left (s := T') (f := (id : R → R)) (a := b))
-      have : x ∣ normalize b * T'.gcd (id : R → R) := by
-        simpa [hgcd_mul] using hxgcd
-      simpa [g] using this
-    rcases associated_normalize b with ⟨u, hu⟩
-    have hxmul : x ∣ (normalize b * g) * (↑u⁻¹ : R) := dvd_mul_of_dvd_left hxnorm _
-    have : (normalize b * g) * (↑u⁻¹ : R) = b * g := by
-      -- rewrite `normalize b` as `b * u` and cancel `u` on the right
-      calc
-        (normalize b * g) * (↑u⁻¹ : R) = ((b * (u : R)) * g) * (↑u⁻¹ : R) := by
-          simp [hu, mul_assoc]
-        _ = b * g * ((u : R) * (↑u⁻¹ : R)) := by
-          ac_rfl
-        _ = b * g := by simp
-    simpa [this] using hxmul
-  have hJg_le : J * Ideal.span ({g} : Set R) ≤ Ideal.span ({x} : Set R) := by
-    refine Ideal.mul_le.2 ?_
-    intro b hbJ z hz
-    rcases (Ideal.mem_span_singleton').1 hz with ⟨t, rfl⟩
-    rcases hxdvd_bg b hbJ with ⟨s, hs⟩
-    refine (Ideal.mem_span_singleton').2 ?_
-    refine ⟨t * s, ?_⟩
-    -- `t * (b * g) = x * (t * s)`, so the product lies in `(x)`.
-    calc
-      (t * s) * x = t * (s * x) := by simp [mul_assoc]
-      _ = t * (x * s) := by simp [mul_left_comm, mul_comm]
-      _ = t * (b * g) := by simpa using congrArg (fun r => t * r) hs.symm
-      _ = b * (t * g) := by simp [mul_left_comm]
-  have hJg : J * Ideal.span ({g} : Set R) = Ideal.span ({x} : Set R) :=
-    le_antisymm hJg_le hspanx_le
+  have hxJg : x ∈ J * span {g} := mul_mono_right hK' hxT
   -- From `(x) = J * (g)`, extract `y` with `x = y * g` and cancel `(g)` to show `J` is principal.
-  have hxmem_g : x ∈ Ideal.span ({g} : Set R) := by
-    have hle : J * Ideal.span ({g} : Set R) ≤ (⊤ : Ideal R) * Ideal.span ({g} : Set R) :=
-      Ideal.mul_mono_left (le_top : J ≤ (⊤ : Ideal R))
-    have : x ∈ (⊤ : Ideal R) * Ideal.span ({g} : Set R) := hle hxmemJg
-    simpa using this
-  rcases (Ideal.mem_span_singleton').1 hxmem_g with ⟨y, hy⟩
-  have hg0 : g ≠ 0 := by
-    intro hg0
-    apply hx0
-    simpa [hg0] using hy.symm
-  have hspanx : Ideal.span ({x} : Set R) = Ideal.span ({y} : Set R) * Ideal.span ({g} : Set R) := by
-    -- Rewrite `(x)` as `(y*g) = (y)*(g)`.
-    calc
-      Ideal.span ({x} : Set R) = Ideal.span ({y * g} : Set R) := by simp [hy]
-      _ = Ideal.span ({y} : Set R) * Ideal.span ({g} : Set R) := by
-        simpa using (Ideal.span_singleton_mul_span_singleton (R := R) y g).symm
-  have hcancel :
-      (Ideal.span ({g} : Set R)) * J = (Ideal.span ({g} : Set R)) * Ideal.span ({y} : Set R) := by
-    -- Commute to put `(g)` on the left, then use `(x) = J*(g) = (y)*(g)`.
-    calc
-      (Ideal.span ({g} : Set R)) * J = J * Ideal.span ({g} : Set R) := by simp [Ideal.mul_comm]
-      _ = Ideal.span ({x} : Set R) := hJg
-      _ = Ideal.span ({y} : Set R) * Ideal.span ({g} : Set R) := hspanx
-      _ = (Ideal.span ({g} : Set R)) * Ideal.span ({y} : Set R) := by simp [Ideal.mul_comm]
-  have hJ : J = Ideal.span ({y} : Set R) :=
-    (Ideal.span_singleton_mul_right_inj (R := R) hg0).1 hcancel
-  refine ⟨y, ?_⟩
-  simp [hJ]
+  suffices J * span {g} = span {x} by
+    obtain ⟨y, rfl⟩ := mem_span_singleton'.mp (Ideal.mul_le_left hxJg)
+    rw [← span_singleton_mul_span_singleton, span_singleton_mul_left_inj] at this
+    · exact ⟨y, this⟩
+    · contrapose! hx0
+      rw [hx0, mul_zero]
+  -- Show `J * (g) ≤ (x)` by proving `x ∣ b * g` for all `b ∈ J`.
+  refine le_antisymm (mul_le.mpr fun b hb z hz ↦ ?_) ((span_singleton_le_iff_mem _).mpr hxJg)
+  obtain ⟨z, rfl⟩ := mem_span_singleton.mp hz
+  rw [mem_span_singleton, ← mul_assoc]
+  apply dvd_mul_of_dvd_left
+  suffices x ∣ normalize b * g from this.trans ((associated_normalize b).mul_right g).dvd'
+  -- Show `x ∣ b * g` by proving `x ∣ b * c` for all `b ∈ J` and `c ∈ T`.
+  rw [← Finset.gcd_mul_left, Finset.dvd_gcd_iff]
+  intro c hc
+  rw [← mem_span_singleton, ← hJK]
+  exact mul_mem_mul hb (hTK hc)
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
 is principal. -/
