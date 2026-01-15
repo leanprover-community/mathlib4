@@ -57,9 +57,6 @@ theorem contentIdeal_def : p.contentIdeal = span (p.coeffs : Set R) := rfl
 theorem contentIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
 
-@[deprecated (since := "2025-07-01")]
-alias contenIdeal_zero := contentIdeal_zero
-
 @[simp]
 theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
   simp only [contentIdeal_def, span_eq_bot]
