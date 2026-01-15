@@ -76,21 +76,7 @@ theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] :
 
 theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ : Sort*) (g : ι₂ → Set M) :
     (⨅ i, f i).colon (⋃ j, g j) = ⨅ (i) (j), (f i).colon (g j) := by
-  apply le_antisymm
-  · exact le_iInf fun i =>
-      le_iInf fun j =>
-        colon_mono (iInf_le _ _) (Set.subset_iUnion (fun j => g j) j)
-  · intro x hx
-    refine mem_colon.2 ?_
-    intro m hm
-    rcases (Set.mem_iUnion.1 hm) with ⟨j, hm'⟩
-    refine (mem_iInf f).2 ?_
-    intro i
-    have hx_i : x ∈ ⨅ j, (f i).colon (g j) := by
-      exact (mem_iInf (p := fun i => ⨅ j, (f i).colon (g j))).1 hx i
-    have h : x ∈ (f i).colon (g j) := by
-      exact (mem_iInf (p := fun j => (f i).colon (g j))).1 hx_i j
-    exact mem_colon.1 h m hm'
+  aesop (add simp mem_colon)
 
 @[deprecated (since := "2026-01-11")] alias iInf_colon_iSup := iInf_colon_iUnion
 
