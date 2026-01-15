@@ -80,14 +80,13 @@ theorem iInf_colon_iUnion (ι₁ : Sort*) (f : ι₁ → Submodule R M) (ι₂ :
 
 @[deprecated (since := "2026-01-11")] alias iInf_colon_iSup := iInf_colon_iUnion
 
-/-- If `S ⊆ N`, then the colon ideal `N.colon S` is the whole ring. -/
-lemma colon_eq_top_of_subset (N : Submodule R M) (S : Set M) (h : S ⊆ N) :
-    N.colon S = ⊤ := by
-  aesop (add simp mem_colon)
-
 /-- If `S ⊆ N₂`, then intersecting with `N₂` does not change the colon ideal. -/
 lemma colon_inf_eq_left_of_subset (h : S ⊆ (N₂ : Set M)) : (N₁ ⊓ N₂).colon S = N₁.colon S := by
   aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
+  aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
 
 @[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
