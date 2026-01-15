@@ -780,6 +780,10 @@ theorem smulLeftCLM_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
   ext f x
   simp [hg, hg.neg, neg_smul]
 
+theorem smulLeftCLM_fun_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ -g x) = -smulLeftCLM F g :=
+  smulLeftCLM_neg hg
+
 theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
   ext f x
@@ -986,6 +990,16 @@ def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
 
+variable [NontriviallyNormedField 𝕜'] [NormedAlgebra ℝ 𝕜'] [NormedSpace 𝕜' F]
+
+theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.HasTemperateGrowth)
+    (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    smulLeftCLM F u (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (smulLeftCLM F (u ∘ g.symm) f) := by
+  ext x
+  have hu' : (u ∘ g.symm).HasTemperateGrowth := by fun_prop
+  simp [smulLeftCLM_apply_apply hu, smulLeftCLM_apply_apply hu']
+
 end Comp
 
 section Derivatives
@@ -1064,6 +1078,14 @@ theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineD
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
     ∂_{m} f x = fderiv ℝ f x m := rfl
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
