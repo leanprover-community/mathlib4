@@ -140,9 +140,10 @@ initialize registerBuiltinAttribute {
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| reassoc $[$dual:toDualOpt]? $optAttr) => MetaM.run' do
+  | `(attr| reassoc $[$toDual:toDualOpt]? $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
+    let toDual := toDual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome
     let tgt := src.appendAfter "_assoc"
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
@@ -150,7 +151,7 @@ initialize registerBuiltinAttribute {
         pure (pf, levels)
     -- If the original declaration is tagged with `to_dual`,
     -- then tag the generated declaration with `to_dual none`.
-    if dual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome then
+    if toDual then
       liftCommandElabM <| Command.elabCommand <| ←
         `(command| attribute [to_dual none] $(mkIdent tgt))
   | _ => throwUnsupportedSyntax }
