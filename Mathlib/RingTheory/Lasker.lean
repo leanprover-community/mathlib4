@@ -141,14 +141,7 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
   rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
       rcases eq_or_ne n 0 with rfl | hn'
-      · calc
-          I = Submodule.colon I {1} := by
-            ext
-            simp [Submodule.mem_colon_singleton]
-          _ = Submodule.colon I ({b} : Set R) := by
-            simpa [f] using hn 1 zero_le_one
-          _ = Submodule.colon I (Submodule.span R {b} : Set R) := by
-            simp only [submodule_span_eq, colon_span]
+      · simpa [f, ← Ideal.colon_span (R := R) (S := {1})] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro
         simpa only [mem_colon_span_singleton] using mul_mem_right _ _
