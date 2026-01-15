@@ -16,7 +16,7 @@ If a category has binary products and equalizers, then it has pullbacks.
 Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

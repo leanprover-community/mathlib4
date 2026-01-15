@@ -30,7 +30,7 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 fractional ideal, invertible ideal
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsDedekindDomain
 

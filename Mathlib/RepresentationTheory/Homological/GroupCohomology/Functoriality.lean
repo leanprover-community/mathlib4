@@ -166,14 +166,12 @@ noncomputable abbrev cochainsMap₁ :
     ModuleCat.of k (H → A) ⟶ ModuleCat.of k (G → B) :=
   ModuleCat.ofHom <| φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
 
-@[deprecated (since := "2025-07-12")] alias f₁ := cochainsMap₁
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H → A` to `(g₁, g₂ : G × G) ↦ φ (x (f g₁, f g₂))`. -/
 noncomputable abbrev cochainsMap₂ :
     ModuleCat.of k (H × H → A) ⟶ ModuleCat.of k (G × G → B) :=
   ModuleCat.ofHom <| φ.hom.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
 
-@[deprecated (since := "2025-07-12")] alias f₂ := cochainsMap₂
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H × H → A` to
 `(g₁, g₂, g₃ : G × G × G) ↦ φ (x (f g₁, f g₂, f g₃))`. -/
@@ -182,7 +180,6 @@ noncomputable abbrev cochainsMap₃ :
   ModuleCat.ofHom <|
     φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
-@[deprecated (since := "2025-07-12")] alias f₃ := cochainsMap₃
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_0_comp_cochainsIso₀ :
     (cochainsMap f φ).f 0 ≫ (cochainsIso₀ B).hom = (cochainsIso₀ A).hom ≫ φ.hom := by
@@ -240,8 +237,6 @@ theorem cocyclesMap_cocyclesIso₀_hom_f :
       (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
   simp
 
-@[deprecated (since := "2025-07-02")]
-alias cocyclesMap_zeroIsoCocycles_hom_f := cocyclesMap_cocyclesIso₀_hom_f
 end H0
 section H1
 
