@@ -64,8 +64,6 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
   ext x
   simp [mem_colon, mem_annihilator]
 
---@[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
-
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| (mem_colon).mp hrns s₁ <| hs hs₁
 
@@ -119,14 +117,9 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {N : Submodule R M} {S : Set M}
 
-theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
-  mem_colon
-
 /-- A variant for arbitrary sets in commutative semirings -/
 theorem bot_colon' : (⊥ : Submodule R M).colon S = (span R S).annihilator := by
   aesop (add simp [mem_colon, mem_annihilator_span])
-
---@[deprecated (since := "2026-01-11")] alias colon_bot' := bot_colon'
 
 @[simp]
 theorem colon_span : N.colon (span R S) = N.colon S := by
@@ -153,7 +146,7 @@ end CommSemiring
 section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M]
-variable {N P : Submodule R M} {S : Set M}
+variable {N P : Submodule R M}
 
 @[simp]
 lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon (P : Set M) := by
@@ -162,7 +155,7 @@ lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon (P : Se
   exact ⟨fun H p hp ↦ (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
     fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp)⟩
 
-theorem annihilator_quotient : Module.annihilator R (M ⧸ N) = N.colon (Set.univ : Set M) := by
+theorem annihilator_quotient : Module.annihilator R (M ⧸ N) = N.colon Set.univ := by
   ext r
   have htop : (⊤ : Submodule R (M ⧸ N)) = (⊤ : Submodule R M).map N.mkQ := by
     simpa [map_top] using (LinearMap.range_eq_top.mpr (mkQ_surjective N)).symm
