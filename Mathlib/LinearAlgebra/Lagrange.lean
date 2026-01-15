@@ -457,18 +457,16 @@ theorem interpolate_poly_eq_self
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
     P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
-  rw (occs := [1]) [eq_interpolate (f := P) hvs]
-  · rw [interpolate_apply, finset_sum_coeff]
-    congr! with i hi
-    rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
-    field_simp
-  · cases hd : P.degree; · simp
-    case coe d => rwa [← hd]
+  rw (occs := [1]) [eq_interpolate hvs hP]
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
-  lift P.degree to ℕ using (by contrapose! hP; rw [hP]; simp) with deg hdeg
+  lift P.degree to ℕ using (by contrapose! hP; simp [hP]) with deg hdeg
   rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
   replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
   have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
