@@ -591,7 +591,7 @@ instance GrpCat.forget_reflects_isos : (forget GrpCat.{u}).ReflectsIsomorphisms 
 instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
+    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
     exact e.toCommGrpIso.isIso_hom
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`

@@ -314,6 +314,7 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
   functor   := mopFunctor C
