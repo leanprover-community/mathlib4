@@ -14,6 +14,8 @@ public import Mathlib.Topology.Algebra.Module.WeakDual
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.Tactic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 @[expose] public section
 
@@ -208,11 +210,93 @@ theorem uniform_bound (h : SchauderBasis 𝕜 X e) :
         specialize hM (CanonicalProjection h n x) (Set.mem_range_self n)
         exact hM )
 
+
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjection h n‖ ≤ C }
-
-
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
+    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n + 1)
+    (hcomp : ∀ n m : ℕ, P n ∘ P m = P (min n m))
+    (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x)) :
+    ∃ e : ℕ → X, SchauderBasis 𝕜 X e := by
+        -- Define the difference operator Q_n mapping to the n-th coordinate space
+        let Q : ℕ → X →L[𝕜] X := fun n ↦
+            if h : n = 0 then P 0 else P n - P (n - 1)
+
+        -- Q sums to P
+        have h_sum : ∀ n, ∑ i ∈ Finset.range (n + 1), Q i = P n := by
+            intro n
+            induction' n with n ih
+            · simp [Q]
+            · rw [Finset.sum_range_succ, ih]; dsimp [Q]; simp
+
+        -- Q n has rank 1
+        have h_dim_Q : ∀ n, Module.finrank 𝕜 (range (Q n)) = 1 := by
+            intro n
+            by_cases h0 : n = 0
+            · simp [Q]
+              rw [if_pos h0]
+              exact hdim 0
+            simp [Q]
+            rw [if_neg h0]
+            have h_le : range (P (n - 1)) ≤ range (P n) := by
+                intro x hx
+                obtain ⟨y, rfl⟩ := hx
+                use P (n - 1) y
+                have : n - 1 ≤ n := Nat.sub_le n 1
+                calc
+                  P n (P (n - 1) y) = (P n ∘ P (n - 1)) y := rfl
+                  _ = (P (n - 1)) y  := by rw [hcomp n (n - 1), min_eq_right this]
+            have hx : range (Q n) ⊓ range (P (n - 1)) = ⊥ := by
+                rw [Submodule.eq_bot_iff]
+                sorry
+            have h_sum : range (Q n) ⊔ range (P (n - 1)) = range (P n) := by
+                sorry
+            let U := range (Q n)
+            let V := range (P (n - 1))
+            have : FiniteDimensional 𝕜 U := by sorry
+            have : FiniteDimensional 𝕜 V := by sorry
+            have hy :   Module.finrank 𝕜 ↥(U ⊔ V) + Module.finrank 𝕜 ↥(U ⊓ V) =  Module.finrank 𝕜 (U) + Module.finrank 𝕜 (V)
+                := Submodule.finrank_sup_add_finrank_inf_eq U V
+
+            rw [hx,  h_sum, finrank_bot, add_zero, hdim n, hdim (n - 1)] at hy
+            have : 1 = Module.finrank 𝕜 (range (Q n)) := by
+                rw [Nat.sub_add_cancel (Nat.pos_of_ne_zero h0)] at hy
+                rw [add_comm] at hy
+                exact Nat.add_right_cancel hy
+
+
+            exact this
+
+
+
+
+                -- apply le_antisymm
+                -- ·   rintro z ⟨x, rfl⟩
+                --     simp [Q]
+                --     rw [if_neg h0]
+                --     have hz : P (n - 1) (P n x) = P (n - 1) x := by
+                --         rw [hcomp n (n - 1), min_eq_right (Nat.sub_le n 1)]
+                --     simp [hz]
+                --     apply Submodule.mem_inf.mpr
+                --     constructor
+                --     · use P n x
+                --     · simp [hz]
+                -- · rintro z ⟨y, hy⟩
+                --   rw [hy]
+                --   simp [Q]
+                --   by_cases h0 : n = 0
+                --   · rw [if_pos h0]
+                --     use y
+                --   · rw [if_neg h0]
+                --     use y
+                --     simp
+
+
+        sorry
+  :
+
+
+theorem basis_of_canonical_projections' {P : ℕ → X →L[𝕜] X}
     (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n + 1)
     (hcomp : ∀ m n : ℕ, P n ∘ P m = P (min n m))
     (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x)) :
