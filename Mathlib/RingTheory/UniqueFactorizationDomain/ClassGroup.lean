@@ -89,7 +89,7 @@ lemma Ideal.isPrincipal_of_exists_mul_eq_span_singleton [NormalizedGCDMonoid R]
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
 is principal. -/
-theorem ideal_isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I : Ideal R)
+theorem Ideal.isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨K, x, hx0, hIK⟩ := Ideal.exists_mul_eq_span_singleton_of_isUnit_coe (R := R) I hI
