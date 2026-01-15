@@ -1205,7 +1205,7 @@ theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ�
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_edist_le_of_summable d hf hd
 
-theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (Metric.closedEBall a r) :=
+theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (Metric.closedEBall a r) :=
   isClosed_le (continuous_id.edist continuous_const) continuous_const
 
 @[simp]

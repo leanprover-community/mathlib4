@@ -225,18 +225,18 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
 
 end Metric
 
-namespace EMetric
+namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (Metric.eball x r) :=
-  Metric.isOpen_eball.measure_pos μ ⟨x, Metric.mem_eball_self hr.bot_lt⟩
+theorem measure_eball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (eball x r) :=
+  isOpen_eball.measure_pos μ ⟨x, mem_eball_self hr.bot_lt⟩
 
-theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (Metric.closedEBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono Metric.eball_subset_closedEBall)
+theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedEBall x r) :=
+  (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
-end EMetric
+end Metric
 
 section MeasureZero
 /-! ## Meagre sets and measure zero

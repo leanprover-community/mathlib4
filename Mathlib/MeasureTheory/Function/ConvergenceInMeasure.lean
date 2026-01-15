@@ -210,7 +210,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
   obtain ⟨t, _, ht, hunif⟩ :=
     tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist' hf hfg hδ
   rw [ENNReal.ofReal_coe_nnreal] at ht
-  rw [EMetric.tendstoUniformlyOn_iff] at hunif
+  rw [Metric.tendstoUniformlyOn_iff_edist] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
   refine ⟨N, fun n hn => ?_⟩
   suffices { x : α | ε ≤ edist (f n x) (g x) } ⊆ t from (measure_mono this).trans ht

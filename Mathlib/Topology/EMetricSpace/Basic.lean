@@ -64,9 +64,7 @@ theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → �
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
   Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
 
-namespace EMetric
-
-theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
+theorem Metric.isUniformInducing_iff_edist [PseudoEMetricSpace β] {f : α → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   isUniformInducing_iff'.trans <| Iff.rfl.and <|
@@ -74,24 +72,26 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
       simp only [subset_def, Prod.forall]; rfl
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
-nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
+theorem Metric.isUniformEmbedding_iff_edist [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
+  (isUniformEmbedding_iff _).trans <| and_comm.trans <|
+    Iff.rfl.and Metric.isUniformInducing_iff_edist
 
 /-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`.
 
 In fact, this lemma holds for a `IsUniformInducing` map.
 TODO: generalize? -/
-theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
+theorem IsUniformEmbedding.controlled_edist [PseudoEMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  ⟨Metric.uniformContinuous_iff_edist.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+  ⟨Metric.uniformContinuous_iff_edist.1 h.uniformContinuous,
+    (Metric.isUniformEmbedding_iff_edist.1 h).2.2⟩
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
-protected theorem cauchy_iff {f : Filter α} :
+protected theorem Metric.cauchy_iff_edist {f : Filter α} :
     Cauchy f ↔ f ≠ ⊥ ∧ ∀ ε > 0, ∃ t ∈ f, ∀ x, x ∈ t → ∀ y, y ∈ t → edist x y < ε := by
   rw [← neBot_iff]; exact uniformity_basis_edist.cauchy_iff
 
@@ -100,7 +100,7 @@ which satisfy a bound of the form `edist (u n) (u m) < B N` for all `n m ≥ N` 
 converging. This is often applied for `B N = 2^{-N}`, i.e., with a very fast convergence to
 `0`, which makes it possible to use arguments of converging series, while this is impossible
 to do in general for arbitrary Cauchy sequences. -/
-theorem complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB : ∀ n, 0 < B n)
+theorem CompleteSpace.of_forall_seq_edist_lt_exists_tendsto (B : ℕ → ℝ≥0∞) (hB : ∀ n, 0 < B n)
     (H : ∀ u : ℕ → α, (∀ N n m : ℕ, N ≤ n → N ≤ m → edist (u n) (u m) < B N) →
       ∃ x, Tendsto u atTop (𝓝 x)) :
     CompleteSpace α :=
@@ -108,13 +108,13 @@ theorem complete_of_convergent_controlled_sequences (B : ℕ → ℝ≥0∞) (hB
     (fun n => { p : α × α | edist p.1 p.2 < B n }) (fun n => edist_mem_uniformity <| hB n) H
 
 /-- A sequentially complete pseudoemetric space is complete. -/
-theorem complete_of_cauchySeq_tendsto :
+theorem EMetric.complete_of_cauchySeq_tendsto :
     (∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) → CompleteSpace α :=
   UniformSpace.complete_of_cauchySeq_tendsto
 
 /-- Expressing locally uniform convergence on a set using `edist`. -/
-theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
-    {p : Filter ι} {s : Set β} :
+theorem Metric.tendstoLocallyUniformlyOn_iff_edist {ι : Type*} [TopologicalSpace β] {F : ι → β → α}
+    {f : β → α} {p : Filter ι} {s : Set β} :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ ε > 0, ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
   refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu x hx => ?_⟩
@@ -123,28 +123,25 @@ theorem tendstoLocallyUniformlyOn_iff {ι : Type*} [TopologicalSpace β] {F : ι
   exact ⟨t, ht, Ht.mono fun n hs x hx => hε (hs x hx)⟩
 
 /-- Expressing uniform convergence on a set using `edist`. -/
-theorem tendstoUniformlyOn_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} {s : Set β} :
+theorem Metric.tendstoUniformlyOn_iff_edist {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι}
+    {s : Set β} :
     TendstoUniformlyOn F f p s ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x ∈ s, edist (f x) (F n x) < ε := by
   refine ⟨fun H ε hε => H _ (edist_mem_uniformity hε), fun H u hu => ?_⟩
   rcases mem_uniformity_edist.1 hu with ⟨ε, εpos, hε⟩
   exact (H ε εpos).mono fun n hs x hx => hε (hs x hx)
 
 /-- Expressing locally uniform convergence using `edist`. -/
-theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι → β → α} {f : β → α}
-    {p : Filter ι} :
+theorem Metric.tendstoLocallyUniformly_iff_edist {ι : Type*} [TopologicalSpace β] {F : ι → β → α}
+    {f : β → α} {p : Filter ι} :
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
-  simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, mem_univ,
+  simp only [← tendstoLocallyUniformlyOn_univ, Metric.tendstoLocallyUniformlyOn_iff_edist, mem_univ,
     forall_const, nhdsWithin_univ]
 
 /-- Expressing uniform convergence using `edist`. -/
-theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
+theorem Metric.tendstoUniformly_iff_edist {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
     TendstoUniformly F f p ↔ ∀ ε > 0, ∀ᶠ n in p, ∀ x, edist (f x) (F n x) < ε := by
-  simp only [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff, mem_univ, forall_const]
-
-end EMetric
-
-open EMetric
+  simp only [← tendstoUniformlyOn_univ, Metric.tendstoUniformlyOn_iff_edist, mem_univ, forall_const]
 
 namespace Metric
 
@@ -277,7 +274,7 @@ theorem Metric.isUniformEmbedding_iff_edist' [PseudoEMetricSpace β] {f : γ →
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
-  rw [isUniformEmbedding_iff_isUniformInducing, EMetric.isUniformInducing_iff,
+  rw [isUniformEmbedding_iff_isUniformInducing, Metric.isUniformInducing_iff_edist,
     uniformContinuous_iff_edist]
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/

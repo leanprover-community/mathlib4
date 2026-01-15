@@ -104,7 +104,7 @@ instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace
     · exact Subset.trans (incl m) (Subset.trans inter_subset_left h)
   have yball : ∀ n, y ∈ closedEBall (c n) (r n) := by
     intro n
-    refine EMetric.isClosed_closedBall.mem_of_tendsto ylim ?_
+    refine Metric.isClosed_closedEBall.mem_of_tendsto ylim ?_
     refine (Filter.eventually_ge_atTop n).mono fun m hm => ?_
     exact I n m hm mem_closedEBall_self
   constructor

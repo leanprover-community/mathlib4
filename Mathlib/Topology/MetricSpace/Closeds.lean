@@ -126,7 +126,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a
     standard criterion. -/
-  refine EMetric.complete_of_convergent_controlled_sequences B B_pos fun s hs => ?_
+  refine CompleteSpace.of_forall_seq_edist_lt_exists_tendsto B B_pos fun s hs => ?_
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t

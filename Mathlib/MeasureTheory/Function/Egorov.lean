@@ -163,7 +163,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     TendstoUniformlyOn f g atTop (s \ Egorov.iUnionNotConvergentSeq hε hf hsm hs hfg) := by
-  rw [EMetric.tendstoUniformlyOn_iff]
+  rw [Metric.tendstoUniformlyOn_iff_edist]
   intro δ hδ
   obtain ⟨N, hN⟩ := ENNReal.exists_inv_nat_lt hδ.ne'
   rw [eventually_atTop]
