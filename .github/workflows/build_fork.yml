@@ -515,7 +515,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Checking for runLinter processes..."
-          if ps -eo pid,lstart,command | rg runLinter; then
+          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
             echo "Killing runLinter processes..."
             pkill -f runLinter || true
           else
@@ -576,7 +576,7 @@ jobs:
         if: always()
         run: |
           echo "Checking for runLinter processes..."
-          if ! ps -eo pid,lstart,command | rg runLinter; then
+          if ! ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
             echo "No stray runLinter processes found."
           fi
 
