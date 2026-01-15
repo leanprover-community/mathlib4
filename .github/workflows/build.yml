@@ -512,6 +512,19 @@ jobs:
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
+      - name: kill stray runLinter processes
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Checking for runLinter processes..."
+          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "Killing runLinter processes..."
+            pkill -f runLinter || true
+          else
+            echo "No stray runLinter processes found."
+          fi
+
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
@@ -560,6 +573,15 @@ jobs:
           then
             printf $'%s\n' "${buildMsgs}"
             exit 1
+          fi
+
+      - name: list stray runLinter processes
+        shell: bash
+        if: always()
+        run: |
+          echo "Checking for runLinter processes..."
+          if ! ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "No stray runLinter processes found."
           fi
 
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
