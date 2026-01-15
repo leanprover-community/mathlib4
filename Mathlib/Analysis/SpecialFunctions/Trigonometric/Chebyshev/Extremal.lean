@@ -191,7 +191,7 @@ theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_eq_coeff_T]
 
-theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
+theorem leadingCoeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.leadingCoeff ≤ 2 ^ (n - 1) := by
   by_cases P = 0
