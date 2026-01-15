@@ -159,7 +159,7 @@ Chebyshev nodes. -/
 private noncomputable def leadingCoeffC (n i : ℕ) :=
   (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
 
-private theorem coeff_eq_sum_node {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
+private theorem sumNodes_eq_coeff {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
     sumNodes n (leadingCoeffC n) P = P.coeff n := by
   simp_rw [sumNodes, leadingCoeffC]
   have : P.degree < (Finset.range (n + 1)).card := by
