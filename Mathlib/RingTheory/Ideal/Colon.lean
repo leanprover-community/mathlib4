@@ -53,7 +53,7 @@ instance (priority := low) (P : Submodule R M) : (N.colon (P : Set M)).IsTwoSide
     exact hr ⟨_, P.smul_mem _ hp, (mul_smul ..).symm⟩
 
 @[simp]
-theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon (Set.univ : Set R) = I := by
+theorem colon_univ {I : Ideal R} [I.IsTwoSided] : I.colon Set.univ = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
