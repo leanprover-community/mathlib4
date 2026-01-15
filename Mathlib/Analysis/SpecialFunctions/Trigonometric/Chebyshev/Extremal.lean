@@ -19,17 +19,17 @@ following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
-* leadingCoeff_le_of_bounded: If `P` is a real polynomial of degree at most `n` and `|P (x)| ≤ 1`
+* leadingCoeff_le_of_mem_Icc: If `P` is a real polynomial of degree at most `n` and `|P (x)| ≤ 1`
   for all `|x| ≤ 1` then the leading coefficient of `P` is at most `2 ^ (n-1)`
-* leadingCoeff_eq_iff_of_bounded: When `n ≥ 2`, equality holds iff `P = T_n`
+* leadingCoeff_eq_iff_of_mem_Icc: When `n ≥ 2`, equality holds iff `P = T_n`
 
 ## Implementation
 
 By monotonicity of `2 ^ (n-1)`, we can assume that `P` has degree exactly `n`.
 Using Lagrange interpolation, we can give a formula for the leading coefficient of `P`
-as a linear combination of the values of `P` on the Chebyshev nodes (leadingCoeff_eq_sum_node).
+as a linear combination of the values of `P` on the Chebyshev nodes (sumNodes_eq_coeff).
 The Chebyshev polynomial `T_n` has value `±1` on the nodes, with the same signs as the
-coefficients of the linear combination (leadingCoeff_eq_sum_node_coeff_pos).
+coefficients of the linear combination (sumNodes_eq_coeff_pos).
 Since `|P (x)| ≤ 1` on the nodes, this implies that the leading coefficient of `P` is bounded
 by that of `T_n`, which is known to equal `2 ^ (n-1)`.
 Moreover, equality holds iff `P` and `T_n` agree on the nodes, which implies that they coincide.
@@ -178,16 +178,16 @@ private theorem sumNodes_eq_coeff_T (n : ℕ) :
   · simp [leadingCoeff]
   · simp
 
-private theorem coeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
+private theorem sumNodes_eq_coeff_pos {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i * leadingCoeffC n i := by
   have := inv_pos_of_pos <| zero_lt_prod_node_sub_node hi
   rwa [mul_inv, ← inv_pow, inv_neg_one] at this
 
-theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
+theorem coeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n ≤ 2 ^ (n - 1) := by
   convert sumNodes_le_sumNodes_T
-      (fun i hi => le_of_lt <| coeff_eq_sum_node_coeff_pos hi) hPbnd
+      (fun i hi => le_of_lt <| sumNodes_eq_coeff_pos hi) hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_eq_coeff_T]
 
@@ -200,22 +200,22 @@ theorem leadingCoeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     lift P.degree to ℕ using degree_ne_bot.mpr hP with d hd
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
     rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
-    grw [coeff_le_of_bounded (le_of_eq hd.symm) hPbnd, hPdeg]
+    grw [coeff_le_of_mem_Icc (le_of_eq hd.symm) hPbnd, hPdeg]
     norm_num
 
 theorem coeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
   convert sumNodes_eq_sumNodes_T_iff
-      (fun i hi => coeff_eq_sum_node_coeff_pos hi) hPdeg hPbnd
+      (fun i hi => sumNodes_eq_coeff_pos hi) hPdeg hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
   · rw [sumNodes_eq_coeff_T]
 
-theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
+theorem leadingCoeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
     (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
     P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
   refine ⟨fun hP => ?_, fun hP => by simp [hP]⟩
-  apply (coeff_eq_of_bounded_iff hPdeg hPbnd).mp
+  apply (coeff_eq_iff_of_mem_Icc hPdeg hPbnd).mp
   suffices hPdeg' : n ≤ P.degree by
     replace hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg hPdeg'
     rwa [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg'] at hP
@@ -226,7 +226,7 @@ theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
   replace hP := ge_of_eq hP
   contrapose! hP
   have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
-  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded (le_of_eq hd.symm) hPbnd
+  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_mem_Icc (le_of_eq hd.symm) hPbnd
   _ < 2 ^ (n - 1) := by gcongr; norm_num
 
 end Polynomial.Chebyshev
