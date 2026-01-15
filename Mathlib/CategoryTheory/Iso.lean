@@ -247,12 +247,6 @@ class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
 
-set_option linter.translateOverwrite false in
-@[to_dual existing out]
-lemma IsIso.out' {f : Y ⟶ X} [self : IsIso f] :
-    ∃ inv : X ⟶ Y, inv ≫ f = 𝟙 X ∧ f ≫ inv = 𝟙 Y := by grind [IsIso.out]
-
-
 /-- The inverse of a morphism `f` when we have `[IsIso f]`. -/
 @[to_dual self, no_expose]
 noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
