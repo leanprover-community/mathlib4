@@ -313,6 +313,24 @@ lemma continuous_integrand_param {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : S
     continuous_snd.continuous_compProj_pi_apply₂ t₀
   exact continuous_eval.comp (hg_comp.prodMk hvec)
 
+omit [CompleteSpace E] in
+/-- The epsilon bound cancellation: when `ε' = ε / (4 * (1 + |T|) * (1 + M^n))`, we have
+`ε' * M^n * T ≤ ε / 4`. This is the key arithmetic fact used in equicontinuity estimates. -/
+lemma epsilon_bound_cancellation {ε M T : ℝ} (hε : 0 < ε) (hM : 0 ≤ M) (hT : 0 ≤ T) (n : ℕ) :
+    ε / (4 * (1 + |T|) * (1 + M ^ n)) * M ^ n * T ≤ ε / 4 := by
+  have h1 : T ≤ 1 + |T| := (le_abs_self _).trans (le_add_of_nonneg_left (by linarith))
+  have h2 : M ^ n ≤ 1 + M ^ n := le_add_of_nonneg_left (by linarith)
+  have hε' : 0 < ε / (4 * (1 + |T|) * (1 + M ^ n)) := by
+    refine div_pos hε (mul_pos (mul_pos (by linarith) ?_) ?_) <;> positivity
+  calc ε / (4 * (1 + |T|) * (1 + M ^ n)) * M ^ n * T
+      ≤ ε / (4 * (1 + |T|) * (1 + M ^ n)) * (1 + M ^ n) * (1 + |T|) := by
+        apply mul_le_mul _ h1 hT (by positivity)
+        exact mul_le_mul_of_nonneg_left h2 (le_of_lt hε')
+    _ = ε / 4 := by
+      have : 1 + M ^ n ≠ 0 := by positivity
+      have : 1 + |T| ≠ 0 := by positivity
+      field_simp
+
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
     ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
@@ -382,19 +400,8 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
         _ ≤ ε' := le_of_lt hα_ball
     have hdα_bound : ∀ i, ‖dα i‖ ≤ M' := fun i ↦
       (norm_le_pi_norm dα i).trans ((hM dα hdα).trans (le_max_left M 0))
-    have hε'_eq : ε' * M' ^ n * (tmax - tmin) ≤ ε / 4 := by
-      have h1 : tmax - tmin ≤ 1 + |tmax - tmin| :=
-        (le_abs_self _).trans (le_add_of_nonneg_left (by linarith))
-      have h2 : M' ^ n ≤ 1 + M' ^ n := le_add_of_nonneg_left (by linarith)
-      calc ε' * M' ^ n * (tmax - tmin)
-          ≤ ε' * (1 + M' ^ n) * (1 + |tmax - tmin|) := by
-            apply mul_le_mul _ h1 (by linarith [t₀.2.1, t₀.2.2]) (by positivity)
-            exact mul_le_mul_of_nonneg_left h2 (le_of_lt hε')
-        _ = ε / (4 * (1 + |tmax - tmin|) * (1 + M' ^ n)) * (1 + M' ^ n) * (1 + |tmax - tmin|) := rfl
-        _ = ε / 4 := by
-          have : 1 + M' ^ n ≠ 0 := by positivity
-          have : 1 + |tmax - tmin| ≠ 0 := by positivity
-          field_simp
+    have hε'_eq : ε' * M' ^ n * (tmax - tmin) ≤ ε / 4 :=
+      epsilon_bound_cancellation hε (le_max_right M 0) (by linarith [t₀.2.1, t₀.2.2]) n
     calc dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑α) dα)
         ≤ ε' * M' ^ n * (tmax - tmin) := dist_integralCMLM_le hg t₀ α₀.2 α.2 hε'
             (le_max_right M 0) hg_close hdα_bound
