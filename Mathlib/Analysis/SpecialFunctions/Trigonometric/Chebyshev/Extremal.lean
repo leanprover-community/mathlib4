@@ -61,8 +61,8 @@ lemma eval_T_real_node {n i : ℕ} (hi : i ∈ Finset.Iic n) :
 
 lemma strictAntiOn_node (n : ℕ) :
     StrictAntiOn (node n ·) (Finset.range (n + 1)) := by
-  wlog! hn : n ≠ 0
-  · simp [hn]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
   refine strictAntiOn_cos.comp_strictMonoOn ?_ (fun x hx => Set.mem_Icc.mpr ⟨by positivity, ?_⟩)
   · apply StrictMono.strictMonoOn
     exact StrictMono.mul_const
