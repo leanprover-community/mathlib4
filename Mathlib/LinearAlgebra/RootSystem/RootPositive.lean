@@ -186,6 +186,7 @@ lemma pairingIn_mul_eq_pairingIn_mul_swap :
   simpa only [← (algebraMap_injective S R).eq_iff, algebraMap_pairingIn, map_mul,
     B.algebraMap_rootLength] using B.toInvariantForm.pairing_mul_eq_pairing_mul_swap i j
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[simp]
 lemma zero_lt_apply_root_root_iff [IsStrictOrderedRing S]
     (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))

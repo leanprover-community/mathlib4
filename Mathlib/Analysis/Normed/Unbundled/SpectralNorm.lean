@@ -527,6 +527,7 @@ theorem isPowMul_spectralNorm_of_finiteDimensional_normal [IsUltrametricDist K] 
   rw [spectralNorm_eq_invariantExtension K L]
   exact isPowMul_invariantExtension K L
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The spectral norm is a `K`-algebra norm on `L` when `L/K` is finite and normal.
   See also `spectralAlgNorm` for a more general construction. -/
 def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraNorm K L where
@@ -667,6 +668,7 @@ theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := b
     _root_.map_add]
   apply isNonarchimedean_spectralNorm_of_finiteDimensional_normal
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 variable (K L) in
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
 def spectralAlgNorm : AlgebraNorm K L where
@@ -729,7 +731,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   letI N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e  := by simp
+      smul_zero e := by simp
       smul_add k e_1 e_ := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
       zero_smul e := by simp [zero_smul]
@@ -882,10 +884,10 @@ def seminormedAddCommGroup : SeminormedAddCommGroup L := by
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
 def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
   letI _ := seminormedAddCommGroup K L
-  {(inferInstance : Module K L) with
+  { (inferInstance : Module K L) with
     norm_smul_le r x := by
       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
-      exact le_of_eq (map_smul_eq_mul _ _ _)}
+      exact le_of_eq (map_smul_eq_mul _ _ _) }
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace : MetricSpace L := (normedField K L).toMetricSpace

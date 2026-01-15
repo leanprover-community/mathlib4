@@ -18,7 +18,7 @@ In this file we define `derangements α`, the set of derangements on a type `α`
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.

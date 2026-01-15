@@ -28,7 +28,7 @@ We show that the following properties of continuous maps are local at the source
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
