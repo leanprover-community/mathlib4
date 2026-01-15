@@ -16,7 +16,7 @@ This file defines the distribution of binomial random graphs.
 
 ## TODO
 
-Add the characteristic predicate for a random variable to follow the binomial distribution.
+Add the characteristic predicate for a random graph to follow the binomial random distribution.
 
 ## Historical note
 
