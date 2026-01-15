@@ -341,6 +341,40 @@ theorem pushoutIsoOpPullback_inv_snd {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ 
     (pushoutIsoOpPullback f g).inv.unop ≫ pullback.snd f.unop g.unop = (pushout.inr f g).unop :=
   Quiver.Hom.op_inj <| by simp [← pushoutIsoOpPullback_inr_hom]
 
-end Pushout
+end Limits.Pushout
 
-end CategoryTheory.Limits
+namespace CommSq
+open Limits
+
+variable {C : Type*} [Category* C]
+variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
+
+/-- The pushout cocone in the opposite category associated to the cone of
+a commutative square identifies to the cocone of the flipped commutative square in
+the opposite category -/
+def coneOp (p : CommSq f g h i) : p.cone.op ≅ p.flip.op.cocone :=
+  PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+
+/-- The pullback cone in the opposite category associated to the cocone of
+a commutative square identifies to the cone of the flipped commutative square in
+the opposite category -/
+def coconeOp (p : CommSq f g h i) : p.cocone.op ≅ p.flip.op.cone :=
+  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+
+/-- The pushout cocone obtained from the pullback cone associated to a
+commutative square in the opposite category identifies to the cocone associated
+to the flipped square. -/
+def coneUnop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z} (p : CommSq f g h i) :
+    p.cone.unop ≅ p.flip.unop.cocone :=
+  PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+
+/-- The pullback cone obtained from the pushout cone associated to a
+commutative square in the opposite category identifies to the cone associated
+to the flipped square. -/
+def coconeUnop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
+    (p : CommSq f g h i) : p.cocone.unop ≅ p.flip.unop.cone :=
+  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+
+end CommSq
+
+end CategoryTheory

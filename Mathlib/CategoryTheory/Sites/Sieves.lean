@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Edward Ayers
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
