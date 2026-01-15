@@ -931,7 +931,6 @@ lemma filterMap_none (l : List α) :
     l.filterMap (fun _ ↦ @Option.none β) = [] := by
   induction l <;> simp [*]
 
-
 /-! ### filter -/
 
 section Filter
