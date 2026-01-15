@@ -234,6 +234,12 @@ def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : Cont
   map_update_smul' dα i c α₁ := by convert integralCM_update_smul hg t₀ α dα i c α₁
   cont := continuous_integralCM ..
 
+-- missing general lemma about applying `ContinuousMultilinearMap` equals applying `toFun`?
+lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
+    {dα : Fin n → C(Icc tmin tmax, E)} :
+    integralCMLM hg t₀ α dα = integralCM hg t₀ α dα := rfl
+
 omit [CompleteSpace E] in
 /-- The norm of a multilinear map difference applied to vectors is bounded by the operator norm
 difference times the product of vector norms. -/
@@ -252,7 +258,7 @@ lemma dist_integralCMLM_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α α' : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (hα' : MapsTo α' univ u)
     {ε M : ℝ} (hε : 0 < ε) (hM : 0 ≤ M)
-    (hg_close : ∀ s : Icc tmin tmax, ‖g (α s) - g (α' s)‖ ≤ ε)
+    (hg_close : ∀ t : Icc tmin tmax, ‖g (α t) - g (α' t)‖ ≤ ε)
     {dα : Fin n → C(Icc tmin tmax, E)} (hdα : ∀ i, ‖dα i‖ ≤ M) :
     dist ((integralCMLM hg t₀ α) dα) ((integralCMLM hg t₀ α') dα) ≤
       ε * M ^ n * (tmax - tmin) := by
@@ -261,14 +267,14 @@ lemma dist_integralCMLM_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
     linarith [t₀.2.1, t₀.2.2]
   rw [ContinuousMap.dist_le hnn]
   intro t
-  simp only [integralCMLM, integralCM_if_pos hα, integralCM_if_pos hα']
-  change dist ((integralCMAux hg t₀ hα dα) t) ((integralCMAux hg t₀ hα' dα) t) ≤ _
-  simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
-  rw [dist_eq_norm, ← intervalIntegral.integral_sub
-    (intervalIntegrable_integrand hg t₀ hα dα ..)
-    (intervalIntegrable_integrand hg t₀ hα' dα ..)]
+  simp only [integralCMLM_apply, integralCM_if_pos hα, integralCM_if_pos hα',
+    integralCMAux, ContinuousMap.coe_mk, integralFun, dist_eq_norm,
+    ← intervalIntegral.integral_sub
+      (intervalIntegrable_integrand hg t₀ hα dα ..)
+      (intervalIntegrable_integrand hg t₀ hα' dα ..)]
   have hdα_eval_bound : ∀ i τ, ‖compProj t₀ (dα i) τ‖ ≤ M := fun i τ ↦ by
-    simp only [compProj]; exact ((dα i).norm_coe_le_norm _).trans (hdα i)
+    simp only [compProj]
+    exact ((dα i).norm_coe_le_norm _).trans (hdα i)
   have hprod_bound : ∀ τ, ∏ i : Fin n, ‖compProj t₀ (dα i) τ‖ ≤ M ^ n := fun τ ↦
     (Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ hdα_eval_bound i τ)).trans_eq
       (by simp [Finset.prod_const])
@@ -276,15 +282,16 @@ lemma dist_integralCMLM_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
       ‖(g (compProj t₀ α τ) - g (compProj t₀ α' τ)) (fun i ↦ compProj t₀ (dα i) τ)‖ ≤
         ε * M ^ n := fun τ ↦ by
     simp only [compProj] at hprod_bound ⊢
-    set s : Icc tmin tmax := projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) τ
-    exact norm_sub_continuousMultilinearMap_apply_le (hg_close s) (hprod_bound τ)
+    exact norm_sub_continuousMultilinearMap_apply_le (hg_close _) (hprod_bound τ)
   have ht_bound : |(t : ℝ) - (t₀ : ℝ)| ≤ tmax - tmin := by
-    rw [← Real.dist_eq]; exact Real.dist_le_of_mem_Icc t.2 t₀.2
+    rw [← Real.dist_eq]
+    exact Real.dist_le_of_mem_Icc t.2 t₀.2
   calc ‖∫ x in ↑t₀..↑t, ((g (compProj t₀ α x) - g (compProj t₀ α' x))
           fun i ↦ compProj t₀ (dα i) x)‖
       ≤ (ε * M ^ n) * |(t : ℝ) - (t₀ : ℝ)| := by
         apply intervalIntegral.norm_integral_le_of_norm_le_const
-        intro τ _; exact hintegrand_bound τ
+        intro τ _
+        exact hintegrand_bound τ
     _ ≤ ε * M ^ n * (tmax - tmin) := by
         apply mul_le_mul_of_nonneg_left ht_bound
         apply mul_nonneg (le_of_lt hε) (pow_nonneg hM n)
@@ -358,11 +365,14 @@ lemma integralCMLM_eventually_dist_lt {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
     hg_unif.continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds _ hε')
   apply Filter.eventually_of_mem hV_mem
   intro α hα dα hdα
-  have hα_ball : dist (gComp α₀) (gComp α) < ε' := by rw [dist_comm]; exact Metric.mem_ball.mp hα
+  have hα_ball : dist (gComp α₀) (gComp α) < ε' := by
+    rw [dist_comm]
+    exact Metric.mem_ball.mp hα
   have hg_close : ∀ s : Icc tmin tmax, ‖g (α₀.1 s) - g (α.1 s)‖ ≤ ε' := fun s ↦ by
     calc ‖g (α₀.1 s) - g (α.1 s)‖ = ‖gComp α₀ s - gComp α s‖ := rfl
       _ ≤ dist (gComp α₀) (gComp α) := by
-        rw [← dist_eq_norm]; exact ContinuousMap.dist_apply_le_dist s
+        rw [← dist_eq_norm]
+        exact ContinuousMap.dist_apply_le_dist s
       _ ≤ ε' := le_of_lt hα_ball
   have hdα_bound : ∀ i, ‖dα i‖ ≤ M' := fun i ↦
     (norm_le_pi_norm dα i).trans ((hB dα hdα).trans (le_max_left M 0))
