@@ -216,9 +216,9 @@ theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countabl
 theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
   e.toEncoding.card_le_aleph0
 
-/-- A finEncoding of `List Bool` in `Bool`. -/
-def finEncodingListBool : FinEncoding (List Bool) where
-  Γ := Bool
+/-- A `List` of symbols in a finite alphabet `α`, encoded directly. -/
+def finEncodingList (α : Type 0) [Fintype α] : FinEncoding (List α) where
+  Γ := α
   encode := id
   decode := Option.some
   decode_encode _ := rfl
