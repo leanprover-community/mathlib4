@@ -544,9 +544,9 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
     (hp : IsInteriorPoint I p) (hfp : IsInteriorPoint J (f p))
     (hf' : (mfderiv I J f p).ker = ⊥ ∧ (mfderiv I J f p).range = ⊤) :
     IsLocalDiffeomorphAt I J n f p := by
-  -- todo : change hf to only require ContMDiffOn some open set containing p (should be easy change)
-  -- question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
-  -- the hf' hypothesis and the process of using it to obtain g' seems a bit awkward
+  /- todo : change hf to only require ContMDiffOn some open set containing p (should be easy change)
+  question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
+  The hf' hypothesis and the process of using it to obtain g' seems a bit awkward -/
 
   -- write the function in coordinates and obtain coordinate charts
   set g : E → F := writtenInExtChartAt I J p f with g_def
@@ -579,23 +579,19 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
     simp only[mfderiv, hf.contMDiffAt.mdifferentiableAt hn, if_pos, fderivWithin] at hf'
     by_cases g'_zero: HasFDerivWithinAt g (0 : E →L[𝕜] F) (range I) (φ₀ p)
     · rw[if_pos g'_zero] at hf'
-      exact ⟨
-        ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
-        g'_zero.hasFDerivAt (range_mem_nhds_isInteriorPoint hp)
-      ⟩
+      exact ⟨ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
+        g'_zero.hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
     · rw[if_neg g'_zero, dif_pos hg₂] at hf'
-      exact ⟨
-        ContinuousLinearEquiv.ofBijective (Classical.choose hg₂) hf'.1 hf'.2,
-        (Classical.choose_spec hg₂).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)
-      ⟩
+      exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose hg₂) hf'.1 hf'.2,
+        (Classical.choose_spec hg₂).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
   -- define V, the open set where g' is a linear equivalence
   set V := fderiv 𝕜 g ⁻¹' range ContinuousLinearEquiv.toContinuousLinearMap
   have hUV: IsOpen (U ∩ V) :=
     (hg₀.continuousOn_fderiv_of_isOpen U_open (ENat.one_le_iff_ne_zero_withTop.mpr hn)
     ).isOpen_inter_preimage U_open (ContinuousLinearEquiv.isOpen)
-  -- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
-  -- restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
-  -- todo : refactor this part to a separate function since it could be independently useful
+  /- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
+  restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
+  todo : refactor this part to a separate function since it could be independently useful -/
   set homeo := (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen _ hUV
   have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
     (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
@@ -633,13 +629,11 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
   · show p ∈ diffeo.source
     simp[diffeo, PartialDiffeomorph.trans, toOpenPartialHomeomorph, coord_diffeo, homeo, U, V,
       and_assoc]
-    refine ⟨
-      mem_diffeoExtChartAt_source hp,
+    refine ⟨mem_diffeoExtChartAt_source hp,
       ContDiffAt.mem_toOpenPartialHomeomorph_source _ _ _,
       ⟨p, mem_diffeoExtChartAt_source hp, mem_diffeoExtChartAt_source hfp, rfl⟩,
       ⟨g', hg'.fderiv.symm⟩,
-      ?_
-    ⟩
+      ?_⟩
     suffices ψ₁ (f p) ∈ ψ₁.symm.source by
       simpa[g, φ₁, diffeoExtChartAt, PartialDiffeomorph.auxModelPartialHomeo]
     exact ψ₁.map_source (mem_diffeoExtChartAt_source hfp)
