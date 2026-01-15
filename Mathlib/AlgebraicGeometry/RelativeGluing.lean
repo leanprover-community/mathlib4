@@ -99,7 +99,7 @@ noncomputable abbrev glued : Scheme.{u} :=
 
 /-- The cover of the glued `Xᵢ` given by the `Xᵢ`. -/
 @[simps!]
-noncomputable abbrev cover : OpenCover d.glued :=
+noncomputable def cover : OpenCover d.glued :=
   Scheme.IsLocallyDirected.openCover _
 
 instance : Category d.cover.I₀ :=

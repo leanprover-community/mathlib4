@@ -338,7 +338,7 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
       naturality x y f := by
         dsimp
         rw [Category.comp_id, ← F.map_comp]
-        congr 1}
+        congr 1 }
 
 /-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
 objects. -/
@@ -737,7 +737,7 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
       naturality x y f := by
         dsimp
         rw [Category.id_comp, ← F.map_comp]
-        congr 1}
+        congr 1 }
 
 /-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
 objects. -/

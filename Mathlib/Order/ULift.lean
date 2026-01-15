@@ -59,10 +59,10 @@ instance [SDiff α] : SDiff (ULift.{v} α) where sdiff x y := up <| x.down \ y.d
 @[simp] theorem up_sdiff [SDiff α] (a b : α) : up (a \ b) = up a \ up b := rfl
 @[simp] theorem down_sdiff [SDiff α] (a b : ULift α) : down (a \ b) = down a \ down b := rfl
 
-instance [HasCompl α] : HasCompl (ULift.{v} α) where compl x := up <| x.downᶜ
+instance [Compl α] : Compl (ULift.{v} α) where compl x := up <| x.downᶜ
 
-@[simp] theorem up_compl [HasCompl α] (a : α) : up (aᶜ) = (up a)ᶜ := rfl
-@[simp] theorem down_compl [HasCompl α] (a : ULift α) : down aᶜ = (down a)ᶜ := rfl
+@[simp] theorem up_compl [Compl α] (a : α) : up (aᶜ) = (up a)ᶜ := rfl
+@[simp] theorem down_compl [Compl α] (a : ULift α) : down aᶜ = (down a)ᶜ := rfl
 
 instance [Ord α] [inst : Std.OrientedOrd α] : Std.OrientedOrd (ULift.{v} α) where
   eq_swap := inst.eq_swap
