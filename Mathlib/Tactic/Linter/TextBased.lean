@@ -9,7 +9,7 @@ public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
 public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Linter.UnicodeLinter
+public meta import Mathlib.Tactic.Linter.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
@@ -180,8 +180,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_NSP" => some (StyleError.nonbreakingSpace)
         | "ERR_UNICODE" => do
+          -- extract the offending unicode character from `errorMessage`
+          -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
           let str ← errorMessage[2]?
-          let c ← str.get? ⟨1⟩
+          let c ← String.Pos.Raw.get? str ⟨1⟩
           StyleError.unwantedUnicode c
         | _ => none
       match String.toNat? lineNumber with
@@ -274,7 +276,7 @@ def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   for h : idx in [:lines.size] do
     let line := lines[idx]
-    let pos := line.find (· == ' ')
+    let pos := line.find (· == '\u00A0')
     if pos != line.endPos then
       errors := errors.push (StyleError.nonbreakingSpace, idx + 1)
   return (errors, none)
@@ -290,14 +292,13 @@ end
 
 namespace UnicodeLinter
 
-/-- Creates `StyleError`s for bad usage of unicode characters.
-Note: if `pos` is not a valid position, the result is unspecified. -/
-def findBadUnicodeAux (s : String) (pos : String.Pos := 0)
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+partial def findBadUnicodeAux (s : String) (pos : s.Pos)
     (err : Array StyleError := #[]) : Array StyleError :=
   if h : pos < s.endPos then
-    have := Nat.sub_lt_sub_left h (String.lt_next s pos)
-    let c := s.get? pos |>.getD '\uFFFD' -- �
-    let posₙ := s.next pos -- `pos` is valid by assumption. `pos` is not `endPos` by check above.
+    -- have := Nat.sub_lt_sub_left h (String.Pos.Raw.byteIdx_lt_byteIdx_next s pos)
+    let c := pos.get (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
+    let posₙ := pos.next (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
     if ! isAllowedCharacter c then
       -- bad: character not allowed
       findBadUnicodeAux s posₙ (err.push (.unwantedUnicode c))
@@ -306,17 +307,22 @@ def findBadUnicodeAux (s : String) (pos : String.Pos := 0)
       findBadUnicodeAux s posₙ err
   else
     err
-termination_by s.endPos.1 - pos.1
+-- TODO it should be possible to prove termination. Do we care?
 
 /-- Creates `StyleError`s for bad usage of unicode characters. -/
 @[inline]
 def findBadUnicode (s : String) : Array StyleError :=
-  findBadUnicodeAux s
+  findBadUnicodeAux s s.startPos
 
 end UnicodeLinter
 
+/-- Lint a collection of input strings for disallowed unicode characters. -/
+public register_option linter.unicodeLinter : Bool := { defValue := true }
+
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
-def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
+def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.unicodeLinter opts do return (#[], none)
+
   let mut changed : Array String := #[]
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
