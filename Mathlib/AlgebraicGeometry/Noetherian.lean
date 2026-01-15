@@ -165,9 +165,7 @@ instance {U : X.OpenCover} (i) [IsLocallyNoetherian X] : IsLocallyNoetherian (U.
 `𝒰.X i` are all locally Noetherian. -/
 theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
     IsLocallyNoetherian X ↔ ∀ (i : 𝒰.I₀), IsLocallyNoetherian (𝒰.X i) := by
-  constructor
-  · intro h i
-    exact isLocallyNoetherian_of_isOpenImmersion (𝒰.f i)
+  refine ⟨fun _ ↦ inferInstance, ?_⟩
   · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _

@@ -125,8 +125,7 @@ theorem IsLocallyArtinian.of_isImmersion [IsImmersion f] [IsLocallyArtinian Y] :
 
 theorem isLocallyArtinian_iff_openCover (𝒰 : X.OpenCover) :
     IsLocallyArtinian X ↔ ∀ (i : 𝒰.I₀), IsLocallyArtinian (𝒰.X i) := by
-  refine ⟨fun h i ↦ .of_isOpenImmersion (𝒰.f i), fun H ↦ ?_⟩
-  have := (isLocallyNoetherian_iff_openCover 𝒰).mpr inferInstance
+  refine ⟨fun h ↦ inferInstance, fun H ↦ ?_⟩
   refine IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology.mpr ⟨?_, ?_⟩
   · exact (isLocallyNoetherian_iff_openCover 𝒰).mpr inferInstance
   · refine discreteTopology_iff_isOpen_singleton.mpr fun x ↦ ?_
@@ -139,7 +138,7 @@ theorem isLocallyArtinian_iff_of_isOpenCover {ι : Type*} {U : ι → X.Opens}
   refine ⟨fun _ _ ↦ IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, hU' _⟩, fun H ↦ ?_⟩
   rw [isLocallyArtinian_iff_openCover (X.openCoverOfIsOpenCover U hU)]
   have : ∀ i, IsLocallyArtinian (Spec Γ(X, U i)) := by simpa
-  exact fun i ↦ .of_isOpenImmersion (hU' _).isoSpec.hom
+  exact fun i ↦ .of_isImmersion (hU' _).isoSpec.hom
 
 /-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
 @[mk_iff]
