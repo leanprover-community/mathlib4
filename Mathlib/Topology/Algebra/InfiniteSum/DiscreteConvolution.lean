@@ -77,8 +77,6 @@ Differences (discrete ↔ MeasureTheory):
     bridge to `MulCauchyProduct` / `CauchyProduct`
 - MulCauchyProduct / CauchyProduct (see `Mathlib.Algebra.BigOperators.CauchyProduct`):
   - Purely algebraic finite-sum convolution (no topology needed)
-  - `MulCauchyProduct.assoc` / `CauchyProduct.assoc`, `one_mul`, `mul_one`, `comm`:
-    ring axioms via `Finset.sum_nbij'`
 
 ## Notation
 
@@ -104,7 +102,7 @@ noncomputable section
 
 namespace DiscreteConvolution
 
-variable {M : Type*} {S : Type*} {E E' F : Type*}
+variable {M S E E' E'' F F' G R : Type*}
 
 /-! ### Multiplication Fiber -/
 
@@ -263,7 +261,7 @@ end Definition
 
 section RingMul
 
-variable [Monoid M] {R : Type*} [Semiring R] [TopologicalSpace R]
+variable [Monoid M] [Semiring R] [TopologicalSpace R]
 
 /-- Convolution using ring multiplication. This is `convolution (LinearMap.mul ℕ R)`. -/
 @[to_additive (dont_translate := R) addRingConvolution
@@ -319,7 +317,7 @@ end CommMonoid
 
 section RingConvolutionComm
 
-variable [CommMonoid M] {R : Type*} [CommSemiring R] [TopologicalSpace R]
+variable [CommMonoid M] [CommSemiring R] [TopologicalSpace R]
 
 @[to_additive (dont_translate := R) addRingConvolution_comm]
 theorem ringConvolution_comm (f g : M → R) : f ⋆ᵣ g = g ⋆ᵣ f :=
@@ -337,7 +335,6 @@ variable [Monoid M] [CommSemiring S]
 the left-associated form's summability is derived via `assocEquiv` and `hL` -/
 section TripleConvolutionExistence
 
-variable {E E' E'' F' G : Type*}
 variable [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid E'']
 variable [AddCommMonoid F'] [AddCommMonoid G]
 variable [Module S E] [Module S E'] [Module S E''] [Module S F'] [Module S G]
@@ -364,7 +361,6 @@ end TripleConvolutionExistence
 
 section AssociativityTheorem
 
-variable {E E' E'' F F' G : Type*}
 variable [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid E'']
 variable [AddCommMonoid F] [AddCommMonoid F'] [AddCommMonoid G]
 variable [Module S E] [Module S E'] [Module S E''] [Module S F] [Module S F'] [Module S G]
@@ -454,7 +450,7 @@ end AssociativityTheorem
 
 section RingConvolutionAssoc
 
-variable {R : Type*} [Semiring R] [TopologicalSpace R] [T3Space R] [ContinuousAdd R]
+variable [Semiring R] [TopologicalSpace R] [T3Space R] [ContinuousAdd R]
 
 /-- Ring convolution associativity at a point: `((f ⋆ᵣ g) ⋆ᵣ h) x = (f ⋆ᵣ (g ⋆ᵣ h)) x`.
 
@@ -500,7 +496,6 @@ end RingConvolutionAssoc
 
 section CompleteUniformRingConvolutionAssoc
 
-variable {R : Type*}
 variable [Ring R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalSemiring R]
 variable [T2Space R] [CompleteSpace R]
 
@@ -579,8 +574,7 @@ theorem mulFiber_finite (x : M) : (mulFiber x).Finite := by
   rw [mulFiber_eq_mulAntidiagonal]
   exact (Finset.mulAntidiagonal x).finite_toSet
 
-variable {S : Type*} [CommSemiring S]
-variable {E E' F : Type*} [AddCommMonoid E] [Module S E]
+variable [CommSemiring S] [AddCommMonoid E] [Module S E]
 variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
 variable [TopologicalSpace F]
 
@@ -619,7 +613,7 @@ section CauchyProductBridge
 open scoped MulCauchyProduct
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
-variable {R : Type*} [Semiring R] [TopologicalSpace R]
+variable [Semiring R] [TopologicalSpace R]
 
 /-- `ringConvolution` (`⋆ᵣ`) equals `MulCauchyProduct.apply` (`⋆ᶜ`) for `HasMulAntidiagonal`. -/
 @[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
