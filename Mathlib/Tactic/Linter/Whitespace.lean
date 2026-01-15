@@ -310,6 +310,8 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term_-_»,
     -- logical negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
     ``«term¬_»,
+    -- `name_poly_vars` asks for a space after the last variable name; fixing this is not obvious
+    `Mathlib.Tactic.namePolyVarsOver
   ]
   depth := some 2
 
@@ -454,7 +456,7 @@ def mkRangeError (ks : Array SyntaxNodeKind) (orig pp : Substring.Raw) :
       if (origWs.take 1).toString != "\n" && (!origWsNext.isEmpty) then
         return some (⟨origWsNext.startPos, origWsNext.stopPos⟩, "remove space in the source", "")
   -- The next pp-character is not a space
-  if !ppNext.trim.isEmpty then
+  else
     if !origWs.isEmpty then
       let wsName := if (origWs.take 1).toString == " " then "space" else "line break"
       let s := if origWs.toString.length == 1 || (origWs.take 1).toString == "\n" then "" else "s"
