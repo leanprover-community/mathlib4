@@ -46,6 +46,7 @@ public register_option linter.globalSyntax : Bool := {
 structure RangesToKinds where
   toKinds : Std.HashMap Syntax.Range Name
   mod2 : Std.HashSet String.Pos.Raw
+  importEnd : Option String.Pos.Raw
   deriving Inhabited
 
 def toggle {α} [BEq α] [Hashable α] (h : Std.HashSet α) (a : α) :=
@@ -54,8 +55,9 @@ def toggle {α} [BEq α] [Hashable α] (h : Std.HashSet α) (a : α) :=
 def RangesToKinds.insert (h : RangesToKinds) (rg : Syntax.Range) (k : Name) : RangesToKinds where
   toKinds := h.toKinds.insert rg k
   mod2 := toggle (toggle h.mod2 rg.start) rg.stop
+  importEnd := h.importEnd
 
-initialize toKindsRef : IO.Ref RangesToKinds ← IO.mkRef {toKinds := ∅, mod2 := ∅}
+initialize toKindsRef : IO.Ref RangesToKinds ← IO.mkRef {toKinds := ∅, mod2 := ∅, importEnd := none}
 
 namespace GlobalSyntax
 
@@ -64,9 +66,10 @@ local instance : ToString Syntax.Range where
 
 local instance : ToString RangesToKinds where
   toString := fun
-  | {toKinds := toKs, mod2 := m2} =>
+  | {toKinds := toKs, mod2 := m2, importEnd := pos?} =>
     let sorted := toKs.toArray.qsort (·.1.start < ·.1.start)
-    s!"mod2: {m2.toArray.qsort}\n\n\
+    s!"{if let some pos := pos? then s!"{pos}" else ""}\n\
+    mod2: {m2.toArray.qsort}\n\n\
     toKinds:\n* {"\n* ".intercalate (sorted.map (s!"{·}")).toList}"
 
 abbrev startersEnders : NameMap Name := .ofArray (cmp := Name.quickCmp) #[
@@ -103,11 +106,14 @@ def globalSyntaxLinter : Linter where run stx := do
     let (_, pos, _) ← parseImports fm.source
     let posStx := fm.ofPosition pos
     --dbg_trace "current {pos} -- {posStx}"
-    toKindsRef.modify (fun r => {r with toKinds := r.toKinds.insert ⟨0, posStx⟩ `Module})
+    toKindsRef.modify (fun r => {r with toKinds := r.toKinds.insert ⟨0, posStx⟩ `Module, importEnd := some posStx})
   if let some rg := stx.getRangeWithTrailing? then
     toKindsRef.modify (·.insert rg stx.getKind)
   let kindsRef ← toKindsRef.get
   --dbg_trace kindsRef
+  --unless kindsRef.mod2.size == 2 && kindsRef.mod2.contains (← getFileMap).positions.back! do
+  unless kindsRef.mod2.size == 2 && (kindsRef.mod2.toArray.qsort == #[0, kindsRef.importEnd.getD 0]) do
+    return
   for (rg1, rg2) in cancellingPairs <| kindsRef.toKinds.toArray.qsort (·.1.start < ·.1.start) do
     logInfoAt (.ofRange rg1) "This command"
     logInfoAt (.ofRange rg2) "is cancelled by this one!"
