@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Bingyu Xia
+Authors: Andrew Yang
 -/
 module
 
@@ -36,21 +36,3 @@ lemma ofAdd_image_nsmul (n : ℕ) (s : Set M) :
   | succ n IH => simp [succ_nsmul, pow_succ, IH]
 
 end Multiplicative
-
-namespace Additive
-
-variable [Monoid M]
-
-@[simp]
-lemma ofMul_image_setMul (s t : Set M) :
-    Additive.ofMul '' (s * t) = Additive.ofMul '' s + Additive.ofMul '' t := by
-  rw [← Set.image2_mul, Set.image_image2_distrib ofMul_mul, Set.image2_add]
-
-@[simp]
-lemma ofMul_image_pow (n : ℕ) (s : Set M) :
-    Additive.ofMul '' (s ^ n) = n • (Additive.ofMul '' s) := by
-  induction n with
-  | zero => simp; rfl
-  | succ n IH => simp [succ_nsmul, pow_succ, IH]
-
-end Additive
