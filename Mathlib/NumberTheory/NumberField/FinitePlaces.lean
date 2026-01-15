@@ -506,7 +506,7 @@ instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asI
     simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
     intro x
     exact ⟨by simp_all, fun h ↦ by
-      rwa [pow_eq_one_iff (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)] at h⟩
+      grind [pow_eq_one_iff, ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
 
 noncomputable
 instance instAlgebraLiesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
