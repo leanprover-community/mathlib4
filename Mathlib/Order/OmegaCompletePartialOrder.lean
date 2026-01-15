@@ -565,6 +565,98 @@ lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
 
 end Prod
 
+namespace Sum
+
+variable
+  [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
+  [OmegaCompletePartialOrder δ] [OmegaCompletePartialOrder γ]
+
+noncomputable instance : OmegaCompletePartialOrder (α ⊕ β) where
+  ωSup c := Sum.map ωSup ωSup (Chain.split c)
+  le_ωSup c i := by
+    cases c using Chain.split_cases with
+    | inl c =>
+      simp only [inl_coe', split_inl, map_inl, ge_iff_le, inl_le_inl_iff]
+      apply le_ωSup
+    | inr c =>
+      simp only [inr_coe', split_inr, map_inr, ge_iff_le, inr_le_inr_iff]
+      apply le_ωSup
+  ωSup_le c x hc := by
+    cases c using Chain.split_cases with
+    | inl c =>
+      cases x with
+      | inl x => simp_all only [
+          inl_coe', ge_iff_le, inl_le_inl_iff, split_inl,
+          map_inl, ωSup_le_iff, implies_true]
+      | inr x => simp only [inl_coe', ge_iff_le, not_inl_le_inr, forall_const] at hc
+    | inr c =>
+      cases x with
+      | inl x => simp only [inr_coe', ge_iff_le, not_inr_le_inl, forall_const] at hc
+      | inr x => simp_all only [
+          inr_coe', ge_iff_le, inr_le_inr_iff, split_inr,
+          map_inr, ωSup_le_iff, implies_true]
+
+@[simp]
+lemma ωSup_inl (c : Chain α) : ωSup (.inl c : Chain (α ⊕ β)) = .inl (ωSup c) := rfl
+
+@[simp]
+lemma ωSup_inr (c : Chain β) : ωSup (.inr c : Chain (α ⊕ β)) = .inr (ωSup c) := rfl
+
+@[fun_prop]
+lemma ωScottContinuous_inl : ωScottContinuous (Sum.inl : α → α ⊕ β) := ScottContinuousOn.inl
+
+lemma ωScottContinuous_inl'
+    {f : α → β} (hf : ωScottContinuous f)
+    : ωScottContinuous (fun x ↦ (Sum.inl (f x) : β ⊕ γ)) := by
+  fun_prop
+
+@[fun_prop]
+lemma ωScottContinuous_inr : ωScottContinuous (Sum.inr : β → α ⊕ β) := ScottContinuousOn.inr
+
+lemma ωScottContinuous_inr'
+    {f : α → β} (hf : ωScottContinuous f)
+    : ωScottContinuous (fun x ↦ (Sum.inr (f x) : γ ⊕ β)) := by
+  fun_prop
+
+@[fun_prop]
+lemma ωScottContinuous_elim
+    {f : α → β → γ} (hf : ωScottContinuous fun x : α × β ↦ f x.1 x.2)
+    {g : α → δ → γ} (hg : ωScottContinuous fun x : α × δ ↦ g x.1 x.2)
+    {h : α → β ⊕ δ} (hh : ωScottContinuous h)
+    : ωScottContinuous (fun x ↦ Sum.elim (f x) (g x) (h x)) := by
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
+  · apply Sum.elim_mono hf.monotone hg.monotone hh.monotone
+  · rw [hh.map_ωSup]
+    generalize hc' : c.map ⟨h, hh.monotone⟩ = c'
+    cases c' using Chain.split_cases with
+    | inl c' =>
+      simp only [ωSup_inl, elim_inl]
+      apply Eq.trans (hf.map_ωSup (c.zip c'))
+      congr 1
+      ext n
+      simp only [Chain.ext_iff, map_coe, OrderHom.coe_mk, funext_iff, Function.comp_apply,
+        inl_coe'] at hc'
+      simp only [map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe, hc', elim_inl]
+    | inr c' =>
+      simp only [ωSup_inr, elim_inr]
+      apply Eq.trans (hg.map_ωSup (c.zip c'))
+      congr 1
+      ext n
+      simp only [Chain.ext_iff, map_coe, OrderHom.coe_mk, funext_iff, Function.comp_apply,
+        inr_coe'] at hc'
+      simp only [map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe, hc', elim_inr]
+
+@[fun_prop]
+lemma ωScottContinuous_map
+    {f : α → β → γ} (hf : ωScottContinuous fun x : α × β ↦ f x.1 x.2)
+    {g : α → δ → γ} (hf : ωScottContinuous fun x : α × δ ↦ g x.1 x.2)
+    {h : α → β ⊕ δ} (hh : ωScottContinuous h)
+    : ωScottContinuous (fun x ↦ Sum.map (f x) (g x) (h x)) := by
+  unfold Sum.map
+  fun_prop
+
+end Sum
+
 namespace CompleteLattice
 
 -- see Note [lower instance priority]
