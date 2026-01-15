@@ -124,7 +124,7 @@ def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
 
-set_option linter.existingAttributeWarning false
+set_option linter.existingAttributeWarning false in
 attribute [to_dual existing refl_inv] refl_hom
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
@@ -140,7 +140,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
 
-set_option linter.existingAttributeWarning false
+set_option linter.existingAttributeWarning false in
 attribute [to_dual existing trans_inv] trans_hom
 
 @[simps]
@@ -483,7 +483,7 @@ def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
 
-set_option linter.existingAttributeWarning false
+set_option linter.existingAttributeWarning false in
 attribute [to_dual existing mapIso_inv] mapIso_hom
 
 @[simp]
