@@ -150,7 +150,7 @@ there will be two additional assumptions:
 * `wlog! h : P` also calls `push_neg` at the generated hypothesis `h`.
   `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`
 * `wlog! +distrib h : P` also calls `push_neg +distrib` at the generated hypothesis `h`.
-  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P ∨ Q`.
+  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
 -/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
