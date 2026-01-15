@@ -291,7 +291,7 @@ theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
-  simp only [subset_def, not_forall, exists_prop]
+  grind
 
 theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
@@ -963,7 +963,7 @@ theorem powerset_univ : 𝒫 (univ : Set α) = univ :=
 
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
-  simp [mem_dite]
+  grind
 
 @[simp]
 theorem mem_ite_univ_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
