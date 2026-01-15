@@ -21,7 +21,7 @@ This file proves asymptotic theorems for binomial coefficients and factorial var
 * `isTheta_choose` is the proof that `n.choose k = Θ(n^k)` as `n → ∞`.
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Filter Nat Topology

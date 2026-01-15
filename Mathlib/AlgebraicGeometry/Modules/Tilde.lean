@@ -103,7 +103,8 @@ lemma sections_smul_localizations_def
     {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
     (r : (Spec.structureSheaf R).val.obj U)
     (m : Localizations M ↑x) :
-  r • m = (by exact r.1 x : Localization.AtPrime x.1.asIdeal) • m := rfl
+    r • m = (by exact r.1 x : Localization.AtPrime x.1.asIdeal) • m :=
+  rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
@@ -178,7 +179,7 @@ noncomputable def tilde : (Spec <| .of R).Modules where
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
-  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _ ).2
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _).2
     M.tildeInType.2
 
 /--
