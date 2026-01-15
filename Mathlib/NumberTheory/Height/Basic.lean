@@ -39,12 +39,10 @@ multiplicative height), which is justified, as both versions are frequently used
 We define the following variants.
 * `Height.mulHeight₁ x` and `Height.logHeight₁ x` for `x : K`.
   This is the height of an element of `K`.
-* (TODO)
-  `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
+* `Height.mulHeight x` and `Height.logHeight x` for `x : ι → K` with `ι` finite. This is the height
   of a tuple of elements of `K` representing a point in projective space.
   It is invariant under scaling by nonzero elements of `K` (for `x ≠ 0`).
-* (TODO)
-  `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
+* `Finsupp.mulHeight x` and `Finsupp.logHeight x` for `x : α →₀ K`. This is the same
   as the height of `x` restricted to the support of `x`.
 * (TODO)
   `Projectivization.mulHeight` and `Projectivization.logHeight` on
