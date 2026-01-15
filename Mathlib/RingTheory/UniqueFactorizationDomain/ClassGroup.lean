@@ -97,6 +97,17 @@ theorem Ideal.isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I :
 
 @[expose] public section
 
+/-- In a normalized GCD domain, every invertible fractional ideal is principal. -/
+theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
+    IsUnit (I.num  : FractionalIdeal R⁰ (FractionRing R)) ↔ IsUnit I := by
+  have hden0 : algebraMap R (FractionRing R) I.den ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.2
+  let u : (FractionRing R)ˣ := Units.mk0 (algebraMap R (FractionRing R) I.den) hden0
+  have hdenUnit : IsUnit (spanSingleton R⁰ (algebraMap R (FractionRing R) I.den)) :=
+    ⟨toPrincipalIdeal R (FractionRing R) u, by simp [u]⟩
+  obtain ⟨c, hc⟩ := hdenUnit
+  rw [← den_mul_self_eq_num', ← hc, Units.isUnit_units_mul]
+
 section NormalizedGCDMonoid
 variable [NormalizedGCDMonoid R]
 
@@ -105,42 +116,9 @@ theorem NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
-  have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := by
-    have hIunit : IsUnit (I : FractionalIdeal R⁰ (FractionRing R)) := ⟨I, rfl⟩
-    -- `J = spanSingleton den * I`, and both factors are units.
-    have hden0 :
-        algebraMap R (FractionRing R)
-            (((I : FractionalIdeal R⁰ (FractionRing R)).den : R⁰) : R) ≠ 0 := by
-      exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
-        (SetLike.coe_mem ((I : FractionalIdeal R⁰ (FractionRing R)).den))
-    let u : (FractionRing R)ˣ :=
-      Units.mk0
-        (algebraMap R (FractionRing R)
-          (((I : FractionalIdeal R⁰ (FractionRing R)).den : R⁰) : R))
-        hden0
-    have hdenUnit :
-        IsUnit
-          (FractionalIdeal.spanSingleton (R⁰)
-            (algebraMap R (FractionRing R)
-              (((I : FractionalIdeal R⁰ (FractionRing R)).den : R⁰) : R))) := by
-      refine ⟨toPrincipalIdeal R (FractionRing R) u, ?_⟩
-      simp [u]
-    have hmul :
-        FractionalIdeal.spanSingleton (R⁰)
-            (algebraMap R (FractionRing R)
-              (((I : FractionalIdeal R⁰ (FractionRing R)).den : R⁰) : R)) *
-          (I : FractionalIdeal R⁰ (FractionRing R)) = J := by
-      simpa [J] using
-        (FractionalIdeal.den_mul_self_eq_num' (S := (R⁰)) (P := FractionRing R)
-          (I := (I : FractionalIdeal R⁰ (FractionRing R))))
-    -- Transport `IsUnit` along the equality.
-    simpa [hmul] using hdenUnit.mul hIunit
-  have hJprin : J.IsPrincipal :=
-    ideal_isPrincipal_of_isUnit_fractionalIdeal (R := R) J hJunit
-  -- If the numerator ideal is principal, the fractional ideal is principal.
-  simpa [J] using
-    FractionalIdeal.isPrincipal_of_num_isPrincipal (R := R)
-      (I := (I : FractionalIdeal R⁰ (FractionRing R))) hJprin
+  have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) := isUnit_num.mpr ⟨I, rfl⟩
+  have hJprin : J.IsPrincipal := ideal_isPrincipal_of_isUnit_fractionalIdeal J hJunit
+  exact isPrincipal_of_num_isPrincipal (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
 
 /-- In a normalized GCD Domain, every class in the ideal class group is `1`. -/
 theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 := by
