@@ -652,50 +652,7 @@ theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
   ringConvolution_eq_sum_mulAntidiagonal f g x
 
-/-- Associativity: `(f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h)` via `MulCauchyProduct.assoc`. -/
-@[to_additive (dont_translate := R) addRingConvolution_assoc_of_hasAntidiagonal
-  /-- Associativity: `(f ⋆ᵣ₊ g) ⋆ᵣ₊ h = f ⋆ᵣ₊ (g ⋆ᵣ₊ h)` via `CauchyProduct.assoc`. -/]
-theorem ringConvolution_assoc_of_hasMulAntidiagonal (f g h : M → R) :
-    (f ⋆ᵣ g) ⋆ᵣ h = f ⋆ᵣ (g ⋆ᵣ h) := by
-  funext x
-  simp only [ringConvolution_eq_sum_mulAntidiagonal]
-  exact congrFun (MulCauchyProduct.assoc f g h) x
-
-/-- Identity left: `MulCauchyProduct.one ⋆ᵣ f = f` via `MulCauchyProduct.one_mul`. -/
-@[to_additive (dont_translate := R) one_addRingConvolution
-  /-- Identity left: `CauchyProduct.one ⋆ᵣ₊ f = f` via `CauchyProduct.one_mul`. -/]
-theorem one_ringConvolution [DecidableEq M] (f : M → R) :
-    MulCauchyProduct.one ⋆ᵣ f = f := by
-  funext x
-  simp only [ringConvolution_eq_sum_mulAntidiagonal]
-  exact congrFun (MulCauchyProduct.one_mul f) x
-
-/-- Identity right: `f ⋆ᵣ MulCauchyProduct.one = f` via `MulCauchyProduct.mul_one`. -/
-@[to_additive (dont_translate := R) addRingConvolution_one
-  /-- Identity right: `f ⋆ᵣ₊ CauchyProduct.one = f` via `CauchyProduct.mul_one`. -/]
-theorem ringConvolution_one [DecidableEq M] (f : M → R) :
-    f ⋆ᵣ MulCauchyProduct.one = f := by
-  funext x
-  simp only [ringConvolution_eq_sum_mulAntidiagonal]
-  exact congrFun (MulCauchyProduct.mul_one f) x
-
 end CauchyProductBridge
-
-section CauchyProductAssocBridge
-
-variable [CommMonoid M] [Finset.HasMulAntidiagonal M]
-variable {R : Type*} [CommSemiring R] [TopologicalSpace R]
-
-/-- Commutativity: `f ⋆ᵣ g = g ⋆ᵣ f` via `MulCauchyProduct.comm`. -/
-@[to_additive (dont_translate := R) addRingConvolution_comm_of_hasAntidiagonal
-  /-- Commutativity: `f ⋆ᵣ₊ g = g ⋆ᵣ₊ f` via `CauchyProduct.comm`. -/]
-theorem ringConvolution_comm_of_hasMulAntidiagonal (f g : M → R) :
-    f ⋆ᵣ g = g ⋆ᵣ f := by
-  funext x
-  simp only [ringConvolution_eq_sum_mulAntidiagonal]
-  exact congrFun (MulCauchyProduct.comm f g) x
-
-end CauchyProductAssocBridge
 
 end DiscreteConvolution
 
