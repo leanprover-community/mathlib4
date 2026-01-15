@@ -461,6 +461,7 @@ public import Mathlib.Algebra.Group.Translate
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Algebra.Group.TypeTags.Hom
+public import Mathlib.Algebra.Group.TypeTags.Pointwise
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 public import Mathlib.Algebra.Group.UniqueProds.VectorSpace
