@@ -633,7 +633,7 @@ equals the corresponding CauchyProduct. This allows deriving ring axioms from th
 algebraic CauchyProduct proofs. See `Mathlib.Algebra.BigOperators.CauchyProduct` for
 the standalone algebraic formulation. -/
 
-section MulCauchyProductBridge
+section CauchyAssocProductBridge
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
@@ -656,7 +656,7 @@ theorem ringConvolution_assoc_of_hasMulAntidiagonal (f g h : M → R) :
   simp only [ringConvolution_eq_sum_mulAntidiagonal]
   exact congrFun (MulCauchyProduct.assoc f g h) x
 
-end MulCauchyProductBridge
+end CauchyAssocProductBridge
 
 /-! ### MulCauchyProduct / CauchyProduct Identity Bridge -/
 
