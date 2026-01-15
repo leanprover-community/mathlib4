@@ -27,9 +27,3 @@ variable (R α) in
 def linearEquiv : Shrink.{v} α ≃ₗ[R] α := (equivShrink α).symm.linearEquiv _
 
 end Shrink
-
-/-- A small module is linearly equivalent to its small model. -/
-@[deprecated Shrink.linearEquiv (since := "2025-07-11")]
-def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [Small β] :
-    β ≃ₗ[α] Shrink β :=
-  ((equivShrink β).symm.linearEquiv α).symm

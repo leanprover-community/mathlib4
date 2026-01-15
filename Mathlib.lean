@@ -13,6 +13,7 @@ public import Mathlib.Algebra.AffineMonoid.UniqueSums
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Field
 public import Mathlib.Algebra.Algebra.Hom
@@ -2692,6 +2693,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
@@ -4242,6 +4246,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
+public import Mathlib.Geometry.Manifold.HasGroupoid
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Real
@@ -4276,6 +4281,7 @@ public import Mathlib.Geometry.Manifold.Sheaf.LocallyRingedSpace
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
+public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
@@ -4784,6 +4790,7 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.Span.TensorProduct
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
