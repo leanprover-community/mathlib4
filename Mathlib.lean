@@ -4072,6 +4072,7 @@ public import Mathlib.Data.ZMod.Units
 public import Mathlib.Data.ZMod.ValMinAbs
 public import Mathlib.Deprecated.Aliases
 public import Mathlib.Deprecated.Estimator
+public import Mathlib.Deprecated.Hyperreal
 public import Mathlib.Deprecated.MLList.BestFirst
 public import Mathlib.Deprecated.Order
 public import Mathlib.Deprecated.Sort

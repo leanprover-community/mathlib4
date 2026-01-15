@@ -29,10 +29,6 @@ Given a finite element of the field, the `ArchimedeanClass.stdPart` function ret
 corresponding to this unique embedding. This function generalizes, among other things, the standard
 part function on `Hyperreal`.
 
-## TODO
-
-Redefine `Hyperreal.st` in terms of `ArchimedeanClass.stdPart`.
-
 ## References
 
 * https://en.wikipedia.org/wiki/Standard_part_function
@@ -364,8 +360,7 @@ theorem stdPart_sub_eq_right (hx : 0 < mk x) : stdPart (x - y) = -stdPart y := b
 theorem stdPart_sub_eq_left (hy : 0 < mk y) : stdPart (x - y) = stdPart x := by
   rw [sub_eq_add_neg, stdPart_add_eq_left (by simpa)]
 
-theorem stdPart_mul {x y : K} (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) :
-    stdPart (x * y) = stdPart x * stdPart y := by
+theorem stdPart_mul (hx : 0 ≤ mk x) (hy : 0 ≤ mk y) : stdPart (x * y) = stdPart x * stdPart y := by
   unfold stdPart
   rw [dif_pos hx, dif_pos hy, dif_pos]
   exact map_mul _ (FiniteElement.mk x hx) (.mk y hy)
@@ -393,9 +388,13 @@ theorem stdPart_ofNat (n : ℕ) [n.AtLeastTwo] : stdPart (ofNat(n) : K) = n :=
   stdPart_natCast n
 
 @[simp]
-theorem stdPart_real (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
+theorem stdPart_of_archimedean (f : ℝ →+*o K) (r : ℝ) : stdPart (f r) = r := by
   rw [stdPart, dif_pos]
   exact r.ringHom_apply <| OrderRingHom.comp _ (FiniteResidueField.ofArchimedean f)
+
+@[simp]
+theorem stdPart_real (r : ℝ) : stdPart r = r :=
+  stdPart_of_archimedean (.id ℝ) r
 
 theorem ofArchimedean_stdPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
     FiniteResidueField.ofArchimedean f (stdPart x) = .mk (.mk x hx) := by
@@ -422,7 +421,19 @@ theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
 theorem mk_sub_stdPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (stdPart x)) :=
   (mk_sub_pos_iff f hx).2 rfl
 
-theorem stdPart_eq (f : ℝ →+*o K) {x : K} {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
+theorem lt_of_lt_stdPart (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : r < stdPart x) : f r < x := by
+  rw [← sub_lt_sub_iff_right (c := f (stdPart x)), ← map_sub]
+  apply lt_of_mk_lt_mk_of_nonpos
+  · rw [mk_map_of_archimedean', mk_sub_pos_iff f hx]
+    rw [ne_eq, sub_eq_zero]
+    exact h.ne
+  · simpa using f.monotone' h.le
+
+theorem lt_of_stdPart_lt (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) (h : stdPart x < r) : x < f r := by
+  rw [← neg_lt_neg_iff, ← map_neg]
+  apply lt_of_lt_stdPart <;> simpa
+
+theorem stdPart_eq (f : ℝ →+*o K) {r : ℝ} (hl : ∀ s < r, f s ≤ x) (hr : ∀ s > r, x ≤ f s) :
     stdPart x = r := by
   have hx : 0 ≤ mk x := by
     apply mk_nonneg_of_le_of_le_of_archimedean f (hl (r - 1) _) (hr (r + 1) _) <;> simp
