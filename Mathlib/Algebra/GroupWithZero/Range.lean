@@ -195,9 +195,4 @@ end MonoidWithZeroHom
 
 namespace MonoidHomWithZero
 
-@[deprecated (since := "2025-07-02")] alias valueMonoid := MonoidWithZeroHom.valueMonoid
-@[deprecated (since := "2025-07-02")] alias valueGroup := MonoidWithZeroHom.valueGroup
-@[deprecated (since := "2025-07-02")] alias valueMonoid₀ := MonoidWithZeroHom.ValueMonoid₀
-@[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.ValueGroup₀
-
 end MonoidHomWithZero

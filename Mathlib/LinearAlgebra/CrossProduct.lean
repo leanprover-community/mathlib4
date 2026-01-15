@@ -63,9 +63,6 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
 @[inherit_doc] scoped[Matrix] infixl:74 " ⨯₃ " => crossProduct
 
 namespace Matrix
-/-- A deprecated notation for `⨯₃`. -/
-@[deprecated «term_⨯₃_» (since := "2025-07-11")]
-scoped syntax:74 (name := _root_.«term_×₃_») term:74 " ×₃ " term:75 : term
 end Matrix
 
 open Lean Elab Meta.Tactic Term in
