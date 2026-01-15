@@ -742,6 +742,6 @@ instance fullyFaithful_reflectsColimits [F.Full] [F.Faithful] :
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.map_preimage]
-              apply t.uniq_cocone_morphism⟩ }}
+              apply t.uniq_cocone_morphism⟩ } }
 
 end CategoryTheory.Limits

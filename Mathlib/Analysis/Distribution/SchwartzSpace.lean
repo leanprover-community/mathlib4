@@ -72,7 +72,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G H V : Type*}
+variable {ι 𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -359,6 +359,14 @@ instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
+open Classical in
+@[simp]
+theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → 𝓢(E, F)) (x : E) :
+    (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
+
 variable (E F)
 
 /-- Coercion as an additive homomorphism. -/
@@ -622,10 +630,12 @@ end CLM
 
 section EvalCLM
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedField 𝕜]
+variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
+variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
-protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
+protected def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
     (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
   rintro ⟨k, n⟩
@@ -641,6 +651,10 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
       gcongr
       apply le_seminorm
 
+@[simp]
+theorem evalCLM_apply_apply (f : 𝓢(E, F →L[ℝ] G)) (m : F) (x : E) :
+    SchwartzMap.evalCLM 𝕜 E G m f x = f x m := rfl
+
 end EvalCLM
 
 section Multiplication
@@ -648,11 +662,11 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F]
 
 section bilin
 
-variable [NormedSpace 𝕜 E]
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -724,8 +738,9 @@ theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f 
   simp [smulLeftCLM, hg]
 
 @[simp]
-theorem smulLeftCLM_const (c : 𝕜) (f : 𝓢(E, F)) : smulLeftCLM F (fun (_ : E) ↦ c) f = c • f := by
-  ext x
+theorem smulLeftCLM_const (c : 𝕜) :
+    smulLeftCLM F (fun (_ : E) ↦ c) = c • ContinuousLinearMap.id 𝕜 _ := by
+  ext f x
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
   simp [this]
 
@@ -742,9 +757,57 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
   ext1 f
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
+theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
+  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  simp
+
+theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ + g₂) = smulLeftCLM F g₁ + smulLeftCLM F g₂ := by
+  ext f x
+  simp [hg₁, hg₂, hg₁.add hg₂, add_smul]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ - g₂) = smulLeftCLM F g₁ - smulLeftCLM F g₂ := by
+  ext f x
+  simp [hg₁, hg₂, hg₁.sub hg₂, sub_smul]
+
+theorem smulLeftCLM_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (-g) = -smulLeftCLM F g := by
+  ext f x
+  simp [hg, hg.neg, neg_smul]
+
+theorem smulLeftCLM_fun_neg {g : E → 𝕜} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ -g x) = -smulLeftCLM F g :=
+  smulLeftCLM_neg hg
+
+theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f x
+  simp +contextual [Function.HasTemperateGrowth.sum hg, Finset.sum_smul, hg]
+
+variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
+
+variable (𝕜') in
+theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F (fun x ↦ RCLike.ofReal (K := 𝕜') (g x)) f = smulLeftCLM F g f := by
+  ext x
+  rw [smulLeftCLM_apply_apply (by fun_prop), smulLeftCLM_apply_apply (by fun_prop),
+    algebraMap_smul]
+
+theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c : ℝ) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
+    ← RCLike.real_smul_eq_coe_smul c]
+
 end smul
 
-variable [NormedSpace 𝕜 E]
+section pairing
+
+variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 /-- The bilinear pairing of Schwartz functions.
 
@@ -761,8 +824,66 @@ theorem pairing_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : �
 theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (g : 𝓢(D, F)) (x : D) :
     pairing B f g x = B (f x) (g x) := rfl
 
+/-- The pairing is continuous in the left argument.
+
+Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
+coincide. -/
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
     Continuous (pairing B · g) := (pairing B.flip g).continuous
+
+end pairing
+
+open ContinuousLinearMap
+
+variable (𝕜 F) in
+/-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
+functions. -/
+def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(E, G →L[ℝ] F) :=
+  mkCLM (fun f x ↦ (L x).smulRight (f x)) (by intros; ext; simp)
+    (by intro c g x; ext v; simpa using smul_comm (L x v) c (g x))
+    (by fun_prop) <| by
+      intro ⟨k, n⟩
+      use {(k + 1, n), (k, n - 1)}, 2 * ‖L‖ * (max 1 n), by positivity
+      intro f x
+      calc
+        _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
+            ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+          gcongr 1
+          exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
+            (by fun_prop) (f.smooth ⊤) x (mod_cast le_top) norm_smulRightL_le
+        _ ≤ ‖x‖ ^ k *
+            (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
+          gcongr 1
+          rw [Finset.sum_range_succ', add_comm]
+          cases n with
+          | zero => simp
+          | succ n =>
+            have : ∑ k ∈ Finset.range n,
+                (((n + 1).choose (k + 1 + 1)) : ℝ) * ‖iteratedFDeriv ℝ (k + 1 + 1) L x‖ *
+                ‖iteratedFDeriv ℝ (n + 1 - (k + 1 + 1)) f x‖ = 0 := by
+              apply Finset.sum_eq_zero
+              simp [iteratedFDeriv_succ_eq_comp_right, iteratedFDeriv_succ_const]
+            simp [Finset.sum_range_succ', this]
+        _ = ‖x‖ ^ k * ‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ +
+              ‖x‖ ^ k * n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖ := by ring
+        _ ≤ ‖L‖ * 1 * (SchwartzMap.seminorm 𝕜 (k + 1) n) f +
+              ‖L‖ * n * (SchwartzMap.seminorm 𝕜 k (n - 1) f) := by
+          grw [le_opNorm, ← le_seminorm 𝕜 (k + 1) n f x, ← le_seminorm 𝕜 k (n - 1) f x]
+          apply le_of_eq
+          ring
+        _ ≤ ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) +
+            ‖L‖ * max 1 n *
+            max ((SchwartzMap.seminorm 𝕜 (k + 1) n) f) ((SchwartzMap.seminorm 𝕜 k (n - 1)) f) := by
+          gcongr <;> simp
+        _ = _ := by
+          simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
+            Seminorm.coe_sup, Pi.sup_apply]
+          ring
+
+@[simp]
+theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :
+    smulRightCLM 𝕜 F L f x = (L x).smulRight (f x) := rfl
 
 end Multiplication
 
@@ -869,6 +990,16 @@ def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
 
+variable [NontriviallyNormedField 𝕜'] [NormedAlgebra ℝ 𝕜'] [NormedSpace 𝕜' F]
+
+theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.HasTemperateGrowth)
+    (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    smulLeftCLM F u (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (smulLeftCLM F (u ∘ g.symm) f) := by
+  ext x
+  have hu' : (u ∘ g.symm).HasTemperateGrowth := by fun_prop
+  simp [smulLeftCLM_apply_apply hu, smulLeftCLM_apply_apply hu']
+
 end Comp
 
 section Derivatives
@@ -920,21 +1051,21 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
+  lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
+  lineDerivOp_add m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).map_add
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
+  lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
 
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
-  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
+  continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
 
 open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
-    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM := lineDerivOpCLM
@@ -947,6 +1078,14 @@ theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineD
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
     ∂_{m} f x = fderiv ℝ f x m := rfl
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
@@ -1381,3 +1520,5 @@ end integration_by_parts
 
 
 end SchwartzMap
+
+set_option linter.style.longFile 1700

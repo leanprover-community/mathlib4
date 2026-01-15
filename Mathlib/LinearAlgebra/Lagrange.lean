@@ -545,6 +545,29 @@ theorem leadingCoeff_eq_sum
   apply coeff_eq_sum hvs
   rw [← hdeg, ← WithBot.coe_one, ← WithBot.coe_add, ← hP, Nat.cast_id]
   rfl
+@[deprecated eq_interpolate (since := "2026-01-14")]
+theorem interpolate_poly_eq_self
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
+    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+
+theorem coeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
+    P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
+  rw (occs := [1]) [eq_interpolate hvs hP]
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
+
+theorem leadingCoeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
+  lift P.degree to ℕ using (by contrapose! hP; simp [hP]) with deg hdeg
+  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
+  replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
+  have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
+  rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
+  exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; omega)
 
 end Interpolate
 
@@ -672,9 +695,6 @@ theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
 theorem nodalWeight_eq_eval_derivative_nodal (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
-
-@[deprecated (since := "2025-07-08")]
-alias nodalWeight_eq_eval_nodal_derative := nodalWeight_eq_eval_derivative_nodal
 
 theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s v i ≠ 0 := by
   rw [nodalWeight, prod_ne_zero_iff]
