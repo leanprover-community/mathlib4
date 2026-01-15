@@ -392,46 +392,22 @@ partial def applyReplacementFun (t : TranslateData) (e : Expr)
       executeReservedNameAction n
   return e'
 where
-  -- In `visitLambda`, `visitForall` and `visitLet`, we use a fresh `lctx` to store
-  -- the translated types of the new free variables.
-  visitLambda (fvars : Array Expr) (lctx : LocalContext) :
-      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
-    | .lam n d b c =>
-      withLocalDecl n c (d.instantiateRev fvars) fun x => do
-        let decl ← getFVarLocalDecl x
-        let decl := decl.setType (← visit decl.type)
-        visitLambda (fvars.push x) (lctx.addDecl decl) b
-    | e => do
-      let e ← visit (e.instantiateRev fvars)
-      withLCtx lctx {} do mkLambdaFVars fvars e
-  visitForall (fvars : Array Expr) (lctx : LocalContext) :
-      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
-    | .forallE n d b c =>
-      withLocalDecl n c (d.instantiateRev fvars) fun x => do
-        let decl ← getFVarLocalDecl x
-        let decl := decl.setType (← visit decl.type)
-        visitForall (fvars.push x) (lctx.addDecl decl) b
-    | e => do
-      let e ← visit (e.instantiateRev fvars)
-      withLCtx lctx {} do mkForallFVars fvars e
-  visitLet (fvars : Array Expr) (lctx : LocalContext) :
-      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
-    | .letE n t v b nondep =>
-      withLetDecl n (t.instantiateRev fvars) (v.instantiateRev fvars) (nondep := nondep)
-        fun x => do
-        let decl ← getFVarLocalDecl x
-        let decl := decl.setType (← visit decl.type) |>.setValue (← visit (decl.value true))
-        visitLet (fvars.push x) (lctx.addDecl decl) b
-    | e => do
-      let e ← visit (e.instantiateRev fvars)
-      withLCtx lctx {} do mkLetFVars (usedLetOnly := false) (generalizeNondepLet := false) fvars e
   /-- The implementation of this function is based on `Meta.transform`.
   We can't use `Meta.transform`, because that would cause the types of free variables to be
   translated, which would create type-incorrect terms. Instead, we give the free variables
   their original type and the translated type is only used when constructing the final term. -/
   visit (e : Expr) : MonadCacheT ExprStructEq Expr MetaM Expr :=
-  checkCache { val := e : ExprStructEq } fun _ => do
-  let visitApp := e.withApp fun f args ↦ do
+    checkCache { val := e : ExprStructEq } fun _ => do
+    match e with
+    | .forallE .. => visitForall #[] {} e
+    | .lam ..     => visitLambda #[] {} e
+    | .letE ..    => visitLet #[] {} e
+    | .mdata _ b  => return e.updateMData! (← visit b)
+    | .proj ..    => visitApp e
+    | .app ..     => visitApp e
+    | .const ..   => visitApp e
+    | _           => return e
+  visitApp (e : Expr) := e.withApp fun f args ↦ do
     let env ← getEnv
     match f with
     | .proj n i b =>
@@ -488,15 +464,39 @@ where
           "reordering the arguments of {n₀} using the cyclic permutations {reorder}"
       return mkAppN (.const n₁ ls₁) (← args.mapM visit)
     | _ => return mkAppN (← visit f) (← args.mapM visit)
-  match e with
-  | .forallE ..    => visitForall #[] {} e
-  | .lam ..        => visitLambda #[] {} e
-  | .letE ..       => visitLet #[] {} e
-  | .mdata _ b     => return e.updateMData! (← visit b)
-  | .proj _ _ b    => visitApp
-  | .app ..        => visitApp
-  | .const ..      => visitApp
-  | _              => return e
+  -- In `visitLambda`, `visitForall` and `visitLet`, we use a fresh `lctx` to store
+  -- the translated types of the new free variables.
+  visitLambda (fvars : Array Expr) (lctx : LocalContext) :
+      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
+    | .lam n d b c =>
+      withLocalDecl n c (d.instantiateRev fvars) fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type)
+        visitLambda (fvars.push x) (lctx.addDecl decl) b
+    | e => do
+      let e ← visit (e.instantiateRev fvars)
+      withLCtx lctx {} do mkLambdaFVars fvars e
+  visitForall (fvars : Array Expr) (lctx : LocalContext) :
+      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
+    | .forallE n d b c =>
+      withLocalDecl n c (d.instantiateRev fvars) fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type)
+        visitForall (fvars.push x) (lctx.addDecl decl) b
+    | e => do
+      let e ← visit (e.instantiateRev fvars)
+      withLCtx lctx {} do mkForallFVars fvars e
+  visitLet (fvars : Array Expr) (lctx : LocalContext) :
+      Expr → MonadCacheT ExprStructEq Expr MetaM Expr
+    | .letE n t v b nondep =>
+      withLetDecl n (t.instantiateRev fvars) (v.instantiateRev fvars) (nondep := nondep)
+        fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type) |>.setValue (← visit (decl.value true))
+        visitLet (fvars.push x) (lctx.addDecl decl) b
+    | e => do
+      let e ← visit (e.instantiateRev fvars)
+      withLCtx lctx {} do mkLetFVars (usedLetOnly := false) (generalizeNondepLet := false) fvars e
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
