@@ -128,7 +128,7 @@ protected def symm : PartialDiffeomorph J I N M n where
   contMDiffOn_invFun := Φ.contMDiffOn_toFun
 
 -- todo : trans shouldn't need the models with corners as explicit arguments. This also prevents
--- us from using dot notation (how to remove these?)
+-- us from using dot notation (see next theorem statement) (how to make these implicit?)
 protected def trans : PartialDiffeomorph I K M P n where
   toPartialEquiv := ((Φ.toOpenPartialHomeomorph).trans (Ψ.toOpenPartialHomeomorph)).toPartialEquiv
   open_source := ((Φ.toOpenPartialHomeomorph).trans (Ψ.toOpenPartialHomeomorph)).open_source
