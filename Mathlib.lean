@@ -1332,6 +1332,7 @@ public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.RationalMap
+public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.AlgebraicGeometry.Scheme
@@ -2085,6 +2086,7 @@ public import Mathlib.Analysis.RCLike.BoundedContinuous
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Inner
 public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.Analysis.Real.Hyperreal
