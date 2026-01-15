@@ -252,6 +252,11 @@ section ContinuousInvolutiveInv
 
 variable [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] {s : Set G}
 
+@[to_additive (attr := simp)]
+theorem tendsto_inv_iff {l : Filter α} {m : α → G} {a : G} :
+    Tendsto (fun x => (m x)⁻¹) l (𝓝 a⁻¹) ↔ Tendsto m l (𝓝 a) :=
+  ⟨fun h => by simpa only [inv_inv] using h.inv, Tendsto.inv⟩
+
 @[to_additive]
 theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
   rw [← image_inv_eq_inv]
