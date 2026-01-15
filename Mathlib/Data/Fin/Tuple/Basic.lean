@@ -541,21 +541,15 @@ theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : 
   · simp only [comp_apply, snoc_castSucc]
     rw [natAdd_castSucc, snoc_castSucc]
 
-@[deprecated (since := "2025-07-04")] alias snoc_comp_nat_add := snoc_comp_natAdd
-
 @[simp]
 theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
-@[deprecated (since := "2025-07-04")] alias snoc_cast_add := snoc_castAdd
-
 @[simp]
 theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
   funext (snoc_castAdd _ _)
-
-@[deprecated (since := "2025-07-04")] alias snoc_comp_cast_add := snoc_comp_castAdd
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]

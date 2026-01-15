@@ -567,8 +567,6 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
 theorem card_div_le : #(s / t) ≤ #s * #t :=
   card_image₂_le _ _ _
 
-@[deprecated (since := "2025-07-02")] alias div_card_le := card_div_le
-
 @[to_additive (attr := simp)]
 theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
   image₂_empty_left

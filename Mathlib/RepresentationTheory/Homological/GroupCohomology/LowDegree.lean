@@ -554,9 +554,6 @@ theorem isCocycle₁_of_mem_cocycles₁
     IsCocycle₁ f :=
   fun _ _ => (mem_cocycles₁_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
-@[deprecated (since := "2025-07-02")]
-alias isOneCocycle_of_mem_oneCocycles := isCocycle₁_of_mem_cocycles₁
-
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
 on `A` induced by the `DistribMulAction`. -/
@@ -571,9 +568,6 @@ theorem isCoboundary₁_of_mem_coboundaries₁
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ => rfl⟩
 
-@[deprecated (since := "2025-07-02")]
-alias isOneCoboundary_of_mem_oneCoboundaries := isCoboundary₁_of_mem_coboundaries₁
-
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
@@ -585,9 +579,6 @@ def cocyclesOfIsCocycle₂ {f : G × G → A} (hf : IsCocycle₂ f) :
 theorem isCocycle₂_of_mem_cocycles₂
     (f : G × G → A) (hf : f ∈ cocycles₂ (Rep.ofDistribMulAction k G A)) :
     IsCocycle₂ f := (mem_cocycles₂_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
-
-@[deprecated (since := "2025-07-02")]
-alias isTwoCocycle_of_mem_twoCocycles := isCocycle₂_of_mem_cocycles₂
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -602,9 +593,6 @@ theorem isCoboundary₂_of_mem_coboundaries₂
     IsCoboundary₂ f := by
   rcases hf with ⟨a, rfl⟩
   exact ⟨a, fun _ _ => rfl⟩
-
-@[deprecated (since := "2025-07-02")]
-alias isTwoCoboundary_of_mem_twoCoboundaries := isCoboundary₂_of_mem_coboundaries₂
 
 end ofDistribMulAction
 
@@ -662,9 +650,6 @@ theorem smul_map_inv_div_map_inv_of_isMulCocycle₂
   simp only [mul_inv_cancel, inv_mul_cancel, map_one_fst_of_isMulCocycle₂ hf g] at this
   exact div_eq_div_iff_mul_eq_mul.2 this.symm
 
-@[deprecated (since := "2025-07-02")]
-alias smul_map_inv_div_map_inv_of_isMulTwoCocycle := smul_map_inv_div_map_inv_of_isMulCocycle₂
-
 end
 
 end IsMulCocycle
@@ -701,9 +686,6 @@ theorem isMulCocycle₁_of_mem_cocycles₁
     IsMulCocycle₁ (Additive.toMul ∘ f) :=
   (mem_cocycles₁_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
-@[deprecated (since := "2025-07-02")]
-alias isMulOneCocycle_of_mem_oneCocycles := isMulCocycle₁_of_mem_cocycles₁
-
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
 1-coboundary for the representation on `Additive M` induced by the `MulDistribMulAction`. -/
@@ -718,9 +700,6 @@ theorem isMulCoboundary₁_of_mem_coboundaries₁
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ =>  rfl⟩
 
-@[deprecated (since := "2025-07-02")]
-alias isMulOneCoboundary_of_mem_oneCoboundaries := isMulCoboundary₁_of_mem_coboundaries₁
-
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
@@ -734,9 +713,6 @@ theorem isMulCocycle₂_of_mem_cocycles₂
     IsMulCocycle₂ (Additive.toMul ∘ f) :=
   (mem_cocycles₂_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
-@[deprecated (since := "2025-07-02")]
-alias isMulTwoCocycle_of_mem_twoCocycles := isMulCocycle₂_of_mem_cocycles₂
-
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
 2-coboundary for the representation on `M` induced by the `MulDistribMulAction`. -/
@@ -749,9 +725,6 @@ theorem isMulCoboundary₂_of_mem_coboundaries₂
     IsMulCoboundary₂ (M := M) (Additive.toMul ∘ f) := by
   rcases hf with ⟨x, rfl⟩
   exact ⟨x, fun _ _ => rfl⟩
-
-@[deprecated (since := "2025-07-02")]
-alias isMulTwoCoboundary_of_mem_twoCoboundaries := isMulCoboundary₂_of_mem_coboundaries₂
 
 end ofMulDistribMulAction
 
@@ -786,23 +759,18 @@ def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dArrowIso₀₁ A)
 
-@[deprecated (since := "2025-07-02")] noncomputable alias zeroCocyclesIso := cocyclesIso₀
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_hom_comp_f :
     (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f = iCocycles A 0 ≫ (cochainsIso₀ A).hom := by
   dsimp [cocyclesIso₀]
   apply KernelFork.mapOfIsLimit_ι
 
-@[deprecated (since := "2025-07-02")]
-noncomputable alias zeroCocyclesIso_hom_comp_f := cocyclesIso₀_hom_comp_f
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesIso₀_inv_comp_iCocycles :
     (cocyclesIso₀ A).inv ≫ iCocycles A 0 =
       (shortComplexH0 A).f ≫ (cochainsIso₀ A).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, cocyclesIso₀_hom_comp_f]
 
-@[deprecated (since := "2025-07-02")]
-noncomputable alias zeroCocyclesIso_inv_comp_iCocycles := cocyclesIso₀_inv_comp_iCocycles
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
@@ -810,8 +778,6 @@ lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
   (ModuleCat.mono_iff_injective <| iCocycles A 0).1 inferInstance <| by
     rw [iCocycles_mk]
     exact (cocyclesIso₀_inv_comp_iCocycles_apply A x).symm
-
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_0_eq := cocyclesMk₀_eq
 
 end cocyclesIso₀
 
@@ -824,8 +790,6 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
-
-@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH1Iso := isoShortComplexH1
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
@@ -860,8 +824,6 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
 
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_1_eq := cocyclesMk₁_eq
-
 end isoCocycles₁
 
 section isoCocycles₂
@@ -874,8 +836,6 @@ def isoShortComplexH2 :
   (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
       (comp_d₁₂_eq A) (comp_d₂₃_eq A)
-
-@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH2Iso := isoShortComplexH2
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
@@ -909,8 +869,6 @@ lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
-
-@[deprecated (since := "2025-07-02")] alias cocyclesMk_2_eq := cocyclesMk₂_eq
 
 end isoCocycles₂
 end CocyclesIso

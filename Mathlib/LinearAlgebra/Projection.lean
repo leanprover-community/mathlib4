@@ -250,9 +250,6 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
 @[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self :=
   IsCompl.projection_add_projection_eq_self
 
-@[deprecated (since := "2025-07-11")] alias linear_proj_add_linearProjOfIsCompl_eq_self :=
-  linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self
-
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]

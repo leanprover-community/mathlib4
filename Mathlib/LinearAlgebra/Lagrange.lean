@@ -600,9 +600,6 @@ theorem nodalWeight_eq_eval_derivative_nodal (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
 
-@[deprecated (since := "2025-07-08")]
-alias nodalWeight_eq_eval_nodal_derative := nodalWeight_eq_eval_derivative_nodal
-
 theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s v i ≠ 0 := by
   rw [nodalWeight, prod_ne_zero_iff]
   intro j hj
