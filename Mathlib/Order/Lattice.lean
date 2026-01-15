@@ -559,8 +559,8 @@ end DistribLattice
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 abbrev DistribLattice.ofInfSupLe
     [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) : DistribLattice α where
-  le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
-      le_sup_inf := inf_sup_le}).le_sup_inf
+  le_sup_inf := (@OrderDual.instDistribLattice αᵒᵈ { inferInstanceAs (Lattice αᵒᵈ) with
+      le_sup_inf := inf_sup_le }).le_sup_inf
 
 /-!
 ### Lattices derived from linear orders

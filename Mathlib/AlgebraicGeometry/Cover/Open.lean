@@ -212,8 +212,8 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
 def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
     𝓤.affineRefinement.openCover ⟶ 𝓤 where
-  idx j := j.fst
-  app j := (𝓤.X j.fst).affineCover.f _
+  s₀ j := j.fst
+  h₀ j := (𝓤.X j.fst).affineCover.f _
 
 /-- If two global sections agree after restriction to each member of an open cover, then
 they agree globally. -/
