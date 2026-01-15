@@ -5,7 +5,6 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Util.AssertExists
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Prod.Basic
 

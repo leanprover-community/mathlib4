@@ -113,7 +113,6 @@ public meta import Mathlib.Tactic.Widget.CongrM
 public meta import Mathlib.Tactic.Widget.Conv
 public meta import Mathlib.Tactic.Widget.LibraryRewrite
 public meta import Mathlib.Tactic.WLOG
-public meta import Mathlib.Util.AssertExists
 public meta import Mathlib.Util.CountHeartbeats
 public meta import Mathlib.Util.PrintSorries
 public meta import Mathlib.Util.TransImports
