@@ -95,9 +95,10 @@ lemma pageD_pageD (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ) :
   by_cases hpq : (c r).Rel pq pq'
   · by_cases hpq' : (c r).Rel pq' pq''
     · rw [pageD_eq X data r hr pq pq' hpq (data.deg pq - 1) (data.deg pq) _ _ (by simp)
-        rfl rfl (data.le₂₃ r pq'').hom (data.le₁₂' pq' (data.hc₁₃ r pq' pq'' hpq').symm
-        (data.hc₀₂ r pq pq' hpq)).hom (data.le₀₁ r pq).hom (data.le₁₂ pq).hom
-        (data.le₂₃ r pq).hom rfl (data.hc₀₂ r pq' pq'' hpq').symm
+        rfl rfl (homOfLE (data.le₂₃ r pq''))
+        (homOfLE (data.le₁₂' pq' (data.hc₁₃ r pq' pq'' hpq').symm
+          (data.hc₀₂ r pq pq' hpq))) (homOfLE (data.le₀₁ r pq)) (homOfLE (data.le₁₂ pq))
+        (homOfLE (data.le₂₃ r pq)) rfl (data.hc₀₂ r pq' pq'' hpq').symm
         (data.hc₁₃ r pq' pq'' hpq').symm rfl rfl rfl rfl,
         pageD_eq X data r hr pq' pq'' hpq' (data.deg pq) _ _ _ rfl rfl rfl _ _ _ _ _
         (data.hc r pq pq' hpq) rfl rfl (data.hc₀₂ r pq' pq'' hpq').symm
@@ -184,7 +185,7 @@ lemma kf_w :
   · dsimp
     rw [pageD_eq X data r hr pq' pq'' h n₀ n₁ n₂ _ hn₁ hn₂ rfl
       (homOfLE (by simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
-      (data.le₀'₀ hrr' hr pq' hi₀' hi₀).hom _ _ _ hn₁'
+      (homOfLE (data.le₀'₀ hrr' hr pq' hi₀' hi₀)) _ _ _ hn₁'
       rfl (by rw [hi₀', data.i₀_prev r r' pq' pq'' h]) hi₀ hi₁ hi₂ hi₃,
       Category.assoc, Iso.inv_hom_id_assoc]
     erw [EMap_fourδ₁Toδ₀_d_assoc, zero_comp]
@@ -227,8 +228,8 @@ lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂
       (X.dKernelSequence_exact n₀ n₁ n₂ _ hn₁ hn₂ rfl
         (homOfLE (show data.i₀ r pq'' ≤ i₀' by
           simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
-        (data.le₀'₀ hrr' hr pq' hi₀' hi₀).hom (data.le₀₁' r hr pq' hi₀ hi₁).hom
-        (data.le₁₂' pq' hi₁ hi₂).hom (data.le₂₃' r hr pq' hi₂ hi₃).hom _ rfl)
+        (homOfLE (data.le₀'₀ hrr' hr pq' hi₀' hi₀)) (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁))
+        (homOfLE (data.le₁₂' pq' hi₁ hi₂)) (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) _ rfl)
     refine ShortComplex.isoMk (Iso.refl _)
       (pageXIso X data _ hr _ _ _ _ _ _ hn₁' _ _ _ _ hi₀ hi₁ hi₂ hi₃)
       (pageXIso X data _ hr _ _ _ _ _ _ (by have := data.hc r _ _ h; lia) _ _ _ _
@@ -264,7 +265,7 @@ lemma cc_w :
   by_cases h : (c r).Rel pq pq'
   · dsimp
     rw [pageD_eq X data r hr pq pq' h (n₀ - 1) n₀ n₁ n₂ (by simp) hn₁ hn₂ _
-      _ (data.le₂₃' r hr pq' hi₂ hi₃).hom (data.le₃₃' hrr' hr pq' hi₃ hi₃').hom
+      _ (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃)) (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
       (homOfLE (by simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq))
       (by have := data.hc r pq pq' h; lia) hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r _ _ h])
       (by rw [hi₃, data.hc₁₃ r _ _ h]) (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl,
@@ -310,9 +311,9 @@ lemma ccSc_exact :
   by_cases h : (c r).Rel pq pq'
   · refine ShortComplex.exact_of_iso (Iso.symm ?_)
       (X.dCokernelSequence_exact (n₀ - 1) n₀ n₁ n₂ (by simp) hn₁ hn₂
-      (data.le₀₁' r hr pq' hi₀ hi₁).hom
-      (data.le₁₂' pq' hi₁ hi₂).hom (data.le₂₃' r hr pq' hi₂ hi₃).hom
-      (data.le₃₃' hrr' hr pq' hi₃ hi₃').hom
+      (homOfLE (data.le₀₁' r hr pq' hi₀ hi₁))
+      (homOfLE (data.le₁₂' pq' hi₁ hi₂)) (homOfLE (data.le₂₃' r hr pq' hi₂ hi₃))
+      (homOfLE (data.le₃₃' hrr' hr pq' hi₃ hi₃'))
       (show i₃' ⟶ data.i₃ r pq from homOfLE (by
         simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq)) _ rfl)
     refine ShortComplex.isoMk
