@@ -295,6 +295,8 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     ``Lean.«command__Unif_hint____Where_|_-⊢_»,
     -- `inductive`s with docstrings for their constructors have undesirable printing
     ``Parser.Command.inductive,
+    -- `name_poly_vars` asks for a space after the last variable name; fixing this is not obvious.
+    `Mathlib.Tactic.namePolyVarsOver
   ]
   depth := none
 
@@ -310,8 +312,6 @@ def ignoreSpaceAfter : ExcludedSyntaxNodeKind where
     ``«term_-_»,
     -- logical negation, the pretty-printer prefers `¬a` (while the correct style is not as obvious)
     ``«term¬_»,
-    -- `name_poly_vars` asks for a space after the last variable name; fixing this is not obvious
-    `Mathlib.Tactic.namePolyVarsOver
   ]
   depth := some 2
 

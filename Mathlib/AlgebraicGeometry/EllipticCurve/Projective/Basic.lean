@@ -100,7 +100,6 @@ universe r s u v
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
---set_option linter.style.whitespace false in -- TODO: the pretty-printer prefers «Z» here; why?
 name_poly_vars X, Y, Z over R
 
 namespace WeierstrassCurve
