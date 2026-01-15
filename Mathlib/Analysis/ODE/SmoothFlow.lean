@@ -40,6 +40,11 @@ lemma continuous_compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc t
     Continuous (compProj t₀ α) :=
   α.continuous.comp continuous_projIcc
 
+/-- `compProj` is jointly continuous in the curve and time. -/
+lemma continuous_compProj₂ {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
+    Continuous (fun p : C(Icc tmin tmax, E) × ℝ ↦ compProj t₀ p.1 p.2) :=
+  continuous_fst.eval (continuous_projIcc.comp continuous_snd)
+
 lemma _root_.ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace F] {g : E → F}
     {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
@@ -48,9 +53,32 @@ lemma _root_.ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace
 
 lemma compProj_update {n : ℕ} {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x : C(Icc tmin tmax, E)) (τ : ℝ) :
-    (fun j => compProj t₀ (update dα i x j) τ) =
-      update (fun j => compProj t₀ (dα j) τ) i (compProj t₀ x τ) := by
-  ext j; simp only [Function.update_apply, compProj]; split_ifs <;> rfl
+    (fun j ↦ compProj t₀ (update dα i x j) τ) =
+      update (fun j ↦ compProj t₀ (dα j) τ) i (compProj t₀ x τ) := by
+  ext j
+  simp only [Function.update_apply, compProj]
+  split_ifs <;> rfl
+
+/-- `compProj` is continuous when the curve varies continuously. -/
+lemma _root_.Continuous.continuous_compProj_pi₂ {X : Type*} [TopologicalSpace X] {tmin tmax : ℝ}
+    (t₀ : Icc tmin tmax) {f : X → C(Icc tmin tmax, E)} (hf : Continuous f) :
+    Continuous (fun p : X × ℝ ↦ compProj t₀ (f p.1) p.2) :=
+  (continuous_compProj₂ t₀).comp ((hf.comp continuous_fst).prodMk continuous_snd)
+
+/-- Composing a function with `compProj` is continuous when the curve varies continuously. -/
+lemma _root_.ContinuousOn.continuous_comp_compProj_pi₂ {X F : Type*} [TopologicalSpace X]
+    [TopologicalSpace F] {g : E → F} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
+    (t₀ : Icc tmin tmax) {f : X → C(Icc tmin tmax, E)} (hf : Continuous f)
+    (hf_mem : ∀ x, MapsTo (f x) univ u) :
+    Continuous (fun p : X × ℝ ↦ g (compProj t₀ (f p.1) p.2)) :=
+  hg.comp_continuous (hf.continuous_compProj_pi₂ t₀) fun p ↦ hf_mem p.1 trivial
+
+/-- Joint continuity of evaluating a family of curves via `compProj`. -/
+lemma _root_.Continuous.continuous_compProj_pi_apply₂ {X : Type*} [TopologicalSpace X]
+    {ι : Type*} {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {f : X → ι → C(Icc tmin tmax, E)}
+    (hf : Continuous f) :
+    Continuous (fun p : X × ℝ ↦ fun i ↦ compProj t₀ (f p.1 i) p.2) :=
+  continuous_pi fun i ↦ ((continuous_apply i).comp hf).continuous_compProj_pi₂ t₀
 
 variable [NormedSpace ℝ E]
 
@@ -79,7 +107,7 @@ lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
     Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) :=
   continuous_eval.comp ((hg.continuous_comp_compProj t₀ hα).prodMk
-    (continuous_pi fun j => continuous_compProj t₀ (dα j)))
+    (continuous_pi fun j ↦ continuous_compProj t₀ (dα j)))
 
 /-- The integrand is interval integrable. -/
 lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
@@ -88,6 +116,18 @@ lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u :
     (a b : Icc tmin tmax) :
     IntervalIntegrable (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) volume a b :=
   (continuous_integrand hg t₀ hα dα).intervalIntegrable a b
+
+/-- Parametric version of `continuous_integrand`: the integrand is jointly continuous
+in the parameter and the integration variable. -/
+lemma continuous_integrand₂ {X : Type*} [TopologicalSpace X] {n : ℕ}
+    {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
+    (t₀ : Icc tmin tmax) {fα : X → C(Icc tmin tmax, E)} (hfα : Continuous fα)
+    (hfα_mem : ∀ x, MapsTo (fα x) univ u) {fdα : X → Fin n → C(Icc tmin tmax, E)}
+    (hfdα : Continuous fdα) :
+    Continuous (fun p : X × ℝ ↦
+      g (compProj t₀ (fα p.1) p.2) (fun i ↦ compProj t₀ (fdα p.1 i) p.2)) :=
+  continuous_eval.comp ((hg.continuous_comp_compProj_pi₂ t₀ hfα hfα_mem).prodMk
+    (hfdα.continuous_compProj_pi_apply₂ t₀))
 
 variable [CompleteSpace E]
 
@@ -151,7 +191,7 @@ lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
     rw [← integral_add (intervalIntegrable_integrand hg t₀ hα _ t₀ t)
         (intervalIntegrable_integrand hg t₀ hα _ t₀ t),
-      integral_congr fun τ _ => ?_]
+      integral_congr fun τ _ ↦ ?_]
     simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_add ..
   · simp [integralCM_if_neg hα]
 
@@ -163,7 +203,7 @@ lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E
   · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.smul_apply]
     intro t
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
-    rw [← intervalIntegral.integral_smul, integral_congr fun τ _ => ?_]
+    rw [← intervalIntegral.integral_smul, integral_congr fun τ _ ↦ ?_]
     simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_smul ..
   · simp [integralCM_if_neg hα]
 
@@ -172,96 +212,22 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     Continuous (integralCM hg t₀ α) := by
   by_cases hα : MapsTo α univ u
   · simp only [integralCM_if_pos hα]
-    -- Let X be the parameter space for dα
     let X := Fin n → C(Icc tmin tmax, E)
-    let fparam : (X × (Icc tmin tmax)) → ℝ → E :=
-      fun p τ => g (compProj t₀ α τ) (fun i => compProj t₀ (p.1 i) τ)
-
-    -- Use the curry/uncurry criterion for continuity into `C(Icc, E)`:
-    -- it suffices to show the uncurried map is continuous.
-    refine
-      ContinuousMap.continuous_of_continuous_uncurry
-        (X := X) (Y := Icc tmin tmax) (Z := E)
-        (f := fun dα : X => integralCMAux hg t₀ hα dα) ?_
-
-    -- Goal: continuity of (dα, t) ↦ (integralCM ... dα) t
-    -- This is definitionaly `integralFun g t₀ α dα t`.
-    -- We'll prove it via a parametric-interval-integral lemma.
-
-    -- First, show τ ↦ g (compProj t₀ α τ) is continuous (only depends on τ).
-    have hg_comp : Continuous (fun τ : ℝ => g (compProj t₀ α τ)) :=
-      hg.continuous_comp_compProj t₀ hα
-
-    -- Next: joint continuity of the integrand (dα, τ) ↦ g(compProj α τ) (…evaluations of dα…)
-    have hIntegrand :
-        Continuous (fun q : X × ℝ =>
-          g (compProj t₀ α q.2) (fun i => compProj t₀ (q.1 i) q.2)) := by
-      -- Build continuity of q ↦ (fun i => compProj t₀ (q.1 i) q.2)
-      have hm :
-          Continuous (fun q : X × ℝ => fun i : Fin n => compProj t₀ (q.1 i) q.2) := by
-        classical
-        refine continuous_pi ?_
-        intro i
-        -- We show (q ↦ compProj t₀ (q.1 i) q.2) is continuous using evaluation continuity.
-        -- compProj t₀ f t = f (projIcc ... t).
-        have heval :
-            Continuous (fun p : C(Icc tmin tmax, E) × Icc tmin tmax => p.1 p.2) := by
-          -- evaluation map is continuous when domain is locally compact (Icc is compact hence locally compact)
-          simpa using
-            (continuous_eval :
-              Continuous (fun p : C(Icc tmin tmax, E) × Icc tmin tmax => p.1 p.2))
-        have hpair :
-            Continuous (fun p : C(Icc tmin tmax, E) × ℝ =>
-              (p.1, projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) p.2)) := by
-          exact continuous_fst.prodMk (continuous_projIcc.comp continuous_snd)
-        have hcompProjVar :
-            Continuous (fun p : C(Icc tmin tmax, E) × ℝ =>
-              p.1 (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) p.2)) := by
-          exact heval.comp hpair
-        -- Now compose with q ↦ (q.1 i, q.2)
-        have hqi : Continuous (fun q : X × ℝ => q.1 i) :=
-          (continuous_apply i).comp continuous_fst
-        have hqpair : Continuous (fun q : X × ℝ => (q.1 i, q.2)) :=
-          hqi.prodMk continuous_snd
-        exact hcompProjVar.comp hqpair
-
-      -- continuity of q ↦ g (compProj t₀ α q.2)
-      have hgq : Continuous (fun q : X × ℝ => g (compProj t₀ α q.2)) :=
-        hg_comp.comp continuous_snd
-
-      exact continuous_eval.comp (hgq.prodMk hm)
-
-    -- Lift the integrand continuity to include the extra (ignored) `t : Icc` parameter.
-    have hIntegrand' :
-        Continuous (fun q : (X × Icc tmin tmax) × ℝ =>
-          g (compProj t₀ α q.2) (fun i => compProj t₀ (q.1.1 i) q.2)) := by
-      -- just precompose hIntegrand with ( (dα,t),τ ) ↦ (dα,τ )
-      have hproj : Continuous (fun q : (X × Icc tmin tmax) × ℝ => (q.1.1, q.2)) :=
-        (continuous_fst.comp continuous_fst).prodMk continuous_snd
-      simpa using hIntegrand.comp hproj
-
-    have hfparam : Continuous (Function.uncurry fparam) := by
-      -- Function.uncurry fparam = fun q : X' × ℝ => fparam q.1 q.2
-      simpa [Function.uncurry, fparam] using hIntegrand'
-
-    -- Finally, apply continuity of the parametric interval integral with variable upper limit.
-    -- This lemma lives in `MeasureTheory/Integral/DominatedConvergence`.
-    -- It gives continuity of p ↦ ∫ τ in a..b(p), F(p,τ) when F is continuous.
-    have huncurry :
-        Continuous (fun p : X × Icc tmin tmax => integralFun g t₀ α p.1 p.2) := by
-      -- Use the library lemma for parametric interval integrals of continuous integrands.
-      -- (Depending on your imports/version, you may need the primed/unprimed variant.)
-      simpa [integralFun] using
-        continuous_parametric_intervalIntegral_of_continuous
-          (a₀ := (t₀ : ℝ))
-          (s := fun p : X × Icc tmin tmax => (p.2 : ℝ))
-          (f := fparam)
-          hfparam
-          (continuous_induced_dom.comp' continuous_snd)
-
-    -- Finish by rewriting the uncurried map in terms of `integralCM`.
-    simpa [integralCM, integralCM, integralFun] using huncurry
-  · simpa [integralCM_if_neg hα] using continuous_const
+    let fparam : (X × Icc tmin tmax) → ℝ → E :=
+      fun p τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (p.1 i) τ)
+    refine ContinuousMap.continuous_of_continuous_uncurry
+      (f := fun dα : X ↦ integralCMAux hg t₀ hα dα) ?_
+    have hIntegrand : Continuous (fun q : (X × Icc tmin tmax) × ℝ ↦
+        g (compProj t₀ α q.2) (fun i ↦ compProj t₀ (q.1.1 i) q.2)) :=
+      (continuous_integrand₂ hg t₀ continuous_const (fun _ ↦ hα) continuous_id).comp
+        ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
+    simpa [integralFun, fparam, Function.uncurry] using
+      continuous_parametric_intervalIntegral_of_continuous (a₀ := (t₀ : ℝ))
+        (s := fun p : X × Icc tmin tmax ↦ (p.2 : ℝ)) (f := fparam)
+        (by simpa [Function.uncurry, fparam] using hIntegrand)
+        (continuous_induced_dom.comp continuous_snd)
+  · simp only [integralCM_if_neg hα]
+    exact continuous_const
 
 /--
 The integral as a continuous multilinear map on the space of continuous curves, which will allow us
@@ -321,39 +287,31 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   -- The key: joint continuity of the parametric integral in (α, dα)
   -- Define the uncurried integral function
   let fparam : (S × X) × Icc tmin tmax → ℝ → E :=
-    fun p τ => g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) τ) (fun i => compProj t₀ (p.1.2 i) τ)
+    fun p τ ↦ g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) τ) (fun i ↦ compProj t₀ (p.1.2 i) τ)
 
   -- Joint continuity of the integrand
-  have hIntegrand : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ =>
-      g (compProj t₀ (p.1.1.1 : C(Icc tmin tmax, E)) p.2) (fun i => compProj t₀ (p.1.1.2 i) p.2)) := by
+  have hIntegrand : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ ↦
+      g (compProj t₀ (p.1.1.1 : C(Icc tmin tmax, E)) p.2) (fun i ↦ compProj t₀ (p.1.1.2 i) p.2)) := by
     -- Membership in u
     have hmem : ∀ p : (S × X) × ℝ, compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2 ∈ u := by
       intro ⟨⟨α, _⟩, τ⟩
       exact α.2 (Set.mem_univ _)
     -- Continuity of compProj in (α, τ)
-    have hcomp : Continuous (fun p : (S × X) × ℝ =>
-        compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2) := by
-      have hpair : Continuous (fun p : (S × X) × ℝ =>
-          ((p.1.1 : C(Icc tmin tmax, E)), projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) p.2)) :=
-        (continuous_subtype_val.comp (continuous_fst.comp continuous_fst)).prodMk
-          (continuous_projIcc.comp continuous_snd)
-      exact continuous_eval.comp hpair
-    have hg_comp : Continuous (fun p : (S × X) × ℝ =>
+    have hcomp : Continuous (fun p : (S × X) × ℝ ↦
+        compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2) :=
+      (continuous_compProj₂ t₀).comp
+        ((continuous_subtype_val.comp (continuous_fst.comp continuous_fst)).prodMk continuous_snd)
+    have hg_comp : Continuous (fun p : (S × X) × ℝ ↦
         g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2)) := hg.comp_continuous hcomp hmem
     -- Continuity of dα evaluation
-    have hvec : Continuous (fun p : (S × X) × ℝ => fun i => compProj t₀ (p.1.2 i) p.2) := by
-      refine continuous_pi fun i => ?_
-      have hpair : Continuous (fun p : (S × X) × ℝ =>
-          (p.1.2 i, projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) p.2)) :=
-        ((continuous_apply i).comp (continuous_snd.comp continuous_fst)).prodMk
-          (continuous_projIcc.comp continuous_snd)
-      exact continuous_eval.comp hpair
+    have hvec : Continuous (fun p : (S × X) × ℝ ↦ fun i ↦ compProj t₀ (p.1.2 i) p.2) :=
+      continuous_snd.continuous_compProj_pi_apply₂ t₀
     -- Combine via multilinear evaluation
-    have hg' : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ =>
+    have hg' : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ ↦
         g (compProj t₀ (p.1.1.1 : C(Icc tmin tmax, E)) p.2)) :=
       hg_comp.comp ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
-    have hvec' : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ =>
-        fun i => compProj t₀ (p.1.1.2 i) p.2) :=
+    have hvec' : Continuous (fun p : ((S × X) × Icc tmin tmax) × ℝ ↦
+        fun i ↦ compProj t₀ (p.1.1.2 i) p.2) :=
       hvec.comp ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
     exact continuous_eval.comp (hg'.prodMk hvec')
 
@@ -361,19 +319,19 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     simpa [Function.uncurry, fparam] using hIntegrand
 
   -- The parametric integral is continuous in (α, dα, t)
-  have hIntegralCont : Continuous (fun p : (S × X) × Icc tmin tmax =>
+  have hIntegralCont : Continuous (fun p : (S × X) × Icc tmin tmax ↦
       ∫ τ in (t₀ : ℝ)..(p.2 : ℝ), g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) τ)
-        (fun i => compProj t₀ (p.1.2 i) τ)) := by
+        (fun i ↦ compProj t₀ (p.1.2 i) τ)) := by
     simpa [fparam] using
       continuous_parametric_intervalIntegral_of_continuous
         (a₀ := (t₀ : ℝ))
-        (s := fun p : (S × X) × Icc tmin tmax => (p.2 : ℝ))
+        (s := fun p : (S × X) × Icc tmin tmax ↦ (p.2 : ℝ))
         (f := fparam)
         hfparam
         (continuous_induced_dom.comp continuous_snd)
 
   -- The map (α, dα) ↦ (t ↦ integral) is continuous into C(Icc, E)
-  have hCont : Continuous (fun p : S × X => (integralCMLM hg t₀ ↑p.1) p.2) := by
+  have hCont : Continuous (fun p : S × X ↦ (integralCMLM hg t₀ ↑p.1) p.2) := by
     apply ContinuousMap.continuous_of_continuous_uncurry
     convert hIntegralCont using 2 with ⟨⟨α, dα⟩, t⟩
     simp only [Function.uncurry_apply_pair, integralCMLM, integralCM_if_pos α.2]
@@ -410,11 +368,11 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   -- Define the modulus: for α close to α₀, sup_τ ‖g(α(τ)) - g(α₀(τ))‖ is small.
 
   -- The map α ↦ g ∘ (compProj t₀ α) is continuous from S to C(ℝ, E [×n]→L[ℝ] E).
-  have hg_cont : Continuous (fun α : S => fun τ : ℝ =>
+  have hg_cont : Continuous (fun α : S ↦ fun τ : ℝ ↦
       g (compProj t₀ (α : C(Icc tmin tmax, E)) τ)) := by
-    refine continuous_pi fun τ => ?_
-    have hmem : ∀ α : S, compProj t₀ (α : C(Icc tmin tmax, E)) τ ∈ u := fun α => α.2 (mem_univ _)
-    have hcomp : Continuous (fun α : S => compProj t₀ (α : C(Icc tmin tmax, E)) τ) := by
+    refine continuous_pi fun τ ↦ ?_
+    have hmem : ∀ α : S, compProj t₀ (α : C(Icc tmin tmax, E)) τ ∈ u := fun α ↦ α.2 (mem_univ _)
+    have hcomp : Continuous (fun α : S ↦ compProj t₀ (α : C(Icc tmin tmax, E)) τ) := by
       simp only [compProj]
       exact (ContinuousEvalConst.continuous_eval_const _).comp continuous_subtype_val
     exact hg.comp_continuous hcomp hmem
@@ -495,16 +453,16 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     -- Now we need: ∀ᶠ α : S in 𝓝 α₀, ∀ dα ∈ B, dist ... < ε/2
 
     -- The map α ↦ (t ↦ g(α(t))) is continuous S → C(Icc, CLM).
-    let gComp : S → C(Icc tmin tmax, E [×n]→L[ℝ] E) := fun α =>
-      ⟨fun t => g (α.1 t),
-        hg.comp_continuous α.1.continuous_toFun (fun t => α.2 (mem_univ t))⟩
+    let gComp : S → C(Icc tmin tmax, E [×n]→L[ℝ] E) := fun α ↦
+      ⟨fun t ↦ g (α.1 t),
+        hg.comp_continuous α.1.continuous_toFun (fun t ↦ α.2 (mem_univ t))⟩
 
     have hg_unif : Continuous gComp := by
       apply ContinuousMap.continuous_of_continuous_uncurry
-      have h1 : Continuous (fun p : S × Icc tmin tmax => (p.1 : C(Icc tmin tmax, E)) p.2) :=
+      have h1 : Continuous (fun p : S × Icc tmin tmax ↦ (p.1 : C(Icc tmin tmax, E)) p.2) :=
         continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
       have hmem : ∀ p : S × Icc tmin tmax, (p.1 : C(Icc tmin tmax, E)) p.2 ∈ u :=
-        fun ⟨α, t⟩ => α.2 (mem_univ t)
+        fun ⟨α, t⟩ ↦ α.2 (mem_univ t)
       exact hg.comp_continuous h1 hmem
 
     -- By continuity at α₀, get a neighborhood where sup_t ‖g(α(t)) - g(α₀(t))‖ < ε'
@@ -549,23 +507,23 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       have hdα_bound : ‖dα‖ ≤ M' := (hM dα hdα).trans (le_max_left M 0)
 
       -- Bound on each component
-      have hdα_i_bound : ∀ i, ‖dα i‖ ≤ M' := fun i =>
+      have hdα_i_bound : ∀ i, ‖dα i‖ ≤ M' := fun i ↦
         (norm_le_pi_norm dα i).trans hdα_bound
 
       -- The sup norm on C(Icc, E) bounds pointwise evaluation
-      have hdα_eval_bound : ∀ i τ, ‖compProj t₀ (dα i) τ‖ ≤ M' := fun i τ => by
+      have hdα_eval_bound : ∀ i τ, ‖compProj t₀ (dα i) τ‖ ≤ M' := fun i τ ↦ by
         simp only [compProj]
         exact ((dα i).norm_coe_le_norm _).trans (hdα_i_bound i)
 
       -- Product bound
-      have hprod_bound : ∀ τ, ∏ i : Fin n, ‖compProj t₀ (dα i) τ‖ ≤ M' ^ n := fun τ => by
+      have hprod_bound : ∀ τ, ∏ i : Fin n, ‖compProj t₀ (dα i) τ‖ ≤ M' ^ n := fun τ ↦ by
         calc ∏ i : Fin n, ‖compProj t₀ (dα i) τ‖
-            ≤ ∏ _ : Fin n, M' := Finset.prod_le_prod (fun i _ => norm_nonneg _)
-                (fun i _ => hdα_eval_bound i τ)
+            ≤ ∏ _ : Fin n, M' := Finset.prod_le_prod (fun i _ ↦ norm_nonneg _)
+                (fun i _ ↦ hdα_eval_bound i τ)
           _ = M' ^ n := by simp [Finset.prod_const, Finset.card_fin]
 
       -- The distance on C(Icc, CLM) gives pointwise bounds
-      have hg_diff_bound : ∀ s : Icc tmin tmax, ‖g (α₀.1 s) - g (α.1 s)‖ < ε' := fun s => by
+      have hg_diff_bound : ∀ s : Icc tmin tmax, ‖g (α₀.1 s) - g (α.1 s)‖ < ε' := fun s ↦ by
         have h1 : ‖gComp α₀ s - gComp α s‖ ≤ dist (gComp α₀) (gComp α) := by
           rw [← dist_eq_norm]
           exact ContinuousMap.dist_apply_le_dist s
@@ -578,20 +536,20 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       have hintegrand_bound : ∀ τ : ℝ,
           ‖(g (compProj t₀ (α₀ : C(Icc tmin tmax, E)) τ) -
             g (compProj t₀ (α : C(Icc tmin tmax, E)) τ))
-              (fun i => compProj t₀ (dα i) τ)‖ ≤ ε' * M' ^ n := fun τ => by
+              (fun i ↦ compProj t₀ (dα i) τ)‖ ≤ ε' * M' ^ n := fun τ ↦ by
         -- Use the multilinear map norm bound
         have hclm := ContinuousMultilinearMap.le_opNorm
           (g (compProj t₀ (α₀ : C(Icc tmin tmax, E)) τ) -
            g (compProj t₀ (α : C(Icc tmin tmax, E)) τ))
-          (fun i => compProj t₀ (dα i) τ)
+          (fun i ↦ compProj t₀ (dα i) τ)
         -- compProj projects to the interval, so we can use hg_diff_bound
         simp only [compProj] at hclm ⊢
         set s : Icc tmin tmax := projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) τ with hs
-        calc ‖(g (α₀.1 s) - g (α.1 s)) (fun i => (dα i) s)‖
+        calc ‖(g (α₀.1 s) - g (α.1 s)) (fun i ↦ (dα i) s)‖
             ≤ ‖g (α₀.1 s) - g (α.1 s)‖ * ∏ i : Fin n, ‖(dα i) s‖ := hclm
           _ ≤ ε' * ∏ i : Fin n, ‖(dα i) s‖ := by
               apply mul_le_mul_of_nonneg_right (le_of_lt (hg_diff_bound s))
-              exact Finset.prod_nonneg (fun _ _ => norm_nonneg _)
+              exact Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _)
           _ ≤ ε' * M' ^ n := by
               apply mul_le_mul_of_nonneg_left _ (le_of_lt hε')
               simp only [compProj] at hprod_bound
@@ -619,7 +577,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
         simp only [ε']; field_simp
 
       calc ‖∫ x in ↑t₀..↑t, ((g (compProj t₀ ↑α₀ x) - g (compProj t₀ ↑α x))
-              fun i => compProj t₀ (dα i) x)‖
+              fun i ↦ compProj t₀ (dα i) x)‖
           ≤ (ε' * M' ^ n) * |(t : ℝ) - (t₀ : ℝ)| := by
             apply intervalIntegral.norm_integral_le_of_norm_le_const
             intro τ _
@@ -657,7 +615,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   let V' : Set S := Subtype.val ⁻¹' V
   have hV'_nhd : V' ∈ 𝓝 α₀ := continuous_subtype_val.continuousAt.preimage_mem_nhds hV_nhd
 
-  refine ⟨V', hV'_nhd, fun x hx y hy ⟨dα, hdα⟩ => ?_⟩
+  refine ⟨V', hV'_nhd, fun x hx y hy ⟨dα, hdα⟩ ↦ ?_⟩
   -- x, y : S (the subtype), hx : x ∈ V' means ↑x ∈ V, and dα ∈ B
 
   -- Need to show ((integralCMLM hg hu t₀ x) dα, (integralCMLM hg hu t₀ y) dα) ∈ U
