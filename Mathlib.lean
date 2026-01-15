@@ -5182,6 +5182,7 @@ public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Skolem
 public import Mathlib.ModelTheory.Substructures
 public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Topology.Types
 public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
