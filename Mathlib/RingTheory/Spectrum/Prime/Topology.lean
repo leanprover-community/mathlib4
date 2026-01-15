@@ -1235,10 +1235,9 @@ lemma isClosed_singleton_closedPoint : IsClosed {closedPoint R} := by
   rw [PrimeSpectrum.isClosed_singleton_iff_isMaximal, closedPoint]
   infer_instance
 
-theorem primeSpectrum_eq_of_KrullDimLE_one [IsDomain R] [hd : Ring.KrullDimLE 1 R]
-    (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ := by
-  revert x
-  simpa [← Order.krullDim_le_one_iff_of_boundedOrder, Ring.krullDimLE_iff] using hd
+theorem Ring.KrullDimLE.eq_bot_or_eq_top [IsDomain R] [hd : Ring.KrullDimLE 1 R]
+    (x : PrimeSpectrum R) : x = ⊥ ∨ x = ⊤ :=
+  Order.krullDim_le_one_iff_of_boundedOrder.mp Order.KrullDimLE.krullDim_le _
 
 end IsLocalRing
 
