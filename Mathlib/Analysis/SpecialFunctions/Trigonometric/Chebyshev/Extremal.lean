@@ -99,11 +99,6 @@ private lemma negOnePow_mul_negOnePow_mul_cancel {α β : ℝ} {i : ℕ} :
   _ = ((-1) ^ i * (-1) ^ i) * α * β := by ring
   _ = α * β := by simp [← mul_pow]
 
-private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : α ∈ Set.Icc (-1) 1) : (-1) ^ i * α ≤ 1 := by
-  apply le_of_abs_le
-  rw [abs_mul, abs_neg_one_pow, one_mul]
-  exact abs_le.mpr hα
-
 /-- For a polynomial `P` and coefficient function `c`, `sumNodes n c P` is a linear combination
 of `P` evaluated at the `n`'th order Chebyshev nodes, with coefficients taken from `c`. -/
 noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
