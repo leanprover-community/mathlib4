@@ -319,6 +319,10 @@ instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
 instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
+instance instLineDerivSMul' : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
+
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous

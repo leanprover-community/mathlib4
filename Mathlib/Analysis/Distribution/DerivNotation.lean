@@ -110,6 +110,23 @@ class LineDerivSMul (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w)
   lineDerivOp_smul (v : V) (r : R) (x : E) : ∂_{v} (r • x) = r • ∂_{v} x
 
 /--
+The line derivative is additive in its vector, `∂_{v + w} x = ∂_{v} x + ∂_{w} y` for all `v w : V`.
+
+Note that `lineDeriv` on functions is not additive.
+-/
+class LineDerivLeftAdd (V : Type u) (E : Type v) (F : outParam (Type w))
+    [AddCommGroup V] [AddCommGroup F] [LineDeriv V E F] where
+  lineDerivOp_left_add (v w : V) (x : E) : ∂_{v + w} x = ∂_{v} x + ∂_{w} x
+
+/--
+The line derivative commutes with scalar multiplication, `∂_{r • v} x = r • ∂_{v} x` for all
+`r : R` and `v : V`.
+-/
+class LineDerivLeftSMul (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w))
+    [SMul R V] [SMul R F] [LineDeriv V E F] where
+  lineDerivOp_left_smul (r : R) (v : V) (x : E) : ∂_{r • v} x = r • ∂_{v} x
+
+/--
 The line derivative is continuous.
 -/
 class ContinuousLineDeriv (V : Type u) (E : Type v) (F : outParam (Type w))
@@ -122,6 +139,8 @@ namespace LineDeriv
 
 export LineDerivAdd (lineDerivOp_add)
 export LineDerivSMul (lineDerivOp_smul)
+export LineDerivLeftAdd (lineDerivOp_left_add)
+export LineDerivLeftSMul (lineDerivOp_left_smul)
 export ContinuousLineDeriv (continuous_lineDerivOp)
 
 section lineDerivOpCLM
