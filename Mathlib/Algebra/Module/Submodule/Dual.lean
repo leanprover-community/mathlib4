@@ -15,6 +15,19 @@ Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` i
 `Submodule.dual p s` to be the submodule in `N` consisting of all points `y` such that
 `0 = p x y` for all `x ∈ s`.
 
+See also `PointedCone.dual`.
+
+## Main declarations
+
+- `Submodule.dual` is the dual submodule of a set `s` w.r.t. a bilinear pairing `p`.
+
+## Notes
+
+- In case that the pairing is `Dual.eval R M`, the dual of a submodule `S` is identical to the
+  dual annihilator `S` (see `dual_dualAnnihilator`).
+- In case that the pairing is `LinealMap.id`, the dual of a submodule `S` is identical to the
+  dual coannihilator `S` (see `dual_dualCoannihilator`).
+
 -/
 
 @[expose] public section
@@ -144,8 +157,12 @@ lemma dual_sup (S T : Submodule R M) : dual p (S ⊔ T : Submodule R M) = dual p
   simp [span_union]
 
 lemma dual_sSup (s : Set (Submodule R M)) :
-    dual p (sSup s : Submodule R M) = dual p (sUnion (SetLike.coe '' s)) := by
-  rw [sUnion_image]; nth_rw 2 [←dual_span]; sorry -- rw [span_biUnion]
+    dual p (sSup s : Submodule R M) = dual p (⋃₀ (SetLike.coe '' s)) := by
+  rw [sUnion_image]
+  nth_rw 2 [←dual_span]
+  -- TODO: replace below by `rw [span_biUnion]` once `span_biUnion` is merged into mathlib.
+  have h : span R (⋃ S ∈ s, S) = sSup s := by simpa using (Submodule.gi R M).l_sSup_u_image s
+  rw [h]
 
 lemma dual_union_dual_inf_dual (s t : Set M) :
     dual p (s ∪ t) = dual p s ⊓ dual p t := by rw [dual_union]
