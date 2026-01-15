@@ -25,7 +25,8 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits
+open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
+  Limits SimplicialObject.Truncated
 
 namespace SSet
 
@@ -175,5 +176,34 @@ lemma ι₁_comp {X Y : SSet.{u}} (f : X ⟶ Y) :
 
 @[simp]
 lemma ι₁_app_fst {X : SSet.{u}} {m} (x : X.obj m) : (ι₁.app _ x).1 = x := rfl
+
+namespace Truncated
+
+variable (n : ℕ)
+
+open MonoidalCategory
+
+instance : CartesianMonoidalCategory (Truncated.{u} n) :=
+  (inferInstance : CartesianMonoidalCategory (_ ⥤ Type u))
+
+instance : MonoidalClosed (Truncated.{u} n) :=
+  inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
+
+instance : (truncation.{u} n).Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+
+variable {n} {X Y : Truncated.{u} n}
+
+@[simp]
+lemma tensor_map_apply_fst {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
+
+@[simp]
+lemma tensor_map_apply_snd {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
+
+end Truncated
 
 end SSet

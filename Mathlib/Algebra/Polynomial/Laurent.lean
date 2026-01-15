@@ -590,7 +590,7 @@ variable {R : Type*} [CommSemiring R]
 def invert : R[T;T⁻¹] ≃ₐ[R] R[T;T⁻¹] := AddMonoidAlgebra.domCongr R R <| AddEquiv.neg _
 
 @[simp] lemma invert_T (n : ℤ) : invert (T n : R[T;T⁻¹]) = T (-n) :=
-  AddMonoidAlgebra.domCongr_single _ _ _ _ _
+  AddMonoidAlgebra.domCongr_single ..
 
 @[simp] lemma invert_apply (f : R[T;T⁻¹]) (n : ℤ) : invert f n = f (-n) := by simp [invert]
 

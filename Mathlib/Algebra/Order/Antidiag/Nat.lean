@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
-public import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.PNat.Basic
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -219,7 +218,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     grind
-  rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
+  rw [prod_attach (f := fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 
@@ -284,7 +283,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     ∃ (a : Fin 3 → ℕ) (ha : a ∈ finMulAntidiag 3 n), f a ha = b := by
   dsimp only at hb
   let g := b.fst.gcd b.snd
-  let a := ![g, b.fst/g, b.snd/g]
+  let a := ![g, b.fst / g, b.snd / g]
   have ha : a ∈ finMulAntidiag 3 n := by
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb

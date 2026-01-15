@@ -252,11 +252,6 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 def IsInaccessible (c : Cardinal) : Prop :=
   ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
-@[deprecated "use the default constructor for `IsInaccessible`" (since := "2025-07-01")]
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
-    IsInaccessible c :=
-  ⟨h₁, h₂, h₃⟩
-
 theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
   h.1
 
@@ -286,9 +281,6 @@ theorem isInaccessible_def {c : Cardinal} :
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
 
-@[deprecated IsInaccessible.univ (since := "2025-07-01")]
-alias univ_inaccessible := IsInaccessible.univ
-
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
 -- `IsInaccessible (ℶ_ o)`
 
@@ -302,12 +294,15 @@ open Cardinal
 open scoped Ordinal
 
 -- TODO: generalize universes, and use ω₁.
-lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
+lemma iSup_sequence_lt_omega_one {α : Type u} [Countable α]
     (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < (aleph 1).ord) :
     iSup o < (aleph 1).ord := by
   apply iSup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+@[deprecated (since := "2025-12-22")]
+alias iSup_sequence_lt_omega1 := iSup_sequence_lt_omega_one
 
 end Ordinal
 

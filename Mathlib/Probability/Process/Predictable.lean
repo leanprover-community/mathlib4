@@ -127,8 +127,8 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
 
 /-- A predictable process is adapted. -/
 lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
-    Adapted 𝓕 u :=
-  h𝓕.progMeasurable.adapted
+    StronglyAdapted 𝓕 u :=
+  h𝓕.progMeasurable.stronglyAdapted
 
 omit [SecondCountableTopology E] in
 lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s : Set (ℕ × Ω)}

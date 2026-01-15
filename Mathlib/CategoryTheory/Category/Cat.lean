@@ -180,6 +180,34 @@ lemma isoMk_toNatIso {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
 lemma toNatIso_isoMk {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (e : F ≅ G) :
     Hom.toNatIso (isoMk e) = e := rfl
 
+instance {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
+    IsIso e.hom.toNatTrans :=
+  (toNatIso e).isIso_hom
+
+instance {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
+    IsIso e.inv.toNatTrans :=
+  (toNatIso e).isIso_inv
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_toNatTrans {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
+    e.hom.toNatTrans ≫ e.inv.toNatTrans = 𝟙 _ :=
+  (toNatIso e).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_toNatTrans {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
+    e.inv.toNatTrans ≫ e.hom.toNatTrans = 𝟙 _ :=
+  (toNatIso e).inv_hom_id
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_toNatTrans_app {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) (A : X) :
+    e.hom.toNatTrans.app A ≫ e.inv.toNatTrans.app A = 𝟙 _ :=
+  (toNatIso e).hom_inv_id_app A
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_toNatTrans_app {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) (A : X) :
+    e.inv.toNatTrans.app A ≫ e.hom.toNatTrans.app A = 𝟙 _ :=
+  (toNatIso e).inv_hom_id_app A
+
 end Hom
 
 end
