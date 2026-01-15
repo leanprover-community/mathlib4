@@ -157,7 +157,7 @@ def mkDataE₂Cohomological :
   le₁₂ pq := by simp
   le₂₃ r pq hr := by simp; lia
   hc := by rintro r pq _ rfl _; dsimp; lia
-  hc₀₂ := by rintro r pq hr rfl _ ; simp; lia
+  hc₀₂ := by rintro r pq hr rfl _; simp; lia
   hc₁₃ := by rintro r pq hr rfl _; simp; lia
   antitone_i₀ r r' pq hr hrr' := by simp; lia
   monotone_i₃ r r' pq hr hrr' := by simp; lia

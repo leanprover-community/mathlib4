@@ -138,7 +138,7 @@ noncomputable def eTruncGEδLT :
     | top => exact 0
   naturality {a b} hab := by
     replace hab := leOfHom hab
-    induction a using WithBotTop.rec ; rotate_right
+    induction a using WithBotTop.rec; rotate_right
     · apply (isZero_zero _).eq_of_src
     all_goals
       induction b using WithBotTop.rec <;> simp at hab <;>
