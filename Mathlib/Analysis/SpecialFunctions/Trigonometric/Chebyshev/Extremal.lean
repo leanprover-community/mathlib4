@@ -141,10 +141,9 @@ theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
   obtain ⟨x, hx, hPx⟩ := h
   obtain ⟨i, hi, hix⟩ := Finset.mem_image.mp hx
   replace hi := Finset.mem_Iic.mpr (Finset.mem_range_succ_iff.mp hi)
-  suffices  ∑ i ≤ n, ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * c i) <
-    ∑ i≤ n, ((-1) ^ i * (T ℝ n).eval (node n i)) * ((-1) ^ i * c i) by
-    simp_rw [negOnePow_mul_negOnePow_mul_cancel] at this
-    exact this
+  suffices ∑ i ≤ n, ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * c i) <
+      ∑ i ≤ n, ((-1) ^ i * (T ℝ n).eval (node n i)) * ((-1) ^ i * c i) by
+    simpa [negOnePow_mul_negOnePow_mul_cancel]
   have h_le {i : ℕ} (hi : i ∈ Finset.Iic n) :
     (-1) ^ i * P.eval (node n i) * ((-1) ^ i * c i) ≤
     (-1) ^ i * (T ℝ n).eval (node n i)  * ((-1) ^ i * c i) := by
