@@ -175,7 +175,7 @@ private theorem coeff_eq_sum_node_T (n : ℕ) :
     sumNodes n (leadingCoeffC n) (T ℝ n) = 2 ^ (n - 1) := by
   rw [coeff_eq_sum_node (by simp)]
   trans (T ℝ n).leadingCoeff
-  · rw [leadingCoeff]; simp
+  · simp [leadingCoeff]
   · simp
 
 private theorem coeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
