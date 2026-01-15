@@ -42,6 +42,7 @@ variable (K A B : Type*) [Field K] [Ring A] [Algebra K A] [Ring B] [Algebra K B]
 open TensorProduct Module
 
 open TwoSidedIdeal in
+@[stacks 074B]
 lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
     [isCentral_A : Algebra.IsCentral K A] [IsSimpleRing B] (I : TwoSidedIdeal (A ⊗[K] B))
     (hAB : letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
@@ -154,6 +155,7 @@ lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : 
     rw [SetLike.mem_coe, TwoSidedIdeal.mem_comap] at hx
     exact hx
 
+@[stacks 074C]
 instance TensorProduct.simple {A B : Type*} [Ring A] [IsSimpleRing A] [Algebra K A] [Ring B]
     [Algebra K B] [Algebra.IsCentral K A] [isSimple_B : IsSimpleRing B] :
     IsSimpleRing (A ⊗[K] B) := by
