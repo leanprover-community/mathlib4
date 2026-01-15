@@ -1173,6 +1173,9 @@ theorem tan_pi_sub (x : ℂ) : tan (π - x) = -tan x :=
 theorem tan_pi_div_two_sub (x : ℂ) : tan (π / 2 - x) = (tan x)⁻¹ := by
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos, inv_div, sin_pi_div_two_sub, cos_pi_div_two_sub]
 
+theorem tan_eq_neg_cot_add_pi_div_two (z : ℂ) : tan z = - cot (z + π / 2) := by
+  simp [tan, cot, cos_add_pi_div_two, neg_div', sin_add_pi_div_two]
+
 theorem tan_nat_mul_pi (n : ℕ) : tan (n * π) = 0 :=
   tan_zero ▸ tan_periodic.nat_mul_eq n
 

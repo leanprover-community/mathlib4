@@ -58,6 +58,16 @@ theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := 
 theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
   contrapose!; exact sin_eq_zero_iff
 
+theorem cot_add_tan {z : ℂ} (hz : ¬∃ (n : ℤ), n * π / 2 = z) : cot z + tan z = 2 / sin (2 * z) := by
+  have hs : sin z ≠ 0 := sin_ne_zero_iff.2 fun k h => hz ⟨2 * k, by grind⟩
+  have hc : cos z ≠ 0 := cos_ne_zero_iff.2 fun k h => hz ⟨2 * k + 1, by grind⟩
+  simp [tan, cot, div_add_div (cos z) (sin z) hs hc, ← pow_two, cos_sq_add_sin_sq, sin_two_mul]
+  field_simp
+
+theorem cot_sub_cot {z : ℂ} (hz : ¬∃ (n : ℤ), n * π / 2 = z) :
+    cot z - cot (z + π / 2) = 2 / sin (2 * z) := by
+  simp [sub_eq_neg_add, ← tan_eq_neg_cot_add_pi_div_two, ← cot_add_tan hz, add_comm]
+
 /-- The tangent of a complex number is equal to zero
 iff this number is equal to `k * π / 2` for an integer `k`.
 

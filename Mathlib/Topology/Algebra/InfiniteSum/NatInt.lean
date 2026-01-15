@@ -201,6 +201,18 @@ theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k
     (∏' k, f (2 * k)) * ∏' k, f (2 * k + 1) = ∏' k, f k :=
   (he.hasProd.even_mul_odd ho.hasProd).tprod_eq.symm
 
+@[to_additive]
+theorem tprod_pnat_odd_mul_even {f : ℕ+ → M}
+    (ho : Multipliable fun (k : ℕ+) => f (2 * k - 1))
+    (he : Multipliable fun (k : ℕ+) => f (2 * k)) :
+    (∏'  k, f (2 * k - 1)) * ∏' k, f (2 * k) = ∏' k, f k := by
+  symm
+  rw [← Equiv.tprod_eq (Equiv.pnatEquivNat.symm), ← tprod_even_mul_odd,
+    ← Equiv.tprod_eq (Equiv.pnatEquivNat.symm), ← Equiv.tprod_eq (Equiv.pnatEquivNat.symm)]
+  · congr
+  · simpa [← Equiv.multipliable_iff (Equiv.pnatEquivNat.symm)] using ho
+  · simpa [← Equiv.multipliable_iff (Equiv.pnatEquivNat.symm)] using he
+
 end ContinuousMul
 
 end tprod
