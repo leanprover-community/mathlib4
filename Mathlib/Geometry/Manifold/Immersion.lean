@@ -430,7 +430,7 @@ theorem continuousOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem continuousAt (h : IsImmersionAtOfComplement F I J n f x) : ContinuousAt f x :=
   h.continuousOn.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
-variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+variable [IsManifold I n M] [IsManifold J n N]
 
 /-- Prefer using `IsImmersionAtOfComplement.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
@@ -630,7 +630,7 @@ theorem continuousOn (h : IsImmersionAt I J n f x) : ContinuousOn f h.domChart.s
 theorem continuousAt (h : IsImmersionAt I J n f x) : ContinuousAt f x :=
   h.isImmersionAtOfComplement_complement.continuousAt
 
-variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+variable [IsManifold I n M] [IsManifold J n N]
 
 /-- Prefer using `IsImmersionAt.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsImmersionAt I J n f x) :
