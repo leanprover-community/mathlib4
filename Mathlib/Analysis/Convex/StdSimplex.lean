@@ -239,8 +239,7 @@ theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
 
 /-- The (sup metric) diameter of a standard simplex indexed by a subsingleton is 0. -/
 @[simp]
-theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] :
-    Metric.diam (stdSimplex ℝ ι) = 0 := by
+theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] : Metric.diam (stdSimplex ℝ ι) = 0 := by
   cases isEmpty_or_nonempty ι with
   | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
   | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
