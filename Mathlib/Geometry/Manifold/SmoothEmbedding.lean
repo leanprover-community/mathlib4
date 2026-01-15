@@ -23,7 +23,7 @@ This will be useful to define embedded submanifolds.
 * `IsSmoothEmbedding.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth embedding
 * `IsSmoothEmbedding.contMDiff`: if `f` is a `C^n` embedding, it is automatically `C^n`
-  in the sense of `ContMDiff`..
+  in the sense of `ContMDiff`.
 
 ## Implementation notes
 
