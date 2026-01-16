@@ -242,13 +242,13 @@ def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial f 0 1
   map_mul' := killComplFun_mul f
-  map_zero' _ _ := by ext; simp [coeff_killComplFun]
-  map_add' := by simp [MvPowerSeries.ext_iff, coeff_killComplFun]
+  map_zero' := by ext; simp [coeff_killComplFun]
+  map_add' _ _ := by ext; simp [coeff_killComplFun]
   commutes' := by simpa using killComplFun_monomial f 0
 }
 
 lemma killCompl_apply (p : MvPowerSeries τ R) :
-    killCompl f p = killComplFun f p := rfl
+    killCompl f p = killComplFun f p := by rfl
 
 lemma killCompl_C (r : R) : killCompl f (C r) = C r := by
   simpa using killComplFun_monomial f 0 r
