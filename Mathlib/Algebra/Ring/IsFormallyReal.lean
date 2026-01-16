@@ -42,12 +42,12 @@ theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [sq_add, add_assoc]
 
-theorem IsSumSq.isSumPosSq [AddMonoid R] [Mul R] {s : R} (h : IsSumNonzeroSq s) : IsSumSq s := by
+theorem IsSumSq.isSumNonzeroSq [AddMonoid R] [Mul R] {s : R} (h : IsSumNonzeroSq s) : IsSumSq s := by
   induction h <;> aesop
 
-theorem isSumPosSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
+theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
     IsSumNonzeroSq s ↔ IsSumSq s where
-  mp := IsSumSq.isSumPosSq
+  mp := IsSumSq.isSumNonzeroSq
   mpr h := by
     induction h with
     | zero => grind
@@ -58,7 +58,7 @@ theorem isSumPosSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠
       · simpa using IsSumNonzeroSq.sq ne_a
       · exact IsSumNonzeroSq.sq_add ne_a (ih ne_s)
 
-alias ⟨_, IsSumSq.isSumPosSq_of_ne_zero⟩ := isSumPosSq_iff_isSumSq
+alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
 
 end IsSumNonzeroSq
 
@@ -68,28 +68,28 @@ variable (R)
 A ring is formally real if, whenever `∑ i, x i ^ 2 = 0`, we in fact have `x i = 0` for all `i`.
 -/
 class IsFormallyReal [AddCommMonoid R] [Mul R] : Prop where
-  not_isSumPosSq_zero : ¬ IsSumNonzeroSq (0 : R)
+  not_isSumNonzeroSq_zero : ¬ IsSumNonzeroSq (0 : R)
 
 namespace IsFormallyReal
 
 theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     (hz : ∀ {a : R}, a * a = 0 → a = 0)
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
-  not_isSumPosSq_zero := by
+  not_isSumNonzeroSq_zero := by
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
     intro x hx
     induction hx with
     | sq ha => grind
-    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) (IsSumSq.isSumPosSq hs)]
+    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) (IsSumSq.isSumNonzeroSq hs)]
 
 theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
-  not_isSumPosSq_zero := by
+  not_isSumNonzeroSq_zero := by
     suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
     intro x hx
     induction hx with
     | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
-    | sq_add ha hs ih => grind [IsSumSq.isSumPosSq hs]
+    | sq_add ha hs ih => grind [IsSumSq.isSumNonzeroSq hs]
 
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
   of_eq_zero_of_mul_self_of_eq_zero_of_add R mul_self_eq_zero.mp <|
@@ -101,20 +101,20 @@ theorem mul_self_eq_zero_iff [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R
     a * a = 0 ↔ a = 0 where
   mp := by simp
   by_contra! hc
-  exact IsFormallyReal.not_isSumPosSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
+  exact IsFormallyReal.not_isSumNonzeroSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
 
 theorem eq_zero_of_mul_self [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} (ha : a * a = 0) :
     a = 0 := by
   by_contra! hc
-  exact IsFormallyReal.not_isSumPosSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
+  exact IsFormallyReal.not_isSumNonzeroSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
 
 theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₁ = 0 := by
   by_contra! h₁
   have h₂ : s₂ ≠ 0 := fun hc ↦ by simp_all
-  rw [← isSumPosSq_iff_isSumSq h₁] at hs₁
-  rw [← isSumPosSq_iff_isSumSq h₂] at hs₂
-  exact IsFormallyReal.not_isSumPosSq_zero (h ▸ IsSumNonzeroSq.add hs₁ hs₂)
+  rw [← isSumNonzeroSq_iff_isSumSq h₁] at hs₁
+  rw [← isSumNonzeroSq_iff_isSumSq h₂] at hs₂
+  exact IsFormallyReal.not_isSumNonzeroSq_zero (h ▸ IsSumNonzeroSq.add hs₁ hs₂)
 
 theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₂ = 0 := by
