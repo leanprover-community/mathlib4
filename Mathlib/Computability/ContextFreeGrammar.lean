@@ -404,31 +404,34 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
-/-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
-terminal. -/
-inductive Good (G : g₀.Embedding g) : Symbol T g.NT → Prop
-  | terminal (t : T) : Good G (.terminal t)
-  | nonterminal (n₀ : g₀.NT) : Good G (.nonterminal (G.embedNT n₀))
+/-- A `Symbol` comes from the embedding or is a terminal iff it is one of those nonterminals that
+result from projecting or it is any terminal. -/
+inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
+  | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
+  | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
 
-/-- A string is good iff every `Symbol` in it is good. -/
-def GoodString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → Good G a
+/-- A string is from the embedding or terminals iff every `Symbol` in it is. -/
+def FromEmbeddingOrTerminalString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
+  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → FromEmbeddingOrTerminal G a
 
-lemma goodString_singleton {s : Symbol T g.NT} (hs : G.Good s) : G.GoodString [s] := by
-  simpa [GoodString] using hs
+lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
+    (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
+  simpa [FromEmbeddingOrTerminalString] using hs
 
 /-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
 nonterminals that `G.g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Produces w₁ w₂) (hw₁ : G.GoodString w₁) :
+    (hG : g.Produces w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.GoodString w₂ := by
+    G.FromEmbeddingOrTerminalString w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  have good_input : G.Good (Symbol.nonterminal r.input) := by apply hw₁; simp
+  have good_input : G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
+    apply hw₁
+    simp
   revert good_input
   generalize hr_eq : r.input = n
   intro good_input
@@ -460,7 +463,7 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
             List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
           using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
     · rw [aft, ← hrr₀]
-      simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
+      simp only [FromEmbeddingOrTerminalString, List.forall_mem_append] at hw₁ ⊢
       refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
       intro a ha
       cases a
@@ -471,14 +474,14 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       rw [← hs]
       cases s with
       | terminal t => simp [Symbol.map] at hs
-      | nonterminal s' => exact Good.nonterminal s'
+      | nonterminal s' => exact FromEmbeddingOrTerminal.nonterminal s'
 
 private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.GoodString w₂ := by
+    G.FromEmbeddingOrTerminalString w₂ := by
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
   | tail _ orig ih =>
@@ -488,7 +491,7 @@ private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
 lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
