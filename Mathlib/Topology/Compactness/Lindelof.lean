@@ -357,7 +357,7 @@ theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
 theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
-    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
+    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion <| forall_mem_range.2 h
 
 theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
@@ -526,11 +526,11 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+  { isLindelof_univ := isCompact_univ.isLindelof }
 
 /-- A sigma-compact space `X` is Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof }
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -727,7 +727,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc

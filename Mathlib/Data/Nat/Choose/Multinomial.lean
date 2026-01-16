@@ -352,7 +352,4 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
 
-@[deprecated (since := "2025-05-23")]
-alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
-
 end Sym

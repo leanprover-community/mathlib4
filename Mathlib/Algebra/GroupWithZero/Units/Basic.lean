@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
-public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Nat.Basic  -- shake: keep (non-recorded `nontrivial` dependency?)
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -131,8 +133,6 @@ theorem inverse_zero : inverse (0 : M₀) = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 
-variable {M₀}
-
 end Ring
 
 theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
@@ -240,6 +240,11 @@ theorem div_ne_zero_iff : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 :=
   div_eq_zero_iff.not.trans not_or
 
 @[simp] lemma div_self (h : a ≠ 0) : a / a = 1 := h.isUnit.div_self
+
+@[simp]
+lemma div_self_eq_one₀ : a / a = 1 ↔ a ≠ 0 where
+  mp := by contrapose!; simp +contextual
+  mpr := div_self
 
 lemma eq_mul_inv_iff_mul_eq₀ (hc : c ≠ 0) : a = b * c⁻¹ ↔ a * c = b :=
   hc.isUnit.eq_mul_inv_iff_mul_eq

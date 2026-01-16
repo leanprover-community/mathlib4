@@ -127,7 +127,8 @@ theorem isIntegrallyClosed_iff :
         IsFractionRing.injective R K]
 
 instance : IsIntegrallyClosedIn (integralClosure R A) A :=
-  isIntegrallyClosedIn_iff.mpr ⟨Subtype.val_injective, fun h ↦ ⟨⟨_, isIntegral_trans _ h⟩, rfl⟩⟩
+  isIntegrallyClosedIn_iff.mpr
+    ⟨FaithfulSMul.algebraMap_injective _ _, fun h ↦ ⟨⟨_, isIntegral_trans _ h⟩, rfl⟩⟩
 
 instance : IsIntegrallyClosedIn (integralClosure R A).toSubring A :=
   inferInstanceAs (IsIntegrallyClosedIn (integralClosure R A) A)
@@ -138,7 +139,7 @@ variable {C : Type*} [SetLike C A] [SubringClass C A] {S : C}
 
 protected theorem isIntegrallyClosedIn_iff :
     IsIntegrallyClosedIn S A ↔ ∀ ⦃x : A⦄, IsIntegral S x → x ∈ S := by
-  rw [isIntegrallyClosedIn_iff, and_iff_right (by exact Subtype.val_injective)]
+  rw [isIntegrallyClosedIn_iff, and_iff_right (FaithfulSMul.algebraMap_injective _ _)]
   exact congr(∀ _ _, _ ∈ $Subtype.range_val)
 
 protected theorem isIntegrallyClosed_iff [IsFractionRing S A] :
@@ -203,8 +204,8 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
-    integralClosure R A = ⊥ :=
+theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [IsDomain R] [Module.IsTorsionFree R A]
+    [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
@@ -345,7 +346,7 @@ theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} 
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,
-except the `NoZeroSMulDivisors` hypothesis isn't inferred automatically from `IsFractionRing`. -/
+except the `Module.IsTorsionFree` hypothesis isn't inferred automatically from `IsFractionRing`. -/
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosed R] : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›

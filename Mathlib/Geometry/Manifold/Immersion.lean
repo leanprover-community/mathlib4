@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
@@ -88,7 +87,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 ## References
 
-* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues2012]
+* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
 
 -/
 
@@ -280,10 +279,10 @@ between the targets of the local charts: using mathlib's formalisation conventio
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
-this is not a mathematically meaningful difference.`
+this is not a mathematically meaningful difference.
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
@@ -522,10 +521,10 @@ between the targets of the local charts: using mathlib's formalisation conventio
 is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChartSource`;
+but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
-this is not a mathematically meaningful difference.`
+this is not a mathematically meaningful difference.
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
@@ -703,7 +702,7 @@ The complement of `f` at `x` is isomorphic to the cokernel of `mfderiv I J f x`,
 of `f` at (even nearby) points `x` and `x'` are not directly related. They have the same rank
 (the dimension of `E`, as will follow from injectivity), but if `E''` is infinite-dimensional this
 is not conclusive. If `E''` is infinite-dimensional, this dimension can indeed change between
-different connected of `M`.
+different connected components of `M`.
 -/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]

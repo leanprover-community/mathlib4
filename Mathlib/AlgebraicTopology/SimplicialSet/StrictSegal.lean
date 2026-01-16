@@ -122,6 +122,7 @@ section autoParam
 
 variable (m : ℕ) (h : m ≤ n + 1 := by lia)
 
+set_option backward.privateInPublic true in
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋m⦌ₙ₊₁`
 and `Path X m`. -/
 def spineEquiv : X _⦋m⦌ₙ₊₁ ≃ Path X m where
@@ -130,9 +131,11 @@ def spineEquiv : X _⦋m⦌ₙ₊₁ ≃ Path X m where
   left_inv := sx.spineToSimplex_spine_apply m h
   right_inv := sx.spine_spineToSimplex_apply m h
 
+set_option backward.privateInPublic true in
 theorem spineInjective : Function.Injective (sx.spineEquiv m h) :=
   Equiv.injective _
 
+set_option backward.privateInPublic true in
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
 def spineToDiagonal : Path X m → X _⦋1⦌ₙ₊₁ :=

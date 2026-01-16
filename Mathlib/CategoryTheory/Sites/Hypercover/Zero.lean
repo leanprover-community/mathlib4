@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Sites.Precoverage
 # 0-hypercovers
 
 Given a coverage `J` on a category `C`, we define the type
-of `0`-hypercovers of an object `S : C`. They consists of a covering family
+of `0`-hypercovers of an object `S : C`. They consist of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
 
 We define this with respect to a coverage and not to a Grothendieck topology, because this
@@ -192,7 +192,7 @@ lemma presieve₀_sum : (E.sum F).presieve₀ = E.presieve₀ ⊔ F.presieve₀ 
     cases i
     · exact Or.inl (.mk _)
     · exact Or.inr (.mk _)
-  · rintro Z g (⟨⟨i⟩⟩|⟨⟨i⟩⟩)
+  · rintro Z g (⟨⟨i⟩⟩ | ⟨⟨i⟩⟩)
     · exact ⟨Sum.inl i⟩
     · exact ⟨Sum.inr i⟩
 

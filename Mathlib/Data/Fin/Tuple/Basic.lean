@@ -541,21 +541,15 @@ theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : 
   · simp only [comp_apply, snoc_castSucc]
     rw [natAdd_castSucc, snoc_castSucc]
 
-@[deprecated (since := "2025-07-04")] alias snoc_comp_nat_add := snoc_comp_natAdd
-
 @[simp]
 theorem snoc_castAdd {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
-@[deprecated (since := "2025-07-04")] alias snoc_cast_add := snoc_castAdd
-
 @[simp]
 theorem snoc_comp_castAdd {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
   funext (snoc_castAdd _ _)
-
-@[deprecated (since := "2025-07-04")] alias snoc_comp_cast_add := snoc_comp_castAdd
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
@@ -1088,6 +1082,7 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
+set_option backward.privateInPublic true in
 private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
   go (m : Nat) (hj : ∀ j (hm : j < n - m), ¬p ⟨j, by grind⟩) := match m with
@@ -1095,6 +1090,8 @@ private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p
     then ⟨_, ⟨hnm, (hj ·.val)⟩⟩ else go m (by grind)
   | 0 => absurd h (fun ⟨⟨_, _⟩, _⟩ => by grind)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
   given that it is satisfied for some `k`. -/
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=

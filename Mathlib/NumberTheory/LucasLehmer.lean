@@ -192,14 +192,6 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
   | zero => dsimp [s, sZMod]; simp
   | succ i ih => push_cast [s, sZMod, ih]; rfl
 
--- These next two don't make good `norm_cast` lemmas.
-theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
-  have : 1 ≤ b ^ p := Nat.one_le_pow p b w
-  norm_cast
-
-theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
-  Int.natCast_pow_pred 2 p (by decide)
-
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
   induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
 
@@ -653,9 +645,9 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
     rw [sModNat, sMod, ← ih]
     have h3 : 2 ≤ 2 ^ p - 1 := by
       zify [h2]
-      calc
-        (2 : Int) ≤ 4 - 1 := by simp
-        _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
+      calc (2 : ℤ)
+        _ ≤ 4 - 1 := by simp
+        _ ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_right, ← sub_eq_add_neg]

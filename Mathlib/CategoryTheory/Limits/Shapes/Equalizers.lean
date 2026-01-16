@@ -38,7 +38,7 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
@@ -252,15 +252,35 @@ def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
   NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_ | _ | _) <;> simp)
 
+/-- Constructor for natural transformations between parallel pairs. -/
+@[simps]
+def parallelPairHomMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ⟶ G.obj zero)
+    (q : F.obj one ⟶ G.obj one)
+    (hl : F.map left ≫ q = p ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q = p ≫ G.map right := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _); exacts [p, q]
+  naturality := by rintro _ _ (_ | _); all_goals cat_disch
+
+/-- Constructor for natural isomorphisms between parallel pairs. -/
+@[simps!]
+def parallelPairIsoMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ≅ G.obj zero)
+    (q : F.obj one ≅ G.obj one)
+    (hl : F.map left ≫ q.hom = p.hom ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q.hom = p.hom ≫ G.map right := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _); exacts [p, q])
+    (by rintro _ _ (_ | _); all_goals cat_disch)
+
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
-    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' where
-  app j :=
-    match j with
-    | zero => p
-    | one => q
-  naturality := by
-    rintro _ _ ⟨⟩ <;> simp [wf,wg]
+    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' :=
+  parallelPairHomMk p q
+
+/-- Construct a isomorphism between parallel pairs. -/
+def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
+    (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
+    parallelPair f g ≅ parallelPair f' g' := parallelPairIsoMk p q
 
 @[simp]
 theorem parallelPairHom_app_zero {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X')
@@ -473,7 +493,7 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     fac := fun s j =>
       WalkingParallelPair.casesOn j (fac s) <| by
         simp [← Category.assoc, fac]
-    uniq := fun s m j => by aesop}
+    uniq := fun s m j => by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the
@@ -564,7 +584,7 @@ def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map ri
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by simp)
-      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition]}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition] }
 
 /-- This is a helper construction that can be useful when verifying that a category has all
 coequalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
@@ -579,7 +599,7 @@ def Cocone.ofCofork {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition]}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition] }
 
 @[simp]
 theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) (j) :
@@ -595,7 +615,7 @@ theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map le
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
   π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
-         naturality := by rintro _ _ (_ | _ | _) <;> simp}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
 `parallelPair (F.map left) (F.map right)` and a cocone on `F`, we get a cofork on
@@ -604,7 +624,7 @@ def Cofork.ofCocone {F : WalkingParallelPair ⥤ C} (t : Cocone F) :
     Cofork (F.map left) (F.map right) where
   pt := t.pt
   ι := { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-         naturality := by rintro _ _ (_ | _ | _) <;> simp}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
 @[simp]
 theorem Fork.ofCone_π {F : WalkingParallelPair ⥤ C} (t : Cone F) (j) :
@@ -632,7 +652,7 @@ def Fork.mkHom {s t : Fork f g} (k : s.pt ⟶ t.pt) (w : k ≫ t.ι = s.ι) : s 
   w := by
     rintro ⟨_ | _⟩
     · exact w
-    · simp only [Fork.app_one_eq_ι_comp_left,← Category.assoc]
+    · simp only [Fork.app_one_eq_ι_comp_left, ← Category.assoc]
       congr
 
 /-- To construct an isomorphism between forks,

@@ -44,7 +44,7 @@ open map, closed map, embedding, quotient map, identification map
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function
@@ -200,7 +200,7 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
-lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
@@ -257,6 +257,15 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
     le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
+
+theorem of_comp_of_eq_coinduced (hgf : IsQuotientMap (g ∘ f))
+    (hf : ‹TopologicalSpace Y› = ‹TopologicalSpace X›.coinduced f) : IsQuotientMap g :=
+  isQuotientMap_iff.mpr <| .intro hgf.1.of_comp fun s ↦ by
+    conv_rhs => rw [TopologicalSpace.ext_iff.mp hf, isOpen_coinduced]
+    exact (isQuotientMap_iff.mp hgf).2 s
+
+theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
+    IsQuotientMap g := of_comp_of_eq_coinduced hgf hf.2
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
@@ -399,7 +408,7 @@ theorem isOpenMap_iff_clusterPt_comap :
   refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ ?_⟩
   simp only [isOpenMap_iff_nhds_le, le_map_iff]
   intro x s hs
-  contrapose! hs
+  contrapose hs
   rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
   exact (h _ _ hs).mono <| by simp [subset_preimage_image]
 
@@ -751,6 +760,13 @@ theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
 lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
   simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.isClosed_iff_image_isClosed]
+
+protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f)) :
+    IsClosedEmbedding f where
+  __ := hg.of_comp_iff.mp hgf.isEmbedding
+  isClosed_range := by
+    convert hg.isClosed_preimage _ hgf.isClosed_range
+    rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

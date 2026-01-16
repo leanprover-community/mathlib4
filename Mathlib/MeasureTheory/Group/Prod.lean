@@ -63,9 +63,9 @@ protected def MeasurableEquiv.shearMulRight [MeasurableInv G] : G × G ≃ᵐ G 
     measurable_toFun := measurable_fst.prodMk measurable_mul
     measurable_invFun := measurable_fst.prodMk <| measurable_fst.inv.mul measurable_snd }
 
-/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, yx)` -/
+/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, yx)` -/
 @[to_additive
-/-- The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, y + x)`. -/]
+/-- The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, y + x)`. -/]
 protected def MeasurableEquiv.shearDivRight [MeasurableInv G] : G × G ≃ᵐ G × G :=
   { Equiv.prodShear (Equiv.refl _) Equiv.divRight with
     measurable_toFun := measurable_fst.prodMk <| measurable_snd.div measurable_fst

@@ -48,7 +48,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     obtain ⟨j, h⟩ := Profinite.exists_locallyConstant.{_, u} c hc f
     exact ⟨⟨j⟩, h⟩
   · intro ⟨i⟩ ⟨j⟩ (fi : LocallyConstant _ _) (fj : LocallyConstant _ _)
-      (h : fi.comap (c.π.app i).hom = fj.comap (c.π.app j).hom)
+      (h : fi.comap (c.π.app i).hom.hom = fj.comap (c.π.app j).hom.hom)
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
     dsimp
@@ -64,7 +64,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
     (i : I) (f : LocallyConstant (toProfinite.obj (F.obj i)) X) :
-    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i).hom) = s.ι.app ⟨i⟩ f := by
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i).hom.hom) =
+      s.ι.app ⟨i⟩ f := by
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨i⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
   rw [(isColimitLocallyConstantPresheaf c X hc).fac]
@@ -78,8 +79,8 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : Profinite)
     (s : Cocone (S.diagram.op ⋙ locallyConstantPresheaf X))
     (i : DiscreteQuotient S) (f : LocallyConstant (S.diagram.obj i) X) :
-    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app i).hom) =
-      s.ι.app ⟨i⟩ f :=
+    (isColimitLocallyConstantPresheafDiagram X S).desc s
+      (f.comap (S.asLimitCone.π.app i).hom.hom) = s.ι.app ⟨i⟩ f :=
   isColimitLocallyConstantPresheaf_desc_apply S.asLimitCone X S.asLimit s i f
 
 end LocallyConstantAsColimit
@@ -189,16 +190,15 @@ def locallyConstantIsoFinYoneda :
 /-- A finite set as a coproduct cocone in `Profinite` over itself. -/
 def fintypeCatAsCofan (X : Profinite) :
     Cofan (fun (_ : X) ↦ (Profinite.of (PUnit.{u + 1}))) :=
-  Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
+  Cofan.mk X (fun x ↦ ConcreteCategory.ofHom (ContinuousMap.const _ x))
 
 set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `Profinite`. -/
 def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
-    IsColimit (fintypeCatAsCofan X) := by
-  refine mkCofanColimit _ (fun t ↦ TopCat.ofHom ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
+    IsColimit (fintypeCatAsCofan X) :=
+  mkCofanColimit _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
+    continuous_of_discreteTopology (α := X)⟩) (by aesop)
     (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
-  · apply continuous_of_discreteTopology (α := X)
-  · aesop
 
 variable [PreservesFiniteProducts F]
 
@@ -310,7 +310,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
       (isLimitOfPreserves lightToProfinite hc) f
     exact ⟨⟨j⟩, h⟩
   · intro ⟨i⟩ ⟨j⟩ (fi : LocallyConstant _ _) (fj : LocallyConstant _ _)
-      (h : fi.comap (c.π.app i).hom = fj.comap (c.π.app j).hom)
+      (h : fi.comap (c.π.app i).hom.hom = fj.comap (c.π.app j).hom.hom)
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
     dsimp
@@ -326,7 +326,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
 lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
     (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
     (n : ℕᵒᵖ) (f : LocallyConstant (toLightProfinite.obj (F.obj n)) X) :
-    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n).hom) = s.ι.app ⟨n⟩ f := by
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n).hom.hom) =
+      s.ι.app ⟨n⟩ f := by
   change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
     (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
   rw [(isColimitLocallyConstantPresheaf c X hc).fac]
@@ -341,8 +342,8 @@ noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
 lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
     (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
     (n : ℕ) (f : LocallyConstant (S.diagram.obj ⟨n⟩) X) :
-    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app ⟨n⟩).hom) =
-      s.ι.app n f := by
+    (isColimitLocallyConstantPresheafDiagram X S).desc s
+      (f.comap (S.asLimitCone.π.app ⟨n⟩).hom.hom) = s.ι.app n f := by
   change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
     (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
   rw [(isColimitLocallyConstantPresheafDiagram X S).fac]
@@ -456,16 +457,15 @@ def locallyConstantIsoFinYoneda : toLightProfinite.op ⋙
 /-- A finite set as a coproduct cocone in `LightProfinite` over itself. -/
 def fintypeCatAsCofan (X : LightProfinite) :
     Cofan (fun (_ : X) ↦ (LightProfinite.of (PUnit.{u + 1}))) :=
-  Cofan.mk X (fun x ↦ TopCat.ofHom (ContinuousMap.const _ x))
+  Cofan.mk X (fun x ↦ ConcreteCategory.ofHom (ContinuousMap.const _ x))
 
 set_option backward.proofsInPublic true in
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
 def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
-    IsColimit (fintypeCatAsCofan X) := by
-  refine mkCofanColimit _ (fun t ↦ TopCat.ofHom ⟨fun x ↦ t.inj x PUnit.unit, ?_⟩) ?_
+    IsColimit (fintypeCatAsCofan X) :=
+  mkCofanColimit _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
+    continuous_of_discreteTopology (α := X)⟩) (by aesop)
     (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
-  · apply continuous_of_discreteTopology (α := X)
-  · aesop
 
 variable [PreservesFiniteProducts F]
 
