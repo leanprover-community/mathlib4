@@ -513,6 +513,7 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         timeout-minutes: 40
+        shell: bash
         run: |
           cd pr-branch
           set -o pipefail
@@ -522,7 +523,7 @@ jobs:
             if timeout 15m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
-            status=$?
+            status=${PIPESTATUS[0]}
             if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
               echo ""
               echo "=============================================================================="
