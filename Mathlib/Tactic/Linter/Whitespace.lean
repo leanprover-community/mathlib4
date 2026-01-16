@@ -555,7 +555,6 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let (_, corr) ← generateCorrespondence true ∅ #[] stx pp
     let (reported, excluded) := corr.partition fun _ {kinds := ks,..} =>
       (!totalExclusions.contains ks && !ignoreSpaceAfter.contains ks && !ignoreSpaceAfter3.contains ks)
-    let fm ← getFileMap
     -- Sort by position to stabilize output.
     let reported := reported.toArray.qsort (·.1 < ·.1)
     -- Counts the number of times that a `Bundle.termπ__` potential exception appears and
