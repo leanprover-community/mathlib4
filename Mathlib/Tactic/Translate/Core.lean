@@ -558,6 +558,7 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut value := decl.value! (allowOpaque := true)
   if let some b := t.unfoldBoundaries? then
     value ← b.cast (← b.insertBoundaries value t.attrName) decl.type t.attrName
+  trace[translate] "Value before translation:{indentExpr value}"
   value ← reorderLambda reorder <| ← applyReplacementLambda t dont value
   if let some b := t.unfoldBoundaries? then
     value ← b.unfoldInsertions value
@@ -606,9 +607,7 @@ def declUnfoldSimpAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
   decl := decl.updateType <| ← unfold decl.type
   if let some v := decl.value? (allowOpaque := true) then
-    trace[translate] "value before unfold:{indentExpr v}"
     decl := decl.updateValue <| ← unfold v
-    trace[translate] "value after unfold:{indentExpr decl.value!}"
   return decl
 
 /-- Find the target name of `src`, which is assumed to have been selected by `findAuxDecls`. -/
