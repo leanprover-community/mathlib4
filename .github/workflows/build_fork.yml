@@ -526,7 +526,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        timeout-minutes: 60
+        timeout-minutes: 40
         run: |
           cd pr-branch
           set -o pipefail
