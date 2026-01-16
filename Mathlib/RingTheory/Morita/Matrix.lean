@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Morita.Basic
 - `equivalentToMatrix`: An equivalence of categories composed by `ModuleCat.toMatrixModCat R ι`
   and `MatrixModCat.toModuleCat R i`.
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
-- `IsMoritaEquivalent.matrix`: The proposition showing `R` and `Mₙ(R)` are Morita equivalent.
 
 -/
 
