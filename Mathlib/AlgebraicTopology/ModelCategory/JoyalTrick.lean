@@ -23,7 +23,7 @@ namely that cofibrations are stable under composition and cobase change.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits MorphismProperty
 
@@ -31,7 +31,7 @@ namespace HomotopicalAlgebra
 
 namespace ModelCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
 
@@ -85,7 +85,7 @@ lemma hasLiftingProperty_of_joyalTrickDual
     rw [← fibration_iff] at h₂
     have : WeakEquivalence (h.p ≫ pullback.snd p g) := by
       rw [weakEquivalence_iff] at h₁ ⊢
-      exact of_precomp _ _ _  h.hi.2 h₁
+      exact of_precomp _ _ _ h.hi.2 h₁
     exact ⟨⟨{ l := sq'.lift ≫ h.p ≫ pullback.fst p g
               fac_right := by
                 rw [assoc, assoc, pullback.condition, reassoc_of% sq'.fac_right] }⟩⟩

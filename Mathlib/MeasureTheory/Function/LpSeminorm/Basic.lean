@@ -17,7 +17,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
-@[expose] public section
+public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
@@ -276,14 +276,14 @@ variable {f : α → F}
 lemma eLpNorm'_mono_enorm_ae {f : α → ε} {g : α → ε'} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
-  gcongr ?_ ^ (1/q)
+  gcongr ?_ ^ (1 / q)
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
   gcongr
 
 lemma eLpNorm'_mono_nnnorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ := by
   simp only [eLpNorm'_eq_lintegral_enorm]
-  gcongr ?_ ^ (1/q)
+  gcongr ?_ ^ (1 / q)
   refine lintegral_mono_ae (h.mono fun x hx => ?_)
   dsimp [enorm]
   gcongr

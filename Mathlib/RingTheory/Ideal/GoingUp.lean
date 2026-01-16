@@ -287,7 +287,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
-    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]
+    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩)]
   rfl
 
 end
@@ -322,8 +322,8 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
-    (P : Ideal R) [P.IsPrime] :
+instance nonempty_primesOver [IsDomain R] [Nontrivial S] [Algebra.IsIntegral R S]
+    [Module.IsTorsionFree R S] (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
   exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
@@ -404,17 +404,21 @@ end IsIntegral
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+  [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
 
+theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
+  primesOver.isMaximal ⟨P, hP⟩
+
 variable (A B) in
-lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
+lemma primesOver_bot [Module.IsTorsionFree A B] [IsDomain A] [IsDomain B] :
+    primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl
-  exact ⟨Ideal.bot_prime, Ideal.bot_liesOver_bot A B⟩
+  exact ⟨Ideal.isPrime_bot, Ideal.bot_liesOver_bot A B⟩
 
 end IsIntegral
 

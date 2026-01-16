@@ -20,7 +20,7 @@ C⋆-algebra that involve the norm.
   respectively.
 -/
 
-@[expose] public section
+public section
 
 variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [StarRing A]

@@ -5,7 +5,7 @@ Authors: Kim Morrison, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # Pullbacks in the category of types
@@ -224,7 +224,7 @@ variable (t l r b) in
 lemma isPullback_iff :
   IsPullback t l r b ↔ t ≫ r = l ≫ b ∧
     (∀ x₁ y₁, t x₁ = t y₁ ∧ l x₁ = l y₁ → x₁ = y₁) ∧
-    ∀ x₂ x₃, r x₂ = b x₃ → ∃ x₁, t x₁ = x₂ ∧ l x₁ = x₃:= by
+    ∀ x₂ x₃, r x₂ = b x₃ → ∃ x₁, t x₁ = x₂ ∧ l x₁ = x₃ := by
   constructor
   · intro h
     exact ⟨h.w, fun x₁ y₁ ⟨h₁, h₂⟩ ↦ ext_of_isPullback h h₁ h₂, exists_of_isPullback h⟩
@@ -235,6 +235,7 @@ lemma isPullback_iff :
       grind [Function.Bijective, Function.Injective, Function.Surjective]
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
+
 end
 
 end CategoryTheory.Limits.Types

@@ -44,7 +44,7 @@ Generally useful lemmas which are not related to integrals:
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
@@ -114,8 +114,6 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) : f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
-
-variable {𝕜}
 
 end AeEqOfForall
 
