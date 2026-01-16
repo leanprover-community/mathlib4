@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 import Mathlib.Algebra.Module.Torsion.Pi
+import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
 # Alternating Maps
@@ -195,6 +196,10 @@ theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 
+theorem map_eq_zero_of_card_lt [Fintype ι] [Fintype M] (v : ι → M)
+    (h : Fintype.card M < Fintype.card ι) : f v = 0 := by
+  obtain ⟨i, j, hne, heq⟩ := Fintype.exists_ne_map_eq_of_card_lt v h
+  exact f.map_eq_zero_of_eq v heq hne
 /-!
 ### Algebraic structure inherited from `MultilinearMap`
 
