@@ -114,6 +114,12 @@ lemma fromSingleMk_precomp
   apply (fromSingleEquiv h).injective
   simp [fromSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
 
+lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} (g : K ⟶ L) :
+    fromSingleMk (f ≫ g.f q) h =
+      (fromSingleMk f h).comp (.ofHom g) (add_zero n) :=
+  (fromSingleEquiv h).injective (by simp [fromSingleEquiv, singleFunctor, singleFunctors])
+
 /-- Constructor for cochains to a single complex. -/
 @[nolint unusedArguments]
 noncomputable def toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (_ : p + n = q) :
@@ -192,6 +198,13 @@ lemma toSingleMk_postcomp
   apply (toSingleEquiv h).injective
   simp [toSingleEquiv, singleFunctor, singleFunctors, HomologicalComplex.single_map_f_self]
 
+lemma toSingleMk_precomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    {L : CochainComplex C ℤ} (g : L ⟶ K) :
+    toSingleMk (g.f p ≫ f) h =
+      (Cochain.ofHom g).comp (toSingleMk f h) (zero_add n) :=
+  (toSingleEquiv h).injective (by simp [toSingleEquiv, singleFunctor, singleFunctors])
+
 end Cochain
 
 namespace Cocycle
@@ -211,6 +224,14 @@ lemma fromSingleMk_precomp {X' : C} (g : X' ⟶ X) {p q : ℤ} (f : X ⟶ K.X q)
       (fromSingleMk f h q' hq' hf).precomp ((singleFunctor C p).map g) := by
   ext : 1
   exact (Cochain.fromSingleEquiv h).injective (by simp [Cochain.fromSingleMk_precomp])
+
+lemma fromSingleMk_postcomp {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) {L : CochainComplex C ℤ}
+    (g : K ⟶ L) :
+    fromSingleMk (f ≫ g.f q) h q' hq' (by simp [reassoc_of% hf]) =
+      (fromSingleMk f h q' hq' hf).postcomp g := by
+  ext : 1
+  exact (Cochain.fromSingleEquiv h).injective (by simp [Cochain.fromSingleMk_postcomp])
 
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cocycle ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) (q' : ℤ) (hq' : q + 1 = q') :
@@ -275,6 +296,15 @@ lemma toSingleMk_postcomp {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q
       (toSingleMk f h p' hp' hf).postcomp ((singleFunctor C q).map g) := by
   ext : 1
   exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_postcomp])
+
+lemma toSingleMk_precomp
+    {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
+    (p' : ℤ) (hp' : p' + 1 = p) (hf : K.d p' p ≫ f = 0)
+    {L : CochainComplex C ℤ} (g : L ⟶ K) :
+    toSingleMk (g.f p ≫ f) h p' hp' (by simp [← g.comm_assoc, hf]) =
+      (toSingleMk f h p' hp' hf).precomp g := by
+  ext : 1
+  exact (Cochain.toSingleEquiv h).injective (by simp [Cochain.toSingleMk_precomp])
 
 lemma toSingleMk_surjective {q n : ℤ} (α : Cocycle K ((singleFunctor C q).obj X) n)
     (p : ℤ) (h : p + n = q) (p' : ℤ) (hp' : p' + 1 = p) :
