@@ -127,6 +127,7 @@ section lift
 
 variable {R : Type v} [CommRing R] (f : α → R)
 
+set_option backward.privateInPublic true in
 /-- A helper to implement `lift`. This is essentially `FreeCommMonoid.lift`, but this does not
 currently exist. -/
 private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R) where
@@ -149,6 +150,8 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
         ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
   Equiv.trans liftToMultiset FreeAbelianGroup.liftMonoid
@@ -392,9 +395,9 @@ end FreeRing
 /-- The free commutative ring on `α` is isomorphic to the polynomial ring over ℤ with
 variables in `α` -/
 def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ :=
-  RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
+  RingEquiv.ofRingHom (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
     (MvPolynomial.eval₂Hom (Int.castRingHom (FreeCommRing α)) FreeCommRing.of)
-    (by ext; simp) (by ext <;> simp)
+    (by ext <;> simp) (by ext; simp)
 
 /-- The free commutative ring on the empty type is isomorphic to `ℤ`. -/
 def freeCommRingPemptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=

@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected  -- shake: keep (`p_w`)
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.Instances.Sphere
 public import Mathlib.Topology.Homotopy.Equiv
@@ -27,7 +27,7 @@ open scoped Manifold ContDiff
 open Metric (sphere)
 
 local macro:max "ℝ" noWs n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
-local macro:max "𝕊"n:superscript(term) : term =>
+local macro:max "𝕊" noWs n:superscript(term) : term =>
   `(sphere (0 : EuclideanSpace ℝ (Fin ($(⟨n.raw[0]⟩) + 1))) 1)
 
 variable (M : Type*) [TopologicalSpace M]

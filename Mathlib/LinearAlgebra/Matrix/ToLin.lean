@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Data.Finite.Sum
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Basis.Basic
@@ -221,26 +222,32 @@ abbrev Matrix.toLinearMapRight' [DecidableEq m] : Matrix m n R ≃ₗ[Rᵐᵒᵖ
 
 @[simp]
 theorem Matrix.toLinearMapRight'_apply (M : Matrix m n R) (v : m → R) :
-    (Matrix.toLinearMapRight') M v = v ᵥ* M := rfl
+    M.toLinearMapRight' v = v ᵥ* M := rfl
 
 @[simp]
 theorem Matrix.toLinearMapRight'_mul [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) :
-    Matrix.toLinearMapRight' (M * N) =
-      (Matrix.toLinearMapRight' N).comp (Matrix.toLinearMapRight' M) :=
+    (M * N).toLinearMapRight' = N.toLinearMapRight' ∘ₗ M.toLinearMapRight' :=
   LinearMap.ext fun _x ↦ (vecMul_vecMul _ M N).symm
 
 theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) (x) :
-    Matrix.toLinearMapRight' (M * N) x =
-      Matrix.toLinearMapRight' N (Matrix.toLinearMapRight' M x) :=
+    (M * N).toLinearMapRight' x = N.toLinearMapRight' (M.toLinearMapRight' x) :=
   (vecMul_vecMul _ M N).symm
 
 @[simp]
+theorem LinearMap.toMatrixRight'_comp [Fintype l] [DecidableEq l] (f : (l → R) →ₗ[R] m → R)
+    (g : (m → R) →ₗ[R] n → R) : (g ∘ₗ f).toMatrixRight' = f.toMatrixRight' * g.toMatrixRight' :=
+  Matrix.toLinearMapRight'.injective <| by simp
+
+@[simp]
 theorem Matrix.toLinearMapRight'_one :
-    Matrix.toLinearMapRight' (1 : Matrix m m R) = LinearMap.id := by
+    (1 : Matrix m m R).toLinearMapRight' = LinearMap.id := by
   ext
   simp
+
+@[simp] theorem LinearMap.toMatrixRight'_id : (@LinearMap.id R (m → R)).toMatrixRight' = 1 :=
+  Matrix.toLinearMapRight'.injective <| by simp
 
 /-- If `M` and `M'` are each other's inverse matrices, they provide an equivalence between `n → A`
 and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
@@ -648,6 +655,9 @@ lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) 
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
+theorem Matrix.toLin_scalar (r : R) : Matrix.toLin v₁ v₁ (scalar n r) = r • LinearMap.id :=
+  (LinearMap.toMatrix v₁ v₁).injective (by simp [toMatrix_id, smul_one_eq_diagonal])
+
 theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M₂) (k : m) (i : n) :
     LinearMap.toMatrix v₁.reindexRange v₂.reindexRange f ⟨v₂ k, Set.mem_range_self k⟩
         ⟨v₁ i, Set.mem_range_self i⟩ =
@@ -997,7 +1007,7 @@ theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
   simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
-    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, map_smul, mul_smul_comm,
+    Basis.smulTower_repr, Finsupp.smul_apply, smul_eq_mul, map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
 theorem smulTower_leftMulMatrix_algebraMap (x : S) :
@@ -1031,17 +1041,10 @@ is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   LinearMap.toMatrixAlgEquiv'
 
-variable (R) in
-/-- A linear equivalence of two modules induces an equivalence of algebras of their
-endomorphisms. -/
-@[simps!] def LinearEquiv.algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
-  __ := e.conjRingEquiv
-  commutes' := fun _ ↦ by ext; change e.restrictScalars R _ = _; simp
-
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/
 def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matrix n n R :=
-  (h.equivFun.algConj R).trans algEquivMatrix'
+  (h.equivFun.conjAlgEquiv R).trans algEquivMatrix'
 
 end
 
@@ -1162,5 +1165,46 @@ def endVecAlgEquivMatrixEnd :
       LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
       LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
     split_ifs <;> rfl
+
+variable {A ι}
+
+/-- A matrix algebra is isomorphic to the opposite of an endomorphism algebra. -/
+def matrixAlgEquivEndVecMulOpposite : Matrix ι ι A ≃ₐ[R] (Module.End A (ι → A))ᵐᵒᵖ :=
+  .trans (.opOp R _) <| .op <| .trans (.symm .mopMatrix) <| .trans
+    (.mapMatrix <| .moduleEndSelf _) <| .symm <| endVecAlgEquivMatrixEnd ..
+
+/-- A matrix ring is isomorphic to the opposite of an endomorphism ring. -/
+def matrixRingEquivEndVecMulOpposite : Matrix ι ι A ≃+* (Module.End A (ι → A))ᵐᵒᵖ :=
+  (matrixAlgEquivEndVecMulOpposite ℕ).toRingEquiv
+
+theorem isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd :
+    IsStablyFiniteRing A ↔ ∀ n, IsDedekindFiniteMonoid (Module.End A (Fin n → A)) := by
+  simp_rw [isStablyFiniteRing_iff, MulEquivClass.isDedekindFiniteMonoid_iff
+    (matrixRingEquivEndVecMulOpposite (ι := Fin _) (A := A)),
+    MulOpposite.isDedekindFiniteMonoid_iff]
+
+instance (ι) [Finite ι] [IsStablyFiniteRing A] : IsStablyFiniteRing (Module.End A (ι → A)) := by
+  have := Fintype.ofFinite ι
+  classical rw [← MulOpposite.isStablyFiniteRing_iff,
+    ← RingEquiv.isStablyFiniteRing_iff (matrixRingEquivEndVecMulOpposite (ι := ι) (A := A))]
+  infer_instance
+
+open Function
+
+theorem isStablyFiniteRing_iff_injective_of_surjective :
+    IsStablyFiniteRing A ↔ ∀ n (f : Module.End A (Fin n → A)), Surjective f → Injective f := by
+  simp_rw [isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd, isDedekindFiniteMonoid_iff]
+  refine ⟨fun h n f surj ↦ ?_, fun h n f g eq ↦ ?_⟩
+  · have ⟨g, eq⟩ := Module.projective_lifting_property _ .id surj
+    exact injective_of_comp_eq_id _ _ (h _ eq)
+  · have surj := surjective_of_comp_eq_id _ _ eq
+    have := (LinearEquiv.ofBijective f ⟨h _ _ surj, surj⟩).symm_comp
+    rwa [← left_inv_eq_right_inv this eq]
+
+/-- `Module.End.injective_of_surjective` is the more general version for finite free `A`-modules
+not necessarily of the form `Fin n → A`, but this version requires less imports. -/
+theorem Module.End.injective_of_surjective_fin [IsStablyFiniteRing A] {n}
+    {f : Module.End A (Fin n → A)} (hf : Surjective f) : Injective f :=
+  isStablyFiniteRing_iff_injective_of_surjective.mp ‹_› n f hf
 
 end

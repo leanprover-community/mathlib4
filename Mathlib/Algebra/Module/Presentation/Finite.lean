@@ -16,7 +16,7 @@ it admits a presentation with finitely many generators and relations.
 
 -/
 
-@[expose] public section
+public section
 
 universe w₀ w₁ v u
 

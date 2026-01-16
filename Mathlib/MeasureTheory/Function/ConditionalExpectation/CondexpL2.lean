@@ -12,8 +12,8 @@ public import Mathlib.MeasureTheory.Function.L2Space
 /-! # Conditional expectation in L2
 
 This file contains one step of the construction of the conditional expectation, which is completed
-in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a description of the
-full process.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
+description of the full process.
 
 We build the conditional expectation of an `L²` function, as an element of `L²`. This is the
 orthogonal projection on the subspace of almost everywhere `m`-measurable functions.

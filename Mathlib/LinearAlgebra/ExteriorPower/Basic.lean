@@ -20,8 +20,9 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file
+  `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
+  `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
@@ -167,7 +168,7 @@ are equal. -/
 @[ext]
 lemma linearMap_ext {f : ⋀[R]^n M →ₗ[R] N} {g : ⋀[R]^n M →ₗ[R] N}
     (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g :=
-  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq )
+  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq)
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`: this is the universal property of the `n`th exterior power of `M`. -/
@@ -271,7 +272,7 @@ noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
-      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
     (by aesop) (by aesop)
 
 @[simp]

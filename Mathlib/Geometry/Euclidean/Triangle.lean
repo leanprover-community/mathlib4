@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -149,7 +149,7 @@ private theorem sin_angle_eq_sin_angle_add_add_angle_add {x y : V} (hx : x ≠ 0
     simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
     ring_nf
 
-/-- In a paralellogram, the two parts of the inner angle add to the inner angle,
+/-- In a parallelogram, the two parts of the inner angle add to the inner angle,
 vector angle form. -/
 theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     angle x y = angle x (x + y) + angle y (x + y) := by
@@ -180,7 +180,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     cases eq_zero_or_eq_zero_of_smul_eq_zero this
     · linarith
     · contradiction
-  obtain rfl : n = 0 := by cutsat
+  obtain rfl : n = 0 := by lia
   simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
@@ -263,6 +263,7 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
@@ -321,6 +322,13 @@ theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠
     neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
   exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
+
+/-- The **Exterior angle theorem**. an exterior angle of a triangle is equal to the sum of the
+measures of the remote interior angles. -/
+theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
+    ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
+  linarith [angle_add_angle_eq_pi_of_angle_eq_pi p₃ h.angle₁₂₃_eq_pi,
+    angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
@@ -450,5 +458,54 @@ theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
     ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by
   rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
   simpa using (angle_lt_iff_dist_lt h).not
+
+/-- The greatest angle of a possibly degenerate triangle is at least `π / 3`. -/
+lemma pi_div_three_le_angle_of_le_of_le {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₂ p₃ p₁ ≤ ∠ p₁ p₂ p₃)
+    (h₃₁₂ : ∠ p₃ p₁ p₂ ≤ ∠ p₁ p₂ p₃) : π / 3 ≤ ∠ p₁ p₂ p₃ := by
+  by_cases h : p₂ = p₁
+  · rw [h, angle_self_left]
+    linarith [Real.pi_pos]
+  · linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The greatest angle of a possibly degenerate triangle is more than `π / 3`, unless all angles
+are equal. -/
+lemma pi_div_three_lt_angle_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₂ p₃ p₁ ≤ ∠ p₁ p₂ p₃)
+    (h₃₁₂ : ∠ p₃ p₁ p₂ ≤ ∠ p₁ p₂ p₃)
+    (hne : ∠ p₁ p₂ p₃ ≠ ∠ p₂ p₃ p₁ ∨ ∠ p₁ p₂ p₃ ≠ ∠ p₃ p₁ p₂ ∨ ∠ p₂ p₃ p₁ ≠ ∠ p₃ p₁ p₂) :
+    π / 3 < ∠ p₁ p₂ p₃ := by
+  by_cases h : p₂ = p₁
+  · rw [h, angle_self_left]
+    linarith [Real.pi_pos]
+  · rcases hne with hne | hne | hne <;>
+      rcases hne.lt_or_gt with hne | hne <;>
+      linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The least angle of a possibly degenerate triangle is at most `π / 3`, unless all three vertices
+are equal. -/
+lemma angle_le_pi_div_three_of_le_of_le {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₁ p₂ p₃ ≤ ∠ p₂ p₃ p₁)
+    (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂) (hnd : p₁ ≠ p₂ ∨ p₁ ≠ p₃ ∨ p₂ ≠ p₃) :
+    ∠ p₁ p₂ p₃ ≤ π / 3 := by
+  by_cases h : p₂ = p₁
+  · subst h
+    simp_all [angle_self_of_ne]
+    linarith [Real.pi_pos]
+  · linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The least angle of a possibly degenerate triangle is less than `π / 3`, unless all angles are
+equal. -/
+lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₁ p₂ p₃ ≤ ∠ p₂ p₃ p₁)
+    (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂)
+    (hne : ∠ p₁ p₂ p₃ ≠ ∠ p₂ p₃ p₁ ∨ ∠ p₁ p₂ p₃ ≠ ∠ p₃ p₁ p₂ ∨ ∠ p₂ p₃ p₁ ≠ ∠ p₃ p₁ p₂) :
+    ∠ p₁ p₂ p₃ < π / 3 := by
+  by_cases h : p₂ = p₁
+  · subst h
+    by_cases h₂₃ : p₂ = p₃
+    · subst h₂₃
+      simp at hne
+    · simp_all [angle_self_of_ne]
+      linarith [Real.pi_pos]
+  · rcases hne with hne | hne | hne <;>
+      rcases hne.lt_or_gt with hne | hne <;>
+      linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
 end EuclideanGeometry

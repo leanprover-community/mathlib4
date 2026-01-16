@@ -20,7 +20,7 @@ This file proves some results on linear functionals on division semirings.
   the range of `f.smulRight x` is the span of the set `{x}`.
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 variable {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]

@@ -290,7 +290,7 @@ theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [←
 
 lemma continuousAt_iff_punctured_nhds [TopologicalSpace β] {f : α → β} {a : α} :
     ContinuousAt f a ↔ Tendsto f (𝓝[≠] a) (𝓝 (f a)) := by
-  simp [ContinuousAt, - pure_sup_nhdsNE, ← pure_sup_nhdsNE a, tendsto_pure_nhds]
+  simp [ContinuousAt, -pure_sup_nhdsNE, ← pure_sup_nhdsNE a, tendsto_pure_nhds]
 
 theorem nhdsWithin_prod [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
@@ -429,10 +429,7 @@ theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h�
     (h₂ : f a = g a) :
     f =ᶠ[𝓝 a] g := by
   filter_upwards [eventually_nhdsWithin_iff.1 h₁]
-  intro x hx
-  by_cases h₂x : x = a
-  · simp [h₂x, h₂]
-  · tauto
+  grind
 
 theorem eventuallyEq_nhdsWithin_of_eqOn {f g : α → β} {s : Set α} {a : α} (h : EqOn f g s) :
     f =ᶠ[𝓝[s] a] g :=
@@ -544,6 +541,9 @@ lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x 
 @[simp]
 lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
   simp [nhdsSetWithin]
+
+theorem mem_nhdsSet {s t : Set α} : s ∈ 𝓝ˢ t ↔ ∃ u ⊆ s, IsOpen u ∧ t ⊆ u := by
+  simp [← nhdsSetWithin_univ, mem_nhdsSetWithin, and_comm, and_assoc]
 
 @[simp]
 lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by

@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 eigenvalue, characteristic polynomial
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

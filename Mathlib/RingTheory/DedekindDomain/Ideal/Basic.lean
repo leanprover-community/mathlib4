@@ -101,7 +101,7 @@ include h
 zero. -/
 noncomputable abbrev commGroupWithZero : CommGroupWithZero (FractionalIdeal A⁰ K) where
   inv_zero := inv_zero' _
-  mul_inv_cancel  := isDedekindDomainInv_iff.mp h
+  mul_inv_cancel := isDedekindDomainInv_iff.mp h
   div_eq_mul_inv I J := by
     obtain rfl | hJ := eq_or_ne J 0
     · simp [inv_zero']
@@ -455,9 +455,8 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wf := by
     have : WellFoundedGT (Ideal A) := inferInstance
-    convert this.wf
-    ext
-    rw [Ideal.dvdNotUnit_iff_lt]
+    convert this.wf using 3
+    exact Ideal.dvdNotUnit_iff_lt
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by

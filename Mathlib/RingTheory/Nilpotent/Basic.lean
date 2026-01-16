@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Lattice
@@ -224,18 +223,14 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
+@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
+and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
-  induction k with
-  | zero =>
-    rw [pow_zero] at hk
-    exact eq_zero_of_zero_eq_one hk.symm x
-  | succ k ih =>
-    obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
-    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ', mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
-    · rfl
-    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
+  have : NoZeroDivisors R := by
+    obtain ⟨m, hm⟩ := exists_ne (0 : M)
+    constructor
+    rintro x y hxy
+    simpa [mul_smul, hm] using congr($hxy • m)
+  infer_instance
