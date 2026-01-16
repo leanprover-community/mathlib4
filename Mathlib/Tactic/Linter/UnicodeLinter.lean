@@ -24,11 +24,8 @@ namespace Mathlib.Linter.TextBased.UnicodeLinter
 E.g., 'a' is "U+0061". -/
 public def printCodepointHex (c : Char) : String :=
   let digits := Nat.toDigits 16 c.val.toNat
-  match digits.length with  -- print at least 4 (could be more) hex characters using leading zeros
-  | 1 => "U+000".append <| String.ofList digits
-  | 2 => "U+00".append <| String.ofList digits
-  | 3 => "U+0".append <| String.ofList digits
-  | _ => "U+".append <| String.ofList digits
+  -- print at least 4 (could be more) hex characters using leading zeros
+  ("U+".append <| "0000".drop digits.length |>.toString).append <| String.ofList digits
 
 /-- Blocklist: If `false`, the character is not allowed in Mathlib. -/
 public def isAllowedCharacter (c : Char) : Bool :=
