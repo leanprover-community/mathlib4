@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Module.HahnBanach
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Star
+import Mathlib.SetTheory.Cardinal.ContinuumHypothesis
 
 /-!
 # A counterexample on Pettis integrability
@@ -455,9 +457,9 @@ along horizontals). Such a set cannot be measurable as it would contradict Fubin
 We need the continuum hypothesis to construct it.
 -/
 
-
-theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
+theorem sierpinski_pathological_family [ContinuumHypothesis] :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
+  have Hcont : #ℝ = ℵ₁ := by rw [← ContinuumHypothesis.continuum_eq_aleph_one, Cardinal.mk_real]
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
   refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
@@ -479,14 +481,14 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
-def spf (Hcont : #ℝ = ℵ₁) (x : ℝ) : Set ℝ :=
-  (sierpinski_pathological_family Hcont).choose x
+def spf [ContinuumHypothesis] (x : ℝ) : Set ℝ :=
+  sierpinski_pathological_family.choose x
 
-theorem countable_compl_spf (Hcont : #ℝ = ℵ₁) (x : ℝ) : (univ \ spf Hcont x).Countable :=
-  (sierpinski_pathological_family Hcont).choose_spec.1 x
+theorem countable_compl_spf [ContinuumHypothesis] (x : ℝ) : (univ \ spf x).Countable :=
+  sierpinski_pathological_family.choose_spec.1 x
 
-theorem countable_spf_mem (Hcont : #ℝ = ℵ₁) (y : ℝ) : {x | y ∈ spf Hcont x}.Countable :=
-  (sierpinski_pathological_family Hcont).choose_spec.2 y
+theorem countable_spf_mem [ContinuumHypothesis] (y : ℝ) : {x | y ∈ spf x}.Countable :=
+  sierpinski_pathological_family.choose_spec.2 y
 
 /-!
 ### A counterexample for the Pettis integral
@@ -505,59 +507,59 @@ which is large (it has countable complement), as in the Sierpinski pathological 
 /-- A family of bounded functions `f_x` from `ℝ` (seen with the discrete topology) to `ℝ` (in fact
 taking values in `{0, 1}`), indexed by a real parameter `x`, corresponding to the characteristic
 functions of the different fibers of the Sierpinski pathological family -/
-def f (Hcont : #ℝ = ℵ₁) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
-  ofNormedAddCommGroupDiscrete (indicator (spf Hcont x) 1) 1 (norm_indicator_le_one _)
+def f [ContinuumHypothesis] (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
+  ofNormedAddCommGroupDiscrete (indicator (spf x) 1) 1 (norm_indicator_le_one _)
 
-theorem apply_f_eq_continuousPart (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
-    (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x = ∅) :
-    φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
+theorem apply_f_eq_continuousPart [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
+    (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf x = ∅) :
+    φ (f x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   set ψ := φ.toBoundedAdditiveMeasure
-  have : φ (f Hcont x) = ψ (spf Hcont x) := rfl
-  have U : univ = spf Hcont x ∪ univ \ spf Hcont x := by simp only [union_univ, union_diff_self]
+  have : φ (f x) = ψ (spf x) := rfl
+  have U : univ = spf x ∪ univ \ spf x := by simp only [union_univ, union_diff_self]
   rw [this, eq_add_parts, discretePart_apply, hx, ψ.empty, zero_add, U,
     ψ.continuousPart.additive _ _ disjoint_sdiff_self_right,
-    ψ.continuousPart_apply_eq_zero_of_countable _ (countable_compl_spf Hcont x), add_zero]
+    ψ.continuousPart_apply_eq_zero_of_countable _ (countable_compl_spf x), add_zero]
 
-theorem countable_ne (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)}.Countable := by
+theorem countable_ne [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f x)}.Countable := by
   have A :
-    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
-      {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x).Nonempty} := by
+    {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f x)} ⊆
+      {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf x).Nonempty} := by
     intro x hx
     simp only [mem_setOf] at *
     contrapose! hx
-    exact apply_f_eq_continuousPart Hcont φ x hx |>.symm
+    exact apply_f_eq_continuousPart φ x hx |>.symm
   have B :
-    {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x).Nonempty} ⊆
-      ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
+    {x | (φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf x).Nonempty} ⊆
+      ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf x} := by
     intro x hx
     dsimp at hx
     simp only [exists_prop, mem_iUnion, mem_setOf_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)
-  exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
+  exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem a
 
-theorem comp_ae_eq_const (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem comp_ae_eq_const [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∀ᵐ x ∂volume.restrict (Icc (0 : ℝ) 1),
-      φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f Hcont x) := by
+      φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f x) := by
   apply ae_restrict_of_ae
-  refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
+  refine measure_mono_null ?_ ((countable_ne φ).measure_zero _)
   intro x
   simp only [imp_self, mem_setOf_eq, mem_compl_iff]
 
-theorem integrable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
+theorem integrable_comp [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+    IntegrableOn (fun x => φ (f x)) (Icc 0 1) := by
   have : IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
       volume := by simp
-  exact Integrable.congr this (comp_ae_eq_const Hcont φ)
+  exact Integrable.congr this (comp_ae_eq_const φ)
 
-theorem integral_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
-  rw [← integral_congr_ae (comp_ae_eq_const Hcont φ)]
+theorem integral_comp [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+    ∫ x in Icc 0 1, φ (f x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
+  rw [← integral_congr_ae (comp_ae_eq_const φ)]
   simp
 
 /-!
-The next few statements show that the function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` takes its
+The next few statements show that the function `f : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` takes its
 values in a complete space, is scalarly measurable, is everywhere bounded by `1`, and still has
 no Pettis integral.
 -/
@@ -566,20 +568,20 @@ no Pettis integral.
 example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` is scalarly measurable. -/
-theorem measurable_comp (Hcont : #ℝ = ℵ₁) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
-    Measurable fun x => φ (f Hcont x) := by
+theorem measurable_comp [ContinuumHypothesis] (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+    Measurable fun x => φ (f x) := by
   have : Measurable fun _ : ℝ => φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
   refine this.measurable_of_countable_ne ?_
-  exact countable_ne Hcont φ
+  exact countable_ne φ
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` is uniformly bounded by `1` in norm. -/
-theorem norm_bound (Hcont : #ℝ = ℵ₁) (x : ℝ) : ‖f Hcont x‖ ≤ 1 :=
+theorem norm_bound [ContinuumHypothesis] (x : ℝ) : ‖f x‖ ≤ 1 :=
   norm_ofNormedAddCommGroup_le _ zero_le_one (norm_indicator_le_one _)
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` has no Pettis integral. -/
-theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
+theorem no_pettis_integral [ContinuumHypothesis] :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,
-        ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f Hcont x) = φ g := by
+        ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f x) = φ g := by
   rintro ⟨g, h⟩
   simp only [integral_comp] at h
   have : g = 0 := by
