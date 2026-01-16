@@ -50,7 +50,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 ## Future work
 * TODO: coimages, and abelian categories.
-* TODO: connect this with existing working in the group theory and ring theory libraries.
+* TODO: connect this with existing work in the group theory and ring theory libraries.
 
 -/
 
@@ -526,7 +526,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
     { I := image f'
       m := image.ι f'
       e := factorThruImage f'
-      fac := by rw [h]; simp only [image.fac]}
+      fac := by rw [h]; simp only [image.fac] }
 
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
@@ -641,7 +641,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
             ((MonoFactorisation.ofCompIso F').m) := by
               simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
                 MonoFactorisation.ofCompIso_m]
-          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] }}
+          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] } }
 
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
 def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
@@ -984,7 +984,7 @@ factorisation.
 -/
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
-  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e}
+  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e }
   IsImage.isoExt F.toMonoIsImage <| Image.isImage f
 
 @[simp]

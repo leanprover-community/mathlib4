@@ -272,7 +272,6 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   have : 0 ≤ 1 - r := sub_nonneg.2 (le_of_abs_le hr)
   refine ⟨(1 + r)/2, (1 - r)/2, by positivity, by positivity, by ring, ?_⟩
   rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
-  apply congrFun (congrArg HSMul.hSMul _) y
   ring_nf
 
 @[simp]
