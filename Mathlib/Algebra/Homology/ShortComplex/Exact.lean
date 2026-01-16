@@ -829,7 +829,7 @@ section Abelian
 
 variable [Abelian C]
 
-section
+/-section
 
 variable {X Y : C} (f : X ⟶ Y)
 
@@ -857,7 +857,7 @@ lemma kernelSequence_exact : (kernelSequence f).Exact :=
 lemma cokernelSequence_exact : (cokernelSequence f).Exact :=
   exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
-end
+end-/
 
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`

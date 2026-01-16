@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.ExactSequenceFour
+public import Mathlib.CategoryTheory.Abelian.Exact
 public import Batteries.Tactic.Lint
 
 /-!
@@ -140,12 +141,12 @@ instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).g := by
 lemma kernelSequenceCycles_exact :
     (X.kernelSequenceCycles n₀ n₁ hn₁ f g).Exact := by
   subst hn₁
-  exact ShortComplex.kernelSequence_exact _
+  apply ShortComplex.exact_kernel
 
 lemma cokernelSequenceOpcycles_exact :
     (X.cokernelSequenceOpcycles n₀ n₁ hn₁ f g).Exact := by
   obtain rfl : n₀ = n₁ - 1 := by lia
-  exact ShortComplex.cokernelSequence_exact _
+  apply ShortComplex.exact_cokernel
 
 section
 
