@@ -51,26 +51,26 @@ open Matrix
 
 /-- `toMatrix` returns a matrix containing ones and zeros. `f.toMatrix i j` is `1` if
   `f i = some j` and `0` otherwise -/
-def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix n m α :=
-  of fun i j => if i ∈ f j then (1 : α) else 0
+def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
+  of fun i j => if j ∈ f i then (1 : α) else 0
 
 -- TODO: set as an equation lemma for `toMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
-    toMatrix f i j = if i ∈ f j then (1 : α) else 0 :=
+    toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
   rfl
 
-theorem mul_toMatrix_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f : n ≃. m) (i j)
-    (M : Matrix l m α) : (M * f.toMatrix :) i j = Option.casesOn (f j) 0 fun fj => M i fj := by
+theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f : l ≃. m) (i j)
+    (M : Matrix m n α) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
-  rcases h : f j with - | fi
+  rcases h : f i with - | fi
   · simp
   · rw [Finset.sum_eq_single fi] <;> simp +contextual [eq_comm]
 
-theorem toMatrix_mul_apply [Fintype m] [NonAssocSemiring α] [DecidableEq l] (M : Matrix m n α)
-    (f : m ≃. l) (i j) : (f.toMatrix * M :) i j = Option.casesOn (f.symm i) 0 fun fi => M fi j := by
+theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α)
+    (f : m ≃. n) (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
   dsimp [Matrix.mul_apply, toMatrix_apply]
-  rcases h : f.symm i with - | fj
+  rcases h : f.symm j with - | fj
   · simp [h, ← f.eq_some_iff]
   · rw [Finset.sum_eq_single fj]
     · simp [h, ← f.eq_some_iff]
@@ -79,7 +79,7 @@ theorem toMatrix_mul_apply [Fintype m] [NonAssocSemiring α] [DecidableEq l] (M 
     · simp
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
-    (f.symm.toMatrix : Matrix m n α) = f.toMatrixᵀ := by
+    (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
   ext
   simp only [transpose, mem_iff_mem f, toMatrix_apply]
   congr
@@ -88,53 +88,53 @@ theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m 
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
-  simp [toMatrix_apply, one_apply, eq_comm]
+  simp [toMatrix_apply, one_apply]
 
 @[simp]
-theorem transpose_toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (j) :
-    f.toPEquiv.toMatrixᵀ j = Pi.single (f j) (1 : α) := by
+theorem toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :
+    f.toPEquiv.toMatrix i = Pi.single (f i) (1 : α) := by
   ext
   simp [toMatrix_apply, Pi.single_apply, eq_comm]
 
 @[simp]
-theorem toMatrix_toPEquiv_apply
-    [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :
-    f.toPEquiv.toMatrix i = Pi.single (f.symm i) (1 : α) := by
+theorem transpose_toMatrix_toPEquiv_apply
+    [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (j) :
+    f.toPEquiv.toMatrixᵀ j = Pi.single (f.symm j) (1 : α) := by
   ext
-  simp [toMatrix_apply, Pi.single_apply, Equiv.eq_symm_apply]
+  simp [toMatrix_apply, Pi.single_apply, eq_comm, ← Equiv.apply_eq_iff_eq_symm_apply]
 
-theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq m]
-    [NonAssocSemiring α] (M : Matrix l m α) (f : n ≃ m) :
-    (M * f.toPEquiv.toMatrix) = M.submatrix id f := by
+theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq m]
+    [NonAssocSemiring α] (f : l ≃ m) (M : Matrix m n α) :
+    f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
-  rw [mul_toMatrix_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
+  rw [toMatrix_mul_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 
-theorem toMatrix_toPEquiv_mul [Fintype m] [DecidableEq l]
-    [NonAssocSemiring α] (f : m ≃ l) (M : Matrix m n α) :
-    f.toPEquiv.toMatrix * M = M.submatrix f.symm id :=
+theorem mul_toMatrix_toPEquiv [Fintype m] [DecidableEq n]
+    [NonAssocSemiring α] (M : Matrix l m α) (f : m ≃ n) :
+    (M * f.toPEquiv.toMatrix) = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
-    rw [PEquiv.toMatrix_mul_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
+    rw [PEquiv.mul_toMatrix_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
       Matrix.submatrix_apply, id]
 
-lemma vecMul_toMatrix_toPEquiv [DecidableEq m] [Fintype m]
-    [NonAssocSemiring α] (σ : n ≃ m) (a : m → α) :
-    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ := by
+lemma toMatrix_toPEquiv_mulVec [DecidableEq n] [Fintype n]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : n → α) :
+    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ := by
   ext j
-  simp [toMatrix, vecMul, dotProduct]
+  simp [toMatrix, mulVec, dotProduct]
 
-lemma toMatrix_toPEquiv_mulVec [DecidableEq m] [Fintype n]
-    [NonAssocSemiring α] (σ : n ≃ m) (a : n → α) :
-    σ.toPEquiv.toMatrix *ᵥ a = a ∘ σ.symm := by
+lemma vecMul_toMatrix_toPEquiv [DecidableEq n] [Fintype m]
+    [NonAssocSemiring α] (σ : m ≃ n) (a : m → α) :
+    a ᵥ* σ.toPEquiv.toMatrix = a ∘ σ.symm := by
   classical
   ext j
-  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, mulVec, dotProduct]
+  simp [toMatrix, σ.apply_eq_iff_eq_symm_apply, vecMul, dotProduct]
 
-theorem toMatrix_trans [Fintype m] [DecidableEq l] [DecidableEq m] [NonAssocSemiring α] (f : m ≃. l)
-    (g : n ≃. m) : ((g.trans f).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
+theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [NonAssocSemiring α] (f : l ≃. m)
+    (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix * g.toMatrix := by
   ext i j
   rw [toMatrix_mul_apply]
   dsimp [toMatrix, PEquiv.trans]
-  cases g j <;> simp
+  cases f i <;> simp
 
 @[simp]
 theorem toMatrix_bot [DecidableEq n] [Zero α] [One α] :
