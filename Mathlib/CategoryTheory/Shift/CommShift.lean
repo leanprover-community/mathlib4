@@ -543,7 +543,7 @@ noncomputable def iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D 
       H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_hom_app (a : A) (X : C) :
     G.map ((iso e a).hom.app X) = e.hom.app (X⟦a⟧) ≫
       (H.commShiftIso a).hom.app X ≫ (e.inv.app X)⟦a⟧' ≫
