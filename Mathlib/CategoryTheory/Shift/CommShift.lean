@@ -126,17 +126,15 @@ lemma isoAdd'_assoc {a b c ab bc abc : A}
     (ec : shiftFunctor C c ⋙ F ≅ F ⋙ shiftFunctor D c)
     (hab : a + b = ab) (hbc : b + c = bc) (h : a + b + c = abc) :
     isoAdd' (show ab + c = abc by rwa [← hab]) (isoAdd' hab ea eb) ec =
-      isoAdd' (by rwa [← hbc, ← add_assoc]) ea (isoAdd' hbc eb ec) := by
+      isoAdd' (show a + bc = abc by grind) ea (isoAdd' hbc eb ec) := by
   ext X
-  have := NatTrans.naturality_2 ec.hom
-    ((shiftFunctorAdd' C a b ab hab).app X)
+  have := NatTrans.naturality_2 ec.hom ((shiftFunctorAdd' C a b ab hab).app X)
   dsimp at this ⊢
   simp only [isoAdd'_hom_app, Category.assoc]
   rw [← NatTrans.naturality_assoc, ← this, Category.assoc, ← F.map_comp_assoc,
     shiftFunctorAdd'_assoc_hom_app a b c ab bc abc hab hbc h,
     Functor.map_comp_assoc, Category.assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
+  simp_rw [← Functor.map_comp_assoc]
   simp [shiftFunctorAdd'_assoc_inv_app a b c ab bc abc hab hbc h]
 
 end CommShift
@@ -292,6 +290,8 @@ structure CommShiftCore (a : A) : Prop where
     Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 
 namespace CommShiftCore
+
+attribute [reassoc] shift_comm
 
 section
 
@@ -501,13 +501,14 @@ def ofHasShiftOfFullyFaithful :
 end CommShift
 
 lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
-    letI := hF.hasShift s i;
-    letI := CommShift.ofHasShiftOfFullyFaithful hF s i;
+    letI := hF.hasShift s i
+    letI := CommShift.ofHasShiftOfFullyFaithful hF s i
     F.commShiftIso a = i a := by
   rfl
 
 end hasShiftOfFullyFaithful
 
+@[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
@@ -522,8 +523,6 @@ lemma map_shiftFunctorComm
   dsimp
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
     ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
-  dsimp
-  rw [Functor.map_comp]
   simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
     ← Functor.map_comp_assoc]
 
@@ -540,12 +539,12 @@ variable {A}
 
 /-- Auxiliary definition for `Functor.CommShift.ofComp`. -/
 noncomputable def iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
-  ((whiskeringRight C D E).obj G).preimageIso (Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ e ≪≫
-    H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
+  ((whiskeringRight C D E).obj G).preimageIso
+    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫
+      H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_hom_app (a : A) (X : C) :
     G.map ((iso e a).hom.app X) = e.hom.app (X⟦a⟧) ≫
       (H.commShiftIso a).hom.app X ≫ (e.inv.app X)⟦a⟧' ≫
@@ -554,7 +553,7 @@ lemma map_iso_hom_app (a : A) (X : C) :
     Functor.map_preimage _ _
   simpa using congr_app h X
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_inv_app (a : A) (X : C) :
     G.map ((iso e a).inv.app X) =
       (G.commShiftIso a).hom.app (F.obj X) ≫ (e.hom.app X)⟦a⟧' ≫
@@ -596,7 +595,6 @@ lemma ofComp_compatibility :
     ← Functor.map_comp]
 
 end CommShift
-
 
 end Functor
 
