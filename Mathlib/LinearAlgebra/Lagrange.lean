@@ -449,6 +449,71 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
+theorem interpolate_eq_sum : interpolate s v r =
+    ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) * (∏ j ∈ s.erase i, (X - C (v j))) := by
+  simp_rw [interpolate_apply]
+  unfold Lagrange.basis basisDivisor
+  congr! 1 with i hi
+  rw [division_def, C_mul, prod_mul_distrib, mul_assoc, ← prod_inv_distrib, map_prod]
+
+theorem iterate_derivative_interpolate
+    (hvs : Set.InjOn v s) {k : ℕ} (hk : k < #s) :
+    derivative^[k] (interpolate s v r) = k.factorial *
+      ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, (v i - v j)) *
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
+      ∏ a ∈ t, (X - C (v a)) := by
+  classical
+  simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
+    ← mul_assoc, mul_comm (a := (k.factorial : F[X])), mul_assoc]
+  congr! 2 with i hi
+  have hvs' := hvs.mono (coe_subset.mpr (erase_subset i s))
+  calc
+    derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
+    derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by
+      rw [Finset.prod_image hvs']
+    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
+      ∏ va ∈ t, (X - C va) := by
+      have hcard : #((s.erase i).image v) = #s - 1 := by
+        rw [card_image_of_injOn hvs', card_erase_of_mem hi]
+      rw [iterate_derivative_prod_X_sub_C (by omega)]
+      congr! 3
+      omega
+    _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
+      ∏ a ∈ t, (X - C (v a)) := by
+      rw [powersetCard_eq_filter, powerset_image, sum_nbij (fun (t : Finset ι) => t.image v)]
+      case hi =>
+        intro a ha
+        rw [mem_powersetCard] at ha
+        rw [mem_filter, mem_image]
+        refine ⟨⟨a, by simp [ha.1]⟩, ?_⟩
+        rw [card_image_of_injOn (hvs'.mono (by grind))]
+        exact ha.2
+      case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (by grind)
+      case i_surj =>
+        intro t ht
+        rw [mem_coe, mem_filter, mem_image] at ht
+        obtain ⟨a, ha⟩ := ht.1
+        simp_rw [Set.mem_image, mem_coe, mem_powersetCard]
+        refine ⟨a, ⟨⟨mem_powerset.mp ha.1, ?_⟩, ha.2⟩⟩
+        rw [← ht.2, ← ha.2, card_image_of_injOn (hvs'.mono (by grind))]
+      case h =>
+        intro a ha
+        convert (prod_image (hvs'.mono (coe_subset.mpr (mem_powersetCard.mp ha).1))).symm
+        rfl
+
+theorem eval_iterate_derivative_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s)
+    {k : ℕ} (hk : k < #s) (x : F) :
+    (derivative^[k] P).eval x = k.factorial *
+      ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, (v i - v j)) *
+      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
+      ∏ a ∈ t, (x - v a) := by
+  rw (occs := [1]) [eq_interpolate hvs hP]
+  rw [iterate_derivative_interpolate _ hvs hk, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul,
+    eval_finset_sum]
+  congr! 2 with i hi
+  simp_rw [eval_C_mul, eval_finset_sum, eval_prod, eval_sub, eval_X, eval_C]
+
 @[deprecated eq_interpolate (since := "2026-01-14")]
 theorem interpolate_poly_eq_self
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
