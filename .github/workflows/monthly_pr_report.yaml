@@ -31,7 +31,7 @@ jobs:
           mth="$(date -d "${yrMth}-01" '+%B')"
           printf $'Date: %s, month: %s\n' "${yrMth}" "${mth}"
           PR="${{ github.event.pull_request.number }}"
-          title="### ${mth} in Mathlib summary"
+          title="### ${mth} $(date +%Y) in Mathlib summary"
 
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
