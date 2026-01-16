@@ -37,23 +37,6 @@ open scoped symmDiff Topology NNReal
 variable {α : Type*} [MeasurableSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 [CompleteSpace E]
 
-lemma Set.union_symmDiff_subset {α : Type*} (a b c : Set α) : (a ∪ b) ∆ c ⊆ a ∆ c ∪ b ∆ c := by
-  intro x hx
-  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
-  grind
-
-lemma Set.symmDiff_union_subset {α : Type*} (a b c : Set α) : a ∆ (b ∪ c) ⊆ a ∆ b ∪ a ∆ c := by
-  intro x hx
-  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
-  grind
-
-lemma Set.union_symmDiff_union_subset {α : Type*} (a b c d : Set α) :
-    (a ∪ b) ∆ (c ∪ d) ⊆ a ∆ c ∪ b ∆ d := by
-  intro x hx
-  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
-  grind
-
-
 namespace MeasureTheory
 
 set_option linter.unusedVariables false in
@@ -111,23 +94,6 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
         simp [symmDiff]
       _ ≤ μ x + ε := by
         gcongr
-
-lemma _root_.Dense.lipschitzWith_extend {α β : Type*}
-    [PseudoEMetricSpace α] [MetricSpace β] [CompleteSpace β]
-    {s : Set α} (hs : Dense s) {f : s → β} {K : ℝ≥0} (hf : LipschitzWith K f) :
-    LipschitzWith K (hs.extend f) := by
-  have : IsClosed {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
-    have : Continuous (hs.extend f) := (hs.uniformContinuous_extend hf.uniformContinuous).continuous
-    apply isClosed_le (by fun_prop)
-    exact (ENNReal.continuous_const_mul (by simp)).comp (by fun_prop)
-  have : Dense {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
-    apply (hs.prod hs).mono
-    rintro ⟨x, y⟩ ⟨hx, hy⟩
-    have Ax : hs.extend f x = f ⟨x, hx⟩ := hs.extend_eq hf.continuous ⟨x, hx⟩
-    have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
-    simp only [Set.mem_setOf_eq, Ax, Ay]
-    exact hf ⟨x, hx⟩ ⟨y, hy⟩
-  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this
 
 open scoped ENNReal
 
@@ -191,8 +157,8 @@ lemma exists_extension (C : Set (Set α)) (hC : ∀ s ∈ C, MeasurableSet s) (m
       contrapose! this
       exact ⟨‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - (m₁ s + m₁ t)‖ₑ, this.bot_lt, le_of_eq (by abel_nf)⟩
     intro ε εpos
-    obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ 16 * δ ≤ ε := by
-      refine ⟨ε / 16, (ENNReal.div_pos εpos.ne' (by simp)), le_of_eq ?_⟩
+    obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ 8 * δ = ε := by
+      refine ⟨ε / 8, (ENNReal.div_pos εpos.ne' (by simp)), ?_⟩
       exact ENNReal.mul_div_cancel (by simp) (by simp)
     obtain ⟨s', s'C, hs'⟩ : ∃ s' ∈ C, μ (s' ∆ s) < δ := h'C _ _ s.2 δpos
     obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t' ∆ t) < δ := h'C _ _ t.2 δpos
@@ -241,6 +207,19 @@ lemma exists_extension (C : Set (Set α)) (hC : ∀ s ∈ C, MeasurableSet s) (m
       _ ≤ μ (s'' ∆ s) + μ (t' ∆ t) := measure_union_le _ _
       _ < 3 * δ + δ := by gcongr
       _ = 4 * δ := by ring
+    calc ‖m₁ (⟨s ∪ t, s.2.union t.2⟩) - m₁ s - m₁ t‖ₑ
+    _ = ‖(m (s'' ∪ t') - m s'' - m t') + (m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t'))
+          + (m s'' - m₁ s) + (m t' - m₁ t)‖ₑ := by abel_nf
+    _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ
+          + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := enorm_add₄_le
+    _ = ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := by
+      rw [h'm _ s''C _ t'C Set.disjoint_sdiff_left]
+      simp
+    _ < 4 * δ + 3 * δ + δ := by
+      gcongr
+      rwa [enorm_sub_rev]
+    _ = 8 * δ := by ring
+    _ = ε := hδ
 
 
 

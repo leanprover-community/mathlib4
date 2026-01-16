@@ -17,7 +17,7 @@ assert_not_exists RelIso
 namespace Set
 
 universe u
-variable {α : Type u} {a : α} {s t u : Set α}
+variable {α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
@@ -49,5 +49,20 @@ theorem subset_symmDiff_union_symmDiff_left (h : Disjoint s t) : u ⊆ s ∆ u �
 
 theorem subset_symmDiff_union_symmDiff_right (h : Disjoint t u) : s ⊆ s ∆ t ∪ s ∆ u :=
   h.le_symmDiff_sup_symmDiff_right
+
+lemma union_symmDiff_subset : (s ∪ t) ∆ u ⊆ s ∆ u ∪ t ∆ u := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
+
+lemma symmDiff_union_subset : s ∆ (t ∪ u) ⊆ s ∆ t ∪ s ∆ u := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
+
+lemma union_symmDiff_union_subset : (s ∪ t) ∆ (u ∪ v) ⊆ s ∆ u ∪ t ∆ v := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
 
 end Set
