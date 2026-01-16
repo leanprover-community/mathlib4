@@ -81,16 +81,21 @@ end MatrixModCat
 
 universe w
 
+lemma MatrixModCat.toModuleCat_isScalarTower (M : ModuleCat (Matrix ι ι R)) :
+    letI := Module.compHom M (Matrix.scalar (α := R) ι)
+    IsScalarTower R (Matrix ι ι R) M :=
+  letI := Module.compHom M (Matrix.scalar (α := R) ι)
+  { smul_assoc r m x := show _ = Matrix.scalar ι r • (m • x) by
+      rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul]}
+
 /-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
   induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
 @[simps]
 def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
-  haveI (M : ModuleCat (Matrix ι ι R)) : IsScalarTower R (Matrix ι ι R) M :=
-    { smul_assoc r m x := show _ = Matrix.scalar ι r • (m • x) by
-        rw [← mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+  haveI := MatrixModCat.toModuleCat_isScalarTower
   { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R M i)
-    map {M N} f := ModuleCat.ofHom <| fromMatrixLinear i f.hom
+    map f := ModuleCat.ofHom <| fromMatrixLinear i f.hom
     map_id _ := rfl
     map_comp _ _ := rfl }
 
@@ -130,18 +135,14 @@ def MatrixModCat.unitIso (i : ι) :
 /-- The linear equiv induced by the equality `toMatrixModCat (toModuleCat M) = Mⁿ` -/
 def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι) :
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI : IsScalarTower R (Matrix ι ι R) M :=
-    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
-        rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+    haveI := MatrixModCat.toModuleCat_isScalarTower
     M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
   toFun m i := ⟨single j i (1 : R) • m, single j i (1 : R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
   map_add' _ _ := by simpa using funext fun _ ↦ by rfl
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI : IsScalarTower R (Matrix ι ι R) M :=
-    { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
-        rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
+    haveI := MatrixModCat.toModuleCat_isScalarTower R M
     simp only [← SemigroupAction.mul_smul, RingHom.id_apply, Module.smul_apply,
       AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
