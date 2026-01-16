@@ -127,6 +127,17 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
+theorem emultiplicity_eq_zero_of_ne {R : Type*} [CancelCommMonoidWithZero R]
+    [UniqueFactorizationMonoid R] [Subsingleton Rˣ] {a b : R}
+    (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b) (hb₀ : b ≠ 0) :
+    emultiplicity a b = 0 := by
+  classical
+  rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
+    Multiset.count_eq_zero, mem_normalizedFactors_iff hb₀, not_and]
+  intro ha_prime h_le
+  have hb_prime := ((Irreducible.dvd_irreducible_iff_associated ha hb).1 h_le).prime_iff.1 ha_prime
+  exact h <| (prime_dvd_prime_iff_eq ha_prime hb_prime).1 h_le
+
 end multiplicity
 
 end UniqueFactorizationMonoid

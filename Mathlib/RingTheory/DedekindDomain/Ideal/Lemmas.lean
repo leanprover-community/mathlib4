@@ -105,6 +105,10 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
     hp.elim (fun h => h.symm ▸ Ideal.isPrime_bot) Ideal.isPrime_of_prime⟩
 
+theorem Ideal.isPrime_of_irreducible {R : Type*} [CommRing R]
+    [IsDedekindDomain R] {I : Ideal R} (hI : Irreducible I) : I.IsPrime := by
+  exact (prime_iff_isPrime hI.ne_zero).1 hI.prime
+
 @[simp]
 theorem Ideal.prime_span_singleton_iff {a : A} : Prime (Ideal.span {a}) ↔ Prime a := by
   rcases eq_or_ne a 0 with rfl | ha
