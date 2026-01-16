@@ -380,14 +380,13 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
       -- For each line in `changed`,
       changed := Array.ofFn fun (lineIdx : Fin changed.size) ↦
         -- check if any exception applies:
-        if (new_errors.filter fun (e, idx) ↦
-            (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
-            ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
-            ).isEmpty
-          then
-            c[lineIdx]! -- no exception applies. Assign linter's suggestion.
-          else
-            changed[lineIdx]! -- An least one exception applies. Ignore linter's suggested line.
+        if new_errors.any fun (e, idx) ↦
+          (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
+          ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
+        then
+          c[lineIdx]! -- no exception applies. Assign linter's suggestion.
+        else
+          changed[lineIdx]! -- An least one exception applies. Ignore linter's suggested line.
       -- Note: to keep logic simple, changed lines where an exception applies are left alone,
       --   even if there are other suggested changes where no exception applies.
 
