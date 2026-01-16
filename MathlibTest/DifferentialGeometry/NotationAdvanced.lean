@@ -331,6 +331,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
         NontriviallyNormedField (E'' →SL[id'] E''')
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `E'' →SL[id'] E'''` among local instances.
 -/
 #guard_msgs in
 #check MDiff f
@@ -528,6 +531,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
         NontriviallyNormedField ↑(Set.Icc x y)
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `↑(Set.Icc x y)` among local instances.
 -/
 #guard_msgs in
 #check MDiffAt g
@@ -633,30 +639,6 @@ variable {g : ℍ → M} in
 #check MDiffAt k y
 
 end UpperHalfPlane
-
-section Circle
-
--- Make a new real manifold N with model J.
--- TODO: change this line to modify M and E instead (thus testing if everything
--- still works in the presence of two instances over different fields).
-variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
-  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
-
-variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circle}
-
-/-- info: ContMDiff (𝓡 1) J 2 g : Prop -/
-#guard_msgs in
-#check CMDiff 2 g
-
-/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡 1) h : E'' → Prop -/
-#guard_msgs in
-#check MDiffAt h
-
-/-- info: MDifferentiableAt (𝓡 1) 𝓘(ℝ, ℝ) k y : Prop -/
-#guard_msgs in
-#check MDiffAt k y
-
-end Circle
 
 section units
 
