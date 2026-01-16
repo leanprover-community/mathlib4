@@ -23,6 +23,7 @@ public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.NumberTheory.RamificationInertia.Valuation
 
 /-!
 # Finite places of number fields
@@ -89,9 +90,9 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       ZeroMemClass.coe_zero, Subtype.forall, Valuation.mem_valuationSubring_iff, not_forall,
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
-    use π
+    use (WithVal.equiv (v.valuation K)).symm π
     simp [hπ, ← exp_zero, -exp_neg,
-          ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
+      ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
 
@@ -346,16 +347,16 @@ end FinitePlace
 
 end NumberField
 
-open UniqueFactorizationMonoid in
-theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
-    [IsDedekindDomain R] {a b : Ideal R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b)
-    (h_bot : b ≠ ⊥) : emultiplicity a b = 0 := by
-  classical
-  rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
-    Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff h_bot, not_and]
-  intro _ h_le
-  exact h ((((Ideal.prime_iff_isPrime hb.ne_zero).1 hb.prime).isMaximal hb.ne_zero).eq_of_le
-    IsPrime.ne_top' h_le).symm
+-- open UniqueFactorizationMonoid in
+-- theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
+--     [IsDedekindDomain R] {a b : Ideal R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b)
+--     (h_bot : b ≠ ⊥) : emultiplicity a b = 0 := by
+--   classical
+--   rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
+--     Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff h_bot, not_and]
+--   intro _ h_le
+--   exact h ((((Ideal.prime_iff_isPrime hb.ne_zero).1 hb.prime).isMaximal hb.ne_zero).eq_of_le
+--     IsPrime.ne_top' h_le).symm
 
 namespace IsDedekindDomain
 
@@ -364,105 +365,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Fi
     [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
 
-variable {A B} in
-open UniqueFactorizationMonoid Ideal.IsDedekindDomain in
-theorem emultiplicity_map_right_eq
-    (hAB : Function.Injective (algebraMap A B))
-    {v : Ideal A} {w : Ideal B} {I : Ideal A} (h : I ≠ ⊥)
-    (hv : Irreducible v) (hw : Irreducible w) (hw_ne_bot : w ≠ ⊥)
-    [w.LiesOver v] :
-    emultiplicity w (I.map (algebraMap A B)) =
-      v.ramificationIdx (algebraMap A B) w * emultiplicity v I := by
-  classical
-  induction I using induction_on_prime with
-  | h₁ => aesop
-  | h₂ I hI =>
-    obtain rfl : I = ⊤ := by simpa using hI
-    simp_rw [Ideal.map_top, emultiplicity_eq_count_normalizedFactors hw top_ne_bot,
-      emultiplicity_eq_count_normalizedFactors hv h, ← Ideal.one_eq_top, normalizedFactors_one]
-    simp
-  | h₃ I p hI hp IH =>
-    simp only [Ideal.map_mul]
-    have hp_bot' := (Ideal.map_eq_bot_iff_of_injective hAB).not.mpr hp.ne_zero
-    rw [emultiplicity_mul hw.prime, emultiplicity_mul hv.prime, IH hI, mul_add]
-    congr
-    by_cases hvp : v = p
-    · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self, mul_one,
-        ramificationIdx_eq_normalizedFactors_count hp_bot' ((Ideal.prime_iff_isPrime hw_ne_bot).1
-          hw.prime) hw_ne_bot, emultiplicity_eq_count_normalizedFactors hw hp_bot']
-    · have h₀ := emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero
-      rw [h₀, mul_zero, emultiplicity_eq_count_normalizedFactors hw hp_bot', normalize_eq,
-        Nat.cast_eq_zero, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot', not_and]
-      intro _ H
-      rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at H
-      exact hvp ((((Ideal.prime_iff_isPrime hp.ne_zero).1 hp).isMaximal hp.ne_zero).eq_of_le
-        (fun h ↦ by simp [h, emultiplicity] at h₀) H).symm
-
 namespace HeightOneSpectrum
-
-lemma intValuation_eq_coe_neg_multiplicity {A : Type*} [CommRing A] [IsDedekindDomain A]
-    (v : HeightOneSpectrum A) {a : A} (hnz : a ≠ 0) :
-    v.intValuation a = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {a}) : ℤ)) := by
-  classical
-  rw [intValuation_def, if_neg hnz, exp_inj, neg_inj, Nat.cast_inj]
-  refine (multiplicity_eq_of_emultiplicity_eq_some ?_).symm
-  rw [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible (by simpa),
-    count_associates_factors_eq (by simpa) v.isPrime v.ne_bot, normalize_eq v.asIdeal]
-
-lemma intValuation_comap [NoZeroSMulDivisors A B] (hAB : Function.Injective (algebraMap A B))
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) (x : A) [w.asIdeal.LiesOver v.asIdeal] :
-    v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
-      w.intValuation (algebraMap A B x) := by
-  rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  rw [intValuation_eq_coe_neg_multiplicity v hx, intValuation_eq_coe_neg_multiplicity w (by simpa),
-    ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
-    Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
-  refine multiplicity_eq_of_emultiplicity_eq_some ?_ |>.symm
-  rw [emultiplicity_map_right_eq hAB (by simp [hx]) v.irreducible w.irreducible w.ne_bot,
-    Nat.cast_mul]
-  congr
-  exact (FiniteMultiplicity.of_prime_left v.prime (by simp [hx])).emultiplicity_eq_multiplicity
-
-theorem _root_.WithVal.algebraMap_apply {K Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    [Field K] {A : Type*} [CommSemiring A] [Algebra A K] (v : Valuation K Γ₀) (x : A) :
-    algebraMap A (WithVal v) x = algebraMap A K x := rfl
-
-theorem _root_.WithVal.algebraMap_apply' {K Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    [Field K] {A : Type*} [Field A] [Algebra K A] (v : Valuation K Γ₀) (x : K) :
-    algebraMap (WithVal v) A x = algebraMap K A x := rfl
-
-variable {A K B} in
-open scoped algebraMap in
-lemma valuation_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
-    [w.asIdeal.LiesOver v.asIdeal] (x : WithVal (v.valuation K)) :
-    v.valuation K x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
-      w.valuation L (algebraMap K L x) := by
-  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-  simp [WithVal.algebraMap_apply, valuation_of_algebraMap, div_pow,
-    ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L,
-    intValuation_comap A B (algebraMap_injective_of_field_isFractionRing A B K L) v w]
-
-variable {A K B L v w} in
-theorem uniformContinuous_algebraMap [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    [w.asIdeal.LiesOver v.asIdeal] :
-    UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
-  refine uniformContinuous_of_continuousAt_zero _ ?_
-  rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _)]
-  intro γ _
-  use WithZero.expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
-  simp only [adicValued_apply', coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
-  intro x hx
-  change (w.valuation L (algebraMap K L x)) < γ
-  rw [← valuation_liesOver L]
-  rcases eq_or_ne x 0 with rfl | hx₀
-  · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
-  · rw [← WithZero.log_lt_log (by simp_all) (by simp)] at hx ⊢
-    simp_rw [log_exp, log_pow, Int.nsmul_eq_mul] at hx ⊢
-    rw [mul_comm]
-    exact Int.mul_lt_of_lt_ediv
-      (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
 -- noncomputable
 -- instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
@@ -473,7 +376,7 @@ theorem uniformContinuous_algebraMap [IsFractionRing B L] [NoZeroSMulDivisors A 
 --     ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) where
 --   continuous_smul := (UniformSpace.Completion.continuous_map.comp (by fun_prop)).mul (by fun_prop)
 
-open WithZeroTopology UniformSpace.Completion in
+open WithZeroTopology UniformSpace.Completion IsDedekindDomain.HeightOneSpectrum in
 theorem valued_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal]
     [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
@@ -489,12 +392,13 @@ theorem valued_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal
     have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
     rw [algebraMap_def] at this
     rw [algebraMap_def] at this
-    rw [valuedAdicCompletion_eq_valuation']
-    simp at this
+    rw [Valued.valuedCompletion_apply]
+    rw [adicValued_apply']
+    rw [Algebra.algebraMap_self, RingHom.id_apply] at this
     rw [← this]
-    rw [valuedAdicCompletion_eq_valuation']
+    rw [Valued.valuedCompletion_apply]
     rw [valuation_liesOver L]
-    rw [WithVal.algebraMap_apply, WithVal.algebraMap_apply']
+    simp [WithVal.algebraMap_apply, WithVal.algebraMap_apply']
 
 variable {B} in
 def under [Algebra.IsIntegral A B] : HeightOneSpectrum A where
@@ -731,7 +635,8 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Fi
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
 
 noncomputable scoped instance : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
-  UniformSpace.Completion.mapRingHom _ uniformContinuous_algebraMap.continuous |>.toAlgebra
+  UniformSpace.Completion.mapRingHom _ (uniformContinuous_algebraMap_liesOver K L v w).continuous
+    |>.toAlgebra
 
 scoped instance : ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) where
   continuous_smul := (UniformSpace.Completion.continuous_map.comp (by fun_prop)).mul (by fun_prop)
