@@ -307,17 +307,27 @@ theorem div_sin_series_rep {z : ℂ} (hz : z ∈ integerComplement) :
         (f := fun b => (1 / (z + (2 * b - 1)) - 1 / (z + (2 * b + 1)))), add_assoc z 1,
         add_comm (1 : ℂ)]
       refine HasSum.tsum_eq ((Summable.hasSum_iff_tendsto_nat ?_).2 ?_)
-      · sorry
-      · have telescoping_sum (z : ℂ) (n : ℕ) : ∑ k ∈ Finset.range n, (1 / (z + (2 * (k + 1 : ℕ)
-          - 1)) - 1 / (z + (2 * (k + 1 : ℕ) + 1))) = 1 / (z + 1) - 1 / (z + (2 * n + 1)) := by
-          induction n with
-          | zero => simp
-          | succ n ih => rw [Finset.sum_range_succ, ih]; grind
-        refine (Filter.tendsto_congr (telescoping_sum z)).2 ?_
+      · suffices Summable (fun n : ℤ => 2 * ((z + n + 1) * (z + n + 3))⁻¹) by
+          have hi : (fun n : ℕ => (2 * n : ℤ)).Injective := fun _ _ _ => by simp_all
+          have := this.comp_injective hi
+          convert this using 2 with n
+          rw [one_div, one_div, inv_sub_inv]
+          · simp; field_simp; ring
+          · simp_all only [integerComplement, mem_compl_iff, Set.mem_range, not_exists,
+              ne_eq, add_eq_zero_iff_eq_neg]
+            exact fun h => hz (-(2 * (n + 1) - 1)) (by simp_all)
+          · simp_all only [integerComplement, mem_compl_iff, Set.mem_range, not_exists,
+              ne_eq, add_eq_zero_iff_eq_neg]
+            exact fun h => hz (-(2 * (n + 1) + 1)) (by simp_all)
+        refine Summable.mul_left 2 ?_
+        apply EisensteinSeries.summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+        simpa [pow_two] using (EisensteinSeries.linear_inv_isBigO_right_add 1 3 z).mul
+          (EisensteinSeries.linear_inv_isBigO_right_add 1 1 z)
+      · refine (Filter.tendsto_congr (telescoping_sum z)).2 ?_
         nth_rw 2 [← sub_zero (1 / (z + 1))]
-        refine Filter.Tendsto.const_sub (1 / (z + 1)) ?_
-        simp only [add_comm _ (1 : ℂ), ← add_assoc]
-        sorry
+        simpa [add_comm _ (1 : ℂ), ← add_assoc, one_mul, - one_div, Function.comp_def] using
+          ((EisensteinSeries.tendsto_zero_inv_linear (1 + z) 1).comp
+          (tendsto_id.const_mul_atTop' (by linarith))).const_sub (1 / (z + 1))
   _ = 1 / z + ∑' n : ℕ+, (-1) ^ (2 * n : ℕ) * (1 / (z - 2 * n) + 1 / (z + 2 * n)) +
       ∑' n : ℕ+, (-1) * (1 / (z - (2 * n - 1)) + 1 / (z + (2 * n - 1))) := by
       rw [Summable.tsum_mul_left (-1) hsummable'', neg_one_mul, ← sub_eq_add_neg]
