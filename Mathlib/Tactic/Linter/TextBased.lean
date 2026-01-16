@@ -11,6 +11,12 @@ public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.UnicodeLinter
 
+-- TODO REMOVE
+import Aesop
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Monotonicity
+
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
@@ -275,21 +281,22 @@ end
 namespace UnicodeLinter
 
 /-- Creates `StyleError`s for bad usage of unicode characters. -/
-partial def findBadUnicodeAux (s : String) (pos : s.Pos)
+def findBadUnicodeAux (s : String) (pos : s.Pos)
     (err : Array StyleError := #[]) : Array StyleError :=
   if h : pos < s.endPos then
-    -- have := Nat.sub_lt_sub_left h (String.Pos.Raw.byteIdx_lt_byteIdx_next s pos)
     let c := pos.get (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
     let posₙ := pos.next (show pos ≠ s.endPos from String.Pos.ne_of_lt h)
+    have : posₙ.remainingBytes < pos.remainingBytes :=
+        (pos.lt_iff_remainingBytes_lt posₙ).mp pos.lt_next
     if ! isAllowedCharacter c then
-      -- bad: character not allowed
+      -- bad: character not allowed. Add StyleError and continue recursion.
       findBadUnicodeAux s posₙ (err.push (.unwantedUnicode c))
     else
-      -- okay
+      -- okay. Continue recursion.
       findBadUnicodeAux s posₙ err
   else
     err
--- TODO it should be possible to prove termination. Do we care?
+termination_by pos.remainingBytes
 
 /-- Creates `StyleError`s for bad usage of unicode characters. -/
 @[inline]
