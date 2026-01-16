@@ -88,11 +88,20 @@ lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
   aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
 
 @[simp]
+lemma colon_singleton_zero : N.colon {0} = ⊤ := by
+  simp
+
+@[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
   aesop (add simp mem_colon)
 
 @[simp]
 lemma iInf_colon {ι : Sort*} (f : ι → Submodule R M) : (⨅ i, f i).colon S = ⨅ i, (f i).colon S := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+    (s.inf f).colon S = s.inf (fun i ↦ (f i).colon S) := by
   aesop (add simp mem_colon)
 
 @[simp]
@@ -116,11 +125,15 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-variable {N : Submodule R M} {S : Set M}
+variable {N N' : Submodule R M} {S : Set M}
 
 @[deprecated mem_colon (since := "2026-01-15")]
 theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
+
+open Pointwise in
+theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
+  aesop (add simp SetLike.coe_subset_coe)
 
 /-- A variant for arbitrary sets in commutative semirings -/
 theorem bot_colon' : (⊥ : Submodule R M).colon S = (span R S).annihilator := by

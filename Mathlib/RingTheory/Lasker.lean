@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Order.Irreducible
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
@@ -206,7 +205,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
   have h {x} q (hq : q ∈ t) :
       (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
     split_ifs with hx
-    · rwa [radical_eq_top, Submodule.colon_eq_top_iff, Set.singleton_subset_iff]
+    · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
     · exact (ht.primary hq).radical_ann_of_notMem hx
   replace h x :
       radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
