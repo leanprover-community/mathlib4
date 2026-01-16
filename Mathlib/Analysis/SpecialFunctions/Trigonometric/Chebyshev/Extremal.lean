@@ -19,19 +19,19 @@ following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
-* leadingCoeff_le_of_mem_Icc: If `P` is a real polynomial of degree at most `n` and `|P (x)| ≤ 1`
-  for all `|x| ≤ 1` then the leading coefficient of `P` is at most `2 ^ (n-1)`
-* leadingCoeff_eq_iff_of_mem_Icc: When `n ≥ 2`, equality holds iff `P = T_n`
+* leadingCoeff_le_of_forall_abs_le_one: If `P` is a real polynomial of degree at most `n` and
+  `|P (x)| ≤ 1` for all `|x| ∈ [-1, 1]` then the leading coefficient of `P` is at most `2 ^ (n - 1)`
+* leadingCoeff_eq_iff_of_forall_abs_le_one: When `n ≥ 2`, equality holds iff `P = T_n`
 
 ## Implementation
 
-By monotonicity of `2 ^ (n-1)`, we can assume that `P` has degree exactly `n`.
+By monotonicity of `2 ^ (n - 1)`, we can assume that `P` has degree exactly `n`.
 Using Lagrange interpolation, we can give a formula for the leading coefficient of `P`
 as a linear combination of the values of `P` on the Chebyshev nodes (sumNodes_eq_coeff).
 The Chebyshev polynomial `T_n` has value `±1` on the nodes, with the same signs as the
-coefficients of the linear combination (sumNodes_eq_coeff_pos).
+coefficients of the linear combination (negOnePow_mul_leadingCoeffC_pos).
 Since `|P (x)| ≤ 1` on the nodes, this implies that the leading coefficient of `P` is bounded
-by that of `T_n`, which is known to equal `2 ^ (n-1)`.
+by that of `T_n`, which is known to equal `2 ^ (n - 1)`.
 Moreover, equality holds iff `P` and `T_n` agree on the nodes, which implies that they coincide.
 -/
 @[expose] public section
@@ -93,10 +93,9 @@ lemma zero_lt_prod_node_sub_node {n i : ℕ} (hi : i ≤ n) :
   rw [union, Finset.prod_union disjoint, ← mul_assoc]
   exact mul_pos h₁ h₂
 
-private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : α ∈ Set.Icc (-1) 1) : (-1) ^ i * α ≤ 1 := by
+private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : |α| ≤ 1) : (-1) ^ i * α ≤ 1 := by
   apply le_of_abs_le
-  rw [abs_mul, abs_neg_one_pow, one_mul]
-  exact abs_le.mpr hα
+  rwa [abs_mul, abs_neg_one_pow, one_mul]
 
 private lemma negOnePow_mul_negOnePow_mul_cancel {α β : ℝ} {i : ℕ} :
     ((-1) ^ i * α) * ((-1) ^ i * β) = α * β := calc
@@ -109,7 +108,7 @@ noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤
 
 theorem sumNodes_le_sumNodes_T {n : ℕ} {c : ℕ → ℝ}
     (hcnonneg : ∀ i ≤ n, 0 ≤ (-1) ^ i * (c i))
-    {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     sumNodes n c P ≤ sumNodes n c (T ℝ n) := by
   rw [sumNodes, sumNodes]
   refine Finset.sum_le_sum (fun i hi => ?_)
@@ -125,7 +124,7 @@ theorem sumNodes_le_sumNodes_T {n : ℕ} {c : ℕ → ℝ}
 
 theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
     (hcpos : ∀ i ≤ n, 0 < (-1) ^ i * (c i))
-    {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     (sumNodes n c P = sumNodes n c (T ℝ n)) ↔ P = T ℝ n := by
   refine ⟨fun h => ?_, by intro h; rw [h]⟩
   rw [sumNodes, sumNodes] at h
@@ -171,28 +170,28 @@ private theorem sumNodes_eq_coeff {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
   · exact Eq.symm (Nat.range_succ_eq_Iic n)
   · simp
 
-private theorem sumNodes_eq_coeff_T (n : ℕ) :
+private theorem sumNodes_T_eq (n : ℕ) :
     sumNodes n (leadingCoeffC n) (T ℝ n) = 2 ^ (n - 1) := by
   rw [sumNodes_eq_coeff (by simp)]
   trans (T ℝ n).leadingCoeff
   · simp [leadingCoeff]
   · simp
 
-private theorem sumNodes_eq_coeff_pos {n i : ℕ} (hi : i ≤ n) :
+private theorem negOnePow_mul_leadingCoeffC_pos {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i * leadingCoeffC n i := by
   have := inv_pos_of_pos <| zero_lt_prod_node_sub_node hi
   rwa [mul_inv, ← inv_pow, inv_neg_one] at this
 
-theorem coeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem coeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n ≤ 2 ^ (n - 1) := by
   convert sumNodes_le_sumNodes_T
-      (fun i hi => le_of_lt <| sumNodes_eq_coeff_pos hi) hPbnd
+      (fun i hi => le_of_lt <| negOnePow_mul_leadingCoeffC_pos hi) hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
-  · rw [sumNodes_eq_coeff_T]
+  · rw [sumNodes_T_eq]
 
-theorem leadingCoeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem leadingCoeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.leadingCoeff ≤ 2 ^ (n - 1) := by
   by_cases P = 0
   case pos hP => simp [hP]
@@ -200,22 +199,22 @@ theorem leadingCoeff_le_of_mem_Icc {n : ℕ} {P : ℝ[X]}
     lift P.degree to ℕ using degree_ne_bot.mpr hP with d hd
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
     rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
-    grw [coeff_le_of_mem_Icc (le_of_eq hd.symm) hPbnd, hPdeg]
+    grw [coeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd, hPdeg]
     norm_num
 
-theorem coeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem coeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
   convert sumNodes_eq_sumNodes_T_iff
-      (fun i hi => sumNodes_eq_coeff_pos hi) hPdeg hPbnd
+      (fun i hi => negOnePow_mul_leadingCoeffC_pos hi) hPdeg hPbnd
   · rw [sumNodes_eq_coeff hPdeg]
-  · rw [sumNodes_eq_coeff_T]
+  · rw [sumNodes_T_eq]
 
-theorem leadingCoeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem leadingCoeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
   refine ⟨fun hP => ?_, fun hP => by simp [hP]⟩
-  apply (coeff_eq_iff_of_mem_Icc hPdeg hPbnd).mp
+  apply (coeff_eq_iff_of_forall_abs_le_one hPdeg hPbnd).mp
   suffices hPdeg' : n ≤ P.degree by
     replace hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg hPdeg'
     rwa [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg'] at hP
@@ -226,7 +225,7 @@ theorem leadingCoeff_eq_iff_of_mem_Icc {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
   replace hP := ge_of_eq hP
   contrapose! hP
   have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
-  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_mem_Icc (le_of_eq hd.symm) hPbnd
+  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd
   _ < 2 ^ (n - 1) := by gcongr; norm_num
 
 end Polynomial.Chebyshev
