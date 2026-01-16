@@ -97,6 +97,12 @@ instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
 
 variable {R}
 
+theorem mul_self_eq_zero_iff [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} :
+    a * a = 0 ↔ a = 0 where
+  mp := by simp
+  by_contra! hc
+  exact IsFormallyReal.not_isSumPosSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
+
 theorem eq_zero_of_mul_self [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} (ha : a * a = 0) :
     a = 0 := by
   by_contra! hc
