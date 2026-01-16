@@ -404,13 +404,10 @@ lemma intValuation_eq_coe_neg_multiplicity {A : Type*} [CommRing A] [IsDedekindD
     (v : HeightOneSpectrum A) {a : A} (hnz : a ≠ 0) :
     v.intValuation a = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {a}) : ℤ)) := by
   classical
-  have hnb : Ideal.span {a} ≠ ⊥ := by rwa [ne_eq, Ideal.span_singleton_eq_bot]
-  rw [intValuation_if_neg _ hnz, count_associates_factors_eq hnb v.isPrime v.ne_bot]
-  nth_rw 1 [← normalize_eq v.asIdeal]
-  congr
-  symm
-  apply multiplicity_eq_of_emultiplicity_eq_some
-  rw [← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible hnb]
+  rw [intValuation_def, if_neg hnz, exp_inj, neg_inj, Nat.cast_inj]
+  refine (multiplicity_eq_of_emultiplicity_eq_some ?_).symm
+  rw [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible (by simpa),
+    count_associates_factors_eq (by simpa) v.isPrime v.ne_bot, normalize_eq v.asIdeal]
 
 lemma intValuation_comap [NoZeroSMulDivisors A B] (hAB : Function.Injective (algebraMap A B))
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) (x : A) [w.asIdeal.LiesOver v.asIdeal] :
