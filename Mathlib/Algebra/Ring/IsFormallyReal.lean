@@ -6,6 +6,7 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Formally real rings
@@ -97,16 +98,12 @@ instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
 
 variable {R}
 
-theorem mul_self_eq_zero_iff [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} :
-    a * a = 0 ↔ a = 0 where
-  mp := by simp
+instance [Ring R] [IsFormallyReal R] : IsReduced R := by
+  rw [isReduced_iff_pow_one_lt 2 (by lia)]
+  intro x hx
   by_contra! hc
-  exact IsFormallyReal.not_isSumNonzeroSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
-
-theorem eq_zero_of_mul_self [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} (ha : a * a = 0) :
-    a = 0 := by
-  by_contra! hc
-  exact IsFormallyReal.not_isSumNonzeroSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
+  exact IsFormallyReal.not_isSumNonzeroSq_zero <| by
+    simpa [← pow_two, hx] using IsSumNonzeroSq.sq hc
 
 theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₁ = 0 := by
