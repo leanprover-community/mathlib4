@@ -61,7 +61,7 @@ open Lean System
 namespace AutoLabel
 
 /-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
-def MAX_LABELS := 1
+def MAX_LABELS := 2
 
 /-- Mathlib's Github topic labels -/
 inductive Label where
@@ -176,39 +176,51 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] }
+      "Mathlib" / "LinearAlgebra"]
+    dependencies := #[.«t-data»] }
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
       "Mathlib" / "Geometry" / "RingedSpace"]
-    dependencies := #[.«t-ring-theory»] }
-  | .«t-algebraic-topology» => {}
-  | .«t-analysis» => {}
-  | .«t-category-theory» => {}
-  | .«t-combinatorics» => {}
-  | .«t-computability» => {}
-  | .«t-condensed» => {}
+    dependencies := #[.«t-ring-theory», .«t-category-theory»] }
+  | .«t-algebraic-topology» => {
+    dependencies := #[.«t-algebra», .«t-topology», .«t-category-theory»] }
+  | .«t-analysis» => {
+    dependencies := #[.«t-data»] }
+  | .«t-category-theory» => {
+    dependencies := #[.«t-data»] }
+  | .«t-combinatorics» => {
+    dependencies := #[.«t-data»] }
+  | .«t-computability» => {
+    dependencies := #[.«t-data»] }
+  | .«t-condensed» => {
+    dependencies := #[.«t-category-theory»] }
   | .«t-convex-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Convex"] }
+    dirs := #["Mathlib" / "Geometry" / "Convex"]
+    dependencies := #[.«t-analysis»] }
   | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
-      "Mathlib" / "Data"] }
+      "Mathlib" / "Data"]
+    dependencies := #[.«t-logic»] }
   | .«t-differential-geometry» => {
     dirs := #["Mathlib" / "Geometry" / "Manifold"]
+    dependencies := #[.«t-analysis», .«t-topology»] }
+  | .«t-dynamics» => {
     dependencies := #[.«t-analysis»] }
-  | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+    dirs := #["Mathlib" / "Geometry" / "Euclidean"]
+    dependencies := #[.«t-algebra», .«t-analysis»] }
   | .«t-geometric-group-theory» => {
-    dirs := #["Mathlib" / "Geometry" / "Group"] }
-  | .«t-group-theory» => {}
+    dirs := #["Mathlib" / "Geometry" / "Group"]
+    dependencies := #[.«t-group-theory»] }
+  | .«t-group-theory» => {
+    dependencies := #[.«t-algebra»] }
   | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
-    ] }
+      "scripts" / "lint-style.py"] }
   | .«t-logic» => {
     dirs := #[
       "Mathlib" / "Logic",
@@ -217,19 +229,25 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       "Mathlib" / "MeasureTheory",
       "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory"] }
+      "Mathlib" / "InformationTheory"]
+    dependencies := #[.«t-analysis»] }
   | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
-      "Mathlib" / "Util"],
+      "Mathlib" / "Util"]
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
-  | .«t-number-theory» => {}
-  | .«t-order» => {}
-  | .«t-ring-theory» => {}
-  | .«t-set-theory» => {}
-  | .«t-topology» => {}
+  | .«t-number-theory» => {
+    dependencies := #[.«t-data»] }
+  | .«t-order» => {
+    dependencies := #[.«t-data»] }
+  | .«t-ring-theory» => {
+    dependencies := #[.«t-algebra», .«t-group-theory»] }
+  | .«t-set-theory» => {
+    dependencies := #[.«t-data»] }
+  | .«t-topology» => {
+    dependencies := #[.«t-algebra»] }
   | .«CI» => {
     dirs := #[
       ".github",
@@ -319,6 +337,16 @@ section Tests
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
   "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
 #guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
+
+-- Test dropping labels works
+#guard dropDependentLabels
+  #[.«t-ring-theory», .«t-data», .«t-algebra»] == #[.«t-ring-theory»]
+#guard dropDependentLabels
+  #[.«CI», .«t-algebraic-topology», .«t-algebra», .«t-order»] ==
+  #[.«CI», .«t-algebraic-topology», .«t-order»]
+#guard dropDependentLabels
+  #[.«t-ring-theory», .«t-data», .«t-algebra», .«t-category-theory», .«t-order»] ==
+  #[.«t-ring-theory», .«t-category-theory», .«t-order»]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
