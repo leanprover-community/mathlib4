@@ -138,9 +138,9 @@ lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
 lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
   intro x hx
-  have hx' : {x} ⊆ (I : Set A) := Set.singleton_subset_iff.mpr hx
   obtain ⟨J, h_J⟩ := F.nonempty
-  exact ⟨J, h_J, by simp[Submodule.colon_eq_top_of_subset I {x} hx']⟩
+  exact ⟨J, h_J, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
+
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot_mono_left (F : IdealFilter A)
@@ -170,11 +170,7 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
         obtain ⟨K₂, h_K₂F, h_K₂⟩ := h_JL x x_L
         refine ⟨K₁ ⊓ K₂, Order.PFilter.inf_mem h_K₁F h_K₂F, ?_⟩
         rintro y ⟨h_y₁, h_y₂⟩
-        have hcol : (I ⊓ J).colon {x} = I.colon {x} ⊓ J.colon {x} := by
-          simpa [iInf_bool_eq, Set.iUnion_const] using
-            (Submodule.iInf_colon_iUnion (ι₁ := Bool) (f := fun | true => I | false => J)
-            (ι₂ := PUnit.{0}) (g := fun _ => {x}))
-        simpa [hcol] using (⟨h_K₁ h_y₁, h_K₂ h_y₂⟩ : y ∈ I.colon {x} ⊓ J.colon {x})
+        simpa using (⟨h_K₁ h_y₁, h_K₂ h_y₂⟩ : y ∈ I.colon {x} ⊓ J.colon {x})
   · intro I J h_IJ ⟨K, h_K, h_IK⟩
     exact ⟨K, h_K, isTorsionQuot_mono_left F h_IJ h_IK⟩
 
