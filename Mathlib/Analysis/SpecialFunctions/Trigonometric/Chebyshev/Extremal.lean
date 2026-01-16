@@ -14,31 +14,24 @@ public import Mathlib.Topology.Algebra.Polynomial
 /-!
 # Chebyshev polynomials over the reals: some extremal properties
 
-* Chebyshev polynomials have largest leading coefficient,
-  following proof in https://math.stackexchange.com/a/978145/1277
-* Chebyshev polynomials maximize iterated derivatives at 1 and beyond
+Chebyshev polynomials have largest leading coefficient,
+following proof in https://math.stackexchange.com/a/978145/1277
 
 ## Main statements
 
-* leadingCoeff_le_of_bounded: If `P` is a real polynomial of degree at most `n` and `|P (x)| ≤ 1`
-  for all `|x| ≤ 1` then the leading coefficient of `P` is at most `2 ^ (n-1)`
-* leadingCoeff_eq_iff_of_bounded: When `n ≥ 2`, equality holds iff `P = T_n`
-* eval_iterate_derivative_le_of_bounded: If `P` is a real polynomial of degree at most `n` and
-  `|P (x)| ≤ 1` for all `|x| ≤ 1` then for all `x ≥ 1`, `P ^ (k) (x) ≤ T_n ^ (k)(x)`
-* eval_iterate_derivative_eq_iff_of_bounded: If `0 < k ≤ n` then equality holds iff `P = T_n`
+* leadingCoeff_le_of_forall_abs_le_one: If `P` is a real polynomial of degree at most `n` and
+  `|P (x)| ≤ 1` for all `x ∈ [-1, 1]` then the leading coefficient of `P` is at most `2 ^ (n - 1)`
+* leadingCoeff_eq_iff_of_forall_abs_le_one: When `n ≥ 2`, equality holds iff `P = T_n`
 
 ## Implementation
 
-We describe the proof for the leading coefficient; the proof for iterated derivatives uses a
-similar approach.
-
-By monotonicity of `2 ^ (n-1)`, we can assume that `P` has degree exactly `n`.
+By monotonicity of `2 ^ (n - 1)`, we can assume that `P` has degree exactly `n`.
 Using Lagrange interpolation, we can give a formula for the leading coefficient of `P`
-as a linear combination of the values of `P` on the Chebyshev nodes (leadingCoeff_eq_sum_node).
+as a linear combination of the values of `P` on the Chebyshev nodes (sumNodes_eq_coeff).
 The Chebyshev polynomial `T_n` has value `±1` on the nodes, with the same signs as the
-coefficients of the linear combination (leadingCoeff_eq_sum_node_coeff_pos).
+coefficients of the linear combination (negOnePow_mul_leadingCoeffC_pos).
 Since `|P (x)| ≤ 1` on the nodes, this implies that the leading coefficient of `P` is bounded
-by that of `T_n`, which is known to equal `2 ^ (n-1)`.
+by that of `T_n`, which is known to equal `2 ^ (n - 1)`.
 Moreover, equality holds iff `P` and `T_n` agree on the nodes, which implies that they coincide.
 -/
 @[expose] public section
@@ -46,7 +39,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial Real
 
-/-- For `n ≠ 0` and `i ≤ n`, node n i is one of the extremal points of the Chebyhsev T
+/-- For `n ≠ 0` and `i ≤ n`, `node n i` is one of the extremal points of the Chebyhsev `T`
 polynomial over the interval `[-1, 1]`. -/
 noncomputable def node (n i : ℕ) : ℝ := cos (i * π / n)
 
@@ -61,15 +54,15 @@ lemma node_mem_Icc {n i : ℕ} : node n i ∈ Set.Icc (-1) 1 :=
 
 lemma eval_T_real_node {n i : ℕ} (hi : i ∈ Finset.Iic n) :
     (T ℝ n).eval (node n i) = (-1) ^ i := by
-  wlog! hn : n ≠ 0
-  · simp [hn, show i = 0 by grind]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [show i = 0 by grind]
   have : (n : ℤ) * (i * π / n) = i * π := by norm_cast; field
   rw [node, T_real_cos, this, cos_nat_mul_pi]
 
 lemma strictAntiOn_node (n : ℕ) :
     StrictAntiOn (node n ·) (Finset.range (n + 1)) := by
-  wlog! hn : n ≠ 0
-  · simp [hn]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
   refine strictAntiOn_cos.comp_strictMonoOn ?_ (fun x hx => Set.mem_Icc.mpr ⟨by positivity, ?_⟩)
   · apply StrictMono.strictMonoOn
     exact StrictMono.mul_const
@@ -81,14 +74,13 @@ lemma strictAntiOn_node (n : ℕ) :
 
 lemma node_lt {n i j : ℕ} (hj : j ≤ n) (hij : i < j) :
     node n j < node n i :=
-  (strictAntiOn_node n) (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr (by grind)))
+  strictAntiOn_node n (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr (by grind)))
     (Finset.mem_coe.mpr (Finset.mem_range_succ_iff.mpr hj)) hij
 
 lemma zero_lt_prod_node_sub_node {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i * ∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j) := by
-  wlog! hn : n ≠ 0
-  · replace hi : i = 0 := Nat.le_zero.mp (le_of_le_of_eq hi hn)
-    simp [hn, hi]
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [Nat.le_zero.mp hi]
   have h₁ : 0 < ∏ j ∈ Finset.range i, ((-1) * (node n i - node n j)) :=
     Finset.prod_pos (fun j hj => mul_pos_of_neg_of_neg neg_one_lt_zero <| sub_neg.mpr <|
     node_lt hi (Finset.mem_range.mp hj))
@@ -101,23 +93,22 @@ lemma zero_lt_prod_node_sub_node {n i : ℕ} (hi : i ≤ n) :
   rw [union, Finset.prod_union disjoint, ← mul_assoc]
   exact mul_pos h₁ h₂
 
+private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : |α| ≤ 1) : (-1) ^ i * α ≤ 1 := by
+  apply le_of_abs_le
+  rwa [abs_mul, abs_neg_one_pow, one_mul]
+
 private lemma negOnePow_mul_negOnePow_mul_cancel {α β : ℝ} {i : ℕ} :
     ((-1) ^ i * α) * ((-1) ^ i * β) = α * β := calc
   _ = ((-1) ^ i * (-1) ^ i) * α * β := by ring
   _ = α * β := by simp [← mul_pow]
 
-private lemma negOnePow_mul_le {α : ℝ} {i : ℕ} (hα : α ∈ Set.Icc (-1) 1) : (-1) ^ i * α ≤ 1 := by
-  apply le_of_abs_le
-  rw [abs_mul, abs_neg_one_pow, one_mul]
-  exact abs_le.mpr hα
-
 /-- For a polynomial `P` and coefficient function `c`, `sumNodes n c P` is a linear combination
 of `P` evaluated at the `n`'th order Chebyshev nodes, with coefficients taken from `c`. -/
 noncomputable def sumNodes (n : ℕ) (c : ℕ → ℝ) (P : ℝ[X]) := ∑ i ≤ n, P.eval (node n i) * (c i)
 
-theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
+theorem sumNodes_le_sumNodes_T {n : ℕ} {c : ℕ → ℝ}
     (hcnonneg : ∀ i ≤ n, 0 ≤ (-1) ^ i * (c i))
-    {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    {P : ℝ[X]} (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     sumNodes n c P ≤ sumNodes n c (T ℝ n) := by
   rw [sumNodes, sumNodes]
   refine Finset.sum_le_sum (fun i hi => ?_)
@@ -131,9 +122,9 @@ theorem apply_le_apply_T_real {n : ℕ} {c : ℕ → ℝ}
     _ = (T ℝ n).eval (node n i) * (c i) := by
       rw [eval_T_real_node hi, one_mul]
 
-theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
+theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
     (hcpos : ∀ i ≤ n, 0 < (-1) ^ i * (c i))
-    {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+    {P : ℝ[X]} (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     (sumNodes n c P = sumNodes n c (T ℝ n)) ↔ P = T ℝ n := by
   refine ⟨fun h => ?_, by intro h; rw [h]⟩
   rw [sumNodes, sumNodes] at h
@@ -149,10 +140,9 @@ theorem apply_eq_apply_T_real_iff {n : ℕ} {c : ℕ → ℝ}
   obtain ⟨x, hx, hPx⟩ := h
   obtain ⟨i, hi, hix⟩ := Finset.mem_image.mp hx
   replace hi := Finset.mem_Iic.mpr (Finset.mem_range_succ_iff.mp hi)
-  suffices  ∑ i ≤ n, ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * c i) <
-    ∑ i≤ n, ((-1) ^ i * (T ℝ n).eval (node n i)) * ((-1) ^ i * c i) by
-    simp_rw [negOnePow_mul_negOnePow_mul_cancel] at this
-    exact this
+  suffices ∑ i ≤ n, ((-1) ^ i * P.eval (node n i)) * ((-1) ^ i * c i) <
+      ∑ i ≤ n, ((-1) ^ i * (T ℝ n).eval (node n i)) * ((-1) ^ i * c i) by
+    simpa [negOnePow_mul_negOnePow_mul_cancel]
   have h_le {i : ℕ} (hi : i ∈ Finset.Iic n) :
     (-1) ^ i * P.eval (node n i) * ((-1) ^ i * c i) ≤
     (-1) ^ i * (T ℝ n).eval (node n i)  * ((-1) ^ i * c i) := by
@@ -168,39 +158,40 @@ Chebyshev nodes. -/
 private noncomputable def leadingCoeffC (n i : ℕ) :=
   (∏ j ∈ (Finset.range (n + 1)).erase i, (node n i - node n j))⁻¹
 
-private theorem coeff_eq_sum_node {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
+private theorem sumNodes_eq_coeff {n : ℕ} {P : ℝ[X]} (hP : P.degree ≤ n) :
     sumNodes n (leadingCoeffC n) P = P.coeff n := by
   simp_rw [sumNodes, leadingCoeffC]
-  have : P.degree + 1 ≤ (Finset.range (n + 1)).card := by
+  have : P.degree < (Finset.range (n + 1)).card := by
     rw [Finset.card_range]
     grw [hP]
+    norm_cast
     simp
   convert (Lagrange.coeff_eq_sum (strictAntiOn_node n).injOn this).symm using 2
   · exact Eq.symm (Nat.range_succ_eq_Iic n)
   · simp
 
-private theorem coeff_eq_sum_node_T (n : ℕ) :
+private theorem sumNodes_T_eq (n : ℕ) :
     sumNodes n (leadingCoeffC n) (T ℝ n) = 2 ^ (n - 1) := by
-  rw [coeff_eq_sum_node (by simp)]
+  rw [sumNodes_eq_coeff (by simp)]
   trans (T ℝ n).leadingCoeff
-  · rw [leadingCoeff]; simp
+  · simp [leadingCoeff]
   · simp
 
-private theorem coeff_eq_sum_node_coeff_pos {n i : ℕ} (hi : i ≤ n) :
+private theorem negOnePow_mul_leadingCoeffC_pos {n i : ℕ} (hi : i ≤ n) :
     0 < (-1) ^ i * leadingCoeffC n i := by
   have := inv_pos_of_pos <| zero_lt_prod_node_sub_node hi
   rwa [mul_inv, ← inv_pow, inv_neg_one] at this
 
-theorem coeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem coeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n ≤ 2 ^ (n - 1) := by
-  convert apply_le_apply_T_real
-      (fun i hi => le_of_lt <| coeff_eq_sum_node_coeff_pos hi) hPbnd
-  · rw [coeff_eq_sum_node hPdeg]
-  · rw [coeff_eq_sum_node_T]
+  convert sumNodes_le_sumNodes_T
+      (fun i hi => le_of_lt <| negOnePow_mul_leadingCoeffC_pos hi) hPbnd
+  · rw [sumNodes_eq_coeff hPdeg]
+  · rw [sumNodes_T_eq]
 
-theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem leadingCoeff_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.leadingCoeff ≤ 2 ^ (n - 1) := by
   by_cases P = 0
   case pos hP => simp [hP]
@@ -208,22 +199,22 @@ theorem leadingCoeff_le_of_bounded {n : ℕ} {P : ℝ[X]}
     lift P.degree to ℕ using degree_ne_bot.mpr hP with d hd
     replace hPdeg : d ≤ n := (WithBot.coe_le rfl).mp hPdeg
     rw [leadingCoeff, natDegree_eq_of_degree_eq_some hd.symm]
-    grw [coeff_le_of_bounded (le_of_eq hd.symm) hPbnd, hPdeg]
+    grw [coeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd, hPdeg]
     norm_num
 
-theorem coeff_eq_of_bounded_iff {n : ℕ} {P : ℝ[X]}
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem coeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.coeff n = 2 ^ (n - 1) ↔ P = T ℝ n := by
-  convert apply_eq_apply_T_real_iff
-      (fun i hi => coeff_eq_sum_node_coeff_pos hi) hPdeg hPbnd
-  · rw [coeff_eq_sum_node hPdeg]
-  · rw [coeff_eq_sum_node_T]
+  convert sumNodes_eq_sumNodes_T_iff
+      (fun i hi => negOnePow_mul_leadingCoeffC_pos hi) hPdeg hPbnd
+  · rw [sumNodes_eq_coeff hPdeg]
+  · rw [sumNodes_T_eq]
 
-theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
+theorem leadingCoeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
+    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, |P.eval x| ≤ 1) :
     P.leadingCoeff = 2 ^ (n - 1) ↔ P = T ℝ n := by
   refine ⟨fun hP => ?_, fun hP => by simp [hP]⟩
-  apply (coeff_eq_of_bounded_iff hPdeg hPbnd).mp
+  apply (coeff_eq_iff_of_forall_abs_le_one hPdeg hPbnd).mp
   suffices hPdeg' : n ≤ P.degree by
     replace hPdeg' : P.degree = n := eq_of_le_of_ge hPdeg hPdeg'
     rwa [leadingCoeff, natDegree_eq_of_degree_eq_some hPdeg'] at hP
@@ -234,83 +225,7 @@ theorem leadingCoeff_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]} (hn : 2 ≤ n)
   replace hP := ge_of_eq hP
   contrapose! hP
   have : d - 1 < n - 1 := by grind [Nat.cast_withBot, WithBot.coe_le_coe, WithBot.coe_lt_coe]
-  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_bounded (le_of_eq hd.symm) hPbnd
+  calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd
   _ < 2 ^ (n - 1) := by gcongr; norm_num
-
-/-- Coefficients use to computate the iterated derivative of a polynomial given its values on the
-Chebyshev nodes. -/
-private noncomputable def iterateDerivativeC (n k : ℕ) (x : ℝ) (i : ℕ) :=
-    k.factorial * (∏ j ∈ (Finset.range (n + 1)).erase i, ((node n i) - (node n j)))⁻¹ *
-    ∑ t ∈ ((Finset.range (n + 1)).erase i).powersetCard (n - k), ∏ a ∈ t, (x - node n a)
-
-private theorem eval_iterate_derivative_eq_sum_node {n k : ℕ} (hk : k ≤ n) (x : ℝ)
-    {P : ℝ[X]} (hP : P.degree ≤ n) :
-    sumNodes n (iterateDerivativeC n k x) P = (derivative^[k] P).eval x := by
-  simp_rw [sumNodes, iterateDerivativeC]
-  have h₁ : P.degree + 1 ≤ (Finset.range (n + 1)).card := by
-    rw [Finset.card_range]
-    grw [hP]
-    simp
-  convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁
-    (show k ≤ _ by simp [hk]) x).symm
-  rw [Finset.mul_sum]
-  grind [Nat.range_succ_eq_Iic, Nat.card_Iic]
-
-private theorem eval_iterate_derivative_eq_sum_node_coeff_nonneg
-    {n k i : ℕ} (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
-    0 ≤ (-1) ^ i * iterateDerivativeC n k x i := by
-  rw [iterateDerivativeC, ← mul_assoc]
-  refine mul_nonneg ?_ (Finset.sum_nonneg' ?_)
-  · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
-    exact le_of_lt <| mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
-      (coeff_eq_sum_node_coeff_pos hi)
-  · refine fun t => Finset.prod_nonneg (fun a _ => ?_)
-    have : node n a ≤ 1 := cos_le_one _
-    linarith
-
-private theorem eval_iterate_derivative_eq_sum_node_coeff_pos
-    {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
-    0 < (-1) ^ i * iterateDerivativeC n k x i := by
-  rw [iterateDerivativeC, ← mul_assoc]
-  refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
-  · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
-    exact mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k) (coeff_eq_sum_node_coeff_pos hi)
-  · refine fun t _ => Finset.prod_nonneg (fun a _ => ?_)
-    have : node n a ≤ 1 := cos_le_one _
-    linarith
-  · have : ∃ s ⊆ (Finset.range (n + 1)).erase i, s.card = n - k ∧ 0 ∉ s := by
-      by_cases 1 ≤ i ∧ i ≤ n - k
-      case neg => exact ⟨Finset.Icc 1 (n - k), by grind, by grind [Nat.card_Icc], by simp⟩
-      case pos => exact ⟨(Finset.Icc 1 (n - k + 1)).erase i, by grind, by grind [Nat.card_Icc],
-        by simp⟩
-    obtain ⟨s, hs, hscard, hsn⟩ := this
-    refine ⟨s, by simp [hs, hscard], Finset.prod_pos (fun a ha => ?_)⟩
-    have : node n a < 1 := by
-      rw [← node_eq_one (n := n)]
-      exact node_lt (by grind) (by grind)
-    linarith
-
-theorem eval_iterate_derivative_le_of_bounded {n : ℕ} {P : ℝ[X]}
-    {k : ℕ} {x : ℝ} (hx : 1 ≤ x)
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    (derivative^[k] P).eval x ≤ (derivative^[k] (T ℝ n)).eval x := by
-  wlog! hk : k ≤ n
-  · rw [iterate_derivative_eq_zero_of_degree_lt (by grw [hPdeg]; simpa),
-      iterate_derivative_eq_zero_of_degree_lt (by simp [hk])]
-  convert apply_le_apply_T_real
-    (fun i hi => eval_iterate_derivative_eq_sum_node_coeff_nonneg hi hx) hPbnd
-    using 1
-  · rw [eval_iterate_derivative_eq_sum_node hk x hPdeg]
-  · rw [eval_iterate_derivative_eq_sum_node hk x (le_of_eq (degree_T ℝ n))]
-
-theorem eval_iterate_derivative_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
-    {k : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) {x : ℝ} (hx : 1 ≤ x)
-    (hPdeg : P.degree ≤ n) (hPbnd : ∀ x ∈ Set.Icc (-1) 1, P.eval x ∈ Set.Icc (-1) 1) :
-    (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n := by
-  convert apply_eq_apply_T_real_iff
-    (fun i hi => eval_iterate_derivative_eq_sum_node_coeff_pos hk₁ hk₂ hi hx) hPdeg hPbnd
-    using 2
-  · rw [eval_iterate_derivative_eq_sum_node hk₂ x hPdeg]
-  · rw [eval_iterate_derivative_eq_sum_node hk₂ x (le_of_eq (degree_T ℝ n))]
 
 end Polynomial.Chebyshev

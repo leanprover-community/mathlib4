@@ -389,7 +389,7 @@ variable (𝕜)
 derivative of `f` is the derivative of the `n`-th derivative of `f` along this set, together with
 an uncurrying step to see it as a multilinear map in `n+1` variables..
 -/
-noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E[×n]→L[𝕜] F :=
+noncomputable def iteratedFDerivWithin (n : ℕ) (f : E → F) (s : Set E) : E → E [×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderivWithin 𝕜 rec s x)
 
@@ -420,7 +420,7 @@ theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖
 
 theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =
-      (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
+      (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
@@ -477,17 +477,17 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
       simp [IH hy m, I]
     calc
       (iteratedFDerivWithin 𝕜 (n + 2) f s x : (Fin (n + 2) → E) → F) m =
-          (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E[×n + 1]→L[𝕜] F) (m 0)
+          (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n.succ f s) s x : E → E [×n + 1]→L[𝕜] F) (m 0)
             (tail m) := by
         simp [iteratedFDerivWithin_succ_eq_comp_left]
       _ = (fderivWithin 𝕜 (I ∘ iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+              E → E [×n + 1]→L[𝕜] F) (m 0) (tail m) := by
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
-              E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
+              E → E [×n + 1]→L[𝕜] F) (m 0) (tail m) := by
         simp [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
-              E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := by
+              E → E [×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := by
         simp [I]
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
             (m (last (n + 1))) := by
@@ -778,7 +778,7 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
 variable (𝕜)
 
 /-- The `n`-th derivative of a function, as a multilinear map, defined inductively. -/
-noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E[×n]→L[𝕜] F :=
+noncomputable def iteratedFDeriv (n : ℕ) (f : E → F) : E → E [×n]→L[𝕜] F :=
   Nat.recOn n (fun x => ContinuousMultilinearMap.uncurry0 𝕜 E (f x)) fun _ rec x =>
     ContinuousLinearMap.uncurryLeft (fderiv 𝕜 rec x)
 
@@ -805,7 +805,7 @@ theorem iteratedFDerivWithin_zero_eq : iteratedFDerivWithin 𝕜 0 f s = iterate
 
 theorem iteratedFDeriv_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDeriv 𝕜 (n + 1) f x : (Fin (n + 1) → E) → F) m =
-      (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E[×n]→L[𝕜] F) (m 0) (tail m) :=
+      (fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x : E → E [×n]→L[𝕜] F) (m 0) (tail m) :=
   rfl
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
@@ -916,6 +916,12 @@ theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
 theorem iteratedFDeriv_one_apply (m : Fin 1 → E) :
     iteratedFDeriv 𝕜 1 f x m = fderiv 𝕜 f x (m 0) := by
   rw [iteratedFDeriv_succ_apply_right, iteratedFDeriv_zero_apply, last_zero]
+
+@[simp]
+theorem norm_iteratedFDeriv_one (f : E → F) :
+    ‖iteratedFDeriv 𝕜 1 f x‖ = ‖fderiv 𝕜 f x‖ := by
+  rw [← iteratedFDerivWithin_univ, ← fderivWithin_univ]
+  exact norm_iteratedFDerivWithin_one f uniqueDiffWithinAt_univ
 
 lemma iteratedFDeriv_two_apply (f : E → F) (z : E) (m : Fin 2 → E) :
     iteratedFDeriv 𝕜 2 f z m = fderiv 𝕜 (fderiv 𝕜 f) z (m 0) (m 1) := by

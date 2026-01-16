@@ -6,7 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
