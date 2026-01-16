@@ -32,6 +32,69 @@ This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with G
 
 public section
 
+namespace Polynomial
+
+variable {R : Type*} [CommRing R] {f g : R[X]} [IsDomain R]
+
+omit [IsDomain R] in
+theorem Splits.image_rootSet_of_monic
+    {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
+    [Algebra R A] [Algebra R B] (hf : (f.map (algebraMap R A)).Splits) (hfm : f.Monic)
+    (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
+  classical
+  have key := (hfm.map (algebraMap R A)).roots_map_of_card_eq_natDegree (g : A →+* B)
+    hf.natDegree_eq_card_roots.symm
+  rw [map_map, g.comp_algebraMap] at key
+  simp [rootSet, aroots, ← key, Multiset.toFinset_map]
+
+theorem Monic.isSwap_toPermHom_apply_of_mem_inertia
+    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    {f : R[X]} (hf : f.Monic) [DecidableEq (f.rootSet S)]
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (m : MaximalSpectrum S) (hf' : (f.map (algebraMap R S)).Splits)
+    (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
+    ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
+      MulAction.toPermHom G (f.rootSet S) g = 1 ∨
+        (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
+  intro g hg
+  let π : S →ₐ[R] S ⧸ m.asIdeal := Ideal.Quotient.mkₐ R m.asIdeal
+  rw [← hf'.image_rootSet_of_monic hf π, Set.ncard_le_ncard_image_add_one_iff] at h
+  have hπ (x : S) : π (g • x) = π x := (Ideal.Quotient.mk_eq_mk_iff_sub_mem (g • x) x).mpr (hg x)
+  rw [or_iff_not_imp_left, Equiv.ext_iff, not_forall]
+  rintro ⟨x, hx : g • x ≠ x⟩
+  refine ⟨g • x, x, hx, ?_⟩
+  ext z
+  rw [Equiv.swap_apply_def]
+  simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
+  split_ifs with hz hz'
+  · subst hz
+    have key := h (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
+      (by simp [hπ]) (by simp [hπ]) (by simpa [← rootSet.coe_smul]) (by simpa [← rootSet.coe_smul])
+    grind [rootSet.coe_smul]
+  · simp [hz']
+  · have key := h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2 (by simp [hπ]) (by simp [hπ])
+    grind [rootSet.coe_smul, SetLike.coe_eq_coe]
+
+theorem Monic.toPermHom_surjective_of_supr_inertia_eq_top
+    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    {f : R[X]} (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Splits)
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    [MulAction.IsPretransitive G (f.rootSet S)]
+    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
+    (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
+    Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
+  classical
+  apply surjective_of_isSwap_of_isPretransitive'
+    (⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G)
+  · intro σ hσ
+    simp only [Set.mem_iUnion] at hσ
+    obtain ⟨m, hm⟩ := hσ
+    have := hf.isSwap_toPermHom_apply_of_mem_inertia G m hf' (h m) σ hm
+    exact this
+  · simpa only [Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
+
+end Polynomial
+
 section Inertia
 
 open scoped Pointwise
@@ -122,114 +185,6 @@ end Inertia
 namespace Polynomial
 
 section Moore
-
-instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S] (f : R[X])
-    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] :
-    MulAction G (f.rootSet S) where
-  smul g x := ⟨g • x.1, by
-    rw [mem_rootSet', aeval_smul, smul_eq_zero_iff_eq, ← mem_rootSet']
-    exact x.2⟩
-  one_smul x := Subtype.ext (one_smul G x.1)
-  mul_smul g h x := Subtype.ext (mul_smul g h x.1)
-
-theorem rootSet.coe_smul
-    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    {f : R[X]}
-    {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
-    (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
-
-theorem Function.Surjective.card_le_card_add_one_iff
-    {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
-    Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
-      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  rcases isEmpty_or_nonempty α
-  · simp
-  let g := Function.surjInv hf
-  rw [← Set.ncard_range_of_injective (Function.injective_surjInv hf),
-    ← Set.ncard_add_ncard_compl (Set.range g), add_le_add_iff_left]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [Set.ncard_le_one_iff_subset_singleton] at h
-    obtain ⟨x, hx⟩ := h
-    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by grind
-    intro a b hfab hab
-    by_cases ha : a ∈ Set.range g
-    · obtain ⟨a, rfl⟩ := ha
-      rw [Function.surjInv_eq hf] at hfab
-      subst hfab
-      by_cases hb : b ∈ Set.range g
-      · obtain ⟨b, rfl⟩ := hb
-        rw [Function.surjInv_eq hf] at hab
-        contradiction
-      · exact Or.inr (congrArg (fun y ↦ g (f y)) (hx hb))
-    · exact Or.inl (hx ha)
-  · rw [Set.ncard_le_one]
-    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, ← ne_eq]
-    intro a ha b hb
-    simpa [(ha (f b)).symm] using congrArg (a ∈ ·) (h a (g (f a)) b (g (f b))
-      (Function.surjInv_eq hf (f a)).symm (Function.surjInv_eq hf (f b)).symm
-      (ha (f a)).symm (hb (f b)).symm)
-
-theorem Set.ncard_le_ncard_image_add_one_iff {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
-    s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
-      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
-  simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
-    Function.Surjective.card_le_card_add_one_iff (Set.surjective_mapsTo_image_restrict f s)
-
-theorem tada
-    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
-    (f : R[X]) (hmon : f.Monic) [DecidableEq (f.rootSet S)]
-    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
-    (m : MaximalSpectrum S) (hf : (f.map (algebraMap R S)).Splits)
-    (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
-    ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
-      MulAction.toPermHom G (f.rootSet S) g = 1 ∨
-        (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
-  intro g hg
-  let π : S →ₐ[R] S ⧸ m.asIdeal := Ideal.Quotient.mkₐ R m.asIdeal
-  have hπ (x : S) (hx : x ∈ f.rootSet S): π x ∈ f.rootSet (S ⧸ m.asIdeal) := by
-    rw [hmon.mem_rootSet, aeval_algHom_apply, aeval_eq_zero_of_mem_rootSet hx, map_zero]
-  have hπ (x : S) : π (g • x) = π x := (Ideal.Quotient.mk_eq_mk_iff_sub_mem (g • x) x).mpr (hg x)
-  rw [or_iff_not_imp_left, Equiv.ext_iff, not_forall]
-  rintro ⟨x, hx : g • x ≠ x⟩
-  refine ⟨g • x, x, hx, ?_⟩
-  ext z
-  rw [Equiv.swap_apply_def]
-  have h0 : f.rootSet (S ⧸ m.asIdeal) = π '' f.rootSet S := by
-    classical
-    have key := Monic.roots_map_of_card_eq_natDegree (hmon.map (algebraMap R S))
-      (π : S →+* S ⧸ m.asIdeal) hf.natDegree_eq_card_roots.symm
-    rw [map_map, π.comp_algebraMap] at key
-    simp [rootSet, aroots, ← key, Multiset.toFinset_map]
-  rw [h0] at h
-  split_ifs with hz hz'
-  · subst hz
-    simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (Set.ncard_le_ncard_image_add_one_iff (f.rootSet S) π).mp h
-      (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2 (by simp [hπ])
-      (by simp [hπ]) (by simpa [← rootSet.coe_smul]) (by simpa [← rootSet.coe_smul])
-    grind [rootSet.coe_smul]
-  · simp [hz']
-  · simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
-    have key := (Set.ncard_le_ncard_image_add_one_iff (f.rootSet S) π).mp h
-      (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2 (by simp [hπ]) (by simp [hπ])
-    grind [rootSet.coe_smul, SetLike.coe_eq_coe]
-
-theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S] (f : R[X])
-    (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Splits)
-    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
-    [MulAction.IsPretransitive G (f.rootSet S)]
-    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
-    (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
-    Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
-  classical
-  apply surjective_of_isSwap_of_isPretransitive'
-    (⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G)
-  · intro σ hσ
-    simp only [Set.mem_iUnion] at hσ
-    obtain ⟨m, hm⟩ := hσ
-    have := tada f hf G m hf' (h m) σ hm
-    exact this
-  · simpa only [Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
 
 open Equiv Pointwise
 
@@ -335,7 +290,8 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     )⟩
     exact ⟨y, Subtype.ext_iff.mp hy⟩
   have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-  refine tada' (S := R) f₀ hf₀ h1 G (NumberField.supr_inertia_eq_top K G) fun m ↦ ?_
+  refine hf₀.toPermHom_surjective_of_supr_inertia_eq_top
+    h1 G (NumberField.supr_inertia_eq_top K G) fun m ↦ ?_
   let := Ideal.Quotient.field m.asIdeal
   refine le_trans (f₀.ncard_rootSet_le R) (h (R ⧸ m.asIdeal) ?_)
   rw [IsScalarTower.algebraMap_eq ℤ R (R ⧸ m.asIdeal), ← Polynomial.map_map]
