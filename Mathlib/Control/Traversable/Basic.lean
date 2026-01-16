@@ -117,10 +117,7 @@ theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, 
 
 @[ext]
 theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
-    η = η' := by
-  apply coe_inj
-  ext1 α
-  exact funext (h α)
+    η = η' := coe_inj (by grind)
 
 section Preserves
 

@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+
 /-!
 # Segments in vector spaces
 
@@ -34,9 +36,8 @@ define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 
 variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 
-open Function Set
-
-open Pointwise Convex
+open Function Module Set
+open scoped Pointwise Convex
 
 section OrderedSemiring
 
@@ -226,6 +227,10 @@ theorem openSegment_eq_image_lineMap (x y : E) :
   convert openSegment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
+theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
+    AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
+  openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
+
 @[simp]
 theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
   Set.ext fun x => by
@@ -304,8 +309,7 @@ theorem sameRay_of_mem_segment [CommRing 𝕜] [PartialOrder 𝕜] [IsStrictOrde
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 
 lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
-    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [NoZeroDivisors 𝕜]
-    [AddCommGroup E] [Module 𝕜 E]
+    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [IsDomain 𝕜] [AddCommGroup E] [Module 𝕜 E]
     {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
     [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
@@ -333,7 +337,7 @@ theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[�
   rw [midpoint_add_sub]
 
 @[simp]
-theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
     x ∈ openSegment 𝕜 x y ↔ x = y := by
   constructor
   · rintro ⟨a, b, _, hb, hab, hx⟩
@@ -344,7 +348,7 @@ theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 
     exact mem_singleton _
 
 @[simp]
-theorem right_mem_openSegment_iff [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] :
+theorem right_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
     y ∈ openSegment 𝕜 x y ↔ x = y := by rw [openSegment_symm, left_mem_openSegment_iff, eq_comm]
 
 end LinearOrderedRing

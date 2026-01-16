@@ -15,6 +15,7 @@ to learn about it as well!
   If these web pages are deprecated or removed, we should remove these scripts.
 
 **Repository analysis and reporting**
+- `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
   Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
@@ -110,14 +111,18 @@ to learn about it as well!
 - `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
-- `bench_summary.lean`
-  Convert data retrieved from the speed center into a shorter, more accessible format,
-  and post a comment with this summary on github.
 - `declarations_diff.sh`
   Attempts to find which declarations have been removed and which have been added in the current PR
   with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
+- `verify_commits.sh` verifies special commits in a PR:
+  - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
+  - **Automated commits** (prefix `x: <command>`) must match the output of re-running the command
+  Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
+  displaying human-readable output.
+- `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
+  Used by CI to post verification summaries on pull requests.
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at
@@ -144,6 +149,9 @@ to learn about it as well!
   repositories listed in `downstream_repos.yml`.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
+
+**Version tag verification**
+- `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`

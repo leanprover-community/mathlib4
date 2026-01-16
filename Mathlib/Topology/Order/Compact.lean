@@ -76,53 +76,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
-    CompactIccSpace α := by
-  refine .mk'' fun {a b} hlt => ?_
-  rcases le_or_gt a b with hab | hab
-  swap
-  · simp [hab]
-  refine isCompact_iff_ultrafilter_le_nhds.2 fun f hf => ?_
-  contrapose! hf
-  rw [le_principal_iff]
-  have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx hxf =>
-    hf x hx ((le_pure_iff.2 hxf).trans (pure_le_nhds x))
-  set s := { x ∈ Icc a b | Icc a x ∉ f }
-  have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
-  have sbd : BddAbove s := ⟨b, hsb⟩
-  have ha : a ∈ s := by simp [s, hpt, hab]
-  rcases hab.eq_or_lt with (rfl | _hlt)
-  · exact ha.2
-  let c := sSup s
-  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
-  have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
-  specialize hf c hc
-  have hcs : c ∈ s := by
-    -- rcases ... with (rfl | ... ) fails here, rewrite manually.
-    rcases hc.1.eq_or_lt with (h | hlt)
-    · rwa [h] at ha
-    refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
-    rcases (mem_nhdsLE_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
-      with ⟨x, hxc, hxU⟩
-    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually (Ioc_mem_nhdsLE hxc)).exists
-      with ⟨y, ⟨_hyab, hyf⟩, hy⟩
-    refine mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans ?_ hxU)
-    rw [diff_subset_iff]
-    exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
-      Ioc_subset_Ioc_left hy.1.le
-  -- rcases ... with (rfl | ... ) fails here, rewrite manually.
-  rcases hc.2.eq_or_lt with (h | hlt)
-  · simpa [h] using hcs.2
-  exfalso
-  refine hf fun U hU => ?_
-  rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
-    with ⟨y, hxy, hyU⟩
-  refine mem_of_superset ?_ hyU; clear! U
-  have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
-  by_cases hay : Icc a y ∈ f
-  · refine mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) ?_
-    rw [diff_subset_iff, union_comm, Ico_union_right hxy.1.le, diff_subset_iff]
-    exact Icc_subset_Icc_union_Icc
-  · exact ((hsc.1 ⟨hy, hay⟩).not_gt hxy.1).elim
+    CompactIccSpace α := ⟨fun {_ _} ↦ ConditionallyCompleteLinearOrder.isCompact_Icc _ _⟩
 
 instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, CompactIccSpace (α i)] : CompactIccSpace (∀ i, α i) :=

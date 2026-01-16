@@ -134,7 +134,7 @@ def edges {u v : V} (p : G.Walk u v) : List (Sym2 V) := p.darts.map Dart.edge
 @[simp]
 theorem support_nil {u : V} : (nil : G.Walk u u).support = [u] := rfl
 
-@[simp]
+@[simp, grind =]
 theorem support_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).support = u :: p.support := rfl
 
@@ -240,34 +240,21 @@ theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.supp
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
-theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.head hp).fst = a := by
-  cases p
-  · contradiction
-  · simp
-
-@[simp]
-theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.getLast hp).snd = b := by
-  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd) (by simpa)]
-  simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
-
-@[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 
 @[simp]
 theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).edges = s(u, v) :: p.edges := rfl
 
-@[simp]
+@[simp, grind =]
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 
 theorem dart_fst_mem_support_of_mem_darts {u v : V} :
@@ -332,7 +319,7 @@ only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 
-@[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
+@[simp, grind .] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
 @[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
@@ -346,6 +333,14 @@ protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
 
 lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
+  cases p <;> simp
+
+@[simp]
+lemma darts_eq_nil {p : G.Walk v w} : p.darts = [] ↔ p.Nil := by
+  cases p <;> simp
+
+@[simp]
+lemma edges_eq_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by

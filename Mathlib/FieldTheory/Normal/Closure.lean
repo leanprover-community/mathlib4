@@ -123,8 +123,8 @@ noncomputable def IsNormalClosure.lift [h : IsNormalClosure F K L] {L'} [Field L
     (fun x hx ↦ ⟨isAlgebraic_iff_isIntegral.mp ((h.normal).isAlgebraic x), ?_⟩) this
   obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
   by_cases iy : IsIntegral F y
-  · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
-      (splits y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
+  · exact (splits y).of_dvd (map_ne_zero (minpoly.ne_zero iy))
+      ((map_dvd_map' _).mpr (minpoly.dvd F x (mem_rootSet.mp hx).2))
   · simp [minpoly.eq_zero iy] at hx
 
 /-- Normal closures of `K/F` are unique up to F-algebra isomorphisms. -/
@@ -216,8 +216,8 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits [Algebra.IsAlgebra
       obtain ⟨y, hx⟩ := Set.mem_iUnion.mp hx
       refine ⟨isAlgebraic_iff_isIntegral.mp (isAlgebraic_of_mem_rootSet hx), ?_⟩
       by_cases iy : IsIntegral F y
-      · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
-          (h y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
+      · exact (h y).of_dvd (map_ne_zero (minpoly.ne_zero iy))
+          ((map_dvd_map' _).mpr (minpoly.dvd F x (mem_rootSet.mp hx).2))
       · simp [minpoly.eq_zero iy] at hx
   let φ' := (φ.comp <| inclusion normalClosure_le_iSup_adjoin)
   { toFun := φ'.comp ∘ (normalClosure.algHomEquiv F K L').symm

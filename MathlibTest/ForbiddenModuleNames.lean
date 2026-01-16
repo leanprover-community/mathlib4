@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Linter.TextBased
+module
+
+import all Mathlib.Tactic.Linter.TextBased
 
 /-!
 # Unit tests for the module name compatibility checks in the text-based linter
@@ -7,7 +9,7 @@ import Mathlib.Tactic.Linter.TextBased
 open Lean.Linter Mathlib.Linter.TextBased
 
 /-- Some unit tests for `modulesOSForbidden` -/
-def testModulesOSForbidden : IO Unit := do
+meta def testModulesOSForbidden : IO Unit := do
   -- Explicitly enable the linter, although it is enabled by default.
   let opts : LinterOptions := {
     toOptions := linter.modulesUpperCamelCase.set {} true
