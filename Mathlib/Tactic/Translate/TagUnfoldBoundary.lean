@@ -47,7 +47,7 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
         else
           .defnDecl <$> mkDefinitionValInferringUnsafe name info.levelParams type value .opaque
     let lhs := mkAppN (.const info.name <| info.levelParams.map mkLevelParam) xs
-    let name ← mkAuxDeclName (t.attrName.appendAfter "_cast")
+    let name ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
     addDecl name (← castKind.mkRel lhs body) (← castKind.mkProof lhs)
 
     let newLhs ← applyReplacementFun t lhs
@@ -56,7 +56,7 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
     -- Make the goal easier to prove by unfolding the new lhs
     let newType' ← castKind.mkRel ((← unfoldDefinition? newLhs).getD newLhs) newBody
     let newValue ← elabTermEnsuringType stx newType' <* synthesizeSyntheticMVarsNoPostponing
-    let newName ← mkAuxDeclName (t.attrName.appendAfter "_cast")
+    let newName ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
     addDecl newName newType (← instantiateMVars newValue)
 
     let relevantArg? := (t.argInfoAttr.find? (← getEnv) declName).map (·.relevantArg)
