@@ -550,6 +550,7 @@ public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.ConnectShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureKInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
