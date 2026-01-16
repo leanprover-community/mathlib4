@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.EdgeLabeling
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 
@@ -20,60 +21,99 @@ public import Mathlib.Data.Matrix.ColumnRowPartitioned
 
 namespace SimpleGraph
 
-variable {V : Type*} {G : SimpleGraph V} {u v : V} {α : Type*} {a : α}
+variable {V : Type*} {G : SimpleGraph V} {u v : V} {α ι : Type*} {a : α} {f : V → ι}
 
-open Set
+lemma neighborFinset_eq_empty_of_notMem_union
+     {S : Set V} [Fintype ↑S] [Fintype ↑Sᶜ] [DecidableEq V] [Fintype ↑(G.neighborSet v)]
+  (hv : v ∉ S.toFinset ∪ Sᶜ.toFinset) : G.neighborFinset v = ∅ := by grind
 
-def IsCompleteWith {ι : Type} (G : SimpleGraph V) (parts : ι → Set V) : Prop :=
-  ∀ i, ∀ v ∈ parts i, ∀ j, i ≠ j → ∀ u ∈ parts j, G.Adj v u
+variable (G) in
+def IsCompleteMultipartiteWith (f : V → ι) : Prop :=
+  G.Adj = Ne.onFun f
 
-structure CompleteBipartite (G : SimpleGraph V) where
-  left : Set V
-  right : Set V
-  bipartite : G.IsBipartiteWith left right
-  complete : G.IsCompleteWith ![left, right]
+namespace IsCompleteMultipartiteWith
 
-namespace CompleteBipartite
+variable {C : G.IsCompleteMultipartiteWith f}
+include C
 
-variable {C : CompleteBipartite G}
+@[simp]
+lemma adj_iff_ne : G.Adj v u ↔ f v ≠ f u :=
+  congrFun (congrFun C v) u |>.to_iff
 
-lemma adj_of_mem_left_mem_right (hv : v ∈ C.left) (hu : u ∈ C.right) : G.Adj v u := by
-  simpa using C.complete 0 v hv 1 (by decide) u hu
-
-lemma adj_of_mem_right_mem_left (hv : v ∈ C.right) (hu : u ∈ C.left) : G.Adj v u :=
-  adj_of_mem_left_mem_right hu hv |> G.adj_symm
-
-lemma neighborSet_eq_of_mem_left (hv : v ∈ C.left) : G.neighborSet v = C.right := by
-  grind [mem_neighborSet, adj_of_mem_left_mem_right,
-         isBipartiteWith_neighborSet_subset C.bipartite hv]
-
-lemma neighborSet_eq_of_mem_right (hv : v ∈ C.right) : G.neighborSet v = C.left := by
-  grind [mem_neighborSet, isBipartiteWith_comm, IsBipartiteWith.mem_of_mem_adj,
-         C.bipartite, adj_of_mem_right_mem_left]
+lemma neighborSet_eq (v : V) : G.neighborSet v = {u | f v ≠ f u} :=
+  Filter.principal_eq_iff_eq.mp (congrArg Filter.principal (congrFun C v))
 
 section finite
 
-variable [Fintype (G.neighborSet v)] [Fintype C.left] [Fintype C.right] [Fintype α]
+variable [Fintype (G.neighborSet v)] [Fintype {u | f v ≠ f u}]
 
-lemma neighborFinset_eq_of_mem_left (hv : v ∈ C.left.toFinset) :
-    G.neighborFinset v = C.right.toFinset := by
-  grind [neighborFinset_def, neighborSet_eq_of_mem_left, toFinset_congr]
-
-lemma neighborFinset_eq_of_mem_right (hv : v ∈ C.right.toFinset) :
-    G.neighborFinset v = C.left.toFinset := by
-  grind [neighborFinset_def, neighborSet_eq_of_mem_right, toFinset_congr]
-
-lemma neighborFinset_eq_empty_of_notMem_union [DecidableEq V]
-    (hv : v ∉ C.left.toFinset ∪ C.right.toFinset) : G.neighborFinset v = ∅ := by
-  ext u
-  simp only [mem_neighborFinset, Finset.notMem_empty, iff_false]
-  intro h
-  grind [C.bipartite.mem_of_adj <| G.mem_edgeSet.2 h]
+variable (v) in
+lemma neighborFinset_eq :
+    G.neighborFinset v = {u | f v ≠ f u}.toFinset := by
+  simp_rw [neighborFinset_def, C.neighborSet_eq]
 
 end finite
 
-end CompleteBipartite
+end IsCompleteMultipartiteWith
 
+def IsCompleteBipartiteWith (left : Set V) : Prop :=
+  G.IsCompleteMultipartiteWith (· ∈ left)
+
+namespace IsCompleteBipartiteWith
+
+variable {left : Set V} (C : G.IsCompleteBipartiteWith left)
+include C
+
+lemma isCompleteMultipartiteWith : G.IsCompleteMultipartiteWith (· ∈ left) := C
+
+@[simp]
+lemma adj_iff_not_mem (hv : v ∈ left) : G.Adj v u ↔ u ∉ left := by
+  simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
+
+@[simp]
+lemma adj_iff_mem (hv : v ∉ left) : G.Adj v u ↔ u ∈ left := by
+  simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
+
+@[simp]
+lemma neighborSet_eq_of_mem_left (hv : v ∈ left) : G.neighborSet v = leftᶜ := by
+  grind [C.isCompleteMultipartiteWith.neighborSet_eq v, Set.compl_def]
+
+@[simp]
+lemma neighborSet_eq_of_not_mem_left (hv : v ∉ left) : G.neighborSet v = left := by
+  ext u
+  simp [C.isCompleteMultipartiteWith.neighborSet_eq, hv]
+
+lemma bipartite : G.IsBipartiteWith left leftᶜ := by
+  refine ⟨disjoint_compl_right, fun v u hadj ↦ ?_⟩
+  have h : (v ∈ left) ≠ (u ∈ left) := C.isCompleteMultipartiteWith.adj_iff_ne.mp hadj
+  by_cases hv : v ∈ left
+  · exact Or.inl ⟨hv, by simpa [hv] using h⟩
+  · exact Or.inr ⟨(Set.mem_compl_iff left v).mpr hv, (adj_iff_mem C hv).mp hadj⟩
+
+section finite
+
+variable [Fintype ↑left] [Fintype ↑(G.neighborSet v)]
+
+@[simp]
+lemma neighborFinset_eq_of_mem_left [Fintype ↑leftᶜ] (hv : v ∈ left.toFinset) :
+    G.neighborFinset v = leftᶜ.toFinset := by
+  grind only [neighborFinset_def, Set.mem_toFinset, neighborSet_eq_of_mem_left, Set.toFinset_congr]
+
+@[simp]
+lemma neighborFinset_eq_of_not_mem_left (hv : v ∉ left.toFinset) :
+    G.neighborFinset v = left.toFinset := by
+  grind only [neighborFinset_def, neighborSet_eq_of_not_mem_left,
+              Set.mem_toFinset, Set.toFinset_congr]
+
+end finite
+
+end IsCompleteBipartiteWith
+
+variable (G) in
+def IsCompleteBipartite :=
+  ∃ left, G.IsCompleteBipartiteWith left
+
+open Set
 section finite
 
 variable [Fintype V] [Fintype α] {𝓁 : TopEdgeLabeling V α}
@@ -85,11 +125,11 @@ If `c` sums to 0 over `V` and over the left side of each complete bipartite subg
 in a partition of `K_n`, then `∑ c_v^2 = 0`.
 -/
 private lemma aux
-  (completeBipartiteOf : ∀ a, CompleteBipartite <| 𝓁.labelGraph a)
-  [∀ a, Fintype (completeBipartiteOf a).left]
+  (completeBipartiteOf : ∀ a, IsCompleteBipartite <| 𝓁.labelGraph a)
+  [∀ a, Fintype (completeBipartiteOf a).choose]
   (c : V → ℝ)
   (h_sum : ∑ v, c v = 0)
-  (h_left : ∀ a, ∑ v ∈ (completeBipartiteOf a).left, c v = 0) :
+  (h_left : ∀ a, ∑ v ∈ (completeBipartiteOf a).choose, c v = 0) :
     ∑ v, c v ^ 2 = 0 := by
   rcases subsingleton_or_nontrivial V
   · simp_rw [sq, sum_mul_self_eq_zero_iff]
@@ -115,23 +155,26 @@ private lemma aux
     intro a _
     let cbp := completeBipartiteOf a
     let sum_eq (S : Finset V) := ∑ x ∈ S, ∑ i ∈ 𝓁.labelGraph a |>.neighborFinset x, c x * c i = 0
-    have h_L_sum : sum_eq cbp.left.toFinset := by
+    have h_L_sum : sum_eq cbp.choose.toFinset := by
       dsimp [sum_eq]
-      rw [sum_congr rfl fun _ hx ↦ by rw [cbp.neighborFinset_eq_of_mem_left hx, ← mul_sum],
+      rw [sum_congr rfl fun v hv ↦ by
+        rw [cbp.choose_spec.neighborFinset_eq_of_mem_left hv, ← mul_sum],
           ← sum_mul, h_left a, zero_mul]
-    have h_R_sum : sum_eq cbp.right.toFinset := by
+    have h_R_sum : sum_eq cbp.chooseᶜ.toFinset := by
       dsimp [sum_eq]
-      rw [sum_congr rfl fun _ hx ↦ by rw [cbp.neighborFinset_eq_of_mem_right hx, ← mul_sum],
+      rw [sum_congr rfl fun _ hx ↦ by
+        rw [cbp.choose_spec.neighborFinset_eq_of_not_mem_left (by grind), ← mul_sum],
           h_left]
       simp only [mul_zero, sum_const_zero]
-    rw [← sum_subset (subset_univ (cbp.left.toFinset ∪ cbp.right.toFinset)) <| fun _ _ hu ↦ by rw
-      [cbp.neighborFinset_eq_empty_of_notMem_union hu, sum_empty],
-        sum_union <| Finset.disjoint_left.mpr fun v hvL hvR ↦
-          Set.disjoint_left.mp cbp.bipartite.disjoint
-            (Set.mem_toFinset.mp hvL) (Set.mem_toFinset.mp hvR),
-        h_L_sum,
-        h_R_sum,
-        add_zero]
+    rw [← sum_subset (subset_univ (cbp.choose.toFinset ∪ cbp.chooseᶜ.toFinset)) <|
+      fun _ _ hu ↦ by
+        rw [neighborFinset_eq_empty_of_notMem_union hu, sum_empty],
+      sum_union <| Finset.disjoint_left.mpr fun v hvL hvR ↦
+        Set.disjoint_left.mp cbp.choose_spec.bipartite.disjoint
+          (Set.mem_toFinset.mp hvL) (Set.mem_toFinset.mp hvR),
+      h_L_sum,
+      h_R_sum,
+      add_zero]
 
 open Fintype LinearMap in
 open scoped Matrix in
@@ -142,19 +185,19 @@ In a complete graph on `|V|` vertices, any edge labeling into complete bipartite
 at least `|V| - 1` distinct labels.
 -/
 theorem card_le_card_labels_add_one_of_CompleteBipartite
-  (completeBipartiteOf : ∀ a, CompleteBipartite <| 𝓁.labelGraph a) :
+  (completeBipartiteOf : ∀ a, IsCompleteBipartite <| 𝓁.labelGraph a) :
     card V ≤ card α + 1 := by
   classical
   by_contra! h
   let M : Matrix (Fin 1 ⊕ α) V ℝ := Matrix.fromRows
     (Matrix.replicateCol V ![1])
-    (Matrix.of fun m n ↦ (completeBipartiteOf m).left.indicator 1 n)
+    (Matrix.of fun m n ↦ (completeBipartiteOf m).choose.indicator 1 n)
   obtain ⟨c, hc, hc_nezero⟩ : ∃ x ∈ ker M.toLin', x ≠ 0 := (ker _).ne_bot_iff.mp <| by
     apply ker_ne_bot_of_finrank_lt
     simp only [Module.finrank_fintype_fun_eq_card, card_sum, card_unique]
     grind
-  have (a : α) : ∑ v ∈ (completeBipartiteOf a).left, c v = 0 := by
-    suffices ∑ x, ((completeBipartiteOf a).left.toFinset : Set _).indicator c x = 0 by
+  have (a : α) : ∑ v ∈ (completeBipartiteOf a).choose, c v = 0 := by
+    suffices ∑ x, ((completeBipartiteOf a).choose.toFinset : Set _).indicator c x = 0 by
       rwa [sum_indicator_subset _ (by simp)] at this
     have : (M *ᵥ c) (.inr a) = 0 := by simp_all
     simp only [M, Matrix.mulVec, dotProduct, Set.indicator_apply] at this
