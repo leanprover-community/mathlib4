@@ -45,101 +45,6 @@ should prove a version of `SchwartzMap.laplacian_eq_sum`.
 
 variable {ι ι' 𝕜 R E F F₁ F₂ F₃ V₁ V₂ V₃ : Type*}
 
-namespace LineDeriv
-
-variable [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃]
-  [AddCommGroup V₂] [AddCommGroup V₃]
-
-/-! ## Laplacian of `LineDeriv` -/
-
-section TensorProduct
-
-variable [CommRing R] [AddCommGroup E] [Module R E]
-  [Module R V₂] [Module R V₃]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul R E V₂ V₃]
-  [LineDerivLeftAdd E V₁ V₂] [LineDerivLeftSMul R E V₁ V₂]
-  [LineDerivLeftAdd E V₂ V₃] [LineDerivLeftSMul R E V₂ V₃]
-
-open InnerProductSpace TensorProduct
-
-variable (R) in
-/-- The second derivative as a bilinear map.
-
-Mainly used to give an abstract definition of the Laplacian. -/
-def bilinearLineDerivTwo (f : V₁) : E →ₗ[R] E →ₗ[R] V₃ :=
-  LinearMap.mk₂ R (∂_{·} <| ∂_{·} f) (by simp [lineDerivOp_left_add])
-    (by simp [lineDerivOp_left_smul]) (by simp [lineDerivOp_left_add, lineDerivOp_add])
-    (by simp [lineDerivOp_left_smul, lineDerivOp_smul])
-
-variable (R) in
-/-- The second derivative as a linear map from the tensor product.
-
-Mainly used to give an abstract definition of the Laplacian. -/
-def tensorLineDerivTwo (f : V₁) : E ⊗[R] E →ₗ[R] V₃ :=
-  lift (bilinearLineDerivTwo R f)
-
-lemma tensorLineDerivTwo_eq_lineDerivOp_lineDerivOp (f : V₁) (v w : E) :
-    tensorLineDerivTwo R f (v ⊗ₜ[R] w) = ∂_{v} (∂_{w} f) := lift.tmul _ _
-
-end TensorProduct
-
-section InnerProductSpace
-
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-
-section LinearMap
-
-variable [CommRing R]
-  [Module R E] [Module ℝ V₂] [Module ℝ V₃]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul ℝ E V₂ V₃]
-  [LineDerivLeftAdd E V₁ V₂] [LineDerivLeftSMul ℝ E V₁ V₂]
-  [LineDerivLeftAdd E V₂ V₃] [LineDerivLeftSMul ℝ E V₂ V₃]
-
-open TensorProduct InnerProductSpace
-
-theorem tensorLineDerivTwo_canonicalCovariantTensor_eq_sum [Fintype ι] (v : OrthonormalBasis ι ℝ E)
-    (f : V₁) : tensorLineDerivTwo ℝ f (canonicalCovariantTensor E) = ∑ i, ∂_{v i} (∂_{v i} f) := by
-  simp [InnerProductSpace.canonicalCovariantTensor_eq_sum E v,
-    tensorLineDerivTwo_eq_lineDerivOp_lineDerivOp]
-
-end LinearMap
-
-section ContinuousLinearMap
-
-section definition
-
-variable [CommRing R]
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [AddCommGroup V₁] [Module R V₁] [Module R V₂] [Module R V₃]
-  [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
-  [LineDerivAdd E V₁ V₂] [LineDerivSMul R E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul R E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
-
-variable (R E V₁) in
-/-- The Laplacian defined by iterated `lineDerivOp` as a continuous linear map. -/
-def laplacianCLM : V₁ →L[R] V₃ :=
-  ∑ i, lineDerivOpCLM R V₂ (stdOrthonormalBasis ℝ E i) ∘L
-    lineDerivOpCLM R V₁ (stdOrthonormalBasis ℝ E i)
-
-end definition
-
-variable [AddCommGroup V₁] [Module ℝ V₁] [Module ℝ V₂] [Module ℝ V₃]
-  [TopologicalSpace V₁] [TopologicalSpace V₂] [TopologicalSpace V₃] [IsTopologicalAddGroup V₃]
-  [LineDerivAdd E V₁ V₂] [LineDerivSMul ℝ E V₁ V₂] [ContinuousLineDeriv E V₁ V₂]
-  [LineDerivAdd E V₂ V₃] [LineDerivSMul ℝ E V₂ V₃] [ContinuousLineDeriv E V₂ V₃]
-  [LineDerivLeftAdd E V₁ V₂] [LineDerivLeftSMul ℝ E V₁ V₂]
-  [LineDerivLeftAdd E V₂ V₃] [LineDerivLeftSMul ℝ E V₂ V₃]
-
-theorem laplacianCLM_eq_sum [Fintype ι] (v : OrthonormalBasis ι ℝ E) (f : V₁) :
-    laplacianCLM ℝ E V₁ f = ∑ i, ∂_{v i} (∂_{v i} f) := by
-  simp [laplacianCLM, ← tensorLineDerivTwo_canonicalCovariantTensor_eq_sum]
-
-end ContinuousLinearMap
-
-end InnerProductSpace
-
-end LineDeriv
-
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F]
 
@@ -150,16 +55,6 @@ namespace SchwartzMap
 variable [NormedSpace ℝ F]
 
 open Laplacian LineDeriv
-
-instance instLineDerivLeftAdd : LineDerivLeftAdd E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_left_add v w f := by
-    ext x
-    simp [lineDerivOp_apply_eq_fderiv]
-
-instance instLineDerivLeftSMul : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
-  lineDerivOp_left_smul r y f := by
-    ext x
-    simp [lineDerivOp_apply_eq_fderiv]
 
 instance instLaplacian : Laplacian 𝓢(E, F) 𝓢(E, F) where
   laplacian := laplacianCLM ℝ E 𝓢(E, F)

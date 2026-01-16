@@ -313,8 +313,15 @@ continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
 
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := rfl
+
 instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+  lineDerivOp_left_add x y f := by
+    ext u
+    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
 
 instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
@@ -329,10 +336,6 @@ instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F)
 
 theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
   PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
-
-@[simp]
-theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
-    ∂_{m} f g = f (- ∂_{m} g) := rfl
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]

@@ -1033,16 +1033,28 @@ continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F) f
 
+theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
+  f.differentiableAt.lineDeriv_eq_fderiv.symm
+
+theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
+    ∂_{m} f x = fderiv ℝ f x m := rfl
+
 instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).map_add
+  lineDerivOp_left_add v w f := by
+    ext x
+    simp [lineDerivOp_apply_eq_fderiv]
 
 instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F)).map_smul
 
+instance instLineDerivLeftSMul : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp_left_smul r y f := by
+    ext x
+    simp [lineDerivOp_apply_eq_fderiv]
+
 instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
   continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM ℝ E F)).continuous
-
-open LineDeriv
 
 theorem lineDerivOpCLM_eq (m : E) :
     lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜 E F) := rfl
@@ -1052,12 +1064,6 @@ alias pderivCLM := lineDerivOpCLM
 
 @[deprecated (since := "2025-11-25")]
 alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
-
-theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
-  f.differentiableAt.lineDeriv_eq_fderiv.symm
-
-theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
-    ∂_{m} f x = fderiv ℝ f x m := rfl
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
@@ -1490,5 +1496,6 @@ theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜
 
 end integration_by_parts
 
-
 end SchwartzMap
+
+set_option linter.style.longFile 1700
