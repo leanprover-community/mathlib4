@@ -16,8 +16,6 @@ public import Mathlib.RingTheory.Morita.Basic
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
   the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix.
 
-## TODO (Edison)
-- Prove `R` and `Mₙ(R)` are morita-equivalent.
 -/
 
 @[expose] public section
