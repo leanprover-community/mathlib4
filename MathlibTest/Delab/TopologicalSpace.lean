@@ -2,9 +2,11 @@ import Mathlib.Topology.Order
 
 open TopologicalSpace
 
--- TODO If and when `(try)SynthInstance` in `#check` is fixed, replace `ℕ` and `Prop` with variables
+-- TODO If and when `(try)SynthInstance` in `#check` is fixed,
+-- replace `ℕ` and `Prop` with variables
 
 variable {α β : Type*} [TopologicalSpace α]
+  {τ₁ τ₂ : TopologicalSpace ℕ} {σ₁ σ₂ : TopologicalSpace Prop}
   (f : ℕ → α) (g : β → α) (h : α → β) (p : ℕ → Prop)
   (s : Set ℕ) (t : Set β)
 
@@ -47,27 +49,27 @@ section unary
 
 section applied
 
--- For unary ops, we check that `induced f inferInstance` (not the canonical `TopologicalSpace ℕ`)
+-- For unary ops, we check that
+-- `τ₁`, `τ₂`, (multiple noncanonical `TopologicalSpace ℕ` instances)
 -- and `induced g inferInstance` (`β` has no `TopologicalSpace` instance) trigger the delab and
--- `inferInstance` does not
+-- `instTopologicalSpaceNat` does not.
+-- (Note that, if there are extra instances of `TopologicalSpace _` lying around, `inferInstance`
+-- prioritizes the local variable over the canonical instance.)
+
+/-- info: [IsOpen[τ₁] s, IsOpen[τ₂] s, IsOpen[induced g inferInstance] t, IsOpen s] : List Prop -/
+#guard_msgs(info) in
+#check [IsOpen[τ₁] s, IsOpen[τ₂] s, IsOpen[induced g inferInstance] t,
+IsOpen[instTopologicalSpaceNat] s]
 
 /-- info:
-[IsOpen[induced f inferInstance] s, IsOpen[induced g inferInstance] t, IsOpen s] : List Prop -/
+[IsClosed[τ₁] s, IsClosed[τ₂] s, IsClosed[induced g inferInstance] t, IsClosed s] : List Prop -/
 #guard_msgs(info) in
-#check [IsOpen[induced f inferInstance] s, IsOpen[induced g inferInstance] t,
-  IsOpen[inferInstance] s]
+#check [IsClosed[τ₁] s, IsClosed[τ₂] s, IsClosed[induced g inferInstance] t,
+IsClosed[instTopologicalSpaceNat] s]
 
-/-- info:
-[IsClosed[induced f inferInstance] s, IsClosed[induced g inferInstance] t,
-IsClosed s] : List Prop -/
+/-- info: [closure[τ₁] s, closure[τ₂] s, closure s] : List (Set ℕ) -/
 #guard_msgs(info) in
-#check [IsClosed[induced f inferInstance] s, IsClosed[induced g inferInstance] t,
-  IsClosed[inferInstance] s]
-
-/-- info:
-[closure[induced f inferInstance] s, closure s] : List (Set ℕ) -/
-#guard_msgs(info) in
-#check [closure[induced f inferInstance] s, closure[inferInstance] s]
+#check [closure[τ₁] s, closure[τ₂] s, closure[instTopologicalSpaceNat] s]
 
 /-- info: closure[induced g inferInstance] t : Set β -/
 #guard_msgs(info) in
@@ -79,26 +81,26 @@ section unapplied
 
 -- Same as above, except with unapplied operators.
 
-/-- info: [IsOpen[induced f inferInstance], IsOpen] : List (Set ℕ → Prop) -/
+/-- info: [IsOpen[τ₁], IsOpen[τ₂], IsOpen] : List (Set ℕ → Prop) -/
 #guard_msgs(info) in
-#check [IsOpen[induced f inferInstance], IsOpen[inferInstance]]
+#check [IsOpen[τ₁], IsOpen[τ₂], IsOpen[instTopologicalSpaceNat]]
 
 /-- info: IsOpen[induced g inferInstance] : Set β → Prop -/
 #guard_msgs(info) in
 #check IsOpen[induced g inferInstance]
 
-
-/-- info: [IsClosed[induced f inferInstance], IsClosed] : List (Set ℕ → Prop) -/
+/-- info: [IsClosed[τ₁], IsClosed[τ₂], IsClosed]
+: List (Set ℕ → Prop) -/
 #guard_msgs(info) in
-#check [IsClosed[induced f inferInstance], IsClosed[inferInstance]]
+#check [IsClosed[τ₁], IsClosed[τ₂], IsClosed[instTopologicalSpaceNat]]
 
 /-- info: IsClosed[induced g inferInstance] : Set β → Prop -/
 #guard_msgs(info) in
 #check IsClosed[induced g inferInstance]
 
-/-- info: [closure[induced f inferInstance], closure] : List (Set ℕ → Set ℕ) -/
+/-- info: [closure[τ₁], closure[τ₂], closure] : List (Set ℕ → Set ℕ) -/
 #guard_msgs(info) in
-#check [closure[induced f inferInstance], closure[inferInstance]]
+#check [closure[τ₁], closure[τ₂], closure[instTopologicalSpaceNat]]
 
 /-- info: closure[induced g inferInstance] : Set β → Set β -/
 #guard_msgs(info) in
@@ -111,24 +113,29 @@ section binary
 
 section applied
 
--- For binary ops, we check that
--- `(co)induced f inferInstance` (not the canonical instance on `ℕ`/`α`) and
+-- For binary ops, we check each argument separately: that is,
+-- `τ₁, τ₂`, `σ₁, σ₂` (multiple canonical instances on `ℕ`/`Prop`) and
 -- `induced g inferInstance` and `coinduced h inferInstance` (no instance on `β`)
--- in either or both slots do trigger the delab and that `inferInstance` in both slots does not
+-- in either or both slots do trigger the delab and that
+-- `instTopologicalSpaceNat`, `sierpinskiSpace` does not.
 
-/-- info: [Continuous[induced f inferInstance, inferInstance] f,
-Continuous[induced g inferInstance, inferInstance] g,
-  Continuous[inferInstance, coinduced f inferInstance] f,
-Continuous[inferInstance, coinduced h inferInstance] h,
-  Continuous[induced p inferInstance, coinduced p inferInstance] p,
-Continuous p] : List Prop -/
+/-- info: [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p,
+  Continuous[induced g inferInstance, inferInstance] g] : List Prop -/
 #guard_msgs(info) in
-#check [Continuous[induced f inferInstance, inferInstance] f,
-  Continuous[induced g inferInstance, inferInstance] g,
-  Continuous[inferInstance, coinduced f inferInstance] f,
-  Continuous[inferInstance, coinduced h inferInstance] h,
-  Continuous[induced p inferInstance, coinduced p inferInstance] p,
-  Continuous[inferInstance, inferInstance] p]
+#check [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p,
+  Continuous[induced g inferInstance, inferInstance] g]
+
+/-- info: [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p,
+  Continuous[inferInstance, coinduced h inferInstance] h] : List Prop -/
+#guard_msgs(info) in
+#check [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p,
+  Continuous[inferInstance, coinduced h inferInstance] h]
+
+/-- info: [Continuous[induced p inferInstance, coinduced p inferInstance] p, Continuous p]
+: List Prop -/
+#guard_msgs(info) in
+#check [Continuous[induced p inferInstance, coinduced p inferInstance] p,
+  Continuous[instTopologicalSpaceNat, sierpinskiSpace] p]
 
 end applied
 
@@ -136,25 +143,31 @@ section unapplied
 
 -- Same as above, except for unapplied operators.
 
-/-- info: [Continuous[induced p inferInstance, inferInstance],
-Continuous[inferInstance, coinduced p inferInstance],
-  Continuous[induced p inferInstance, coinduced p inferInstance],
-Continuous] : List ((ℕ → Prop) → Prop) -/
+/-- info: [Continuous[τ₁, sierpinskiSpace], Continuous[τ₂, sierpinskiSpace]]
+: List ((ℕ → Prop) → Prop) -/
 #guard_msgs(info) in
-#check [Continuous[induced p inferInstance, inferInstance],
-  Continuous[inferInstance, coinduced p inferInstance],
-  Continuous[induced p inferInstance, coinduced p inferInstance],
-  Continuous[inferInstance, inferInstance]]
+#check [Continuous[τ₁, sierpinskiSpace], Continuous[τ₂, sierpinskiSpace]]
 
 /-- info:
 Continuous[induced g inferInstance, inferInstanceAs (TopologicalSpace α)] : (β → α) → Prop -/
 #guard_msgs(info) in
 #check Continuous[induced g inferInstance, inferInstanceAs (TopologicalSpace α)]
 
+/-- info: [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
+: List ((ℕ → Prop) → Prop) -/
+#guard_msgs(info) in
+#check [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
+
 /-- info:
 Continuous[inferInstanceAs (TopologicalSpace α), coinduced h inferInstance] : (α → β) → Prop -/
 #guard_msgs(info) in
 #check Continuous[inferInstanceAs (TopologicalSpace α), coinduced h inferInstance]
+
+/-- info: [Continuous[induced p inferInstance, coinduced p inferInstance], Continuous]
+: List ((ℕ → Prop) → Prop) -/
+#guard_msgs(info) in
+#check [Continuous[induced p inferInstance, coinduced p inferInstance],
+  Continuous[instTopologicalSpaceNat, sierpinskiSpace]]
 
 end unapplied
 end binary
