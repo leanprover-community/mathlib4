@@ -740,7 +740,7 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
   intro a ha
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
-  exact ContextFreeGrammar.Embedding.Good.nonterminal g₁.initial
+  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
 
 private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)]
@@ -750,7 +750,7 @@ private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
   intro a ha
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
-  exact ContextFreeGrammar.Embedding.Good.nonterminal g₂.initial
+  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
 
 private lemma map_inl_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inl)) :
     ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
