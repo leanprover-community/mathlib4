@@ -142,6 +142,8 @@ This means that `a ≤ b` and there is no element in between. This is denoted `a
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
+to_dual_insert_cast WCovBy := by grind
+
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
@@ -150,6 +152,8 @@ between. This is denoted `a ⋖ b`. -/
 @[to_dual self (reorder := 3 4)]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
+
+to_dual_insert_cast CovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy

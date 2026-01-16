@@ -66,7 +66,7 @@ partial def unfoldConsts (b : UnfoldBoundaries) (e : Expr) : SimpM Expr := do
   let e ← do
     let { expr, proof? := some proof } ← Simp.simp eType | pure e
     trace[translate_detail] "unfoldConsts: added a cast from {eType} to {expr}"
-    mkAppOptM ``cast #[eType, expr, proof, e]
+    mkAppOptM ``Eq.mp #[eType, expr, proof, e]
   let eTypeWhnf ← whnf (← inferType e)
   if let .const c us := eTypeWhnf.getAppFn then
     if let some (cast, _) := b.casts.find? c then
