@@ -249,7 +249,8 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] {f g : R[X]}
+variable [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B]
+  [IsDomain A] [IsDomain B] [Algebra R A] [Algebra R B]
 
 theorem splits_iff_exists_multiset :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X - C ·)).prod := by
@@ -303,16 +304,16 @@ theorem Splits.eval_eq_prod_roots_of_monic (hf : Splits f) (hm : Monic f) (x : R
   simp [hf.eval_eq_prod_roots, hm]
 
 omit [IsDomain R] in
-theorem Splits.aeval_eq_prod_aroots {A : Type*} [CommRing A] [IsDomain A]
-    [IsSimpleRing R] [Algebra R A] (hf : (f.map (algebraMap R A)).Splits) (x : A) :
+theorem Splits.aeval_eq_prod_aroots [IsSimpleRing R]
+    (hf : (f.map (algebraMap R A)).Splits) (x : A) :
     f.aeval x = algebraMap R A f.leadingCoeff * ((f.aroots A).map (x - ·)).prod := by
   simp [← eval_map_algebraMap, hf.eval_eq_prod_roots]
 
 omit [IsDomain R] in
-theorem Splits.aeval_eq_prod_aroots_of_monic {A : Type*} [CommRing A] [IsDomain A]
-    [IsSimpleRing R] [Algebra R A] (hf : (f.map (algebraMap R A)).Splits) (hm : Monic f) (x : A) :
+theorem Splits.aeval_eq_prod_aroots_of_monic
+    (hf : (f.map (algebraMap R A)).Splits) (hm : Monic f) (x : A) :
     f.aeval x = ((f.aroots A).map (x - ·)).prod := by
-  simp [hf.aeval_eq_prod_aroots, hm]
+  simp [hf.eval_eq_prod_roots_of_monic (hm.map (algebraMap R A)), ← eval_map_algebraMap]
 
 theorem Splits.eval_derivative [DecidableEq R] (hf : f.Splits) (x : R) :
     eval x f.derivative = f.leadingCoeff *
@@ -380,20 +381,27 @@ theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimp
   exact ⟨x, hx⟩
 
 omit [IsDomain R] in
-theorem Splits.image_rootSet {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
-    [IsSimpleRing A] [Algebra R A] [Algebra R B] (hf : (f.map (algebraMap R A)).Splits)
+theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
     ← hf.map_roots, map_map, g.comp_algebraMap, ← rootSet]
 
 omit [IsDomain R] in
-theorem Splits.adjoin_rootSet_eq_range {A B : Type*} [CommRing A] [CommRing B]
-    [IsDomain A] [IsDomain B] [IsSimpleRing A] [Algebra R A] [Algebra R B]
+theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
     (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
     Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
   rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective g.injective).eq_iff
+
+omit [IsDomain R] in
+theorem Splits.image_rootSet_of_monic (hf : (f.map (algebraMap R A)).Splits) (hfm : f.Monic)
+    (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
+  classical
+  have key := (hfm.map (algebraMap R A)).roots_map_of_card_eq_natDegree (g : A →+* B)
+    hf.natDegree_eq_card_roots.symm
+  rw [map_map, g.comp_algebraMap] at key
+  simp [rootSet, aroots, ← key, Multiset.toFinset_map]
 
 theorem Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots (hf : Splits f) :
     f.coeff 0 = (-1) ^ f.natDegree * f.leadingCoeff * f.roots.prod := by
