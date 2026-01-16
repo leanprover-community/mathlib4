@@ -229,8 +229,6 @@ theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
     (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
 
-variable {J : GrothendieckTopology C}
-
 end Subcanonical
 
 variable (J : GrothendieckTopology C)
