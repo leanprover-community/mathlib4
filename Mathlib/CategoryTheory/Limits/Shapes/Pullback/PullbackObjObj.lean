@@ -20,7 +20,7 @@ we have a canonical "inclusion" `sq₁₂.ι : sq₁₂.pt ⟶ (F.obj Y₁).obj 
 
 If `C₃` has pushouts, then we define the Leibniz pushout (often called pushout-product) as the
 canonical inclusion `(PushoutObjObj.ofHasPushout F f₁ f₂).ι`. This defines a bifunctor
-`LeibnizPushout.leftBifunctor F : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃`.
+`F.leibnizPushout : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃`.
 
 Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
 morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃`,
@@ -32,10 +32,11 @@ projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
 
 If `C₂` has pullbacks, then we define the Leibniz pullback (often called pullback-hom) as the
 canonical projection `(PullbackObjObj.ofHasPullback G f₁ f₃).π`. This defines a bifunctor
-`LeibnizPullback.rightBifunctor G : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`.
+`G.leibnizPullback : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`.
 
 ## References
 
+* [Emily Riehl, Dominic Verity, *Elements of ∞-Category Theory*, Definition C.2.8][RV22]
 * https://ncatlab.org/nlab/show/pushout-product
 * https://ncatlab.org/nlab/show/pullback-power
 
@@ -119,6 +120,103 @@ lemma ofHasPushout_ι
     (IsPushout.of_hasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)).desc
       ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (((F.map f₁).naturality f₂).symm) := rfl
 
+noncomputable section Arrow
+
+variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
+  (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
+  (sq₁₂' : F.PushoutObjObj f₁'.hom f₂.hom)
+
+/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
+  `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a morphism between the induced
+  pushout maps. -/
+@[simps]
+def mapArrowLeft (sq : f₁ ⟶ f₁') :
+    Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
+  left := sq₁₂.isPushout.desc
+    ((F.map sq.right).app f₂.left ≫ sq₁₂'.inl)
+    ((F.map sq.left).app f₂.right ≫ sq₁₂'.inr)
+    (by grind [sq.w, sq₁₂'.isPushout.w])
+  right := (F.map sq.right).app f₂.right
+  w := by
+    apply sq₁₂.isPushout.hom_ext
+    all_goals simp [← NatTrans.comp_app, ← Functor.map_comp]
+
+@[simp]
+lemma mapArrowLeft_id :
+    mapArrowLeft sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by
+  apply Arrow.hom_ext
+  · apply sq₁₂.isPushout.hom_ext
+    all_goals simp
+  · simp
+
+@[simp]
+lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁''.hom f₂.hom)
+    (sq : f₁ ⟶ f₁') (sq' : f₁' ⟶ f₁'') :
+    (mapArrowLeft sq₁₂ sq₁₂' sq) ≫ (mapArrowLeft sq₁₂' sq₁₂'' sq') =
+      mapArrowLeft sq₁₂ sq₁₂'' (sq ≫ sq') := by
+  apply Arrow.hom_ext
+  · apply sq₁₂.isPushout.hom_ext
+    all_goals simp
+  · simp
+
+/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
+  `f₂ : Arrow C₂`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
+  pushout maps. -/
+@[simps]
+def ι_iso_of_iso_left (iso : f₁ ≅ f₁') :
+    Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
+  hom := mapArrowLeft sq₁₂ sq₁₂' iso.hom
+  inv := mapArrowLeft sq₁₂' sq₁₂ iso.inv
+
+variable {f₁ : Arrow C₁} {f₂ f₂' : Arrow C₂}
+    (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
+    (sq₁₂' : F.PushoutObjObj f₁.hom f₂'.hom)
+
+/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
+  `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a morphism between the induced
+  pushout maps. -/
+@[simps]
+def mapArrowRight (sq : f₂ ⟶ f₂') :
+    Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
+  left :=   sq₁₂.isPushout.desc
+    (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
+    (((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr)
+    (by grind [sq.w, sq₁₂'.isPushout.w])
+  right := (F.obj f₁.right).map sq.right
+  w := by
+    apply sq₁₂.isPushout.hom_ext
+    · simp [← map_comp]
+    · cat_disch
+
+@[simp]
+lemma mapArrowRight_id :
+    mapArrowRight sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by
+  apply Arrow.hom_ext
+  · apply sq₁₂.isPushout.hom_ext
+    all_goals simp
+  · simp
+
+@[simp]
+lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f₁.hom f₂''.hom)
+    (sq : f₂ ⟶ f₂') (sq' : f₂' ⟶ f₂'') :
+    (mapArrowRight sq₁₂ sq₁₂' sq) ≫ (mapArrowRight sq₁₂' sq₁₂'' sq') =
+      mapArrowRight sq₁₂ sq₁₂'' (sq ≫ sq') := by
+  apply Arrow.hom_ext
+  · apply sq₁₂.isPushout.hom_ext
+    all_goals simp
+  · simp
+
+/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
+  `f₂' : Arrow C₂`, and an isomorphism `f₂ ≅ f₂'`, this defines an isomorphism of the induced
+  pushout maps. -/
+@[simps]
+def ι_iso_of_iso_right (iso : f₂ ≅ f₂') :
+    Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
+  hom := mapArrowRight sq₁₂ sq₁₂' iso.hom
+  inv := mapArrowRight sq₁₂' sq₁₂ iso.inv
+
+end Arrow
+
 end PushoutObjObj
 
 end
@@ -134,136 +232,20 @@ end
   `(F.obj X₁).obj Y₂` ----> `(F.obj Y₁).obj Y₂`
 ```
 -/
-@[simp]
+@[simps]
 noncomputable
-abbrev leibnizPushout [HasPushouts C₃]
-    {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₂ Y₂ : C₂} (f₂ : X₂ ⟶ Y₂) :=
-  (Functor.PushoutObjObj.ofHasPushout F f₁ f₂).ι
-
-namespace LeibnizPushout
-
-noncomputable section Functor
-
-variable (f₁ : Arrow C₁) {f₂ f₂' : Arrow C₂} (sq : f₂ ⟶ f₂')
-  (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
-  (sq₁₂' : F.PushoutObjObj f₁.hom f₂'.hom)
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
-  `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a map between the points of the
-  pushouts. -/
-@[simp]
-def leftFunctor_map_left :
-    sq₁₂.pt ⟶ sq₁₂'.pt :=
-  sq₁₂.isPushout.desc
-    (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
-    (((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr)
-    (by grind [sq.w, sq₁₂'.isPushout.w])
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
-  `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a morphism between the induced
-  pushout maps. -/
-@[simp]
-def leftFunctor_map :
-    Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
-  left := leftFunctor_map_left F f₁ sq sq₁₂ sq₁₂'
-  right := (F.obj f₁.right).map sq.right
-  w := by
-    apply sq₁₂.isPushout.hom_ext
-    · simp [← map_comp]
-    · cat_disch
-
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, and a morphism
-  `f₁ : X₁ ⟶ Y₁` in `C₁`, this defines a functor `Arrow C₂ ⥤ Arrow C₃` by taking the
-  (left) Leibniz pushout with `f₁`. -/
-@[simp]
-def leftFunctor [HasPushouts C₃] (f₁ : Arrow C₁) : Arrow C₂ ⥤ Arrow C₃ where
-  obj f₂ := F.leibnizPushout f₁.hom f₂.hom
-  map sq := leftFunctor_map F f₁ sq (PushoutObjObj.ofHasPushout F _ _)
-    (PushoutObjObj.ofHasPushout F _ _)
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
-  `f₂' : Arrow C₂`, and an isomorphism `f₂ ≅ f₂'`, this defines an isomorphism of the induced
-  pushout maps. -/
-@[simps]
-def _root_.CategoryTheory.Functor.PushoutObjObj.ι_iso_of_iso_right (iso : f₂ ≅ f₂') :
-    Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
-  hom := LeibnizPushout.leftFunctor_map F f₁ iso.hom sq₁₂ sq₁₂'
-  inv := LeibnizPushout.leftFunctor_map F f₁ iso.inv sq₁₂' sq₁₂
-  hom_inv_id := by
-    apply Arrow.hom_ext
-    · apply sq₁₂.isPushout.hom_ext
-      all_goals simp [← map_comp_assoc]
-    · simp [← map_comp]
-  inv_hom_id := by
-    apply Arrow.hom_ext
-    · apply sq₁₂'.isPushout.hom_ext
-      all_goals simp [← map_comp_assoc]
-    · simp [← map_comp]
-
-variable {f₁ f₁' : Arrow C₁} (f₂ : Arrow C₂) (sq : f₁ ⟶ f₁')
-  (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
-  (sq₁₂' : F.PushoutObjObj f₁'.hom f₂.hom)
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
-  `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a map between the points of the
-  pushouts. -/
-@[simp]
-def leftBifunctor_map_left :
-    sq₁₂.pt ⟶ sq₁₂'.pt :=
-  sq₁₂.isPushout.desc
-    ((F.map sq.right).app f₂.left ≫ sq₁₂'.inl)
-    ((F.map sq.left).app f₂.right ≫ sq₁₂'.inr)
-    (by grind [sq.w, sq₁₂'.isPushout.w])
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
-  `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a morphism between the induced
-  pushout maps. -/
-@[simps]
-def leftBifunctor_map_app :
-    Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
-  left := leftBifunctor_map_left F f₂ sq sq₁₂ sq₁₂'
-  right := (F.map sq.right).app f₂.right
-  w := by
-    apply sq₁₂.isPushout.hom_ext
-    all_goals simp [← NatTrans.comp_app, ← Functor.map_comp]
-
-/-- Given `f₁ f₁' : Arrow C₁` and a morphism `f₁ ⟶ f₁'`, this defines a natural transformation
-  between the (left) Leibniz pushout functors induced by `f₁` and `f₁'`. -/
-@[simp]
-def leftBifunctor_map [HasPushouts C₃] {f₁ f₁' : Arrow C₁} (sq : f₁ ⟶ f₁') :
-    leftFunctor F f₁ ⟶ leftFunctor F f₁' where
-  app f₂ := leftBifunctor_map_app F f₂ sq (PushoutObjObj.ofHasPushout F _ _)
-    (PushoutObjObj.ofHasPushout F _ _)
-
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the `leibnizPushout`
-  construction defines a bifunctor `Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃`. -/
-@[simp]
-def leftBifunctor [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ where
-  obj := leftFunctor F
-  map := leftBifunctor_map F
-
-/-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
-  `f₂ : Arrow C₂`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
-  pushout maps. -/
-@[simps]
-def _root_.CategoryTheory.Functor.PushoutObjObj.ι_iso_of_iso_left (iso : f₁ ≅ f₁') :
-    Arrow.mk sq₁₂.ι ≅ Arrow.mk sq₁₂'.ι where
-  hom := LeibnizPushout.leftBifunctor_map_app F f₂ iso.hom sq₁₂ sq₁₂'
-  inv := LeibnizPushout.leftBifunctor_map_app F f₂ iso.inv sq₁₂' sq₁₂
-  hom_inv_id := by
-    apply Arrow.hom_ext
-    · apply sq₁₂.isPushout.hom_ext
-      all_goals simp [← NatTrans.comp_app_assoc, ← map_comp]
-    · simp [← NatTrans.comp_app, ← map_comp]
-  inv_hom_id := by
-    apply Arrow.hom_ext
-    · apply sq₁₂'.isPushout.hom_ext
-      all_goals simp [← NatTrans.comp_app_assoc, ← map_comp]
-    · simp [← NatTrans.comp_app, ← map_comp]
-
-end Functor
-
-end LeibnizPushout
+def leibnizPushout [HasPushouts C₃] : Arrow C₁ ⥤ Arrow C₂ ⥤ Arrow C₃ where
+  obj f₁ :=
+    { obj f₂ := Arrow.mk (PushoutObjObj.ofHasPushout F f₁.hom f₂.hom).ι
+      map sq :=
+        PushoutObjObj.mapArrowRight
+          (PushoutObjObj.ofHasPushout F ..)
+          (PushoutObjObj.ofHasPushout F ..) sq }
+  map sq :=
+    { app f₂ :=
+        PushoutObjObj.mapArrowLeft
+          (PushoutObjObj.ofHasPushout F ..)
+          (PushoutObjObj.ofHasPushout F ..) sq }
 
 section
 
@@ -312,6 +294,103 @@ lemma ofHasPullback_π
     (IsPullback.of_hasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)).lift
       ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) ((G.map f₁.op).naturality f₃).symm := rfl
 
+noncomputable section Arrow
+
+variable {f₁ f₁' : Arrow C₁} {f₃ : Arrow C₃}
+  (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
+  (sq₁₃' : G.PullbackObjObj f₁'.hom f₃.hom)
+
+/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
+  `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a morphism between the induced
+  pullback maps. -/
+@[simps]
+def mapArrowLeft (sq : f₁' ⟶ f₁) :
+    Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
+  left := (G.map sq.right.op).app f₃.left
+  right :=   sq₁₃'.isPullback.lift
+    (sq₁₃.fst ≫ (G.map sq.left.op).app f₃.left)
+    (sq₁₃.snd ≫ (G.map sq.right.op).app f₃.right)
+    (by simp only [id_obj, Category.assoc]; grind [sq.w, sq₁₃.isPullback.w])
+  w := by
+    apply sq₁₃'.isPullback.hom_ext
+    · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
+    · cat_disch
+
+@[simp]
+lemma mapArrowLeft_id :
+    mapArrowLeft sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by
+  apply Arrow.hom_ext
+  · simp
+  · apply sq₁₃.isPullback.hom_ext
+    all_goals simp
+
+@[simp]
+lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₃'' : G.PullbackObjObj f₁''.hom f₃.hom)
+    (sq' : f₁'' ⟶ f₁') (sq : f₁' ⟶ f₁) :
+    (mapArrowLeft sq₁₃ sq₁₃' sq) ≫ (mapArrowLeft sq₁₃' sq₁₃'' sq') =
+      mapArrowLeft sq₁₃ sq₁₃'' (sq' ≫ sq) := by
+  apply Arrow.hom_ext
+  · simp
+  · apply sq₁₃''.isPullback.hom_ext
+    all_goals simp
+
+/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
+  `f₃ : Arrow C₃`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
+  pullback maps. -/
+@[simps]
+def π_iso_of_iso_left (iso : f₁ ≅ f₁') :
+    Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
+  hom := mapArrowLeft sq₁₃ sq₁₃' iso.inv
+  inv := mapArrowLeft sq₁₃' sq₁₃ iso.hom
+
+variable {f₁ : Arrow C₁} {f₃ f₃' : Arrow C₃}
+  (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
+  (sq₁₃' : G.PullbackObjObj f₁.hom f₃'.hom)
+
+/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
+  `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a morphism between the induced
+  pullback maps. -/
+@[simps]
+def mapArrowRight (sq : f₃ ⟶ f₃') :
+    Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
+  left := (G.obj (.op f₁.right)).map sq.left
+  right := sq₁₃'.isPullback.lift
+    (sq₁₃.fst ≫ (G.obj (.op f₁.left)).map sq.left)
+    (sq₁₃.snd ≫ (G.obj (.op f₁.right)).map sq.right)
+    (by grind [sq.w, sq₁₃.isPullback.w])
+  w := by
+    apply sq₁₃'.isPullback.hom_ext
+    all_goals simp [← Functor.map_comp]
+
+@[simp]
+lemma mapArrowRight_id :
+    mapArrowRight sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by
+  apply Arrow.hom_ext
+  · simp
+  · apply sq₁₃.isPullback.hom_ext
+    all_goals simp
+
+@[simp]
+lemma mapArrowRight_comp {f₃'' : Arrow C₃} (sq₁₃'' : G.PullbackObjObj f₁.hom f₃''.hom)
+    (sq : f₃ ⟶ f₃') (sq' : f₃' ⟶ f₃'') :
+    (mapArrowRight sq₁₃ sq₁₃' sq) ≫ (mapArrowRight sq₁₃' sq₁₃'' sq') =
+      mapArrowRight sq₁₃ sq₁₃'' (sq ≫ sq') := by
+  apply Arrow.hom_ext
+  · simp
+  · apply sq₁₃''.isPullback.hom_ext
+    all_goals simp
+
+/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
+  `f₃' : Arrow C₃`, and an isomorphism `f₃ ≅ f₃'`, this defines an isomorphism of the induced
+  pullback maps. -/
+@[simps]
+def π_iso_of_iso_right (iso : f₃ ≅ f₃') :
+    Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
+  hom := mapArrowRight sq₁₃ sq₁₃' iso.hom
+  inv := mapArrowRight sq₁₃' sq₁₃ iso.inv
+
+end Arrow
+
 end PullbackObjObj
 
 end
@@ -330,143 +409,18 @@ end
 -/
 @[simp]
 noncomputable
-abbrev leibnizPullback [HasPullbacks C₂]
-    {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃) :=
-  (Functor.PullbackObjObj.ofHasPullback G f₁ f₃).π
-
-namespace PullbackPower
-
-section Functor
-
-variable (f₁ : Arrow C₁) {f₃ f₃' : Arrow C₃} (sq : f₃ ⟶ f₃')
-  (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
-  (sq₁₃' : G.PullbackObjObj f₁.hom f₃'.hom)
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
-  `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a map between the points of the
-  pullbacks. -/
-@[simp]
-noncomputable
-def rightFunctor_map_right :
-    sq₁₃.pt ⟶ sq₁₃'.pt :=
-  sq₁₃'.isPullback.lift
-    (sq₁₃.fst ≫ (G.obj (.op f₁.left)).map sq.left)
-    (sq₁₃.snd ≫ (G.obj (.op f₁.right)).map sq.right)
-    (by grind [sq.w, sq₁₃.isPullback.w])
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
-  `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a morphism between the induced
-  pullback maps. -/
-@[simp]
-noncomputable
-def rightFunctor_map :
-    Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
-  left := (G.obj (.op f₁.right)).map sq.left
-  right := rightFunctor_map_right G f₁ sq sq₁₃ sq₁₃'
-  w := by
-    apply sq₁₃'.isPullback.hom_ext
-    all_goals simp [← Functor.map_comp]
-
-/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, and a morphism
-  `f₁ : X₁ ⟶ Y₁` in `C₁`, this defines a functor `Arrow C₃ ⥤ Arrow C₂` by taking the
-  (right) Leibniz pullback with `f₁`. -/
-@[simp]
-noncomputable
-def rightFunctor [HasPullbacks C₂] (f₁ : Arrow C₁) : Arrow C₃ ⥤ Arrow C₂ where
-  obj f₃ := G.leibnizPullback f₁.hom f₃.hom
-  map sq := rightFunctor_map G f₁ sq (PullbackObjObj.ofHasPullback _ _ _)
-    (PullbackObjObj.ofHasPullback _ _ _)
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
-  `f₃' : Arrow C₃`, and an isomorphism `f₃ ≅ f₃'`, this defines an isomorphism of the induced
-  pullback maps. -/
-@[simps]
-noncomputable
-def _root_.CategoryTheory.Functor.PullbackObjObj.π_iso_of_iso_right (iso : f₃ ≅ f₃') :
-    Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
-  hom := rightFunctor_map G f₁ iso.hom sq₁₃ sq₁₃'
-  inv := rightFunctor_map G f₁ iso.inv sq₁₃' sq₁₃
-  hom_inv_id := by
-    apply Arrow.hom_ext
-    · simp [← map_comp]
-    · apply sq₁₃.isPullback.hom_ext
-      all_goals simp [← map_comp]
-  inv_hom_id := by
-    apply Arrow.hom_ext
-    · simp [← map_comp]
-    · apply sq₁₃'.isPullback.hom_ext
-      all_goals simp [← map_comp]
-
-variable {f₁ f₁' : Arrow C₁} (f₃ : Arrow C₃) (sq : f₁' ⟶ f₁)
-  (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
-  (sq₁₃' : G.PullbackObjObj f₁'.hom f₃.hom)
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
-  `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a map between the points of the
-  pullbacks. -/
-@[simp]
-noncomputable
-def rightBifunctor_map_right :
-    sq₁₃.pt ⟶ sq₁₃'.pt :=
-  sq₁₃'.isPullback.lift
-    (sq₁₃.fst ≫ (G.map sq.left.op).app f₃.left)
-    (sq₁₃.snd ≫ (G.map sq.right.op).app f₃.right)
-    (by simp only [id_obj, Category.assoc]; grind [sq.w, sq₁₃.isPullback.w])
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
-  `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a morphism between the induced
-  pullback maps. -/
-@[simps]
-noncomputable
-def rightBifunctor_map_app :
-    Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
-  left := (G.map sq.right.op).app f₃.left
-  right := rightBifunctor_map_right G f₃ sq sq₁₃ sq₁₃'
-  w := by
-    apply sq₁₃'.isPullback.hom_ext
-    · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-    · cat_disch
-
-/-- Given `f₁ f₁' : Arrow C₁` and a morphism `f₁' ⟶ f₁`, this defines a natural transformation
-  between the (right) Leibniz pullback functors induced by `f₁` and `f₁'`. -/
-@[simp]
-noncomputable
-def rightBifunctor_map [HasPullbacks C₂] {f₁ f₁' : Arrow C₁} (sq : f₁' ⟶ f₁) :
-    rightFunctor G f₁ ⟶ rightFunctor G f₁' where
-  app f₃ := rightBifunctor_map_app G f₃ sq (PullbackObjObj.ofHasPullback _ _ _)
-    (PullbackObjObj.ofHasPullback _ _ _)
-
-/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the
-  `LeibnizPullback` construction defines a bifunctor `(Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂`. -/
-@[simp]
-noncomputable
-def rightBifunctor [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂ where
-  obj f₁ := rightFunctor G f₁.unop
-  map sq := rightBifunctor_map G sq.unop
-
-/-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
-  `f₃ : Arrow C₃`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
-  pullback maps. -/
-@[simps]
-noncomputable
-def _root_.CategoryTheory.Functor.PullbackObjObj.π_iso_of_iso_left (iso : f₁ ≅ f₁') :
-    Arrow.mk sq₁₃.π ≅ Arrow.mk sq₁₃'.π where
-  hom := rightBifunctor_map_app G f₃ iso.inv sq₁₃ sq₁₃'
-  inv := rightBifunctor_map_app G f₃ iso.hom sq₁₃' sq₁₃
-  hom_inv_id := by
-    apply Arrow.hom_ext
-    · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-    · apply sq₁₃.isPullback.hom_ext
-      all_goals simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-  inv_hom_id := by
-    apply Arrow.hom_ext
-    · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-    · apply sq₁₃'.isPullback.hom_ext
-      all_goals simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
-
-end Functor
-
-end PullbackPower
+def leibnizPullback [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂ where
+  obj f₁ :=
+    { obj f₃ := Arrow.mk (PullbackObjObj.ofHasPullback G f₁.unop.hom f₃.hom).π
+      map sq :=
+        PullbackObjObj.mapArrowRight
+          (PullbackObjObj.ofHasPullback G ..)
+          (PullbackObjObj.ofHasPullback G ..) sq }
+  map sq :=
+    { app f₃ :=
+        PullbackObjObj.mapArrowLeft
+          (PullbackObjObj.ofHasPullback G ..)
+          (PullbackObjObj.ofHasPullback G ..) sq.unop }
 
 end Functor
 
