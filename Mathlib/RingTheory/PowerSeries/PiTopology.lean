@@ -50,7 +50,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace PowerSeries

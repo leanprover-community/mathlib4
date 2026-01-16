@@ -67,6 +67,9 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
     simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
     exact h2.1 hne
 
+theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
+  simp [IsChain, G.symm.iff]
+
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
@@ -311,6 +314,7 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
   simp only [coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
     (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
   isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
@@ -786,7 +790,10 @@ abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
 theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
-  Iff.rfl
+  .rfl
+
+theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
+  .rfl
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by

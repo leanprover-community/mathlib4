@@ -18,7 +18,7 @@ In this file we prove a few facts like “`-s` is bounded above iff `s` is bound
 (`bddAbove_neg`).
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 open scoped Pointwise
