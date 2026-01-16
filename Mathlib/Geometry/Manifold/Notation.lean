@@ -285,18 +285,19 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"      fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return m
+  if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"         fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"            fromManifold       then return m
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return m
-  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return m
-  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return m
+  if let some m ← tryStrategy m!"RealInterval"        fromRealInterval   then return m
+  if let some m ← tryStrategy m!"EuclideanSpace"      fromEuclideanSpace then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane"      fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"Units of algebra"    fromUnitsOfAlgebra then return m
   if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return m
-  if let some m ← tryStrategy m!"Sphere"           fromSphere         then return m
-  if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return m
+  if let some m ← tryStrategy m!"Sphere"              fromSphere         then return m
+  if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return m
+  if let some m ← tryStrategy m!"InnerProductSpace"   fromInnerProductSpace then return m
   throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -357,6 +358,18 @@ where
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
+    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+  /-- Attempt to find the trivial model on an inner product space. -/
+  fromInnerProductSpace : TermElabM Expr := do
+    let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
+      -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
+      match (← instantiateMVars type).cleanupAnnotations with
+        | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
+          if ← withReducible (pureIsDefEq E e) then return some (inst, k)
+          else return none
+        | _ => return none
+      | throwError "Couldn't find an `InnerProductSpace` structure on `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is an inner product space over the field `{K}`"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
