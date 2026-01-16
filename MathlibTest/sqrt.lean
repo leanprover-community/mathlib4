@@ -2,13 +2,14 @@ import Mathlib.Tactic.Eval
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Data.Rat.NatSqrt.Real
 
-open Nat
-
 /-
 Unfortunately this test run extremely slowly under `lake test`, despite on taking a few seconds
 in VSCode or under `lake build MathlibTest` or `lake env lean MathlibTest/sqrt.lean`.
 
 While we investigate, we'll turn off the test.
+
+open Nat
+
 /--
 Compute an explicit rational approximation of `√10005`, accurate to 2 million decimal places.
 

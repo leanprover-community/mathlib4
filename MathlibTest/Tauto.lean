@@ -134,11 +134,9 @@ section pair_eq_pair_iff
 variable (α : Type)
 variable (x y z w : α)
 
--- This example is taken from pair_eq_pair_iff in Data.Set.Basic.
--- It currently doesn't work because `tauto` does not apply `symm`.
---example : ((x = z ∨ x = w) ∧ (y = z ∨ y = w)) ∧
---           (z = x ∨ z = y) ∧ (w = x ∨ w = y) → x = z ∧ y = w ∨ x = w ∧ y = z := by
---  tauto
+example : ((x = z ∨ x = w) ∧ (y = z ∨ y = w)) ∧
+           (z = x ∨ z = y) ∧ (w = x ∨ w = y) → x = z ∧ y = w ∨ x = w ∧ y = z := by
+  tauto
 
 end pair_eq_pair_iff
 
