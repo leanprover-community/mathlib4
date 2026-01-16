@@ -148,6 +148,7 @@ section domCongr
 
 variable {A : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `AddCommMonoid A` and `e : G ≃ H`, `domCongr e` is the corresponding `Equiv` between
 `SkewMonoidAlgebra A G` and `SkewMonoidAlgebra A H`. -/
 @[simps apply]
@@ -219,6 +220,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 variable {V : Type*} [AddCommMonoid V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
   [IsScalarTower k (SkewMonoidAlgebra k G) V]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `SkewMonoidAlgebra k G` -/
 def submoduleOfSmulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :

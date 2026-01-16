@@ -364,6 +364,26 @@ theorem iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
 
+variable {f}
+
+/-- The naturality of the iterated slice equivalence up to isomorphism. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
+    iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
+  Iso.refl _
+
+/-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
+mediated by the underlying functor of the iterated slice equivalence.
+Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
+2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`iteratedSliceEquivOverMapIso`.
+-/
+@[simps! hom_app_left_left inv_app_left_left]
+def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
+    f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _)))
+
 end IteratedSlice
 
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
@@ -443,6 +463,13 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
+/-- `post (Over.forget X) : Over f ⥤ Over (forget.obj f)` is naturally isomorphic to the
+functor `Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardIsoPost (f : Over X) :
+    post (Over.forget X) ≅ Over.iteratedSliceForward f :=
+  Iso.refl _
+
 open Limits
 
 variable {X} in
@@ -485,6 +512,17 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
 
 end Over
+
+/--
+Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
+`Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
+-/
+@[simps]
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
+  pt := Over.mk (c.π.app j)
+  π.app k := Over.homMk (c.π.app k.left)
 
 namespace CostructuredArrow
 
@@ -899,6 +937,17 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
+
+/--
+Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
+`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+-/
+@[simps]
+def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
+    {D : J ⥤ C} (c : Cocone D) (j : J) :
+    Cocone (Under.post (X := j) D) where
+  pt := Under.mk (c.ι.app j)
+  ι.app k := Under.homMk (c.ι.app k.right)
 
 namespace StructuredArrow
 

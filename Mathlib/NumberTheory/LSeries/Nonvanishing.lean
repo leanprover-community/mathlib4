@@ -201,7 +201,7 @@ private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacte
     χ.LFunction 1 ≠ 0 := by
   intro hL
   -- construct a "bad character" and put together a contradiction.
-  let B : BadChar N := {χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne}
+  let B : BadChar N := { χ := χ, χ_sq := hχ, hχ := hL, χ_ne := χ_ne }
   refine B.F_neg_two.not_gt ?_
   refine ArithmeticFunction.LSeries_positive_of_differentiable_of_eqOn (zetaMul_nonneg hχ)
     (χ.isMultiplicative_zetaMul.map_one ▸ zero_lt_one) B.F_differentiable ?_
