@@ -498,6 +498,11 @@ where
               Term.elabTerm (← ``(𝓘($eK, $eα))) none
             | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
           else
+            -- NB. If further instances of `NormedAlgebra` arise in practice, adding another check
+            -- here is a good thing to do.
+            -- NB. We don't know the field `𝕜` here, thus using typeclass inference to determine
+            -- if `α` is a normed algebra is not a good idea. Searches `NormedAlgebra ?k α` for
+            -- unspecified `k` often loop, and are not a good idea.
             throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
               co-domain `{W}` being not definitionally equal"
     | _ => throwError "`{e}` is not a set of units, in particular not of a complete normed algebra"
