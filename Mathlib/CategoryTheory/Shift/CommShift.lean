@@ -553,7 +553,7 @@ lemma map_iso_hom_app (a : A) (X : C) :
     Functor.map_preimage _ _
   simpa using congr_app h X
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_inv_app (a : A) (X : C) :
     G.map ((iso e a).inv.app X) =
       (G.commShiftIso a).hom.app (F.obj X) ≫ (e.hom.app X)⟦a⟧' ≫
