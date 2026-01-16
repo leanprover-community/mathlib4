@@ -5,8 +5,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 module
 
-public import Batteries.Data.RBMap.Basic
-public import Mathlib.Data.Tree.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree and RBMaps
@@ -22,15 +21,3 @@ Implement a `Traversable` instance for `Tree`.
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
-
-public section
-
-namespace Tree
-
-universe u
-
-variable {α : Type u}
-
-open Batteries (RBNode)
-
-end Tree
