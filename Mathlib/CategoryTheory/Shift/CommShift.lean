@@ -520,8 +520,6 @@ lemma map_shiftFunctorComm
   dsimp
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
     ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
-  dsimp
-  rw [Functor.map_comp]
   simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
     ← Functor.map_comp_assoc]
 
