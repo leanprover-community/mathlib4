@@ -143,7 +143,7 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-attribute [to_dual (reorder := 3 4)] HImp.himp
+attribute [to_dual existing (reorder := 3 4)] HImp.himp
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
@@ -152,7 +152,7 @@ while the latter belongs to co-Heyting algebras. They are both pseudo-complement
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
-@[notation_class, to_dual HasCompl]
+@[notation_class, to_dual]
 class HNot (α : Type*) where
   /-- Heyting negation `￢` -/
   hnot : α → α

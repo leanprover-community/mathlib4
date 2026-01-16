@@ -156,7 +156,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("iic", ["Ici"]),
   ("ioc", ["Ico"]),
   ("ico", ["Ioc"]),
-  ("Heyting", ["Coheyting"]),
+  ("heyting", ["Coheyting"]),
   ("coheyting", ["Heyting"]),
   ("sdiff", ["HImp"]),
   ("himp", ["SDiff"]),
