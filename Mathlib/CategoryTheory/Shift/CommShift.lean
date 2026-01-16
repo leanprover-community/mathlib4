@@ -499,8 +499,8 @@ def ofHasShiftOfFullyFaithful :
 end CommShift
 
 lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
-    letI := hF.hasShift s i;
-    letI := CommShift.ofHasShiftOfFullyFaithful hF s i;
+    letI := hF.hasShift s i
+    letI := CommShift.ofHasShiftOfFullyFaithful hF s i
     F.commShiftIso a = i a := by
   rfl
 
