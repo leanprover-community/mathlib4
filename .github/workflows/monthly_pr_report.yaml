@@ -37,7 +37,7 @@ jobs:
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
           message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}")")"
           echo "${message}"
-          message="$(echo "${message}" |
+          echo "${message}" |
             sed '
               / [0-9]* PRs$/{
                 s=^=</details><details><summary>\n=
@@ -48,8 +48,7 @@ jobs:
               s=</details><details><summary>=<details><summary>=
               s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
               s=\n---[\n]*$=\n\n</details>\n&=
-            ')"
+            ' | tee "${yrMth}_in_mathlib.md"
           echo "---"
           echo "---"
-          echo "${message}"
-          ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
+          ./scripts/update_PR_comment.sh "${yrMth}_in_mathlib.md" "${title}" "${PR}"
