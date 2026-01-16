@@ -30,8 +30,7 @@ public def printCodepointHex (c : Char) : String :=
   | 3 => "U+0".append <| String.ofList digits
   | _ => "U+".append <| String.ofList digits
 
-/-- If `false`, the character is not allowed in Mathlib.
--/
+/-- If `false`, the character is not allowed in Mathlib. -/
 public def isAllowedCharacter (c : Char) : Bool :=
   c != '\u00A0' -- non-breaking space
 
