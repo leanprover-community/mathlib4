@@ -354,13 +354,13 @@ def Symbol.map {N₀ N : Type*} (f : N₀ → N) : Symbol T N₀ → Symbol T N
 
 /-- Mapping `Symbol` when it is a nonterminal; may return `none`. -/
 def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → Option (Symbol T N₀)
-  | Symbol.terminal t => some (Symbol.terminal t)
-  | Symbol.nonterminal n => Option.map Symbol.nonterminal (f n)
+  | terminal t => some (terminal t)
+  | nonterminal n => .map nonterminal (f n)
 
 /-- Map the type of nonterminal symbols of a `ContextFreeRule` . -/
 def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
     ContextFreeRule T N :=
-  ⟨f r.input, r.output.map (Symbol.map f)⟩
+  ⟨f r.input, r.output.map (.map f)⟩
 
 /-- An embedding from a context-free grammar `g₀` to a context-free grammar `g` is an embedding
 `embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
@@ -377,9 +377,8 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
   has a corresponding rule in the smaller grammar. -/
-  preimage_of_rules :
-    ∀ r : ContextFreeRule T g.NT,
-      r ∈ g.rules → ∀ n₀ : g₀.NT,
+  preimage_of_rules (r : ContextFreeRule T g.NT) :
+    ∀ r ∈ g.rules → ∀ n₀ : g₀.NT,
         embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
 namespace ContextFreeGrammar.Embedding
@@ -393,8 +392,7 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   refine ⟨r.map G.embedNT, G.embed_mem_rules r rin, ?_⟩
   rw [ContextFreeRule.rewrites_iff]
-  use u.map (Symbol.map G.embedNT), v.map (Symbol.map G.embedNT)
-  constructor
+  refine ⟨u.map (.map G.embedNT), v.map (.map G.embedNT), ?_, ?_⟩
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
@@ -475,7 +473,7 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       | terminal t => simp [Symbol.map] at hs
       | nonterminal s' => exact Good.nonterminal s'
 
-lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
+private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
