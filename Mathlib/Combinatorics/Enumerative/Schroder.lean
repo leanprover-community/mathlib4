@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Group.Even
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Nat.Choose.Multinomial
 public import Mathlib.Order.Interval.Finset.Nat
 
 import Mathlib.Algebra.BigOperators.Fin
@@ -122,5 +124,17 @@ theorem smallSchroder_succ (n : ℕ) :
             congr
         rw [← h]
         lia
+
+theorem smallSchroder_succ_add_smallSchroder (n : ℕ) :
+    smallSchroder (n + 1) + smallSchroder n =
+      2 * ∑ ij ∈ antidiagonal n, smallSchroder ij.1 * smallSchroder ij.2 := by
+  rw [smallSchroder_succ, Iio_eq_range]
+  have : 2 * ∑ i ∈ range n, i.smallSchroder * (n - i).smallSchroder + 2 * smallSchroder n =
+      2 * ∑ i ∈ range (n + 1), i.smallSchroder * (n - i).smallSchroder := by
+    rw [sum_range_succ, tsub_self, smallSchroder_zero, mul_one]
+    lia
+  rw [add_right_comm, ← two_mul, add_comm, this, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
+    (fun x y => smallSchroder x * smallSchroder y) n,
+    Finset.sum_range, add_comm]
 
 end Nat
