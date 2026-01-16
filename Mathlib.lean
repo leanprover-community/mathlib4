@@ -7192,7 +7192,6 @@ public import Mathlib.Topology.Instances.AddCircle.Real
 public import Mathlib.Topology.Instances.CantorSet
 public import Mathlib.Topology.Instances.Complex
 public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Topology.Instances.ENNReal.InfiniteSum
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Instances.ENat
 public import Mathlib.Topology.Instances.EReal.Lemmas
