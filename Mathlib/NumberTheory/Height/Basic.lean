@@ -195,17 +195,14 @@ lemma mulHeight_comp_equiv {ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · have hx' : x ∘ e ≠ 0 := by
-      contrapose! hx
-      rw [show x = (x ∘ e) ∘ e.symm by simp [Function.comp_assoc]]
-      ext1 i
-      simp [hx]
+      obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
+      exact Function.ne_iff.mpr ⟨e.symm i, by simp [hi]⟩
     simp [mulHeight_eq hx, mulHeight_eq hx', Function.comp_apply, H]
 
 lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
   let e : Fin 2 ≃ Fin 2 := Equiv.swap 0 1
-  convert mulHeight_comp_equiv e ![y, x]
-  ext i
-  fin_cases i <;> simp [e]
+  rw [show ![x, y] = ![y, x] ∘ e from List.ofFn_inj.mp rfl]
+  exact mulHeight_comp_equiv e ![y, x]
 
 /-- The logarithmic height of a tuple of elements of `K`. -/
 def logHeight (x : ι → K) : ℝ := log (mulHeight x)
@@ -352,8 +349,8 @@ is the same as the multiplicative height of `x`. -/
 lemma mulHeight₁_inv (x : K) : mulHeight₁ (x⁻¹) = mulHeight₁ x := by
   simp_rw [mulHeight₁_eq_mulHeight]
   rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  · have H : x • ![x⁻¹, 1] = ![1, x] := funext fun i ↦ by fin_cases i <;> simp [hx]
+  · rw [inv_zero]
+  · have H : x • ![x⁻¹, 1] = ![1, x] := by ext1 i; fin_cases i <;> simp [hx]
     rw [← mulHeight_smul_eq_mulHeight _ hx, H, mulHeight_swap]
 
 /-- The logarithmic height of the inverse of a field element `x`
@@ -364,7 +361,6 @@ lemma logHeight₁_inv (x : K) : logHeight₁ (x⁻¹) = logHeight₁ x := by
 /-- The multiplicative height of the `n`th power of a field element `x` (with `n : ℕ`)
 is the `n`th power of the multiplicative height of `x`. -/
 lemma mulHeight₁_pow (x : K) (n : ℕ) : mulHeight₁ (x ^ n) = mulHeight₁ x ^ n := by
-  have hx : ![x, 1] ≠ 0 := Function.ne_iff.mpr ⟨1, by simp⟩
   simp only [mulHeight₁_eq_mulHeight, ← mulHeight_pow _ n]
   congr 1
   ext1 i
