@@ -30,9 +30,9 @@ open WithZero Ideal.IsDedekindDomain
 section AKLB
 
 variable {A B K : Type*} (L : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
-    [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
-    [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
+  [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
+  [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
+  (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
 
 theorem intValuation_liesOver [NoZeroSMulDivisors A B] (x : A) [w.asIdeal.LiesOver v.asIdeal] :
     v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
@@ -47,13 +47,12 @@ theorem intValuation_liesOver [NoZeroSMulDivisors A B] (x : A) [w.asIdeal.LiesOv
     Nat.cast_mul, (FiniteMultiplicity.of_prime_left v.prime hx).emultiplicity_eq_multiplicity]
 
 theorem valuation_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    [w.asIdeal.LiesOver v.asIdeal] (x : WithVal (v.valuation K)) :
+    [w.asIdeal.LiesOver v.asIdeal] (x : K) :
     v.valuation K x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
       w.valuation L (algebraMap K L x) := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-  simp [WithVal.algebraMap_apply', valuation_of_algebraMap, div_pow,
-    ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L,
-    intValuation_liesOver v w]
+  simp [valuation_of_algebraMap, div_pow, ← IsScalarTower.algebraMap_apply A K L,
+    IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
 variable (K) in
 theorem uniformContinuous_algebraMap_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
@@ -66,7 +65,8 @@ theorem uniformContinuous_algebraMap_liesOver [IsFractionRing B L] [NoZeroSMulDi
   use expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
   simp only [adicValued_apply', coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
   intro x hx
-  rw [WithVal.algebraMap_apply, WithVal.algebraMap_apply', ← valuation_liesOver L]
+  rw [WithVal.algebraMap_apply, WithVal.algebraMap_apply', RingEquiv.apply_symm_apply,
+    ← valuation_liesOver L v w (WithVal.equiv _ x)]
   rcases eq_or_ne x 0 with rfl | hx₀
   · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
   · rw [← log_lt_iff_lt_exp (by simpa)] at hx

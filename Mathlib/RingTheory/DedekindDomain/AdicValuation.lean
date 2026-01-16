@@ -424,7 +424,8 @@ theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
 @[simp]
-theorem adicValued_apply' (x : WithVal (v.valuation K)) : v.adicValued.v x = v.valuation K x :=
+theorem adicValued_apply' (x : WithVal (v.valuation K)) :
+    v.adicValued.v x = v.valuation K (WithVal.equiv _ x) :=
   rfl
 
 variable (K)
@@ -478,21 +479,14 @@ instance : Algebra S (v.adicCompletion K) where
   algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
   commutes' r x := by
     induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
-    | ih x =>
-      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
-        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
-      norm_cast
-      rw [Algebra.commutes]
+    | hp => exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
+    | ih x => rw [mul_comm]
   smul_def' r x := by
     induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
+    | hp => exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
-      change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
-      norm_cast
-      rw [← Algebra.smul_def]
+      simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_apply,
+        Completion.coeRingHom]
 
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=

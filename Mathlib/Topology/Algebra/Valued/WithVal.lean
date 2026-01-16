@@ -55,36 +55,8 @@ instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceA
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 
-instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
-    Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
-
-instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
-    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
-
 instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) :=
   inferInstanceAs (SMul S R)
-
-instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Valuation R Γ₀) :
-    IsScalarTower P S (WithVal v) :=
-  inferInstanceAs (IsScalarTower P S R)
-
-variable [CommRing R] (v : Valuation R Γ₀)
-
-instance {S : Type*} [Ring S] [Algebra R S] :
-    Algebra (WithVal v) S := inferInstanceAs (Algebra R S)
-
-instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
-    Algebra R (WithVal w) := inferInstanceAs (Algebra R S)
-
-theorem algebraMap_apply {S : Type*} [Ring S] [Algebra R S] (x : R) :
-    algebraMap (WithVal v) S x = algebraMap R S x := rfl
-
-theorem algebraMap_apply' {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) (x : R) :
-    algebraMap R (WithVal w) x = algebraMap R S x := rfl
-
-instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
-    [Algebra R S] [IsScalarTower P R S] :
-    IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
 
 instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
@@ -97,6 +69,46 @@ variable [Ring R] (v : Valuation R Γ₀)
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
+
+section AlgebraInstances
+
+variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable [CommRing R] (v : Valuation R Γ₀)
+variable {P S : Type*}
+
+instance [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) : Algebra S (WithVal v) where
+  algebraMap := (WithVal.equiv v).symm.toRingHom.comp (algebraMap S R)
+  commutes' r x := mul_comm ..
+  smul_def' r x := by simp only [Algebra.smul_def, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
+    RingHom.coe_coe, Function.comp_apply]; rfl
+
+theorem algebraMap_apply [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) (s : S) :
+    algebraMap S (WithVal v) s = (WithVal.equiv v).symm (algebraMap S R s) := rfl
+
+instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
+    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
+
+instance [Ring S] [Algebra R S] :
+    Algebra (WithVal v) S := Algebra.compHom S (WithVal.equiv v).toRingHom
+
+theorem algebraMap_apply' [Ring S] [Algebra R S] (x : WithVal v) :
+    algebraMap (WithVal v) S x = algebraMap R S (WithVal.equiv v x) := rfl
+
+instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
+    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
+
+instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Valuation R Γ₀) :
+    IsScalarTower P S (WithVal v) :=
+  inferInstanceAs (IsScalarTower P S R)
+
+instance [Ring S] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
+
+instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
+
+end AlgebraInstances
 
 /-- Canonical valuation on the `WithVal v` type synonym. -/
 def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
