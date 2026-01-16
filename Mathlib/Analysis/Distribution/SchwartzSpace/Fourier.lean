@@ -201,7 +201,7 @@ theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
     𝓕 (fderivCLM 𝕜 V E f) = (2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) (𝓕 f) := by
   ext x m
-  change 𝓕 (fderiv ℝ (f : V → E)) x m = _
+  change 𝓕 (fderiv ℝ (f : V → E)) x m = _ -- TODO review
   simp [Real.fourier_fderiv f.integrable f.differentiable (fderivCLM ℝ V E f).integrable,
     innerSL_apply_apply ℝ, fourier_coe]
 
