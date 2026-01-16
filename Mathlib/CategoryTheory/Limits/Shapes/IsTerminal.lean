@@ -334,12 +334,6 @@ theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerm
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
   InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
 
-section Comparison
-
-variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
-
-end Comparison
-
 variable {J : Type u} [Category.{v} J]
 
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.

@@ -160,7 +160,7 @@ noncomputable instance forget_createsLimit :
   apply createsLimitOfReflectsIso
   intro c t
   have : Small.{u} (Functor.sections (F ⋙ forget MonCat)) :=
-    (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk {cone := c, isLimit := t})
+    (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk { cone := c, isLimit := t })
   refine LiftsToLimit.mk (LiftableCone.mk
     { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget MonCat)).pt,
       π := NatTrans.mk
