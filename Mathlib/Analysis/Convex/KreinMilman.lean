@@ -52,7 +52,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

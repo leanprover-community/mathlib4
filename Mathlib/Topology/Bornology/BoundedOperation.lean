@@ -210,6 +210,7 @@ section NonUnitalSeminormedRing
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
@@ -227,9 +228,9 @@ instance : BoundedMul R where
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
-     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖ := norm_sub_le _ _
+     _ ≤ Af * Ag + Af * Ag     := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
+     _ = 2 * Af * Ag           := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
 
