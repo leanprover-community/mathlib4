@@ -73,11 +73,11 @@ local instance : ToString RangesToKinds where
     mod2: {m2.toArray.qsort}\n\n\
     toKinds:\n* {"\n* ".intercalate (sorted.map (s!"{·}")).toList}"
 
-abbrev startersEnders : NameMap Name := .ofArray (cmp := Name.quickCmp) #[
-    (``Parser.Command.namespace, ``Parser.Command.end),
-    (``Parser.Command.open, ``Parser.Command.end),
-    (``Parser.Command.section, ``Parser.Command.end),
-    (``Parser.Command.variable, ``Parser.Command.end),
+abbrev startersEnders : NameMap (Array Name) := .ofArray (cmp := Name.quickCmp) #[
+    (``Parser.Command.namespace, #[``Parser.Command.end]),
+    (``Parser.Command.open, #[``Parser.Command.end, ``Parser.Command.eoi]),
+    (``Parser.Command.section, #[``Parser.Command.end]),
+    (``Parser.Command.variable, #[``Parser.Command.end, ``Parser.Command.eoi]),
   ]
 
 def cancellingPairs (h : Array (Syntax.Range × Name)) :
@@ -89,10 +89,13 @@ def cancellingPairs (h : Array (Syntax.Range × Name)) :
     curr := h[i]!
     let next := h[i + 1]!
     if let some ender := startersEnders.get? curr.2 then
-      if next.2 == ender then
-      pairs := pairs.push (curr.1, next.1)
+      if ender.contains next.2 then
+        pairs := pairs.push (curr.1, next.1)
     curr := next
   return pairs
+
+def substringOfRange (s : String) (rg : Syntax.Range) : String :=
+  {s.toRawSubstring with startPos := rg.start, stopPos := rg.stop}.trim.toString
 
 -- Note that we explicitly avoid `withSetOptionIn`, since we want to inspect the outermost
 -- commands.
@@ -108,13 +111,24 @@ def globalSyntaxLinter : Linter where run stx := do
     let posStx := fm.ofPosition pos
     toKindsRef.modify (fun r => {r with toKinds := r.toKinds.insert ⟨0, posStx⟩ `Module, importEnd := some posStx})
   if let some rg := stx.getRangeWithTrailing? then
-    toKindsRef.modify (·.insert rg stx.getKind)
+    -- `rg.stop == 0` should only happen when parsing `eoi`. In that case, `stx.getRange?` is
+    -- the range of width `0` at the end of the file.
+    let rg' := if rg.stop == 0 then stx.getRange?.getD default else rg
+    toKindsRef.modify (·.insert rg' stx.getKind)
   let kindsRef ← toKindsRef.get
-  unless kindsRef.mod2.size == 2 && (kindsRef.mod2.toArray.qsort == #[0, kindsRef.importEnd.getD 0]) do
+  let fm ← getFileMap
+  unless kindsRef.mod2.size == 2 &&
+      (kindsRef.mod2.toArray.qsort == #[kindsRef.importEnd.getD 0, fm.positions.back!]) do
     return
   for (rg1, rg2) in cancellingPairs <| kindsRef.toKinds.toArray.qsort (·.1.start < ·.1.start) do
-    logLint linter.globalSyntax (.ofRange rg1) "This command"
-    logLint linter.globalSyntax (.ofRange rg2) "is cancelled by this one!"
+    -- No range should have stopping position strictly before its ending position.
+    if rg1.stop < rg1.start || rg2.stop < rg2.start then
+      logWarning "This should not have happened"
+      continue
+    logLint linter.globalSyntax (.ofRange rg1)
+      m!"The command '{substringOfRange fm.source rg1}'"
+    logLint linter.globalSyntax (.ofRange rg2)
+      m!"is cancelled by '{substringOfRange fm.source rg2}'!"
 
 initialize addLinter globalSyntaxLinter
 
