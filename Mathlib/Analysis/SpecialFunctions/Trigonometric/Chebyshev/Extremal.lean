@@ -20,7 +20,7 @@ following proof in https://math.stackexchange.com/a/978145/1277
 ## Main statements
 
 * leadingCoeff_le_of_forall_abs_le_one: If `P` is a real polynomial of degree at most `n` and
-  `|P (x)| ≤ 1` for all `|x| ∈ [-1, 1]` then the leading coefficient of `P` is at most `2 ^ (n - 1)`
+  `|P (x)| ≤ 1` for all `x ∈ [-1, 1]` then the leading coefficient of `P` is at most `2 ^ (n - 1)`
 * leadingCoeff_eq_iff_of_forall_abs_le_one: When `n ≥ 2`, equality holds iff `P = T_n`
 
 ## Implementation
