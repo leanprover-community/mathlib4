@@ -9,7 +9,7 @@ public meta import Lean.Elab.Import
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-
+import Batteries
 /-!
 #  The "globalSyntax" linter
 
@@ -54,8 +54,21 @@ public register_option linter.globalSyntax : Bool := {
   used as one of the two distinguished positions in `mod2`.
 -/
 structure RangesToKinds where
+  /--
+  `toKinds` maps the source `Syntax.Range` of a top-level command to its `SyntaxNodeKind`
+  preserving enough information to detect cancelling pairs.
+  -/
   toKinds : Std.HashMap Syntax.Range Name
+  /--
+  `mod2` tracks the parity of coverage over the file by toggling both the start and stop
+  positions of every encountered command range; once all top-level commands have been seen,
+  this set should contain exactly the file’s import-end position and the final end-of-input.
+  -/
   mod2 : Std.HashSet String.Pos.Raw
+  /--
+  `importEnd` is the position immediately after the import block (computed using `parseImports`),
+  used as one of the two distinguished positions in `mod2`.
+  -/
   importEnd : Option String.Pos.Raw
   deriving Inhabited
 
