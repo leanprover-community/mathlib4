@@ -446,6 +446,39 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     _ < ε / 2 + ε / 2 := add_lt_add (hV (↑x) hx dα hdα) (hV (↑y) hy dα hdα)
     _ = ε := by ring
 
+lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
+    {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : Bornology.IsBounded B) :
+    ∀ᶠ (α : ↑{α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀,
+      ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε := by
+  sorry
+
+lemma continuousOn_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
+    ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
+  -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
+  rw [continuousOn_iff_continuous_restrict,
+    ContinuousMultilinearMap.isEmbedding_toUniformOnFun.continuous_iff,
+    UniformOnFun.continuous_rng_iff]
+  intro B hB
+  rw [mem_setOf, NormedSpace.isVonNBounded_iff] at hB
+  rw [← equicontinuous_iff_continuous]
+  simp_rw [comp_apply, restrict_apply, ContinuousMultilinearMap.toUniformOnFun_toFun]
+  intro α₀
+  simp_rw [EquicontinuousAt, Subtype.forall] -- redundant?
+  intro U hU
+  -- express in terms of `ε` inequality
+  obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
+  suffices H : ∀ᶠ (α : ↑{α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀,
+      ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε from by
+    apply H.mono
+    intro _
+    apply forall₂_imp
+    intro _ _ h
+    exact hεU h
+  exact integralCMLM_eventually_dist_lt' hg hu t₀ α₀ hε hB
+
 end
 
 end SmoothFlow
