@@ -407,7 +407,7 @@ end
   `(G.obj (op Y₁)).obj Y₃` ----> `(G.obj (op X₁)).obj Y₃`
 ```
 -/
-@[simp]
+@[simps]
 noncomputable
 def leibnizPullback [HasPullbacks C₂] : (Arrow C₁)ᵒᵖ ⥤ Arrow C₃ ⥤ Arrow C₂ where
   obj f₁ :=
