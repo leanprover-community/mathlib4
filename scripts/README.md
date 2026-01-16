@@ -123,6 +123,10 @@ to learn about it as well!
   displaying human-readable output.
 - `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
   Used by CI to post verification summaries on pull requests.
+- `find_labels.sh` generates a monthly report of all PRs merged into `master` by Bors for a given
+  GitHub repository, grouping them by labels and comparing them with commits found in the local git
+  history. It also highlights discrepancies between PRs detected via the GitHub CLI and those
+  inferred from commit messages (mostly for debugging).
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at
