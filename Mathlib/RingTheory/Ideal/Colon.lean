@@ -111,35 +111,6 @@ lemma colon_iUnion {ι : Sort*} (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ 
 lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
   aesop (add simp mem_colon)
 
-/-- If `P ≤ N`, then the colon ideal `N.colon P` is the whole ring. -/
-lemma colon_eq_top_of_le (N P : Submodule R M) (h : P ≤ N) :
-    N.colon P  = ⊤ := by
-  refine top_unique ?_
-  intro x _
-  refine Submodule.mem_colon.mpr ?_
-  intro p h_p
-  exact h (Submodule.smul_mem P x h_p)
-
-/-- The colon ideal distributes over `⊓` (intersection of submodules). -/
-lemma colon_inf_left (N₁ N₂ P : Submodule R M) : (N₁ ⊓ N₂).colon P = N₁.colon P ⊓ N₂.colon P := by
-  ext x
-  constructor
-  · intro h_x
-    refine ⟨Submodule.mem_colon.mpr ?_, Submodule.mem_colon.mpr ?_⟩ <;> intro p h_p
-    · exact (Submodule.mem_colon.mp h_x p h_p).1
-    · exact (Submodule.mem_colon.mp h_x p h_p).2
-  · rintro ⟨h_xI, h_xJ⟩
-    refine Submodule.mem_colon.mpr ?_
-    intro p h_p
-    exact ⟨Submodule.mem_colon.mp h_xI p h_p, Submodule.mem_colon.mp h_xJ p h_p⟩
-
-/-- If `P ≤ N₂`, then intersecting with `N₁` does not change the colon ideal. -/
-lemma colon_inf_eq_left_of_le (N₁ N₂ P : Submodule R M) (h : P ≤ N₂) :
-    (N₁ ⊓ N₂).colon P = N₁.colon P := calc
-  (N₁ ⊓ N₂).colon P = N₁.colon P ⊓ N₂.colon P := colon_inf_left N₁ N₂ P
-  _ = N₁.colon P ⊓ ⊤ := by rw[colon_eq_top_of_le N₂ P h]
-  _ = N₁.colon P := inf_top_eq (N₁.colon P)
-
 end Semiring
 
 section CommSemiring
