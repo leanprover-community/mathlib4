@@ -28,7 +28,7 @@ This induces a `MulAction G (n.Combination α)` instance. Then:
 
 * `EmbeddingToCombination.map`: the equivariant map from `Fin n ↪ α` to `n.Combination α`.
 
-* `Nat.Combination.isPretransitive_of_IsMultiplyPretransitive`
+* `Nat.Combination.isPretransitive_of_isMultiplyPretransitive`
 shows the pretransitivity of that action if the action of `G` on `α` is `n`-pretransitive.
 
 * `Nat.Combination.isPretransitive` shows that `Equiv.Perm α`

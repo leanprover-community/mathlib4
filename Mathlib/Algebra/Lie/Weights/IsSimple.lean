@@ -130,7 +130,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
   have h_pairing_zero : S.pairing i j = 0 := by
-    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+    apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S
     · intro h_eq; exact w_minus (by rw [← hi, ← hj, h_eq, sub_self])
     · intro h_eq; exact w_plus (by rw [← hi, ← hj, h_eq, neg_add_cancel])
     · intro ⟨idx, hidx⟩
@@ -259,6 +259,23 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     | add x₁ x₂ _ _ ih₁ ih₂ =>
       simp only [add_lie, Submodule.carrier_eq_coe, SetLike.mem_coe] at ih₁ ih₂ ⊢
       exact add_mem ih₁ ih₂
+
+@[simp] lemma coe_invtSubmoduleToLieIdeal_eq_iSup (q : Submodule K (Dual K H))
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    (invtSubmoduleToLieIdeal q hq).toSubmodule =
+      ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 :=
+  rfl
+
+open LieSubmodule in
+@[simp] lemma invtSubmoduleToLieIdeal_top :
+    invtSubmoduleToLieIdeal (⊤ : Submodule K (Module.Dual K H)) (by simp) = ⊤ := by
+  simp_rw [← toSubmodule_inj, coe_invtSubmoduleToLieIdeal_eq_iSup, iSup_toSubmodule,
+    top_toSubmodule, iSup_toSubmodule_eq_top, eq_top_iff, ← cartan_sup_iSup_rootSpace_eq_top H,
+    iSup_subtype, Submodule.mem_top, true_and, sup_le_iff, iSup_le_iff, sl2SubmoduleOfRoot_eq_sup]
+  refine ⟨?_, fun α hα ↦ le_iSup₂_of_le α hα <| le_sup_of_le_left <| le_sup_of_le_left <| le_refl _⟩
+  suffices H.toLieSubmodule ≤ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α from
+    this.trans <| iSup₂_mono fun α hα ↦ le_sup_right
+  simp
 
 section IsSimple
 
@@ -420,8 +437,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
-    eq_top_of_invtSubmodule_ne_bot
+  exact RootPairing.IsIrreducible.mk' (rootSystem H) <| eq_top_of_invtSubmodule_ne_bot
 
 end IsSimple
 

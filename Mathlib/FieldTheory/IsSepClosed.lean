@@ -65,6 +65,9 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
+@[deprecated (since := "2025-12-09")]
+alias IsSepClosed.factors_of_separable := IsSepClosed.splits_of_separable
+
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
   ⟨fun p _ ↦ IsAlgClosed.splits p⟩
@@ -266,7 +269,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K 
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.toIsAlgebraic := inferInstance
   to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
     (Algebra.IsSeparable.isSeparable k x)
 

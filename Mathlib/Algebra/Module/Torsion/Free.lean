@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Regular.SMul
 
@@ -37,7 +38,7 @@ variable [AddCommMonoid M] [Module R M] [Module S M] [AddCommMonoid N] [Module R
   {r : R} {m m₁ m₂ : M}
 
 variable (R M) in
-/-- A `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
+/-- An `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
 multiplication (on `R`) by `r` is.
 
 For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`.
@@ -54,6 +55,13 @@ instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.2
 lemma Function.Injective.moduleIsTorsionFree [IsTorsionFree R N] (f : M → N) (hf : f.Injective)
     (smul : ∀ (r : R) (m : M), f (r • m) = r • f m) : IsTorsionFree R M where
   isSMulRegular r hr m₁ m₂ hm := hf <| hr.isSMulRegular <| by simpa [smul] using congr(f $hm)
+
+/-- Pullback an `IsTorsionFree` instance along a function preserving scalar multiplication and
+regular elements. -/
+lemma Module.IsTorsionFree.comap [IsTorsionFree S M] (f : R → S)
+    (isRegular : ∀ r, IsRegular r → IsRegular (f r)) (smul : ∀ (r : R) (m : M), f r • m = r • m) :
+    IsTorsionFree R M where
+  isSMulRegular r hr := (isRegular _ hr).isSMulRegular.of_map f (smul r)
 
 instance IsAddTorsionFree.to_isTorsionFree_nat [IsAddTorsionFree M] : IsTorsionFree ℕ M where
   isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
@@ -89,6 +97,10 @@ variable [IsDomain R]
 lemma IsSMulRegular.of_ne_zero (hr : r ≠ 0) : IsSMulRegular M r :=
   (isRegular_of_ne_zero hr).isSMulRegular
 
+instance (priority := 100) Module.IsTorsionFree.to_noZeroSMulDivisors : NoZeroSMulDivisors R M where
+  eq_zero_or_eq_zero_of_smul_eq_zero {r m} hrm := by
+    contrapose! hrm; exact (isRegular_of_ne_zero hrm.1).smul_ne_zero_iff_right.2 hrm.2
+
 variable [CharZero R]
 
 variable (R M) in
@@ -123,3 +135,21 @@ lemma Module.isTorsionFree_int_iff_isAddTorsionFree : IsTorsionFree ℤ M ↔ Is
 
 end AddCommGroup
 end Semiring
+
+section Ring
+variable [Ring R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
+
+lemma Module.IsTorsionFree.of_smul_eq_zero [Nontrivial R]
+    (h : ∀ (r : R) (m : M), r • m = 0 → r = 0 ∨ m = 0) :
+    IsTorsionFree R M where
+  isSMulRegular r hr m₁ m₂ hm := by
+    simpa [sub_eq_zero, hr.ne_zero] using h r (m₁ - m₂) (by simpa [smul_sub, sub_eq_zero] using hm)
+
+variable [IsDomain R]
+
+lemma Module.isTorsionFree_iff_smul_eq_zero :
+    IsTorsionFree R M ↔ ∀ (r : R) (m : M), r • m = 0 → r = 0 ∨ m = 0 where
+  mp _ _ _ := smul_eq_zero.1
+  mpr := .of_smul_eq_zero
+
+end Ring

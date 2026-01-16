@@ -569,8 +569,6 @@ lemma rpow_eq_rpow_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
 
-@[deprecated (since := "2025-05-13")] alias rpow_eq_rpow_rpod := rpow_eq_rpow_prod
-
 end prod
 
 section pi

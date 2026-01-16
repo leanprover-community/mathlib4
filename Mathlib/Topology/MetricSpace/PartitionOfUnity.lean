@@ -27,7 +27,7 @@ lemma.
 metric space, partition of unity, locally finite
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal NNReal Filter Set Function TopologicalSpace
 

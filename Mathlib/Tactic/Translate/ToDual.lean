@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -19,7 +19,7 @@ Known limitations:
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
-  are dual to eachother. Currently, this requires writing
+  are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
 
@@ -82,6 +82,9 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
+
+When troubleshooting, you can see what `to_dual` is doing by replacing it with `to_dual?` and/or
+by using `set_option trace.translate_detail true`.
  -/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
@@ -135,6 +138,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
   ("upper", ["Lower"]),
+  ("succ", ["Pred"]),
+  ("pred", ["Succ"]),
+  ("disjoint", ["Codisjoint"]),
+  ("codisjoint", ["Disjoint"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -165,8 +172,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cospan", ["Span"]),
   ("kernel", ["Cokernel"]),
   ("cokernel", ["Kernel"]),
-  ("kernels", ["Cokernel"]),
-  ("cokernels", ["Kernel"]),
+  ("kernels", ["Cokernels"]),
+  ("cokernels", ["Kernels"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),
@@ -177,7 +184,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
-  ("wellFoundedGT", "WellFoundedLT")
+  ("wellFoundedGT", "WellFoundedLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit")
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/

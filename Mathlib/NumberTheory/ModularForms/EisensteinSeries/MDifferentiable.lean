@@ -18,7 +18,7 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 MDifferentiable.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

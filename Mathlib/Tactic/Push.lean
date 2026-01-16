@@ -7,10 +7,11 @@ Jireh Loreaux
 module
 
 public meta import Lean.Elab.Tactic.Location
-public meta import Mathlib.Tactic.Push.Attr
-public meta import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.Conv
-public meta import Mathlib.Util.AtLocation
+public import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Util.AtLocation
 
 /-!
 # The `push`, `push_neg` and `pull` tactics
@@ -317,8 +318,9 @@ which will print the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " cfg:optConfig head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk push $cfg $head:ident => $e)
+macro (name := pushCommand) tk:"#push" cfg:optConfig disch?:(discharger)? ppSpace head:term " => "
+    e:term : command =>
+  `(command| #conv%$tk push $cfg $[$disch?:discharger]? $head:term => $e)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
@@ -326,8 +328,8 @@ which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNegCommand) tk:"#push_neg " cfg:optConfig e:term : command =>
- `(command| #push%$tk $cfg Not $e)
+macro (name := pushNegCommand) tk:"#push_neg" cfg:optConfig ppSpace e:term : command =>
+ `(command| #push%$tk $cfg Not => $e)
 
 @[inherit_doc pull]
 elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
@@ -341,8 +343,9 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk pull $head:ident => $e)
+macro (name := pullCommand) tk:"#pull" disch?:(discharger)? ppSpace head:term " => " e:term :
+    command =>
+  `(command| #conv%$tk pull $[$disch?:discharger]? $head:term => $e)
 
 end Conv
 

@@ -539,7 +539,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
     convert hI {i}
     rw [Finset.sup_singleton]
   intro hi I
-  by_cases hI : I.Nonempty
+  by_cases! hI : I.Nonempty
   · choose r hr h using hi
     have h' : 0 < I.sup' hI r := by
       rcases hI with ⟨i, hi⟩
@@ -548,7 +548,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
     refine lt_of_lt_of_le (h i x hx) ?_
     simp only [Finset.le_sup'_iff]
     exact ⟨i, hi, (Eq.refl _).le⟩
-  simp only [Finset.not_nonempty_iff_eq_empty.mp hI, Finset.sup_empty, coe_bot, Pi.zero_apply]
+  simp only [hI, Finset.sup_empty, coe_bot, Pi.zero_apply]
   exact ⟨1, zero_lt_one, fun _ _ => zero_lt_one⟩
 
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}

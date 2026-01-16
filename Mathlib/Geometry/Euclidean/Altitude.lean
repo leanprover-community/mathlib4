@@ -98,7 +98,7 @@ theorem finrank_direction_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i
     (vectorSpan_mono ℝ (Set.image_subset_range s.points {i}ᶜ))
   have hn : (n - 1) + 1 = n := by
     have := NeZero.ne n
-    cases n <;> omega
+    cases n <;> lia
   have hc : #({i}ᶜ) = (n - 1) + 1 := by
     rw [card_compl, card_singleton, Fintype.card_fin, hn, add_tsub_cancel_right]
   refine add_left_cancel (_root_.trans h ?_)

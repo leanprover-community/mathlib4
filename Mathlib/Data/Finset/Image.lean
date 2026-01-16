@@ -72,11 +72,8 @@ theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
 -- Higher priority to apply before `mem_map`.
 @[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
-  rw [mem_map]
-  exact
-    ⟨by
-      rintro ⟨a, H, rfl⟩
-      simpa, fun h => ⟨_, h, by simp⟩⟩
+  simp only [mem_map, Equiv.coe_toEmbedding]
+  grind
 
 @[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
@@ -603,9 +600,6 @@ not satisfy the property of the subtype. -/
 theorem notMem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
   mt s.property_of_mem_map_subtype h
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_map_subtype_of_not_property := notMem_map_subtype_of_not_property
 
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the

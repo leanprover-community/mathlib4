@@ -361,8 +361,7 @@ def limit.pre : limit F ⟶ limit (E ⋙ F) :=
 
 @[reassoc (attr := simp)]
 theorem limit.pre_π (k : K) : limit.pre F E ≫ limit.π (E ⋙ F) k = limit.π F (E.obj k) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.pre]
 
 @[simp]
 theorem limit.lift_pre (c : Cone F) :
@@ -401,8 +400,7 @@ def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
 
 @[reassoc (attr := simp)]
 theorem limit.post_π (j : J) : limit.post F G ≫ limit.π (F ⋙ G) j = G.map (limit.π F j) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.post]
 
 @[simp]
 theorem limit.lift_post (c : Cone F) :
@@ -446,7 +444,7 @@ theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] 
   apply hasLimit_of_iso (e.invFunIdAssoc F)
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
--- are proved in `CategoryTheory/Adjunction/Limits.lean`.
+-- are proved in `Mathlib/CategoryTheory/Adjunction/Limits.lean`.
 section LimFunctor
 
 variable [HasLimitsOfShape J C]
@@ -708,7 +706,7 @@ However, since `Category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
-(see `Tactic/reassoc_axiom.lean`)
+(see `Mathlib/Tactic/CategoryTheory/Reassoc.lean`)
 -/
 @[reassoc (attr := simp)]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
@@ -893,8 +891,7 @@ def colimit.pre : colimit (E ⋙ F) ⟶ colimit F :=
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = colimit.ι F (E.obj k) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.pre]
 
 @[reassoc (attr := simp)]
 theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
@@ -948,8 +945,7 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 @[reassoc (attr := simp)]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.post]
 
 @[simp]
 theorem colimit.post_desc (c : Cocone F) :

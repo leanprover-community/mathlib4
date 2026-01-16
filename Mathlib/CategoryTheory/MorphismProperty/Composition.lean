@@ -27,7 +27,7 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-/-- Typeclass expressing that a morphism property contain identities. -/
+/-- Typeclass expressing that a morphism property contains identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)
@@ -65,7 +65,7 @@ instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdenti
 
 end ContainsIdentities
 
-instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
@@ -132,8 +132,8 @@ instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsSta
   comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
-this is the `morphism_property C` satisfied by the morphisms in `C` with respect
-to whom `app` is natural. -/
+this is the `MorphismProperty C` satisfied by the morphisms in `C` with respect
+to which `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
   fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
@@ -306,7 +306,7 @@ lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
   induction hf with
   | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
   | id x => simpa using .id (F.obj x)
-  | comp_of _ _  hf hg h =>
+  | comp_of _ _ hf hg h =>
     simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
 
 /-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever

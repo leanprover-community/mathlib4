@@ -975,9 +975,11 @@ lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
     H1ToTensorOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
       Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
   simp only [H1ToTensorOfIsTrivial, H1π, AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
+  -- todo: change this proof so that we don't need `change` that abuses defeq.
   change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
-  simp [π_comp_H1Iso_hom_apply, Submodule.Quotient.mk, QuotientAddGroup.lift, AddCon.lift,
-    AddCon.liftOn, AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
+  simp [π_comp_H1Iso_hom_apply, ← Submodule.Quotient.quotientAddGroupMk_eq_mk, Submodule.mkQ,
+    AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
+
 
 /-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
 `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` defined by `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
@@ -997,9 +999,10 @@ def H1AddEquivOfIsTrivial :
         ext
         simp only [H1ToTensorOfIsTrivial, Iso.toLinearEquiv, AddMonoidHom.coe_comp,
           LinearMap.toAddMonoidHom_coe, LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
+        -- todo: change this proof so that we don't need `change` and `simpa` that both abuse defeq.
         change TensorProduct.lift _ (QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _)) = _
-        simpa [AddSubgroup.subtype, cycles₁IsoOfIsTrivial_inv_apply (A := A),
-          -π_comp_H1Iso_inv_apply] using (π_comp_H1Iso_inv_apply A _).symm)
+        simpa [AddSubgroup.subtype, -π_comp_H1Iso_inv_apply, QuotientAddGroup.mk',
+          cycles₁IsoOfIsTrivial_inv_apply (A := A)] using (π_comp_H1Iso_inv_apply A _).symm)
 
 @[simp]
 lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
