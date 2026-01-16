@@ -171,7 +171,9 @@ def MatrixModCat.counitIso (i : ι) :
     ext
     simp [toModuleCatFromModuleCatLinearEquiv]
 
-@[simps, stacks 074D]
+/-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
+  an equivalence of categories. -/
+@[simps]
 def moritaEquivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι
   inverse := MatrixModCat.toModuleCat R i
