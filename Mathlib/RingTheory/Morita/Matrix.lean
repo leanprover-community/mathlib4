@@ -203,4 +203,5 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
     simp [Matrix.algebraMap_matrix_apply]
 
 theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Nonempty ι] :
-    IsMoritaEquivalent R₀ R (Matrix ι ι R) := ⟨Nonempty.map (moritaEquivMatrix R R₀) inferInstance⟩
+    IsMoritaEquivalent R₀ R (Matrix ι ι R) :=
+  ⟨Nonempty.map (moritaEquivalenceMatrix R R₀) inferInstance⟩
