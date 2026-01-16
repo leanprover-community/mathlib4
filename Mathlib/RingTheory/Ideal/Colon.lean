@@ -185,5 +185,3 @@ theorem _root_.Ideal.annihilator_quotient {I : Ideal R} [I.IsTwoSided] :
 end Ring
 
 end Submodule
-
-#lint
