@@ -134,8 +134,7 @@ lemma isoAdd'_assoc {a b c ab bc abc : A}
   rw [← NatTrans.naturality_assoc, ← this, Category.assoc, ← F.map_comp_assoc,
     shiftFunctorAdd'_assoc_hom_app a b c ab bc abc hab hbc h,
     Functor.map_comp_assoc, Category.assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
+  simp_rw [← Functor.map_comp_assoc]
   simp [shiftFunctorAdd'_assoc_inv_app a b c ab bc abc hab hbc h]
 
 end CommShift
