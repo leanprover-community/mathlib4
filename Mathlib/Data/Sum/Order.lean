@@ -203,6 +203,10 @@ theorem elim_mono {δ : Type*} [Preorder δ]
       simp only [hhx₁, hhx₂, inr_le_inr_iff, elim_inr, ge_iff_le] at ⊢ hhx
       exact hg (⟨hx, hhx⟩ : (x₁, y₁) ≤ (x₂, y₂))
 
+theorem swap_mono : Monotone (Sum.swap : α ⊕ β → β ⊕ α) := by
+  intro _ _ hx
+  cases hx <;> simp_all only [inl_le_inl_iff, swap_inl, inr_le_inr_iff, swap_inr]
+
 end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ β) :=

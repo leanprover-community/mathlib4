@@ -158,57 +158,38 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
   unfold Chain; ext n : 2; cases n <;> rfl
 
 /-- Left injection for chains of sums. -/
-@[simps!]
-def inl (c : Chain α) : Chain (α ⊕ β) :=
-  c.map ⟨.inl, by
-    intro x y h
-    simp only [Sum.inl_le_inl_iff, h]⟩
+def inl (c : Chain α) : Chain (α ⊕ β) := c.map ⟨.inl, Sum.inl_mono⟩
 
 @[simp]
-lemma inl_coe' (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
+lemma inl_coe (c : Chain α) (n : ℕ) : inl (β := β) c n = .inl (c n) := rfl
 
 /-- Right injection for chains of sums. -/
-@[simps!]
-def inr (c : Chain β) : Chain (α ⊕ β) :=
-  c.map ⟨.inr, by
-    intro x y h
-    simp only [Sum.inr_le_inr_iff, h]⟩
+def inr (c : Chain β) : Chain (α ⊕ β) := c.map ⟨.inr, Sum.inr_mono⟩
 
 @[simp]
-lemma inr_coe' (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
+lemma inr_coe (c : Chain β) (n : ℕ) : inr (α := α) c n = .inr (c n) := rfl
 
 /-- Projects left values out of a chain.
 If the chain contains right values, then a default value is returned. -/
-@[simps!]
 def projl [hA : Inhabited α] (c : Chain (α ⊕ β)) : Chain α where
   toFun n := Sum.elim id (fun _ ↦ default) (c n)
-  monotone' := by
-    refine monotone_nat_of_le_succ fun n ↦ ?_
-    have hc := c.monotone (Nat.le_add_right n 1)
-    cases hn : c n with
-    | inl x =>
-      cases hn' : c (n + 1) with
-      | inl y =>
-        simp only [hn, hn', Sum.inl_le_inl_iff] at hc
-        simp only [Sum.elim_inl, id_eq, hc]
-      | inr y => simp only [hn, hn', Sum.not_inl_le_inr] at hc
-    | inr x =>
-      cases hn' : c (n + 1) with
-      | inl y => simp only [hn, hn', Sum.not_inr_le_inl] at hc
-      | inr y => simp only [Sum.elim_inr, le_refl]
+  monotone' := Sum.elim_mono monotone_snd monotone_const c.monotone
+
+@[simp]
+lemma projl_coe [hA : Inhabited α] (c : Chain (α ⊕ β)) (n : ℕ)
+    : projl c n = Sum.elim id (fun _ ↦ default) (c n) :=
+  rfl
 
 /-- Projects right values out of a chain.
 If the chain contains left values, then a default value is returned. -/
-@[simps!]
 def projr [hB : Inhabited β] (c : Chain (α ⊕ β)) : Chain β :=
-  projl (c.map
-    ⟨ Sum.swap
-    , by
-      intro x y h
-      cases h with
-      | inl h => simp only [Sum.swap_inl, ge_iff_le, Sum.inr_le_inr_iff, h]
-      | inr h => simp only [Sum.swap_inr, ge_iff_le, Sum.inl_le_inl_iff, h]
-    ⟩)
+  projl (c.map ⟨Sum.swap, Sum.swap_mono⟩)
+
+@[simp]
+lemma projr_coe [hB : Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ)
+    : projr c n = Sum.elim (fun _ ↦ default) id (c n) := by
+  simp only [projr, projl_coe, map_coe, OrderHom.coe_mk, Function.comp_apply]
+  cases c n <;> rfl
 
 /-- Splits a chain of sums into a sum of chains. -/
 def split (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
@@ -218,39 +199,31 @@ def split (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
     (c 0)
 
 @[simp]
-lemma elim_split (c : Chain (α ⊕ β)) : Sum.elim inl inr (split c) = c := by
-  apply OrderHom.ext
-  ext n
-  dsimp only [split]
-  have := c.monotone (Nat.zero_le n)
-  cases h₀ : c 0 with
-  | inl x =>
-    cases hₙ : c n with
-    | inl y => simp only [Sum.map_inl, Sum.elim_inl, inl_coe, projl_coe, hₙ, id_eq]
-    | inr y => simp only [h₀, hₙ, Sum.not_inl_le_inr] at this
-  | inr x =>
-    cases hₙ : c n with
-    | inl y => simp only [h₀, hₙ, Sum.not_inr_le_inl] at this
-    | inr y =>
-      simp only [
-        Sum.map_inr, Sum.elim_inr, inr_coe, projr_coe,
-        hₙ, Sum.swap_inr, Sum.elim_inl, id_eq]
-
-@[simp]
 lemma split_inl (c : Chain α) : split (inl c : Chain (α ⊕ β)) = .inl c := rfl
 
 @[simp]
 lemma split_inr (c : Chain β) : split (inr c : Chain (α ⊕ β)) = .inr c := rfl
 
+@[elab_as_elim]
 lemma split_cases
     {p : Chain (α ⊕ β) → Prop}
     (inl : ∀ c, p (inl c))
     (inr : ∀ c, p (inr c))
     (c : Chain (α ⊕ β)) : p c := by
-  rw [←elim_split c]
-  cases hc : c.split with
-  | inl c' => simp only [Sum.elim_inl, inl]
-  | inr c' => simp only [Sum.elim_inr, inr]
+  suffices this : Sum.elim .inl .inr (split c) = c by
+    rw [← this]
+    cases c.split with
+    | inl _ => simp only [Sum.elim_inl, inl]
+    | inr _ => simp only [Sum.elim_inr, inr]
+  apply Chain.ext
+  ext n
+  generalize h₀ : c 0 = c0
+  generalize hₙ : c n = cn
+  have hc := c.monotone (Nat.zero_le n)
+  simp only [h₀, hₙ] at hc
+  cases hc with
+  | inl _ => simp only [split, h₀, Sum.map_inl, Sum.elim_inl, inl_coe, projl_coe, hₙ, id_eq]
+  | inr _ => simp only [split, h₀, Sum.map_inr, Sum.elim_inr, inr_coe, projr_coe, hₙ, id_eq]
 
 end Chain
 
@@ -576,25 +549,21 @@ noncomputable instance : OmegaCompletePartialOrder (α ⊕ β) where
   le_ωSup c i := by
     cases c using Chain.split_cases with
     | inl c =>
-      simp only [inl_coe', split_inl, map_inl, ge_iff_le, inl_le_inl_iff]
+      simp only [inl_coe, split_inl, map_inl, ge_iff_le, inl_le_inl_iff]
       apply le_ωSup
     | inr c =>
-      simp only [inr_coe', split_inr, map_inr, ge_iff_le, inr_le_inr_iff]
+      simp only [inr_coe, split_inr, map_inr, ge_iff_le, inr_le_inr_iff]
       apply le_ωSup
   ωSup_le c x hc := by
     cases c using Chain.split_cases with
     | inl c =>
-      cases x with
-      | inl x => simp_all only [
-          inl_coe', ge_iff_le, inl_le_inl_iff, split_inl,
-          map_inl, ωSup_le_iff, implies_true]
-      | inr x => simp only [inl_coe', ge_iff_le, not_inl_le_inr, forall_const] at hc
+      rcases hc 0
+      simp_all only [inl_coe, ge_iff_le, inl_le_inl_iff, split_inl, map_inl, ωSup_le_iff,
+        implies_true]
     | inr c =>
-      cases x with
-      | inl x => simp only [inr_coe', ge_iff_le, not_inr_le_inl, forall_const] at hc
-      | inr x => simp_all only [
-          inr_coe', ge_iff_le, inr_le_inr_iff, split_inr,
-          map_inr, ωSup_le_iff, implies_true]
+      rcases hc 0
+      simp_all only [inr_coe, ge_iff_le, inr_le_inr_iff, split_inr, map_inr, ωSup_le_iff,
+        implies_true]
 
 @[simp]
 lemma ωSup_inl (c : Chain α) : ωSup (.inl c : Chain (α ⊕ β)) = .inl (ωSup c) := rfl
@@ -635,7 +604,7 @@ lemma ωScottContinuous_elim
       congr 1
       ext n
       simp only [Chain.ext_iff, map_coe, OrderHom.coe_mk, funext_iff, Function.comp_apply,
-        inl_coe'] at hc'
+        inl_coe] at hc'
       simp only [map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe, hc', elim_inl]
     | inr c' =>
       simp only [ωSup_inr, elim_inr]
@@ -643,7 +612,7 @@ lemma ωScottContinuous_elim
       congr 1
       ext n
       simp only [Chain.ext_iff, map_coe, OrderHom.coe_mk, funext_iff, Function.comp_apply,
-        inr_coe'] at hc'
+        inr_coe] at hc'
       simp only [map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe, hc', elim_inr]
 
 @[fun_prop]
