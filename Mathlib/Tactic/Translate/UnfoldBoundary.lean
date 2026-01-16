@@ -6,7 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Tactic.Delta
-public meta import Batteries.Lean.NameMapAttribute
+public import Batteries.Lean.NameMapAttribute
 public import Mathlib.Init
 
 /-!
@@ -24,7 +24,7 @@ and at each type mismatch, we try to insert a cast.
 There are two kinds of casts:
 - Equality casts. This is for propositions and terms,
   where it is possible to prove that one is equal to the other. For example `Monotone`.
-- Explicit casting functions, both for unfolding and folding. This is for types, where we
+- Explicit casting functions, both for unfolding and refolding. This is for types, where we
   cannot express their equivalence with an equality. For example `DecidableLE`.
 -/
 
@@ -155,8 +155,8 @@ public def UnfoldBoundaryExt.cast (b : UnfoldBoundaryExt) (e expectedType : Expr
 /-- Modify `e` so that it is well typed if the constants in `b` cannot be unfolded.
 
 Note: it may be that `e` contains some constant whose type is not well typed in this setting.
-  We don't make an effort to replace such constants.
-  It seems that this approximation works well enough. -/
+We don't make an effort to replace such constants.
+It seems that this approximation works well enough. -/
 public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr) (attr : Name) :
     MetaM Expr := do
   let b ← b.toUnfoldBoundaries
@@ -170,10 +170,16 @@ public def UnfoldBoundaryExt.insertBoundaries (b : UnfoldBoundaryExt) (e : Expr)
 /-- Unfold all of the auxiliary functions that were inserted as unfold boundaries. -/
 public def UnfoldBoundaryExt.unfoldInsertions (e : Expr) (b : UnfoldBoundaryExt) : CoreM Expr := do
   let b ← b.toUnfoldBoundaries
-  -- This is the same as Meta.deltaExpand, but with an extra beta reduction.
+  -- This is the same as `Meta.deltaExpand`, but with an extra beta reduction.
   Core.transform e fun e => do
-    match ← delta? e b.insertionFuns.contains with
-    | some e' => return .visit e'.headBeta
-    | none    => return .continue
+    if let some e ← delta? e b.insertionFuns.contains then
+      return .visit (headBetaBody e)
+    return .continue
+where
+  headBetaBody (e : Expr) : Expr :=
+    if let .lam _ d b bi := e then
+      e.updateLambda! bi d (headBetaBody b)
+    else
+      e.headBeta
 
 end Mathlib.Tactic.UnfoldBoundary

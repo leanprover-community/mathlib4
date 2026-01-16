@@ -728,28 +728,16 @@ instance _root_.WithTop.distribLattice [DistribLattice α] : DistribLattice (Wit
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
--- `to_dual` is not happy to translate the equational theorems of these decidable instances,
--- so we define the duals separately.
+@[to_dual]
 instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
+@[to_dual]
 instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
-
-@[to_dual existing]
-instance _root_.WithTop.decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
-  | _, ⊤ => isTrue <| by simp
-  | ⊤, (a : α) => isFalse <| by simp
-  | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
-
-@[to_dual existing]
-instance _root_.WithTop.decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
-  | ⊤, _ => isFalse <| by simp
-  | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
 instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where

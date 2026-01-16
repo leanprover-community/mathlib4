@@ -151,7 +151,7 @@ def lt_sum_eq_of_le [DecidableLE α] {a b : α} (hab : a ≤ b) :
   if hba : b ≤ a then PSum.inr (le_antisymm hab hba) else PSum.inl (lt_of_le_not_ge hab hba)
 
 @[to_dual DecidableLE1_dual]
-def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := h
+def DecidableLE1 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := fun a b ↦ h a b
 
 @[to_dual DecidableLE2_dual]
 def DecidableLE2 (h : ∀ a b : α, Decidable (a ≤ b)) : DecidableLE α := id h
@@ -174,7 +174,7 @@ fun {α} [PartialOrder α] h =>
 def DecidableLE3 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := h
 
 @[to_dual DecidableLE4_dual]
-def DecidableLE4 (h : DecidableLE α) : ∀ a b : α, Decidable (a ≤ b) := id h
+def DecidableLE4 (h : DecidableLE α) (a b : α) : Decidable (a ≤ b) := h a b
 
 -- The arguments to `h` have been introduced, and swapped:
 /--
@@ -182,7 +182,7 @@ info: fun {α} [PartialOrder α] h a b => h b a
 ---
 info: fun {α} [PartialOrder α] h => id fun a b => h b a
 ---
-info: fun {α} [PartialOrder α] h => id fun a b => h b a
+info: fun {α} [PartialOrder α] h a b => h b a
 -/
 #guard_msgs in
 open Lean in
