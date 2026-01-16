@@ -92,6 +92,12 @@ lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
     IsIso (homOfLE h) :=
   ⟨homOfLE (le_of_eq heq.symm), by simp⟩
 
+lemma isIso_homOfLE {x y : X} (h : x = y) :
+    IsIso (homOfLE (by rw [h]) : x ⟶ y) := by
+  subst h
+  change IsIso (𝟙 _)
+  infer_instance
+
 @[simp, reassoc]
 lemma homOfLE_comp_eqToHom {a b c : X} (hab : a ≤ b) (hbc : b = c) :
     homOfLE hab ≫ eqToHom hbc = homOfLE (hab.trans (le_of_eq hbc)) :=
