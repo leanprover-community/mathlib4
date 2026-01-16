@@ -296,6 +296,7 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.MinimalAxioms
+public import Mathlib.Algebra.Field.ModEq
 public import Mathlib.Algebra.Field.NegOnePow
 public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.Algebra.Field.Periodic
@@ -391,6 +392,7 @@ public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.MinimalAxioms
+public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Algebra.Group.Nat.Hom
@@ -4426,6 +4428,7 @@ public import Mathlib.GroupTheory.PushoutI
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Finite
+public import Mathlib.GroupTheory.QuotientGroup.ModEq
 public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.RegularWreathProduct
 public import Mathlib.GroupTheory.Schreier
