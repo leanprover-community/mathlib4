@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.SchwartzSpace
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Derivatives
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
 public import Mathlib.Analysis.Fourier.Inversion
 
