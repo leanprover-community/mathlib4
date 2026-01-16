@@ -49,4 +49,7 @@ jobs:
               s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
               s=\n---[\n]*$=\n\n</details>\n&=
             ')"
+          echo "---"
+          echo "---"
+          echo "${message}"
           ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
