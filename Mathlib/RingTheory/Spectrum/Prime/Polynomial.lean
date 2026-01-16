@@ -70,8 +70,9 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
-set_option synthInstance.maxHeartbeats 40000 in
--- `MonoidWithZeroHomClass` timeout
+instance (F R A B) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [FunLike F A B] [AlgHomClass F R A B] : MonoidWithZeroHomClass F A B := inferInstance
+
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A ⧸ I`. -/
@@ -107,8 +108,6 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
     ext a
     exact congr(a ∈ $(Ideal.ker_algebraMap_residueField _))
 
-set_option synthInstance.maxHeartbeats 40000 in
--- `MonoidWithZeroHomClass` timeout
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A`. -/
@@ -141,8 +140,6 @@ end PrimeSpectrum
 
 namespace Polynomial
 
-set_option synthInstance.maxHeartbeats 40000 in
--- `MonoidWithZeroHomClass` timeout
 lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     x ∈ comap C '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0
@@ -204,8 +201,6 @@ namespace MvPolynomial
 
 variable {σ : Type*}
 
-set_option synthInstance.maxHeartbeats 40000 in
--- `MonoidWithZeroHomClass` timeout
 lemma mem_image_comap_C_basicOpen (f : MvPolynomial σ R) (x : PrimeSpectrum R) :
     x ∈ comap (C (σ := σ)) '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   classical
