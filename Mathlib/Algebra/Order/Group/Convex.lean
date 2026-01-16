@@ -170,7 +170,7 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
   __ : CompleteLattice _ := inferInstance
 
 @[to_additive] instance : HasQuotient α (ConvexSubgroup α) where
-  quotient' G := α ⧸ G.toSubgroup
+  Quotient G := α ⧸ G.toSubgroup
 
 @[to_additive] instance : CommGroup (α ⧸ G) := inferInstanceAs <| CommGroup (α ⧸ G.toSubgroup)
 
