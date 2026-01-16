@@ -643,7 +643,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-open Set
 
 end
 
