@@ -1,4 +1,16 @@
 #!/bin/bash
+ : << 'BASH_MODULE_DOCS'
+
+Usage: ./script.sh owner/repo YYYY-MM
+
+The script summarizes PRs by label and author in the given year-month range in the input GitHub repository.
+
+It assumes that
+* the merged PRs have been `[Merged by Bors]`;
+* `gh auth status` is set for the repo;
+* `jq` is installed.
+
+BASH_MODULE_DOCS
 
 # Check if required arguments are provided
 if [ "$#" -ne 2 ]; then
