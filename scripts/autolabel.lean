@@ -31,7 +31,12 @@ These are printed for testing purposes.
 to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
 Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/pull/10402.
 
-The script can add up to `MAX_LABELS` labels (defined below).
+The script can add up to `MAX_LABELS` labels (defined below),
+but it filters them by a hand-curated dependency list:
+For example if `t-ring-theory` and `t-algebra` are both applicable, only the former will
+be added. Dependencies are transitive.
+This list is defined in `mathlibLabelData` below..
+
 If more than `MAX_LABELS` labels would be applicable, nothing will be added.
 
 ## Workflow
@@ -104,7 +109,6 @@ def mathlibLabels : Array Label := #[
   .«dependency-bump»
 ]
 
--- Note: Since Lean does not know reflection, this needs to be updated manually!
 def Label.toString : Label → String
   | .«t-algebra»                    => "t-algebra"
   | .«t-algebraic-geometry»         => "t-algebraic-geometry"
@@ -144,6 +148,8 @@ A `LabelData` consists of the
 * The `exclusions` field is the array of all "root paths" that are excluded, among the
   ones that start with the ones in `dirs`.
   Any modifications to a file in an excluded path is ignored for the purposes of labelling.
+* The `dependencies` field is the array of all labels, which are lower in the import hierarchy
+  and which should be excluded if the label is present.
 -/
 structure LabelData (label : Label) where
   /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"`.
@@ -155,6 +161,10 @@ structure LabelData (label : Label) where
   /-- Array of paths which should be excluded.
   Any modifications to a file in an excluded path are ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
+  /-- Labels which are "lower" in the Mathlib import order. These labels will not be added
+  alongside the label. For example any PR to `t-ring-theory` might modify files from `t-algebra`
+  but should only get the former label -/
+  dependencies : Array Label := #[]
   deriving BEq, Hashable
 
 /--
@@ -264,6 +274,18 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
     data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
+
+/-- Helper function: union of all labels an all their dependent labels -/
+partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
+  labels.flatMap fun label ↦
+    (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
+
+/-- Reduce a list of labels to not include any which are dependencies of other
+labels in the list -/
+def dropDependentLabels (labels: Array Label) : Array Label :=
+  let dependentLabels := labels.flatMap fun label ↦
+    (mathlibLabelData label).dependencies
+  labels.filter (!dependentLabels.contains ·)
 
 /-!
 Testing the functionality of the declarations defined in this script
@@ -402,7 +424,7 @@ unsafe def main (args : List String): IO UInt32 := do
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
 
   -- find labels covering the modified files
-  let labels := getMatchingLabels modifiedFiles
+  let labels := dropDependentLabels <| getMatchingLabels modifiedFiles
   println s!"::notice::Applicable labels: {labels}"
 
   match labels with
