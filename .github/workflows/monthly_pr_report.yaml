@@ -29,6 +29,7 @@ jobs:
         run: |
           yrMth="$(date +%Y-%m)"  # format: 2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
+          printf $'Date: %s, month: %s\n' "${yrMth}" "${mth}"
           PR="${{ github.event.pull_request.number }}"
           title="### ${mth} in Mathlib summary"
 
