@@ -188,7 +188,7 @@ def moritaEquivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι 
 
 open ModuleCat.Algebra in
 @[simps, stacks 074D]
-def moritaEquivMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
+def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
   eqv := moritaEquivalentToMatrix R i
   linear.map_smul {X Y} f r := by
