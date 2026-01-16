@@ -26,7 +26,7 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 module, regular element, commutative algebra
 -/
 
-@[expose] public section
+public section
 
 section Congr
 
@@ -67,11 +67,6 @@ lemma IsSMulRegular.rTensor : IsSMulRegular (M' ⊗[R] M) r :=
   h1.subst (Module.Flat.rTensor_preserves_injective_linearMap _ h)
 
 end TensorProduct
-
-lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
-    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
-  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
 
 section Ring
 

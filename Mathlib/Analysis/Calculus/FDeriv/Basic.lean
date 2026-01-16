@@ -95,9 +95,6 @@ by taking `f` or `g` to be the identity. Instead, for every reasonable function 
 we add a lemma that if `f` is differentiable then so is `(fun x ↦ exp (f x))`. This means adding
 some boilerplate lemmas, but these can also be useful in their own right.
 
-Tests for this ability of the simplifier (with more examples) are provided in
-`Tests/Differentiable.lean`.
-
 ## TODO
 
 Generalize more results to topological vector spaces.

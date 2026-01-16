@@ -17,7 +17,7 @@ of a more general statement where one deduces monotonicity on a union from monot
 set.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

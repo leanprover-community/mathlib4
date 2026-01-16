@@ -180,7 +180,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
   · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
-    · congrm(inr $(cfcₙHom_id ha))
+    · congrm (inr $(cfcₙHom_id ha))
     · exact cfcₙAux_id @(h) a ha |>.symm
 
 end Normal
@@ -257,7 +257,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have ha : IsSelfAdjoint a := by simp [a_def]
   -- the key element to consider is `c := b * a⁻`, which satisfies `- (star c * c) = a⁻ ^ 3`.
   set c := b * a⁻
-  have h_eq_negPart_a : - (star c * c) = a⁻ ^ 3 := calc
+  have h_eq_negPart_a : -(star c * c) = a⁻ ^ 3 := calc
     -(star c * c) = - a⁻ * a * a⁻ := by
       simp only [star_mul, c, mul_assoc, ← mul_assoc (star b), ← a_def, CFC.negPart_def,
         neg_mul, IsSelfAdjoint.cfcₙ (f := (·⁻)).star_eq]
@@ -266,7 +266,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     _ = a⁻ ^ 3 := by simp [mul_sub, pow_succ]
   -- the spectrum of `- (star c * c) = a⁻ ^ 3` is nonnegative, since the function on the right
   -- is nonnegative on the spectrum of `a`.
-  have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
+  have h_c_spec₀ : SpectrumRestricts (-(star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_negPart_a, CFC.negPart_def]
     rw [cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow (ha := ha) .., cfc_map_spectrum (ha := ha) ..]
     rintro - ⟨x, -, rfl⟩

@@ -6,9 +6,10 @@ Authors: Leonardo de Moura, Miyahara Kō
 module
 
 public meta import Mathlib.Tactic.CC.Datatypes
-public meta import Mathlib.Tactic.CC.Lemmas
-public meta import Mathlib.Tactic.Relation.Rfl
-public meta import Mathlib.Tactic.Relation.Symm
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.CC.Datatypes
+public import Mathlib.Tactic.Relation.Rfl
+public import Mathlib.Tactic.Relation.Symm
 
 /-!
 # Make proofs from a congruence closure

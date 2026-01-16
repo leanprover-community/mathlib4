@@ -207,7 +207,7 @@ lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)}
   have t_map_eq_t' : t.map ⟨(· + 1), add_left_injective 1⟩ = t' := by
     refine map_add_one_range (a · = a i) i ?_
     intro H
-    rw [←H, M] at hi1
+    rw [← H, M] at hi1
     have a0_le : a 0 ≤ (Finset.range (N + 1)).sup a := Finset.le_sup (by simp)
     lia
   have card_t_eq_card_t' : #t = #t' := by simp [← t_map_eq_t', t]
@@ -695,13 +695,13 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
   have hiI : a (i - 2) ∈ I := by
     simp only [I, Finset.mem_filter, Finset.mem_range, hi2s, true_and]
     rw [hc.apply_eq_card (by lia), show i - 1 - 1 = i - 2 by lia]
-    exact Finset.card_le_card (Finset.filter_subset_filter _  (by simp))
+    exact Finset.card_le_card (Finset.filter_subset_filter _ (by simp))
   have hj2s : a (j - 2) < k a + 1 :=
     Nat.lt_add_one_iff.mpr (hc.apply_sub_two_small_of_apply_small_of_N'_lt (hijeq ▸ his) (by lia))
   have hjJ : a (j - 2) ∈ J := by
     simp only [J, Finset.mem_filter, Finset.mem_range, hj2s, true_and]
     rw [hc.apply_eq_card (by lia), show j - 1 - 1 = j - 2 by lia]
-    exact Finset.card_le_card (Finset.filter_subset_filter _  (by simp))
+    exact Finset.card_le_card (Finset.filter_subset_filter _ (by simp))
   have hjI : a (j - 2) ∈ I := by
     by_contra hjI
     have hjIf := hjI

@@ -286,4 +286,20 @@ lemma mem_corootSpace' {x : H} :
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
 
+section FiniteDimensional
+
+variable {K : Type*} [Field K] [LieAlgebra K L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+variable [LieModule.IsTriangularizable K H L]
+
+lemma cartan_sup_iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
+  rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · exact le_sup_of_le_right <| le_iSup₂_of_le α hα (le_refl _)
+
+end FiniteDimensional
+
 end LieAlgebra
