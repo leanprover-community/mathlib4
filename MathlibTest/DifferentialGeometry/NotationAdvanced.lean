@@ -51,6 +51,7 @@ section
 
 variable [RCLike 𝕜] {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E''] {g' : M → E''}
 
+--set_option trace.Elab.DiffGeo.MDiff true in
 /-- error: Could not find a model with corners for `E''` -/
 #guard_msgs in
 #check MDiff g'
@@ -60,6 +61,8 @@ variable [RCLike 𝕜] {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace
 #check CMDiff n g'
 
 end
+
+#exit
 
 /-! A partial homeomorphism or partial equivalence. More generally, this works for any type
 with a coercion to (possibly dependent) functions. -/
