@@ -126,7 +126,7 @@ lemma isoAdd'_assoc {a b c ab bc abc : A}
     (ec : shiftFunctor C c ⋙ F ≅ F ⋙ shiftFunctor D c)
     (hab : a + b = ab) (hbc : b + c = bc) (h : a + b + c = abc) :
     isoAdd' (show ab + c = abc by rwa [← hab]) (isoAdd' hab ea eb) ec =
-      isoAdd' (by rwa [← hbc, ← add_assoc]) ea (isoAdd' hbc eb ec) := by
+      isoAdd' (show a + bc = abc by grind) ea (isoAdd' hbc eb ec) := by
   ext X
   have := NatTrans.naturality_2 ec.hom ((shiftFunctorAdd' C a b ab hab).app X)
   dsimp at this ⊢
