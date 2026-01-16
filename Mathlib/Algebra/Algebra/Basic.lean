@@ -431,6 +431,7 @@ instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M 
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
+/-- This has high priority because it is almost always the right instance when it applies. -/
 instance (priority := high) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
