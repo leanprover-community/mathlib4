@@ -6,11 +6,11 @@ Authors: Mario Carneiro, Pim Spelier, Daan van Gent
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.PFun
 import Mathlib.Computability.Tape
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.PFun
 
 /-!
 # State Transition Systems
