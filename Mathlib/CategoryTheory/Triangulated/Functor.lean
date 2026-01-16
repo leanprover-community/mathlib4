@@ -257,15 +257,10 @@ lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e
     [G.IsTriangulated] [G.Full] [G.Faithful] :
     F.IsTriangulated ↔ H.IsTriangulated := by
   rw [← isTriangulated_iff_of_iso e]
-  constructor
-  · intro
-    infer_instance
-  · intro
-    constructor
-    intro T hT
-    rw [← G.map_distinguished_iff]
-    exact isomorphic_distinguished _ ((F ⋙ G).map_distinguished T hT) _
-      ((mapTriangleCompIso F G).symm.app T)
+  refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun T hT ↦ ?_⟩⟩
+  rw [← G.map_distinguished_iff]
+  exact isomorphic_distinguished _ ((F ⋙ G).map_distinguished T hT) _
+    ((mapTriangleCompIso F G).symm.app T)
 
 lemma mem_mapTriangle_essImage_of_distinguished
     [F.IsTriangulated] [F.mapArrow.EssSurj] (T : Triangle D) (hT : T ∈ distTriang D) :
