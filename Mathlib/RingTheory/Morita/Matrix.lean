@@ -134,7 +134,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     { smul_assoc r m x := show _ = (Matrix.scalar ι r) • (m • x) by
         rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
     M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
-  toFun m i := ⟨(single j i 1 : Matrix ι ι R) • m, (single j i 1 : Matrix ι ι R) • m, by
+  toFun m i := ⟨single j i (1 : R) • m, single j i (1 : R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
   map_add' _ _ := by simpa using funext fun _ ↦ by rfl
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
