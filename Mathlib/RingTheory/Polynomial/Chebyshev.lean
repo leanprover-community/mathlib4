@@ -54,8 +54,6 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
-* Compute zeroes and extrema of Chebyshev polynomials.
-* Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
 * Prove minimax properties of Chebyshev polynomials.
 -/
 
