@@ -280,6 +280,14 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
 
+theorem intValuation_eq_coe_neg_multiplicity (v : HeightOneSpectrum R) {x : R} (hnz : x ≠ 0) :
+    v.intValuation x = WithZero.exp (-(multiplicity v.asIdeal (Ideal.span {x}) : ℤ)) := by
+  classical
+  rw [intValuation_def, if_neg hnz, exp_inj, neg_inj, Nat.cast_inj]
+  refine (multiplicity_eq_of_emultiplicity_eq_some ?_).symm
+  rw [UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors v.irreducible (by simpa),
+    count_associates_factors_eq (by simpa) v.isPrime v.ne_bot, normalize_eq v.asIdeal]
+
 /-! ### Adic valuations on the field of fractions `K` -/
 
 variable (K) in

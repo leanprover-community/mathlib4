@@ -45,7 +45,7 @@ namespace WithVal
 
 section Instances
 
-variable {P S : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {P S : Type*}
 
 instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs (Ring R)
 
@@ -75,6 +75,12 @@ instance {S : Type*} [Ring S] [Algebra R S] :
 
 instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
     Algebra R (WithVal w) := inferInstanceAs (Algebra R S)
+
+theorem algebraMap_apply {S : Type*} [Ring S] [Algebra R S] (x : R) :
+    algebraMap (WithVal v) S x = algebraMap R S x := rfl
+
+theorem algebraMap_apply' {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) (x : R) :
+    algebraMap R (WithVal w) x = algebraMap R S x := rfl
 
 instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
     [Algebra R S] [IsScalarTower P R S] :
