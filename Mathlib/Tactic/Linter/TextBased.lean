@@ -319,7 +319,7 @@ end UnicodeLinter
 /-- Lint a collection of input strings for disallowed unicode characters. -/
 public register_option linter.unicodeLinter : Bool := { defValue := true }
 
-/-- Lint a collection of input strings if one of them contains unwanted unicode. -/
+@[inherit_doc linter.unicodeLinter]
 def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   unless getLinterValue linter.unicodeLinter opts do return (#[], none)
 
