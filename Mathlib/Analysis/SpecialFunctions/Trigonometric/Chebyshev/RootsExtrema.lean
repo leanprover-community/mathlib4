@@ -9,10 +9,12 @@ public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.NumberTheory.Niven
 
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
@@ -22,10 +24,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
 * Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
-
-## TODO
-
-Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
+* Irrationality of zeroes of T other than zero: `irrational_of_isRoot_T_real`
 -/
 
 @[expose] public section
@@ -303,5 +302,30 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
   · rintro ⟨k, hk, hx⟩
     rw [hx]
     exact isExtrOn_T_real hn hk
+
+theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
+    Irrational x := by
+  contrapose! hnz
+  rw [Irrational, Set.mem_range, not_not] at hnz
+  obtain ⟨q, hq⟩ := hnz
+  replace hroot : x ∈ (T ℝ n).roots := (mem_roots_iff_aeval_eq_zero (T_ne_zero ℝ n)).mpr hroot
+  rw [roots_T_real] at hroot
+  obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
+  have hn : n ≠ 0 := by grind
+  suffices (2 * k + 1 : ℚ) / (2 * n) = 1 / 2 by
+    have : (2 * k + 1) * π / (2 * n) = π / 2 := calc
+      (2 * k + 1) * π / (2 * n) = (2 * k + 1 : ℝ) / (2 * n) * π := by ring
+      _ = π / 2 := by rify at this; rw [this]; ring
+    rw [←hk₂, this, cos_pi_div_two]
+  set r := (2 * k + 1 : ℚ) / (2 * n) with rdef
+  have hcos : cos (r * π) = q := by rw [hq, ← hk₂, rdef]; congr 1; push_cast; ring
+  have h_bnd : r ∈ Set.Icc 0 1 := by
+    refine Set.mem_Icc.mpr ⟨by positivity, by rw [rdef]; field_simp; norm_cast; grind⟩
+  rcases niven_rat_eq ⟨q, hcos⟩ h_bnd with (hr | hr | hr | hr | hr)
+  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr
+  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr; grind
+  · exact hr
+  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr; grind
+  · exfalso; rw [Set.mem_singleton_iff, rdef] at hr; field_simp at hr; norm_cast at hr; grind
 
 end Polynomial.Chebyshev

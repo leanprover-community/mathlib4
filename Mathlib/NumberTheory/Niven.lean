@@ -159,3 +159,18 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     have h₂ := cos_pi_div_three;
     have h₂ := cos_zero] <;>
   simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
+
+theorem niven_rat_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
+    (h_bnd : r ∈ Set.Icc 0 1) : r ∈ ({0, 1 / 3, 1 / 2, 2 / 3, 1} : Set ℚ) := by
+  replace h_bnd : (r : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr
+    ⟨by norm_cast; grind, by norm_cast; grind⟩
+  replace h_bnd : r * π ∈ Set.Icc 0 π := by
+    obtain ⟨h_lb, h_ub⟩ := Set.mem_Icc.mp h_bnd
+    refine Set.mem_Icc.mpr ⟨by positivity, by grw [h_ub]; simp⟩
+  have hinj : Function.Injective (fun (r : ℚ) => r * π) := smul_left_injective ℚ pi_ne_zero
+  rcases niven_angle_eq ⟨r, rfl⟩ hcos h_bnd with h | h | h | h | h
+  · simp [show r = 0 by apply hinj; dsimp; rw [h]; ring]
+  · simp [show r = 1 / 3 by apply hinj; dsimp; rw [h]; ring]
+  · simp [show r = 1 / 2 by apply hinj; dsimp; rw [h]; ring]
+  · simp [show r = 2 / 3 by apply hinj; dsimp; rw [h]; ring]
+  · simp [show r = 1 by apply hinj; dsimp; rw [h]; ring]
