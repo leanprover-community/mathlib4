@@ -29,15 +29,6 @@ We introduce a predicate for sums of squares in a ring.
 
 @[expose] public section
 
--- TODO : find home
-@[to_additive]
-theorem Submonoid.closure_eq_image_multiset_prod {M : Type*} [CommMonoid M] (s : Set M) :
-    ↑(closure s) = Multiset.prod '' {m : Multiset M | ∀ x ∈ m, x ∈ s} := by
-  ext x
-  refine ⟨fun h ↦ Submonoid.exists_multiset_of_mem_closure h, fun h ↦ ?_⟩
-  rcases h with ⟨m, hm, rfl⟩
-  exact Submonoid.multiset_prod_mem _ _ (by aesop)
-
 variable {R : Type*}
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -117,15 +108,6 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSq R := by
   refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
   induction hx <;> aesop
-
-theorem isSumSq_iff_exists_sum_mul_self_eq {R : Type*} [AddCommMonoid R] [Mul R] {x} :
-    IsSumSq x ↔ ∃ s : Multiset R, (s.map (fun a ↦ a * a)).sum = x := by
-  rw [← AddSubmonoid.mem_sumSq, ← AddSubmonoid.closure_isSquare, ← SetLike.mem_coe,
-      AddSubmonoid.closure_eq_image_multiset_sum, Set.mem_image]
-  refine ⟨fun h => ?_, fun ⟨m, hm⟩ => ⟨Multiset.map (fun a ↦ a * a) m, by simp [hm]⟩⟩
-  rcases h with ⟨m, hm, rfl⟩
-  choose! sqrt hsqrt using hm
-  exact ⟨m.map sqrt, by simp [← Multiset.map_congr _ hsqrt]⟩
 
 /--
 In an additive commutative monoid with multiplication, a finite sum of sums of squares
