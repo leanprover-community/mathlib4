@@ -529,6 +529,7 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
         timeout-minutes: 40
+        shell: bash
         run: |
           cd pr-branch
           set -o pipefail
