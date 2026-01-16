@@ -429,13 +429,14 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  have good_input : G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
+  have from_embedding_or_terminal_input :
+      G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
     apply hw₁
     simp
-  revert good_input
+  revert from_embedding_or_terminal_input
   generalize hr_eq : r.input = n
-  intro good_input
-  cases good_input with
+  intro from_embedding_or_terminal_input
+  cases from_embedding_or_terminal_input with
   | nonterminal n₀ =>
     rcases G.preimage_of_rules r rin n₀ hr_eq.symm with ⟨r₀, hr₀, hrr₀⟩
     constructor
