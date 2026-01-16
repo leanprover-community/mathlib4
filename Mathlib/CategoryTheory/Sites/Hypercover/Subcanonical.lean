@@ -86,7 +86,7 @@ instance : (isomorphisms C).IsLocalAtTarget J := by
   · exact 𝒰.hom_ext fun i ↦ by simp [pullback.condition]
 
 /--
-To show
+To show that
 ```
 P ---> X
 |      |
