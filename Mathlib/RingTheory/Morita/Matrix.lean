@@ -164,7 +164,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
     simp [← SemigroupAction.mul_smul, ← hy]
 
-/-- the natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat` -/
+/-- The natural isomorphism showing that `toMatrixModCat` is the right inverse of `toModuleCat`. -/
 def MatrixModCat.counitIso (i : ι) :
     MatrixModCat.toModuleCat R i ⋙ ModuleCat.toMatrixModCat R ι ≅ 𝟭 (ModuleCat (Matrix ι ι R)) :=
   NatIso.ofComponents (fun X ↦ ((toModuleCatFromModuleCatLinearEquiv R X i).symm).toModuleIso) <| by
