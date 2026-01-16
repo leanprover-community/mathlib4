@@ -29,7 +29,8 @@ jobs:
         run: |
           yrMth="$(date +%Y-%m)"  # format: 2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
-          printf $'Date: %s, month: %s\n' "${yrMth}" "${mth}"
+          tmp_file="${yrMth}_in_mathlib.md"
+          printf $'Date: %s, month: %s\ntemp file: %s\n' "${yrMth}" "${mth}" "${tmp_file}"
           PR="${{ github.event.pull_request.number }}"
           title="### ${mth} $(date +%Y) in Mathlib summary"
 
@@ -48,7 +49,7 @@ jobs:
               s=</details><details><summary>=<details><summary>=
               s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
               s=\n---[\n]*$=\n\n</details>\n&=
-            ' | tee "${yrMth}_in_mathlib.md"
+            ' | tee "${tmp_file}"
           echo "---"
           echo "---"
-          ./scripts/update_PR_comment.sh "${yrMth}_in_mathlib.md" "${title}" "${PR}"
+          ./scripts/update_PR_comment.sh "${tmp_file}" "${title}" "${PR}"
