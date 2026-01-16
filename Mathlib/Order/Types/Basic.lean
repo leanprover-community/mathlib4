@@ -62,9 +62,9 @@ instance : AddMonoid OrderType where
   add_assoc o₁ o₂ o₃ :=
     inductionOn₃ o₁ o₂ o₃ fun α _ β _ γ _ ↦ (OrderIso.sumLexAssoc α β γ).orderType_eq
   zero_add o :=
-    inductionOn o (fun α _ ↦ RelIso.orderType_eq (OrderIso.emptySumLex α _))
+    inductionOn o (fun α _ ↦ RelIso.orderType_eq OrderIso.emptySumLex)
   add_zero o :=
-   inductionOn o (fun α _ ↦ RelIso.orderType_eq (OrderIso.sumLexEmpty α _))
+   inductionOn o (fun α _ ↦ RelIso.orderType_eq OrderIso.sumLexEmpty)
   nsmul := nsmulRec
 
 instance (n : Nat) : OfNat OrderType n where
@@ -76,11 +76,11 @@ lemma type_add (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
 
 instance : Mul OrderType where
   mul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r)⟩)
-   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩
+   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodLexCongr  (Classical.choice hb) (Classical.choice ha)⟩
 
 instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hMul := Quotient.map₂ (fun r s ↦ ⟨(s ×ₗ r)⟩)
-   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodCongr (Classical.choice hb) (Classical.choice ha)⟩
+   fun _ _ ha _ _ hb ↦ ⟨Prod.Lex.prodLexCongr  (Classical.choice hb) (Classical.choice ha)⟩
 
 @[simp]
 lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
@@ -89,7 +89,7 @@ lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
 instance : Monoid OrderType where
   mul_assoc o₁ o₂ o₃ :=
     inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦
-    RelIso.orderType_eq (Prod.Lex.prodAssoc γ β α).symm)
+    RelIso.orderType_eq (Prod.Lex.prodLexAssoc γ β α).symm)
   one_mul o := inductionOn o (fun α _ ↦ RelIso.orderType_eq (Prod.Lex.prodUnique α PUnit))
   mul_one o := inductionOn o (fun α _ ↦ RelIso.orderType_eq (Prod.Lex.uniqueProd PUnit α)) --6
 
@@ -97,7 +97,7 @@ instance : LeftDistribClass OrderType where
   left_distrib a b c := by
     refine inductionOn₃ a b c (fun _ _ _ _ _ _ ↦ ?_)
     simp only [←type_mul,←type_add]
-    exact RelIso.orderType_eq (Prod.Lex.sumProdDistrib _ _ _)
+    exact RelIso.orderType_eq (Prod.Lex.sumLexProdLexDistrib _ _ _)
 
 /-- The order type of the rational numbers. -/
 def eta : OrderType := type ℚ
