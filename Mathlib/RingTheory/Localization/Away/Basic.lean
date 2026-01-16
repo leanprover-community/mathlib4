@@ -188,6 +188,30 @@ noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
       use n
       simp)
 
+lemma map_injective_iff {S : Type*} [CommRing S] [Algebra R S]
+    (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Injective (map S Q f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 := by
+  rw [injective_iff_map_eq_zero]
+  trans ∀ a n, f r ^ n * f a = 0 → ∃ m, r ^ m * a = 0
+  · simp [(IsLocalization.mk'_surjective (.powers r)).forall, Submonoid.mem_powers_iff,
+      IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff]
+  · refine ⟨fun H x hx ↦ H x 0 (by simpa), fun H a n ha ↦ ?_⟩
+    obtain ⟨m, hm⟩ := H (r ^ n * a) (by simpa)
+    exact ⟨m + n, by simp [pow_add, mul_assoc, *]⟩
+
+lemma map_surjective_iff (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Surjective (map S Q f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a := by
+  trans ∀ a n, ∃ b m k, f (r ^ (k + n) * b) = f r ^ (k + m) * a
+  · simp [Function.Surjective, (IsLocalization.mk'_surjective (.powers (f r))).forall, ← map_pow,
+      (IsLocalization.mk'_surjective (.powers r)).exists, Submonoid.mem_powers_iff, pow_add,
+      IsLocalization.Away.map, IsLocalization.map_mk', ← mul_assoc,
+      IsLocalization.mk'_eq_iff_eq, ← map_mul, IsLocalization.eq_iff_exists (.powers (f r))]
+  · refine ⟨fun H x ↦ ⟨_, _, (H x 0).choose_spec.choose_spec.choose_spec⟩, fun H a n ↦ ?_⟩
+    obtain ⟨b, m, e⟩ := H a
+    exact ⟨b, n + m, 0, by simp [e, pow_add]; ring_nf⟩
+
 section Algebra
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
@@ -425,6 +449,15 @@ lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
+
+lemma awayMap_injective_iff {R : Type*} [CommRing R] {f : R →+* S} {r : R} :
+    Function.Injective (Localization.awayMap f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 :=
+  IsLocalization.Away.map_injective_iff _ _ _
+
+omit [Algebra R S] in
+lemma awayMap_surjective_iff {f : R →+* S} {r : R} :
+    Function.Surjective (Localization.awayMap f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a :=
+  IsLocalization.Away.map_surjective_iff _ _ _ _
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {B : Type*} [CommSemiring B] [Algebra R B]

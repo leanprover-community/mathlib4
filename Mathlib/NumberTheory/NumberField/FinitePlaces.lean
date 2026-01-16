@@ -63,7 +63,7 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
       Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, - exp_neg,
+    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, -exp_neg,
       ← (v.valuation K).map_eq_zero_iff, hπ]
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
@@ -82,7 +82,7 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [hπ, ← exp_zero, - exp_neg,
+    simp [hπ, ← exp_zero, -exp_neg,
           ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
@@ -135,8 +135,7 @@ noncomputable def FinitePlace.embedding : WithVal (v.valuation K) →+* adicComp
 
 theorem FinitePlace.embedding_apply (x : K) : embedding v x = ↑x := rfl
 
-noncomputable instance instRankOneValuedAdicCompletion :
-    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) where
+noncomputable instance : (v.valuation K).RankOne where
   hom := {
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
@@ -147,12 +146,12 @@ noncomputable instance instRankOneValuedAdicCompletion :
   exists_val_nontrivial := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use x
-    dsimp [adicCompletion]
-    rw [valuedAdicCompletion_eq_valuation' v (x : K)]
-    constructor
-    · simpa only [ne_eq, map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
-    · apply ne_of_lt
-      rwa [valuation_of_algebraMap, intValuation_lt_one_iff_mem]
+    rw [valuation_of_algebraMap]
+    exact ⟨v.intValuation_ne_zero _ hx2, ((intValuation_lt_one_iff_mem _ _).2 hx1).ne⟩
+
+@[deprecated Valuation.instRankOneCompletion (since := "2026-01-05")]
+noncomputable instance instRankOneValuedAdicCompletion :
+    Valuation.RankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) := inferInstance
 
 /-- The `v`-adic completion of `K` is a normed field. -/
 noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
