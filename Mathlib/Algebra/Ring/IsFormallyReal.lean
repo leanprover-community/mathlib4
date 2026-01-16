@@ -10,8 +10,11 @@ public import Mathlib.Algebra.Ring.SumsOfSquares
 /-!
 # Formally real rings
 
-A ring `R` is *formally real* if, whenever `∑ i, x i ^ 2 = 0`,
-we in fact have `x i = 0` for all `i`.
+A ring `R` is *formally real* if, whenever `∑ i, x i ^ 2 = 0`, in fact `x i = 0` for all `i`.
+
+We define formally real rings in an index-free manner using the inductive predicate
+`IsSumNonzeroSq`, which asserts that an element is a finite sum of squares of nonzero elements.
+A ring is then formally real if `¬ IsSumNonzeroSq 0`.
 
 ## Main declaration
 
@@ -21,57 +24,91 @@ we in fact have `x i = 0` for all `i`.
 
 @[expose] public section
 
-variable (R : Type*)
+variable {R : Type*}
+
+section IsSumNonzeroSq
+
+/--
+The property of being a sum of positive squares is defined inductively by:
+`a * a : R` is a sum of nonzero squares for all nonzero `a`, and
+if `s : R` is a sum of positive squares, and `a ≠ 0`, then `a * a + s` is a sum of positive squares.
+-/
+@[mk_iff]
+inductive IsSumNonzeroSq [Mul R] [Add R] [Zero R] : R → Prop
+  | sq {a : R} (ha : a ≠ 0) : IsSumNonzeroSq (a * a)
+  | sq_add {a s : R} (ha : a ≠ 0) (hs : IsSumNonzeroSq s) : IsSumNonzeroSq (a * a + s)
+
+theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
+    (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
+  induction h₁ <;> simp_all [sq_add, add_assoc]
+
+theorem IsSumSq.isSumPosSq [AddMonoid R] [Mul R] {s : R} (h : IsSumNonzeroSq s) : IsSumSq s := by
+  induction h <;> aesop
+
+theorem isSumPosSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
+    IsSumNonzeroSq s ↔ IsSumSq s where
+  mp := IsSumSq.isSumPosSq
+  mpr h := by
+    induction h with
+    | zero => grind
+    | @sq_add a s hs ih =>
+    rcases eq_or_ne a 0 with (rfl | ne_a)
+    · simp_all
+    · rcases eq_or_ne s 0 with (rfl | ne_s)
+      · simpa using IsSumNonzeroSq.sq ne_a
+      · exact IsSumNonzeroSq.sq_add ne_a (ih ne_s)
+
+alias ⟨_, IsSumSq.isSumPosSq_of_ne_zero⟩ := isSumPosSq_iff_isSumSq
+
+end IsSumNonzeroSq
+
+variable (R)
 
 /--
 A ring is formally real if, whenever `∑ i, x i ^ 2 = 0`, we in fact have `x i = 0` for all `i`.
 -/
 class IsFormallyReal [AddCommMonoid R] [Mul R] : Prop where
-  eq_zero_of_sum_eq_zero : ∀ {s : Multiset R}, (s.map (fun a ↦ a * a)).sum = 0 → ∀ a ∈ s, a = 0
+  not_isSumPosSq_zero : ¬ IsSumNonzeroSq (0 : R)
 
 namespace IsFormallyReal
 
 theorem of_eq_zero_of_mul_self_of_eq_zero_of_add [AddCommMonoid R] [Mul R]
     (hz : ∀ {a : R}, a * a = 0 → a = 0)
     (ha : ∀ {s₁ s₂ : R}, IsSumSq s₁ → IsSumSq s₂ → s₁ + s₂ = 0 → s₁ = 0) : IsFormallyReal R where
-  eq_zero_of_sum_eq_zero {s} := by
-    induction s using Multiset.induction with
-    | empty => simp
-    | cons a m hm =>
-        simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.mem_cons, forall_eq_or_imp]
-        intro h
-        have := ha (by simp) (by rw [isSumSq_iff_exists_sum_mul_self_eq]; simp) h
-        exact ⟨hz this, hm (by simpa [this] using h)⟩
+  not_isSumPosSq_zero := by
+    suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
+    intro x hx
+    induction hx with
+    | sq ha => grind
+    | @sq_add b s hb hs ih => grind [ha (IsSumSq.mul_self b) (IsSumSq.isSumPosSq hs)]
 
 theorem of_eq_zero_of_eq_zero_of_mul_self_add [NonUnitalNonAssocSemiring R]
     (h : ∀ {s a : R}, IsSumSq s → a * a + s = 0 → a = 0) : IsFormallyReal R where
-  eq_zero_of_sum_eq_zero {s} := by
-    induction s using Multiset.induction with
-    | empty => simp
-    | cons a m hm =>
-        simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.mem_cons, forall_eq_or_imp]
-        intro has
-        have := h (by rw [isSumSq_iff_exists_sum_mul_self_eq]; simp) has
-        exact ⟨this, hm (by simpa [this] using has)⟩
+  not_isSumPosSq_zero := by
+    suffices ∀ (x : R), IsSumNonzeroSq x → x ≠ 0 by grind
+    intro x hx
+    induction hx with
+    | sq ha => exact fun hc ↦ ha (h IsSumSq.zero (by simpa using hc))
+    | sq_add ha hs ih => grind [IsSumSq.isSumPosSq hs]
 
-/-- A linearly ordered ring is formally real. -/
 instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsFormallyReal R :=
   of_eq_zero_of_mul_self_of_eq_zero_of_add R mul_self_eq_zero.mp <|
     fun hs₁ hs₂ h ↦ ((add_eq_zero_iff_of_nonneg (IsSumSq.nonneg hs₁) (IsSumSq.nonneg hs₂)).mp h).1
 
 variable {R}
 
-theorem eq_zero_of_mul_self [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} :
-  a * a = 0 → a = 0 := by simpa using IsFormallyReal.eq_zero_of_sum_eq_zero (s := {a})
+theorem eq_zero_of_mul_self [AddCommMonoid R] [Mul R] [IsFormallyReal R] {a : R} (ha : a * a = 0) :
+    a = 0 := by
+  by_contra! hc
+  exact IsFormallyReal.not_isSumPosSq_zero (ha.symm ▸ IsSumNonzeroSq.sq hc)
 
 theorem eq_zero_of_add_right [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₁ = 0 := by
-  simp_rw [isSumSq_iff_exists_sum_mul_self_eq] at *
-  rcases hs₁ with ⟨m₁, rfl⟩
-  rcases hs₂ with ⟨m₂, rfl⟩
-  rw [← Multiset.sum_add, ← Multiset.map_add] at h
-  exact Multiset.sum_eq_zero <|by
-    simpa using fun _ _ ↦ by simp [eq_zero_of_sum_eq_zero h _ (by aesop)]
+  by_contra! h₁
+  have h₂ : s₂ ≠ 0 := fun hc ↦ by simp_all
+  rw [← isSumPosSq_iff_isSumSq h₁] at hs₁
+  rw [← isSumPosSq_iff_isSumSq h₂] at hs₂
+  exact IsFormallyReal.not_isSumPosSq_zero (h ▸ IsSumNonzeroSq.add hs₁ hs₂)
 
 theorem eq_zero_of_add_left [NonUnitalNonAssocSemiring R] [IsFormallyReal R]
     {s₁ s₂ : R} (hs₁ : IsSumSq s₁) (hs₂ : IsSumSq s₂) (h : s₁ + s₂ = 0) : s₂ = 0 := by
