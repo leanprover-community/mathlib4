@@ -740,6 +740,12 @@ def Acyclic := ∀ i, K.ExactAt i
 lemma acyclic_iff :
     K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
 
+variable {K} in
+lemma Acyclic.of_iso (hK : K.Acyclic) {L : HomologicalComplex C c} (e : K ≅ L) :
+    L.Acyclic := by
+  rw [acyclic_iff]
+  exact fun n ↦ (hK n).of_iso e
+
 lemma acyclic_of_isZero (hK : IsZero K) :
     K.Acyclic := by
   rw [acyclic_iff]
