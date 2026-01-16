@@ -216,9 +216,6 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
 protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
   not_lt_bot
 
-#check lt_of_le_of_lt
-#check lt_iff_le_not_ge
-
 @[simp]
 theorem pos_iff_ne_zero (o : OrderType) : 0 < o ↔ o ≠ 0 :=
   ⟨ne_bot_of_gt, fun ho ↦ by simpa using
