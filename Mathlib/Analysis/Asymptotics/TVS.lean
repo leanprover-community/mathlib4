@@ -18,7 +18,7 @@ public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 This file defines `Asymptotics.IsLittleOTVS`, `Asymptotics.IsBigOTVS`, and `Asymptotics.IsThetaTVS`
 as generalizations of `Asymptotics.IsLittleO`, `Asymptotics.IsBigO`, and `Asymptotics.IsTheta`
-from normed spaces to topological spaces.
+from normed spaces to topological vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
