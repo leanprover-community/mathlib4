@@ -171,9 +171,6 @@ theorem composition_eq_min (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
 
 
 
-
-
-
 -- TODO understand why this is not simp
 theorem id_eq_limit (x : X) :
     Tendsto (fun n => h.canonicalProjection n x) atTop (𝓝 x) := by
@@ -188,8 +185,14 @@ variable [CompleteSpace X]
 theorem uniform_bound : ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ ≤ C := by
   apply banach_steinhaus
   intro x
-  -- The sequence converges, so the image of the sequence is a bounded set
-  exact Metric.isBounded_range_of_tendsto _ (h.id_eq_limit x)
+
+  let f: ℕ → X := fun n => canonicalProjection h n x
+  have : ∃ M : ℝ, ∀ x ∈ Set.range f, ‖x‖ ≤ M :=
+      isBounded_iff_forall_norm_le.mp (Metric.isBounded_range_of_tendsto _ (id_eq_limit h x ))
+  rcases this with ⟨M, hM⟩
+  rw [Set.forall_mem_range] at hM
+  use M
+
 
 end SchauderBasis
 
