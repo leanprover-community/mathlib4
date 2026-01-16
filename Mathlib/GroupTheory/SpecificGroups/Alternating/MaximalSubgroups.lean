@@ -36,7 +36,7 @@ alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -184,7 +184,7 @@ theorem subgroup_eq_top_of_isPreprimitive (h4 : 4 < Nat.card α)
   · let φ := (alternatingGroup α).subtype.subgroupMap G
     let f : α →ₑ[φ] α := {
       toFun := id
-      map_smul' _ _ := rfl  }
+      map_smul' _ _ := rfl }
     rwa [← isPreprimitive_congr (f := f) ((alternatingGroup α).subtype.subgroupMap_surjective G)
       Function.bijective_id]
 

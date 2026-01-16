@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
@@ -352,7 +353,6 @@ namespace Module.Basis
 theorem card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : Basis ι R M)
     {ι' : Type*} [Fintype ι'] {v : ι' → M} (hv : LinearIndependent R v) :
     Fintype.card ι' ≤ Fintype.card ι := by
-  letI := nontrivial_of_invariantBasisNumber R
   simpa [rank_eq_card_basis b, Cardinal.mk_fintype] using hv.cardinal_lift_le_rank
 
 theorem card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)

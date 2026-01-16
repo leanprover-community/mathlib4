@@ -364,7 +364,7 @@ instance : CompleteLattice (Con M) where
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
+  le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
   bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
@@ -504,12 +504,6 @@ def comap (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (c : Con N) : Con M
 theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N} {x y : M} :
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
-
-section
-
-open Quotient
-
-end
 
 end
 

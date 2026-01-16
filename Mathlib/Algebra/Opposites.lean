@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Logic.Nontrivial.Basic
+public import Aesop
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Multiplicative opposite and algebraic operations on it

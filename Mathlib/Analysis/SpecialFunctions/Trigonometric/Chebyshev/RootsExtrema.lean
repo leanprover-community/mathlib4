@@ -28,7 +28,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial.Chebyshev
 
@@ -51,7 +51,7 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
   have : arcosh x ≠ 0 := by
     by_contra! h
     grind [cosh_arcosh, cosh_zero]
-  rw [←cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
+  rw [← cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
   exact ⟨by norm_cast, by assumption⟩
 
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :

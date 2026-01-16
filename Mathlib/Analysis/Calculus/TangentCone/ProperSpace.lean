@@ -15,7 +15,7 @@ In this file we prove that the tangent cone of a set in a proper normed space
 at an accumulation point of this set is nontrivial.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Metric NormedField
 open scoped Topology
