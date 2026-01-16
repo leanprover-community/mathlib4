@@ -44,8 +44,6 @@ lemma isNilpotent_tensor_residueField_iff
   cases subsingleton_or_nontrivial R
   · have := (algebraMap R (A ⊗[R] I.ResidueField)).codomain_trivial
     simp [Subsingleton.elim I ⊤, Subsingleton.elim (f ⊗ₜ[R] (1 : I.ResidueField)) 0]
-  have : SMulCommClass R I.ResidueField I.ResidueField := Algebra.to_smulCommClass
-  have : IsScalarTower R I.ResidueField I.ResidueField := IsScalarTower.right
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
     rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
@@ -69,10 +67,6 @@ lemma isNilpotent_tensor_residueField_iff
     · simp [hi.ne', coeff_eq_zero_of_natDegree_lt hi]
 
 namespace PrimeSpectrum
-
--- shortcut instance to avoid timeouts
-instance (F R A B) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [FunLike F A B] [AlgHomClass F R A B] : MonoidWithZeroHomClass F A B := inferInstance
 
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
