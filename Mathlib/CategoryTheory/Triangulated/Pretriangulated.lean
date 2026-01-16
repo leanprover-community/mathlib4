@@ -544,7 +544,6 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
 instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
 instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
-instance : HasBinaryProducts C := inferInstance
 
 lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :
