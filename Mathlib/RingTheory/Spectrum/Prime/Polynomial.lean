@@ -70,6 +70,7 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
+-- shortcut instance to avoid timeouts
 instance (F R A B) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [FunLike F A B] [AlgHomClass F R A B] : MonoidWithZeroHomClass F A B := inferInstance
 
