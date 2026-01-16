@@ -577,7 +577,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
     DifferentiableWithinAt.mono (hg₁.differentiableWithinAt hn) fun _ _ ↦ trivial
   -- use hf' to show that the derivative of g at φ₀ p is a linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E ≃L[𝕜] F, HasFDerivAt g (g' : E →L[𝕜] F) (φ₀ p) := by
-    simp only [mfderiv, hf.contMDiffAt.mdifferentiableAt hn, if_pos, fderivWithin] at hf'
+    rw [mfderiv, if_pos (hf.contMDiffAt.mdifferentiableAt hn), fderivWithin] at hf'
     by_cases g'_zero: HasFDerivWithinAt g (0 : E →L[𝕜] F) (range I) (φ₀ p)
     · rw [if_pos g'_zero] at hf'
       exact ⟨ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
