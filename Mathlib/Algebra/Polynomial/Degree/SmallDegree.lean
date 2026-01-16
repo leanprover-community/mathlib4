@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.WithBot
 # Results on polynomials of specific small degrees
 -/
 
-@[expose] public section
+public section
 
 open Finsupp Finset
 

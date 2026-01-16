@@ -14,7 +14,7 @@ public import Mathlib.Topology.MetricSpace.Lipschitz
 This file develops Lipschitz continuous functions further with some results that depend on algebra.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal
 

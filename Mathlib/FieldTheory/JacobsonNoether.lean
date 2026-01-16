@@ -48,7 +48,7 @@ separate variables constrained by certain relations.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-@[expose] public section
+public section
 
 namespace JacobsonNoether
 

@@ -20,7 +20,7 @@ for the vanishing of elements (especially in modules over division rings).
 
 assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
-section NoZeroSMulDivisors
+namespace NoZeroSMulDivisors
 
 variable {R M : Type*}
 
@@ -76,7 +76,7 @@ end SMulInjective
 variable (R M)
 
 @[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
-theorem NoZeroSMulDivisors.int_of_charZero
+theorem int_of_charZero
     (R) (M) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] [CharZero R] :
     NoZeroSMulDivisors ℤ M :=
   ⟨fun {z x} h ↦ by simpa [← smul_one_smul R z x] using h⟩

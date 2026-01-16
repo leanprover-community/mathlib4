@@ -11,7 +11,7 @@ public import Mathlib.Data.NNRat.Defs
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
