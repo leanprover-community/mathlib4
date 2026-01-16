@@ -271,22 +271,16 @@ instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 
 open IsIso
 
-/-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `X ≅ Y`. -/
-@[to_dual asIso' /-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `Y ≅ X`. -/]
+/-- Reinterpret a morphism `f` with an `IsIso f` instance as an `Iso`. -/
+@[to_dual none]
 noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
--- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
--- was failing to generate it by typeclass search.
-@[to_dual (attr := simp) asIso'_inv]
+@[simp, to_dual none]
 theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
   rfl
 
--- Porting note: the `IsIso f` argument had been instance implicit,
--- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
--- was failing to generate it by typeclass search.
-@[to_dual (attr := simp) asIso'_hom]
+@[simp, to_dual none]
 theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
   rfl
 
