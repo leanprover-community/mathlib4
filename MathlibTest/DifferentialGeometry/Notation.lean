@@ -963,6 +963,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
         NontriviallyNormedField Unit
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
 -/
 #guard_msgs in
 #check mfderiv% f
