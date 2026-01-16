@@ -25,6 +25,13 @@ partial def computeLength (b : Q(Basis)) : MetaM Nat := do
   | ~q(List.cons $basis_hd $basis_tl) => return 1 + (← computeLength basis_tl)
   | _ => panic! s!"computeLength: unexpected basis: {← ppExpr b}"
 
+partial def getNth {α : Q(Type)} (li : Q(List $α)) (n : Nat) :
+    MetaM <| Q($α) := do
+  match n, li with
+  | 0, ~q(List.cons $hd $tl) => return hd
+  | n + 1, ~q(List.cons $hd $tl) => return ← getNth tl n
+  | _, _ => panic! s!"getNth: unexpected list: {← ppExpr li}"
+
 /-- Returns the last element of a list. -/
 partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α) := do
   match li with
@@ -34,6 +41,10 @@ partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α
     | ~q(List.cons $tl_hd $tl_tl) => return ← getLast tl
     | ~q(List.nil) => return .some hd
   | _ => panic! s!"getLast: unexpected list: {← ppExpr li}"
+
+def mkFin (n m : Q(ℕ)) : MetaM Q(Fin $m) := do
+  let hn : Q($n < $m) := ← mkDecideProof q($n < $m)
+  return q(Fin.mk $n $hn)
 
 /-- Returns the index (as a `Nat`) of the first element equal to `val` in a list. -/
 partial def findIndexAux {α : Q(Type)} (li : Q(List $α)) (val : Q($α)) :
@@ -51,9 +62,7 @@ partial def findIndexAux {α : Q(Type)} (li : Q(List $α)) (val : Q($α)) :
 partial def findIndex {α : Q(Type)} (li : Q(List $α)) (val : Q($α)) :
     MetaM Q(Fin (List.length $li)) := do
   haveI n : Q(Nat) := mkNatLit (← findIndexAux li val)
-  do
-  let hn : Q($n < List.length $li) := ← mkDecideProof q($n < List.length $li)
-  return q(Fin.mk $n $hn)
+  return ← mkFin q($n) q(List.length $li)
 
 /-- Assuming `basis = left ++ right`, returns `left`. -/
 def expressAsAppend (basis right : Q(Basis)) : MetaM Q(Basis) := do

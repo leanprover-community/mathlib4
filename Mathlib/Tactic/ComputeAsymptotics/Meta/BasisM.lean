@@ -69,8 +69,8 @@ def BasisM.monomial {k : Q(ℕ)} (n : Q(Fin $k)) : BasisM MS := do
     (← get).h_logBasis
 
 /-- MS approximating `basis[n] ^ r` in the current basis. -/
-def BasisM.monomial_rpow {k : Q(ℕ)} (n : Q(Fin $k)) (r : Q(ℝ)) : BasisM MS := do
-  return MS.monomial_rpow (← get).basis (← get).logBasis n r (← get).h_basis
+def BasisM.monomialRpow {k : Q(ℕ)} (n : Q(Fin $k)) (r : Q(ℝ)) : BasisM MS := do
+  return MS.monomialRpow (← get).basis (← get).logBasis n r (← get).h_basis
     (← get).h_logBasis
 
 end ComputeAsymptotics

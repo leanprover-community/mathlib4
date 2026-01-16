@@ -17,9 +17,12 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 -/
 
+set_option linter.flexible false
+set_option linter.style.longLine false
+
 @[expose] public section
 
-open Filter Asymptotics Topology Stream' Seq
+open Filter Asymptotics Topology Stream'
 
 namespace ComputeAsymptotics
 
@@ -30,6 +33,8 @@ namespace PreMS
 abbrev LazySeries := Seq ℝ
 
 namespace LazySeries
+
+open Seq
 
 -- I do not know why it is necessary
 /-- Recursion principle for lazy series. -/
@@ -75,17 +80,6 @@ theorem ofFn_get {f : ℕ → ℝ} {n : ℕ} : (ofFn f).get? n = some (f n) := b
   convert ofFnFrom_get
   omega
 
-/-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
-noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
-  let T := LazySeries
-  let g : T → Option (ℝ × PreMS basis_tl × PreMS (basis_hd :: basis_tl) × T) := fun s =>
-    match s.destruct with
-    | none => none
-    | some (c, cs) =>
-      some (0, PreMS.const _ c, ms, cs)
-  gcorec g mul s
-
 -- theorems
 
 /-- Coefficient of the lazy series at index `n`. -/
@@ -96,6 +90,7 @@ noncomputable def coeff (s : LazySeries) (n : ℕ) : ℝ :=
 noncomputable def toFormalMultilinearSeries (s : LazySeries) : FormalMultilinearSeries ℝ ℝ ℝ :=
   .ofScalars ℝ (coeff s)
 
+@[simp]
 theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} :
     s.toFormalMultilinearSeries.coeff n = (s.get? n).getD 0 := by
   unfold FormalMultilinearSeries.coeff toFormalMultilinearSeries
@@ -103,6 +98,7 @@ theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} :
   simp_rw [Pi.one_apply, FormalMultilinearSeries.ofScalars_apply_eq, coeff]
   simp
 
+@[simp]
 theorem toFormalMultilinearSeries_norm {s : LazySeries} {n : ℕ} :
     ‖(s.toFormalMultilinearSeries) n‖ = |(s.get? n).getD 0| := by
   simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, Real.norm_eq_abs]
@@ -149,6 +145,12 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
       simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
         Real.norm_eq_abs, pow_succ, ← mul_assoc] at h_bound ⊢
       rw [← div_le_iff₀, mul_div_assoc, ← NNReal.coe_div, div_self hr_pos.ne.symm] <;> simpa
+
+theorem cons_analytic {s_hd : ℝ} {s_tl : LazySeries} (h_analytic : Analytic s_tl) :
+    Analytic (.cons s_hd s_tl) := by
+  simp only [Analytic]
+  rw [tail_radius_eq]
+  exact h_analytic
 
 theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
     (h_analytic : Analytic (.cons s_hd s_tl)) :
@@ -264,90 +266,6 @@ theorem toFun_majorated_zero {s : LazySeries} (h_analytic : s.Analytic) {f basis
   apply Tendsto.comp Filter.tendsto_abs_atTop_atTop
   exact Tendsto.comp (tendsto_rpow_atTop h_pos) h_basis
 
--- TODO: move
-theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : majorated f basis_hd exp)
-    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
-    majorated (f * g) basis_hd exp := by
-  simp only [majorated] at *
-  intro exp h_exp
-  conv =>
-    rhs; ext t; rw [← mul_one (basis_hd t ^ exp)]
-  apply IsLittleO.mul_isBigO
-  · exact hf _ h_exp
-  · exact hg
-
-@[simp]
-theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    apply .nil ms = nil := by
-  simp [apply, gcorec_nil]
-
-@[simp]
-theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
-    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply (.cons s_hd s_tl) ms) = cons 0 (PreMS.const _ s_hd) (ms.mul (apply s_tl ms)) := by
-  simp only [apply]
-  rw [gcorec_some]
-  rfl
-
-theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply s ms).leadingExp ≤ 0 := by
-  cases s <;> simp
-
-theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)}
-    (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
-    (apply s ms).WellOrdered := by
-  let motive (X : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ s, X = apply s ms
-  apply WellOrdered.mul_coind motive
-  · use s
-  intro exp coef tl ⟨s, h_eq⟩
-  cases s with
-  | nil => simp at h_eq
-  | cons s_hd s_tl =>
-  simp only [apply_cons, cons_eq_cons] at h_eq
-  simp only [h_eq, const_WellOrdered, mul_leadingExp, WithBot.coe_zero, true_and]
-  constructor
-  · generalize ms.leadingExp = x at *
-    have : (apply s_tl ms).leadingExp ≤ 0 := apply_leadingExp_le_zero
-    generalize (apply s_tl ms).leadingExp = y at *
-    cases x <;> cases y <;> simp; norm_cast at this h_neg ⊢; linarith
-  exact ⟨_, _, rfl, h_wo, s_tl, rfl⟩
-
-theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd : ℝ → ℝ}
-    {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-    (h_neg : ms.leadingExp < 0) (h_wo : ms.WellOrdered) {f : ℝ → ℝ}
-    (h_approx : ms.Approximates f) : (apply s ms).Approximates (s.toFun ∘ f) := by
-  have hf_tendsto_zero : Tendsto f atTop (𝓝 0) := by
-    apply neg_leadingExp_tendsto_zero h_neg h_approx
-  let motive (X : PreMS (basis_hd :: basis_tl)) (g : ℝ → ℝ) : Prop :=
-    ∃ (s : LazySeries), Analytic s ∧ X = apply s ms ∧ g =ᶠ[atTop] s.toFun ∘ f
-  apply Approximates.mul_coind h_basis motive (apply_WellOrdered h_wo h_neg)
-  · use s
-  rintro X g ⟨s, h_analytic, rfl, hg_eq⟩
-  cases s with
-  | nil => simpa using hg_eq
-  | cons s_hd s_tl =>
-  right
-  simp only [↓existsAndEq, apply_cons, cons_eq_cons, true_and, exists_and_left, Real.rpow_zero,
-    one_mul]
-  have : toFun (Seq.cons s_hd s_tl) ∘ f =ᶠ[atTop] (fun t ↦ s_hd + t * ((toFun s_tl) t)) ∘ f := by
-    apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
-    exact toFun_cons_eventually_eq h_analytic
-  refine ⟨fun _ ↦ s_hd, _, _, rfl, const_Approximates (h_basis.tail), ?_, ?_⟩
-  · apply majorated_of_EventuallyEq hg_eq
-    apply toFun_majorated_zero h_analytic hf_tendsto_zero
-    apply basis_tendsto_top h_basis
-    simp
-  refine ⟨f, toFun s_tl ∘ f, ?_, h_approx, apply_WellOrdered h_wo h_neg, s_tl,
-    tail_analytic h_analytic, rfl, by rfl⟩
-  grw [hg_eq, this]
-  apply EventuallyEq.of_eq
-  ext t
-  simp
-
 theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s.Analytic := by
   simp only [Analytic]
   apply lt_of_lt_of_le (b := 1)
@@ -362,16 +280,142 @@ theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s
   apply h
   exact get?_mem h_get
 
+end LazySeries
+
+-- TODO: move
+theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : majorated f basis_hd exp)
+    (hg : g =O[atTop] (fun _ ↦ (1 : ℝ))) :
+    majorated (f * g) basis_hd exp := by
+  simp only [majorated] at *
+  intro exp h_exp
+  conv =>
+    rhs; ext t; rw [← mul_one (basis_hd t ^ exp)]
+  apply IsLittleO.mul_isBigO
+  · exact hf _ h_exp
+  · exact hg
+
+/-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
+noncomputable def SeqMS.apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
+  let T := LazySeries
+  let g : T → Option (ℝ × PreMS basis_tl × SeqMS basis_hd basis_tl × T) := fun s =>
+    match s.destruct with
+    | none => none
+    | some (c, cs) =>
+      some (0, PreMS.const _ c, ms, cs)
+  SeqMS.gcorec g SeqMS.mul s
+
+noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
+  mk (SeqMS.apply s ms.seq) (s.toFun ∘ ms.toFun)
+
+@[simp]
+theorem apply_toFun {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)} :
+    (apply s ms).toFun = s.toFun ∘ ms.toFun :=
+  rfl
+
+@[simp]
+theorem apply_seq {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)} :
+    (apply s ms).seq = SeqMS.apply s ms.seq :=
+  rfl
+
+@[simp]
+theorem SeqMS.apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
+    apply .nil ms = .nil := by
+  simp [apply, SeqMS.gcorec_nil]
+
+@[simp]
+theorem SeqMS.apply_cons {s_hd : ℝ} {s_tl : LazySeries}
+    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
+    (apply (.cons s_hd s_tl) ms) = .cons 0 (PreMS.const _ s_hd) (ms.mul (apply s_tl ms)) := by
+  simp only [apply]
+  rw [SeqMS.gcorec_some]
+  rfl
+
+theorem SeqMS.apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : SeqMS basis_hd basis_tl} :
+    (apply s ms).leadingExp ≤ 0 := by
+  cases s <;> simp
+
+theorem SeqMS.apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : SeqMS basis_hd basis_tl}
+    (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
+    (apply s ms).WellOrdered := by
+  let motive (X : SeqMS basis_hd basis_tl) : Prop :=
+    ∃ s, X = apply s ms
+  apply SeqMS.WellOrdered.mul_coind motive
+  · use s
+  intro exp coef tl ⟨s, h_eq⟩
+  cases s with
+  | nil => simp at h_eq
+  | cons s_hd s_tl =>
+  simp only [apply_cons, SeqMS.cons_eq_cons] at h_eq
+  simp only [h_eq, PreMS.const_WellOrdered, SeqMS.mul_leadingExp, WithBot.coe_zero, true_and]
+  constructor
+  · generalize ms.leadingExp = x at *
+    have : (apply s_tl ms).leadingExp ≤ 0 := apply_leadingExp_le_zero
+    generalize (apply s_tl ms).leadingExp = y at *
+    cases x <;> cases y <;> simp; norm_cast at this h_neg ⊢; linarith
+  exact ⟨_, _, rfl, h_wo, s_tl, rfl⟩
+
+theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)} (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
+    (apply s ms).WellOrdered := by
+  simp at *
+  exact SeqMS.apply_WellOrdered h_wo h_neg
+
+theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd : ℝ → ℝ}
+    {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl))
+    (h_neg : ms.leadingExp < 0) (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates) : (apply s ms).Approximates := by
+  have hf_tendsto_zero : Tendsto ms.toFun atTop (𝓝 0) := by
+    apply neg_leadingExp_tendsto_zero h_neg h_approx
+  let motive (X : PreMS (basis_hd :: basis_tl)) : Prop :=
+    ∃ (s : LazySeries), s.Analytic ∧ X ≈ apply s ms
+  apply Approximates.mul_coind h_basis motive (apply_WellOrdered h_wo h_neg)
+  · use s
+  rintro X ⟨s, h_analytic, h_seq_eq, hf_eq⟩
+  cases s with
+  | nil =>
+    simp at hf_eq
+    simp [h_seq_eq, hf_eq]
+  | cons s_hd s_tl =>
+  right
+  simp at hf_eq
+  simp [h_seq_eq]
+  have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop] (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
+    apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
+    exact LazySeries.toFun_cons_eventually_eq h_analytic
+  use ms, apply s_tl ms
+  simp [const_Approximates h_basis.tail, h_approx, SeqMS.apply_WellOrdered (by simpa using h_wo) h_neg]
+  constructorm* _ ∧ _
+  · apply majorated_of_EventuallyEq hf_eq
+    apply LazySeries.toFun_majorated_zero h_analytic hf_tendsto_zero
+    apply basis_tendsto_top h_basis
+    simp
+  · grw [hf_eq, this]
+    apply EventuallyEq.of_eq
+    ext t
+    simp
+  simp [motive]
+  refine ⟨s_tl, LazySeries.tail_analytic h_analytic, rfl, by rfl⟩
+
 section Zeros
 
 /-- Infinite sequence of zeros. -/
 def zeros : LazySeries := Seq.corec (fun () ↦ some (0, ())) ()
+
+open LazySeries
 
 theorem zeros_eq_cons : zeros = .cons 0 zeros := by
   simp only [zeros]
   nth_rw 1 [Seq.corec_cons]
   rfl
 
+@[simp]
 theorem zeros_get {n : ℕ} : zeros.get? n = .some 0 := by
   induction n with
   | zero =>
@@ -381,16 +425,23 @@ theorem zeros_get {n : ℕ} : zeros.get? n = .some 0 := by
     rw [zeros_eq_cons]
     simpa
 
+@[simp]
 theorem zeros_toFun : zeros.toFun = 0 := by
-  simp only [toFun, toFormalMultilinearSeries]
+  simp only [LazySeries.toFun, toFormalMultilinearSeries]
   unfold FormalMultilinearSeries.sum FormalMultilinearSeries.ofScalars
   simp [coeff, zeros_get]
   rfl
 
+@[simp]
+theorem zeros_radius : zeros.toFormalMultilinearSeries.radius = ⊤ := by
+  apply FormalMultilinearSeries.radius_eq_top_of_summable_norm
+  simp
+  exact summable_zero
+
 theorem zeros_analytic : Analytic zeros := by
   apply analytic_of_all_le_one
   intro x hx
-  apply all_coind (fun s ↦ s = zeros) _ _ _ hx
+  apply Seq.all_coind (fun s ↦ s = zeros) _ _ _ hx
   · rfl
   · intro hd tl h_eq
     rw [zeros_eq_cons, Seq.cons_eq_cons] at h_eq
@@ -399,15 +450,13 @@ theorem zeros_analytic : Analytic zeros := by
 
 -- I am almost sure we don't really need `h_wo` and `h_approx`
 theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
-    {f : ℝ → ℝ} (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates f) (h_neg : ms.leadingExp < 0) :
-    (zeros.apply ms).Approximates 0 := by
-  rw [show 0 = zeros.toFun ∘ f by rw [zeros_toFun]; rfl]
-  apply apply_Approximates zeros_analytic h_basis h_neg h_wo h_approx
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates) (h_neg : ms.leadingExp < 0) :
+    (ms.apply zeros).Approximates :=
+  apply_Approximates zeros_analytic h_basis h_neg h_wo h_approx
 
 end Zeros
 
-end LazySeries
 
 end PreMS
 

@@ -83,7 +83,8 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   /-- Proof of its well-orderedness. -/
   h_wo : Q(PreMS.WellOrdered $val)
   /-- Proof that it approximates the same function. -/
-  h_approx : Q(∀ f, PreMS.Approximates $ms f → PreMS.Approximates $val f)
+  h_fun : Q(PreMS.toFun $val = PreMS.toFun $ms)
+  h_approx : Q(PreMS.Approximates $val)
   /-- Proof that it is trimmed. -/
   h_trimmed : Q(PreMS.Trimmed $val)
 

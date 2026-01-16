@@ -165,8 +165,8 @@ theorem PreMS.inv_exp_neg_Approximates {basis : Basis} {n : Fin basis.length}
     {f : ℝ → ℝ}
     (h_basis : WellFormedBasis basis)
     (h : basis.get n = Real.exp ∘ (-f)) :
-    (monomial_rpow basis n (-1)).Approximates (Real.exp ∘ f) := by
-  convert monomial_rpow_Approximates h_basis using 1
+    (monomialRpow basis n (-1)).Approximates (Real.exp ∘ f) := by
+  convert monomialRpow_Approximates h_basis using 1
   ext
   simp at h
   simp [h, Real.rpow_def_of_pos (Real.exp_pos _)]
@@ -275,7 +275,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
-    let G_exp ← BasisM.monomial_rpow new_idx q(-1)
+    let G_exp ← BasisM.monomialRpow new_idx q(-1)
     haveI : $G_exp.basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩; do
     let new_idx : Q(Fin (List.length $G_exp.basis)) := new_idx
     let h_eq : Q(List.get _ $new_idx = Real.exp ∘ (-$G.f)) := ← mkEqRefl q(Real.exp ∘ (-$G.f))
@@ -348,7 +348,7 @@ partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val))
       let expH := ← createExpMS H hH_trimmed?
       -- return b_i^c * exp (H)
       let n ← findIndex (← get).basis right_hd
-      let B ← BasisM.monomial_rpow n q($c)
+      let B ← BasisM.monomialRpow n q($c)
       -- B ~ b_i^c
       -- expH ~ exp (f - c * log b_i)
       let res := B.mul expH

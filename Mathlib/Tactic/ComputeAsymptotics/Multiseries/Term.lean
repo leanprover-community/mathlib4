@@ -59,6 +59,11 @@ theorem zero_coef_toFun {t : Term} (basis : Basis) (h_coef : t.coef = 0) :
   rw [fold_eq_mul, h_coef]
   simp
 
+
+/-- If `t.coef = 0`, then t.toFun is zero. -/
+theorem zero_coef_toFun' (basis : Basis) (exps : List ℝ) :
+    Term.toFun ⟨0, exps⟩ basis = 0 := zero_coef_toFun _ rfl
+
 /-- Flipping the sign of `coef` flips the sign of `toFun`. The theorem is stated in this form,
 because it allows one to rewrite `t.toFun basis` expression. It is used below in cases where we want
 to reduce the case of `t.coef < 0` to `t.coef > 0`. -/

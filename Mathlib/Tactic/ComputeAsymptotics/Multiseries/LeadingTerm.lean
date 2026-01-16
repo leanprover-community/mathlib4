@@ -13,6 +13,9 @@ Here we find the limit of series by reducing the problem to computing limits for
 term.
 -/
 
+set_option linter.flexible false
+set_option linter.style.longLine false
+
 @[expose] public section
 
 open Filter Asymptotics Topology Stream'
@@ -21,42 +24,114 @@ namespace ComputeAsymptotics
 
 namespace PreMS
 
-/-- `ms.leadingTerm` is its leading monomial. -/
-def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
+mutual
+
+def SeqMS.exps {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : List ℝ :=
+  match ms.head with
+  | none => List.replicate (basis_hd :: basis_tl).length 0
+  | some (exp, coef) => exp :: coef.exps
+
+def exps {basis : Basis} (ms : PreMS basis) : List ℝ :=
   match basis with
-  | [] => ⟨ms.toReal, []⟩
+  | [] => []
+  | List.cons _ _ => ms.seq.exps
+
+end
+
+def realCoef {basis : Basis} (ms : PreMS basis) : ℝ :=
+  match basis with
+  | [] => ms.toReal
   | List.cons _ _ =>
     match ms.seq.head with
-    | none => ⟨0, List.replicate basis.length 0⟩
-    | some (exp, coef) =>
-      let pre := coef.leadingTerm
-      ⟨pre.coef, exp :: pre.exps⟩
+    | none => 0
+    | some (_, coef) => coef.realCoef
+
+/-- `ms.leadingTerm` is its leading monomial. -/
+def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
+  ⟨ms.realCoef, ms.exps⟩
+
+@[simp]
+theorem const_realCoef' {ms : PreMS []} :
+    ms.realCoef = ms.toReal := rfl
+
+@[simp]
+theorem const_exps' {ms : PreMS []} :
+    ms.exps = [] := by
+  simp [exps]
+
+@[simp]
+theorem exps_eq_Seq_exps {basis_hd basis_tl} {ms : PreMS (basis_hd :: basis_tl)} :
+    ms.exps = ms.seq.exps := by
+  simp [exps, SeqMS.exps]
+
+@[simp]
+theorem SeqMS.nil_exps {basis_hd basis_tl} :
+    (nil : SeqMS basis_hd basis_tl).exps = List.replicate (basis_hd :: basis_tl).length 0 := by
+  simp [SeqMS.exps]
+
+@[simp]
+theorem SeqMS.cons_exps {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : SeqMS basis_hd basis_tl} :
+    (cons exp coef tl).exps = exp :: coef.exps := by
+  simp [SeqMS.exps]
+
+@[simp]
+theorem cons_realCoef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+    (@realCoef (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) =
+    coef.realCoef := by
+  simp [realCoef]
 
 /-- `Term.coef ms.coef.leadingTerm` is equal to `Term.coef ms.leadingTerm`. -/
 theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : Seq (ℝ × PreMS basis_tl)} {f : ℝ → ℝ} :
-    (@leadingTerm (basis_hd :: basis_tl) (mk (.cons (exp, coef) tl) f)).coef =
+    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+    (@leadingTerm (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)).coef =
     coef.leadingTerm.coef := by
-  conv_lhs => simp [leadingTerm]
+  simp [leadingTerm]
+
+mutual
+
+theorem SeqMS.exps_length {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
+    ms.exps.length = (basis_hd :: basis_tl).length := by
+  cases ms with
+  | nil => simp [SeqMS.exps]
+  | cons exp coef tl =>
+    simp [SeqMS.exps]
+    rw [exps_length]
+
+theorem exps_length {basis : Basis} (ms : PreMS basis) :
+    ms.exps.length = basis.length := by
+  cases basis with
+  | nil => simp [exps]
+  | cons basis_hd basis_tl =>
+    simp [exps]
+    rw [SeqMS.exps_length]
+    simp
+
+end
 
 theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
-    ms.leadingTerm.exps.length = basis.length :=
-  match basis with
-  | [] => by simp [leadingTerm]
-  | List.cons basis_hd basis_tl => by
-    cases ms <;> simp [leadingTerm, leadingTerm_length]
+    ms.leadingTerm.exps.length = basis.length := by
+  simp [leadingTerm, exps_length]
+
+theorem SeqMS.exps_ne_nil {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
+    ms.exps ≠ [] := by
+  cases ms with
+  | nil => simp [exps]
+  | cons exp coef tl =>
+    simp [exps]
 
 theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} :
     ms.leadingTerm.exps ≠ [] := by
-  cases ms <;> simp [leadingTerm]
+  simp [leadingTerm, exps, SeqMS.exps_ne_nil]
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
-    {coef : PreMS basis_tl} {tl : Seq (ℝ × PreMS basis_tl)} {f : ℝ → ℝ} (t : ℝ) :
-    (leadingTerm (basis := basis_hd :: basis_tl) (mk (.cons (exp, coef) tl) f)).toFun
+    {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} (t : ℝ) :
+    (leadingTerm (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)).toFun
       (basis_hd :: basis_tl) t =
-    (basis_hd t)^exp * (leadingTerm coef).toFun basis_tl t := by
-  simp [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
+    (basis_hd t) ^ exp * (leadingTerm coef).toFun basis_tl t := by
+  simp [Term.toFun, leadingTerm, exps, SeqMS.exps, SeqMS.head_cons, List.zip_cons_cons, List.foldl_cons]
   conv =>
     congr <;> rw [Term.fold_eq_mul]
     lhs
@@ -71,7 +146,7 @@ theorem IsZero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_tr
     cases ms with
     | nil => simp
     | cons exp coef tl =>
-    simp [leadingTerm, Seq.head_cons] at h
+    simp [leadingTerm, SeqMS.head_cons] at h
     replace h_trimmed := Trimmed_cons h_trimmed
     have : IsZero coef := IsZero_of_leadingTerm_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
@@ -83,14 +158,9 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
     ∀ᶠ t in atTop, ms.leadingTerm.toFun basis t ≠ 0 := by
   cases basis with
   | nil =>
-    unfold leadingTerm
-    simp only [Term.toFun, List.zip_nil_right, List.foldl_nil, ne_eq, eventually_atTop, ge_iff_le]
-    use default
-    intros
-    intro h
-
-    simp at h_ne_zero
-    simp [h] at h_ne_zero
+    simp only [leadingTerm, Term.toFun, exps, List.zip_nil_right, List.foldl_nil, realCoef]
+    apply Eventually.of_forall
+    simpa using h_ne_zero
   | cons basis_hd basis_tl =>
     cases ms with
     | nil =>
@@ -102,7 +172,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
         (h_basis.tail)
       apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
-      simp [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
+      simp [Term.toFun, leadingTerm, exps, SeqMS.exps, SeqMS.head_cons, List.zip_cons_cons, List.foldl_cons]
       simp only [Term.toFun] at coef_ih
       conv =>
         arg 1
@@ -120,9 +190,9 @@ mutual
   /-- If function `f` is approximated by `cons (exp, coef) tl` and `coef` approximates `fC`, then
   `f` is asymptotically equivalent to `fC * basis_hd ^ exp`. -/
   theorem IsEquivalent_coef {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
-      {coef : PreMS basis_tl} {tl : Seq (ℝ × PreMS basis_tl)}
-      (h_approx : Approximates (basis := basis_hd :: basis_tl) (mk (.cons (exp, coef) tl) f))
-      (h_wo : WellOrdered (basis := basis_hd :: basis_tl) (mk (.cons (exp, coef) tl) f))
+      {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+      (h_approx : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
+      (h_wo : WellOrdered (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
       (h_coef_trimmed : coef.Trimmed)
       (h_coef_ne_zero : ¬ IsZero coef)
       (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
@@ -139,10 +209,9 @@ mutual
       apply Approximates_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
-    | cons tl_hd tl_tl =>
-      obtain ⟨tl_exp, tl_coef⟩ := tl_hd
+    | cons tl_exp tl_coef tl_tl =>
       obtain ⟨_, h_tl_maj, _⟩ := Approximates_cons h_tl
-      simp only [Seq.leadingExp_cons, WithBot.coe_lt_coe] at h_comp
+      simp only [SeqMS.leadingExp_cons, WithBot.coe_lt_coe] at h_comp
       let exp' := (exp + tl_exp) / 2
       specialize h_tl_maj exp' (by simp only [exp']; linarith)
       apply IsLittleO.trans h_tl_maj
@@ -205,7 +274,7 @@ mutual
       | nil =>
         have hF := Approximates_nil h_approx
         unfold leadingTerm
-        simp [Seq.head_nil, List.length_cons, Term.zero_coef_toFun]
+        simp [exps, SeqMS.exps, SeqMS.head_nil, List.length_cons, realCoef, Term.zero_coef_toFun']
         apply EventuallyEq.isEquivalent (by assumption)
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
@@ -239,7 +308,7 @@ lemma eventually_pos_of_IsEquivallent {l : Filter ℝ} {f g : ℝ → ℝ} (h : 
 /-- If `f` is approximated by `ms`, and `ms.leadingTerm.coef > 0`, then
 `f` is eventually positive. -/
 theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis}
-    (h_pos : 0 < ms.leadingTerm.coef) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_pos : 0 < ms.realCoef) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, 0 < ms.toFun t := by
   apply eventually_pos_of_IsEquivallent (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)
@@ -466,37 +535,95 @@ theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
   simp [h_coef]
 
 theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
-    (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    (h_pos : Term.FirstIsPos ms.exps) :
     ¬ IsZero ms := by
   intro h
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp only [leadingTerm] at h_pos
+  · simp [exps] at h_pos
     cases h_pos
   · apply Term.not_FirstIsPos_of_AllZero _ h_pos
     cases h with | nil f =>
-    simp [leadingTerm, Seq.head_nil, List.length_cons]
+    simp [exps, SeqMS.exps, SeqMS.head_nil, List.length_cons]
     exact Term.AllZero_of_replicate
+
+@[simp]
+theorem const_realCoef {basis : Basis} {c : ℝ} :
+    (@PreMS.const basis c).realCoef = c := by
+  cases basis with
+  | nil => simp [const, realCoef, ofReal, toReal]
+  | cons basis_hd basis_tl =>
+    simp [const, SeqMS.const, realCoef]
+    rw [const_realCoef]
+
+mutual
+
+@[simp]
+theorem SeqMS.const_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+    (SeqMS.const basis_hd basis_tl c).exps = List.replicate (basis_hd :: basis_tl).length 0 := by
+  simp [SeqMS.const, SeqMS.exps]
+  rw [const_exps]
+  simp [List.replicate_succ]
+
+@[simp]
+theorem const_exps {basis : Basis} {c : ℝ} :
+    (@PreMS.const basis c).exps = List.replicate basis.length 0 := by
+  cases basis with
+  | nil => simp [exps]
+  | cons =>
+    simp [exps]
+    rw [SeqMS.const_exps]
+    simp
+
+end
 
 theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
     (@PreMS.const basis c).leadingTerm = ⟨c, List.replicate basis.length 0⟩ := by
-  obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp [const, leadingTerm]
-  · simp [const, leadingTerm, const_leadingTerm_eq, List.replicate_succ]
+  simp [leadingTerm, const_realCoef, const_exps]
 
-theorem monomial_rpow_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
-    (@PreMS.monomial_rpow basis n r).leadingTerm =
+theorem monomialRpow_realCoef {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
+    (@PreMS.monomialRpow basis n r).realCoef = 1 := by
+  cases basis with
+  | nil => simp at h
+  | cons basis_hd basis_tl =>
+    cases n with
+    | zero =>
+      simp [realCoef, SeqMS.monomialRpow, one, const_realCoef]
+    | succ n =>
+      simp [realCoef, SeqMS.monomialRpow, monomialRpow_realCoef (by simpa using h)]
+
+mutual
+
+theorem SeqMS.monomialRpow_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ}
+    (h : n < (basis_hd :: basis_tl).length) :
+    (SeqMS.monomialRpow basis_hd basis_tl n r).exps =
+    List.replicate n 0 ++ r :: List.replicate ((basis_hd :: basis_tl).length - n - 1) 0 := by
+  cases n with
+  | zero => simp [SeqMS.monomialRpow, SeqMS.exps, one]
+  | succ n =>
+    simp [SeqMS.monomialRpow, SeqMS.exps, List.replicate_succ]
+    rw [monomialRpow_exps (by simpa using h)]
+
+theorem monomialRpow_exps {basis : Basis} {n : ℕ} {r : ℝ} (h : n < basis.length) :
+    (@PreMS.monomialRpow basis n r).exps =
+    List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0 := by
+  cases basis with
+  | nil => simp at h
+  | cons basis_hd basis_tl =>
+    simp [exps]
+    rw [SeqMS.monomialRpow_exps h]
+    simp
+
+end
+
+theorem monomialRpow_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
+    (@PreMS.monomialRpow basis n r).leadingTerm =
     ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
-  obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp at h
-  obtain _ | n := n
-  · simp [monomial_rpow, leadingTerm, one, const_leadingTerm_eq]
-  · simp [monomial_rpow, leadingTerm, monomial_rpow_leadingTerm_eq (by simpa using h) r,
-      List.replicate_succ]
+  simp [leadingTerm, monomialRpow_realCoef h, monomialRpow_exps h]
 
 theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (@PreMS.monomial basis n).leadingTerm =
       ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ :=
-  monomial_rpow_leadingTerm_eq h 1
+  monomialRpow_leadingTerm_eq h 1
 
 -- theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
 --     (ms.extendBasisEnd b).leadingTerm = ⟨ms.leadingTerm.coef, ms.leadingTerm.exps ++ [0]⟩ := by
@@ -508,10 +635,11 @@ theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length)
 
 lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
     {ms : PreMS basis}
-    (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    (h_pos : Term.FirstIsPos ms.exps) :
     basis ≠ [] := by
   contrapose! h_pos
   subst h_pos
+  simp [exps]
   exact id
 
 -- theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
@@ -603,7 +731,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis}
     (h_exps : Term.FirstIsNeg t_exps) :
     Tendsto ms.toFun atTop (𝓝 0) := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
-  · simp only [leadingTerm, Term.mk.injEq, List.nil_eq] at h_eq
+  · simp only [leadingTerm, realCoef, exps, Term.mk.injEq, List.nil_eq] at h_eq
     simp [h_eq.right, Term.FirstIsNeg] at h_exps
   cases ms with
   | nil =>
@@ -613,13 +741,14 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis}
   | cons exp coef tl f =>
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
-    simp [leadingTerm, Seq.head_cons, Term.mk.injEq] at h_eq
+    simp [leadingTerm, realCoef, exps, SeqMS.exps, SeqMS.head_cons, Term.mk.injEq] at h_eq
     simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
     · exact majorated_tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto coef.toFun atTop (𝓝 0) := by
       apply tendsto_zero_of_FirstIsNeg (t_coef := t_coef) h_coef_wo h_coef_approx _ h_zero.right
       rw [← h_eq.left]
+      rfl
     have h_tl : Tendsto (f - coef.toFun) atTop (𝓝 0) := by
       have h : Tendsto (fun t ↦ f t - basis_hd t ^ exp * coef.toFun t) atTop (𝓝 0) := by
         apply neg_leadingExp_tendsto_zero _ h_tl_approx
@@ -642,8 +771,9 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis}
     Tendsto ms.toFun atTop atTop := by
   apply (IsEquivalent.tendsto_atTop_iff
     (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  simp [leadingTerm] at h_eq
   apply Term.tendsto_top_of_FirstIsPos h_basis leadingTerm_length
-  all_goals simpa [h_eq]
+  all_goals simpa [leadingTerm, h_eq]
 
 theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered)
@@ -657,8 +787,9 @@ theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis}
     Tendsto ms.toFun atTop atBot := by
   apply (IsEquivalent.tendsto_atBot_iff
     (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  simp [leadingTerm] at h_eq
   apply Term.tendsto_bot_of_FirstIsPos h_basis leadingTerm_length
-  all_goals simpa [h_eq]
+  all_goals simpa [leadingTerm, h_eq]
 
 ------------------------------------------------------------------
 

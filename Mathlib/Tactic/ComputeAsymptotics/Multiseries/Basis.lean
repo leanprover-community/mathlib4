@@ -264,6 +264,7 @@ def getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
   | keep basis_hd ex => basis_hd :: ex.getBasis
   | insert f ex => f :: ex.getBasis
 
+-- TODO: remove examples
 example :
   let basis := [fun x ↦ x];
   let ex : BasisExtension basis := .keep _ .nil;
@@ -280,12 +281,24 @@ example :
   ex.getBasis = [fun x ↦ x, Real.log, fun x ↦ 3 * x] := by
     rfl
 
+theorem getBasis_Sublist {basis : Basis} {ex : BasisExtension basis} :
+    List.Sublist basis ex.getBasis := by
+  induction ex with
+  | nil => simp
+  | keep _ ex ih =>
+    simp [getBasis]
+    apply ih
+  | insert _ ex ih =>
+    simp [getBasis]
+    apply List.Sublist.cons
+    apply ih
+
 theorem insert_WellFormedBasis_tail {basis : Basis} {f : ℝ → ℝ}
     {ex_tl : BasisExtension basis}
     (h_basis : WellFormedBasis <| BasisExtension.getBasis (.insert f ex_tl)) :
     WellFormedBasis ex_tl.getBasis := by
-  simp only [getBasis] at h_basis
-  exact WellFormedBasis.tail h_basis
+  apply WellFormedBasis.of_sublist _ h_basis
+  simp [getBasis]
 
 end BasisExtension
 

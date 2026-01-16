@@ -12,9 +12,12 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 # LogBasis
 -/
 
+set_option linter.flexible false
+set_option linter.style.longLine false
+
 @[expose] public section
 
-open Asymptotics Filter
+open Asymptotics Filter Topology
 
 namespace ComputeAsymptotics
 
@@ -37,8 +40,9 @@ def WellFormed {basis : Basis} (logBasis : LogBasis basis) : Prop :=
   | .single f => True
   | .cons basis_hd _ _ logBasis_tl ms =>
     ms.WellOrdered ∧
-    ms.Approximates (Real.log ∘ basis_hd) ∧
+    ms.Approximates ∧
     ms.Trimmed ∧
+    ms.toFun = (Real.log ∘ basis_hd) ∧
     WellFormed logBasis_tl
 
 theorem nil_WellFormed : WellFormed (.nil) := by simp [WellFormed]
@@ -55,7 +59,7 @@ theorem WellFormed_cons_WellOrdered {basis_hd basis_tl_hd : ℝ → ℝ} {basis_
 theorem WellFormed_cons_Approximates {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
     {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
-    ms.Approximates (Real.log ∘ basis_hd) := by
+    ms.Approximates := by
   simp only [WellFormed] at h
   exact h.right.left
 
@@ -65,6 +69,13 @@ theorem WellFormed_cons_Trimmed {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_t
     ms.Trimmed := by
   simp only [WellFormed] at h
   exact h.right.right.left
+
+theorem WellFormed_cons_toFun {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
+    ms.toFun = Real.log ∘ basis_hd := by
+  simp only [WellFormed] at h
+  exact h.right.right.right.left
 
 /-- Tail of a `LogBasis`. -/
 abbrev tail {basis_hd : ℝ → ℝ} {basis_tl : Basis} (logBasis : LogBasis (basis_hd :: basis_tl)) :
@@ -81,7 +92,7 @@ theorem tail_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   | cons _ _ _ logBasis_tl ms =>
     simp only [WellFormed] at h_wf
     simp only [tail]
-    exact h_wf.right.right.right
+    exact h_wf.right.right.right.right
 
 /-- Extends a `LogBasis` along the basis by adding a function to the middle with a multiseries
 approximating its logarithm. -/
@@ -128,50 +139,55 @@ noncomputable def insertLastLog {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 -- TODO: rename and move
 theorem Approximates_log_basis_ne_zero {basis basis' : Basis} {ms : PreMS basis'} {f : ℝ → ℝ}
     (h_basis : WellFormedBasis basis)
-    (h_approx : ms.Approximates (Real.log ∘ f))
+    (h_approx : ms.Approximates)
+    (h_fun : ms.toFun = Real.log ∘ f)
     (hf : f ∈ basis) :
-    ms ≠ PreMS.zero _ := by
-  rintro rfl
-  rw [PreMS.zero_Approximates_iff] at h_approx
-  have h : Tendsto (Real.log ∘ f) atTop atTop := by
+    ¬ ms.IsZero := by
+  intro h
+  replace h := PreMS.IsZero_Approximates_zero h h_approx
+  rw [h_fun] at h
+  have h_top : Tendsto (Real.log ∘ f) atTop atTop := by
     apply Tendsto.comp Real.tendsto_log_atTop
     exact basis_tendsto_top h_basis _ hf
-  apply Filter.Tendsto.congr' h_approx at h
-  have h' : Tendsto (0 : ℝ → ℝ) atTop (nhds 0) := tendsto_const_nhds
-  have := Filter.Tendsto.disjoint h (disjoint_nhds_atTop 0).symm h'
-  simp only [disjoint_self] at this
-  contrapose! this
-  exact Filter.NeBot.ne'
+  have h_nhds : Tendsto (Real.log ∘ f) atTop (𝓝 0) := by
+    apply tendsto_const_nhds.congr' h.symm
+  have := h_nhds.disjoint (disjoint_nhds_atTop _) h_top
+  simp only [disjoint_self, Filter.NeBot.ne'] at this
 
 theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : Basis} {f : ℝ → ℝ}
     {logBasis : LogBasis (left ++ right_hd :: right_tl)} {ms : PreMS (right_hd :: right_tl)}
     (h_basis : WellFormedBasis (left ++ f :: right_hd :: right_tl))
     (h_wf : logBasis.WellFormed)
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates (Real.log ∘ f))
+    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisMiddle f ms).WellFormed := by
+  simp at h_wo
   cases left with
   | nil =>
     cases logBasis with
-    | single => simp [WellFormed, h_wo, h_approx, h_trimmed]
+    | single => simp [WellFormed, h_wo, h_approx, hf, h_trimmed]
     | cons _ right_tl_hd right_tl_tl logBasis_tl ms' =>
-      simp only [WellFormed] at h_wf
-      simp [WellFormed, h_wo, h_approx, h_trimmed, h_wf]
+      simp [WellFormed] at h_wf
+      simp [WellFormed, h_wo, h_approx, hf, h_trimmed, h_wf]
   | cons left_hd left_tl =>
   cases left_tl with
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp only [WellFormed] at h_wf
-    simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed, h_wo, h_approx,
+    simp [WellFormed] at h_wf
+    simp [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed, h_wo, h_approx,
       h_wf.right, and_true, true_and]
-    constructor
-    · exact PreMS.extendBasisMiddle_WellOrdered h_wf.left
-    constructor
+    constructorm* _ ∧ _
+    · rw [← PreMS.WellOrdered_iff_Seq_WellOrdered]
+      apply PreMS.extendBasisMiddle_WellOrdered
+      simp
+      grind
     · apply PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
-    constructor
     · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
-      exact Approximates_log_basis_ne_zero h_basis h_wf.right.left (by simp)
+      apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
+      simp [h_wf]
+      left
     · exact h_trimmed
+    · exact hf
   | cons left_tl_hd left_tl_tl =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
     simp only [WellFormed, List.append_eq] at h_wf
@@ -182,22 +198,25 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     · exact PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
     constructor
     · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
-      exact Approximates_log_basis_ne_zero h_basis h_wf.right.left (by simp)
-    · exact extendBasisMiddle_WellFormed h_basis.tail h_wf.right.right.right h_wo h_approx h_trimmed
+      apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
+      simp [h_wf]
+      left
+    · simp [h_wf]
+      exact extendBasisMiddle_WellFormed h_basis.tail (by grind) (by simpa) h_approx hf h_trimmed
 
 theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     {logBasis : LogBasis (basis_hd :: basis_tl)} {ms : PreMS [f]}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl ++ [f]))
     (h_wf : logBasis.WellFormed)
     (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates (Real.log ∘ (basis_hd :: basis_tl).getLast
-      (basis_tl.cons_ne_nil basis_hd)))
+    (h_approx : ms.Approximates)
+    (hf : ms.toFun = Real.log ∘ (basis_hd :: basis_tl).getLast (basis_tl.cons_ne_nil basis_hd))
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisEnd f ms).WellFormed := by
   cases logBasis with
   | single =>
     unfold extendBasisEnd
-    simpa [WellFormed, h_wo, h_trimmed]
+    simp_all [WellFormed]
   | cons _ basis_tl_hd basis_tl_tl logBasis_tl ms' =>
     simp only [WellFormed] at h_wf
     unfold extendBasisEnd
@@ -208,7 +227,8 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
     · exact PreMS.extendBasisEnd_Approximates h_basis.tail h_wf.right.left
     constructor
     · exact PreMS.extendBasisEnd_Trimmed h_wf.right.right.left
-    · exact extendBasisEnd_WellFormed h_basis.tail h_wf.right.right.right h_wo h_approx h_trimmed
+    · simp [h_wf]
+      apply extendBasisEnd_WellFormed h_basis.tail (by simp [h_wf]) h_wo h_approx hf h_trimmed
 
 theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {logBasis : LogBasis (basis_hd :: basis_tl)}
@@ -226,6 +246,9 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       apply h_basis.right
       simp
     exact PreMS.monomial_Approximates this (n := ⟨0, by simp⟩)
+  · simp [PreMS.monomial, PreMS.monomialRpow]
+    ext t
+    simp
   · exact PreMS.monomial_Trimmed (by simp)
 
 end LogBasis
