@@ -357,8 +357,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
             (x.1 * a, x.2 * a) := by simp [Filter.map_map, Function.comp_def]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
-        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
-      )
+        Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const))
 
 namespace MulOpposite
 
@@ -643,7 +642,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-open Set
 
 end
 

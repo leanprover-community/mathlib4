@@ -39,7 +39,7 @@ of total derived functors (and a refactor of the sequence of derived functors).
 
 open CategoryTheory Abelian
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace CochainComplex
 

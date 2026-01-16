@@ -29,7 +29,7 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
 
@@ -442,7 +442,7 @@ abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, 
 
 @[reassoc (attr := simp high)]
 lemma Sigma.ι_map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
-    Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b:= by simp
+    Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b := by simp
 
 @[simp]
 lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
@@ -874,7 +874,7 @@ instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
 instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
   left_cancellation _ _ h := by
     refine colimit.hom_ext fun j => ?_
-    simpa using  Sigma.ι _ j ≫= h
+    simpa using Sigma.ι _ j ≫= h
 
 end
 

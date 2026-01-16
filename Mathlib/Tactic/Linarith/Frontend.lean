@@ -6,11 +6,11 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Tactic.Linarith.Verification
-public meta import Mathlib.Tactic.Linarith.Preprocessing
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Util.ElabWithoutMVars
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -515,6 +515,18 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
+private meta partial def minimize (cfg : Linarith.LinarithConfig) (st : Tactic.SavedState)
+    (g : MVarId) (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
+  if _h : i < hs.length then
+    let rest := hs.eraseIdx i
+    st.restore
+    try
+      let _ ← Linarith.linarith true rest cfg g
+      minimize cfg st g rest i
+    catch _ => minimize cfg st g hs (i+1)
+  else
+    return hs
+
 elab_rules : tactic
   | `(tactic| linarith?%$tk $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) =>
       withMainContext do
@@ -530,17 +542,7 @@ elab_rules : tactic
             throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
             if cfg.minimize then
-              let rec minimize (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
-                if _h : i < hs.length then
-                  let rest := hs.eraseIdx i
-                  st.restore
-                  try
-                    let _ ← Linarith.linarith true rest cfg g
-                    minimize rest i
-                  catch _ => minimize hs (i+1)
-                else
-                  return hs
-              minimize used₀ 0
+              minimize cfg st g used₀ 0
             else
               pure used₀
           st.restore

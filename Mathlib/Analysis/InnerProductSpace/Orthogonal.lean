@@ -104,7 +104,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
-theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) := by
+theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
   ext
   simpa using mem_orthogonal _ _
 
@@ -112,15 +112,16 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
-  simp only [coe_iInf]
+  simp
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
 
-lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map f = (K.map f)ᗮ := by
+lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, LinearIsometryEquiv.inner_map_eq_flip]
+    forall_apply_eq_imp_iff₂, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun x ↦ ⟨fun ⟨y, hy⟩ z hz ↦ by simp [← hy.2, hy.1 _ hz], fun h ↦ ⟨_, h, by simp⟩⟩
 
 variable (𝕜 E)
@@ -202,9 +203,12 @@ theorem orthogonalFamily_self :
 end Submodule
 
 @[simp]
-theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
+theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
   rfl
+
+@[deprecated (since := "2025-12-26")]
+alias bilinFormOfRealInner_orthogonal := orthogonalBilin_innerₗ
 
 /-!
 ### Orthogonality of submodules
@@ -331,32 +335,31 @@ theorem isOrtho_span {s t : Set E} :
     isOrtho_iSup_right, isOrtho_iff_le, span_le, Set.subset_def, SetLike.mem_coe,
     mem_orthogonal_singleton_iff_inner_left, Set.mem_singleton_iff, forall_eq]
 
-theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) : U.map f ⟂ V.map f := by
-  rw [isOrtho_iff_inner_eq] at *
-  simp_rw [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    LinearIsometry.inner_map_map]
-  exact h
+theorem IsOrtho.map (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} (h : U ⟂ V) :
+    U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) := by
+  aesop (add simp [isOrtho_iff_inner_eq])
 
 theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U ⟂ V) :
-    U.comap f ⟂ V.comap f := by
+    U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) := by
   rw [isOrtho_iff_inner_eq] at *
   simp_rw [mem_comap, ← f.inner_map_map]
   intro u hu v hv
   exact h _ hu _ hv
 
 @[simp]
-theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
-  ⟨fun h => by
-    have hf : ∀ p : Submodule 𝕜 E, (p.map f).comap f.toLinearIsometry = p :=
-      comap_map_eq_of_injective f.injective
-    simpa only [hf] using h.comap f.toLinearIsometry, IsOrtho.map f.toLinearIsometry⟩
+theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} :
+    U.map (f : E →ₗ[𝕜] F) ⟂ V.map (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
+  refine ⟨fun h ↦ ?_, IsOrtho.map f.toLinearIsometry⟩
+  have hf : ∀ p : Submodule 𝕜 E,
+      (p.map (f : E →ₗ[𝕜] F)).comap (f.toLinearIsometry : E →ₗ[𝕜] F) = p :=
+    comap_map_eq_of_injective f.injective
+  simpa only [hf] using h.comap f.toLinearIsometry
 
 @[simp]
-theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
-  ⟨fun h => by
-    have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.toLinearIsometry = p :=
-      map_comap_eq_of_surjective f.surjective
-    simpa only [hf] using h.map f.toLinearIsometry, IsOrtho.comap f.toLinearIsometry⟩
+theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} :
+    U.comap (f : E →ₗ[𝕜] F) ⟂ V.comap (f : E →ₗ[𝕜] F) ↔ U ⟂ V := by
+  convert IsOrtho.map_iff f.symm using 2 <;>
+    exact Submodule.comap_equiv_eq_map_symm (f : E ≃ₗ[𝕜] F) _
 
 end Submodule
 

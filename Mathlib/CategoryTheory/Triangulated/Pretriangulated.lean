@@ -395,9 +395,9 @@ lemma shift_distinguished (n : ℤ) :
   have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
-  obtain (n|n) := n
+  obtain (n | n) := n
   · induction n with
-    | zero =>  exact H_zero
+    | zero => exact H_zero
     | succ n hn => exact H_add hn H_one rfl
   · induction n with
     | zero => exact H_neg_one
@@ -627,7 +627,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [← φ'.comm₃_assoc]
       rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
     let b := fun j => (ha'' j).choose
-    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb : ∀ j, _ = b j ≫ _ := fun j => (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
       Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by

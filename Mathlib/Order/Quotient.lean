@@ -40,7 +40,7 @@ instance : LE (Quotient s) where
 theorem le_def {x y : α} :
     Quotient.mk s x ≤ Quotient.mk s y ↔ Relation.TransGen (fun x y ↦ x ≤ y ∨ x ≈ y) x y := .rfl
 
-instance : IsRefl (Quotient s) (· ≤ ·) where
+instance : @Std.Refl (Quotient s) (· ≤ ·) where
   refl x := by
     induction x using Quotient.inductionOn with | h x
     exact .single <| .inr (refl x)
@@ -134,7 +134,7 @@ theorem le_iff_forall_right_exists {x y : Quotient s} :
 theorem le_iff_exists {x y : Quotient s} : x ≤ y ↔ ∃ ax ay, ⟦ax⟧ = x ∧ ⟦ay⟧ = y ∧ ax ≤ ay :=
   tfae_le.out 0 3
 
-instance [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
+instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
   le_antisymm x y h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y
