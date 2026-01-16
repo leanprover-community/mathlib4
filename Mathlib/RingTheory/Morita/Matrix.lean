@@ -19,6 +19,9 @@ public import Mathlib.RingTheory.Morita.Basic
   and `MatrixModCat.toModuleCat R i`.
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
+## Main results
+- `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
+
 -/
 
 @[expose] public section
