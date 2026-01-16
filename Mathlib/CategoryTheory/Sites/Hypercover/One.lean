@@ -664,7 +664,7 @@ lemma PreZeroHypercover.ext_of_isSeparatedFor {P : Cᵒᵖ ⥤ Type*} {S : C} (E
     x = y :=
   h.ext fun _ _ ⟨i⟩ ↦ hi i
 
-/-- If the pairwise pullbacks exist, this is the naive pre-`1`-hypercover where the covers
+/-- If the pairwise pullbacks exist, this is the pre-`1`-hypercover where the covers
 by the pullbacks are given by the pullbacks themselves. -/
 @[simps toPreZeroHypercover I₁ Y p₁ p₂]
 noncomputable def PreZeroHypercover.toPreOneHypercover {S : C} (E : PreZeroHypercover S)
