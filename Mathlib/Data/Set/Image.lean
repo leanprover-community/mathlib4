@@ -274,16 +274,6 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_notMem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
-theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
-    Compl.compl ⁻¹' s = Compl.compl '' s :=
-  Set.ext fun x =>
-    ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
-      Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
-
-theorem mem_compl_image [BooleanAlgebra α] (t : α) (s : Set α) :
-    t ∈ Compl.compl '' s ↔ tᶜ ∈ s := by
-  simp [← preimage_compl_eq_image_compl]
-
 @[simp]
 theorem image_id_eq : image (id : α → α) = id := by ext; simp
 
@@ -299,10 +289,6 @@ lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n]
   induction n with
   | zero => simp
   | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
-
-theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
-    Compl.compl '' (Compl.compl '' s) = s := by
-  rw [← image_comp, compl_comp_compl, image_id]
 
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
@@ -342,6 +328,10 @@ theorem _root_.Function.Involutive.image_eq_preimage_symm {f : α → α} (hf : 
 theorem mem_image_iff_of_inverse {f : α → β} {g : β → α} {b : β} {s : Set α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : b ∈ f '' s ↔ g b ∈ s := by
   rw [image_eq_preimage_of_inverse h₁ h₂]; rfl
+
+theorem _root_.Function.Involutive.mem_image_iff {f : α → α} (hf : f.Involutive) {a : α} :
+    a ∈ f '' s ↔ f a ∈ s  :=
+  mem_image_iff_of_inverse hf.leftInverse hf.rightInverse
 
 theorem image_compl_subset {f : α → β} {s : Set α} (H : Injective f) : f '' sᶜ ⊆ (f '' s)ᶜ :=
   Disjoint.subset_compl_left <| by simp [disjoint_iff_inf_le, ← image_inter H]
@@ -1103,6 +1093,10 @@ theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
 theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
     g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]
 
+theorem Involutive.image_image {f : α → α} (hf : f.Involutive) (s : Set α) :
+    f '' (f '' s) = s :=
+  hf.leftInverse.image_image s
+
 theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s : Set α) :
     f ⁻¹' (g ⁻¹' s) = s := by rw [← preimage_comp, h.comp_eq_id, preimage_id]
 
@@ -1379,3 +1373,18 @@ lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s 
   simp [image]
 
 end Sigma
+
+section BooleanAlgebra
+
+variable {α : Type*} [BooleanAlgebra α] (t : α) (s : Set α)
+
+theorem compl_compl_image : Compl.compl '' (Compl.compl '' s) = s :=
+  compl_involutive.image_image s
+
+theorem preimage_compl_eq_image_compl : Compl.compl ⁻¹' s = Compl.compl '' s :=
+  congr_fun (compl_involutive.image_eq_preimage_symm).symm s
+
+theorem mem_compl_image : t ∈ Compl.compl '' s ↔ tᶜ ∈ s :=
+  compl_involutive.mem_image_iff
+
+end BooleanAlgebra
