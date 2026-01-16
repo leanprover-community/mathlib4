@@ -110,7 +110,7 @@ def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   let ⟨exp', pf_exp⟩ ← normalizeReal exp
   match basis_tl with
   | ~q(List.nil) =>
-    let ⟨coef', pf_coef⟩ ← normalizeReal coef
+    let ⟨coef', pf_coef⟩ ← normalizeReal q(($coef).toReal)
     return .cons q($exp') q($coef') q($tl) q(consNormalize_aux_congr_exp_coef $h $pf_exp $pf_coef)
   | _ =>
     return .cons q($exp') q($coef) q($tl) q(consNormalize_aux_congr_exp $h $pf_exp)

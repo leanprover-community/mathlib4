@@ -8,7 +8,7 @@ module
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.ConvertDomain
-public import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
+-- public import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Log
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
 
@@ -27,20 +27,20 @@ namespace ComputeAsymptotics
 theorem init_basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] :=
   WellFormedBasis.single _ (fun _ a ↦ a)
 
-theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : ℝ → ℝ)
-    (h_approx : ms.Approximates (f ^ (-1 : ℝ))) :
-    ms.Approximates (f⁻¹) := by
-  convert h_approx
-  ext t
-  simp [Real.rpow_neg_one]
+-- theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : ℝ → ℝ)
+--     (h_approx : ms.Approximates (f ^ (-1 : ℝ))) :
+--     ms.Approximates (f⁻¹) := by
+--   convert h_approx
+--   ext t
+--   simp [Real.rpow_neg_one]
 
--- TODO: move
-theorem Approximates_sqrt_of_pow {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_approx : ms.Approximates (f ^ (1 / 2 : ℝ))) :
-    ms.Approximates (Real.sqrt ∘ f) := by
-  convert h_approx
-  ext t
-  simp [Real.sqrt_eq_rpow]
+-- -- TODO: move
+-- theorem Approximates_sqrt_of_pow {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+--     (h_approx : ms.Approximates (f ^ (1 / 2 : ℝ))) :
+--     ms.Approximates (Real.sqrt ∘ f) := by
+--   convert h_approx
+--   ext t
+--   simp [Real.sqrt_eq_rpow]
 
 /-- Implemetation of `createMS` in `BasisM`. -/
 partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
@@ -77,12 +77,14 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
       return MS.mul ms1 ms2
   | (``Inv.inv, #[_, _, (arg : Q(ℝ))]) =>
     if arg == x then
-      let res ← BasisM.monomial_rpow (← get).n_id q(-1)
-      return {res with
-        f := ← mkLambdaFVars #[x] q($arg⁻¹)
-        h_approx := ← mkAppM ``monomial_rpow_Approximates_inv
-          #[res.basis, res.val, q(id : ℝ → ℝ), res.h_approx]
-      }
+      let res ← BasisM.monomialRpow (← get).n_id q(-1)
+      let f : Q(ℝ → ℝ) := ← mkLambdaFVars #[x] q($arg⁻¹)
+      return ← res.replaceFun q($f) (← mkSorry q(($res.val).toFun =ᶠ[atTop] $f) false)
+      -- return {res with
+      --   f := ← mkLambdaFVars #[x] q($arg⁻¹)
+      --   h_approx := ← mkAppM ``monomial_rpow_Approximates_inv
+      --     #[res.basis, res.val, q(id : ℝ → ℝ), res.h_approx]
+      -- }
     else
       let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp x arg)
       return MS.inv ms h_trimmed
@@ -109,34 +111,35 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
         throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℕ, ℤ and ℝ are supported."
     else
       if t == q(ℝ) then
-        let .some h_pos ← getLeadingTermCoefPos ms.val
-          | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
-        let exp : Q(ℝ) := exp
-        let res ← createMSImp x q(Real.exp ((Real.log $arg) * $exp))
-        return {res with
-          f := ← mkLambdaFVars #[x] q($arg ^ $exp)
-          h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo,
-            ms.h_approx, h_trimmed, h_pos, res.h_approx]
-        }
+        throwError "TODO: implement exp for non-constant exponents"
+        -- let .some h_pos ← getLeadingTermCoefPos ms.val
+        --   | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
+        -- let exp : Q(ℝ) := exp
+        -- let res ← createMSImp x q(Real.exp ((Real.log $arg) * $exp))
+        -- return {res with
+        --   f := ← mkLambdaFVars #[x] q($arg ^ $exp)
+        --   h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo,
+        --     ms.h_approx, h_trimmed, h_pos, res.h_approx]
+        -- }
       else
         throwError
           f!"Unexpected type in pow: {← ppExpr t}. Only ℝ is supported for non-constant exponents"
   | (``Real.log, #[arg]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp x arg)
     return ← createLogMS arg ms h_trimmed
-  | (``Real.exp, #[arg]) =>
-    let ⟨ms, h_trimmed?⟩ ← trimPartialMS (← createMSImp x arg)
-    return ← createExpMS ms h_trimmed?
+  -- | (``Real.exp, #[arg]) =>
+  --   let ⟨ms, h_trimmed?⟩ ← trimPartialMS (← createMSImp x arg)
+  --   return ← createExpMS ms h_trimmed?
   | (``Real.cos, _) =>
     throwError "Cosine is not supported (but will be soon)"
   | (``Real.sin, _) =>
     throwError "Sine is not supported (but will be soon)"
-  | (``Real.sqrt, #[(arg : Q(ℝ))]) =>
-    let res ← createMSImp x q($arg ^ (1 / 2 : ℝ))
-    return {res with
-      f := ← mkLambdaFVars #[x] q(Real.sqrt $arg)
-      h_approx := ← mkAppM ``Approximates_sqrt_of_pow #[res.h_approx]
-    }
+  -- | (``Real.sqrt, #[(arg : Q(ℝ))]) =>
+  --   let res ← createMSImp x q($arg ^ (1 / 2 : ℝ))
+  --   return {res with
+  --     f := ← mkLambdaFVars #[x] q(Real.sqrt $arg)
+  --     h_approx := ← mkAppM ``Approximates_sqrt_of_pow #[res.h_approx]
+  --   }
   | _ => throwError f!"Unsupported body in createMS: {body}"
 
 /-- Given a body of a function, returns the MS approximating it. -/
@@ -157,15 +160,18 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     let #[x] := args | throwError ("Function must me in the form fun x ↦ ...\n" ++
       "Calling `eta_expand` before `compute asymptotics might help.")
     let ms ← createMS x body
+    dbg_trace ← ppExpr ms.val
     let ⟨ms_trimmed, h_trimmed?⟩ ← trimPartialMS ms
+    dbg_trace "Trimmed: {← ppExpr ms_trimmed.val}"
     let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis
       | panic! "Unexpected basis in computeTendstoAtTop"
     -- I don't know how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
-    | ~q(PreMS.nil) =>
+    | ~q(PreMS.mk .nil $f) =>
       pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
-    | ~q(PreMS.cons $exp $coef $tl) =>
+    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
+      dbg_trace f!"leading: {← ppExpr leading}"
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>
@@ -187,7 +193,7 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto
       | panic! "Unexpected h_tendsto's universe level"
     let ~q(@Tendsto ℝ ℝ $g atTop $limit) := t | panic! "Unexpected h_tendsto's type"
-    haveI' : $g =Q $ms.f := ⟨⟩
+    haveI' : $g =Q ($ms.val).toFun := ⟨⟩
     let res := h_tendsto
     return ⟨limit, res⟩
 

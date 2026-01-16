@@ -275,6 +275,14 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) : MetaM MS := do
+  let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
+  return {ms with
+    val := q(PreMS.replaceFun $ms.val $f)
+    h_wo := q(PreMS.replaceFun_WellOrdered $ms.h_wo)
+    h_approx := q(PreMS.replaceFun_Approximates $h $ms.h_approx)
+  }
+
 end MS
 
 end ComputeAsymptotics

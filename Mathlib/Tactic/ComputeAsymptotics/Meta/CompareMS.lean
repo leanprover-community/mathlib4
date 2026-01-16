@@ -77,17 +77,17 @@ inductive CompareResult (f g : Q(ℝ → ℝ))
 | eq (c : Q(ℝ)) (hc : Q($c ≠ 0)) (h : Q($f ~[atTop] $c • $g))
 
 /-- Prove that a trimmed multiseries is not zero. -/
-def proveNeZero (ms : MS) : MetaM Q($ms.val ≠ PreMS.zero _) := do
-  let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
-  let ~q(PreMS.cons $exp $coef $tl) := ms.val | panic! "proveNeZero: unexpected val"
-  return q(PreMS.cons_ne_zero)
+def proveNeZero (ms : MS) : MetaM Q(¬ PreMS.IsZero $ms.val) := do
+  let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
+  let ~q(PreMS.mk (.cons $exp $coef $tl) $f) := ms.val | panic! "proveNeZero: unexpected val"
+  return q(PreMS.cons_not_IsZero)
 
 /-- Compare two trimmed multiseries. It assumes that `x.basis = ... ++ y.basis` and that `x` and
 `y` both are not `nil`s. -/
 def compare (x y : MS)
     (hx_trimmed : Q(PreMS.Trimmed $x.val))
     (hy_trimmed : Q(PreMS.Trimmed $y.val)) :
-    TacticM <| CompareResult q($x.f) q($y.f) := do
+    TacticM <| CompareResult q(($x.val).toFun) q(($y.val).toFun) := do
   let left ← expressAsAppend x.basis y.basis
   haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
   let tx ← getLeadingTerm x.val
@@ -103,11 +103,11 @@ def compare (x y : MS)
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
   | .lt h =>
-    let h_ne_zero : Q($y.val ≠ PreMS.zero _) ← proveNeZero y
+    let h_ne_zero : Q(¬ PreMS.IsZero $y.val) ← proveNeZero y
     return .lt q(PreMS.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .gt h =>
-    let h_ne_zero : Q($x.val ≠ PreMS.zero _) ← proveNeZero x
+    let h_ne_zero : Q(¬ PreMS.IsZero $x.val) ← proveNeZero x
     return .gt q(PreMS.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h =>
@@ -158,16 +158,16 @@ lemma log_left_concat (left : Basis) {f last : ℝ → ℝ} (h : f =o[atTop] (Re
 open PreMS
 
 lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
-    {f f' : ℝ → ℝ}
+    {f' : ℝ → ℝ}
     {ms : PreMS (left ++ right_hd :: right_tl)}
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
+    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
     (h_trimmed : PreMS.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : 0 < (ms.leadingTerm).coef)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
-    (h_equiv : f ~[atTop] f')
-    (h_left : ∀ g ∈ left.getLast?, f =o[atTop] (Real.log ∘ g))
-    (h_right : (Real.log ∘ right_hd) =o[atTop] f) :
+    (h_equiv : ms.toFun ~[atTop] f')
+    (h_left : ∀ g ∈ left.getLast?, ms.toFun =o[atTop] (Real.log ∘ g))
+    (h_right : (Real.log ∘ right_hd) =o[atTop] ms.toFun) :
     WellFormedBasis (left ++ (Real.exp ∘ f') :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert h_basis
   · apply Tendsto.comp Real.tendsto_exp_atTop
@@ -177,16 +177,16 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
 
 lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
-    {f f' : ℝ → ℝ}
+    {f' : ℝ → ℝ}
     {ms : PreMS (left ++ right_hd :: right_tl)}
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
+    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
     (h_trimmed : PreMS.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : (ms.leadingTerm).coef < 0)
     (h_basis : WellFormedBasis (left ++ right_hd :: right_tl))
-    (h_equiv : f ~[atTop] f')
-    (h_left : ∀ g ∈ left.getLast?, f =o[atTop] (Real.log ∘ g))
-    (h_right : (Real.log ∘ right_hd) =o[atTop] f) :
+    (h_equiv : ms.toFun ~[atTop] f')
+    (h_left : ∀ g ∈ left.getLast?, ms.toFun =o[atTop] (Real.log ∘ g))
+    (h_right : (Real.log ∘ right_hd) =o[atTop] ms.toFun) :
     WellFormedBasis (left ++ (Real.exp ∘ (-f')) :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert_pos_exp _ _ _ (ms := ms.neg)
     (neg_WellOrdered h_wo) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
@@ -194,8 +194,14 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   · simpa [neg_leadingTerm]
   · exact h_basis
   · convert h_equiv.neg using 1
+    ext t
+    simp
   · peel h_left
     convert this.neg_left using 1
+    ext t
+    simp
   · convert h_right.neg_right using 1
+    ext t
+    simp
 
 end ComputeAsymptotics

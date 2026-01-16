@@ -6,7 +6,6 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries
--- import Mathlib.Tactic.ComputeAsymptotics.Meta.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal
 
 /-!
@@ -26,9 +25,9 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
     return q(⟨$ms, List.nil⟩)
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
-    | ~q(PreMS.nil) =>
+    | ~q(PreMS.mk .nil $f) =>
       return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
-    | ~q(PreMS.cons $exp $coef $tl) =>
+    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
       match ← getLeadingTerm coef with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
         return q(⟨$coef_coef, $exp :: $coef_exps⟩)
@@ -54,7 +53,7 @@ def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     return .some pf
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
-    | ~q(PreMS.nil) => return .none
+    | ~q(PreMS.mk .nil $f) => return .none
     | _ =>
       let ⟨rhs, h_eq⟩ ← getLeadingTermWithProof ms
       let ~q(⟨$coef, $exps⟩) := rhs | return .none

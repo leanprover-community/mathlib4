@@ -639,7 +639,7 @@ def SeqMS.WellOrdered {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) : Prop :
 variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 @[simp]
-theorem WellOrdered_iff_Seq_WellOrdered (ms : PreMS (basis_hd :: basis_tl)) :
+theorem WellOrdered_iff_Seq_WellOrdered {ms : PreMS (basis_hd :: basis_tl)} :
     ms.WellOrdered ↔ SeqMS.WellOrdered ms.seq where
   mp h := by
     cases h with | seq _ h_coef h_Pairwise =>
@@ -1152,6 +1152,11 @@ theorem Approximates_cons {exp : ℝ}
     (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
+
+theorem replaceFun_WellOrdered {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+    (h_wo : ms.WellOrdered) :
+    (ms.replaceFun f).WellOrdered := by
+  simpa using h_wo
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
 theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}

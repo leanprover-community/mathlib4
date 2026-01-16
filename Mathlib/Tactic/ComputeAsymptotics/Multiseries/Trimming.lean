@@ -55,14 +55,14 @@ theorem IsZero_Approximates_zero {basis : Basis} {ms : PreMS basis} (h_zero : Is
 -- theorem nil_IsZero {basis_hd} {basis_tl} {f} : @IsZero (basis_hd :: basis_tl) (mk .nil f) := by
 --   constructor
 
--- @[simp]
--- theorem cons_not_IsZero {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
---     {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
---     ¬ @IsZero (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
---   intro h
---   generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
---   cases h
---   simp at h_ms
+@[simp]
+theorem cons_not_IsZero {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
+    ¬ @IsZero (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
+  intro h
+  generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
+  cases h
+  simp at h_ms
 
 /-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
 coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that

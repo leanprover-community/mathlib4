@@ -63,7 +63,7 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
 
   let e ← mkFreshExprMVar q($x = 0)
   let res ← evalTacticAt (← `(tactic|
-    norm_num <;> field_simp <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
+    norm_num <;> try field_simp <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
   if res.isEmpty then
     return .zero e
   throwError f!"Cannot compare real number {← ppExpr x} with zero. You can use a `have` " ++

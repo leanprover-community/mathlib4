@@ -39,9 +39,9 @@ structure FindPlaceResult (ms : MS) where
   /-- Tail of the right part of the basis. -/
   right_tl : Q(Basis)
   /-- `ms` is o-little of logarithms of `left`. -/
-  h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g))
+  h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g))
   /-- Either `right_hd` is o-little of `ms.f` or `ms.f` and `right_hd` are equivalent. -/
-  h_right : FindPlaceResultRight ms.f right_hd
+  h_right : FindPlaceResultRight q(($ms.val).toFun) right_hd
 deriving Inhabited
 
 /-- Given `ms : MS` with `ms.basis = left ++ cur :: right` return the place where `ms` can be
@@ -51,7 +51,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     (left : Q(Basis)) (cur : Q(ℝ → ℝ)) (right : Q(Basis))
     (logBasis : Q(LogBasis ($cur :: $right)))
     (h_logBasis : Q(LogBasis.WellFormed $logBasis))
-    (h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g))) :
+    (h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g))) :
     BasisM (FindPlaceResult ms) := do
   match right with
   | ~q(List.nil) =>
@@ -59,7 +59,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     -- `ms` is not o-little of `log cur = log b_n` as `ms ~ b_1 ^ e_1 * ... * b_n ^ e_n -> inf`
     let left' := ← reduceBasis left
     have : $left' =Q $left := ⟨⟩
-    let h_right : Q((Real.log ∘ $cur) =o[atTop] $ms.f) :=
+    let h_right : Q((Real.log ∘ $cur) =o[atTop] $(ms.val).toFun) :=
       (q(PreMS.log_basis_getLast_IsLittleO $ms.h_basis $ms.h_wo $ms.h_approx
         $h_trimmed $h_pos) : Expr)
     return {
@@ -84,12 +84,13 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       basis := q($right_hd :: $right_tl)
       logBasis := _
       val := q($log_hd)
-      f := q(Real.log ∘ $cur)
+      -- f := q(Real.log ∘ $cur)
       h_approx := q(LogBasis.WellFormed_cons_Approximates $h_logBasis)
       h_wo := q(LogBasis.WellFormed_cons_WellOrdered $h_logBasis)
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
+    -- TODO: store trimmed?
     let ⟨log_hd', h_log_hd_trimmed⟩ ← trimMS log_hd'
     -- match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
     match ← MS.compare ms log_hd' h_trimmed h_log_hd_trimmed with
@@ -104,8 +105,9 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
         h_right := .gt h
       }
     | .lt h => -- `log cur` grows faster than `ms` => we add `cur` to the `left`
-      have : $log_hd'.f =Q (Real.log ∘ $cur) := ⟨⟩
-      let h_left' : Q(∀ g ∈ List.getLast? ($left ++ [$cur]), $ms.f =o[atTop] (Real.log ∘ g)) :=
+      haveI : $(log_hd'.val).toFun =Q (Real.log ∘ $cur) := ⟨⟩
+      let h : Q($(ms.val).toFun =o[atTop] (Real.log ∘ $cur)) := h
+      let h_left' : Q(∀ g ∈ List.getLast? ($left ++ [$cur]), $(ms.val).toFun =o[atTop] (Real.log ∘ g)) :=
         q(log_left_concat $left $h)
       findPlaceAux ms h_trimmed h_pos q($left ++ [$cur]) right_hd right_tl
         q(LogBasis.tail $logBasis) q(LogBasis.tail_WellFormed $h_logBasis) q($h_left')
@@ -132,12 +134,12 @@ partial def findPlace (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     q(by simp)
 
 -- TODO: move
-lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
-    {exp : ℝ} {tl : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
-    (h_approx : PreMS.Approximates (PreMS.cons exp coef tl) f) :
-    PreMS.Approximates coef (PreMS.Approximates_cons h_approx).choose := by
-  generalize_proofs h
-  exact h.choose_spec.left
+-- lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
+--     {exp : ℝ} {tl : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+--     (h_approx : PreMS.Approximates (PreMS.cons exp coef tl) f) :
+--     PreMS.Approximates coef (PreMS.Approximates_cons h_approx).choose := by
+--   generalize_proofs h
+--   exact h.choose_spec.left
 
 /-- Given trimmed `ms : MS` finds its coefficient on depth `depth`. -/
 def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Nat) :
@@ -146,13 +148,13 @@ def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Na
   | 0 => return ⟨ms, h_trimmed⟩
   | newDepth + 1 =>
     let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in extractDeepCoef"
-    let ~q(PreMS.cons $exp $coef $tl) := ms.val | panic! "Unexpected ms in extractDeepCoef"
+    let ~q(PreMS.mk (.cons $exp $coef $tl) $f) := ms.val | panic! "Unexpected ms in extractDeepCoef"
     let newMS : MS := {
       basis := q($basis_tl)
       logBasis := q(LogBasis.tail $ms.logBasis)
       val := q($coef)
-      f := _
-      h_approx := q(PreMS.Approximates_coef $ms.h_approx)
+      -- f := _
+      h_approx := q((PreMS.Approximates_cons $ms.h_approx).left)
       h_wo := q((PreMS.WellOrdered_cons $ms.h_wo).left)
       h_basis := q(WellFormedBasis.tail $ms.h_basis)
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)
@@ -209,15 +211,15 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     (right_hd : Q(ℝ → ℝ)) (right_tl : Q(Basis))
     (coef : Q(ℝ)) (exps : Q(List ℝ))
     (h_first_is_pos : Q(Term.FirstIsPos $exps))
-    (h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g)))
-    (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $ms.f)) : BasisM (MS × MS) := do
+    (h_left : Q(∀ g ∈ List.getLast? $left, $(ms.val).toFun =o[atTop] (Real.log ∘ g)))
+    (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $(ms.val).toFun)) : BasisM (MS × MS) := do
   haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
   haveI : (PreMS.leadingTerm $ms.val).coef =Q $coef := ⟨⟩; do
   haveI : (PreMS.leadingTerm $ms.val).exps =Q $exps := ⟨⟩; do
   -- extract deep coef `G`
   let ⟨G, hG_trimmed⟩ := ← extractDeepCoef ms h_trimmed (← computeLength left)
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
-  let h_ms_equiv_G : Q($ms.f ~[atTop] $G.f) :=
+  let h_ms_equiv_G : Q(($ms.val).toFun ~[atTop] ($G.val).toFun) :=
     let h_coef : Q((PreMS.leadingTerm $ms.val).coef = (PreMS.leadingTerm $G.val).coef) :=
       ← mkEqRefl q((PreMS.leadingTerm $ms.val).coef)
     let h_exps : Q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps =
@@ -229,8 +231,8 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
   -- insert `exp g` in basis
   match ← compareReal coef with
   | .pos h_pos =>
-    have expG := q(Real.exp ∘ $G.f)
-    haveI : $expG =Q Real.exp ∘ $G.f := ⟨⟩
+    have expG := q(Real.exp ∘ ($G.val).toFun)
+    haveI : $expG =Q Real.exp ∘ ($G.val).toFun := ⟨⟩
     let new_n_id := ← getNewNId left q($right_hd :: $right_tl) expG (← get).n_id
     let basis := ← reduceBasis q($left ++ $expG :: $right_hd :: $right_tl)
     haveI : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
@@ -245,15 +247,15 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
-        (PreMS.Approximates_log_exp $G.h_approx) $hG_trimmed) : Expr)
+        (PreMS.Approximates_log_exp $G.h_approx) $hG_trimmed) : Expr) -- TODO!
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
     let G_exp ← BasisM.monomial new_idx
     return (← updateBasis G, G_exp)
   | .neg h_neg =>
-    have expG := q(Real.exp ∘ (-$G.f))
-    haveI : $expG =Q Real.exp ∘ (-$G.f) := ⟨⟩
+    have expG := q(Real.exp ∘ (-($G.val).toFun))
+    haveI : $expG =Q Real.exp ∘ (-($G.val).toFun) := ⟨⟩
     let new_n_id := ← getNewNId left q($right_hd :: $right_tl) expG (← get).n_id
     let basis := ← reduceBasis q($left ++ $expG :: $right_hd :: $right_tl)
     haveI : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
@@ -271,14 +273,14 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
         (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx)
-        (PreMS.neg_Trimmed $hG_trimmed)) : Expr)
+        (PreMS.neg_Trimmed $hG_trimmed)) : Expr) -- TODO!
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
     let G_exp ← BasisM.monomialRpow new_idx q(-1)
     haveI : $G_exp.basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩; do
     let new_idx : Q(Fin (List.length $G_exp.basis)) := new_idx
-    let h_eq : Q(List.get _ $new_idx = Real.exp ∘ (-$G.f)) := ← mkEqRefl q(Real.exp ∘ (-$G.f))
+    let h_eq : Q(List.get _ $new_idx = Real.exp ∘ (-$(G.val).toFun)) := ← mkEqRefl q(Real.exp ∘ (-$(G.val).toFun))
     let G_exp := {G_exp with
       f := q(Real.exp ∘ $G.f)
       h_approx := (q(PreMS.inv_exp_neg_Approximates $G_exp.h_basis $h_eq) : Expr)

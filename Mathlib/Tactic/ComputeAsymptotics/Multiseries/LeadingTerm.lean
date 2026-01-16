@@ -639,56 +639,57 @@ lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
     basis ≠ [] := by
   contrapose! h_pos
   subst h_pos
-  simp [exps]
+  simp
   exact id
 
--- theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
---     {ms : PreMS basis} {f : ℝ → ℝ} (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
---     (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
---     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] f := by
---   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
---   · simp only [leadingTerm] at h_pos
---     cases h_pos
---   have h_basis' := insertLastLog_WellFormedBasis h_basis
---   let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
---     ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
---   have h_wo' : ms'.WellOrdered := PreMS.extendBasisEnd_WellOrdered h_wo
---   have h_approx' : ms'.Approximates f := PreMS.extendBasisEnd_Approximates h_basis' h_approx
---   have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
---   let ms_log :
---       PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
---     PreMS.monomial _ (basis_tl.length + 1)
---   have h_log_wo : ms_log.WellOrdered := monomial_WellOrdered
---   have h_log_approx : ms_log.Approximates (Real.log ∘
---       ((basis_hd :: basis_tl).getLast (log_basis_getLast_IsLittleO_aux h_pos))) := by
---     convert monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
---     simp
---   have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
---   apply IsLittleO_of_lt_leadingTerm h_log_wo h_wo' h_log_approx h_approx' h_log_trimmed
---     h_trimmed' h_basis'
---   · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
---   simp only [ms_log, ms']
---   rw [monomial_leadingTerm_eq (by simp)]
---   simp only [List.cons_append, List.length_cons, List.length_append, List.length_nil, zero_add,
---     add_tsub_cancel_left, tsub_self, List.replicate_zero, extendBasisEnd_leadingTerm_eq]
---   have h_len : ms.leadingTerm.exps.length = basis_tl.length + 1 := by
---     simp [leadingTerm_length]
---   clear * - h_pos h_len
---   generalize ms.leadingTerm.exps = exps at *
---   generalize basis_tl.length + 1 = n at *
---   induction n generalizing exps with
---   | zero =>
---     simp only [List.length_eq_zero_iff] at h_len
---     simp only [h_len] at h_pos
---     cases h_pos
---   | succ n ih =>
---     obtain _ | ⟨exp, exps_tl⟩ := exps
---     · simp at h_len
---     simp only [List.length_cons, Nat.add_right_cancel_iff] at h_len
---     rcases h_pos with h_pos | ⟨rfl, h_pos⟩
---     · exact List.Lex.rel h_pos
---     apply List.Lex.cons
---     apply ih _ h_pos h_len
+theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
+    {ms : PreMS basis} (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] ms.toFun := by
+  simp [leadingTerm] at h_pos
+  obtain _ | ⟨basis_hd, basis_tl⟩ := basis
+  · simp at h_pos
+    cases h_pos
+  have h_basis' := insertLastLog_WellFormedBasis h_basis
+  let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+    ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
+  have h_wo' : ms'.WellOrdered := PreMS.extendBasisEnd_WellOrdered h_wo
+  have h_approx' : ms'.Approximates := PreMS.extendBasisEnd_Approximates h_basis' h_approx
+  have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
+  let ms_log :
+      PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+    PreMS.monomial _ (basis_tl.length + 1)
+  have h_log_wo : ms_log.WellOrdered := monomial_WellOrdered
+  have h_log_approx : ms_log.Approximates := by
+    convert monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
+    -- simp
+  have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
+  sorry
+  -- apply IsLittleO_of_lt_leadingTerm --h_log_wo h_wo' h_log_approx h_approx' h_log_trimmed
+  --   -- h_trimmed' h_basis'
+  -- · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
+  -- simp only [ms_log, ms']
+  -- rw [monomial_leadingTerm_eq (by simp)]
+  -- simp only [List.cons_append, List.length_cons, List.length_append, List.length_nil, zero_add,
+  --   add_tsub_cancel_left, tsub_self, List.replicate_zero, extendBasisEnd_leadingTerm_eq]
+  -- have h_len : ms.leadingTerm.exps.length = basis_tl.length + 1 := by
+  --   simp [leadingTerm_length]
+  -- clear * - h_pos h_len
+  -- generalize ms.leadingTerm.exps = exps at *
+  -- generalize basis_tl.length + 1 = n at *
+  -- induction n generalizing exps with
+  -- | zero =>
+  --   simp only [List.length_eq_zero_iff] at h_len
+  --   simp only [h_len] at h_pos
+  --   cases h_pos
+  -- | succ n ih =>
+  --   obtain _ | ⟨exp, exps_tl⟩ := exps
+  --   · simp at h_len
+  --   simp only [List.length_cons, Nat.add_right_cancel_iff] at h_len
+  --   rcases h_pos with h_pos | ⟨rfl, h_pos⟩
+  --   · exact List.Lex.rel h_pos
+  --   apply List.Lex.cons
+  --   apply ih _ h_pos h_len
 
 --------------------------------
 
