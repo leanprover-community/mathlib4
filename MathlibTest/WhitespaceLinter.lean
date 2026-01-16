@@ -751,8 +751,7 @@ example (h : False) : False := by
 structure X where
   A : {_ : Nat} → Nat → Nat
 
--- The pretty printer does not place spaces around the braces`{}`.
-example : X where A{a}b := a + b
+example : X where A {a} b := a + b
 
 /--
 warning: add space in the source
