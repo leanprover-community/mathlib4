@@ -186,7 +186,8 @@ def moritaEquivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι 
       fromModuleCatToModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
 
 open ModuleCat.Algebra in
-/-- The `R₀`-linear morita equivalence between `R` and `Mₙ(R)`. -/
+/-- The `R₀`-linear morita equivalence between `R` and `Mₙ(R)` sending `M : ModuleCat R` to `Mⁿ`
+  and `M : ModuleCat (Matrix ι ι R)` to `Eᵢᵢ • M`. -/
 @[simps, stacks 074D]
 def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
