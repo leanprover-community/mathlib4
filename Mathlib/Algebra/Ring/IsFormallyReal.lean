@@ -43,7 +43,8 @@ theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [sq_add, add_assoc]
 
-theorem IsSumSq.isSumNonzeroSq [AddMonoid R] [Mul R] {s : R} (h : IsSumNonzeroSq s) : IsSumSq s := by
+theorem IsSumSq.isSumNonzeroSq [AddMonoid R] [Mul R] {s : R}
+    (h : IsSumNonzeroSq s) : IsSumSq s := by
   induction h <;> aesop
 
 theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s ≠ 0) :
