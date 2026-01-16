@@ -333,7 +333,7 @@ unsafe def main (args : List String): IO UInt32 := do
   | #[] =>
     println s!"::warning::no label to add"
   | newLabels =>
-    if newLabels.size > 3 then
+    if newLabels.size > 2 then
       println s!"::notice::not adding multiple labels: {labels}"
       return 0
     match prNumber? with
