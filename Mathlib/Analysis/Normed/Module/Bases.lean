@@ -206,6 +206,24 @@ theorem uniform_bound : ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ 
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖canonicalProjection h n‖ ≤ C }
 
+
+variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
+
+lemma range_sub_add_range_eq {S T : V →ₗ[K] W} (hs : LinearMap.range S ≤ LinearMap.range T) :
+     LinearMap.range (T - S) ⊔ LinearMap.range S = LinearMap.range T := by
+  apply le_antisymm
+  · -- Case: range (T - S) ⊔ range S ≤ range T
+    rw [sup_le_iff]
+    constructor
+    · intro w hw
+      rcases hw with ⟨v, rfl⟩
+      rw [LinearMap.sub_apply]
+      exact Submodule.sub_mem _ (LinearMap.mem_range_self T v) (hs (LinearMap.mem_range_self S v))
+    · exact hs
+  · -- Backward inclusion: range(T) ≤ range(T-S) ⊔ range(S)
+    nth_rewrite 1 [← sub_add_cancel T S]
+    exact LinearMap.range_add_le (T - S) S
+
 /-- Construct a Schauder basis from a sequence of canonical projections satisfying natural
     properties. -/
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
@@ -220,18 +238,19 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
         -- Q sums to P
         have h_sum : ∀ n, ∑ i ∈ Finset.range (n + 1), Q i = P n := by
             intro n
-            induction' n with n ih
-            · simp [Q]
-            · rw [Finset.sum_range_succ, ih]; dsimp [Q]; simp
+            induction n with
+            | zero => simp only [zero_add, Finset.range_one, dite_eq_ite,
+              Finset.sum_singleton, ↓reduceIte, Q]
+            | succ n ih => rw [Finset.sum_range_succ, ih]; dsimp [Q]; simp
 
         -- Q n has rank 1
         have h_dim_Q : ∀ n, Module.finrank 𝕜 (LinearMap.range (Q n)) = 1 := by
             intro n
             by_cases h0 : n = 0
-            · simp [Q]
+            · simp only [dite_eq_ite, Q]
               rw [if_pos h0]
               exact hdim 0
-            simp [Q]
+            simp only [dite_eq_ite, Q]
             rw [if_neg h0]
             have h_le : LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) := by
                 intro x hx
@@ -243,14 +262,41 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
                   _ = (P (n - 1)) y  := by rw [hcomp n (n - 1), min_eq_right this]
             have hx : LinearMap.range (Q n) ⊓ LinearMap.range (P (n - 1)) = ⊥ := by
                 rw [Submodule.eq_bot_iff]
-                sorry
-            have h_sum : LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) = LinearMap.range (P n) := by
-                sorry
+                intro x ⟨ hxQ, hxP ⟩
+                obtain ⟨xp, hxP⟩ := hxP
+                obtain ⟨xq, hxQ⟩ := hxQ
+                calc
+                  x = (P (n - 1) ∘ P (n - 1)) xp := by rw [hxP.symm, hcomp (n - 1) (n - 1),
+                    min_eq_left (le_refl (n - 1))]
+                  _ = P (n - 1) (Q n xq) := by rw [Function.comp_apply, hxP, hxQ]
+                  _ = P (n - 1) (P n xq - P (n - 1) xq) := by
+                    simp only [dite_eq_ite, Q]; rw [if_neg h0]; rfl
+                  _ = (P (n - 1) ∘ P n) xq - (P (n - 1) ∘ P (n - 1)) xq := by
+                    rw [ContinuousLinearMap.map_sub]; simp only [Function.comp_apply]
+                  _ = P (n - 1) xq - P (n - 1) xq := by
+                    rw [hcomp (n - 1) n, min_eq_left (Nat.sub_le n 1),
+                        hcomp (n - 1) (n - 1), min_eq_left (le_refl (n - 1))]
+                  _ = 0 := sub_self (P (n - 1) xq)
+            have h_sum : LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) =
+              LinearMap.range (P n) := by
+                simp only [dite_eq_ite, Q]; rw [if_neg h0]
+                exact range_sub_add_range_eq h_le
             let U := LinearMap.range (Q n)
             let V := LinearMap.range (P (n - 1))
-            have : FiniteDimensional 𝕜 U := by sorry
-            have : FiniteDimensional 𝕜 V := by sorry
-            have hy :   Module.finrank 𝕜 ↥(U ⊔ V) + Module.finrank 𝕜 ↥(U ⊓ V) =  Module.finrank 𝕜 (U) + Module.finrank 𝕜 (V)
+            have h_fin_Pn : ∀ n , FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
+                intro n
+                apply FiniteDimensional.of_finrank_pos
+                rw [hdim n]
+                exact Nat.succ_pos n
+
+            have : FiniteDimensional 𝕜 V := by simp only [V]; exact h_fin_Pn (n-1)
+            have : FiniteDimensional 𝕜 U := by
+              have : U ≤ LinearMap.range (P n) := by
+                rw [← h_sum]
+                exact le_sup_left
+              exact Submodule.finiteDimensional_of_le this
+            have hy :   Module.finrank 𝕜 ↥(U ⊔ V) + Module.finrank 𝕜 ↥(U ⊓ V) =
+              Module.finrank 𝕜 (U) + Module.finrank 𝕜 (V)
                 := Submodule.finrank_sup_add_finrank_inf_eq U V
 
             rw [hx,  h_sum, finrank_bot, add_zero, hdim n, hdim (n - 1)] at hy
@@ -259,8 +305,11 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
                 rw [add_comm] at hy
                 exact Nat.add_right_cancel hy
 
+            simp only [Q, dite_eq_ite] at this
+            rw [if_neg h0] at this
+            exact this.symm
 
-            exact this
+        sorry
 
 
 
@@ -287,7 +336,6 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
                 --     simp
 
 
-        sorry
 
 
 
