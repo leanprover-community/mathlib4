@@ -75,9 +75,10 @@ local instance : ToString RangesToKinds where
 
 abbrev startersEnders : NameMap (Array Name) := .ofArray (cmp := Name.quickCmp) #[
     (``Parser.Command.namespace, #[``Parser.Command.end]),
-    (``Parser.Command.open, #[``Parser.Command.end, ``Parser.Command.eoi]),
     (``Parser.Command.section, #[``Parser.Command.end]),
+    (``Parser.Command.open, #[``Parser.Command.end, ``Parser.Command.eoi]),
     (``Parser.Command.variable, #[``Parser.Command.end, ``Parser.Command.eoi]),
+    (``Parser.Command.universe, #[``Parser.Command.end, ``Parser.Command.eoi]),
   ]
 
 def cancellingPairs (h : Array (Syntax.Range × Name)) :
