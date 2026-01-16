@@ -291,6 +291,8 @@ structure CommShiftCore (a : A) : Prop where
 
 namespace CommShiftCore
 
+attribute [reassoc] shift_comm
+
 section
 
 variable {A} {a : A} (hτ : CommShiftCore τ a)
