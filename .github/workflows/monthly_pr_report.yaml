@@ -31,8 +31,8 @@ jobs:
       - name: blog report
         run: |
           # The job runs on the first of each month and will process the date for the previous month
-          yr="$(date --date=yesterday +\%Y)"
-          mm="$(date --date=yesterday +\%m)"
+          yr="$(date --date=yesterday '+%Y')"
+          mm="$(date --date=yesterday '+%m')"
           yrMth="${yr}-${mm}"  # format: 2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
           tmp_file="${yrMth}_in_mathlib.md"
