@@ -236,6 +236,10 @@ instance instTransIsThetaOTVSIsBigOTVS :
 theorem IsThetaTVS.trans (hfg : f =Θ[𝕜; l] g) (hgk : g =Θ[𝕜; l] k) : f =Θ[𝕜; l] k :=
   ⟨hfg.1.trans hgk.1, hgk.2.trans hfg.2⟩
 
+instance instTransIsThetaOTVS :
+    @Trans (α → E) (α → F) (α → G) (IsThetaTVS 𝕜 l) (IsThetaTVS 𝕜 l) (IsThetaTVS 𝕜 l) where
+  trans := IsThetaTVS.trans
+
 theorem IsLittleOTVS.trans_isBigOTVS (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
