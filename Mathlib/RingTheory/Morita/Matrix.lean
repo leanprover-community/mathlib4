@@ -181,14 +181,12 @@ def equivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) whe
   counitIso := MatrixModCat.counitIso R i
   functor_unitIso_comp X := by
     ext1
-    simp only [Functor.id_obj, ModuleCat.toMatrixModCat_obj_carrier,
-      ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
-      Functor.comp_obj, Iso.symm_hom, ModuleCat.toMatrixModCat_map, toModuleCat_obj_carrier,
-      toModuleCat_obj_isAddCommGroup, toModuleCat_obj_isModule, ModuleCat.hom_comp,
-      ModuleCat.hom_ofHom, ModuleCat.hom_id]
-    ext x i
-    simp [unitIso, counitIso, toModuleCatFromModuleCatLinearEquiv,
-      fromModuleCatToModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
+    suffices (toModuleCatFromModuleCatLinearEquiv R ((ModuleCat.toMatrixModCat R ι).obj X)
+      i).symm.toLinearMap ∘ₗ LinearMap.mapMatrixModule ι (ModuleCat.Hom.hom
+      ((unitIso R i).inv.app X)) = LinearMap.id by simpa using this
+    ext x
+    simp [unitIso, toModuleCatFromModuleCatLinearEquiv, fromModuleCatToModuleCatLinearEquiv,
+      fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
 
 open ModuleCat.Algebra in
 /-- Moreover `moritaEquivalentToMatrix` is a `MoritaEquivalence`. -/
