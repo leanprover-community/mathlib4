@@ -364,11 +364,11 @@ lemma integralCMLM_eventually_dist_lt {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
     (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
     {M : ℝ} (hM : 0 ≤ M) {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : ∀ dα ∈ B, ‖dα‖ ≤ M) :
     ∀ᶠ α in 𝓝 α₀, ∀ dα ∈ B, dist ((integralCMLM hg t₀ ↑α₀) dα)
-      ((integralCMLM hg t₀ ↑α) dα) < ε / 2 := by
+      ((integralCMLM hg t₀ ↑α) dα) < ε := by
   let S := {α : C(Icc tmin tmax, E) | MapsTo α univ u}
   have hS_open : IsOpen S := ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
   let M' := max M 0
-  let ε' := ε / (4 * (1 + |tmax - tmin|) * (1 + M' ^ n))
+  let ε' := ε / (2 * (1 + |tmax - tmin|) * (1 + M' ^ n))
   have hε' : 0 < ε' := by
     refine div_pos hε (mul_pos (mul_pos (by linarith) ?_) ?_) <;> positivity
   have hS_nhd : ∀ᶠ x in 𝓝 (α₀ : C(Icc tmin tmax, E)), x ∈ S := hS_open.mem_nhds α₀.2
@@ -395,13 +395,25 @@ lemma integralCMLM_eventually_dist_lt {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
       _ ≤ ε' := le_of_lt hα_ball
   have hdα_bound : ∀ i, ‖dα i‖ ≤ M' := fun i ↦
     (norm_le_pi_norm dα i).trans ((hB dα hdα).trans (le_max_left M 0))
-  have hε'_eq : ε' * M' ^ n * (tmax - tmin) ≤ ε / 4 :=
-    epsilon_bound_cancellation hε (le_max_right M 0) (by linarith [t₀.2.1, t₀.2.2]) n
+  have hε'_eq : ε' * M' ^ n * (tmax - tmin) ≤ ε / 2 := by
+    have h1 : tmax - tmin ≤ 1 + |tmax - tmin| :=
+      (le_abs_self _).trans (le_add_of_nonneg_left (by linarith))
+    have h2 : M' ^ n ≤ 1 + M' ^ n := le_add_of_nonneg_left (by linarith)
+    calc ε' * M' ^ n * (tmax - tmin)
+        ≤ ε' * (1 + M' ^ n) * (1 + |tmax - tmin|) := by
+          apply mul_le_mul _ h1 (by linarith [t₀.2.1, t₀.2.2]) (by positivity)
+          exact mul_le_mul_of_nonneg_left h2 (le_of_lt hε')
+      _ = ε / 2 := by
+        change ε / (2 * (1 + |tmax - tmin|) * (1 + M' ^ n)) *
+          (1 + M' ^ n) * (1 + |tmax - tmin|) = ε / 2
+        have h3 : (1 + M' ^ n) ≠ 0 := by positivity
+        have h4 : (1 + |tmax - tmin|) ≠ 0 := by positivity
+        field_simp [h3, h4]
   calc dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑α) dα)
       ≤ ε' * M' ^ n * (tmax - tmin) := dist_integralCMLM_le hg t₀ α₀.2 α.2 hε'
           (le_max_right M 0) hg_close hdα_bound
-    _ ≤ ε / 4 := hε'_eq
-    _ < ε / 2 := by linarith
+    _ ≤ ε / 2 := hε'_eq
+    _ < ε := by linarith
 
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
@@ -418,7 +430,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   intro U hU
   obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
   obtain ⟨M, hM⟩ := hB_bdd.exists_norm_le
-  have key := integralCMLM_eventually_dist_lt hg hu t₀ α₀ hε (le_max_right M 0)
+  have key := integralCMLM_eventually_dist_lt hg hu t₀ α₀ (half_pos hε) (le_max_right M 0)
     (fun dα hdα ↦ (hM dα hdα).trans (le_max_left M 0))
   obtain ⟨V, hV_nhd, hV⟩ := key.exists_mem
   let V' : Set S := Subtype.val ⁻¹' V
