@@ -5,32 +5,25 @@ Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.Topology.Algebra.Module.WeakDual
-public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Tactic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-
-@[expose] public section
 
 noncomputable section
 
-universe u
-
-open Filter Topology LinearMap
+open Filter Topology LinearMap Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 variable (𝕜 X)
--- TODO use (.) functions instead of fun => when possible
-
-
 /-- A Schauder basis is a sequence (e n) such that every element x of the space can be uniquely
 represented as a convergent series x = ∑' n, a n • e n for some coefficients a n in the field 𝕜. -/
 def SchauderBasis (e : ℕ → X) : Prop :=
@@ -38,181 +31,172 @@ def SchauderBasis (e : ℕ → X) : Prop :=
     (∀ i j, f i (e j) = if i = j then 1 else 0) ∧
     ∀ x : X, Summable (fun n ↦ f n x • e n) ∧ (∑' n, f n x • e n = x)
 
+
 variable {𝕜 X}
 variable {e : ℕ → X}
+variable (h : SchauderBasis 𝕜 X e)
 
 namespace SchauderBasis
 
-def coord {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℕ → StrongDual 𝕜 X := Classical.choose h
+/-- The coordinate functionals associated with the basis. -/
+def coord (n : ℕ) : StrongDual 𝕜 X := (Classical.choose h) n
 
-theorem coord_apply_eq (h : SchauderBasis 𝕜 X e) (i j : ℕ) :
-    h.coord i (e j) = if i = j then 1 else 0 :=
-  (Classical.choose_spec h).1 i j
+theorem coord_spec :
+    (∀ i j, h.coord i (e j) = if i = j then 1 else 0) ∧
+    ∀ x : X, Summable (fun n ↦ h.coord n x • e n) ∧ (∑' n, h.coord n x • e n = x) :=
+  Classical.choose_spec h
 
-theorem coord_apply_self (h : SchauderBasis 𝕜 X e) (i : ℕ) : h.coord i (e i) = 1 := by
+@[simp]
+theorem coord_apply_eq (i j : ℕ) : h.coord i (e j) = if i = j then 1 else 0 :=
+  h.coord_spec.1 i j
+
+@[simp]
+theorem coord_apply_self (i : ℕ) : h.coord i (e i) = 1 := by
   rw [coord_apply_eq, if_pos rfl]
 
-theorem coord_apply_ne (h : SchauderBasis 𝕜 X e) {i j : ℕ} (hne : i ≠ j) : h.coord i (e j) = 0 := by
+theorem coord_apply_ne {i j : ℕ} (hne : i ≠ j) : h.coord i (e j) = 0 := by
   rw [coord_apply_eq, if_neg hne]
 
 /-- The basis vectors are linearly independent. -/
 theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff]
-  intros l hl
-  ext k
+  intro l hl
+  ext i
   have hsum : ∑ i ∈ l.support, l i • e i = 0 := hl
-  have h_app : h.coord k (∑ i ∈ l.support, l i • e i) = 0 := by
-    rw [hsum, map_zero]
-  rw [map_sum, Finset.sum_eq_single k] at h_app
-  · simpa [coord_apply_self] using h_app
-  · intros j _ hji
-    have : (h.coord k) (l j • e j) = l j • (h.coord k (e j)) := by
-        rw [ContinuousLinearMap.map_smul]
-    simp [this, coord_apply_ne h hji.symm]
-  · intro hi_notin_supp
-    have : l k = 0 := Finsupp.notMem_support_iff.mp hi_notin_supp
-    simp [this]
+  -- Apply the i-th coordinate functional to the linear combination
+  have h_app : h.coord i (∑ j ∈ l.support, l j • e j) = 0 := by rw [hsum, map_zero]
+  rw [map_sum] at h_app
+  -- The sum collapses to just the i-th term
+  simp_rw [ContinuousLinearMap.map_smul, coord_apply_eq] at h_app
+  rw [Finset.sum_eq_single i] at h_app
+  · simpa using h_app
+  · intro j _ hji; rw [if_neg hji.symm]; simp
+  · intro hi; simp [Finsupp.notMem_support_iff.mp hi]
 
-
-def coeff {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) : ℕ → 𝕜 :=
-    fun n => coord h n x
-
-theorem coeff_summable {e : ℕ → X} (h : SchauderBasis 𝕜 X e) (x : X) :
-        Summable (fun n => coeff h x n • e n) := ((Classical.choose_spec h).2 x).1
-
-/-- The representation of x. -/
-def repr (h : SchauderBasis 𝕜 X e) (x : X) : X := ∑' n, h.coord n x • e n
-
+/-- The expansion of x in the basis. -/
 @[simp]
-theorem repr_eq_self (h : SchauderBasis 𝕜 X e) (x : X) : h.repr x = x :=
-  ((Classical.choose_spec h).2 x).2
+theorem expansion (x : X) : ∑' n, h.coord n x • e n = x :=
+  (h.coord_spec.2 x).2
 
-theorem summable (h : SchauderBasis 𝕜 X e) (x : X) : Summable (fun n ↦ h.coord n x • e n) :=
-  ((Classical.choose_spec h).2 x).1
+theorem summable (x : X) : Summable (fun n ↦ h.coord n x • e n) :=
+  (h.coord_spec.2 x).1
 
 /-- A canonical projection P_n associated to a Schauder basis.
     P_n x = ∑_{i < n} f_i(x) e_i -/
-def CanonicalProjection (h : SchauderBasis 𝕜 X e) (n : ℕ) : X →L[𝕜] X :=
+def canonicalProjection (n : ℕ) : X →L[𝕜] X :=
   ∑ i ∈ Finset.range n, (h.coord i).smulRight (e i)
 
-theorem CanonicalProjection_apply (h : SchauderBasis 𝕜 X e) (n : ℕ) (x : X) :
-    h.CanonicalProjection n x = ∑ i ∈ Finset.range n, h.coord i x • e i := by
-  simp [CanonicalProjection, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
+theorem canonicalProjection_apply (n : ℕ) (x : X) :
+    h.canonicalProjection n x = ∑ i ∈ Finset.range n, h.coord i x • e i := by
+  simp [canonicalProjection, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
+
+@[simp]
+theorem canonicalProjection_basis_element (n i : ℕ) :
+    h.canonicalProjection n (e i) = if i < n then e i else 0 := by
+    rw [canonicalProjection_apply]
+    by_cases hin : i < n
+    · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
+      · simp [if_pos hin]
+      · intro j _ hji; rw [h.coord_apply_ne hji]; simp
+    rw [if_neg hin, Finset.sum_eq_zero]
+    intro j hj
+    push_neg at hin
+    rw [h.coord_apply_ne _, zero_smul]
+    exact (Finset.mem_range.mp hj).trans_le hin |>.ne
 
 
-namespace CanonicalProjections
+theorem range_canonicalProjection (n : ℕ) :
+    LinearMap.range (h.canonicalProjection n) =
+        Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
+  apply le_antisymm
+  · rintro _ ⟨x, rfl⟩
+    rw [canonicalProjection_apply]
+    apply Submodule.sum_mem
+    intros i hi
+    apply Submodule.smul_mem
+    apply Submodule.subset_span
+    exact ⟨⟨i, Finset.mem_range.mp hi⟩, rfl⟩
+  · rw [Submodule.span_le]
+    rintro _ ⟨i, rfl⟩
+    use e i
+    rw [canonicalProjection_basis_element]
+    rw [if_pos i.is_lt]
 
-theorem canonical_projection_on_basis_element
-    (h : SchauderBasis 𝕜 X e) (n i : ℕ) :
-    (CanonicalProjection h n) (e i) = if i < n then e i else 0 := by
-    let bf := coord h
-    have : (CanonicalProjection h n) (e i) = ∑ j ∈ Finset.range n, bf j (e i) • e j := by
-        rw [CanonicalProjection]; simp [bf]
-    rw [this]
-    have hsum: (∑ j ∈ Finset.range n, bf j (e i) • e j) =
-        ∑ j ∈ Finset.range n, (if j = i then (1 : 𝕜) else 0) • e j := by
-        apply Finset.sum_congr rfl
-        intro j hj
-        rw [coord_apply_eq h j i]
-    rw [hsum]
-    simp [Finset.sum_ite_eq']
+theorem dim_of_range (n : ℕ) :
+    Module.finrank 𝕜 (LinearMap.range (h.canonicalProjection n)) = n := by
+  rw [range_canonicalProjection]
+  -- The dimension of the span of linearly independent vectors is the cardinality of the set
+  rw [finrank_span_eq_card]
+  · exact Fintype.card_fin n
+  · -- The subfamily is linearly independent because the whole family is
+    exact h.linearIndependent.comp (fun (i : Fin n) => (i : ℕ)) Fin.val_injective
 
-theorem dim_of_range (h : SchauderBasis 𝕜 X e) (n : ℕ) :
-    Module.finrank 𝕜 (range (CanonicalProjection h n)) = n := by
-  let P := CanonicalProjection h n
-  have h_range : range P = Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
-    apply le_antisymm
-    · rintro y ⟨x, rfl⟩
-      rw [CanonicalProjection_apply]
-      apply Submodule.sum_mem
-      intros i hi
-      apply Submodule.smul_mem
-      apply Submodule.subset_span
-      use ⟨i, Finset.mem_range.mp hi⟩
-    · rw [Submodule.span_le]
-      rintro y ⟨i, hi, rfl⟩
-      use e i
-      rw [canonical_projection_on_basis_element h n i]
-      simp [i.isLt]
-  rw [h_range]
-  have li : LinearIndependent 𝕜 (fun i : Fin n => e i) := by
-    apply LinearIndependent.comp h.linearIndependent
-    intro i j hij
-    exact Fin.ext hij
-  rw [finrank_span_eq_card, Fintype.card_fin]
-  exact li
-
+-- TODO refactor
 theorem composition_eq_min (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
-    CanonicalProjection h n ∘ CanonicalProjection h m = CanonicalProjection h (min n m) := by
+    h.canonicalProjection n ∘L h.canonicalProjection m = h.canonicalProjection (min n m) := by
     ext x
-    let bf := coord h
-    have hinner: ∀ i j : ℕ, (bf i (bf j x • e j)) • e i = if i = j then (bf j x) • e i else 0 := by
-        intro i j; rw [ContinuousLinearMap.map_smul, coord_apply_eq h i j]; simp
-    calc
-        (CanonicalProjection h n ∘ CanonicalProjection h m) x
-            = CanonicalProjection h n (CanonicalProjection h m x) := by simp
-        _ = ∑ i ∈ Finset.range n, bf i (CanonicalProjection h m x) • e i := by
-            rw [CanonicalProjection]; simp [bf]
-        _ = ∑ i ∈ Finset.range n, bf i (∑ j ∈ Finset.range m, bf j x • e j) • e i := by
-            rw [CanonicalProjection]; simp [bf]
-        _ = ∑ i ∈ Finset.range n, (∑ j ∈ Finset.range m, (bf i (bf j x • e j))) • e i :=
-            Finset.sum_congr rfl (fun j hj => by apply congrArg ( · • e j ); rw [map_sum])
-        _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, (bf i (bf j x • e j)) • e i :=
-            Finset.sum_congr rfl (fun j hj => Finset.sum_smul )
-        _ = ∑ i ∈ Finset.range n, ∑ j ∈ Finset.range m, if i = j then (bf j x) • e i else 0 :=
-            Finset.sum_congr rfl (fun j hj => Finset.sum_congr rfl (fun i hi => hinner j i))
-        _ = ∑ i ∈ Finset.range (min n m), (bf i x) • e i := by
-            by_cases hnm: n ≤ m
-            · rw [min_eq_left hnm]
-              apply Finset.sum_congr rfl
-              intro i hi
-              apply Finset.sum_ite_eq_of_mem
-              simp only [Finset.mem_range] at *
-              exact lt_of_lt_of_le hi hnm
-            · push_neg at hnm
-              rw [min_eq_right (le_of_lt hnm)]
-              rw [Finset.sum_comm]
-              apply Finset.sum_congr rfl
-              intro j hj
-              apply Finset.sum_ite_eq_of_mem'
-              simp only [Finset.mem_range] at *
-              exact hj.trans hnm
-        _ = CanonicalProjection h (min n m) x := by rw [CanonicalProjection]; simp [bf]
+    simp only [ContinuousLinearMap.comp_apply]
+    -- Expand the inner projection and rhs
+    rw [canonicalProjection_apply h m x, canonicalProjection_apply h (min n m) x]
+    rw [map_sum]
+    by_cases hmn: m ≤ n
+    · -- Case min n m = m
+      rw [min_eq_right hmn]
+        -- Simplify using the action on basis vectors
+      apply Finset.sum_congr rfl
+      intro i hi
+      rw [ContinuousLinearMap.map_smul] -- Linearity (scalar)
+      congr
+      rw [canonicalProjection_basis_element]
+      rw [if_pos _]
+      exact (Finset.mem_range.mp hi).trans_le hmn
+    · -- Case min n m = n
+      push_neg at hmn
+      rw [min_eq_left (le_of_lt hmn)]
+      rw [Finset.sum_congr_of_eq_on_inter]
+      · intro i _ hin
+        rw [ContinuousLinearMap.map_smul]
+        rw [canonicalProjection_basis_element]
+        rw [Finset.mem_range] at hin
+        rw [if_neg hin]
+        rw [smul_zero]
+      · intro i hin him
+        rw [Finset.mem_range] at *
+        linarith
+      · intro i _ hin
+        rw [ContinuousLinearMap.map_smul]
+        congr
+        rw [canonicalProjection_basis_element]
+        rw [if_pos (Finset.mem_range.mp hin)]
 
-theorem id_eq_limit (h : SchauderBasis 𝕜 X e) (x : X) :
-    Tendsto (fun n => CanonicalProjection h n x) atTop (𝓝 x) := by
-    let bf := coord h
-    have tndto : Tendsto (fun n => (∑ i ∈ Finset.range n, coeff h x i • e i))
-        atTop (𝓝 (∑' n, bf n x • e n)) := HasSum.tendsto_sum_nat (coeff_summable h x).hasSum
-    have r: ∑' (n : ℕ), (bf n) x • e n = x := by
-        nth_rw 2 [<-repr_self h x]
-        dsimp [repr, coeff]
-    rw [r] at tndto
-    have p: ∀ n, ∑ i ∈ Finset.range n, h.coeff x i • e i = (h.CanonicalProjection n) x := by
-        dsimp [CanonicalProjection, coeff]
-        simp
-    exact Filter.Tendsto.congr p tndto
+
+
+
+
+
+-- TODO understand why this is not simp
+theorem id_eq_limit (x : X) :
+    Tendsto (fun n => h.canonicalProjection n x) atTop (𝓝 x) := by
+  convert HasSum.tendsto_sum_nat (h.summable x).hasSum
+  · rw [canonicalProjection_apply]
+  simp only [expansion h x]
+
 
 variable [CompleteSpace X]
--- todo clean up proof
-theorem uniform_bound (h : SchauderBasis 𝕜 X e) :
-    ∃ C : ℝ, ∀ n : ℕ, ‖CanonicalProjection h n‖ ≤ C := by
-    exact banach_steinhaus (by
-        intro x
-        let f: ℕ → X := fun n => CanonicalProjection h n x
-        have : Bornology.IsBounded (Set.range f) := by
-           exact Metric.isBounded_range_of_tendsto _ (id_eq_limit h x )
-        have : ∃ M : ℝ, ∀ x ∈ Set.range f, ‖x‖ ≤ M :=
-            isBounded_iff_forall_norm_le.mp  this
-        rcases this with ⟨M, hM⟩
-        use M
-        rintro n
-        specialize hM (CanonicalProjection h n x) (Set.mem_range_self n)
-        exact hM )
+
+/-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
+theorem uniform_bound : ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ ≤ C := by
+  apply banach_steinhaus
+  intro x
+  -- The sequence converges, so the image of the sequence is a bounded set
+  exact Metric.isBounded_range_of_tendsto _ (h.id_eq_limit x)
+
+end SchauderBasis
 
 
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖CanonicalProjection h n‖ ≤ C }
+
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hdim : ∀ n : ℕ, Module.finrank 𝕜 (range (P n)) = n + 1)
     (hcomp : ∀ n m : ℕ, P n ∘ P m = P (min n m))
