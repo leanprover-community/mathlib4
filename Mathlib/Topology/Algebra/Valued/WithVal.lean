@@ -170,8 +170,9 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 /-- The completion of a field with respect to a valuation. -/
 abbrev Completion := UniformSpace.Completion (WithVal v)
 
-instance : Coe R v.Completion :=
-  inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
+-- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
+instance (priority := 99) : Coe R v.Completion where
+  coe r := (WithVal.equiv v).symm r
 
 section Equivalence
 
@@ -248,7 +249,8 @@ namespace NumberField.RingOfIntegers
 
 variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
 
-instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (𝓞 K) K)
+instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
+  coe x := RingOfIntegers.val x
 
 instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
 

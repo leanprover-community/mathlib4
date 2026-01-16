@@ -520,7 +520,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
 
 @[simp]
 lemma algebraMap_adicCompletionIntegers_apply (r : R) :
-    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) := by
   rfl
 
 instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
@@ -533,14 +533,14 @@ open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
 integer ring. -/
 theorem valuedAdicCompletion_eq_valuation (r : R) :
-    Valued.v (r : v.adicCompletion K) = v.valuation K r := by
-  convert Valued.valuedCompletion_apply (r : K)
+    Valued.v (r : v.adicCompletion K) = v.valuation K r :=
+  Valued.valuedCompletion_apply _
 
 variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
 theorem valuedAdicCompletion_eq_valuation' (k : K) :
-    Valued.v (k : v.adicCompletion K) = v.valuation K k := by
-  convert Valued.valuedCompletion_apply k
+    Valued.v (k : v.adicCompletion K) = v.valuation K k :=
+  Valued.valuedCompletion_apply _
 
 variable {R K} in
 open scoped algebraMap in -- to make the coercion from `R` fire
