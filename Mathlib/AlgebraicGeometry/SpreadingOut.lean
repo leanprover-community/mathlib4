@@ -166,8 +166,8 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
-    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i)
-    infer_instance
+    exact isLocallyNoetherian_Spec.mp
+      (isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i))
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)
   have hJ (x) : x ∈ J ↔ ∃ y : I.primeCompl, y * x = 0 :=
