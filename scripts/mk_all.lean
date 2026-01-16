@@ -7,6 +7,8 @@ import Cli.Basic
 import Lake.CLI.Main
 import Mathlib.Util.GetAllModules
 
+-- The `style.header` linter flags `import Lake.CLI.Main` as a potential performance issue.
+set_option linter.style.header false
 /-!
 # Script to create a file importing all files from a folder
 
@@ -24,11 +26,13 @@ it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
+  let some ws ← loadWorkspace config |>.toBaseIO
+    | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
+  return if package.baseName == `mathlib then
+    libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
+      |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
     libs
 
@@ -40,6 +44,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
+  let useModule := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
@@ -49,9 +54,16 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
+    let useModule := useModule || d.startsWith "Mathlib"
     let fileName := addExtension d "lean"
-    let allFiles ← getAllModulesSorted git d
-    let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
+    let mut allFiles ← getAllModulesSorted git d
+    -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
+    if d == "Mathlib" then
+      allFiles := #["Std", "Batteries"] ++ allFiles
+    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
+      ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
+      (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
+      "\n"
     if !(← pathExists fileName) then
       if check then
         IO.println s!"File '{fileName}' does not exist"
@@ -61,7 +73,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       updates := updates + 1
     else if (← IO.FS.readFile fileName) != fileContent then
       if check then
-        IO.println s!"The file '{fileName}' is out of date: run `lake exe mk_all{if git then " --git" else ""}` to update it"
+        IO.println s!"The file '{fileName}' is out of date: \
+          run `lake exe mk_all{if git then " --git" else ""}` to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent
@@ -86,6 +99,7 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
+    module;       "Generate `module` files with `public` imports."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/

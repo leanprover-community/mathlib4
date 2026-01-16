@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 
@@ -14,9 +16,11 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 
 ## Main results
 - `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `IsBezout.TFAE`: For a Bézout domain, noetherian ↔ PID ↔ UFD ↔ ACCP
+- `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
+
+public section
 
 
 universe u v
@@ -51,15 +55,15 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
     tfae_have 1 → 2
-    · intro H; exact ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
+    | _ => inferInstance
     tfae_have 2 → 3
-    · intro; infer_instance
+    | _ => inferInstance
     tfae_have 3 → 4
-    · intro; infer_instance
+    | _ => inferInstance
     tfae_have 4 → 1
-    · rintro ⟨h⟩
+    | ⟨h⟩ => by
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
-      apply RelEmbedding.wellFounded _ h
+      refine ⟨RelEmbedding.wellFounded ?_ h⟩
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
         fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
       choose f hf using this

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 
 /-!
 # Quadratic reciprocity.
@@ -33,6 +35,8 @@ properties of quadratic Gauss sums as provided by `NumberTheory.LegendreSymbol.G
 quadratic residue, quadratic nonresidue, Legendre symbol, quadratic reciprocity
 -/
 
+public section
+
 
 open Nat
 
@@ -52,15 +56,13 @@ for the Jacobi symbol.
 
 namespace legendreSym
 
-variable (hp : p ≠ 2)
-
 /-- `legendreSym p 2` is given by `χ₈ p`. -/
-theorem at_two : legendreSym p 2 = χ₈ p := by
+theorem at_two (hp : p ≠ 2) : legendreSym p 2 = χ₈ p := by
   have : (2 : ZMod p) = (2 : ℤ) := by norm_cast
   rw [legendreSym, ← this, quadraticChar_two ((ringChar_zmod_n p).substr hp), card p]
 
 /-- `legendreSym p (-2)` is given by `χ₈' p`. -/
-theorem at_neg_two : legendreSym p (-2) = χ₈' p := by
+theorem at_neg_two (hp : p ≠ 2) : legendreSym p (-2) = χ₈' p := by
   have : (-2 : ZMod p) = (-2 : ℤ) := by norm_cast
   rw [legendreSym, ← this, quadraticChar_neg_two ((ringChar_zmod_n p).substr hp), card p]
 
@@ -68,27 +70,17 @@ end legendreSym
 
 namespace ZMod
 
-variable (hp : p ≠ 2)
-
 /-- `2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `7` mod `8`. -/
-theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
+theorem exists_sq_eq_two_iff (hp : p ≠ 2) : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
-  have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
-  have h₂ := mod_lt p (by norm_num : 0 < 8)
-  revert h₂ h₁
-  generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
+  have h₁ := (Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp
+  lia
 
 /-- `-2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `3` mod `8`. -/
-theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
+theorem exists_sq_eq_neg_two_iff (hp : p ≠ 2) : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
-  have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
-  have h₂ := mod_lt p (by norm_num : 0 < 8)
-  revert h₂ h₁
-  generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
+  have h₁ := (Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp
+  lia
 
 end ZMod
 
@@ -141,7 +133,8 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
 then `(q / p) = (p / q)`. -/
 theorem quadratic_reciprocity_one_mod_four (hp : p % 4 = 1) (hq : q ≠ 2) :
     legendreSym q p = legendreSym p q := by
-  rw [quadratic_reciprocity' (Prime.mod_two_eq_one_iff_ne_two.mp (odd_of_mod_four_eq_one hp)) hq,
+  rw [quadratic_reciprocity'
+      ((Prime.mod_two_eq_one_iff_ne_two Fact.out).mp (odd_of_mod_four_eq_one hp)) hq,
     pow_mul, neg_one_pow_div_two_of_one_mod_four hp, one_pow, one_mul]
 
 /-- The Law of Quadratic Reciprocity: if `p` and `q` are primes that are both congruent
@@ -150,7 +143,7 @@ theorem quadratic_reciprocity_three_mod_four (hp : p % 4 = 3) (hq : q % 4 = 3) :
     legendreSym q p = -legendreSym p q := by
   let nop := @neg_one_pow_div_two_of_three_mod_four
   rw [quadratic_reciprocity', pow_mul, nop hp, nop hq, neg_one_mul] <;>
-  rwa [← Prime.mod_two_eq_one_iff_ne_two, odd_of_mod_four_eq_three]
+  rwa [← Prime.mod_two_eq_one_iff_ne_two Fact.out, odd_of_mod_four_eq_three]
 
 end legendreSym
 

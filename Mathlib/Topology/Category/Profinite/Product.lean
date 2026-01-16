@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.Basic
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 # Compact subsets of products as limits in `Profinite`
@@ -13,7 +15,7 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
   `J` to the restriction of `C` to `J`
 - `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
@@ -26,6 +28,8 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 - `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -78,22 +82,23 @@ end IndexFunctor
 
 variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
 variable {C}
-variable (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite IndexFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
-  map h := map C (leOfHom h.unop)
+  map h := ConcreteCategory.ofHom (map C (leOfHom h.unop))
 
 /-- The limit cone on `indexFunctor` -/
 noncomputable
-def indexCone : Cone (indexFunctor hC) where
+def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := { app := fun J ↦ π_app C (· ∈ unop J) }
+  π := { app := fun J ↦ ConcreteCategory.ofHom (π_app C (· ∈ unop J)) }
+
+variable (hC : IsCompact C)
 
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=

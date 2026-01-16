@@ -3,20 +3,22 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-! Morphism properties equipped with a localized category
 
 If `C : Type u` is a category (with `[Category.{v} C]`), and
 `W : MorphismProperty C`, then the constructed localized
 category `W.Localization` is in `Type u` (the objects are
-essentially the same as that of `C`), but the morphisms
+essentially the same as those of `C`), but the morphisms
 are in `Type (max u v)`. In particular situations, it
 may happen that there is a localized category for `W`
 whose morphisms are in a lower universe like `v`: it shall
 be so for the homotopy categories of model categories (TODO),
 and it should also be so for the derived categories of
-Grothendieck abelian categories (TODO: but this shall be
+Grothendieck abelian categories (TODO: but this will be
 very technical).
 
 Then, in order to allow the user to provide a localized
@@ -36,6 +38,8 @@ assumption, but one may use
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -46,7 +50,7 @@ variable (W : MorphismProperty C)
 namespace MorphismProperty
 
 /-- The data of a localized category with a given universe
-for the morphisms.  -/
+for the morphisms. -/
 class HasLocalization where
   /-- the objects of the localized category. -/
   {D : Type u}

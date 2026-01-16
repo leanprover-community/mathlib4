@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2018 . All rights reserved.
+Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # p-groups
@@ -13,6 +15,8 @@ This file contains a proof that if `G` is a `p`-group acting on a finite set `α
 then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
 It also contains proofs of some corollaries of this lemma about existence of fixed points.
 -/
+
+@[expose] public section
 
 open Fintype MulAction
 
@@ -28,7 +32,7 @@ namespace IsPGroup
 
 theorem iff_orderOf [hp : Fact p.Prime] : IsPGroup p G ↔ ∀ g : G, ∃ k : ℕ, orderOf g = p ^ k :=
   forall_congr' fun g =>
-    ⟨fun ⟨k, hk⟩ =>
+    ⟨fun ⟨_, hk⟩ =>
       Exists.imp (fun _ h => h.right)
         ((Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hk)),
       Exists.imp fun k hk => by rw [← hk, pow_orderOf_eq_one]⟩
@@ -37,7 +41,7 @@ theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (by rw [Subgroup.card_bot, pow_zero])
+  of_card (n := 0) (by rw [Subgroup.card_bot, pow_zero])
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
@@ -57,6 +61,7 @@ alias ⟨exists_card_eq, _⟩ := iff_card
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
+include hG
 
 theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
@@ -72,7 +77,7 @@ theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surj
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
-  hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
+  hG.of_surjective (QuotientGroup.mk' H) Quotient.mk''_surjective
 
 theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
@@ -120,7 +125,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
   cases finite_or_infinite G
   · obtain ⟨n, hn⟩ := iff_card.mp hG
     rw [hn]
-    cases' n with n n
+    rcases n with - | n
     · exact Or.inl rfl
     · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
@@ -133,9 +138,9 @@ theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G 
       Nat.pos_of_ne_zero fun hk0 => by
         rw [hk0, pow_zero] at hk; exact Finite.one_lt_card.ne' hk,
       hk⟩,
-    fun ⟨k, hk0, hk⟩ =>
+    fun ⟨_, hk0, hk⟩ =>
     Finite.one_lt_card_iff_nontrivial.1 <|
-      hk.symm ▸ one_lt_pow (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
+      hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 
 variable {α : Type*} [MulAction G α]
 
@@ -156,12 +161,12 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
   rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   classical
     calc
-      card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
+      card α = card (Σ y : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
       _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
       _ = _ := by simp
-    rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
+    rw [← ZMod.natCast_eq_natCast_iff _ _ p, Nat.cast_sum, Nat.cast_sum]
     have key :
       ∀ x,
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
@@ -171,29 +176,24 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
-            Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
+            Subtype.ext (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
-    have : k = 0 :=
-      Nat.le_zero.1
-        (Nat.le_of_lt_succ
-          (lt_of_not_ge
-            (mt (pow_dvd_pow p)
-              (by
-                rwa [pow_one, ← hk, ← Nat.modEq_zero_iff_dvd, ← ZMod.eq_iff_modEq_nat, ← key,
-                  Nat.cast_zero]))))
+    have : k = 0 := by
+      contrapose! hb
+      simp [key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩
 
 /-- If a p-group acts on `α` and the cardinality of `α` is not a multiple
   of `p` then the action has a fixed point. -/
-theorem nonempty_fixed_point_of_prime_not_dvd_card (hpα : ¬p ∣ Nat.card α) :
+theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
-  @Set.nonempty_of_nonempty_subtype _ _
+  @Set.Nonempty.of_subtype _ _
     (by
       rw [← Finite.card_pos_iff, pos_iff_ne_zero]
       contrapose! hpα
@@ -244,7 +244,7 @@ theorem to_inf_right {H K : Subgroup G} (hK : IsPGroup p K) : IsPGroup p (H ⊓ 
 
 theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G →* K) :
     IsPGroup p (H.map ϕ) := by
-  rw [← H.subtype_range, MonoidHom.map_range]
+  rw [← H.range_subtype, MonoidHom.map_range]
   exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
 
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
@@ -283,7 +283,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
   ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
-            (Subgroup.sup_subgroupOf_eq hHK Subgroup.le_normalizer)).mp
+            ((Subgroup.subgroupOf_sup hHK Subgroup.le_normalizer).symm)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))
 
@@ -313,14 +313,40 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
   · simpa using hn₁
   · exact absurd (eq_of_prime_pow_eq hp₁.out.prime hp₂.out.prime hn₁ this) hne
 
+theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsPGroup p P)
+    {H : Subgroup G} [H.Normal] (h_cop : (Nat.card H).Coprime H.index) :
+    P ≤ H ∨ Disjoint H P := by
+  by_cases h1 : Nat.card H = 0
+  · rw [h1, Nat.coprime_zero_left, Subgroup.index_eq_one] at h_cop
+    rw [h_cop]
+    exact Or.inl le_top
+  by_cases h2 : H.index = 0
+  · rw [h2, Nat.coprime_zero_right, Subgroup.card_eq_one] at h_cop
+    rw [h_cop]
+    exact Or.inr disjoint_bot_left
+  have : Finite G := by
+    apply Nat.finite_of_card_ne_zero
+    rw [← H.card_mul_index]
+    exact mul_ne_zero h1 h2
+  have h3 : (Nat.card H).Coprime (Nat.card P) ∨ H.index.Coprime (Nat.card P) := by
+    obtain ⟨k, hk⟩ := hP.exists_card_eq
+    refine hk ▸ Or.imp hp.out.coprime_pow_of_not_dvd hp.out.coprime_pow_of_not_dvd ?_
+    contrapose! h_cop
+    exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.out, h_cop⟩
+  refine h3.symm.imp (fun h4 ↦ ?_) (fun h4 ↦ ?_)
+  · rw [← Subgroup.relIndex_eq_one]
+    exact Nat.eq_one_of_dvd_coprimes h4 (H.relIndex_dvd_index_of_normal P)
+      (Subgroup.relIndex_dvd_card H P)
+  · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
+
 section P2comm
 
-variable [Fact p.Prime] {n : ℕ} (hGpn : Nat.card G = p ^ n)
+variable [Fact p.Prime] {n : ℕ}
 
 open Subgroup
 
 /-- The cardinality of the `center` of a `p`-group is `p ^ k` where `k` is positive. -/
-theorem card_center_eq_prime_pow (hn : 0 < n) :
+theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
     ∃ k > 0, Nat.card (center G) = p ^ k := by
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
@@ -341,7 +367,7 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) :
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
 for just the proof that `∀ a b, a * b = b * a` -/
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
-  @commGroupOfCycleCenterQuotient _ _ _ _ (cyclic_center_quotient_of_card_eq_prime_sq hG) _
+  @commGroupOfCyclicCenterQuotient _ _ _ _ (cyclic_center_quotient_of_card_eq_prime_sq hG) _
     (QuotientGroup.ker_mk' (center G)).le
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commGroupOfCardEqPrimeSq`
@@ -352,3 +378,12 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+namespace ZModModule
+variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
+
+lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) := by
+  simpa [IsPGroup, Multiplicative.forall] using
+    fun _ ↦ ⟨1, by simp [← ofAdd_nsmul, ZModModule.char_nsmul_eq_zero]⟩
+
+end ZModModule

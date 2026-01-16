@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -16,11 +18,11 @@ We also prove that the projection and transition maps in this limit are surjecti
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open CategoryTheory Limits CompHausLike
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace LightProfinite
 
@@ -36,14 +38,14 @@ abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
-(Auxiliary definition, use `S.asLimitCone` instead.)
+(Auxiliary definition, use `S.asLimitCone` instead.)
 -/
 def asLimitConeAux : Cone S.diagram :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftLimit hc
 
-/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
+/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
 def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
@@ -51,7 +53,7 @@ def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.
 
 /--
 `S.asLimitConeAux` is indeed a limit cone.
-(Auxiliary definition, use `S.asLimit` instead.)
+(Auxiliary definition, use `S.asLimit` instead.)
 -/
 def asLimitAux : IsLimit S.asLimitConeAux :=
   let hc : IsLimit (lightToProfinite.mapCone S.asLimitConeAux) :=
@@ -77,21 +79,12 @@ def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 /-- The projection from `S` to the `n`th component of `S.diagram`. -/
 abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
-lemma map_liftedLimit {C D J : Type*} [Category C] [Category D] [Category J] {K : J ⥤ C}
-    {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (n : J) :
-    (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app n) = c.π.app n := by
-  have : (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app n = F.map ((liftLimit t).π.app n) := by
-    simp
-  rw [← this, ← Category.assoc, ← Cone.category_comp_hom]
-  simp
-
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp? says simp only [toCompHausLike_obj, Functor.comp_obj,
-      FintypeCat.toLightProfinite_obj_toTop_α, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
-  exact map_liftedLimit hc _
+  exact liftedLimitMapsToOriginal_inv_map_π hc _
 
 lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   change Function.Surjective (lightToProfinite.map (S.proj n))
@@ -102,7 +95,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
@@ -122,7 +115,7 @@ lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
   S.asLimitCone.w (homOfLE h).op
 
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
-    S.transitionMapLE h ∘ S.proj m  = S.proj n := by
+    S.transitionMapLE h ∘ S.proj m = S.proj n := by
   rw [← S.proj_comp_transitionMapLE h]
   rfl
 

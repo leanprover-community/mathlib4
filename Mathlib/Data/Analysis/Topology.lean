@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Analysis.Filter
-import Mathlib.Topology.Bases
-import Mathlib.Topology.LocallyFinite
+module
+
+public import Mathlib.Data.Analysis.Filter
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.LocallyFinite
 
 /-!
 # Computational realization of topological spaces (experimental)
@@ -19,6 +21,8 @@ This file provides infrastructure to compute with topological spaces.
 * `LocallyFinite.Realizer`: Realization of the local finiteness of an indexed family of sets.
 * `Compact.Realizer`: Realization of the compactness of a set.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -57,7 +61,6 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 
 /-- Map a Ctop to an equivalent representation type. -/
@@ -208,7 +211,7 @@ end Ctop.Realizer
 
 /-- A `LocallyFinite.Realizer F f` is a realization that `f` is locally finite, namely it is a
 choice of open sets from the basis of `F` such that they intersect only finitely many of the values
-of `f`.  -/
+of `f`. -/
 structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f : β → Set α) where
   bas : ∀ a, { s // a ∈ F.F s }
   sets : ∀ x : α, Fintype { i | (f i ∩ F.F (bas x)).Nonempty }
@@ -237,7 +240,7 @@ instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Se
   (locallyFinite_iff_exists_realizer _).1 <| locallyFinite_of_finite _
 
 /-- A `Compact.Realizer s` is a realization that `s` is compact, namely it is a
-choice of finite open covers for each set family covering `s`.  -/
+choice of finite open covers for each set family covering `s`. -/
 def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
   ∀ {f : Filter α} (F : f.Realizer) (x : F.σ), f ≠ ⊥ → F.F x ⊆ s → { a // a ∈ s ∧ 𝓝 a ⊓ f ≠ ⊥ }
 

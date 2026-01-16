@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-import Mathlib.CategoryTheory.Category.Quiv
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 
@@ -26,7 +28,7 @@ The obvious functor `Q W : C ⥤ W.Localization` satisfies the universal propert
 of the localization. Indeed, if `G : C ⥤ D` sends morphisms in `W` to isomorphisms
 in `D` (i.e. we have `hG : W.IsInvertedBy G`), then there exists a unique functor
 `G' : W.Localization ⥤ D` such that `Q W ≫ G' = G`. This `G'` is `lift G hG`.
-The expected property of `lift G hG` if expressed by the lemma `fac` and the
+The expected property of `lift G hG` is expressed by the lemma `fac` and the
 uniqueness is expressed by `uniq`.
 
 ## References
@@ -35,10 +37,12 @@ uniqueness is expressed by `uniq`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open CategoryTheory.Category
+open CategoryTheory.Category CategoryTheory.Functor
 
 namespace CategoryTheory
 
@@ -50,7 +54,6 @@ namespace Localization
 
 namespace Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -67,13 +70,12 @@ def ιPaths (X : C) : Paths (LocQuiver W) :=
 
 /-- The morphism in the path category associated to a morphism in the original category. -/
 @[simp]
-def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y :=
-  Paths.of.map (Sum.inl f)
+def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
 /-- The morphism in the path category corresponding to a formal inverse. -/
 @[simp]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
-  Paths.of.map (Sum.inr ⟨w, hw⟩)
+  (Paths.of _).map (Sum.inr ⟨w, hw⟩)
 
 /-- The relations by which we take the quotient in order to get the localized category. -/
 inductive relations : HomRel (Paths (LocQuiver W))
@@ -90,7 +92,6 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -102,7 +103,7 @@ instance : Category (Localization W) := by
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where
-  obj X := (Quotient.functor _).obj (Paths.of.obj ⟨X⟩)
+  obj X := (Quotient.functor _).obj ((Paths.of _).obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
   map_comp f g := Quotient.sound _ (relations.comp f g)
@@ -117,7 +118,7 @@ variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
 def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
-  inv := (Quotient.functor _).map (by dsimp; exact Paths.of.map (Sum.inr ⟨w, hw⟩))
+  inv := (Quotient.functor _).map (by dsimp; exact (Paths.of _).map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
@@ -125,12 +126,10 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
 abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
-variable (W)
-
+variable (W) in
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
   (Localization.Construction.wIso w hw).isIso_hom
 
-variable {W}
 variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
@@ -139,7 +138,7 @@ def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
-        intros X Y
+        intro X Y
         rintro (f | ⟨g, hg⟩)
         · exact G.map f
         · haveI := hG g hg
@@ -151,19 +150,11 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
-      rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      · aesop_cat
-      · aesop_cat
-      all_goals
-        dsimp
-        haveI := hG f hf
-        simp
-        rfl)
+      rcases r with ⟨⟩ <;> all_goals aesop)
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
-  Functor.ext (fun X => rfl)
+  Functor.ext (fun _ => rfl)
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
@@ -189,26 +180,22 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
       refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 
-variable (W)
-
+variable (W) in
 /-- The canonical bijection between objects in a category and its
-localization with respect to a morphism_property `W` -/
+localization with respect to a `MorphismProperty` `W` -/
 @[simps]
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv X := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
-
-variable {W}
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, the inverses of the morphisms
 in `W` and if it is stable under composition -/
-theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
+theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (wInv w hw)) :
     P = ⊤ := by
@@ -224,24 +211,29 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
       simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
-    intros X₁ X₂ p
-    induction' p with X₂ X₃ p g hp
-    · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    · let p' : X₁ ⟶X₂ := p
+    intro X₁ X₂ p
+    induction p with
+    | nil => simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
+    | @cons X₂ X₃ p g hp =>
+      let p' : X₁ ⟶ X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
       · apply hP₁
       · apply hP₂
 
+@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top := morphismProperty_eq_top
+
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, if is stable under composition
 and if the property is stable by passing to inverses. -/
-theorem morphismProperty_is_top' (P : MorphismProperty W.Localization)
+theorem morphismProperty_eq_top' (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : W.Localization⦄ (e : X ≅ Y) (_ : P e.hom), P e.inv) : P = ⊤ :=
-  morphismProperty_is_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
+  morphismProperty_eq_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
+
+@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top' := morphismProperty_eq_top'
 
 namespace NatTransExtension
 
@@ -270,16 +262,20 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
       simpa only [← this] using MorphismProperty.top_apply f
-    refine morphismProperty_is_top'
+    refine morphismProperty_eq_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
-    intros X Y f
+    intro X Y f
     dsimp
     simpa only [NatTransExtension.app_eq] using τ.naturality f
 
 @[simp]
+theorem whiskerLeft_natTransExtension {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
+    whiskerLeft W.Q (natTransExtension τ) = τ := by cat_disch
+
+-- This is not a simp lemma, because the simp norm form of the left-hand side uses `whiskerLeft`.
 theorem natTransExtension_hcomp {F G : W.Localization ⥤ D} (τ : W.Q ⋙ F ⟶ W.Q ⋙ G) :
-    𝟙 W.Q ◫ natTransExtension τ = τ := by aesop_cat
+    𝟙 W.Q ◫ natTransExtension τ = τ := by simp
 
 theorem natTrans_hcomp_injective {F G : W.Localization ⥤ D} {τ₁ τ₂ : F ⟶ G}
     (h : 𝟙 W.Q ◫ τ₁ = 𝟙 W.Q ◫ τ₂) : τ₁ = τ₂ := by
@@ -296,7 +292,7 @@ namespace WhiskeringLeftEquivalence
 composition with `W.Q : C ⥤ W.Localization`. -/
 @[simps!]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
+  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
@@ -304,7 +300,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
 @[simps!]
 def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
-  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ ≫ eqToHom (by rw [fac]))
+  map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ.hom ≫ eqToHom (by rw [fac]))
   map_id G :=
     natTrans_hcomp_injective
       (by
@@ -347,12 +343,16 @@ def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
         exact fac G hG
       · rintro ⟨G₁, hG₁⟩ ⟨G₂, hG₂⟩ f
         ext
-        apply NatTransExtension.app_eq)
+        dsimp
+        -- Why does `rw` work but not `simp`?
+        rw [NatTransExtension.app_eq, InducedCategory.eqToHom_hom,
+          InducedCategory.eqToHom_hom]
+        simp)
 
 end WhiskeringLeftEquivalence
 
-/-- The equivalence of categories `(W.localization ⥤ D) ≌ (W.FunctorsInverting D)`
-induced by the composition with `W.Q : C ⥤ W.localization`. -/
+/-- The equivalence of categories `(W.Localization ⥤ D) ≌ (W.FunctorsInverting D)`
+induced by the composition with `W.Q : C ⥤ W.Localization`. -/
 def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D

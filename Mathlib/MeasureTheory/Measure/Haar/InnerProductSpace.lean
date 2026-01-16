@@ -3,8 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orientation
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -16,14 +19,38 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
+@[expose] public section
+
+open Module MeasureTheory MeasureTheory.Measure Set WithLp
 
 variable {ι E F : Type*}
-variable [Fintype ι] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [MeasurableSpace F] [BorelSpace F]
+
+variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
+
+namespace LinearIsometryEquiv
+
+variable (f : E ≃ₗᵢ[ℝ] F)
+
+/-- Every linear isometry equivalence is a measurable equivalence. -/
+def toMeasurableEquiv : E ≃ᵐ F where
+  toEquiv := f
+  measurable_toFun := f.continuous.measurable
+  measurable_invFun := f.symm.continuous.measurable
+
+@[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
+
+@[simp] theorem toMeasurableEquiv_symm : f.symm.toMeasurableEquiv = f.toMeasurableEquiv.symm := rfl
+
+@[simp] lemma coe_symm_toMeasurableEquiv : ⇑f.toMeasurableEquiv.symm = f.symm := rfl
+
+end LinearIsometryEquiv
+
+variable [Fintype ι]
+variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
 
 section
-
 variable {m n : ℕ} [_i : Fact (finrank ℝ F = n)]
 
 /-- The volume form coming from an orientation in an inner product space gives measure `1` to the
@@ -91,58 +118,68 @@ theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι �
 
 section PiLp
 
-variable (ι : Type*) [Fintype ι]
+variable (ι : Type*)
+
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
+@[deprecated MeasurableEquiv.toLp (since := "2025-11-02")]
+protected def EuclideanSpace.measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) :=
+  (MeasurableEquiv.toLp 2 (ι → ℝ)).symm
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
+theorem EuclideanSpace.measurableEquiv_toEquiv :
+    (EuclideanSpace.measurableEquiv ι).toEquiv = WithLp.equiv 2 (ι → ℝ) := rfl
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp (since := "2025-11-02")]
+theorem EuclideanSpace.coe_measurableEquiv :
+    ⇑(EuclideanSpace.measurableEquiv ι) = ofLp := rfl
+
+set_option linter.deprecated false in
+@[deprecated MeasurableEquiv.coe_toLp_symm (since := "2025-11-02")]
+theorem EuclideanSpace.coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = toLp 2 := rfl
+
+variable [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
-theorem EuclideanSpace.volume_preserving_measurableEquiv :
-    MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
-  suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
-    convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
+theorem EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp :
+    MeasurePreserving (MeasurableEquiv.toLp 2 (ι → ℝ)).symm := by
+  suffices volume = map (MeasurableEquiv.toLp 2 (ι → ℝ)) volume by
+    convert ((MeasurableEquiv.toLp 2 (ι → ℝ)).measurable.measurePreserving _).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
-    coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
+    MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 
-/-- A copy of `EuclideanSpace.volume_preserving_measurableEquiv` for the canonical spelling of the
-equivalence. -/
-theorem PiLp.volume_preserving_equiv : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)) :=
-  EuclideanSpace.volume_preserving_measurableEquiv ι
+@[deprecated (since := "2025-07-26")] alias EuclideanSpace.volume_preserving_measurableEquiv :=
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp
 
-/-- The reverse direction of `PiLp.volume_preserving_measurableEquiv`, since
+/-- A copy of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`
+for the canonical spelling of the equivalence. -/
+theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :=
+  EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι
+
+/-- The reverse direction of `EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp`, since
 `MeasurePreserving.symm` only works for `MeasurableEquiv`s. -/
-theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (ι → ℝ)).symm :=
-  (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
+theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
+  (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  rw [← ((EuclideanSpace.volume_preserving_measurableEquiv ι).symm).map_eq,
-    volume_pi_eq_dirac 0, map_dirac (MeasurableEquiv.measurable _)]
-  rfl
+  rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0,
+    map_dirac (measurable_toLp 2 _), toLp_zero]
 
 end PiLp
 
 namespace LinearIsometryEquiv
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
-
-variable (f : E ≃ₗᵢ[ℝ] F)
-
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
-theorem measurePreserving : MeasurePreserving f := by
+/-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
+theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
+    MeasurePreserving f := by
   refine ⟨f.continuous.measurable, ?_⟩
   rcases exists_orthonormalBasis ℝ E with ⟨w, b, _hw⟩
   erw [← OrthonormalBasis.addHaar_eq_volume b, ← OrthonormalBasis.addHaar_eq_volume (b.map f),
     Basis.map_addHaar _ f.toContinuousLinearEquiv]
   congr
-
-/-- Every linear isometry equivalence is a measurable equivalence. -/
-def toMeasureEquiv : E ≃ᵐ F where
-  toEquiv := f
-  measurable_toFun := f.continuous.measurable
-  measurable_invFun := f.symm.continuous.measurable
-
-@[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
-
-theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
 
 end LinearIsometryEquiv

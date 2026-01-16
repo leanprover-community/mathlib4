@@ -3,8 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.RingTheory.Ideal.Quotient
+module
+
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Ideals and quotients of topological rings
@@ -14,10 +17,13 @@ ring. We also define a `TopologicalSpace` structure on the quotient of a topolog
 ideal and prove that the quotient is a topological ring.
 -/
 
+@[expose] public section
+
+open Topology
 
 section Ring
 
-variable {R : Type*} [TopologicalSpace R] [Ring R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R]
 
 /-- The closure of an ideal in a topological ring as an ideal. -/
 protected def Ideal.closure (I : Ideal R) : Ideal R :=
@@ -31,9 +37,11 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
 theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=
   rfl
 
--- Porting note: removed `@[simp]` because we make the instance argument explicit since otherwise
--- it causes timeouts as `simp` tries and fails to generated an `IsClosed` instance.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
+/--
+This is not `@[simp]` since otherwise it causes timeouts downstream as `simp` tries and fails to
+generate an `IsClosed` instance.
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234852.20heartbeats.20of.20the.20linter
+-/
 theorem Ideal.closure_eq_of_isClosed (I : Ideal R) (hI : IsClosed (I : Set R)) : I.closure = I :=
   SetLike.ext' hI.closure_eq
 
@@ -49,28 +57,23 @@ instance topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
   instTopologicalSpaceQuotient
 
 -- note for the reader: in the following, `mk` is `Ideal.Quotient.mk`, the canonical map `R → R/I`.
-variable [TopologicalRing R]
+variable [IsTopologicalRing R]
 
-theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) := by
-  intro s s_op
-  change IsOpen (mk N ⁻¹' (mk N '' s))
-  rw [quotient_ring_saturate]
-  exact isOpen_iUnion fun ⟨n, _⟩ => isOpenMap_add_left n s s_op
+theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) :=
+  QuotientAddGroup.isOpenMap_coe
 
-theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
-  IsOpenMap.to_quotientMap ((QuotientRing.isOpenMap_coe N).prod (QuotientRing.isOpenMap_coe N))
-    ((continuous_quot_mk.comp continuous_fst).prod_mk (continuous_quot_mk.comp continuous_snd))
-    (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
+theorem QuotientRing.isOpenQuotientMap_mk : IsOpenQuotientMap (mk N) :=
+  QuotientAddGroup.isOpenQuotientMap_mk
 
-instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
-  TopologicalSemiring.toTopologicalRing
-    { continuous_add :=
-        have cont : Continuous (mk N ∘ fun p : R × R => p.fst + p.snd) :=
-          continuous_quot_mk.comp continuous_add
-        (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont
-      continuous_mul :=
-        have cont : Continuous (mk N ∘ fun p : R × R => p.fst * p.snd) :=
-          continuous_quot_mk.comp continuous_mul
-        (QuotientMap.continuous_iff (QuotientRing.quotientMap_coe_coe N)).mpr cont }
+theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk N p.1, mk N p.2) :=
+  ((isOpenQuotientMap_mk N).prodMap (isOpenQuotientMap_mk N)).isQuotientMap
+
+instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where
+  __ := QuotientAddGroup.instIsTopologicalAddGroup _
+  continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|
+    continuous_quot_mk.comp continuous_mul
+
+instance [CompactSpace R] : CompactSpace (R ⧸ N) :=
+  Quotient.compactSpace
 
 end CommRing

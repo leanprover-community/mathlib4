@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 /-!
 # The monoidal structure on `QuadraticModuleCat` is symmetric.
@@ -15,10 +17,10 @@ In this file we show:
 
 ## Implementation notes
 
-This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Symmetric.lean`.
+This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
-suppress_compilation
+@[expose] public section
 
 open CategoryTheory
 
@@ -31,20 +33,13 @@ namespace QuadraticModuleCat
 open QuadraticForm
 
 instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
-  braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
-    (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (by aesop_cat)
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+    fun X Y ↦ ofIso <| tensorComm X.form Y.form
 
-variable (R) in
-/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a braided functor. -/
-@[simps toMonoidalFunctor]
-def toModuleCatBraidedFunctor : BraidedFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) where
-  toMonoidalFunctor := toModuleCatMonoidalFunctor R
-
-instance : (toModuleCatBraidedFunctor R).Faithful :=
-  forget₂_faithful _ _
+/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a braided functor. -/
+instance : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Braided where
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful (toModuleCatBraidedFunctor R)
+  .ofFaithful (forget₂ (QuadraticModuleCat R) (ModuleCat R))
 
 end QuadraticModuleCat

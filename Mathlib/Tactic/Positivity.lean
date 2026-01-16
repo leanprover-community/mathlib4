@@ -1,3 +1,4 @@
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Init.Data.Int.Order
+module
+
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Positivity.Finset

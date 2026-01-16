@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Presheaves on `PUnit`
 
 Presheaves on `PUnit` satisfy sheaf condition iff its value at empty set is a terminal object.
 -/
+
+public section
 
 
 namespace TopCat.Presheaf
@@ -24,7 +28,7 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
   obtain rfl | hne := eq_or_ne U ⊥
   · intro _ _
-    rw [@exists_unique_iff_exists _ ⟨fun _ _ => _⟩]
+    rw [@existsUnique_iff_exists _ ⟨fun _ _ => _⟩]
     · refine ⟨it.from _, fun U hU hs => IsTerminal.hom_ext ?_ _ _⟩
       rwa [le_bot_iff.1 hU.le]
     · apply it.hom_ext

@@ -1,10 +1,13 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Newell Jensen
+Authors: Kim Morrison, Newell Jensen
 -/
-import Lean.Elab.SyntheticMVars
-import Lean.Meta.Tactic.Constructor
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean.Meta.Tactic.Constructor
 
 /-!
 # The `fconstructor` and `econstructor` tactics
@@ -14,6 +17,8 @@ except that
 - `fconstructor` does not reorder goals
 - `econstructor` adds only non-dependent premises as new goals.
 -/
+
+public meta section
 
 open Lean Elab Tactic
 

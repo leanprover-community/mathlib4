@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.PresheafOfFunctions
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Sheaves.PresheafOfFunctions
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.
@@ -15,24 +17,24 @@ We show that
 
 For
 * `Top.sheafToTop`: continuous functions into a topological space form a sheaf
-please see `Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
+please see `Mathlib/Topology/Sheaves/LocalPredicate.lean`, where we set up a general framework
 for constructing sub(pre)sheaves of the sheaf of dependent functions.
 
 ## Future work
 Obviously there's more to do:
 * sections of a fiber bundle
-* various classes of smooth and structure preserving functions
+* various classes of smooth and structure-preserving functions
 * functions into spaces with algebraic structure, which the sections inherit
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits TopologicalSpace Opens
 
-universe u
-
 noncomputable section
 
-variable (X : TopCat.{u})
+variable (X : TopCat)
 
 open TopCat
 
@@ -45,8 +47,8 @@ form a sheaf.
 In fact, the proof is identical when we do this for dependent functions to a type family `T`,
 so we do the more general case.
 -/
-theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
-  isSheaf_of_isSheafUniqueGluing_types.{u} _ fun ι U sf hsf => by
+theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
+  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf => by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
   -- In the informal comments below, I'll just write `U` to represent the union.
@@ -75,9 +77,9 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
 
 -- We verify that the non-dependent version is an immediate consequence:
 /-- The presheaf of not-necessarily-continuous functions to
-a target type `T` satsifies the sheaf condition.
+a target type `T` satisfies the sheaf condition.
 -/
-theorem toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
+theorem toType_isSheaf (T : Type*) : (presheafToType X T).IsSheaf :=
   toTypes_isSheaf X fun _ => T
 
 end TopCat.Presheaf
@@ -87,12 +89,12 @@ namespace TopCat
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in type family
 `T : X → Type u`.
 -/
-def sheafToTypes (T : X → Type u) : Sheaf (Type u) X :=
+def sheafToTypes (T : X → Type*) : Sheaf (Type _) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
-def sheafToType (T : Type u) : Sheaf (Type u) X :=
+def sheafToType (T : Type*) : Sheaf (Type _) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
 
 end TopCat

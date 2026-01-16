@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Patrick Massot
+Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Interval.Set.OrdConnected
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 # Projection of a line onto a closed interval
@@ -12,9 +14,9 @@ import Mathlib.Order.Interval.Set.OrdConnected
 Given a linearly ordered type `α`, in this file we define
 
 * `Set.projIci (a : α)` to be the map `α → [a, ∞)` sending `(-∞, a]` to `a`, and each point
-   `x ∈ [a, ∞)` to itself;
+  `x ∈ [a, ∞)` to itself;
 * `Set.projIic (b : α)` to be the map `α → (-∞, b[` sending `[b, ∞)` to `b`, and each point
-   `x ∈ (-∞, b]` to itself;
+  `x ∈ (-∞, b]` to itself;
 * `Set.projIcc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
   to `b`, and each point `x ∈ [a, b]` to itself;
 * `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
@@ -26,6 +28,8 @@ Given a linearly ordered type `α`, in this file we define
 
 We also prove some trivial properties of these maps.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} [LinearOrder α]
@@ -62,7 +66,6 @@ theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.
 theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, hx.trans h]
 
-
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, h]
 
@@ -85,10 +88,10 @@ theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [
 theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
-  simp [projIcc, Subtype.ext_iff, h.not_le]
+  simp [projIcc, Subtype.ext_iff, h.not_ge]
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
@@ -170,11 +173,11 @@ theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
-  simp only [IciExtend, range_comp f, range_projIci, range_id', image_univ]
+  simp only [IciExtend, range_comp f, range_projIci, image_univ]
 
 @[simp]
 theorem range_IicExtend (f : Iic b → β) : range (IicExtend f) = range f := by
-  simp only [IicExtend, range_comp f, range_projIic, range_id', image_univ]
+  simp only [IicExtend, range_comp f, range_projIic, image_univ]
 
 @[simp]
 theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f := by
@@ -236,9 +239,9 @@ function from $[a, b]$ to the whole line is equal to the original function. -/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x
-  cases' lt_or_le x a with hxa hax
+  rcases lt_or_ge x a with hxa | hax
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
-  · rcases le_or_lt x b with hxb | hbx
+  · rcases le_or_gt x b with hxb | hbx
     · lift x to Icc a b using ⟨hax, hxb⟩
       rw [IccExtend_val, comp_apply]
     · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]

@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+module
+
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
 /-!
 # Consequences of the homology sequence
@@ -17,20 +19,22 @@ of the homology sequence of `S₁` and `S₂` with respect to `φ`
 
 Then, we shall show in this file that if two out of the three maps `φ.τ₁`,
 `φ.τ₂`, `φ.τ₃` are quasi-isomorphisms, then the third is. We also obtain
-more specific separate lemmas which gives sufficient condition for one
+more specific separate lemmas which give sufficient conditions for one
 of these three morphisms to induce a mono/epi/iso in a given degree
-in terms of properties of the two others in the same or neighboring degrees.
+in terms of properties of the other two in the same or neighboring degrees.
 
 So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
-for `φ.τ₁` and `φ.τ₂` shall be also obtained (TODO).
+for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 -/
+
+@[expose] public section
 
 open CategoryTheory ComposableArrows Abelian
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
   (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
 
@@ -60,7 +64,7 @@ variable (S)
 noncomputable def composableArrows₂ (i : ι) : ComposableArrows C 2 :=
   mk₂ (homologyMap S.f i) (homologyMap S.g i)
 
-lemma composableArrows₂_exact (i : ι) :
+lemma composableArrows₂_exact (hS₁ : S₁.ShortExact) (i : ι) :
     (composableArrows₂ S₁ i).Exact :=
   (hS₁.homology_exact₂ i).exact_toComposableArrows
 
@@ -103,7 +107,7 @@ noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
     (naturality' (mapComposableArrows₂ φ j) 0 1)
     (naturality' (mapComposableArrows₂ φ j) 1 2)
 
-attribute [local instance] epi_comp
+include hS₁ hS₂
 
 lemma mono_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))
@@ -145,7 +149,6 @@ lemma epi_homologyMap_τ₃ (i : ι)
     simp only [homologyMap_comp] at eq
     have := epi_homologyMap_of_epi_of_not_rel S₂.g i (by simpa using hi)
     exact epi_of_epi_fac eq.symm
-
 
 lemma isIso_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))

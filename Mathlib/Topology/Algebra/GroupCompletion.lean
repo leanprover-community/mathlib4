@@ -3,18 +3,18 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.UniformSpace.Completion
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Completion of topological groups:
 
-This files endows the completion of a topological abelian group with a group structure.
+This file endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
-Then the instance `UniformSpace.Completion.uniformAddGroup` proves this group structure is
-compatible with the completed uniform structure. The compatibility condition is `UniformAddGroup`.
+Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
+compatible with the completed uniform structure. The compatibility condition is `IsUniformAddGroup`.
 
 ## Main declarations:
 
@@ -27,6 +27,8 @@ the main constructions deal with continuous group morphisms.
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -55,6 +57,10 @@ instance [Sub α] : Sub (Completion α) :=
 theorem UniformSpace.Completion.coe_zero [Zero α] : ((0 : α) : Completion α) = 0 :=
   rfl
 
+@[simp] lemma UniformSpace.Completion.coe_eq_zero_iff [Zero α] [T0Space α] {x : α} :
+    (x : Completion α) = 0 ↔ x = 0 :=
+  Completion.coe_inj
+
 end Group
 
 namespace UniformSpace.Completion
@@ -73,9 +79,9 @@ instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
 
 end Zero
 
-section UniformAddGroup
+section IsUniformAddGroup
 
-variable [UniformSpace α] [AddGroup α] [UniformAddGroup α]
+variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α]
 
 @[norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
@@ -136,8 +142,8 @@ instance : SubNegMonoid (Completion α) :=
     zsmul_succ' := fun n a ↦
       Completion.induction_on a
         (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
-          show Int.ofNat n.succ • (a : Completion α) = _ by
-            rw [← coe_smul, show Int.ofNat n.succ • a = Int.ofNat n • a + a from
+          show (n.succ : ℤ) • (a : Completion α) = _ by
+            rw [← coe_smul, show (n.succ : ℤ) • a = (n : ℤ) • a + a from
               SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a ↦
       Completion.induction_on a
@@ -148,15 +154,15 @@ instance : SubNegMonoid (Completion α) :=
 
 instance addGroup : AddGroup (Completion α) :=
   { (inferInstance : SubNegMonoid <| Completion α) with
-    add_left_neg := fun a ↦
+    neg_add_cancel := fun a ↦
       Completion.induction_on a
         (isClosed_eq (continuous_map₂ Completion.continuous_map continuous_id) continuous_const)
         fun a ↦
         show -(a : Completion α) + a = 0 by
-          rw_mod_cast [add_left_neg]
+          rw_mod_cast [neg_add_cancel]
           rfl }
 
-instance uniformAddGroup : UniformAddGroup (Completion α) :=
+instance isUniformAddGroup : IsUniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
@@ -179,18 +185,15 @@ def toCompl : α →+ Completion α where
 theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
   continuous_coe α
 
-variable (α)
+variable (α) in
+theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
+  isDenseInducing_coe
 
-theorem denseInducing_toCompl : DenseInducing (toCompl : α → Completion α) :=
-  denseInducing_coe
-
-variable {α}
-
-end UniformAddGroup
+end IsUniformAddGroup
 
 section UniformAddCommGroup
 
-variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
+variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
 instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
@@ -217,8 +220,8 @@ end UniformSpace.Completion
 
 section AddMonoidHom
 
-variable [UniformSpace α] [AddGroup α] [UniformAddGroup α] [UniformSpace β] [AddGroup β]
-  [UniformAddGroup β]
+variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α] [UniformSpace β] [AddGroup β]
+  [IsUniformAddGroup β]
 
 open UniformSpace UniformSpace.Completion
 
@@ -255,6 +258,7 @@ theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) 
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 
+@[simp]
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
@@ -265,11 +269,10 @@ theorem AddMonoidHom.completion_zero :
   refine Completion.induction_on x ?_ ?_
   · apply isClosed_eq (AddMonoidHom.continuous_completion (0 : α →+ β) continuous_const)
     exact continuous_const
-  · intro a
-    simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
+  · simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 
 theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
-    [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
+    [IsUniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by
   have hfg := hf.add hg
@@ -277,7 +280,6 @@ theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace
   refine Completion.induction_on x ?_ ?_
   · exact isClosed_eq ((f + g).continuous_completion hfg)
       ((f.continuous_completion hf).add (g.continuous_completion hg))
-  · intro a
-    simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
+  · simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
 
 end AddMonoidHom

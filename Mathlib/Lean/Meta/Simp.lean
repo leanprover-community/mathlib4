@@ -1,15 +1,20 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
+Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Lean.Elab.Tactic.Simp
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Helper functions for using the simplifier.
 
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
+
+@[expose] public section
 
 open Lean Elab.Tactic
 
@@ -71,10 +76,24 @@ def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
 
 /-- Construct a `Simp.Context` from a list of names. -/
 def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
-    (config : Simp.Config := {}) : MetaM Simp.Context := do pure <|
-  { simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly],
-    congrTheorems := ← Lean.Meta.getSimpCongrTheorems,
-    config := config }
+    (config : Simp.Config := {}) : MetaM Simp.Context := do
+  Simp.mkContext config
+    (simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly])
+    (congrTheorems := ← Lean.Meta.getSimpCongrTheorems)
+
+-- adapted from `Lean.Elab.Tactic.mkSimpContext`
+/-- Construct a `Simp.Context`, following the same algorithm that would be done in a "simp" run:
+look up all the simp-lemmas in the library, and adjust (add/erase) as specified by the provided
+`simpArgs` list. -/
+def Simp.Context.ofArgs (args : TSyntax ``Parser.Tactic.simpArgs) (config : Simp.Config := {}) :
+    TacticM Simp.Context := do
+  let simpTheorems ← Meta.getSimpTheorems
+  let congrTheorems ← Meta.getSimpCongrTheorems
+  let ctx ← Simp.mkContext config
+     (simpTheorems := #[simpTheorems])
+     congrTheorems
+  let r ← elabSimpArgs args (eraseLocal := false) (kind := SimpKind.simp) (simprocs := {}) ctx
+  return r.ctx
 
 /-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
@@ -121,13 +140,13 @@ def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
 /-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return false
+  let some simpDecl ← getSimpExtension? simpAttr | return false
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
-  Note: this also returns many auxiliary declarations. -/
+Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return []
+  let some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems
   return thms.toUnfold.toList ++ thms.lemmaNames.toList.filterMap fun
     | .decl decl => some decl

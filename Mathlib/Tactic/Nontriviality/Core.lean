@@ -3,11 +3,16 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
-import Qq.MetaM
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Attr.Core
+module
+
+public meta import Qq.MetaM
+public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
+public meta import Aesop
+public meta import Mathlib.Tactic.ToDual
 
 /-! # The `nontriviality` tactic. -/
+
+public meta section
 
 universe u
 
@@ -32,7 +37,7 @@ def nontrivialityByElim {u : Level} (α : Q(Type u)) (g : MVarId) (simpArgs : Ar
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
     g₁'.withContext try
-      -- FIXME: restore after lean4#2054 is fixed
+      -- FIXME: restore after https://github.com/leanprover/lean4/issues/2054 is fixed
       -- g₁'.inferInstance <|> do
       (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
         let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))
@@ -123,3 +128,7 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       g.assert `inst ty m
     let g ← liftM <| tac <|> nontrivialityByElim α g stx[2][1].getSepArgs
     replaceMainGoal [(← g.intro1).2]
+
+end Nontriviality
+
+end Mathlib.Tactic

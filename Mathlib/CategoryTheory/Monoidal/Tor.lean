@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.LeftDerived
-import Mathlib.CategoryTheory.Monoidal.Preadditive
+module
+
+public import Mathlib.CategoryTheory.Abelian.LeftDerived
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Tor, the left-derived functor of tensor product
@@ -21,6 +23,10 @@ Possibly it's best to axiomatize delta functors, and obtain a unique characteris
 
 -/
 
+@[expose] public section
+
+
+assert_not_exists ModuleCat.abelian
 
 noncomputable section
 
@@ -30,7 +36,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [MonoidalCategory C]
+variable (C : Type*) [Category* C] [MonoidalCategory C]
   [Abelian C] [MonoidalPreadditive C] [HasProjectiveResolutions C]
 
 /-- We define `Tor C n : C ⥤ C ⥤ C` by left-deriving in the second factor of `(X, Y) ↦ X ⊗ Y`. -/
@@ -40,24 +46,11 @@ def Tor (n : ℕ) : C ⥤ C ⥤ C where
   map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
-@[simps! obj_obj]
+@[simps! obj_obj map_app obj_map]
 def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
       map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
-
--- Porting note: the `checkType` linter complains about the automatically generated
--- lemma `Tor'_map_app`, but not about this one
-@[simp]
-lemma Tor'_map_app' (n : ℕ) {X Y : C} (f : X ⟶ Y) (Z : C) :
-    ((Tor' C n).map f).app Z = (Functor.leftDerived ((tensoringRight C).obj Z) n).map f := by
-  rfl
-
--- Porting note: this specific lemma was added because otherwise the internals of
--- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)
-@[simp]
-lemma Tor'_obj_map (n : ℕ) {X Y : C} (Z : C) (f : X ⟶ Y) :
-    ((Tor' C n).obj Z).map f = (NatTrans.leftDerived ((tensoringRight C).map f) n).app Z := rfl
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : C) [Projective Y] (n : ℕ) :
@@ -70,5 +63,3 @@ lemma isZero_Tor'_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
   apply Functor.isZero_leftDerived_obj_projective_succ
 
 end CategoryTheory
-
-assert_not_exists Module.abelian

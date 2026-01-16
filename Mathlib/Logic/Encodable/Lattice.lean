@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Lattice operations on encodable types
@@ -18,6 +20,8 @@ This is a separate file, to avoid unnecessary imports in basic files.
 
 Previously some of these results were in the `MeasureTheory` folder.
 -/
+
+public section
 
 open Set
 
@@ -33,18 +37,18 @@ theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
 theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 
-/- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
---@[elab_as_elim]
+@[elab_as_elim]
 theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
     convert H1 b
-    simp [Set.ext_iff]
+    simp
 
+open scoped Function in -- required for scoped `on` notation
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij

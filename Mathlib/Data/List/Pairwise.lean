@@ -3,33 +3,38 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
-import Mathlib.Data.List.Basic
+module
+
+public import Batteries.Data.List.Pairwise
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
+public import Batteries.Data.List
 
 /-!
 # Pairwise relations on a list
 
 This file provides basic results about `List.Pairwise` and `List.pwFilter` (definitions are in
 `Data.List.Defs`).
-`Pairwise r [a 0, ..., a (n - 1)]` means `∀ i j, i < j → r (a i) (a j)`. For example,
+`Pairwise R [a 0, ..., a (n - 1)]` means `∀ i j, i < j → R (a i) (a j)`. For example,
 `Pairwise (≠) l` means that all elements of `l` are distinct, and `Pairwise (<) l` means that `l`
 is strictly increasing.
-`pwFilter r l` is the list obtained by iteratively adding each element of `l` that doesn't break
+`pwFilter R l` is the list obtained by iteratively adding each element of `l` that doesn't break
 the pairwiseness of the list we have so far. It thus yields `l'` a maximal sublist of `l` such that
-`Pairwise r l'`.
+`Pairwise R l'`.
 
 ## Tags
 
 sorted, nodup
 -/
 
+public section
+
 
 open Nat Function
 
 namespace List
 
-variable {α β : Type*} {R S T : α → α → Prop} {a : α} {l : List α}
+variable {α β : Type*} {R : α → α → Prop} {l : List α} {a : α}
 
 mk_iff_of_inductive_prop List.Pairwise List.pairwise_iff
 
@@ -49,40 +54,8 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 
--- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated (since := "2024-02-25")] theorem pairwise_map' (f : β → α) :
-    ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
-  | [] => by simp only [map, Pairwise.nil]
-  | b :: l => by
-    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, pairwise_map]
-
-theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h : ∀ x ∈ l, p x) :
-    Pairwise R (l.pmap f h) ↔
-      Pairwise (fun b₁ b₂ => ∀ (h₁ : p b₁) (h₂ : p b₂), R (f b₁ h₁) (f b₂ h₂)) l := by
-  induction' l with a l ihl
-  · simp
-  obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
-  simp only [ihl hl, pairwise_cons, exists₂_imp, pmap, and_congr_left_iff, mem_pmap]
-  refine fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, ?_⟩
-  rintro H _ b hb rfl
-  exact H b hb _ _
-
-theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : ∀ a, p a → β}
-    (h : ∀ x ∈ l, p x) {S : β → β → Prop}
-    (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
-    Pairwise S (l.pmap f h) := by
-  refine (pairwise_pmap h).2 (Pairwise.imp_of_mem ?_ hl)
-  intros; apply hS; assumption
-
-theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
-    l.Pairwise r := by
-  rw [pairwise_iff_forall_sublist]
-  intro a b hab
-  apply h <;> (apply hab.subset; simp)
-
-theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
-    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
+theorem pairwise_of_reflexive_of_forall_ne (hr : Reflexive R)
+    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) : l.Pairwise R := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
@@ -91,22 +64,99 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
-set_option linter.deprecated false in
-@[deprecated pairwise_iff_get (since := "2023-01-10")]
-theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
-    ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
-  pairwise_iff_get.trans
-    ⟨fun h i j _ h₂ => h ⟨i, _⟩ ⟨j, _⟩ h₂,
-     fun h i j hij => h i j _ hij⟩
+theorem Pairwise.rel_head_tail (h₁ : l.Pairwise R) (ha : a ∈ l.tail) :
+    R (l.head <| ne_nil_of_mem <| mem_of_mem_tail ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (pairwise_cons.1 h₁).1 a ha
+
+theorem Pairwise.rel_head_of_rel_head_head (h₁ : l.Pairwise R) (ha : a ∈ l)
+    (hhead : R (l.head <| ne_nil_of_mem ha) (l.head <| ne_nil_of_mem ha)) :
+    R (l.head <| ne_nil_of_mem ha) a := by
+  cases l with
+  | nil => simp at ha
+  | cons b l => exact (mem_cons.mp ha).elim (· ▸ hhead) ((pairwise_cons.1 h₁).1 _)
+
+theorem Pairwise.rel_head [Std.Refl R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
+    R (l.head <| ne_nil_of_mem ha) a :=
+  h₁.rel_head_of_rel_head_head ha (refl_of ..)
+
+theorem Pairwise.rel_dropLast_getLast (h : l.Pairwise R) (ha : a ∈ l.dropLast) :
+    R a (l.getLast <| ne_nil_of_mem <| dropLast_subset _ ha) := by
+  rw [← pairwise_reverse] at h
+  rw [getLast_eq_head_reverse]
+  exact h.rel_head_tail (by rwa [tail_reverse, mem_reverse])
+
+theorem Pairwise.rel_getLast_of_rel_getLast_getLast (h₁ : l.Pairwise R) (ha : a ∈ l)
+    (hlast : R (l.getLast <| ne_nil_of_mem ha) (l.getLast <| ne_nil_of_mem ha)) :
+    R a (l.getLast <| ne_nil_of_mem ha) := by
+  rw [← dropLast_concat_getLast (ne_nil_of_mem ha), mem_append, List.mem_singleton] at ha
+  exact ha.elim h₁.rel_dropLast_getLast (· ▸ hlast)
+
+theorem Pairwise.rel_getLast [Std.Refl R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
+    R a (l.getLast <| ne_nil_of_mem ha) :=
+  h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
+
+protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
+
+theorem Pairwise.head!_le [Inhabited α] [Std.Refl R] (h : l.Pairwise R)
+    (ha : a ∈ l) : R l.head! a := by
+  cases l
+  · contradiction
+  · cases ha with
+    | head => exact refl_of ..
+    | tail => exact rel_of_pairwise_cons h (by assumption)
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.head!_le := Pairwise.head!_le
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.le_head! := Pairwise.head!_le
+
+theorem pairwise_replicate_of_refl {n} [Std.Refl R] : (replicate n a).Pairwise R :=
+  pairwise_replicate.mpr (Or.inr <| refl_of ..)
+
+@[deprecated (since := "2025-10-11")]
+alias sorted_replicate := pairwise_replicate_of_refl
 
 /-! ### Pairwise filtering -/
 
+protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 
-variable [DecidableRel R]
+theorem pairwise_cons_cons_iff_of_trans [IsTrans α R] {l : List α} {a b : α} :
+    Pairwise R (a :: b :: l) ↔ R a b ∧ Pairwise R (b :: l) := by
+  simp_rw [← isChain_iff_pairwise, isChain_cons_cons]
 
-alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
+@[deprecated (since := "2025-10-11")]
+alias sorted_cons_cons := pairwise_cons_cons_iff_of_trans
 
--- Porting note: commented out
--- attribute [protected] List.Pairwise.pwFilter
+theorem Pairwise.cons_cons_of_trans [IsTrans α R] {l : List α} {a b : α} :
+    R a b → Pairwise R (b :: l) → Pairwise R (a :: b :: l) := by
+  simp_rw [pairwise_cons_cons_iff_of_trans]
+  exact And.intro
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.cons := Pairwise.cons_cons_of_trans
+
+theorem Pairwise.rel_get_of_lt {l : List α} (h : l.Pairwise R) {a b : Fin l.length} (hab : a < b) :
+    R (l.get a) (l.get b) :=
+  List.pairwise_iff_get.1 h _ _ hab
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_lt := Pairwise.rel_get_of_lt
+
+theorem Pairwise.rel_get_of_le [Std.Refl R] {l : List α} (h : l.Pairwise R) {a b : Fin l.length}
+    (hab : a ≤ b) : R (l.get a) (l.get b) := by
+  obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, (pairwise_iff_get.1 h) _ _ hlt]
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.rel_get_of_le := Pairwise.rel_get_of_le
+
+theorem Pairwise.decide [DecidableRel R] (l : List α) (h : Pairwise R l) :
+    Pairwise (fun a b => decide (R a b) = true) l := by
+  refine h.imp fun {a b} h => by simpa using h
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.decide := Pairwise.decide
 
 end List

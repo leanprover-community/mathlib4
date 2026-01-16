@@ -3,14 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.SMulWithZero
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Lattice
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Nilpotent elements
@@ -18,7 +19,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 This file develops the basic theory of nilpotent elements. In particular it shows that the
 nilpotent elements are closed under many operations.
 
-For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 
 ## Main definitions
@@ -28,6 +29,8 @@ For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
   * `Commute.isNilpotent_sub`
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -81,6 +84,23 @@ theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
     IsUnit (r + u) :=
   add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
 
+lemma IsUnit.not_isNilpotent [Ring R] [Nontrivial R] {x : R} (hx : IsUnit x) :
+    ¬ IsNilpotent x := by
+  intro H
+  simpa using H.isUnit_add_right_of_commute hx.neg (by simp)
+
+lemma IsNilpotent.not_isUnit [Ring R] [Nontrivial R] {x : R} (hx : IsNilpotent x) :
+    ¬ IsUnit x :=
+  mt IsUnit.not_isNilpotent (by simpa only [not_not] using hx)
+
+lemma IsIdempotentElem.eq_zero_of_isNilpotent [MonoidWithZero R] {e : R}
+    (idem : IsIdempotentElem e) (nilp : IsNilpotent e) : e = 0 := by
+  obtain ⟨rfl | n, hn⟩ := nilp
+  · rw [pow_zero] at hn; rw [← one_mul e, hn, zero_mul]
+  · rw [← hn, idem.pow_succ_eq]
+
+alias IsNilpotent.eq_zero_of_isIdempotentElem := IsIdempotentElem.eq_zero_of_isNilpotent
+
 instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
@@ -100,7 +120,9 @@ theorem IsRadical.of_dvd [CancelCommMonoidWithZero R] {x y : R} (hy : IsRadical 
     (hxy : x ∣ y) : IsRadical x := (isRadical_iff_pow_one_lt 2 one_lt_two).2 <| by
   obtain ⟨z, rfl⟩ := hxy
   refine fun w dvd ↦ ((mul_dvd_mul_iff_right <| right_ne_zero_of_mul h0).mp <| hy 2 _ ?_)
-  rw [mul_pow, sq z]; exact mul_dvd_mul dvd (dvd_mul_left z z)
+  rw [mul_pow]
+  gcongr
+  exact dvd_pow_self _ two_ne_zero
 
 namespace Commute
 
@@ -137,7 +159,7 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert j s hj ih => ?_
+  | insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
@@ -145,19 +167,28 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   · exact ih (fun i hi ↦ hnp i (by simp [hi]))
       (fun i j hi hj ↦ h_comm i j (by simp [hi]) (by simp [hj]))
 
-protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
-    IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
-  rintro ⟨k, hk⟩
-  rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) (h_comm : ∀ i j, Commute (f i) (f j)) :
+    IsNilpotent (finsum f) := by
+  classical
+  by_cases h : Set.Finite f.support
+  · rw [finsum_def, dif_pos h]
+    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
+  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
 
-protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsRight R) :
-    IsNilpotent (x * y) ↔ IsNilpotent y := by
+protected lemma isNilpotent_mul_right_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsRight R) :
+    IsNilpotent (x * y) ↔ IsNilpotent x := by
   refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
-  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
+  exact ⟨k, (nonZeroDivisorsRight R).pow_mem hy k _ hk⟩
+
+protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hx : x ∈ nonZeroDivisorsLeft R) :
+    IsNilpotent (x * y) ↔ IsNilpotent y := by
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
+  rintro ⟨k, hk⟩
+  rw [mul_pow h_comm] at hk
+  exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hx k _ hk⟩
 
 end Semiring
 
@@ -185,18 +216,21 @@ lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     IsNilpotent (∑ i ∈ s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) :
+    IsNilpotent (finsum f) :=
+  Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
+
 end CommSemiring
 
+@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
+and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
-  induction' k with k ih
-  · rw [pow_zero] at hk
-    exact eq_zero_of_zero_eq_one hk.symm x
-  · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
-    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ', mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
-    · rfl
-    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
+  have : NoZeroDivisors R := by
+    obtain ⟨m, hm⟩ := exists_ne (0 : M)
+    constructor
+    rintro x y hxy
+    simpa [mul_smul, hm] using congr($hxy • m)
+  infer_instance

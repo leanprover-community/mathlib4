@@ -1,21 +1,23 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of open neighborhoods of a point
 
 Given an object `X` of the category `TopCat` of topological spaces and a point `x : X`, this file
-builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
+builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
 order given by inclusion and the corresponding category structure (as a full subcategory of the
 poset category `Set X`). This is used in `Topology.Sheaves.Stalks` to build the stalk of a sheaf
 at `x` as a limit over `OpenNhds x`.
 
-## Main declarations
+## Main declarations
 
 Besides `OpenNhds`, the main constructions here are:
 
@@ -25,8 +27,10 @@ Besides `OpenNhds`, the main constructions here are:
                     `OpenNhds (f x)`.
 -/
 
+@[expose] public section
 
-open CategoryTheory TopologicalSpace Opposite
+
+open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u
 
@@ -35,20 +39,16 @@ variable {X Y : TopCat.{u}} (f : X ⟶ Y)
 namespace TopologicalSpace
 
 /-- The type of open neighbourhoods of a point `x` in a (bundled) topological space. -/
-def OpenNhds (x : X) :=
-  FullSubcategory fun U : Opens X => x ∈ U
+def OpenNhds (x : X) : Type u := { U : Opens X // x ∈ U }
 
 namespace OpenNhds
+variable {x : X} {U V W : OpenNhds x}
 
-instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
-  le U V := U.1 ≤ V.1
-  le_refl _ := by dsimp [LE.le]; exact le_rfl
-  le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
-  le_antisymm _ _ i j := FullSubcategory.ext _ _ <| le_antisymm i j
+instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
+  inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
 
 instance (x : X) : Lattice (OpenNhds x) :=
-  { OpenNhds.partialOrder x with
-    inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
+  { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
     inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
     inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
@@ -64,10 +64,19 @@ instance (x : X) : OrderTop (OpenNhds x) where
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
-instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
+instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
+  coe f := Set.inclusion f.le
+  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
 
-instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) fun _ => U.1 → V.1 :=
-  ⟨fun f x => ⟨x, f.le x.2⟩⟩
+@[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
+
+@[simp] lemma val_apply (f : U ⟶ V) (y : U.1) : (f y : X) = y := rfl
+
+@[simp, norm_cast] lemma coe_id (f : U ⟶ U) : ⇑f = id := rfl
+
+lemma id_apply (f : U ⟶ U) (y : U.1) : f y = y := rfl
+
+@[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U.1) : (f ≫ g) x = g (f x) := rfl
 
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets. -/
 def infLELeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
@@ -80,21 +89,20 @@ def infLERight {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ V :=
 /-- The inclusion functor from open neighbourhoods of `x`
 to open sets in the ambient topological space. -/
 def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
-  fullSubcategoryInclusion _
+  (Subtype.mono_coe _).functor
 
 @[simp]
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
-  U.1.openEmbedding
+theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.1.inclusion' :=
+  U.1.isOpenEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map i := (Opens.map f).map i
 
--- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
 theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl
@@ -144,9 +152,31 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   map i := h.functor.map i
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
-def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-      counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
+def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
+  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap
+
+namespace Topology.IsInducing
+
+open TopologicalSpace
+
+variable {f}
+
+/-- An inducing map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`. -/
+@[simps]
+def functorNhds (h : IsInducing f) (x : X) :
+    OpenNhds x ⥤ OpenNhds (f x) where
+  obj U := ⟨h.functor.obj U.1, (h.mem_functorObj_iff U.1).mpr U.2⟩
+  map := h.functor.map
+
+/--
+An inducing map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
+-/
+def adjunctionNhds (h : IsInducing f) (x : X) :
+    OpenNhds.map f x ⊣ h.functorNhds x where
+  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
+  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
+
+end Topology.IsInducing

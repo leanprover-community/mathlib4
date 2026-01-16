@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Minimal polynomials
@@ -14,8 +16,9 @@ such as irreducibility under the assumption `B` is a domain.
 
 -/
 
+@[expose] public section
 
-open scoped Classical
+
 open Polynomial Set Function
 
 variable {A B B' : Type*}
@@ -24,6 +27,7 @@ section MinPolyDef
 
 variable (A) [CommRing A] [Ring B] [Algebra A B]
 
+open scoped Classical in
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
 
 The minimal polynomial `minpoly A x` of `x`
@@ -33,6 +37,7 @@ if such exists (`IsIntegral A x`) or zero otherwise.
 For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V →ₗ[𝕜] V` then
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
+@[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
   if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
 
@@ -58,10 +63,14 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 
+theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
+  ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
+
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
-  refine dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => ?_) fun _ => rfl
-  simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
+  classical
+  simp_rw [minpoly, isIntegral_algHom_iff _ hf, ← Polynomial.aeval_def, aeval_algHom,
+    AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
 
 theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
     (h : Function.Injective (algebraMap B B')) (x : B) :
@@ -116,7 +125,7 @@ theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     exact ne_of_lt (show ⊥ < ↑1 from WithBot.bot_lt_coe 1) hx
   have key := minpoly.aeval A x
   rw [eq_X_add_C_of_degree_eq_one hx, (minpoly.monic h).leadingCoeff, C_1, one_mul, aeval_add,
-    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← RingHom.map_neg] at key
+    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← map_neg] at key
   exact ⟨-(minpoly A x).coeff 0, key.symm⟩
 
 /-- The defining property of the minimal polynomial of an element `x`:
@@ -124,7 +133,7 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_lt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · exact le_of_not_gt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
   · simp only [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
@@ -151,15 +160,29 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   rw [eq_C_of_natDegree_le_zero this, ← Nat.eq_zero_of_le_zero this, ← leadingCoeff, ← hlead, C_1,
     mul_one]
 
+open Polynomial in
+/-- If a monic polynomial `p : A[X]` of degree `n` annihilates an element `x` in an `A`-algebra `B`,
+such that `{xⁱ | 0 ≤ i < n}` is linearly independent over `A`, then `p` is the minimal polynomial
+of `x` over `A`. -/
+theorem eq_of_linearIndependent {p : A[X]} (monic : p.Monic) (hp0 : p.aeval x = 0)
+    (n : ℕ) (hpn : p.degree = n) (ind : LinearIndependent A fun i : Fin n ↦ x ^ i.val) :
+    minpoly A x = p :=
+  .symm <| unique' _ _ monic hp0 fun q lt ↦ or_iff_not_imp_left.mpr fun ne hq ↦ ne <| ext fun i ↦ by
+    rw [q.as_sum_range' _ ((natDegree_lt_iff_degree_lt ne).mpr (hpn ▸ lt))] at hq
+    obtain lt | le := lt_or_ge i n
+    · simpa using Fintype.linearIndependent_iff.mp ind (q.coeff ·)
+        (by simpa [Finset.sum_range, Algebra.smul_def] using hq) ⟨i, lt⟩
+    · exact coeff_eq_zero_of_degree_lt ((hpn ▸ lt).trans_le <| WithBot.coe_le_coe.mpr le)
+
 @[nontriviality]
 theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
-  rcases le_or_lt (minpoly A x).degree 0 with h | h
+  rcases le_or_gt (minpoly A x).degree 0 with h | h
   · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
            (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
-  · exact (this.not_lt h).elim
+  · exact (this.not_gt h).elim
 
 end Ring
 
@@ -237,13 +260,13 @@ variable {x : B}
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine fun ha => (min A x hamonic ha).not_lt (degree_lt_degree ?_)
+  refine fun ha => (min A x hamonic ha).not_gt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
   -- TODO: port Nat.lt_add_of_zero_lt_left from lean3 core
   apply lt_add_of_pos_right
-  refine (lt_of_not_le fun h => hu ?_)
+  refine (lt_of_not_ge fun h => hu ?_)
   rw [eq_C_of_natDegree_le_zero h, ← Nat.eq_zero_of_le_zero h, ← leadingCoeff, hcm.leadingCoeff,
     C_1]
   exact isUnit_one
@@ -257,7 +280,7 @@ theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
-  cases' heval with heval heval
+  rcases heval with heval | heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval
   · refine aeval_ne_zero_of_dvdNotUnit_minpoly hx hg ⟨hg.ne_zero, f, h.1, ?_⟩ heval
     rw [mul_comm, he]

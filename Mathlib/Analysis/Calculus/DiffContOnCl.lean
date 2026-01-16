@@ -1,10 +1,13 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.NormedSpace.Real
+module
+
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Functions differentiable on a domain and continuous on its closure
@@ -13,6 +16,8 @@ Many theorems in complex analysis assume that a function is complex differentiab
 is continuous on its closure. In this file we define a predicate `DiffContOnCl` that expresses
 this property and prove basic facts about this predicate.
 -/
+
+@[expose] public section
 
 
 open Set Filter Metric

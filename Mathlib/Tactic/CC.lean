@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Tactic.CC.Addition
+module
+
+public import Mathlib.Tactic.CC.Addition
 
 /-!
 # Congruence closure
@@ -41,13 +43,15 @@ The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 
 * The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016).
+  [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+  (de Moura, Selsam IJCAR 2016).
 -/
+
+public meta section
 
 universe u
 
@@ -59,7 +63,7 @@ namespace CCState
 
 open CCM
 
-/-- Make an new `CCState` from the given `config`. -/
+/-- Make a new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
@@ -125,7 +129,7 @@ def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
 def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { ccs with }
     | throwError "CCState.refutationFor failed to build proof"
-  mkAppM ``not_of_eq_false #[r]
+  mkAppM ``of_eq_false #[r]
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
 def proofForFalse (ccs : CCState) : MetaM Expr := do
@@ -181,6 +185,12 @@ def foldEqcM {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α
 
 end CCState
 
+/-- Option to control whether to show a deprecation warning for the `cc` tactic. -/
+register_option mathlib.tactic.cc.warning : Bool := {
+  defValue := true
+  descr := "Show a deprecation warning when using the `cc` tactic"
+}
+
 /--
 Applies congruence closure to solve the given metavariable.
 This procedure tries to solve the goal by chaining
@@ -197,13 +207,22 @@ congruence lemmas.
 The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 * The congruence lemmas for dependent type theory as used in Lean are described in
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
 -/
 def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
+  -- Check if warning should be shown
+  if ← getBoolOption `mathlib.tactic.cc.warning true then
+    logWarning "The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead.\n\n\
+      Please report any regressions at https://github.com/leanprover/lean4/issues/.\n\
+      Note that `cc` supports some goals that `grind` doesn't,\n\
+      but these rely on higher-order unification and can result in unpredictable performance.\n\
+      If a downstream library is relying on this functionality,\n\
+      please report this in an issue and we'll help find a solution."
+
   let (_, m) ← m.intros
   m.withContext do
     let s ← CCState.mkUsingHsCore cfg
@@ -239,7 +258,7 @@ the current goal, not to make some inconclusive progress.
 A mostly trivial example would be:
 
 ```lean
-example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+example (a b c : ℕ) (f : ℕ → ℕ) (h : a = b) (h' : b = c) : f a = f c := by
   cc
 ```
 
@@ -251,8 +270,8 @@ example (f : ℕ → ℕ) (x : ℕ)
     f x = x := by
   cc
 ``` -/
-elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
-  let cfg ← elabCCConfig (mkOptionalNode cfg)
+elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:optConfig : tactic => do
+  let cfg ← elabCCConfig cfg
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
 
 end Mathlib.Tactic.CC

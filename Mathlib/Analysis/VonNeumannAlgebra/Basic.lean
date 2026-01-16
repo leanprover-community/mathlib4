@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Von Neumann algebras
@@ -23,6 +24,8 @@ We'll also need to prove the von Neumann double commutant theorem,
 that the concrete definition is equivalent to a *-closed subalgebra which is weakly closed.
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -39,13 +42,12 @@ One the other hand, not picking one means that the weak-* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
-class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
-    [NormedAlgebra ℂ M] [StarModule ℂ M] : Prop where
+class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :
     ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (NormedSpace.Dual ℂ X ≃ₗᵢ⋆[ℂ] M)
+      Nonempty (StrongDual ℂ X ≃ₗᵢ⋆[ℂ] M)
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
@@ -62,7 +64,6 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannA
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
--- Porting note: I don't think the nonempty instance linter exists yet
 structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
@@ -82,7 +83,6 @@ instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
--- Porting note: `StarMemClass` should be in `Prop`?
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
 
@@ -97,7 +97,6 @@ instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) w
 theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
     x ∈ S.toStarSubalgebra ↔ x ∈ (S : Set (H →L[ℂ] H)) :=
   Iff.rfl
--- Porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
 @[simp]
 theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
@@ -119,7 +118,7 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
   S.centralizer_centralizer'
 
 /-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`. -/
-def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
+noncomputable def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp
 
@@ -137,5 +136,25 @@ theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 @[simp]
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
+
+open ContinuousLinearMap in
+/-- An idempotent is an element in a von Neumann algebra if and only if
+its range and kernel are invariant under the commutant. -/
+theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
+    (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant,
+      e.range ∈ Module.End.invtSubmodule y ∧ e.ker ∈ Module.End.invtSubmodule y := by
+  conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
+
+open VonNeumannAlgebra ContinuousLinearMap in
+/-- A star projection is an element in a von Neumann algebra if and only if
+its range is invariant under the commutant. -/
+theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
+    (S : VonNeumannAlgebra H) :
+    e ∈ S ↔ ∀ y ∈ S.commutant, e.range ∈ Module.End.invtSubmodule y := by
+  simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
+    he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
+  intro h x hx
+  simpa [he.isSelfAdjoint.star_eq] using congr(star $(h _ (star_mem hx)))
 
 end VonNeumannAlgebra

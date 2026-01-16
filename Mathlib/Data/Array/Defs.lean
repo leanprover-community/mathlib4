@@ -3,13 +3,17 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
+module
 
+public import Mathlib.Init
 /-!
-## Definitions on Arrays
+# Definitions on Arrays
 
 This file contains various definitions on `Array`. It does not contain
-proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
+proofs about these definitions.
 -/
+
+@[expose] public section
 
 namespace Array
 
@@ -20,7 +24,7 @@ variable {α : Type u}
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
-  | a, []      => a
+  | a, [] => a
   | a, i :: is => cyclicPermuteAux a is a[i]! i
 where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, [], x, i0 => a.set! i0 x
@@ -31,3 +35,5 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 /-- Permute the array using a list of cycles. -/
 def permute! [Inhabited α] (a : Array α) (ls : List (List Nat)) : Array α :=
 ls.foldl (init := a) (·.cyclicPermute! ·)
+
+end Array

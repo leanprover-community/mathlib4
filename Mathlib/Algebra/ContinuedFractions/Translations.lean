@@ -3,8 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Seq.Basic
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions
@@ -14,6 +17,8 @@ import Mathlib.Algebra.GroupWithZero.Basic
 Some simple translation lemmas between the different definitions of functions defined in
 `Algebra.ContinuedFractions.Basic`.
 -/
+
+public section
 
 
 namespace GenContFract
@@ -127,9 +132,7 @@ theorem second_contAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
 
 theorem first_cont_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.conts 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [nth_cont_eq_succ_nth_contAux]
-  -- Porting note (#10959): simp used to work here, but now it can't figure out that 1 + 1 = 2
-  convert second_contAux_eq zeroth_s_eq
+  simp [nth_cont_eq_succ_nth_contAux, second_contAux_eq zeroth_s_eq]
 
 theorem first_num_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.nums 1 = gp.b * g.h + gp.a := by simp [num_eq_conts_a, first_cont_eq zeroth_s_eq]

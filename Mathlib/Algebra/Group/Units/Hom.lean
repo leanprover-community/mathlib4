@@ -3,8 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.Units.Basic
 
 /-!
 # Monoid homomorphisms and units
@@ -17,10 +20,25 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 * `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
 * `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
+* `IsLocalHom`: A predicate on monoid maps, requiring that it maps
+  nonunits to nonunits. For the local rings, that is, applied to their
+  multiplicative monoids, this means that the image of the unique
+  maximal ideal is again contained in the unique maximal ideal. This
+  is developed earlier, and in the generality of monoids, as it allows
+  its use in non-local-ring related contexts, but it does have the
+  strange consequence that it does not require local rings, or even rings.
+
+## TODO
+
+The results that don't mention homomorphisms should be proved (earlier?) in a different file and be
+used to golf the basic `Group` lemmas.
+
+Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+@[expose] public section
+
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -31,8 +49,8 @@ section MonoidHomClass
 /-- If two homomorphisms from a division monoid to a monoid are equal at a unit `x`, then they are
 equal at `x⁻¹`. -/
 @[to_additive
-  "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
-  additive unit `x`, then they are equal at `-x`."]
+  /-- If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
+  additive unit `x`, then they are equal at `-x`. -/]
 theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
     [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
@@ -40,8 +58,8 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
 
 /-- If two homomorphism from a group to a monoid are equal at `x`, then they are equal at `x⁻¹`. -/
 @[to_additive
-    "If two homomorphism from an additive group to an additive monoid are equal at `x`,
-    then they are equal at `-x`."]
+    /-- If two homomorphism from an additive group to an additive monoid are equal at `x`,
+    then they are equal at `-x`. -/]
 theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F G M]
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
@@ -53,7 +71,7 @@ namespace Units
 variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
-@[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
+@[to_additive /-- The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`. -/]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
     (fun u => ⟨f u.val, f u.inv,
@@ -66,6 +84,12 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
+
+set_option backward.proofsInPublic true in
+@[to_additive (attr := simp)]
+lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
+      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
@@ -80,7 +104,7 @@ variable (M)
 theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 
 /-- Coercion `Mˣ → M` as a monoid homomorphism. -/
-@[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
+@[to_additive /-- Coercion `AddUnits M → M` as an AddMonoid homomorphism. -/]
 def coeHom : Mˣ →* M where
   toFun := Units.val; map_one' := val_one; map_mul' := val_mul
 
@@ -88,6 +112,9 @@ variable {M}
 
 @[to_additive (attr := simp)]
 theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
+
+@[to_additive]
+theorem coeHom_injective : Function.Injective (coeHom M) := Units.val_injective
 
 section DivisionMonoid
 
@@ -107,8 +134,8 @@ end DivisionMonoid
 /-- If a map `g : M → Nˣ` agrees with a homomorphism `f : M →* N`, then
 this map is a monoid homomorphism too. -/
 @[to_additive
-  "If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
-  is an AddMonoid homomorphism too."]
+  /-- If a map `g : M → AddUnits N` agrees with a homomorphism `f : M →+ N`, then this map
+  is an AddMonoid homomorphism too. -/]
 def liftRight (f : M →* N) (g : M → Nˣ) (h : ∀ x, ↑(g x) = f x) : M →* Nˣ where
   toFun := g
   map_one' := by ext; rw [h 1]; exact f.map_one
@@ -131,28 +158,44 @@ theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = 
 end Units
 
 namespace MonoidHom
+variable {G M : Type*} [Group G]
+
+section Monoid
+variable [Monoid M]
 
 /-- If `f` is a homomorphism from a group `G` to a monoid `M`,
 then its image lies in the units of `M`,
 and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -/
 @[to_additive
-  "If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
+  /-- If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
   then its image lies in the `AddUnits` of `M`,
-  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
-def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
-  Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_self _),
-    map_mul_eq_one f (inv_mul_self _)⟩)
+  and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`. -/]
+def toHomUnits (f : G →* M) : G →* Mˣ :=
+  Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
+    map_mul_eq_one f (inv_mul_cancel _)⟩)
     fun _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
-    (f.toHomUnits g : M) = f g := rfl
+theorem coe_toHomUnits (f : G →* M) (g : G) : (f.toHomUnits g : M) = f g := rfl
+
+end Monoid
+
+variable [CommMonoid M]
+
+@[simp] lemma toHomUnits_mul (f g : G →* M) : (f * g).toHomUnits = f.toHomUnits * g.toHomUnits := by
+  ext; rfl
+
+/-- `MonoidHom.toHomUnits` as a `MulEquiv`. -/
+@[simps] def toHomUnitsMulEquiv : (G →* M) ≃* (G →* Mˣ) where
+  toFun := toHomUnits
+  invFun f := (Units.coeHom _).comp f
+  map_mul' := by simp
 
 end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {F G M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 
@@ -167,6 +210,7 @@ theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 
+/-- Prefer `IsLocalHom.of_leftInverse`, but we can't get rid of this because of `ToAdditive`. -/
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
@@ -175,8 +219,8 @@ theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass 
 /-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
 to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
 @[to_additive
-  "If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
-  lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version."]
+  /-- If a homomorphism `f : M →+ N` sends each element to an `IsAddUnit`, then it can be
+  lifted to `f : M →+ AddUnits N`. See also `AddUnits.liftRight` for a computable version. -/]
 noncomputable def liftRight (f : M →* N) (hf : ∀ x, IsUnit (f x)) : M →* Nˣ :=
   (Units.liftRight f fun x => (hf x).unit) fun _ => rfl
 
@@ -194,3 +238,50 @@ theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
 
 end Monoid
 end IsUnit
+
+section IsLocalHom
+
+variable {G R S T F : Type*}
+
+variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
+
+/-- A map `f` between monoids is *local* if any `a` in the domain is a unit
+  whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
+  definitions in the local ring case - from where this concept originates, but it is useful in
+  other contexts, so we allow this generalisation in mathlib. -/
+class IsLocalHom (f : F) : Prop where
+  /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
+  map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+
+theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
+  IsLocalHom.map_nonunit a h
+
+-- TODO : remove alias, change the parenthesis of `f` and `a`
+alias isUnit_of_map_unit := IsUnit.of_map
+
+variable [MonoidHomClass F R S]
+
+@[simp]
+theorem isUnit_map_iff (f : F) [IsLocalHom f] (a : R) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨IsLocalHom.map_nonunit a, IsUnit.map f⟩
+
+theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
+    {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
+  map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+
+@[instance]
+theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
+    [IsLocalHom f] : IsLocalHom (g.comp f) where
+  map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+
+-- see note [lower instance priority]
+@[instance 100]
+theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
+    IsLocalHom (f : R →* S) :=
+  ⟨IsLocalHom.map_nonunit (f := f)⟩
+
+theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
+    IsLocalHom f :=
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
+
+end IsLocalHom

@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Topology.Algebra.ConstMulAction
+module
+
+public import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 # Minimal action of a group
@@ -21,6 +22,8 @@ and prove some basic facts about minimal actions.
 
 group action, minimal
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -94,11 +97,11 @@ theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} 
     hs.closure_eq ▸ (dense_of_nonempty_smul_invariant M hne hsmul).closure_eq
 
 @[to_additive]
-theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
+theorem isMinimal_iff_isClosed_smul_invariant [ContinuousConstSMul M α] :
     IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ := by
   constructor
   · intro _ _
     exact eq_empty_or_univ_of_smul_invariant_closed M
   refine fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ ?_ ?_).resolve_left ?_⟩
   exacts [isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
-    (orbit_nonempty _).closure.ne_empty]
+    (nonempty_orbit _).closure.ne_empty]

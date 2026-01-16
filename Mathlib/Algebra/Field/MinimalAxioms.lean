@@ -3,9 +3,10 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.MinimalAxioms
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.MinimalAxioms
 
 /-!
 # Minimal Axioms for a Field
@@ -15,20 +16,22 @@ a minimum number of equalities.
 
 ## Main Definitions
 
-* `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimized set of axioms
+* `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimal set of axioms
 
 -/
 
+@[expose] public section
+
 universe u
 
-/-- Define a `Field` structure on a Type by proving a minimized set of axioms.
-Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`
+/-- Define a `Field` structure on a Type by proving a minimal set of axioms.
+Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`.
 See note [reducible non-instances]. -/
 abbrev Field.ofMinimalAxioms (K : Type u)
     [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K]
     (add_assoc : ∀ a b c : K, a + b + c = a + (b + c))
     (zero_add : ∀ a : K, 0 + a = a)
-    (add_left_neg : ∀ a : K, -a + a = 0)
+    (neg_add_cancel : ∀ a : K, -a + a = 0)
     (mul_assoc : ∀ a b c : K, a * b * c = a * (b * c))
     (mul_comm : ∀ a b : K, a * b = b * a)
     (one_mul : ∀ a : K, 1 * a = a)
@@ -37,11 +40,11 @@ abbrev Field.ofMinimalAxioms (K : Type u)
     (left_distrib : ∀ a b c : K, a * (b + c) = a * b + a * c)
     (exists_pair_ne : ∃ x y : K, x ≠ y) : Field K :=
   letI := CommRing.ofMinimalAxioms add_assoc zero_add
-    add_left_neg mul_assoc mul_comm one_mul left_distrib
+    neg_add_cancel mul_assoc mul_comm one_mul left_distrib
   { exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero
     nnqsmul := _
-    nnqsmul_def := fun q a => rfl
+    nnqsmul_def := fun _ _ => rfl
     qsmul := _
-    qsmul_def := fun q a => rfl }
+    qsmul_def := fun _ _ => rfl }

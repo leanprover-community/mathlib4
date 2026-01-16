@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.PFunctor.Univariate.M
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -14,23 +16,23 @@ as the greatest fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `M.mk`     - constructor
- * `M.dest`   - destructor
- * `M.corec`  - corecursor: useful for formulating infinite, productive computations
- * `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
+* `M.mk`     - constructor
+* `M.dest`   - destructor
+* `M.corec`  - corecursor: useful for formulating infinite, productive computations
+* `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
 
 ## Implementation notes
 
 Dual view of M-types:
 
- * `mp`: polynomial functor
- * `M`: greatest fixed point of a polynomial functor
+* `mp`: polynomial functor
+* `M`: greatest fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `mp` as:
 
- * A := a possibly infinite tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   from the root of `t` to any given node.
+* A := a possibly infinite tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  from the root of `t` to any given node.
 
 As a result `mp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
@@ -40,13 +42,15 @@ that `A` is a possibly infinite tree.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
+@[expose] public section
 
 
-universe u
+
+universe u v
 
 open MvFunctor
 
@@ -58,7 +62,7 @@ variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
 /-- A path from the root of a tree to one of its node -/
 inductive M.Path : P.last.M → Fin2 n → Type u
-  | root  (x : P.last.M)
+  | root (x : P.last.M)
           (a : P.A)
           (f : P.last.B a → P.last.M)
           (h : PFunctor.M.dest x = ⟨a, f⟩)
@@ -80,7 +84,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a]; rfl)
       _ default⟩
 
 /-- Polynomial functor of the M-type of `P`. `A` is a data-less
@@ -103,7 +107,7 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 
 /-- construct through corecursion the shape of an M-type
 without its contents -/
-def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
+def M.corecShape {β : Type v} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
     β → P.last.M :=
   PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
 
@@ -115,7 +119,7 @@ def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b =>
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-    {β : Type u}
+    {β : Type v}
     (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
@@ -141,7 +145,7 @@ def M.corecContents {α : TypeVec.{u} n}
     M.corecContents g₀ g₁ g₂ (f j) (g₂ b (P.castLastB h₀ j)) h₁ i c
 
 /-- Corecursor for M-type of `P` -/
-def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
+def M.corec' {α : TypeVec n} {β : Type v} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β) : β → P.M α := fun b =>
   ⟨M.corecShape P g₀ g₂ b, M.corecContents P g₀ g₁ g₂ _ _ rfl⟩
 
@@ -182,7 +186,7 @@ theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
     M.dest P ⟨x, f'⟩ = M.dest' P h f' :=
   M.dest'_eq_dest' _ _ _ _
 
-theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
+theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type v} (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) (x : β) :
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
@@ -191,7 +195,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
   · apply M.dest_corec'
-  cases' g x with a f; dsimp
+  obtain ⟨a, f⟩ := g x; dsimp
   rw [MvPFunctor.map_eq]; congr
   conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
   rfl
@@ -199,7 +203,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
     {f' : (P.B a').drop ⟹ α} {f₁' : (P.B a').last → M P α}
     (e₁ : M.dest P ⟨a₁, f₁⟩ = ⟨a', splitFun f' f₁'⟩) :
-    ∃ (g₁' : _)(e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
+    ∃ (g₁' : _) (e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
       f' = M.pathDestLeft P e₁' f₁ ∧
         f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ := by
   generalize ef : @splitFun n _ (append1 α (M P α)) f' f₁' = ff at e₁
@@ -216,8 +220,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
             M.dest P x = ⟨a, splitFun f f₁⟩ ∧
               M.dest P y = ⟨a, splitFun f f₂⟩ ∧ ∀ i, R (f₁ i) (f₂ i))
     (x y) (r : R x y) : x = y := by
-  cases' x with a₁ f₁
-  cases' y with a₂ f₂
+  obtain ⟨a₁, f₁⟩ := x
+  obtain ⟨a₂, f₂⟩ := y
   dsimp [mp] at *
   have : a₁ = a₂ := by
     refine
@@ -231,15 +235,16 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
-  induction' p with x a f h' i c x a f h' i c p IH <;>
-    try
-      rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h''⟩
-      rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
-      rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', e₃, rfl⟩
-      cases h'.symm.trans e₁'
-      cases h'.symm.trans e₂'
-  · exact (congr_fun (congr_fun e₃ i) c : _)
-  · exact IH _ _ (h'' _)
+  induction p with (
+    obtain ⟨a', f', f₁', f₂', e₁, e₂, h''⟩ := h _ _ r
+    obtain ⟨g₁', e₁', rfl, rfl⟩ := M.bisim_lemma P e₁
+    obtain ⟨g₂', e₂', e₃, rfl⟩ := M.bisim_lemma P e₂
+    cases h'.symm.trans e₁'
+    cases h'.symm.trans e₂')
+  | root x a f h' i c =>
+    exact congr_fun (congr_fun e₃ i) c
+  | child x a f h' i c p IH =>
+    exact IH _ _ (h'' _)
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
@@ -249,16 +254,14 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   introv Hr
   specialize h _ _ Hr
   clear Hr
-
   revert h
   rcases M.dest P x with ⟨ax, fx⟩
   rcases M.dest P y with ⟨ay, fy⟩
   intro h
-
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp? at h₁ says simp only [heq_eq_eq] at h₁
+  simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁
@@ -268,27 +271,27 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
-  replace h₁ := Quot.exact _ h₁
+  replace h₁ := Quot.eqvGen_exact h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
-  have := M.bisim₀ P (EqvGen R) ?_ ?_
-  · solve_by_elim [EqvGen.rel]
-  · apply EqvGen.is_equivalence
+  have := M.bisim₀ P (Relation.EqvGen R) ?_ ?_
+  · solve_by_elim [Relation.EqvGen.rel]
+  · apply Relation.EqvGen.is_equivalence
   · clear r x y
     introv Hr
-    have : ∀ x y, R x y → EqvGen R x y := @EqvGen.rel _ R
+    have : ∀ x y, R x y → Relation.EqvGen R x y := @Relation.EqvGen.rel _ R
     induction Hr
-    · rw [← Quot.factor_mk_eq R (EqvGen R) this]
+    · rw [← Quot.factor_mk_eq R (Relation.EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    all_goals aesop
+    all_goals simp_all
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
-  cases' x with a f
+  obtain ⟨a, f⟩ := x
   rw [map_eq]
   conv =>
     rhs
@@ -299,7 +302,8 @@ theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β))
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr
-  apply eq_of_drop_last_eq <;> simp
+  apply eq_of_drop_last_eq (by simp)
+  simp only [lastFun_appendFun]
   ext1; apply h
 
 end MvPFunctor

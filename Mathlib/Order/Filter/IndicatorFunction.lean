@@ -3,7 +3,13 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Indicator function and filters
@@ -13,6 +19,8 @@ Properties of additive and multiplicative indicator functions involving `=ᶠ` a
 ## Tags
 indicator, characteristic, filter
 -/
+
+public section
 
 variable {α β M E : Type*}
 
@@ -28,7 +36,7 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs, not_false_eq_true])
+      (fun hxs => by simp only [mulIndicator_of_notMem, hxs, mt hst.2 hxs, not_false_eq_true])
 
 end One
 
@@ -39,7 +47,7 @@ variable [Monoid M] {s t : Set α} {f g : α → M} {a : α} {l : Filter α}
 @[to_additive]
 theorem mulIndicator_union_eventuallyEq (h : ∀ᶠ a in l, a ∉ s ∩ t) :
     mulIndicator (s ∪ t) f =ᶠ[l] mulIndicator s f * mulIndicator t f :=
-  h.mono fun _a ha => mulIndicator_union_of_not_mem_inter ha _
+  h.mono fun _a ha => mulIndicator_union_of_notMem_inter ha _
 
 end Monoid
 
@@ -120,7 +128,7 @@ theorem Filter.EventuallyEq.of_mulIndicator [One β] {l : Filter α} {f : α →
 @[to_additive]
 theorem Filter.EventuallyEq.of_mulIndicator_const [One β] {l : Filter α} {c : β} (hc : c ≠ 1)
     {s t : Set α} (h : s.mulIndicator (fun _ ↦ c) =ᶠ[l] t.mulIndicator fun _ ↦ c) : s =ᶠ[l] t :=
-  .of_mulIndicator (eventually_of_forall fun _ ↦ hc) h
+  .of_mulIndicator (Eventually.of_forall fun _ ↦ hc) h
 
 @[to_additive]
 theorem Filter.mulIndicator_const_eventuallyEq [One β] {l : Filter α} {c : β} (hc : c ≠ 1)

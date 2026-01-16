@@ -22,12 +22,10 @@ that contain the relative path, whilst linting absolute paths (like
 ``/root/mathlib4/Mathlib/Foo/Bar.lean``) will produce errors with the
 absolute path.
 
-This script can also be used to regenerate the list of allowed / ignored style
-exceptions by redirecting the output to ``style-exceptions.txt``. Use:
+The linters in this script are gradually being rewritten in Lean.
+Do not add new linters here; please write them in Lean instead.
 
-    $ ./scripts/update-style-exceptions.sh
-
-to perform this update.
+To run all style linters, run `lake exe lint-style`.
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
@@ -37,37 +35,16 @@ import sys
 import re
 import shutil
 
-ERR_MOD = 2 # module docstring
+
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
-ERR_DOT = 12 # isolated or low focusing dot
-ERR_SEM = 13 # the substring " ;"
-ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
-
-SCRIPTS_DIR = Path(__file__).parent.resolve()
-ROOT_DIR = SCRIPTS_DIR.parent
-
-
-with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
-    for exline in f:
-        filename, _, _, _, _, errno, *extra = exline.split()
-        path = ROOT_DIR / filename
-        if errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path, None)]
-        elif errno in ["ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
-            pass # maintained by the Lean style linter now
-        else:
-            print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
-            sys.exit(1)
-
 new_exceptions = False
+
 
 def annotate_comments(enumerate_lines):
     """
@@ -127,18 +104,6 @@ def annotate_strings(enumerate_lines):
                 continue
         yield line_nr, line, *rem, False
 
-def line_endings_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
-            line = line.replace("\r\n", "\n")
-        if line.endswith(" \n"):
-            errors += [(ERR_TWS, line_nr, path)]
-            line = line.rstrip() + "\n"
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def four_spaces_in_second_line(lines, path):
     # TODO: also fix the space for all lines before ":=", right now we only fix the line after
@@ -174,70 +139,6 @@ def four_spaces_in_second_line(lines, path):
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
-flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega", "linarith", "nlinarith"]
-
-def nonterminal_simp_check(lines, path):
-    errors = []
-    newlines = []
-    annotated_lines = list(annotate_comments(lines))
-    for (line_nr, line, is_comment), (_, next_line, _) in zip(annotated_lines,
-                                                              annotated_lines[1:]):
-        # Check if the current line matches whitespace followed by "simp"
-        new_line = line
-        # TODO it would be better to use a regex like r"^\s*simp( \[.*\])?( at .*)?$" and thereby
-        # catch all possible simp invocations. Adding this will require more initial cleanup or
-        # nolint.
-        if (not is_comment) and re.search(r"^\s*simp$", line):
-            # Calculate the number of spaces before the first non-space character in the line
-            num_spaces = len(line) - len(line.lstrip())
-            # Calculate the number of spaces before the first non-space character in the next line
-            stripped_next_line = next_line.lstrip()
-
-            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or any(f in next_line for f in flexible_tactics)):
-                num_next_spaces = len(next_line) - len(stripped_next_line)
-                # Check if the number of leading spaces is the same
-                if num_spaces == num_next_spaces:
-                    # If so, the simp is nonterminal
-                    errors += [(ERR_NSP, line_nr, path)]
-                    new_line = line.replace("simp", "simp?")
-        newlines.append((line_nr, new_line))
-    newlines.append(lines[-1])
-    return errors, newlines
-
-def import_only_check(lines, path):
-    for _, line, is_comment in annotate_comments(lines):
-        if is_comment:
-            continue
-        imports = line.split()
-        if imports[0] == "#align_import":
-            continue
-        if imports[0] != "import":
-            return False
-    return True
-
-def regular_check(lines, path):
-    errors = []
-    copy_started = False
-    copy_done = False
-    for line_nr, line in lines:
-        if not copy_started and line == "\n":
-            continue
-        if not copy_started and line == "/-\n":
-            copy_started = True
-            continue
-        if copy_started and not copy_done:
-            if line == "-/\n":
-                copy_done = True
-            continue
-        if copy_done and line == "\n":
-            continue
-        words = line.split()
-        if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(ERR_MOD, line_nr, path)]
-            break
-        if words[0] == "/-!":
-            break
-    return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
     errors = []
@@ -264,14 +165,6 @@ def isolated_by_dot_semicolon_check(lines, path):
                     line = f"{indent}{line.lstrip()[3:]}"
         elif line.lstrip() == "where":
             errors += [(ERR_IWH, line_nr, path)]
-        if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", 1)
-        if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
-        if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
-            line = line.replace(" ;", ";")
         if line.lstrip().startswith(":"):
             errors += [(ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
@@ -293,18 +186,10 @@ def left_arrow_check(lines, path):
     return errors, newlines
 
 def output_message(path, line_nr, code, msg):
-    if len(exceptions) == 0:
-        # we are generating a new exceptions file
-        # filename first, then line so that we can call "sort" on the output
-        print(f"{path} : line {line_nr} : {code} : {msg}")
-    else:
-        if code.startswith("ERR"):
-            msg_type = "error"
-        if code.startswith("WRN"):
-            msg_type = "warning"
-        # We are outputting for github. We duplicate path, line_nr and code,
-        # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+    # We are outputting for github. We duplicate path, line_nr and code,
+    # so that they are also visible in the plaintext output.
+    print(f"::error file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+
 
 def format_errors(errors):
     global new_exceptions
@@ -312,28 +197,16 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_MOD:
-            output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
             output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
-        if errno == ERR_SEM:
-            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
-        if errno == ERR_WIN:
-            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
-        if errno == ERR_TWS:
-            output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
         if errno == ERR_CLN:
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
-        if errno == ERR_NSP:
-            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
 
 def lint(path, fix=False):
     global new_exceptions
@@ -343,20 +216,16 @@ def lint(path, fix=False):
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
-        for error_check in [line_endings_check,
-                            four_spaces_in_second_line,
+        for error_check in [four_spaces_in_second_line,
                             isolated_by_dot_semicolon_check,
                             left_arrow_check,
                             nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
-        if not import_only_check(newlines, path):
-            errs, newlines = regular_check(newlines, path)
-            format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:
-        path.with_name(path.name + '.bak').write_text("".join(l for _,l in newlines), encoding = "utf8")
+        path.with_name(path.name + '.bak').write_text("".join(l for _, l in newlines), encoding = "utf8")
         shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv

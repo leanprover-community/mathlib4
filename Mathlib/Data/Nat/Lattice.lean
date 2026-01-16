@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -15,23 +17,27 @@ In this file we
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 open Set
 
 namespace Nat
 
-open scoped Classical
-
+open scoped Classical in
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
 
+open scoped Classical in
 noncomputable instance : SupSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, ∀ a ∈ s, a ≤ n then @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h else 0⟩
 
+open scoped Classical in
 theorem sInf_def {s : Set ℕ} (h : s.Nonempty) : sInf s = @Nat.find (fun n ↦ n ∈ s) _ h :=
   dif_pos _
 
+open scoped Classical in
 theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
     sSup s = @Nat.find (fun n ↦ ∀ a ∈ s, a ≤ n) _ h :=
   dif_pos _
@@ -39,15 +45,15 @@ theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
-    (hn k hks).not_lt hk
+    (hn k hks).not_gt hk
 
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
   | inl h => subst h
-             simp only [or_true_iff, eq_self_iff_true, iff_true_iff, iInf, InfSet.sInf,
+             simp only [or_true, InfSet.sInf,
                         mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
-  | inr h => simp only [h.ne_empty, or_false_iff, Nat.sInf_def, h, Nat.find_eq_zero]
+  | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
 
 @[simp]
 theorem sInf_empty : sInf ∅ = 0 := by
@@ -61,19 +67,22 @@ theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 :=
 
 /-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
 @[simp]
-lemma iInf_const_zero {ι : Sort*} : ⨅ i : ι, 0 = 0 :=
+lemma iInf_const_zero {ι : Sort*} : ⨅ _ : ι, 0 = 0 :=
   (isEmpty_or_nonempty ι).elim (fun h ↦ by simp) fun h ↦ sInf_eq_zero.2 <| by simp
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
+  classical
   rw [Nat.sInf_def h]
   exact Nat.find_spec h
 
-theorem not_mem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s := by
+theorem notMem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s := by
+  classical
   cases eq_empty_or_nonempty s with
-  | inl h => subst h; apply not_mem_empty
+  | inl h => subst h; apply notMem_empty
   | inr h => rw [Nat.sInf_def h] at hm; exact Nat.find_min h hm
 
 protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m := by
+  classical
   rw [Nat.sInf_def ⟨m, hm⟩]
   exact Nat.find_min' ⟨m, hm⟩ hm
 
@@ -95,6 +104,7 @@ theorem eq_Ici_of_nonempty_of_upward_closed {s : Set ℕ} (hs : s.Nonempty)
 
 theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s)
     (k : ℕ) : sInf s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s := by
+  classical
   constructor
   · intro H
     rw [eq_Ici_of_nonempty_of_upward_closed (nonempty_of_sInf_eq_succ _) hs, H, mem_Ici, mem_Ici]
@@ -110,11 +120,10 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
 instance : Lattice ℕ :=
   LinearOrder.toLattice
 
+open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    -- sup := sSup -- Porting note: removed, unnecessary?
-    -- inf := sInf -- Porting note: removed, unnecessary?
     le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
     csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
@@ -127,7 +136,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       trivial
     csSup_of_not_bddAbove := by
       intro s hs
-      simp only [mem_univ, forall_true_left, sSup,
+      simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
       rw [dif_neg]
       · exact le_antisymm (zero_le _) (find_le trivial)
@@ -140,6 +149,7 @@ theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s 
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
     sInf { m | p (m + n) } + n = sInf { m | p m } := by
+  classical
   obtain h | ⟨m, hm⟩ := { m | p (m + n) }.eq_empty_or_nonempty
   · rw [h, Nat.sInf_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
@@ -160,8 +170,8 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine
     le_csInf ⟨m + n, ?_⟩ fun b hb ↦
-      le_of_not_lt fun hbn ↦
-        ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
+      le_of_not_gt fun hbn ↦
+        ne_of_mem_of_not_mem ?_ (notMem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [Nat.add_sub_cancel_right]
   · exact hb
@@ -171,7 +181,7 @@ section
 variable {α : Type*} [CompleteLattice α]
 
 theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
-  simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
+  simp_rw [Nat.lt_add_one_iff, biSup_le_eq_sup]
 
 theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]

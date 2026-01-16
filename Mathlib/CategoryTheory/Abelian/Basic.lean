@@ -1,14 +1,16 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Johan Commelin, Scott Morrison
+Authors: Markus Himmel, Johan Commelin, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Abelian.NonPreadditive
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 
 /-!
 # Abelian categories
@@ -17,12 +19,12 @@ This file contains the definition and basic properties of abelian categories.
 
 There are many definitions of abelian category. Our definition is as follows:
 A category is called abelian if it is preadditive,
-has a finite products, kernels and cokernels,
+has finite products, kernels, and cokernels,
 and if every monomorphism and epimorphism is normal.
 
 It should be noted that if we also assume coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
-`NonPreadditiveAbelian.lean`. However, this fact is of little practical
+`Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a
 preadditive structure. In this way, by requiring preadditivity, we allow the
 user to pass in the "native" preadditive structure for the specific category they are
@@ -60,7 +62,7 @@ to avoid having to deal with comparing the two `HasZeroMorphisms` instances
 As a consequence, at the beginning of this file we trivially build
 a `NonPreadditiveAbelian` instance from an `Abelian` instance,
 and use this to restate a number of theorems,
-in each case just reusing the proof from `NonPreadditiveAbelian.lean`.
+in each case just reusing the proof from `Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`.
 
 We don't show this yet, but abelian categories are finitely complete and finitely cocomplete.
 However, the limits we can construct at this level of generality will most likely be less nice than
@@ -79,6 +81,8 @@ convention:
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -104,13 +108,14 @@ and every epimorphism is the cokernel of some morphism.
 finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
-class Abelian extends Preadditive C, NormalMonoCategory C, NormalEpiCategory C where
+class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
 
+-- These instances should have a lower priority, or typeclass search times out.
 attribute [instance 100] Abelian.has_finite_products
-attribute [instance 90] Abelian.has_kernels Abelian.has_cokernels
+attribute [instance 100] Abelian.has_kernels Abelian.has_cokernels
 
 end CategoryTheory
 
@@ -144,7 +149,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
@@ -183,9 +188,9 @@ attribute [local instance] Limits.HasFiniteBiproducts.of_hasFiniteProducts
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal mono category.
 -/
-def normalMonoCategory : NormalMonoCategory C where
-  normalMonoOfMono f m :=
-    { Z := _
+lemma isNormalMonoCategory : IsNormalMonoCategory C where
+  normalMonoOfMono f m := ⟨{
+      Z := _
       g := cokernel.π f
       w := by simp
       isLimit := by
@@ -203,14 +208,14 @@ def normalMonoCategory : NormalMonoCategory C where
           simp only [KernelFork.ι_ofι, Category.assoc]
           convert limit.lift_π A WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
-          exact (imageMonoFactorisation f).fac }
+          exact (imageMonoFactorisation f).fac }⟩
 
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal epi category.
 -/
-def normalEpiCategory : NormalEpiCategory C where
-  normalEpiOfEpi f m :=
-    { W := kernel f
+lemma isNormalEpiCategory : IsNormalEpiCategory C where
+  normalEpiOfEpi f m := ⟨{
+      W := kernel f
       g := kernel.ι _
       w := kernel.condition _
       isColimit := by
@@ -229,24 +234,22 @@ def normalEpiCategory : NormalEpiCategory C where
           simp only [CokernelCofork.π_ofπ, ← Category.assoc]
           convert colimit.ι_desc A WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
-          exact (imageMonoFactorisation f).fac }
+          exact (imageMonoFactorisation f).fac }⟩
 
 end OfCoimageImageComparisonIsIso
 
 variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
   [Limits.HasFiniteProducts C]
 
-attribute [local instance] OfCoimageImageComparisonIsIso.normalMonoCategory
+attribute [local instance] OfCoimageImageComparisonIsIso.isNormalMonoCategory
 
-attribute [local instance] OfCoimageImageComparisonIsIso.normalEpiCategory
+attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 
 /-- A preadditive category with kernels, cokernels, and finite products,
 in which the coimage-image comparison morphism is always an isomorphism,
-is an abelian category.
-
-The Stacks project uses this characterisation at the definition of an abelian category.
-See <https://stacks.math.columbia.edu/tag/0109>.
--/
+is an abelian category. -/
+@[stacks 0109
+"The Stacks project uses this characterisation at the definition of an abelian category."]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -255,11 +258,12 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
--- Porting note: the below porting note is from mathlib3!
 -- Porting note: this should be an instance,
 -- but triggers https://github.com/leanprover/lean4/issues/2055
+-- (this is still the case despite that issue being closed now).
 -- We set it as a local instance instead.
 -- instance (priority := 100)
+-- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
@@ -282,7 +286,7 @@ end ToNonPreadditiveAbelian
 
 section
 
-/-! We now promote some instances that were constructed using `non_preadditive_abelian`. -/
+/-! We now promote some instances that were constructed using `nonPreadditiveAbelian`. -/
 
 
 attribute [local instance] nonPreadditiveAbelian
@@ -312,10 +316,8 @@ section
 theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
-  apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
-  simp_rw [← h]
-  exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
+theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f :=
+  epi_of_cokernel_zero h
 
 end
 
@@ -403,6 +405,38 @@ theorem factorThruImage_comp_coimageIsoImage'_inv :
   simp only [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
     coimageStrongEpiMonoFactorisation_e]
 
+variable {Z : C} (g : Y ⟶ Z)
+
+@[simp] lemma image.ι_comp_eq_zero : image.ι f ≫ g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_epi (Abelian.factorThruImage _)]
+
+@[simp] lemma coimage.comp_π_eq_zero : f ≫ coimage.π g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_mono (Abelian.factorThruCoimage _)]
+
+/-- `Abelian.image` as a functor from the arrow category. -/
+@[simps]
+def im : Arrow C ⥤ C where
+  obj f := Abelian.image f.hom
+  map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
+
+@[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
+
+/-- `Abelian.coimage` as a functor from the arrow category. -/
+@[simps]
+def coim : Arrow C ⥤ C where
+  obj f := Abelian.coimage f.hom
+  map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
+    simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
+
+@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
+
+/-- The image and coimage of an arrow are naturally isomorphic. -/
+@[simps!]
+def coimIsoIm : coim (C := C) ≅ im :=
+  NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
+
+@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctorIsoImageFunctor := coimIsoIm
+
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
 abbrev imageIsoImage : Abelian.image f ≅ image f :=
@@ -466,7 +500,7 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
 
 section
 
-variable {D : Type*} [Category D] [HasZeroMorphisms D]
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
 
 /-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
 admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
@@ -484,7 +518,7 @@ noncomputable def isLimitMapConeOfKernelForkOfι
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
-/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphism
 admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
 noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
@@ -550,7 +584,7 @@ abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
     `(0, g)`. -/
 abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
-    rw [biprod.lift_desc, comp_neg, pullback.condition, add_right_neg]
+    rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
     `(f, -g)`. -/
@@ -581,7 +615,7 @@ abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
     `X ⟶ Y ⊞ Z` induced by `f` and `-g`. -/
 abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
-    rw [biprod.lift_desc, neg_comp, pushout.condition, add_right_neg]
+    rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
     cofork. -/
@@ -762,26 +796,10 @@ namespace CategoryTheory.NonPreadditiveAbelian
 
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
-/-- Every NonPreadditiveAbelian category can be promoted to an abelian category. -/
-def abelian : Abelian C :=
-  {/- We need the `convert`s here because the instances we have are slightly different from the
-       instances we need: `HasKernels` depends on an instance of `HasZeroMorphisms`. In the
-       case of `NonPreadditiveAbelian`, this instance is an explicit argument. However, in the case
-       of `abelian`, the `HasZeroMorphisms` instance is derived from `Preadditive`. So we need to
-       transform an instance of "has kernels with NonPreadditiveAbelian.HasZeroMorphisms" to an
-       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms".
-       Luckily, we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can
-       immediately close the goal it creates for the two instances of `HasZeroMorphisms`,
-       and the proof is complete. -/
-    NonPreadditiveAbelian.preadditive with
-    has_finite_products := by infer_instance
-    has_kernels := by convert (by infer_instance : Limits.HasKernels C)
-    has_cokernels := by convert (by infer_instance : Limits.HasCokernels C)
-    normalMonoOfMono := by
-      intro _ _ f _
-      convert normalMonoOfMono f
-    normalEpiOfEpi := by
-      intro _ _ f _
-      convert normalEpiOfEpi f }
+/-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
+def abelian : Abelian C where
+  toPreadditive := NonPreadditiveAbelian.preadditive
+  normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
+  normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
 
 end CategoryTheory.NonPreadditiveAbelian

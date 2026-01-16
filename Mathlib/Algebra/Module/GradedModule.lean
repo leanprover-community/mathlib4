@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.Module.BigOperators
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Graded Module
@@ -19,6 +21,8 @@ Then `⨁ i, 𝓜 i` is an `A`-module and is isomorphic to `M`.
 
 graded module
 -/
+
+@[expose] public section
 
 
 section
@@ -93,16 +97,14 @@ theorem smulAddMonoidHom_apply_of_of [DecidableEq ιA] [DecidableEq ιB] [GMonoi
     smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i +ᵥ j) (GSMul.smul x y) := by
   simp [smulAddMonoidHom]
 
--- @[simp] -- Porting note: simpNF lint
 theorem of_smul_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
-    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) :=
-  smulAddMonoidHom_apply_of_of _ _ _ _
+    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) := by simp
 
 open AddMonoidHom
 
--- Porting note: renamed to one_smul' since DirectSum.Gmodule.one_smul already exists
 -- Almost identical to the proof of `direct_sum.one_mul`
+set_option backward.privateInPublic true in
 private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
@@ -112,8 +114,8 @@ private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodu
   rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
 
--- Porting note: renamed to mul_smul' since DirectSum.Gmodule.mul_smul already exists
 -- Almost identical to the proof of `direct_sum.mul_assoc`
+set_option backward.privateInPublic true in
 private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M]
     (a b : ⨁ i, A i)
     (c : ⨁ i, M i) : (a * b) • c = a • b • c := by
@@ -124,7 +126,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
+    from -- `fun a b c ↦ a • (b • c)` as a bundled hom
       DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
@@ -134,10 +136,11 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
     DirectSum.of_eq_of_gradedMonoid_eq
       (mul_smul (GradedMonoid.mk ai ax) (GradedMonoid.mk bi bx) (GradedMonoid.mk ci cx))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
     Module (⨁ i, A i) (⨁ i, M i) where
-  smul := (· • ·)
   one_smul := one_smul' _ _
   mul_smul := mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
@@ -222,8 +225,7 @@ def linearEquiv [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] [DirectSum
   rw [show (decompose 𝓐 x i : A) • (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j) : (⨁ i, 𝓜 i)) =
     DirectSum.Gmodule.smulAddMonoidHom _ _ (decompose 𝓐 ↑(decompose 𝓐 x i))
     (decomposeAddEquiv 𝓜 ↑(decompose 𝓜 y j)) from DirectSum.Gmodule.smul_def _ _ _ _]
-  simp only [decomposeAddEquiv_apply, Equiv.invFun_as_coe, Equiv.symm_symm, decompose_coe,
-    Gmodule.smulAddMonoidHom_apply_of_of]
+  simp only [decomposeAddEquiv_apply, decompose_coe, Gmodule.smulAddMonoidHom_apply_of_of]
   convert DirectSum.decompose_coe 𝓜 _
   rfl
 

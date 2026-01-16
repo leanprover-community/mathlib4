@@ -1,26 +1,30 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
 
 In this file we define inversion in a sphere in an affine space. This map sends each point `x` to
 the point `y` such that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center
-and the radius the sphere.
+and the radius of the sphere.
 
-In many applications, it is convenient to assume that the inversions swaps the center and the point
+In many applications, it is convenient to assume that the inversion swaps the center and the point
 at infinity. In order to stay in the original affine space, we define the map so that it sends
 center to itself.
 
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -32,7 +36,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 
 namespace EuclideanGeometry
 
-variable {a b c d x y z : P} {r R : ℝ}
+variable {c x y : P} {R : ℝ}
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
@@ -40,7 +44,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
@@ -92,7 +95,11 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]
+  simp only [inversion]
+  field_simp
+  simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub]
+  field
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -158,13 +165,13 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   have hy' : inversion c R y ≠ c := by simp [*]
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
-  have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp; ring
+  field [dist_ne_zero.2 hx]
 
 /-!
 ### Ptolemy's inequality
 -/
 
+include V in
 /-- **Ptolemy's inequality**: in a quadrangle `ABCD`, `|AC| * |BD| ≤ |AB| * |CD| + |BC| * |AD|`. If
 `ABCD` is a convex cyclic polygon, then this inequality becomes an equality, see
 `EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical`. -/
@@ -175,7 +182,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
   · rw [dist_self, zero_mul]
-    apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    positivity
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
@@ -184,8 +191,8 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
-  rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
+  rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
+  convert H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 

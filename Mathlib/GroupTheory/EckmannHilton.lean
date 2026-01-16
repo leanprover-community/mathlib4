@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Eckmann-Hilton argument
@@ -21,6 +23,8 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace EckmannHilton
@@ -32,7 +36,7 @@ local notation a " <" m:51 "> " b => m a b
 
 /-- `IsUnital m e` expresses that `e : X` is a left and right unit
 for the binary operation `m : X → X → X`. -/
-structure IsUnital (m : X → X → X) (e : X) extends Std.LawfulIdentity m e : Prop
+structure IsUnital (m : X → X → X) (e : X) : Prop extends Std.LawfulIdentity m e
 
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
 theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=
@@ -42,6 +46,8 @@ theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :
 variable {m₁ m₂ : X → X → X} {e₁ e₂ : X}
 variable (h₁ : IsUnital m₁ e₁) (h₂ : IsUnital m₂ e₂)
 variable (distrib : ∀ a b c d, ((a <m₂> b) <m₁> c <m₂> d) = (a <m₁> c) <m₂> b <m₁> d)
+
+include h₁ h₂ distrib
 
 /-- If a type carries two unital binary operations that distribute over each other,
 then they have the same unit elements.
@@ -59,8 +65,8 @@ theorem mul : m₁ = m₂ := by
   funext a b
   calc
     m₁ a b = m₁ (m₂ a e₁) (m₂ e₁ b) := by
-      { simp only [one h₁ h₂ distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] }
-    _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id]
+      { simp only [one h₁ h₂ distrib, h₂.left_id, h₂.right_id] }
+    _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id]
 
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are commutative.
@@ -78,10 +84,10 @@ theorem mul_assoc : Std.Associative m₂ :=
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
-@[to_additive (attr := reducible)
-      "If a type carries a unital additive magma structure that distributes over a unital binary
-      operation, then the additive magma structure is a commutative additive monoid."]
-def commMonoid [h : MulOneClass X]
+@[to_additive
+      /-- If a type carries a unital additive magma structure that distributes over a unital binary
+      operation, then the additive magma structure is a commutative additive monoid. -/]
+abbrev commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
       mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
@@ -89,10 +95,10 @@ def commMonoid [h : MulOneClass X]
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
-@[to_additive (attr := reducible)
-      "If a type carries an additive group structure that distributes over a unital binary
-      operation, then the additive group is commutative."]
-def commGroup [G : Group X]
+@[to_additive
+      /-- If a type carries an additive group structure that distributes over a unital binary
+      operation, then the additive group is commutative. -/]
+abbrev commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.commMonoid h₁ distrib, G with .. }
 

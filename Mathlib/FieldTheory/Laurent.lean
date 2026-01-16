@@ -3,8 +3,10 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
+module
+
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 /-!
 # Laurent expansions of rational functions
@@ -21,6 +23,8 @@ An auxiliary definition is provided first to make the construction of the `AlgHo
   which works on `CommRing` which are not necessarily domains.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -30,12 +34,12 @@ noncomputable section
 
 open Polynomial
 
-open scoped Classical nonZeroDivisors Polynomial
+open scoped nonZeroDivisors
 
-variable {R : Type u} [CommRing R] [hdomain : IsDomain R] (r s : R) (p q : R[X]) (f : RatFunc R)
+variable {R : Type u} [CommRing R] (r s : R) (p q : R[X]) (f : RatFunc R)
 
 theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰ := by
-  rw [mem_nonZeroDivisors_iff]
+  rw [mem_nonZeroDivisors_iff_right]
   intro x hx
   have : x = taylor (r - r) x := by simp
   rwa [this, sub_eq_add_neg, ← taylor_taylor, ← taylor_mul,
@@ -57,6 +61,8 @@ theorem laurentAux_ofFractionRing_mk (q : R[X]⁰) :
     laurentAux r (ofFractionRing (Localization.mk p q)) =
       ofFractionRing (.mk (taylor r p) ⟨taylor r q, taylor_mem_nonZeroDivisors r q q.prop⟩) :=
   map_apply_ofFractionRing_mk _ _ _ _
+
+variable [IsDomain R]
 
 theorem laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =
@@ -84,7 +90,7 @@ theorem laurent_algebraMap : laurent r (algebraMap _ _ p) = algebraMap _ _ (tayl
 
 @[simp]
 theorem laurent_X : laurent r X = X + C r := by
-  rw [← algebraMap_X, laurent_algebraMap, taylor_X, _root_.map_add, algebraMap_C]
+  rw [← algebraMap_X, laurent_algebraMap, taylor_X, map_add, algebraMap_C]
 
 @[simp]
 theorem laurent_C (x : R) : laurent r (C x) = C x := by

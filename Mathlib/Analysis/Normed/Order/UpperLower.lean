@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.UpperLower
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.UpperLower
-import Mathlib.Topology.MetricSpace.Sequences
+module
+
+public import Mathlib.Algebra.Order.Field.Pi
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Topology.Algebra.Order.UpperLower
+public import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -28,13 +30,15 @@ from the other possible lemmas, but we will want there to be a single set of lem
 situations.
 -/
 
+public section
+
 open Bornology Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedOrderedGroup α] {s : Set α}
+variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
@@ -114,19 +118,19 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
 end Finite
 
 section Fintype
-variable [Fintype ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
+variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
-  simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
+  simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
     Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
-  exact Real.toNNReal_mono (sub_le_sub_right (hy _) _)
+  grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
   simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
@@ -142,16 +146,15 @@ lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
 
 lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
     dist a₁ b₁ ≤ dist a₂ b₂ :=
-  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans $
-    dist_anti_left_pi (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
+  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans <|
+    dist_anti_left_pi (ha.trans <| h₁.trans hb) (h₁.trans hb) ha
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x + const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_add_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs]
-    simp only [gt_iff_lt, zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_add_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
@@ -166,10 +169,9 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_sub_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs, gt_iff_lt, zero_lt_three, abs_of_pos,
-      zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_sub_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
@@ -184,7 +186,7 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
 end Fintype
 
 section Finite
-variable [Finite ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
+variable [Finite ι] {s : Set (ι → ℝ)}
 
 /-!
 #### Note
@@ -213,7 +215,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   haveI : BoundedGENhdsClass ℝ := by infer_instance
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
-    ⟨hg n, (ha $ mem_range_self _).trans $ hfg _⟩
+    ⟨hg n, (ha <| mem_range_self _).trans <| hfg _⟩
   exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_atTop) hbf fun _ ↦ hfg _⟩
 
@@ -225,14 +227,14 @@ protected lemma IsClopen.lowerClosure_pi (hs : IsClopen s) (hs' : BddAbove s) :
 
 lemma closure_upperClosure_comm_pi (hs : BddBelow s) :
     closure (upperClosure s : Set (ι → ℝ)) = upperClosure (closure s) :=
-  (closure_minimal (upperClosure_anti subset_closure) $
-      isClosed_closure.upperClosure_pi hs.closure).antisymm $
+  (closure_minimal (upperClosure_anti subset_closure) <|
+      isClosed_closure.upperClosure_pi hs.closure).antisymm <|
     upperClosure_min (closure_mono subset_upperClosure) (upperClosure s).upper.closure
 
 lemma closure_lowerClosure_comm_pi (hs : BddAbove s) :
     closure (lowerClosure s : Set (ι → ℝ)) = lowerClosure (closure s) :=
-  (closure_minimal (lowerClosure_mono subset_closure) $
-        isClosed_closure.lowerClosure_pi hs.closure).antisymm $
+  (closure_minimal (lowerClosure_mono subset_closure) <|
+        isClosed_closure.lowerClosure_pi hs.closure).antisymm <|
     lowerClosure_min (closure_mono subset_lowerClosure) (lowerClosure s).lower.closure
 
 end Finite

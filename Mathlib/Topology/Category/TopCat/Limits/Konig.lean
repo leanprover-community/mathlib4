@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Topological Kőnig's lemma
@@ -19,22 +21,22 @@ We give this in a more general form, which is that cofiltered limits
 of nonempty compact Hausdorff spaces are nonempty
 (`nonempty_limitCone_of_compact_t2_cofiltered_system`).
 
-This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirected J (≤)]` and
+This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirectedOrder J]` and
 `F : Jᵒᵖ ⥤ TopCat`.
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
-`nonempty_sections_of_finite_inverse_system` in the file `Mathlib.CategoryTheory.CofilteredSystem`.
+`nonempty_sections_of_finite_inverse_system` in `Mathlib/CategoryTheory/CofilteredSystem.lean`.
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
+@[expose] public section
 
 open CategoryTheory
 
 open CategoryTheory.Limits
 
--- Porting note: changed universe order as `v` is usually passed explicitly
 universe v u w
 
 noncomputable section
@@ -45,23 +47,27 @@ section TopologicalKonig
 
 variable {J : Type u} [SmallCategory J]
 
--- Porting note: generalized `F` to land in `v` not `u`
 variable (F : J ⥤ TopCat.{v})
 
+set_option backward.privateInPublic true in
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
   Σ' (X Y : J) (_ : X ∈ G) (_ : Y ∈ G), X ⟶ Y
 
+set_option backward.privateInPublic true in
 private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
   Σ G : Finset J, Finset (FiniteDiagramArrow G)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
--- Porting note: generalized `F` to land in `v` not `u`
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
   classical
@@ -75,6 +81,8 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   dsimp only
   rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.directed :
     Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
@@ -97,6 +105,8 @@ theorem partialSections.directed :
       exact ⟨f, hf, rfl⟩
     exact hu this
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
@@ -108,17 +118,10 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   rw [this]
   apply isClosed_biInter
   intro f _
-  -- Porting note: can't see through forget
-  have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
-    inferInstanceAs (T2Space (F.obj f.snd.fst))
-  apply isClosed_eq
-  -- Porting note: used to be a single `continuity` that closed both goals
-  · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
-  · continuity
+  apply isClosed_eq <;> fun_prop
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
--- Porting note: generalized from `TopCat.{u}` to `TopCat.{max v u}`
 theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{max v u})
     [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
@@ -131,10 +134,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
       partialSections.closed F _
   use u
   intro X Y f
-  let G : FiniteDiagram J :=
-    ⟨{X, Y},
-      {⟨X, Y, by simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert], by
-          simp only [eq_self_iff_true, or_true_iff, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
+  let G : FiniteDiagram J := ⟨{X, Y}, {⟨X, Y, by grind, by grind, f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig

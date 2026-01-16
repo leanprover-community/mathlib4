@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -62,12 +64,12 @@ we define the functor in the other direction
 extension of a functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C` which is
 defined similarly as in [*Simplicial Homotopy Theory* by Goerss-Jardine][goerss-jardine-2009].
 In `Degeneracies.lean`, we show that `PInfty` vanishes on the image of degeneracy
-operators, which is one of the key properties that makes it possible to contruct
+operators, which is one of the key properties that makes it possible to construct
 the isomorphism `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 The rest of the proof follows the strategy in the [original paper by Dold][dold1958]. We show
 that the functor `N₂` reflects isomorphisms in `NReflectsIso.lean`: this relies on a
-decomposition of the identity of `X _[n]` using `PInfty.f n` and degeneracies obtained in
+decomposition of the identity of `X _⦋n⦌` using `PInfty.f n` and degeneracies obtained in
 `Decomposition.lean`. Then, in `NCompGamma.lean`, we construct a natural transformation
 `Γ₂N₂.trans : N₂ ⋙ Γ₂ ⟶ 𝟭 (Karoubi (SimplicialObject C))`. It is shown that it is an
 isomorphism using the fact that `N₂` reflects isomorphisms, and because we can show
@@ -119,12 +121,14 @@ what is the best way to do this. The exact design may be decided when it is need
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open CategoryTheory Category Idempotents
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 namespace CategoryTheory
 
@@ -149,11 +153,11 @@ def comparisonN : (N : SimplicialObject A ⥤ _) ≅ Idempotents.DoldKan.N :=
   calc
     N ≅ N ⋙ 𝟭 _ := Functor.leftUnitor N
     _ ≅ N ⋙ (toKaroubiEquivalence _).functor ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
+          Functor.isoWhiskerLeft _ (toKaroubiEquivalence _).unitIso
     _ ≅ (N ⋙ (toKaroubiEquivalence _).functor) ⋙ (toKaroubiEquivalence _).inverse :=
           Iso.refl _
     _ ≅ N₁ ⋙ (toKaroubiEquivalence _).inverse :=
-          isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
+          Functor.isoWhiskerRight (N₁_iso_normalizedMooreComplex_comp_toKaroubi A).symm _
     _ ≅ Idempotents.DoldKan.N := Iso.refl _
 
 /-- The Dold-Kan equivalence for abelian categories -/

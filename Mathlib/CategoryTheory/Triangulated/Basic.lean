@@ -3,10 +3,13 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles
@@ -16,6 +19,8 @@ It also defines morphisms between these triangles.
 
 TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -34,9 +39,8 @@ We work in a category `C` equipped with a shift.
 variable (C : Type u) [Category.{v} C] [HasShift C ℤ]
 
 /-- A triangle in `C` is a sextuple `(X,Y,Z,f,g,h)` where `X,Y,Z` are objects of `C`,
-and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`.
-See <https://stacks.math.columbia.edu/tag/0144>.
--/
+and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`. -/
+@[stacks 0144]
 structure Triangle where mk' ::
   /-- the first object of a triangle -/
   obj₁ : C
@@ -95,9 +99,8 @@ In other words, we have a commutative diagram:
   X' ───> Y' ───> Z' ───> X'⟦1⟧
      f'     g'     h'
 ```
-See <https://stacks.math.columbia.edu/tag/0144>.
 -/
-@[ext]
+@[ext, stacks 0144]
 structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the first morphism in a triangle morphism -/
   hom₁ : T₁.obj₁ ⟶ T₂.obj₁
@@ -106,11 +109,11 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the third morphism in a triangle morphism -/
   hom₃ : T₁.obj₃ ⟶ T₂.obj₃
   /-- the first commutative square of a triangle morphism -/
-  comm₁ : T₁.mor₁ ≫ hom₂ = hom₁ ≫ T₂.mor₁ := by aesop_cat
+  comm₁ : T₁.mor₁ ≫ hom₂ = hom₁ ≫ T₂.mor₁ := by cat_disch
   /-- the second commutative square of a triangle morphism -/
-  comm₂ : T₁.mor₂ ≫ hom₃ = hom₂ ≫ T₂.mor₂ := by aesop_cat
+  comm₂ : T₁.mor₂ ≫ hom₃ = hom₂ ≫ T₂.mor₂ := by cat_disch
   /-- the third commutative square of a triangle morphism -/
-  comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by aesop_cat
+  comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by cat_disch
 
 attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
@@ -148,7 +151,7 @@ instance triangleCategory : Category (Triangle C) where
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
+  TriangleMorphism.ext h₁ h₂ h₃
 
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
@@ -167,12 +170,13 @@ lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
+/-- Make a morphism between triangles from the required data. -/
 @[simps]
 def Triangle.homMk (A B : Triangle C)
     (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
-    (comm₁ : A.mor₁ ≫ hom₂ = hom₁ ≫ B.mor₁ := by aesop_cat)
-    (comm₂ : A.mor₂ ≫ hom₃ = hom₂ ≫ B.mor₂ := by aesop_cat)
-    (comm₃ : A.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ B.mor₃ := by aesop_cat) :
+    (comm₁ : A.mor₁ ≫ hom₂ = hom₁ ≫ B.mor₁ := by cat_disch)
+    (comm₂ : A.mor₂ ≫ hom₃ = hom₂ ≫ B.mor₂ := by cat_disch)
+    (comm₃ : A.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ B.mor₃ := by cat_disch) :
     A ⟶ B where
   hom₁ := hom₁
   hom₂ := hom₂
@@ -181,12 +185,13 @@ def Triangle.homMk (A B : Triangle C)
   comm₂ := comm₂
   comm₃ := comm₃
 
+/-- Make an isomorphism between triangles from the required data. -/
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
     (iso₁ : A.obj₁ ≅ B.obj₁) (iso₂ : A.obj₂ ≅ B.obj₂) (iso₃ : A.obj₃ ≅ B.obj₃)
-    (comm₁ : A.mor₁ ≫ iso₂.hom = iso₁.hom ≫ B.mor₁ := by aesop_cat)
-    (comm₂ : A.mor₂ ≫ iso₃.hom = iso₂.hom ≫ B.mor₂ := by aesop_cat)
-    (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃ := by aesop_cat) : A ≅ B where
+    (comm₁ : A.mor₁ ≫ iso₂.hom = iso₁.hom ≫ B.mor₁ := by cat_disch)
+    (comm₂ : A.mor₂ ≫ iso₃.hom = iso₂.hom ≫ B.mor₂ := by cat_disch)
+    (comm₃ : A.mor₃ ≫ iso₁.hom⟦1⟧' = iso₃.hom ≫ B.mor₃ := by cat_disch) : A ≅ B where
   hom := Triangle.homMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
   inv := Triangle.homMk _ _ iso₁.inv iso₂.inv iso₃.inv
     (by simp only [← cancel_mono iso₂.hom, assoc, Iso.inv_hom_id, comp_id,
@@ -230,6 +235,96 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
+namespace Triangle
+
+section Preadditive
+
+variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+@[simps (attr := grind =)]
+instance : Zero (T₁ ⟶ T₂) where
+  zero :=
+    { hom₁ := 0
+      hom₂ := 0
+      hom₃ := 0 }
+
+@[simps (attr := grind =)]
+instance : Add (T₁ ⟶ T₂) where
+  add f g :=
+    { hom₁ := f.hom₁ + g.hom₁
+      hom₂ := f.hom₂ + g.hom₂
+      hom₃ := f.hom₃ + g.hom₃ }
+
+@[simps (attr := grind =)]
+instance : Neg (T₁ ⟶ T₂) where
+  neg f :=
+    { hom₁ := -f.hom₁
+      hom₂ := -f.hom₂
+      hom₃ := -f.hom₃ }
+
+@[simps (attr := grind =)]
+instance : Sub (T₁ ⟶ T₂) where
+  sub f g :=
+    { hom₁ := f.hom₁ - g.hom₁
+      hom₂ := f.hom₂ - g.hom₂
+      hom₃ := f.hom₃ - g.hom₃ }
+
+section
+
+variable {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+@[simps (attr := grind =)]
+instance : SMul R (T₁ ⟶ T₂) where
+  smul n f :=
+    { hom₁ := n • f.hom₁
+      hom₂ := n • f.hom₂
+      hom₃ := n • f.hom₃ }
+
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+end
+
+instance : AddCommGroup (T₁ ⟶ T₂) where
+  zero_add f := by ext <;> apply zero_add
+  add_assoc f g h := by ext <;> apply add_assoc
+  add_zero f := by ext <;> apply add_zero
+  add_comm f g := by ext <;> apply add_comm
+  neg_add_cancel f := by ext <;> apply neg_add_cancel
+  sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
+  nsmul n f := n • f
+  nsmul_zero f := by cat_disch
+  nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
+  zsmul n f := n • f
+  zsmul_zero' := by cat_disch
+  zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
+  zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
+
+instance : Preadditive (Triangle C) where
+
+end Preadditive
+
+section Linear
+
+variable [Preadditive C] {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+attribute [local simp] mul_smul add_smul in
+instance : Module R (T₁ ⟶ T₂) where
+  one_smul := by aesop
+  mul_smul := by aesop
+  smul_zero := by aesop
+  smul_add := by aesop
+  add_smul := by aesop
+  zero_smul := by aesop
+
+instance : Linear R (Triangle C) where
+
+end Linear
+
+end Triangle
+
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
@@ -249,7 +344,7 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by cat_disch) (by simp) (by simp)
 
 section
 
@@ -260,9 +355,9 @@ variable {J : Type*} (T : J → Triangle C)
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
+    (Limits.Pi.map (fun j => (T j).mor₂))
+    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]
@@ -290,12 +385,12 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
   comm₃ := by
     dsimp
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
-    aesop_cat
+    cat_disch
 
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
-  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by aesop_cat) (by
+  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
     intro s m hm
     ext1
     all_goals
@@ -347,6 +442,22 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+/-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
+@[simps]
+def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
+  app T := T.mor₁
+
+/-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
+@[simps]
+def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
+  app T := T.mor₂
+
+/-- The third morphism of a triangle, as a natural
+transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
+@[simps]
+def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
+  app T := T.mor₃
+
 section
 
 variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
@@ -354,6 +465,23 @@ variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
 instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
 instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
 instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+section
+
+variable {J : Type*} [Category* J]
+
+/-- Constructor for functors to the category of triangles. -/
+@[simps]
+def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    J ⥤ Triangle C where
+  obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
+  map φ :=
+    { hom₁ := obj₁.map φ
+      hom₂ := obj₂.map φ
+      hom₃ := obj₃.map φ }
 
 end
 

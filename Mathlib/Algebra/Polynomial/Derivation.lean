@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Richard Hill
+Authors: Kevin Buzzard, Richard M. Hill
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials
 
@@ -15,6 +18,8 @@ We also provide a constructor `Polynomial.mkDerivation` that
 builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -101,6 +106,7 @@ variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCom
 
 open Polynomial Module
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 For a derivation `d : A → M` and an element `a : A`, `d.compAEval a` is the
 derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
@@ -122,25 +128,22 @@ def compAEval : Derivation R R[X] <| AEval R M a where
   map_one_eq_zero' := by simp
 
 /--
-  A form of the chain rule: if `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation then for all `a : A` we have
-  $$ d(f(a)) = f' (a) d a. $$
-  The equation is in the `R[X]`-module `Module.AEval R M a`.
-  For the same equation in `M`, see `Derivation.compAEval_eq`.
+A form of the chain rule: if `f` is a polynomial over `R`
+and `d : A → M` is an `R`-derivation then for all `a : A` we have
+$$ d(f(a)) = f' (a) d a. $$
+The equation is in the `R[X]`-module `Module.AEval R M a`.
+For the same equation in `M`, see `Derivation.compAEval_eq`.
 -/
 theorem compAEval_eq (d : Derivation R A M) (f : R[X]) :
     d.compAEval a f = derivative f • (AEval.of R M a (d a)) := by
-  rw [← mkDerivation_apply]
-  congr
-  apply derivation_ext
-  simp
+  simpa using AEval.of_aeval_smul _ _ _
 
 /--
-  A form of the chain rule: if `f` is a polynomial over `R`
-  and `d : A → M` is an `R`-derivation then for all `a : A` we have
-  $$ d(f(a)) = f' (a) d a. $$
-  The equation is in `M`. For the same equation in `Module.AEval R M a`,
-  see `Derivation.compAEval_eq`.
+A form of the chain rule: if `f` is a polynomial over `R`
+and `d : A → M` is an `R`-derivation then for all `a : A` we have
+$$ d(f(a)) = f' (a) d a. $$
+The equation is in `M`. For the same equation in `Module.AEval R M a`,
+see `Derivation.compAEval_eq`.
 -/
 theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
     d (aeval a f) = aeval a (derivative f) • d a :=

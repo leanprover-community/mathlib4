@@ -3,12 +3,16 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.Real.Cardinality
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
 -/
+
+@[expose] public section
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
 
@@ -24,7 +28,7 @@ theorem exists_nat_measurableEquiv_range_coe_fin_of_finite [Finite α] :
 theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Countable α] :
     Nonempty (α ≃ᵐ range ((↑) : ℕ → ℝ)) := by
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
-    Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
+    Nat.isClosedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine ⟨PolishSpace.Equiv.measurableEquiv ?_⟩
   refine (nonempty_equiv_of_countable.some : α ≃ ℕ).trans ?_
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective
@@ -62,5 +66,10 @@ def embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω
 lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
     MeasurableEmbedding (embeddingReal Ω) :=
   (exists_measurableEmbedding_real Ω).choose_spec
+
+@[fun_prop]
+lemma measurable_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    Measurable (embeddingReal Ω) :=
+  (measurableEmbedding_embeddingReal Ω).measurable
 
 end MeasureTheory

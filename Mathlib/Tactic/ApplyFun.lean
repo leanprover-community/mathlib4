@@ -1,23 +1,29 @@
 /-
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Keeley Hoek, Patrick Massot, Scott Morrison
+Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Aesop
+public import Mathlib.Order.Hom.Basic
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `apply_fun` tactic.
 
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
-## Porting notes
-When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
+## Future work
+
+Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `apply_fun
 
@@ -28,8 +34,9 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
     | (``Eq, #[_, lhs, rhs]) => do
-      let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
-        withoutRecover <| runTermElab <| do
+      let (eq', gs) ←
+        withCollectingNewGoalsFrom (parentTag := ← g.getTag) (tagSuffix := `apply_fun) <|
+        withoutRecover <| runTermElab do
           let f ← Term.elabTerm f none
           let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
           let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
@@ -126,7 +133,8 @@ def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (Lis
   -- handle applying a two-argument theorem whose first argument is f
   let handle (thm : Name) : TacticM (List MVarId) := do
     let ng ← mkFreshExprMVar none
-    let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+    let (pf, gs) ←
+      withCollectingNewGoalsFrom (parentTag := ← g.getTag) (tagSuffix := `apply_fun) <|
       withoutRecover <| runTermElab do
         -- This coerces `f` to be a function as necessary:
         let pf ← Term.elabTermEnsuringType (← `($(mkIdent thm) $f $(← Term.exprToSyntax ng)))
@@ -151,7 +159,8 @@ def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (Lis
     let ginj ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (appendTag (← g.getTag) `inj)
     -- `withCollectingNewGoalsFrom` does not expect the goal to be closed, so here is "the goal"
     let gDefer ← mkFreshExprMVar (← g.getType)
-    let (_, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+    let (_, gs) ←
+      withCollectingNewGoalsFrom (parentTag := ← g.getTag) (tagSuffix := `apply_fun) <|
       withoutRecover <| runTermElab do
         let inj ← Term.elabTerm (← ``(Function.Injective $f)) none
         _ ← isDefEq (← inferType ginj) inj
@@ -198,14 +207,14 @@ open Function
 
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
     Injective f := by
-  intros x x' h
+  intro x x' h
   apply_fun g at h
   exact H h
 ```
 
 The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
 placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
- -/
+-/
 syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
@@ -214,3 +223,5 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
     (atTarget := withMainContext do
       replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")
+
+end Mathlib.Tactic

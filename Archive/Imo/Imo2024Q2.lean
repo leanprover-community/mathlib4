@@ -31,7 +31,7 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
     (hd : (φ d : ℤ) ∣ (n : ℤ) - z) :
     d ∣ a ^ n + b ↔ (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) + b = 0 := by
   rcases hd with ⟨k, hk⟩
-  rw [← ZMod.natCast_zmod_eq_zero_iff_dvd]
+  rw [← ZMod.natCast_eq_zero_iff]
   convert Iff.rfl
   push_cast
   congr
@@ -46,6 +46,9 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
 namespace Condition
 
 variable {a b : ℕ} (h : Condition a b)
+
+section
+include h
 
 lemma a_pos : 0 < a := h.1
 
@@ -78,6 +81,8 @@ lemma dvd_g_of_le_N_of_dvd {n : ℕ} (hn : h.N ≤ n) {d : ℕ} (hab : d ∣ a ^
     (hba : d ∣ b ^ n + a) : d ∣ h.g := by
   rw [← h.gcd_eq_g hn, Nat.dvd_gcd_iff]
   exact ⟨hab, hba⟩
+
+end
 
 lemma a_coprime_ab_add_one : a.Coprime (a * b + 1) := by
   simp
@@ -132,7 +137,7 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
       (IsUnit.mul_right_eq_zero (ZMod.unitOfCoprime _ a_coprime_ab_add_one).isUnit).1 this
   rw [mul_add]
   norm_cast
-  simp only [mul_right_inv, Units.val_one, ZMod.coe_unitOfCoprime]
+  simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
   norm_cast
   convert ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _
@@ -151,21 +156,23 @@ lemma ab_add_one_dvd_a_pow_large_n_0_add_b : a * b + 1 ∣ a ^ h.large_n_0 + b :
   rw [← h.gcd_eq_g h.N_le_large_n_0]
   exact Nat.gcd_dvd_left _ _
 
+include h
+
 lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
   rw [add_comm b]
   suffices a * b + 1 ∣ a ^ h.large_n_0 + b by
     rw [dvd_pow_iff_of_dvd_sub a_coprime_ab_add_one h.dvd_large_n_0_sub_zero, zpow_zero] at this
-    rw [← ZMod.natCast_zmod_eq_zero_iff_dvd]
+    rw [← ZMod.natCast_eq_zero_iff]
     push_cast
     norm_cast at this
   exact h.ab_add_one_dvd_a_pow_large_n_0_add_b
 
 lemma a_eq_one : a = 1 := by
-  have hle : a * b + 1 ≤ b + 1 := Nat.le_of_dvd (by omega) h.ab_add_one_dvd_b_add_one
+  have hle : a * b + 1 ≤ b + 1 := Nat.le_of_dvd (by lia) h.ab_add_one_dvd_b_add_one
   rw [add_le_add_iff_right] at hle
   suffices a ≤ 1 by
     have hp := h.a_pos
-    omega
+    lia
   have hle' : a * b ≤ 1 * b := by
     simpa using hle
   exact Nat.le_of_mul_le_mul_right hle' h.b_pos

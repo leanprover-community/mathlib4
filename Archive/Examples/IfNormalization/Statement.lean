@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 
 /-!
@@ -16,7 +16,7 @@ Their first suggestion was "if-normalization".
 This file contains a Lean formulation of the problem. See `Result.lean` for a Lean solution.
 -/
 
-/-- An if-expression is either boolean literal, a numbered variable,
+/-- An if-expression is either Boolean literal, a numbered variable,
 or an if-then-else expression where each subexpression is an if-expression. -/
 inductive IfExpr
   | lit : Bool → IfExpr

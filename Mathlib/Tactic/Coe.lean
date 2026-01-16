@@ -3,7 +3,9 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean.Elab.ElabRules
+module
+
+public import Mathlib.Init
 
 /-!
 # Additional coercion notation
@@ -16,6 +18,8 @@ Defines notation for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -60,3 +64,5 @@ elab "(" "↥" ")" : term <= expectedType =>
       ensureHasType b ty
     else
       throwError "cannot coerce to sort{indentExpr x}"
+
+end Lean.Elab.Term.CoeImpl

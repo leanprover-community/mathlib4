@@ -3,13 +3,14 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Logic.Unique
-import Mathlib.Order.Defs
-import Mathlib.Tactic.Attr.Register
+module
+
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Unique
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nontrivial types
@@ -17,10 +18,9 @@ import Mathlib.Tactic.Attr.Register
 Results about `Nontrivial`.
 -/
 
+@[expose] public section
 
 variable {α : Type*} {β : Type*}
-
-open scoped Classical
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
 theorem nontrivial_of_lt [Preorder α] (x y : α) (h : x < y) : Nontrivial α :=
@@ -37,6 +37,7 @@ theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
     Nontrivial (Subtype p) ↔ ∃ (y : α) (_ : p y), y ≠ x := by
   simp only [_root_.nontrivial_iff_exists_ne x, Subtype.exists, Ne, Subtype.ext_iff]
 
+open Classical in
 /-- An inhabited type is either nontrivial, or has a unique element. -/
 noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
     Nontrivial α ⊕' Unique α :=
@@ -52,21 +53,6 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, nofun⟩
 
-/-- Pushforward a `Nontrivial` instance along an injective function. -/
-protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) : Nontrivial β :=
-  let ⟨x, y, h⟩ := exists_pair_ne α
-  ⟨⟨f x, f y, hf.ne h⟩⟩
-
-/-- An injective function from a nontrivial type has an argument at
-which it does not take a given value. -/
-protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
-    (hf : Function.Injective f) (y : β) : ∃ x, f x ≠ y := by
-  rcases exists_pair_ne α with ⟨x₁, x₂, hx⟩
-  by_cases h : f x₂ = y
-  · exact ⟨x₁, (hf.ne_iff' h).2 hx⟩
-  · exact ⟨x₂, h⟩
-
 instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
   Prod.snd_surjective.nontrivial
 
@@ -77,6 +63,7 @@ namespace Pi
 
 variable {I : Type*} {f : I → Type*}
 
+open Classical in
 /-- A pi type is nontrivial if it's nonempty everywhere and nontrivial somewhere. -/
 theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')] :
     Nontrivial (∀ i : I, f i) := by
@@ -99,7 +86,3 @@ instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α 
 @[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
-
-@[to_additive]
-theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
-  Subsingleton.elim _ _

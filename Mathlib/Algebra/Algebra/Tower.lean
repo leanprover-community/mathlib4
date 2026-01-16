@@ -3,21 +3,27 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.LinearAlgebra.Span.Basic
+
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Towers of algebras
 
-In this file we prove basic facts about towers of algebra.
+In this file we prove basic facts about towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -104,7 +110,7 @@ variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
-  ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
+  ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
 /-- See note [partially-applied ext lemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
@@ -160,7 +166,7 @@ theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
 instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A :=
   of_algebraMap_eq fun _x => rfl
 
--- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
@@ -200,7 +206,26 @@ theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
-  AlgHom.ext (AlgHom.congr_fun h : _)
+  AlgHom.ext (AlgHom.congr_fun h :)
+
+section
+
+variable {R}
+
+/-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) : A →ₐ[S] B where
+  toRingHom := f
+  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+end
 
 end AlgHom
 
@@ -223,7 +248,42 @@ theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
-  AlgEquiv.ext (AlgEquiv.congr_fun h : _)
+  AlgEquiv.ext (AlgEquiv.congr_fun h :)
+
+lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
+    (f.restrictScalars R).symm x = f.symm x := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+
+section
+
+variable {R}
+
+/-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  toRingEquiv := f
+  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+@[simp]
+lemma extendScalarsOfSurjective_symm (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
+
+end
 
 end AlgEquiv
 
@@ -240,7 +300,7 @@ variable [Module R M] [Module A M] [IsScalarTower R A M]
 theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : Set M) :
     restrictScalars R (span A X) = span R X := by
   refine ((span_le_restrictScalars R A X).antisymm fun m hm => ?_).symm
-  refine span_induction hm subset_span (zero_mem _) (fun _ _ => add_mem) fun a m hm => ?_
+  refine span_induction subset_span (zero_mem _) (fun _ _ _ _ => add_mem) (fun a m _ hm => ?_) hm
   obtain ⟨r, rfl⟩ := hsur a
   simpa [algebraMap_smul] using smul_mem _ r hm
 
@@ -265,21 +325,21 @@ open IsScalarTower
 
 theorem smul_mem_span_smul_of_mem {s : Set S} {t : Set A} {k : S} (hks : k ∈ span R s) {x : A}
     (hx : x ∈ t) : k • x ∈ span R (s • t) :=
-  span_induction hks (fun c hc => subset_span <| Set.smul_mem_smul hc hx)
+  span_induction (fun _ hc => subset_span <| Set.smul_mem_smul hc hx)
     (by rw [zero_smul]; exact zero_mem _)
-    (fun c₁ c₂ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
-    fun b c hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc
+    (fun c₁ c₂ _ _ ih₁ ih₂ => by rw [add_smul]; exact add_mem ih₁ ih₂)
+    (fun b c _ hc => by rw [IsScalarTower.smul_assoc]; exact smul_mem _ _ hc) hks
 
 theorem span_smul_of_span_eq_top {s : Set S} (hs : span R s = ⊤) (t : Set A) :
     span R (s • t) = (span S t).restrictScalars R :=
   le_antisymm
     (span_le.2 fun _x ⟨p, _hps, _q, hqt, hpqx⟩ ↦ hpqx ▸ (span S t).smul_mem p (subset_span hqt))
-    fun p hp ↦ closure_induction hp (zero_mem _) (fun _ _ ↦ add_mem) fun s0 y hy ↦ by
-      refine span_induction (hs ▸ mem_top : s0 ∈ span R s)
-        (fun x hx ↦ subset_span ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
+    fun _ hp ↦ closure_induction (hx := hp) (zero_mem _) (fun _ _ _ _ ↦ add_mem) fun s0 y hy ↦ by
+      refine span_induction (fun x hx ↦ subset_span <| by exact ⟨x, hx, y, hy, rfl⟩) ?_ ?_ ?_
+        (hs ▸ mem_top : s0 ∈ span R s)
       · rw [zero_smul]; apply zero_mem
-      · intro _ _; rw [add_smul]; apply add_mem
-      · intro r s0 hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
+      · intro _ _ _ _; rw [add_smul]; apply add_mem
+      · intro r s0 _ hy; rw [IsScalarTower.smul_assoc]; exact smul_mem _ r hy
 
 -- The following two lemmas were originally used to prove `span_smul_of_span_eq_top`
 -- but are now not needed.
@@ -332,8 +392,18 @@ variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
-  smul_right_injective M hx
+  NoZeroSMulDivisors.smul_right_injective M hx
 
 end Algebra
 
 end Ring
+
+section Algebra.algebraMapSubmonoid
+
+@[simp]
+theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
+    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
+  algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
+
+end Algebra.algebraMapSubmonoid

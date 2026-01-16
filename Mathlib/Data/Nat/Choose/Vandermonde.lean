@@ -3,8 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Data.Nat.Choose.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 
@@ -18,6 +20,8 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 
 -/
 
+public section
+
 
 open Polynomial Finset Finset.Nat
 
@@ -29,4 +33,4 @@ theorem Nat.add_choose_eq (m n k : ℕ) :
     _ = ((X + 1) ^ m * (X + 1) ^ n).coeff k := by rw [pow_add]
     _ = ∑ ij ∈ antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
       rw [coeff_mul, Finset.sum_congr rfl]
-      simp only [coeff_X_add_one_pow, Nat.cast_id, eq_self_iff_true, imp_true_iff]
+      simp only [coeff_X_add_one_pow, Nat.cast_id, imp_true_iff]

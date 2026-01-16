@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Group.Completion
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Group.Completion
 
 /-!
 # Completion of normed group homs
@@ -46,6 +48,8 @@ The vertical maps in the above diagrams are also normed group homs constructed i
   `f : NormedAddGroupHom G H` to a `NormedAddGroupHom (completion G) H`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -69,7 +73,6 @@ theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Comple
 theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
     (f.completion : Completion G → Completion H) = Completion.map f := rfl
 
--- Porting note: `@[simp]` moved to the next lemma
 theorem NormedAddGroupHom.completion_coe (f : NormedAddGroupHom G H) (g : G) :
     f.completion g = f g :=
   Completion.map_coe f.uniformContinuous _
@@ -120,7 +123,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
   normedAddGroupHomCompletionHom.map_zero
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
-@[simps] -- Porting note: added `@[simps]`
+@[simps]
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add
@@ -132,7 +135,7 @@ theorem NormedAddCommGroup.norm_toCompl (x : G) : ‖toCompl x‖ = ‖x‖ :=
   Completion.norm_coe x
 
 theorem NormedAddCommGroup.denseRange_toCompl : DenseRange (toCompl : G → Completion G) :=
-  Completion.denseInducing_coe.dense
+  Completion.isDenseInducing_coe.dense
 
 @[simp]
 theorem NormedAddGroupHom.completion_toCompl (f : NormedAddGroupHom G H) :
@@ -158,12 +161,13 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
   rcases h.exists_pos with ⟨C', C'_pos, hC'⟩
   rcases exists_pos_mul_lt ε_pos (1 + C' * ‖f‖) with ⟨δ, δ_pos, hδ⟩
   obtain ⟨_, ⟨g : G, rfl⟩, hg : ‖hatg - g‖ < δ⟩ :=
-    SeminormedAddCommGroup.mem_closure_iff.mp (Completion.denseInducing_coe.dense hatg) δ δ_pos
+    SeminormedAddCommGroup.mem_closure_iff.mp (Completion.isDenseInducing_coe.dense hatg) δ δ_pos
   obtain ⟨g' : G, hgg' : f g' = f g, hfg : ‖g'‖ ≤ C' * ‖f g‖⟩ := hC' (f g) (mem_range_self _ g)
   have mem_ker : g - g' ∈ f.ker := by rw [f.mem_ker, map_sub, sub_eq_zero.mpr hgg'.symm]
   refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, ?_⟩
   have : ‖f g‖ ≤ ‖f‖ * δ := calc
-    ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
+    ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by
+      simpa [map_sub, hatg_in] using f.completion.le_opNorm (hatg - g)
     _ ≤ ‖f‖ * δ := by gcongr
   calc ‖hatg - ↑(g - g')‖ = ‖hatg - g + g'‖ := by rw [Completion.coe_sub, sub_add]
     _ ≤ ‖hatg - g‖ + ‖(g' : Completion G)‖ := norm_add_le _ _
