@@ -66,6 +66,7 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
 namespace AddSubmonoid
 variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 variable (T) in
 /--
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
@@ -161,6 +162,13 @@ theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   simp [sumSq, Subsemigroup.nonUnitalSubsemiringClosure_eq_closure]
 
 end NonUnitalSubsemiring
+
+@[simp, aesop safe]
+theorem IsSumSq.natCast {R : Type*} [NonAssocSemiring R] (n : ℕ) : IsSumSq (n : R) := by
+  induction n <;> aesop
+
+@[simp]
+theorem Nat.isSumSq (n : ℕ) : IsSumSq n := IsSumSq.natCast n
 
 /--
 In a commutative (possibly non-unital) semiring,
