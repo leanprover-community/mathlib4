@@ -138,5 +138,3 @@ theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
 end Semiring
 
 end RingHom
-
-variable [Semiring α] [Semiring β]

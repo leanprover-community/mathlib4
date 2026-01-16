@@ -13,12 +13,3 @@ public import Mathlib.Analysis.Normed.Group.Basic
 In this file, we define classes for fields and groups that are both normed and ordered.
 These are mostly useful to avoid diamonds during type class inference.
 -/
-
-public section
-
-
-open Filter Set
-
-open Topology
-
-variable {α : Type*}
