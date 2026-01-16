@@ -30,7 +30,7 @@ noncomputable def Fin.succAboveOrderIso {n : ℕ} (i : Fin (n + 2)) :
       · intro a b h
         exact (Fin.succAboveOrderEmb i).injective (by simpa using h)
       · rintro ⟨j, hj⟩
-        simp only [mem_compl, mem_singleton] at hj
+        push _ ∈ _ at hj
         obtain rfl | ⟨i, rfl⟩ := Fin.eq_zero_or_eq_succ i
         · exact ⟨j.pred hj, by simp⟩
         · exact ⟨i.predAbove j, by aesop⟩)

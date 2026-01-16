@@ -145,7 +145,7 @@ theorem partialSups_succ [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccOrder 
   suffices Iic (Order.succ i) = Iic i ∪ {Order.succ i} by simp only [partialSups_apply, this,
     sup'_union nonempty_Iic ⟨_, mem_singleton_self _⟩ f, sup'_singleton]
   ext
-  simp only [mem_Iic, mem_union, mem_singleton]
+  push _ ∈ _
   constructor
   · exact fun h ↦ (Order.le_succ_iff_eq_or_le.mp h).symm
   · exact fun h ↦ h.elim (le_trans · <| Order.le_succ _) le_of_eq

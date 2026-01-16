@@ -225,7 +225,7 @@ instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
       one_mem' := Set.mem_singleton 1
       mul_mem' := fun ha hb => by
-        simp only [Set.mem_singleton_iff] at *
+        push _ ∈ _ at *
         rw [ha, hb, mul_one] }⟩
 
 @[to_additive]

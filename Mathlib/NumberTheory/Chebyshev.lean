@@ -88,7 +88,7 @@ theorem theta_eq_sum_Icc (x : ℝ) :
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  simp only [mem_Ioc] at hn
+  push _ ∈ _ at hn
   convert vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne.symm |>.mp hn.2) hx
   norm_cast at this
