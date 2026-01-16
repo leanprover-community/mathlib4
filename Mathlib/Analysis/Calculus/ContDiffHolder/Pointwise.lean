@@ -56,7 +56,7 @@ structure ContDiffPointwiseHolderAt (k : ℕ) (α : I) (f : E → F) (a : E) : P
   /-- A $C^{k+(α)}$ map satisfies $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`. -/
   isBigO : (iteratedFDeriv ℝ k f · - iteratedFDeriv ℝ k f a) =O[𝓝 a] (‖· - a‖ ^ (α : ℝ))
 
-/-- A $C^n$ map is a $C^{k+(α)}$ map with any `k < n`. -/
+/-- A $C^n$ map is a $C^{k+(α)}$ map for any `k < n`. -/
 theorem ContDiffAt.contDiffPointwiseHolderAt {n : WithTop ℕ∞} (h : ContDiffAt ℝ n f a) (hk : k < n)
     (α : I) : ContDiffPointwiseHolderAt k α f a where
   contDiffAt := h.of_le hk.le
@@ -84,7 +84,7 @@ theorem zero_exponent_iff : ContDiffPointwiseHolderAt k 0 f a ↔ ContDiffAt ℝ
 /-- A function is $C^{0+(α)}$ at a point if and only if
 it is $C^0$ at the point (i.e., it is continuous on a neighborhood of the point)
 and $f(x) - f(a) = O(‖x - a‖ ^ α)$. -/
-theorem zero_left_iff :
+theorem zero_order_iff :
     ContDiffPointwiseHolderAt 0 α f a ↔
       ContDiffAt ℝ 0 f a ∧ (f · - f a) =O[𝓝 a] (‖· - a‖ ^ (α : ℝ)) := by
   simp only [contDiffPointwiseHolderAt_iff, Nat.cast_zero, and_congr_right_iff]
@@ -116,7 +116,7 @@ theorem of_le (hf : ContDiffPointwiseHolderAt k α f a) (hl : l ≤ k) :
 /-- If a function is $C^{k+α}$ on a neighborhood of a point `a`,
 i.e., it is $C^k$ on this neighborhood and $D^k f$ is Hölder continuous on it,
 then the function is $C^{k+(α)}$ at `a`. -/
-theorem of_contDiffOn_holderWith {s : Set E} {C : ℝ≥0} (hf : ContDiffOn ℝ k f s) (hs : s ∈ 𝓝 a)
+theorem of_contDiffOn_holderOnWith {s : Set E} {C : ℝ≥0} (hf : ContDiffOn ℝ k f s) (hs : s ∈ 𝓝 a)
     (hd : HolderOnWith C ⟨α, α.2.1⟩ (iteratedFDeriv ℝ k f) s) :
     ContDiffPointwiseHolderAt k α f a where
   contDiffAt := hf.contDiffAt hs
@@ -166,7 +166,7 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
       rw [iteratedFDeriv_comp hgx hfx le_rfl,
         iteratedFDeriv_comp hg.contDiffAt hf.contDiffAt le_rfl]
     _ =O[𝓝 a] fun x ↦ ‖x - a‖ ^ (α : ℝ) := by
-      apply FormalMultilinearSeries.taylorComp_sub_taylorComp_isBigO
+      apply FormalMultilinearSeries.taylorComp_sub_taylorComp_isBigO <;> intro i hi
       · intro i hi
         exact ((hg.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).comp hf.continuousAt)
           |>.norm.isBoundedUnder_le
@@ -183,8 +183,7 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
           simp only [ftaylorSeries, iteratedFDeriv_zero_eq_comp, Function.comp_apply, ← map_sub,
             LinearIsometryEquiv.norm_map, isBigO_norm_left]
           refine ((hd.resolve_right hfd).isBigO_sub.comp_tendsto hf.continuousAt).trans ?_
-          refine .trans (.of_norm_right ?_) hf.isBigO
-          simp [iteratedFDeriv_zero_eq_comp, ← map_sub, Function.comp_def, isBigO_refl]
+          exact (zero_left_iff.mp hf).2
       · intro i hi
         exact (hf.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).norm.isBoundedUnder_le
       · exact fun _ _ ↦ isBoundedUnder_const
@@ -243,7 +242,7 @@ protected theorem iteratedFDeriv (hf : ContDiffPointwiseHolderAt k α f a) (hl :
     rw [← add_assoc, add_right_comm] at hl
     simpa +unfoldPartialApp [iteratedFDeriv_succ_eq_comp_left] using (ihm hl).fderiv l.lt_add_one
 
-theorem congr_eventuallyEq {g : E → F} (hf : ContDiffPointwiseHolderAt k α f a)
+theorem congr_of_eventuallyEq {g : E → F} (hf : ContDiffPointwiseHolderAt k α f a)
     (hfg : f =ᶠ[𝓝 a] g) :
     ContDiffPointwiseHolderAt k α g a where
   contDiffAt := hf.contDiffAt.congr_of_eventuallyEq hfg.symm

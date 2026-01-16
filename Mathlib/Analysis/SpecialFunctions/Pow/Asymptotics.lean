@@ -300,7 +300,7 @@ theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le_of_imp {a b : ℝ} (h : a ≤ b) (him
     simpa [Real.abs_rpow_of_nonneg hx.1, abs_of_nonneg hx.1]
      using Real.rpow_le_rpow_of_exponent_ge_of_imp hx.1 hx.2 h fun _ ↦ himp
 
-/-- If `a ≤ b`, `b ≠ 0`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`, unless `b = 0` and `a ≠ 0`. -/
+/-- If `a ≤ b`, `b ≠ 0`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`. -/
 theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠ 0) :
     (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
   .rpow_rpow_nhdsGE_zero_of_le_of_imp h (absurd · hb)
