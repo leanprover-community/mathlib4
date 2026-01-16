@@ -92,6 +92,10 @@ To use the simpler `⋆` notation, define a scoped notation in your file:
 scoped notation:70 f:70 " ⋆ " g:71 => f ⋆ᵣ g   -- multiplicative
 scoped notation:70 f:70 " ⋆ " g:71 => f ⋆ᵣ₊ g  -- additive
 ```
+
+Precedence design: `f:70` and `g:71` gives left associativity (`f ⋆ g ⋆ h` parses as
+`(f ⋆ g) ⋆ h`), matching tensor product `⊗` and standard multiplication. This differs from
+`MeasureTheory.convolution` which uses `f:67` and `g:66` (right associative).
 -/
 
 @[expose] public section
@@ -234,7 +238,7 @@ def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : 
   fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
 /-- Notation for discrete convolution with explicit bilinear map. -/
-scoped notation:70 f:70 " ⋆[" L:70 "] " g:71 => convolution L f g
+scoped notation:70 f:70 " ⋆[" L "] " g:71 => convolution L f g
 
 /-- Notation for additive convolution. -/
 scoped notation:70 f:70 " ⋆₊[" L "] " g:71 => addConvolution L f g
