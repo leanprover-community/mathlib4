@@ -67,6 +67,8 @@ This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
+/-- The local instance for some arbitrary linear order on `Type u` , order isomorphic within
+order type `o`. -/
 @[no_expose]
 local instance (o : OrderType) : LinearOrder o.ToType :=
   o.out.str
