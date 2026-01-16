@@ -1,5 +1,8 @@
 on:
   pull_request
+  #schedule:
+  #- cron: '0 0 1 * *'   # Runs at 00:00 on day 1 of the month
+  #workflow_dispatch:
 
 name: Blog report
 
@@ -27,12 +30,15 @@ jobs:
 
       - name: blog report
         run: |
-          yrMth="$(date +%Y-%m)"  # format: 2024-07
+          # The job runs on the first of each month and will process the date for the previous month
+          yr="$(date --date=yesterday +\%Y)"
+          mm="$(date --date=yesterday +\%m)"
+          yrMth="${yr}-${mm}"  # format: 2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
           tmp_file="${yrMth}_in_mathlib.md"
           printf $'Date: %s, month: %s\ntemp file: %s\n' "${yrMth}" "${mth}" "${tmp_file}"
           PR="${{ github.event.pull_request.number }}"
-          title="### ${mth} $(date +%Y) in Mathlib summary"
+          title="### ${mth} ${yr} in Mathlib summary"
 
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
