@@ -91,11 +91,6 @@ def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
   map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
   map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
 
-@[simps (nameStem := "commMon")]
-instance : HasForget₂ CommRingCat CommMonCat where
-  forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
-  forget_comp := rfl
-
 /-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
@@ -106,7 +101,7 @@ def monoidAlgebraAdj (R : CommRingCat.{u}) :
     naturality S T f := by
       ext : 2
       apply MonoidAlgebra.ringHom_ext <;>
-        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, - Under.w] }
+        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, -Under.w] }
   left_triangle_components G := by
     ext : 2
     apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]

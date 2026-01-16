@@ -368,6 +368,12 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
+variable {G M}
+
+/-- Unfolds `ofMulDistribMulAction`; useful to keep track of additivity. -/
+@[simps!]
+def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
+
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
     (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
 
@@ -708,12 +714,12 @@ variable {A B C}
 instance : MonoidalClosed (Rep k G) where
   closed A :=
     { rightAdj := Rep.ihom A
-      adj := Adjunction.mkOfHomEquiv (
-      { homEquiv := Rep.homEquiv A
+      adj := Adjunction.mkOfHomEquiv ({
+        homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext
           (ModuleCat.hom_ext (TensorProduct.ext' fun _ _ => rfl))
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext (ModuleCat.hom_ext (LinearMap.ext
-          fun _ => LinearMap.ext fun _ => rfl)) })}
+          fun _ => LinearMap.ext fun _ => rfl)) }) }
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=

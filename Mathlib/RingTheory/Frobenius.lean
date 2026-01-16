@@ -164,8 +164,6 @@ lemma eq_of_isUnramifiedAt
     (H' : ψ.IsArithFrobAt Q) [Q.IsPrime] (hQ : Q.primeCompl ≤ S⁰)
     [Algebra.IsUnramifiedAt R Q] [IsNoetherianRing S] : φ = ψ := by
   have : H.localize = H'.localize := by
-    have : IsNoetherianRing (Localization.AtPrime Q) :=
-      IsLocalization.isNoetherianRing Q.primeCompl _ inferInstance
     apply Algebra.FormallyUnramified.ext_of_iInf _
       (Ideal.iInf_pow_eq_bot_of_isLocalRing (maximalIdeal _) Ideal.IsPrime.ne_top')
     intro x
@@ -217,7 +215,6 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   let P := Q.under R
   have := Algebra.IsInvariant.isIntegral R S G
   have : Q.IsMaximal := Ideal.Quotient.maximal_of_isField _ (Finite.isField_of_domain (S ⧸ Q))
-  have : P.IsMaximal := Ideal.isMaximal_comap_of_isIntegral_of_isMaximal Q
   obtain ⟨p, hc⟩ := CharP.exists (R ⧸ P)
   have : Finite (R ⧸ P) := .of_injective _ Ideal.algebraMap_quotient_injective
   cases nonempty_fintype (R ⧸ P)

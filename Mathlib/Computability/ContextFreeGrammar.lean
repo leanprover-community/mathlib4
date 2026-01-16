@@ -6,7 +6,6 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
-import Mathlib.Data.Finset.Image
 
 /-!
 # Context-Free Grammars
@@ -24,6 +23,7 @@ nonterminal symbols that are referred to by its finitely many rules.
 
 ## Main theorems
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
+* `Language.IsContextFree.union`: The class of context-free languages is closed under union.
 * `Language.IsContextFree.mul`: The class of context-free languages is closed under concatenation.
 -/
 
@@ -355,13 +355,13 @@ def Symbol.map {N₀ N : Type*} (f : N₀ → N) : Symbol T N₀ → Symbol T N
 
 /-- Mapping `Symbol` when it is a nonterminal; may return `none`. -/
 def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → Option (Symbol T N₀)
-  | Symbol.terminal t => some (Symbol.terminal t)
-  | Symbol.nonterminal n => Option.map Symbol.nonterminal (f n)
+  | terminal t => some (terminal t)
+  | nonterminal n => .map nonterminal (f n)
 
 /-- Map the type of nonterminal symbols of a `ContextFreeRule` . -/
 def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
     ContextFreeRule T N :=
-  ⟨f r.input, r.output.map (Symbol.map f)⟩
+  ⟨f r.input, r.output.map (.map f)⟩
 
 /-- An embedding from a context-free grammar `g₀` to a context-free grammar `g` is an embedding
 `embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
@@ -373,15 +373,14 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
   projectNT : g.NT → Option g₀.NT
   /-- The two mappings are essentially inverses. -/
-  projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
+  projectNT_embedNT (n₀ : g₀.NT): projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
-  embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
+  embed_mem_rules (r : ContextFreeRule T g₀.NT): r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
   has a corresponding rule in the smaller grammar. -/
-  preimage_of_rules :
-    ∀ r : ContextFreeRule T g.NT,
-      r ∈ g.rules → ∀ n₀ : g₀.NT,
-        embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
+  preimage_of_rules (r : ContextFreeRule T g.NT) :
+    r ∈ g.rules → ∀ n₀ : g₀.NT,
+      embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
@@ -394,8 +393,7 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   refine ⟨r.map G.embedNT, G.embed_mem_rules r rin, ?_⟩
   rw [ContextFreeRule.rewrites_iff]
-  use u.map (Symbol.map G.embedNT), v.map (Symbol.map G.embedNT)
-  constructor
+  refine ⟨u.map (.map G.embedNT), v.map (.map G.embedNT), ?_, ?_⟩
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
@@ -407,35 +405,39 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
-/-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
-terminal. -/
-inductive Good (G : g₀.Embedding g) : Symbol T g.NT → Prop
-  | terminal (t : T) : Good G (.terminal t)
-  | nonterminal (n₀ : g₀.NT) : Good G (.nonterminal (G.embedNT n₀))
+/-- A `Symbol` comes from the embedding or is a terminal iff it is one of those nonterminals that
+result from projecting or it is any terminal. -/
+inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
+  | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
+  | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
 
-/-- A string is good iff every `Symbol` in it is good. -/
-def GoodString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → Good G a
+/-- A string is from the embedding or terminals iff every `Symbol` in it is. -/
+def FromEmbeddingOrTerminalString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
+  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → FromEmbeddingOrTerminal G a
 
-lemma goodString_singleton {s : Symbol T g.NT} (hs : G.Good s) : G.GoodString [s] := by
-  simpa [GoodString] using hs
+lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
+    (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
+  simpa [FromEmbeddingOrTerminalString] using hs
 
 /-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
 nonterminals that `G.g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Produces w₁ w₂) (hw₁ : G.GoodString w₁) :
+    (hG : g.Produces w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.GoodString w₂ := by
+    G.FromEmbeddingOrTerminalString w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rw [bef] at hw₁
-  have good_input : G.Good (Symbol.nonterminal r.input) := by apply hw₁; simp
-  revert good_input
+  have from_embedding_or_terminal_input :
+      G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
+    apply hw₁
+    simp
+  revert from_embedding_or_terminal_input
   generalize hr_eq : r.input = n
-  intro good_input
-  cases good_input with
+  intro from_embedding_or_terminal_input
+  cases from_embedding_or_terminal_input with
   | nonterminal n₀ =>
     rcases G.preimage_of_rules r rin n₀ hr_eq.symm with ⟨r₀, hr₀, hrr₀⟩
     constructor
@@ -463,7 +465,7 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
             List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
           using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
     · rw [aft, ← hrr₀]
-      simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
+      simp only [FromEmbeddingOrTerminalString, List.forall_mem_append] at hw₁ ⊢
       refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
       intro a ha
       cases a
@@ -474,14 +476,14 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
       rw [← hs]
       cases s with
       | terminal t => simp [Symbol.map] at hs
-      | nonterminal s' => exact Good.nonterminal s'
+      | nonterminal s' => exact FromEmbeddingOrTerminal.nonterminal s'
 
-lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
+private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
-    G.GoodString w₂ := by
+    G.FromEmbeddingOrTerminalString w₂ := by
   induction hG with
   | refl => exact ⟨by rfl, hw₁⟩
   | tail _ orig ih =>
@@ -491,7 +493,7 @@ lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
 lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
-    (hG : g.Derives w₁ w₂) (hw₁ : G.GoodString w₁) :
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
@@ -739,7 +741,7 @@ private lemma in_left_of_in_union (hw : (g₁.union g₂).Derives
   intro a ha
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
-  exact ContextFreeGrammar.Embedding.Good.nonterminal g₁.initial
+  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
 
 private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
       [Symbol.nonterminal (some (Sum.inr g₂.initial) : (g₁.union g₂).NT)]
@@ -749,7 +751,7 @@ private lemma in_right_of_in_union (hw : (g₁.union g₂).Derives
   intro a ha
   simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
   rw [ha]
-  exact ContextFreeGrammar.Embedding.Good.nonterminal g₂.initial
+  exact ContextFreeGrammar.Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
 
 private lemma map_inl_injective : ((ContextFreeRule.map · (Option.some ∘ Sum.inl)) :
     ContextFreeRule T g₁.NT → ContextFreeRule T (Option (g₁.NT ⊕ g₂.NT))).Injective := by
@@ -1182,18 +1184,18 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
         -- Use splitting to get two separate derivations
         obtain ⟨u'', v'', hu'', hv'', huv''⟩ := concatenation_split _ _ _ hg
         -- Extract words from the combined grammar back to original grammars
-        have good_u : (@g₁g_concat T g₁ g₂).GoodString
+        have good_u : (@g₁g_concat T g₁ g₂).FromEmbeddingOrTerminalString
             [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
           intro a ha
           simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
           rw [ha]
-          exact Embedding.Good.nonterminal g₁.initial
-        have good_v : (@g₂g_concat T g₁ g₂).GoodString
+          exact Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
+        have good_v : (@g₂g_concat T g₁ g₂).FromEmbeddingOrTerminalString
             [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
           intro a ha
           simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
           rw [ha]
-          exact Embedding.Good.nonterminal g₂.initial
+          exact Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
         have hu_filter := (@g₁g_concat T g₁ g₂).derives_filterMap hu'' good_u
         have hv_filter := (@g₂g_concat T g₁ g₂).derives_filterMap hv'' good_v
         -- Extract the terminal words

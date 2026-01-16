@@ -88,7 +88,7 @@ theorem hasEqualizers_of_hasPullbacks_and_binary_products [HasBinaryProducts C] 
 
 attribute [local instance] hasPullback_of_preservesPullback
 
-/-- A functor that preserves pullbacks and binary products also presrves equalizers. -/
+/-- A functor that preserves pullbacks and binary products also preserves equalizers. -/
 lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
     [HasBinaryProducts C] [HasPullbacks C]
     [PreservesLimitsOfShape (Discrete WalkingPair) G] [PreservesLimitsOfShape WalkingCospan G] :
@@ -181,7 +181,7 @@ theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproduct
 
 attribute [local instance] hasPushout_of_preservesPushout
 
-/-- A functor that preserves pushouts and binary coproducts also presrves coequalizers. -/
+/-- A functor that preserves pushouts and binary coproducts also preserves coequalizers. -/
 lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinaryCoproducts C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete WalkingPair) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesColimitsOfShape WalkingParallelPair G :=
