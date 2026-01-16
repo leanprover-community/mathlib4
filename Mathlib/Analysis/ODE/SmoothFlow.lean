@@ -415,46 +415,15 @@ lemma integralCMLM_eventually_dist_lt {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
     _ ≤ ε / 2 := hε'_eq
     _ < ε := by linarith
 
-lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
-    ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
-  let S := {α : C(Icc tmin tmax, E) | MapsTo α univ u}
-  rw [continuousOn_iff_continuous_restrict,
-    ContinuousMultilinearMap.isEmbedding_toUniformOnFun.continuous_iff,
-    UniformOnFun.continuous_rng_iff]
-  intro B hB
-  rw [← equicontinuous_iff_continuous]
-  have hB_bdd : Bornology.IsBounded B := NormedSpace.isVonNBounded_iff ℝ |>.mp hB
-  intro α₀
-  rw [equicontinuousAt_iff_pair]
-  intro U hU
-  obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
-  obtain ⟨M, hM⟩ := hB_bdd.exists_norm_le
-  have key := integralCMLM_eventually_dist_lt hg hu t₀ α₀ (half_pos hε) (le_max_right M 0)
-    (fun dα hdα ↦ (hM dα hdα).trans (le_max_left M 0))
-  obtain ⟨V, hV_nhd, hV⟩ := key.exists_mem
-  let V' : Set S := Subtype.val ⁻¹' V
-  have hV'_nhd : V' ∈ 𝓝 α₀ := continuous_subtype_val.continuousAt.preimage_mem_nhds hV_nhd
-  refine ⟨V', hV'_nhd, fun x hx y hy ⟨dα, hdα⟩ ↦ ?_⟩
-  apply hεU
-  calc dist ((integralCMLM hg t₀ ↑x) dα) ((integralCMLM hg t₀ ↑y) dα)
-      ≤ dist ((integralCMLM hg t₀ ↑x) dα) ((integralCMLM hg t₀ ↑α₀) dα) +
-        dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑y) dα) := dist_triangle ..
-    _ = dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑x) dα) +
-        dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑y) dα) := by
-      rw [dist_comm ((integralCMLM hg t₀ ↑x) dα)]
-    _ < ε / 2 + ε / 2 := add_lt_add (hV (↑x) hx dα hdα) (hV (↑y) hy dα hdα)
-    _ = ε := by ring
-
 lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
+    {α₀ : C(Icc tmin tmax, E)} (hα₀ : MapsTo α₀ univ u) {ε : ℝ} (hε : 0 < ε)
     {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : Bornology.IsBounded B) :
-    ∀ᶠ (α : ↑{α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀,
-      ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε := by
+    ∀ᶠ α in 𝓝 α₀, ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε := by
+
   sorry
 
-lemma continuousOn_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
     ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
   -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
@@ -470,14 +439,11 @@ lemma continuousOn_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : S
   intro U hU
   -- express in terms of `ε` inequality
   obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
-  suffices H : ∀ᶠ (α : ↑{α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀,
-      ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε from by
-    apply H.mono
-    intro _
-    apply forall₂_imp
-    intro _ _ h
-    exact hεU h
-  exact integralCMLM_eventually_dist_lt' hg hu t₀ α₀ hε hB
+  rw [eventually_nhds_subtype_iff _ _
+      (fun α ↦ ∀ dα ∈ B, ((integralCMLM hg t₀ α₀) dα, (integralCMLM hg t₀ α) dα) ∈ U),
+    (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu).nhdsWithin_eq α₀.2]
+  apply integralCMLM_eventually_dist_lt' hg hu t₀ α₀.2 hε hB |>.mono
+  exact fun _ ↦ forall₂_imp (fun _ _ h ↦ hεU h)
 
 end
 
