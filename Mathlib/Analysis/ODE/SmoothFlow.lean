@@ -240,6 +240,25 @@ lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {h
     {dα : Fin n → C(Icc tmin tmax, E)} :
     integralCMLM hg t₀ α dα = integralCM hg t₀ α dα := rfl
 
+/-
+Strategy for proving the continuity of `α ↦ dα ↦ t ↦ ∫ τ in t₀..t, g (α τ) (fun i ↦ dα i τ)` as a
+function `F → F [×n]→L[ℝ] F`:
+
+* Embed `F [×n]→L[ℝ] F` into `UniformOnFun (Fin n → F) F`
+(`ContinuousMultilinearMap.isEmbedding_toUniformOnFun`)
+* Translate continuity `Topology.IsEmbedding.continuous_iff` across the embedding
+* Translate continuity in the topology of uniform convergence on bounded sets to equicontinuity
+(`UniformOnFun.continuous_rng_iff`, `equicontinuous_iff_continuous`, missing lemma combining them)
+* Translate equicontinuity to finding witness sets (`equicontinuousAt_iff_pair`)
+* Translate uniformity to `ε` witness (`Metric.mem_uniformity_dist`)
+* Translate von Neumann boundedness to boundedness (`NormedSpace.isVonNBounded_iff`)
+* Prove key inequality
+
+(look into uniform equicontinuity, perhaps a missing lemma like iff_pair could remove the need for
+`ε/2`)
+
+-/
+
 omit [CompleteSpace E] in
 /-- The norm of a multilinear map difference applied to vectors is bounded by the operator norm
 difference times the product of vector norms. -/
