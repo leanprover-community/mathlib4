@@ -236,7 +236,9 @@ instance : Std.LawfulBCmp (compare (α := α)) where
 
 end Ord
 
-/-- The category of linear orders. -/
+/-- The category of linear orders.
+
+This will get reused to define `OrderType`. -/
 structure LinOrd where
   /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
   of ::

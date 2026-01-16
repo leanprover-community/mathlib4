@@ -11,12 +11,12 @@ public import Mathlib.Order.Hom.Basic
 # Order types
 
 Order types are defined as the quotient of linear orders under order isomorphism. They are endowed
-with a preorder, where an OrderType is smaller than another one there is an order embedding
+with a preorder, where an OrderType is ≤ to another when there is an order embedding
 into it.
 
 ## Main definitions
 
-* `OrderType`: the type of OrderTypes (in a given universe)
+* `OrderType`: the type of order types (in a given universe)
 * `OrderType.type α`: given a type `α` with a linear order, this is the corresponding OrderType,
 
 A preorder with a bottom element is registered on order types, where `⊥` is
@@ -40,7 +40,7 @@ The following are notations in the `OrderType` namespace:
 order type, order isomorphism, linear order
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open Function Set Equiv Order
 
@@ -63,7 +63,7 @@ namespace OrderType
 
 /-- A "canonical" type order-isomorphic to the order type `o`, living in the same universe.
 This is defined through the axiom of choice. -/
-public def ToType (o : OrderType) : Type u :=
+def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
 instance (o : OrderType) : LinearOrder o.ToType :=
@@ -192,7 +192,7 @@ instance instNeZeroOne : NeZero (1 : OrderType) :=
 
 theorem type_le_type_iff {α β} [LinearOrder α]
     [LinearOrder β] : type α ≤ type β ↔ Nonempty (α ↪o β) :=
-  Iff.rfl
+  .rfl
 
 theorem type_le_type {α β}
     [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
@@ -221,12 +221,13 @@ protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
 
 @[simp]
 theorem pos_iff_ne_zero (o : OrderType) : 0 < o ↔ o ≠ 0 :=
-  ⟨ne_bot_of_gt, fun ho ↦ by simpa [@type_of_isEmpty PEmpty] using
+  ⟨ne_bot_of_gt, fun ho ↦ by simpa using
     (⟨⟨Function.Embedding.ofIsEmpty, by simp⟩, fun ⟨f⟩ ↦ PEmpty.elim
       (f (Classical.choice (OrderType.nonempty_toType_iff.mpr ho)))⟩ : type PEmpty < type o.ToType)⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
-public def omega0 : OrderType := type ℕ
+-- TODO: define `OrderType.lift` and redefine this using it.
+public def omega0 : OrderType := type <| ULift ℕ
 
 @[inherit_doc]
 scoped notation "ω" => OrderType.omega0
