@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 
 /-!
 # The distinguished triangle of a short exact sequence in an abelian category
@@ -18,6 +20,8 @@ the associated distinguished triangle in the derived category:
   exact sequence in the heart of a t-structure
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -62,12 +66,9 @@ noncomputable def singleTriangleIso :
       triangleOfSES (hS.map_of_exact (HomologicalComplex.single C (ComplexShape.up ℤ) 0)) := by
   let e := (SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostcompQIso C)
   refine Triangle.isoMk _ _ (e.app S.X₁) (e.app S.X₂) (e.app S.X₃) ?_ ?_ ?_
-  · aesop_cat
-  · aesop_cat
-  · dsimp [singleδ, e]
-    rw [Category.assoc, Category.assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app]
-    erw [Functor.map_id]
-    rw [comp_id]
+  · cat_disch
+  · cat_disch
+  · simp [singleδ, e, ← Functor.map_comp, CochainComplex.singleFunctors]
 
 /-- The distinguished triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/

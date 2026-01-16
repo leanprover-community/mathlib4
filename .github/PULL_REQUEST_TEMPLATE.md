@@ -1,8 +1,11 @@
 
 ---
-<!-- The text above the `---` will become the commit message when your
-PR is merged. Please leave a blank newline before the `---`, otherwise
-GitHub will format the text above it as a title.
+<!-- Your PR title will become the first line of the commit message.
+
+In this box, the text above the `---` (if not empty) will be appended
+to the commit message, and can be used to give additional context or
+details. Please leave a blank newline before the `---`, otherwise GitHub
+will format the text above it as a title.
 
 For details on the "pull request lifecycle" in mathlib, please see:
 https://leanprover-community.github.io/contribute/index.html
@@ -11,13 +14,26 @@ In particular, note that most reviewers will only notice your PR
 if it passes the continuous integration checks.
 Please ask for help on https://leanprover.zulipchat.com if needed.
 
-To indicate co-authors, include lines at the bottom of the commit message
-(that is, before the `---`) using the following format:
+When merging, all the commits will be squashed into a single commit
+listing all co-authors.
+
+Co-authors in the squash commit are gathered from two sources:
+
+First, all authors of commits to this PR branch are included. Thus,
+one way to add co-authors is to include at least one commit authored by
+each co-author among the commits in the pull request. If necessary, you
+may create empty commits to indicate co-authorship, using commands like so:
+
+git commit --author="Author Name <author@email.com>" --allow-empty -m "add Author Name as coauthor"
+
+Second, co-authors can also be listed in lines at the very bottom of
+the commit message (that is, directly before the `---`) using the following format:
 
 Co-authored-by: Author Name <author@email.com>
 
-If you are moving or deleting declarations, please include these lines at the bottom of the commit message
-(that is, before the `---`) using the following format:
+If you are moving or deleting declarations, please include these lines
+at the bottom of the commit message (before the `---`, and also before
+any "Co-authored-by" lines) using the following format:
 
 Moves:
 - Vector.* -> List.Vector.*

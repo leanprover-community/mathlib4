@@ -3,16 +3,22 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
-# Results
+# Derivations into Square-Zero Ideals
+
+## Main statements
 
 - `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 -/
+
+@[expose] public section
 
 
 section ToSquareZero
@@ -96,7 +102,7 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
 
--- @[simp] -- Porting note: simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
+-- simp normal form is `liftOfDerivationToSquareZero_mk_apply'`
 theorem liftOfDerivationToSquareZero_mk_apply [IsScalarTower R A B] (d : Derivation R A I) (x : A) :
     Ideal.Quotient.mk I (liftOfDerivationToSquareZero I hI d x) = algebraMap A (B ⧸ I) x := by
   rw [liftOfDerivationToSquareZero_apply, map_add, Ideal.Quotient.eq_zero_iff_mem.mpr (d x).prop,

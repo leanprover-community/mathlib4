@@ -3,8 +3,10 @@ Copyright (c) 2024 Robert Maxton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Maxton
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 
 /-!
 # The free product of $R$-algebras
@@ -41,6 +43,8 @@ general $R$-algebras.
 - Induction principle for `FreeProduct`
 
 -/
+
+@[expose] public section
 universe u v w w'
 
 namespace DirectSum
@@ -84,8 +88,6 @@ def algEquivQuotAlgEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
-@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
-
 /-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
@@ -96,8 +98,6 @@ def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
   algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
-
-@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
 
 end RingQuot
 
@@ -127,13 +127,10 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
-@[deprecated (since := "2025-05-05")] alias powerAlgebra_equiv_freeAlgebra :=
-  powerAlgebraEquivFreeTensorAlgebra
-
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
-  | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
+  | id : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
@@ -156,19 +153,11 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 as a quotient of `PowerAlgebra R A` -/
 @[reducible] def asPowers := RingQuot <| FreeProduct.rel' R A
 
-@[deprecated (since := "2024-12-07")]
-alias _root_.LinearAlgebra.FreeProduct_ofPowers := asPowers
-@[deprecated (since := "2025-05-01")]
-alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
-
 /-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`. -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
     (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
-
-@[deprecated (since := "2025-05-01")]
-alias equivPowerAlgebra := asPowersEquiv
 
 open RingQuot Function
 
@@ -187,7 +176,7 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
-  ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
+    ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
     aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/

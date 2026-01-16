@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Tactic.CC.Addition
+module
+
+public import Mathlib.Tactic.CC.Addition
 
 /-!
 # Congruence closure
@@ -49,6 +51,8 @@ derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for
   (de Moura, Selsam IJCAR 2016).
 -/
 
+public meta section
+
 universe u
 
 open Lean Meta Elab Tactic Std
@@ -59,7 +63,7 @@ namespace CCState
 
 open CCM
 
-/-- Make an new `CCState` from the given `config`. -/
+/-- Make a new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
@@ -181,6 +185,12 @@ def foldEqcM {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α
 
 end CCState
 
+/-- Option to control whether to show a deprecation warning for the `cc` tactic. -/
+register_option mathlib.tactic.cc.warning : Bool := {
+  defValue := true
+  descr := "Show a deprecation warning when using the `cc` tactic"
+}
+
 /--
 Applies congruence closure to solve the given metavariable.
 This procedure tries to solve the goal by chaining
@@ -204,6 +214,15 @@ derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for
 (de Moura, Selsam IJCAR 2016).
 -/
 def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
+  -- Check if warning should be shown
+  if ← getBoolOption `mathlib.tactic.cc.warning true then
+    logWarning "The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead.\n\n\
+      Please report any regressions at https://github.com/leanprover/lean4/issues/.\n\
+      Note that `cc` supports some goals that `grind` doesn't,\n\
+      but these rely on higher-order unification and can result in unpredictable performance.\n\
+      If a downstream library is relying on this functionality,\n\
+      please report this in an issue and we'll help find a solution."
+
   let (_, m) ← m.intros
   m.withContext do
     let s ← CCState.mkUsingHsCore cfg
@@ -239,7 +258,7 @@ the current goal, not to make some inconclusive progress.
 A mostly trivial example would be:
 
 ```lean
-example (a b c : ℕ) (f : ℕ → ℕ) (h: a = b) (h' : b = c) : f a = f c := by
+example (a b c : ℕ) (f : ℕ → ℕ) (h : a = b) (h' : b = c) : f a = f c := by
   cc
 ```
 

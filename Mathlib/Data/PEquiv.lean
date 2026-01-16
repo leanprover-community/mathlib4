@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Option.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Data.Option.Basic
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -39,6 +41,8 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 pequiv, partial equivalence
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -198,13 +202,7 @@ theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a 
 theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :
     a ∈ ofSet s b ↔ a = b ∧ a ∈ s := by
   dsimp [ofSet]
-  split_ifs with h
-  · simp only [mem_def, eq_comm, some.injEq, iff_self_and]
-    rintro rfl
-    exact h
-  · simp only [mem_def, false_iff, not_and, reduceCtorEq]
-    rintro rfl
-    exact h
+  grind
 
 @[simp]
 theorem ofSet_eq_some_iff {s : Set α} {_ : DecidablePred (· ∈ s)} {a b : α} :
@@ -386,17 +384,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b
           simp only [Option.mem_def] at *
-          split_ifs with h1 h2 h2 <;> try simp [hf]
-          · contrapose! h2
-            rw [h2]
-            rw [← h1, hf, h2] at hg
-            simp only [true_iff] at hg
-            rw [hg]
-          · contrapose! h1
-            rw [h1] at hf h2
-            rw [← h2] at hg
-            simp only [iff_true] at hf hg
-            rw [hf, hg] }
+          grind }
     inf_le_left := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
     inf_le_right := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
     le_inf := fun f g h fg gh a b => by

@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Lagrange's four square theorem
@@ -15,6 +17,8 @@ a proof that every natural number is the sum of four square numbers.
 
 The proof used is close to Lagrange's original proof.
 -/
+
+public section
 
 
 open Finset Polynomial FiniteField Equiv
@@ -122,7 +126,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   -- Take the minimal possible `m`
   rcases Nat.findX hm with ⟨m, ⟨hmp, hm₀, a, b, c, d, habcd⟩, hmin⟩
   -- If `m = 1`, then we are done
-  rcases (Nat.one_le_iff_ne_zero.2 hm₀.ne').eq_or_gt with rfl | hm₁
+  rcases (Nat.one_le_iff_ne_zero.2 hm₀.ne').eq_or_lt with rfl | hm₁
   · use a, b, c, d; simpa using habcd
   -- Otherwise, let us find a contradiction
   exfalso
@@ -153,7 +157,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
       simp [habcd]
     -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence
     -- `m` divides each `a`, `b`, `c`, `d`, thus `m ∣ p` which is impossible.
-    rcases (zero_le r).eq_or_gt with rfl | hr₀
+    rcases (zero_le r).eq_or_lt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d := by
         simp only [← ZMod.natCast_eq_zero_iff, ← hf_mod, hr, Int.cast_zero, and_self]
@@ -196,10 +200,10 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
   -- The proof is by induction on prime factorization. The case of prime `n` was proved above,
   -- the inductive step follows from `Nat.euler_four_squares`.
   induction n using Nat.recOnMul with
-  | h0 => exact ⟨0, 0, 0, 0, rfl⟩
-  | h1 => exact ⟨1, 0, 0, 0, rfl⟩
-  | hp p hp => exact hp.sum_four_squares
-  | h m n hm hn =>
+  | zero => exact ⟨0, 0, 0, 0, rfl⟩
+  | one => exact ⟨1, 0, 0, 0, rfl⟩
+  | prime p hp => exact hp.sum_four_squares
+  | mul m n hm hn =>
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩

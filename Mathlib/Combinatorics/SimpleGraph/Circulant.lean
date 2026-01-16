@@ -3,9 +3,11 @@ Copyright (c) 2024 Iván Renison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Definition of circulant graphs
@@ -19,6 +21,8 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 * `SimpleGraph.circulantGraph s`: the circulant graph over `G` with jumps `s`.
 * `SimpleGraph.cycleGraph n`: the cycle graph over `Fin n`.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
@@ -44,11 +48,9 @@ theorem circulantGraph_eq_erase_zero : circulantGraph s = circulantGraph (s \ {0
       | inr h1 => exact Or.inr h1.left
 
 theorem circulantGraph_eq_symm : circulantGraph s = circulantGraph (s ∪ (-s)) := by
-  ext (u v : G)
-  simp only [circulantGraph, fromRel_adj, Set.mem_union, Set.mem_neg, neg_sub, and_congr_right_iff,
-    iff_self_or]
-  intro _ h
-  exact Or.symm h
+  ext
+  simp only [circulantGraph_adj, Set.mem_union, Set.mem_neg, neg_sub]
+  grind
 
 instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (circulantGraph s).Adj :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
@@ -134,6 +136,7 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
+set_option backward.privateInPublic true in
 private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
     ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
   | ⟨0, h⟩ => Walk.nil
@@ -142,6 +145,8 @@ private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
     Walk.cons hadj (cycleGraph_EulerianCircuit_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Eulerian trail of `cycleGraph (n + 3)` -/
 def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by

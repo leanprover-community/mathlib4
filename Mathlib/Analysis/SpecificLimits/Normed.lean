@@ -3,19 +3,21 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Module
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Order.Filter.AtTopBot.ModEq
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.BigOperators.Module
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.List.TFAE
+public import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Order.Filter.AtTopBot.ModEq
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # A collection of specific limit computations
@@ -24,9 +26,11 @@ This file contains important specific limit computations in (semi-)normed groups
 well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
+open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}
 
@@ -60,7 +64,7 @@ theorem tendsto_intCast_atTop_cobounded
 theorem isLittleO_pow_pow_of_lt_left {r₁ r₂ : ℝ} (h₁ : 0 ≤ r₁) (h₂ : r₁ < r₂) :
     (fun n : ℕ ↦ r₁ ^ n) =o[atTop] fun n ↦ r₂ ^ n :=
   have H : 0 < r₂ := h₁.trans_lt h₂
-  (isLittleO_of_tendsto fun _ hn ↦ False.elim <| H.ne' <| pow_eq_zero hn) <|
+  (isLittleO_of_tendsto fun _ hn ↦ False.elim <| H.ne' <| eq_zero_of_pow_eq_zero hn) <|
     (tendsto_pow_atTop_nhds_zero_of_lt_one
       (div_nonneg h₁ (h₁.trans h₂.le)) ((div_lt_one H).2 h₂)).congr fun _ ↦ div_pow _ _ _
 
@@ -81,7 +85,7 @@ open List in
 * 2: $f n = O(a ^ n)$ for some $-R < a < R$;
 * 3: $f n = O(a ^ n)$ for some $0 < a < R$;
 * 4: there exist `a < R` and `C` such that one of `C` and `R` is positive and $|f n| ≤ Ca^n$
-     for all `n`;
+  for all `n`;
 * 5: there exists `0 < a < R` and a positive `C` such that $|f n| ≤ Ca^n$ for all `n`;
 * 6: there exists `a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`;
 * 7: there exists `0 < a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`.
@@ -192,7 +196,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
   simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
-    (tendsto_pow_atTop hk) ) r
+    (tendsto_pow_atTop hk)) r
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
@@ -235,6 +239,30 @@ lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R]
   | base => simp
   | succ n hn IH => simp [pow_succ, IH]
 
+variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
+  [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
+
+/-- `v (1 / (1 + a ^n))` tends to `1` for all `v : AbsoluteValue R S` for fields `R` and `S`,
+provided `v a < 1`. -/
+theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R}
+    (ha : v a < 1) : atTop.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) (𝓝 1) := by
+  simp_rw [map_div₀ v, v.map_one]
+  apply one_div_one (G := S) ▸ Tendsto.div tendsto_const_nhds _ one_ne_zero
+  have h_add := (tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha).const_add 1
+  have h_sub := (tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha).const_sub 1
+  exact tendsto_of_tendsto_of_tendsto_of_le_of_le (by simpa using h_sub) (by simpa using h_add)
+    (fun n ↦ le_trans (by simp) (v.le_add _ _))
+    (fun n ↦ le_trans (v.add_le _ _) (by simp))
+
+/-- `v (1 / (1 + a ^n))` tends to `0` whenever `v : AbsoluteValue R S` for fields `R` and `S`,
+provided `1 < v a`. -/
+theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} {a : R}
+    (ha : 1 < v a) : Filter.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
+  simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
+  refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop
+  simpa using (tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
+    (fun _ ↦ le_rfl)).congr fun n ↦ (sub_eq_add_neg (v a ^ n) 1).symm
+
 /-! ### Geometric series -/
 
 /-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
@@ -272,29 +300,19 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
       convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
       simp
     linarith
-  · simp [tsum_eq_zero_of_not_summable hx]
+  · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     nontriviality R
     have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
-    have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
+    have : 0 ≤ (1 - ‖x‖)⁻¹ := inv_nonneg.2 (by linarith)
     linarith
 
 variable [HasSummableGeomSeries R]
 
-theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← geom_sum_mul_neg, Finset.sum_mul]
+theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 :=
+  (summable_geometric_of_norm_lt_one h).tsum_pow_mul_one_sub
 
-theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← mul_neg_geom_sum, Finset.mul_sum]
+theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 :=
+  (summable_geometric_of_norm_lt_one h).one_sub_mul_tsum_pow
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
   rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
@@ -319,7 +337,7 @@ def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
 
 theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
     ∑' i, x ^ i = Ring.inverse (1 - x) := by
-  change (Units.oneSub x h) ⁻¹ = Ring.inverse (1 - x)
+  change (Units.oneSub x h)⁻¹ = Ring.inverse (1 - x)
   rw [← Ring.inverse_unit]
   rfl
 
@@ -426,7 +444,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
         simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
         norm_cast
         calc (n + k).choose k
-          _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
+          _ ≤ (2 * n).choose k := choose_le_choose k (by lia)
           _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
       convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
@@ -435,7 +453,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
             ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
           apply Finset.sum_congr rfl (fun i hi ↦ ?_)
           simp only [Finset.mem_range] at hi
-          rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
+          rw [mul_assoc, ← pow_add, show i + (n - i) = n by lia]
         simp [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k, add_assoc]
       · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
@@ -454,7 +472,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
   simp
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' n, (n + k).choose k * r ^ n = 1/ (1 - r) ^ (k + 1) :=
+    ∑' n, (n + k).choose k * r ^ n = 1 / (1 - r) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -475,7 +493,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
     have dP : P.natDegree = k := by
       simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
     have A : (n + k).descFactorial k = P.eval n := by
-      have : n + 1 + k - 1 = n + k := by omega
+      have : n + 1 + k - 1 = n + k := by lia
       simp [P, ascPochhammer_nat_eq_descFactorial, this]
     conv_lhs => rw [A, mP.as_sum, dP]
     simp [eval_finset_sum]
@@ -610,7 +628,7 @@ end SummableLeGeometric
 theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
-  by_cases hr₀ : 0 ≤ r
+  by_cases! hr₀ : 0 ≤ r
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
@@ -621,8 +639,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
-  · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat summable_zero ?_
+  · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
@@ -651,10 +668,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     specialize hN₀ N hNN₀
     simp only [comp_apply, zero_add] at h''
     exact hN h''.symm
-  · intro i
-    dsimp only [comp_apply]
-    convert hN₀ (i + N) (hNN₀.trans (N.le_add_left i)) using 3
-    ac_rfl
+  · grind
 
 theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
@@ -727,7 +741,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
-    norm_num
+    simp
   convert (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp
 
@@ -782,8 +796,8 @@ theorem Monotone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, sub_le_iff_le_add]
     gcongr
-    exact hfm (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfm (by lia)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating monotone series with an odd number of terms provide
 lower bounds on the limit. -/
@@ -797,8 +811,8 @@ theorem Monotone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, le_sub_iff_add_le]
     gcongr
-    exact hfm (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfm (by lia)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an even number of terms provide
 lower bounds on the limit. -/
@@ -811,8 +825,8 @@ theorem Antitone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, le_sub_iff_add_le]
     gcongr
-    exact hfa (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfa (by lia)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an odd number of terms provide
 upper bounds on the limit. -/
@@ -825,8 +839,47 @@ theorem Antitone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, sub_le_iff_le_add]
     gcongr
-    exact hfa (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfa (by lia)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
+
+theorem Summable.tendsto_alternating_series_tsum
+    {E} [Ring E] [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]
+    {f : ℕ → E} (hfs : Summable f) :
+    Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
+  Summable.tendsto_sum_tsum_nat hfs.alternating
+
+-- TODO: generalize to conditionally-convergent sums
+-- see https://github.com/leanprover-community/mathlib4/pull/29577#discussion_r2343447344
+theorem alternating_series_error_bound
+    {E} [Ring E] [LinearOrder E] [IsOrderedRing E]
+    [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E] [OrderClosedTopology E]
+    (f : ℕ → E) (hfa : Antitone f) (hfs : Summable f) (n : ℕ) :
+    |(∑' i : ℕ, (-1) ^ i * f i) - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
+  obtain h := hfs.tendsto_alternating_series_tsum
+  have upper := hfa.alternating_series_le_tendsto h
+  have lower := hfa.tendsto_le_alternating_series h
+  have I (n : ℕ) : 0 ≤ f n := by
+    apply le_of_tendsto hfs.tendsto_atTop_zero
+    filter_upwards [Ici_mem_atTop n] with m hm using hfa hm
+  obtain (h | h) := even_or_odd n
+  · obtain ⟨n, rfl⟩ := even_iff_exists_two_mul.mp h
+    specialize upper n
+    specialize lower n
+    simp only [sum_range_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul] at lower
+    rw [abs_sub_le_iff]
+    constructor
+    · rwa [sub_le_iff_le_add, add_comm]
+    · rw [sub_le_iff_le_add, add_comm]
+      exact upper.trans (le_add_of_nonneg_right (I (2 * n)))
+  · obtain ⟨n, rfl⟩ := odd_iff_exists_bit1.mp h
+    specialize upper (n + 1)
+    specialize lower n
+    rw [Nat.mul_add, Finset.sum_range_succ] at upper
+    rw [abs_sub_le_iff]
+    constructor
+    · rw [sub_le_iff_le_add, add_comm]
+      exact lower.trans (le_add_of_nonneg_right (I (2 * n + 1)))
+    · simpa [Finset.sum_range_succ, add_comm, pow_add] using upper
 
 end
 
@@ -870,7 +923,7 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
   filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
     hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
-  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  rcases eq_or_lt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
   · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
   calc
     _ = ‖g x‖ := by simp
@@ -880,8 +933,8 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
 
 section
 
-variable [NormedRing K] [NormedAddCommGroup R]
-variable [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
+variable [NormedRing K] [NormedAddCommGroup R] [IsDomain K]
+variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
 
 lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
@@ -914,7 +967,7 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
 end
 
 lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
-    [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
+    [Module K R] [IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=

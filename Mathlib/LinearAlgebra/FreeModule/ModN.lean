@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.ZMod
-import Mathlib.LinearAlgebra.Dimension.Free
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Quotienting out a free `ℤ`-module
@@ -13,7 +15,9 @@ import Mathlib.LinearAlgebra.Dimension.Free
 If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardinality `n ^ d`.
 -/
 
-open Finsupp Function
+@[expose] public section
+
+open Finsupp Function Module
 
 variable {G H M : Type*} [AddCommGroup G] {n : ℕ}
 
@@ -26,7 +30,7 @@ namespace ModN
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
-are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
   toFun f := ⟨f.comp (QuotientAddGroup.mk' _), fun g ↦ by
     let Gn : AddSubgroup G := (LinearMap.range (LinearMap.lsmul ℤ G n)).toAddSubgroup
@@ -43,7 +47,7 @@ protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // 
   right_inv φ := by aesop
 
 /-- The universal property of `ModN G n` in terms of `ZMod n`-modules: `ZMod n`-linear maps from
-`ModN G n` are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+`ModN G n` are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
     (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
   (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans ModN.liftEquiv

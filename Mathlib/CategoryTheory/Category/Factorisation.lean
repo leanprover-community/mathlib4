@@ -3,9 +3,10 @@ Copyright (c) 2023 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # The Factorisation Category of a Category
@@ -19,12 +20,15 @@ TODO: Show that `Factorisation f` is isomorphic to a comma category in two ways.
 TODO: Make `MonoFactorisation f` a special case of a `Factorisation f`.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Factorisations of a morphism `f` as a structure, containing, one object, two morphisms,
 and the condition that their composition equals `f`. -/
 structure Factorisation {X Y : C} (f : X ⟶ Y) where
@@ -35,7 +39,7 @@ structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The morphism out of the factorisation midpoint. -/
   π   : mid ⟶ Y
   /-- The factorisation condition. -/
-  ι_π : ι ≫ π = f := by aesop_cat
+  ι_π : ι ≫ π = f := by cat_disch
 
 attribute [simp] Factorisation.ι_π
 
@@ -50,9 +54,9 @@ protected structure Hom (d e : Factorisation f) : Type (max u v) where
   /-- The morphism between the midpoints of the factorizations. -/
   h : d.mid ⟶ e.mid
   /-- The left commuting triangle of the factorization morphism. -/
-  ι_h : d.ι ≫ h = e.ι := by aesop_cat
+  ι_h : d.ι ≫ h = e.ι := by cat_disch
   /-- The right commuting triangle of the factorization morphism. -/
-  h_π : h ≫ e.π = d.π := by aesop_cat
+  h_π : h ≫ e.π = d.π := by cat_disch
 
 attribute [simp] Factorisation.Hom.ι_h Factorisation.Hom.h_π
 

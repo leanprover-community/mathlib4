@@ -19,7 +19,7 @@ Some functions here are duplicates from the folder `Mathlib/Lean/`.
 /-- Format as hex digit string. Used by `Cache` to format hashes. -/
 def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
   | 0, s => s
-  | len+1, s =>
+  | len + 1, s =>
     let b := UInt8.ofNat (n >>> (len * 8))
     Nat.toHexDigits n len <|
       s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)

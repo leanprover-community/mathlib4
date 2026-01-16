@@ -3,12 +3,13 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.Group.ConjFinite
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # Class Equation
@@ -22,6 +23,8 @@ This file establishes the class equation for finite groups.
   nontrivial conjugacy classes. Also `Group.nat_card_center_add_sum_card_noncenter_eq_card`.
 
 -/
+
+public section
 
 open MulAction ConjClasses
 
@@ -72,7 +75,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
 theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
     [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] [Fintype <| Subgroup.center G]
     [Fintype <| noncenter G] : Fintype.card (Subgroup.center G) +
-  ∑ x ∈ (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
+    ∑ x ∈ (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
   convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
   · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype,

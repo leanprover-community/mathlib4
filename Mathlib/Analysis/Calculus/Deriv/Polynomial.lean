@@ -3,10 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Add
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.Deriv.Add
 
 /-!
 # Derivatives of polynomials
@@ -15,7 +18,7 @@ In this file we prove that derivatives of polynomials in the analysis sense agre
 derivatives in the algebraic sense.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## TODO
 
@@ -26,6 +29,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, polynomial
 -/
+
+public section
 
 
 universe u
@@ -86,6 +91,7 @@ protected theorem differentiableWithinAt_aeval :
     DifferentiableWithinAt 𝕜 (fun x => aeval x q) s x :=
   q.differentiableAt_aeval.differentiableWithinAt
 
+@[fun_prop]
 protected theorem differentiable : Differentiable 𝕜 fun x => p.eval x := fun _ => p.differentiableAt
 
 protected theorem differentiable_aeval : Differentiable 𝕜 fun x : 𝕜 => aeval x q := fun _ =>

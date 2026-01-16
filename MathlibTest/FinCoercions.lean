@@ -11,12 +11,12 @@ set_option pp.mvars false
 -- Such a coercion would frequently introduce unexpected modular arithmetic.
 
 /--
-error: type mismatch
+error: Type mismatch
   n
 has type
-  ℕ : Type
+  ℕ
 but is expected to have type
-  Fin 3 : Type
+  Fin 3
 ---
 info: fun n => sorry : (n : ℕ) → ?_ n
 -/

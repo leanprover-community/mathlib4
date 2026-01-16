@@ -3,10 +3,12 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -35,6 +37,8 @@ integers.
 
 p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -88,14 +92,15 @@ theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
   ext
-  rw [valuation_coe, norm_extends, padicNormE.norm_p, one_div, NNReal.coe_inv,
+  rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -140,7 +145,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
 @[simp, norm_cast]
-lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p])  := by
+lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
 
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
@@ -148,11 +153,12 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
   strictMono' := strictMono_id
-  nontrivial' := by
+  exists_val_nontrivial := by
     use p
     have hp : Nat.Prime p := hp.1
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
@@ -164,7 +170,7 @@ lemma rankOne_hom_eq :
 
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
-instance : NormedField ℂ_[p] :=  Valued.toNormedField _ _
+instance : NormedField ℂ_[p] := Valued.toNormedField _ _
 
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
 
@@ -179,13 +185,13 @@ theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun x y ↦ by
   refine UniformSpace.Completion.induction_on₂ x y
-    (isClosed_le (continuous_norm.comp continuous_add) (by continuity)) (fun a b ↦ ?_)
+    (isClosed_le (continuous_norm.comp continuous_add) (by fun_prop)) (fun a b ↦ ?_)
   rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
   exact PadicAlgCl.isNonarchimedean p a b
 
 end PadicComplex
 
-/-- We define `𝓞_ℂ_[p]` as the valuation subring of of `ℂ_[p]`, consisting of those elements with
+/-- We define `𝓞_ℂ_[p]` as the valuation subring of `ℂ_[p]`, consisting of those elements with
   valuation `≤ 1`. -/
 def PadicComplexInt : ValuationSubring ℂ_[p] := (PadicComplex.valued p).v.valuationSubring
 

@@ -3,29 +3,27 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Ring.Shrink
+module
+
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Module.TransferInstance
 
 /-!
-# Transfer module and algebra structures from `α` to `Shrink α`.
+# Transfer module and algebra structures from `α` to `Shrink α`
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
-variable {α β : Type*}
+universe v
+variable {R α : Type*} [Small.{v} α] [Semiring R] [AddCommMonoid α] [Module R α]
 
-instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α (Shrink β) :=
-  (equivShrink _).symm.module α
+namespace Shrink
 
-/-- A small module is linearly equivalent to its small model. -/
-def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [Small β] :
-    β ≃ₗ[α] Shrink β :=
-  ((equivShrink β).symm.linearEquiv α).symm
+instance : Module R (Shrink.{v} α) := (equivShrink α).symm.module R
 
-instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α (Shrink β) :=
-  (equivShrink _).symm.algebra α
+variable (R α) in
+/-- Shrinking `α` to a smaller universe preserves module structure. -/
+@[simps!]
+def linearEquiv : Shrink.{v} α ≃ₗ[R] α := (equivShrink α).symm.linearEquiv _
 
-/-- A small algebra is algebra equivalent to its small model. -/
-def algEquivShrink (α β) [CommSemiring α] [Semiring β] [Algebra α β] [Small β] :
-    β ≃ₐ[α] Shrink β :=
-  ((equivShrink β).symm.algEquiv α).symm
+end Shrink

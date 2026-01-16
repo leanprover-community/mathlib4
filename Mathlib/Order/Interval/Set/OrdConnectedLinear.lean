@@ -3,10 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta, Oliver Nash
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.SuccPred
 
 /-!
 # Order-connected subsets of linear orders
@@ -25,6 +27,8 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 * `Set.Nonempty.eq_Icc_iff_nat`: characterisation of closed intervals for `ℕ`.
 * `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
 -/
+
+public section
 
 variable {α : Type*} {I : Set α}
 
@@ -53,7 +57,7 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z
     intro z hz
-    suffices z ∉ Ioo x y by aesop
+    suffices z ∉ Ioo x y by simp_all
     exact fun contra ↦ hxy contra <| h'.out hx hy <| mem_Icc_of_Ioo contra
   · by_contra hz'
     obtain ⟨x', hx', hx''⟩ :=

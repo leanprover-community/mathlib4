@@ -3,11 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Data.Multiset.Bind
 
 /-!
 # Sections of a multiset
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Vanishing
-import Mathlib.Algebra.Module.FinitePresentation
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
+public import Mathlib.RingTheory.Flat.Tensor
 
 /-! # The equational criterion for flatness
 
@@ -51,6 +53,8 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 * [Stacks: Characterizing flatness](https://stacks.math.columbia.edu/tag/058C)
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
@@ -130,11 +134,10 @@ theorem tfae_equational_criterion : List.TFAE [
     let x' : Fin l → M := fun i ↦ x (single i 1)
     have := calc
       ∑ i, f' i • x' i
-      _ = ∑ i, f i • x (single i 1)         := rfl
+      _ = ∑ i, f i • x (single i 1) := rfl
       _ = x (∑ i, f i • Finsupp.single i 1) := by simp_rw [map_sum, map_smul]
-      _ = x f                               := by
-        simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
-      _ = 0                                 := hfx
+      _ = x f := by simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
+      _ = 0 := hfx
     obtain ⟨k, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
     use k
     use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
@@ -157,7 +160,7 @@ theorem tfae_equational_criterion : List.TFAE [
         LinearMap.congr_fun ha'y' (Finsupp.single i 1)
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
-        ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
+        ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using DFunLike.congr_fun ha' j
   tfae_finish
 
@@ -224,9 +227,6 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
     (f := e.symm f) (x := x ∘ₗ e) (by simpa using h)
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], haf⟩
 
-@[deprecated (since := "2025-01-03")] alias exists_factorization_of_apply_eq_zero :=
-  exists_factorization_of_apply_eq_zero_of_free
-
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
     [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
     {x : (Fin n →₀ R) →ₗ[R] M} (h : x ∘ₗ f = 0) :
@@ -273,7 +273,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
       ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
-  haveI : Module.Finite R K := Module.Finite.iff_fg.mpr hK
+  haveI : Module.Finite R K := .of_fg hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
     simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨k, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this

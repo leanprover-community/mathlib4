@@ -3,8 +3,10 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
+module
+
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 
 /-!
 # Absolute values and the integers
@@ -15,6 +17,8 @@ This file contains some results on absolute values applied to integers.
 
 * `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
 -/
+
+public section
 
 variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 

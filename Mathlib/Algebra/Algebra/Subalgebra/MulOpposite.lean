@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Ring.Subring.MulOpposite
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 /-!
 
@@ -14,6 +16,8 @@ For every ring `A` over a commutative ring `R`, we construct an equivalence betw
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
 
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 
@@ -32,7 +36,7 @@ attribute [norm_cast] coe_op
 @[simp]
 theorem mem_op {x : Aᵐᵒᵖ} {S : Subalgebra R A} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
-/-- Pull an subalgebra subring back to a subalgebra along `MulOpposite.op` -/
+/-- Pull a subalgebra back to a subalgebra along `MulOpposite.op` -/
 @[simps! coe toSubsemiring]
 protected def unop (S : Subalgebra R Aᵐᵒᵖ) : Subalgebra R A where
   toSubsemiring := S.toSubsemiring.unop
@@ -65,7 +69,7 @@ theorem op_le_op_iff {S₁ S₂ : Subalgebra R A} : S₁.op ≤ S₂.op ↔ S₁
 theorem unop_le_unop_iff {S₁ S₂ : Subalgebra R Aᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
   MulOpposite.unop_surjective.forall
 
-/-- A subalgebra `S` of `A / R` determines a subring `S.op` of the opposite ring `Aᵐᵒᵖ / R`. -/
+/-- A subalgebra `S` of `A / R` determines a subalgebra `S.op` of the opposite ring `Aᵐᵒᵖ / R`. -/
 @[simps]
 def opEquiv : Subalgebra R A ≃o Subalgebra R Aᵐᵒᵖ where
   toFun := Subalgebra.op

@@ -3,9 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.ZMod
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.ZMod
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -22,6 +25,8 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 zmod, quotient ring, ideal quotient
 -/
+
+@[expose] public section
 
 open QuotientAddGroup Set ZMod
 
@@ -75,5 +80,12 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
   quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
+
+/-- The **Chinese remainder theorem**, version for `ZMod n`. -/
+def ZMod.equivPi (hn : n ≠ 0) :
+    ZMod n ≃+* Π (p : n.primeFactors), ZMod (p ^ (n.factorization p)) :=
+  (ringEquivCongr <| Nat.prod_pow_primeFactors_factorization hn).trans
+    <| prodEquivPi (fun (p : n.primeFactors) ↦ (p : ℕ) ^ (n.factorization p))
+      n.pairwise_coprime_pow_primeFactors_factorization
 
 end ChineseRemainder

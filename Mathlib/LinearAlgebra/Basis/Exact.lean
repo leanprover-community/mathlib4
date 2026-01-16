@@ -3,8 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Basis from a split exact sequence
@@ -18,11 +21,15 @@ We treat linear independence and the span condition separately. For convenience 
 is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
 -/
 
+@[expose] public section
+
 variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
 variable [Module R M] [Module R K] [Module R P]
 variable {f : K →ₗ[R] M} {g : M →ₗ[R] P} {s : M →ₗ[R] K}
 variable (hs : s ∘ₗ f = LinearMap.id) (hfg : Function.Exact f g)
 variable {ι κ σ : Type*} {v : ι → M} {a : κ → ι} {b : σ → ι}
+
+section
 include hs hfg
 
 lemma LinearIndependent.linearIndependent_of_exact_of_retraction
@@ -84,10 +91,54 @@ if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
 For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
-noncomputable def Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
+noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))
     (hab : Codisjoint (Set.range a) (Set.range b)) :
     Basis κ R P :=
-  Basis.mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
+  .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
+
+@[simp]
+lemma Module.Basis.ofSplitExact_apply (hg : Function.Surjective g) (v : Basis ι R M)
+    (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
+    (hlib : LinearIndependent R (s ∘ v ∘ b))
+    (hab : Codisjoint (Set.range a) (Set.range b)) (k : κ) :
+    ofSplitExact hs hfg hg v hainj hsa hlib hab k = g (v (a k)) := by
+  simp [ofSplitExact]
+
+end
+
+section
+include hfg
+
+lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
+    {p q : Submodule R M} (hpq : IsCompl p q)
+    (hmap : Submodule.map g q = ⊤) :
+    Function.Surjective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
+  rw [← Set.surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
+  rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), surjOn_iff_le_map,
+    ← hfg.linearMap_ker_eq]
+  intro x triv
+  obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
+  exact ⟨x - a, by simp [← ha], by simpa⟩
+
+lemma Submodule.linearProjOfIsCompl_comp_bijective_of_exact
+    (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
+    Function.Bijective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
+  refine ⟨?_, Submodule.linearProjOfIsCompl_comp_surjective_of_exact hfg _ hmap⟩
+  rwa [LinearMap.coe_comp, Set.InjOn.injective_iff ↑(LinearMap.range f) _ subset_rfl]
+  simpa [← LinearMap.disjoint_ker_iff_injOn, ← hfg.linearMap_ker_eq]
+
+lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
+    (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]
+    {i : E →ₗ[R] M} (hi : Function.Injective i) (h : IsCompl (LinearMap.range i) q)
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
+    Function.Bijective (LinearMap.linearProjOfIsCompl q i hi h ∘ₗ f) := by
+  rw [LinearMap.linearProjOfIsCompl, LinearMap.comp_assoc, LinearMap.coe_comp,
+      Function.Bijective.of_comp_iff]
+  · exact (LinearEquiv.ofInjective i hi).symm.bijective
+  · exact Submodule.linearProjOfIsCompl_comp_bijective_of_exact hfg hf h hker hmap
+
+end

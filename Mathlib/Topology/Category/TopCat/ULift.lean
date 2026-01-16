@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Lifting topological spaces to a higher universe
@@ -13,6 +15,8 @@ In this file, we construct the functor `uliftFunctor.{v, u} : TopCat.{u} ⥤ Top
 which sends a topological space `X : Type u` to a homeomorphic space in `Type (max u v)`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -49,7 +53,7 @@ lemma uliftFunctorObjHomeo_symm_naturality_apply {X Y : TopCat.{u}} (f : X ⟶ Y
 with the one defined on categories of types. -/
 @[simps!]
 def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
-  forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
+    forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
 
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where

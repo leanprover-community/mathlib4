@@ -3,10 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Prod
 /-!
 # Adjoining elements to form subalgebras
 
@@ -18,13 +20,14 @@ adjoin, algebra
 
 -/
 
+public section
+
 assert_not_exists Polynomial
 
 universe uR uS uA uB
 
-open Pointwise
-
-open Submodule Subsemiring
+open Module Submodule Subsemiring
+open scoped Pointwise
 
 variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 
@@ -49,7 +52,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
   · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
-      subset_adjoin,-- the rest comes from `squeeze_simp`
+      subset_adjoin, -- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,
       Set.mk_preimage_prod_left, LinearMap.coe_inr, and_self_iff, Set.union_singleton,
@@ -84,12 +87,8 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
 theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
-  · change adjoin R s ≤ (adjoin S s).restrictScalars R
-    refine adjoin_le ?_
-    -- Porting note: unclear why this was broken
-    have : (Subalgebra.restrictScalars R (adjoin S s) : Set A) = adjoin S s := rfl
-    rw [this]
-    exact subset_adjoin
+  · rw [← Subalgebra.coe_restrictScalars R (S := S), SetLike.coe_subset_coe]
+    exact adjoin_le subset_adjoin
 
 theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
     (adjoin S s).restrictScalars R = (IsScalarTower.toAlgHom R S A).range ⊔ adjoin R s := by
@@ -125,6 +124,17 @@ variable (R s t)
 theorem adjoin_union_eq_adjoin_adjoin :
     adjoin R (s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R := by
   simpa using adjoin_algebraMap_image_union_eq_adjoin_adjoin R s t
+
+/--
+If `A` is spanned over `R` by `s`, then the algebra spanned over `A` by `t` is the equal to the
+algebra spanned over `R` by `s ∪ t`.
+-/
+theorem adjoin_eq_adjoin_union [CommSemiring B] [Algebra R B] [Algebra A B]
+    [IsScalarTower R A B] (s : Set A) (t : Set B) (hS : adjoin R s = ⊤) :
+    (adjoin A t).restrictScalars R = adjoin R ((algebraMap A B '' s) ∪ t) := by
+  have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R A B)) hS
+  rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
+  rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
 
 variable {R}
 
@@ -178,7 +188,7 @@ theorem Subalgebra.adjoin_eq_span_basis {ι : Type*} (bL : Basis ι F L) :
     toSubmodule (adjoin E (L : Set K)) = span E (Set.range fun i : ι ↦ (bL i).1) :=
   L.adjoin_eq_span_of_eq_span E <| by
     simpa only [← L.range_val, Submodule.map_span, Submodule.map_top, ← Set.range_comp]
-      using congr_arg (Submodule.map L.val) bL.span_eq.symm
+      using congr_arg (Submodule.map (L.val : L →ₗ[F] K)) bL.span_eq.symm
 
 theorem Algebra.restrictScalars_adjoin (F : Type*) [CommSemiring F] {E : Type*} [CommSemiring E]
     [Algebra F E] (K : Subalgebra F E) (S : Set E) :

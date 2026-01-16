@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Aesop
 
 /-!
 # `ULift` instances for groups and monoids
@@ -16,6 +18,8 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -65,17 +69,17 @@ instance smul [SMul α β] : SMul α (ULift β) :=
 theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
   rfl
 
-@[to_additive existing (reorder := 1 2) smul]
+@[to_additive existing smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
-@[to_additive existing (attr := simp) (reorder := 1 2, 4 5) smul_down]
+@[to_additive existing (attr := simp) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 
 /-- The multiplicative equivalence between `ULift α` and `α`.
 -/
-@[to_additive "The additive equivalence between `ULift α` and `α`."]
+@[to_additive /-- The additive equivalence between `ULift α` and `α`. -/]
 def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 
@@ -99,44 +103,6 @@ instance monoid [Monoid α] : Monoid (ULift α) :=
 instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
   Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance instNatCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
-instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
-
-@[simp, norm_cast]
-theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
-  rfl
-
-@[simp]
-theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    up (ofNat(n) : α) = ofNat(n) :=
-  rfl
-
-@[simp, norm_cast]
-theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
-  rfl
-
-@[simp, norm_cast]
-theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
-  rfl
-
-@[simp]
-theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    down (ofNat(n) : ULift α) = ofNat(n) :=
-  rfl
-
-@[simp, norm_cast]
-theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
-  rfl
-
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
-  { ULift.one, ULift.addMonoid with
-      natCast := (⟨·⟩)
-      natCast_zero := congr_arg ULift.up Nat.cast_zero,
-      natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
-
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (ULift α) :=
-  { ULift.addMonoidWithOne, ULift.addCommMonoid with }
-
 @[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
   Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
@@ -151,15 +117,6 @@ instance group [Group α] : Group (ULift α) :=
 instance commGroup [CommGroup α] : CommGroup (ULift α) :=
   Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
-
-instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
-  { ULift.addMonoidWithOne, ULift.addGroup with
-      intCast := (⟨·⟩),
-      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
-      intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
-
-instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne (ULift α) :=
-  { ULift.addGroupWithOne, ULift.addCommGroup with }
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=

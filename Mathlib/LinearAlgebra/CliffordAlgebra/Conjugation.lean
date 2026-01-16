@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.Algebra.Module.Opposite
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Conjugations
@@ -29,6 +31,8 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]

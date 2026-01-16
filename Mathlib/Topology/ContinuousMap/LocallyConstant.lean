@@ -3,14 +3,18 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Topology.LocallyConstant.Algebra
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
 
 -/
+
+@[expose] public section
 
 
 namespace LocallyConstant
@@ -19,8 +23,8 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- The inclusion of locally-constant functions into continuous functions as a multiplicative
 monoid hom. -/
-@[to_additive (attr := simps)
-"The inclusion of locally-constant functions into continuous functions as an additive monoid hom."]
+@[to_additive (attr := simps) /-- The inclusion of locally-constant functions into continuous
+functions as an additive monoid hom. -/]
 def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y →* C(X, Y) where
   toFun := (↑)
   map_one' := by

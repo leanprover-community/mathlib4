@@ -3,9 +3,10 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Filter.CountableInter
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measurability modulo a filter
@@ -31,6 +32,8 @@ TODO: Implement the latter.
 
 -/
 
+@[expose] public section
+
 open Filter Set MeasurableSpace
 
 variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
@@ -44,8 +47,6 @@ def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : Measura
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
     exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
-
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace := eventuallyMeasurableSpace
 
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
@@ -63,9 +64,6 @@ theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
 theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurable_le :=
-  le_eventuallyMeasurableSpace
-
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
   ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
 
@@ -81,9 +79,6 @@ section instances
 instance eventuallyMeasurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (eventuallyMeasurableSpace m l) :=
   @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
-
-@[deprecated (since := "2025-06-21")] alias EventuallyMeasurableSpace.measurableSingleton :=
-  eventuallyMeasurableSingleton
 
 end instances
 

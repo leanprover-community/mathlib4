@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 /-!
 # Matching with a RefinedDiscrTree
@@ -27,6 +29,8 @@ We use a simple unification algorithm. For all star/metavariable patterns in the
 and when it is attempted to be assigned again, we check that it is the same assignment.
 
 -/
+
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 
@@ -134,7 +138,7 @@ private structure PartialMatch where
   /-- Trie to match next -/
   trie : TrieIndex
   /-- Metavariable assignments for `.labelledStar` patterns in the discrimination tree.
-    We use a `List Key`, in the reverse order. -/
+  We use a `List Key`, in the reverse order. -/
   treeStars : Std.HashMap Nat (List Key) := {}
   deriving Inhabited
 
@@ -193,7 +197,7 @@ where
   drop (dropped rest : List Key) (n : Nat) : (List Key × List Key) := Id.run do
     match n with
     | 0 => (dropped, rest)
-    | n+1 =>
+    | n + 1 =>
       let key :: rest := rest | panic! "too few keys"
       drop (key :: dropped) rest (n + key.arity)
 
@@ -262,7 +266,7 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 
 /--
 Find values that match `e` in `d`.
-* If `unify == true` then metavarables in `e` can be assigned.
+* If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.
 

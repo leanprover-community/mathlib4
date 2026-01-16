@@ -3,18 +3,22 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.Invertible
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Ring.Invertible
 
 /-!
 # Further basic results about modules.
 
 -/
+
+public section
 
 assert_not_exists Nonneg.inv Multiset
 
@@ -32,7 +36,7 @@ theorem Units.neg_smul [Ring R] [AddCommGroup M] [Module R M] (u : Rˣ) (x : M) 
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
     [Invertible (2 : R)] (x : M) :
-    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
+    (⅟2 : R) • x + (⅟2 : R) • x = x :=
   Convex.combo_self invOf_two_add_invOf_two _
 
 theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]

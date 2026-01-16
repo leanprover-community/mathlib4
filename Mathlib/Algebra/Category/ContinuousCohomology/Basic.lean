@@ -3,12 +3,14 @@ Copyright (c) 2025 Richard Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Functor
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.CategoryTheory.Action.Limits
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Functor
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.Action.Limits
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 
@@ -33,13 +35,15 @@ See `ContinuousCohomology.MultiInd.d`.
 - `ContinuousCohomology.homogeneousCochains`:
   The functor taking an `R`-linear `G`-representation to the complex of homogeneous cochains.
 - `continuousCohomology`:
-  The functor taking an `R`-linear `G`-representation to its `n`-th continuous homology.
+  The functor taking an `R`-linear `G`-representation to its `n`-th continuous cohomology.
 
 ## TODO
 - Show that it coincides with `groupCohomology` for discrete groups.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
-- Show that short exact sequences induces long exact sequences in certain scenarios.
+- Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
+
+@[expose] public section
 
 open CategoryTheory Functor ContinuousMap
 
@@ -90,12 +94,14 @@ def const : 𝟭 _ ⟶ I R G where
 
 namespace MultiInd
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
 def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
   | 0     => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The differential map in `MultiInd.complex`. -/
 def d : ∀ n : ℕ, functor R G n ⟶ functor R G (n + 1)
   | 0     => const R G
@@ -151,7 +157,7 @@ def homogeneousCochains : Action (TopModuleCat R) G ⥤ CochainComplex (TopModul
     (ComplexShape.embeddingUp'Add 1 1).restrictionFunctor _
 
 /-- `continuousCohomology R G n` is the functor taking
-an `R`-linear `G`-representation to its `n`-th continuous homology. -/
+an `R`-linear `G`-representation to its `n`-th continuous cohomology. -/
 noncomputable
 def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopModuleCat R :=
   homogeneousCochains R G ⋙ HomologicalComplex.homologyFunctor _ _ n
@@ -159,16 +165,16 @@ def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopMod
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
-    LinearMap.ker (((homogeneousCochains R G).obj X).d 0 n).hom ≃L[R] (invariants R G).obj X where
+    (((homogeneousCochains R G).obj X).d 0 n).hom.ker ≃L[R] (invariants R G).obj X where
   toFun x :=
   { val := DFunLike.coe (F := C(G, _)) x.1.1 1
     property g := by
       subst hn
       obtain ⟨⟨x : C(G, _), hx⟩, hx'⟩ := x
       have : (X.ρ g).hom (x (g⁻¹ * 1)) = x 1 := congr(DFunLike.coe (F := C(G, _)) $(hx g) 1)
-      have hx' : x (g⁻¹ * 1) + (- x 1) = 0 :=
+      have hx' : x (g⁻¹ * 1) - x 1 = 0 :=
         congr(DFunLike.coe (F := C(G, _)) (DFunLike.coe (F := C(G, _)) ($hx').1 1) (g⁻¹ * 1))
-      rw [← sub_eq_add_neg, sub_eq_zero] at hx'
+      rw [sub_eq_zero] at hx'
       exact congr((X.ρ g).hom $hx').symm.trans this }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -177,14 +183,14 @@ def kerHomogeneousCochainsZeroEquiv
       by subst hn; exact x.2 g⟩, ?_⟩
     subst hn
     exact Subtype.ext (ContinuousMap.ext fun a ↦
-      ContinuousMap.ext fun b ↦ show x.1 + (- x.1) = (0 : X.V) by simp)
+      ContinuousMap.ext fun b ↦ show x.1 - x.1 = (0 : X.V) by simp)
   left_inv x := by
     subst hn
     obtain ⟨⟨x : C(G, _), hx⟩, hx'⟩ := x
     refine Subtype.ext (Subtype.ext <| ContinuousMap.ext fun a ↦ ?_)
-    have hx' : x 1 + (- x a) = 0 :=
+    have hx' : x 1 - x a = 0 :=
       congr(DFunLike.coe (F := C(G, _)) (DFunLike.coe (F := C(G, _)) ($hx').1 a) 1)
-    rwa [← sub_eq_add_neg, sub_eq_zero] at hx'
+    rwa [sub_eq_zero] at hx'
   right_inv _ := rfl
   continuous_toFun := continuous_induced_rng.mpr ((continuous_eval_const (F := C(G, _)) 1).comp
       (continuous_subtype_val.comp continuous_subtype_val))

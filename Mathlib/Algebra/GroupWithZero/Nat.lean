@@ -3,9 +3,11 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Tactic.Spread
 
 /-!
 # The natural numbers form a `CancelCommMonoidWithZero`
@@ -14,6 +16,8 @@ This file contains the `CancelCommMonoidWithZero` instance on the natural number
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -37,7 +41,7 @@ instance instCommMonoidWithZero : CommMonoidWithZero ℕ where
   __ := instMonoidWithZero
 
 instance instIsLeftCancelMulZero : IsLeftCancelMulZero ℕ where
-  mul_left_cancel_of_ne_zero h := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
+  mul_left_cancel_of_ne_zero h _ _ := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
   __ := instCommMonoidWithZero

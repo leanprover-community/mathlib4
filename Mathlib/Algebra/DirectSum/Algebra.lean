@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.DirectSum.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.DirectSum.Ring
 
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 
@@ -23,6 +25,8 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 * `DirectSum.toAlgebra` extends `DirectSum.toSemiring` to produce an `AlgHom`.
 
 -/
+
+@[expose] public section
 
 
 universe uι uR uA uB
@@ -70,8 +74,8 @@ variable [DecidableEq ι]
 instance : Algebra R (⨁ i, A i) where
   algebraMap :=
   { toFun := (DirectSum.of A 0).comp GAlgebra.toFun
-    map_zero' := AddMonoidHom.map_zero _
-    map_add' := AddMonoidHom.map_add _
+    map_zero' := map_zero _
+    map_add' := map_add _
     map_one' := DFunLike.congr_arg (DirectSum.of A 0) GAlgebra.map_one
     map_mul' a b := by
       simp only [AddMonoidHom.comp_apply]
@@ -104,7 +108,7 @@ theorem algebraMap_toAddMonoid_hom :
 /-- A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
 describes an `AlgHom` on `⨁ i, A i`. This is a stronger version of `DirectSum.toSemiring`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure originates from
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/

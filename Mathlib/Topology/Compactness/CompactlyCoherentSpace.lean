@@ -3,9 +3,10 @@ Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Topology.Coherent
-import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Coherent
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Compactly coherent spaces and the k-ification
@@ -27,6 +28,8 @@ are both referred to as compactly generated spaces in the literature.
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -61,7 +64,7 @@ lemma isClosed_iff [CompactlyCoherentSpace X] (A : Set X) :
 then the space is a compactly coherent space. -/
 lemma of_isOpen (h : ∀ (A : Set X), (∀ K, IsCompact K → IsOpen (K ↓∩ A)) → IsOpen A) :
     CompactlyCoherentSpace X where
-  isCoherentWith := {isOpen_of_forall_induced := h}
+  isCoherentWith := { isOpen_of_forall_induced := h }
 
 /-- If every set `A` is closed if for every compact `K` the intersection `K ∩ A` is closed in `K`,
 then the space is a compactly coherent space. -/
@@ -73,15 +76,9 @@ lemma of_isClosed (h : ∀ (A : Set X), (∀ K, IsCompact K → IsClosed (K ↓�
 instance of_weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X] : CompactlyCoherentSpace X where
   isCoherentWith := IsCoherentWith.of_nhds exists_compact_mem_nhds
 
-@[deprecated (since := "2025-05-30")] alias
-_root_.Topology.IsCoherentWith.isCompact_of_weaklyLocallyCompact := of_weaklyLocallyCompactSpace
-
 /-- Every sequential space is a compactly coherent space. -/
 instance of_sequentialSpace [SequentialSpace X] : CompactlyCoherentSpace X where
   isCoherentWith := IsCoherentWith.of_seq fun _u _x hux ↦ hux.isCompact_insert_range
-
-@[deprecated (since := "2025-05-30")] alias
-_root_.Topology.IsCoherentWith.isCompact_of_seq := of_sequentialSpace
 
 /-- In a compactly coherent space `X`, a set `s` is open iff `f ⁻¹' s` is open for every continuous
 map from a compact space. -/

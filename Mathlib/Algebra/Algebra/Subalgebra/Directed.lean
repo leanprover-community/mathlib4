@@ -3,9 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Data.Set.UnionLift
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Data.Set.UnionLift
 
 /-!
 # Subalgebras and directed Unions of sets
@@ -16,6 +17,8 @@ import Mathlib.Data.Set.UnionLift
 * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 
@@ -37,9 +40,7 @@ theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ 
 
 variable (K)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: turn `hT` into an assumption `T ≤ iSup K`.
--- That's what `Set.iUnionLift` needs
--- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
+-- TODO: turn `hT` into an assumption `T ≤ iSup K`. That's what `Set.iUnionLift` needs
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
@@ -53,18 +54,14 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
           rfl)
         (T : Set A) (by rw [hT, coe_iSup_of_directed dir])
     map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
-    map_zero' := by dsimp; apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
+    map_zero' := by apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
     map_mul' := by
-      subst hT; dsimp
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
-      all_goals simp
+      subst hT;
+      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·)) <;> simp
     map_add' := by
-      subst hT; dsimp
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
-      all_goals simp
-    commutes' := fun r => by
-      dsimp
-      apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
+      subst hT;
+      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·)) <;> simp
+    commutes' := fun r => by apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
 
 
 @[simp]

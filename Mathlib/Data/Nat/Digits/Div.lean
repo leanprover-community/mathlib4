@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Data.List.Palindrome
-import Mathlib.Data.Nat.Digits.Lemmas
+module
+
+public import Mathlib.Data.List.Palindrome
+public import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # Divisibility tests for natural numbers in terms of digits.
@@ -14,15 +16,17 @@ Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
 -/
 
+public section
+
 namespace Nat
 
 variable {n : ℕ}
 
 theorem modEq_three_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 3] :=
-  modEq_digits_sum 3 10 (by norm_num) n
+  modEq_digits_sum 3 10 (by simp) n
 
 theorem modEq_nine_digits_sum (n : ℕ) : n ≡ (digits 10 n).sum [MOD 9] :=
-  modEq_digits_sum 9 10 (by norm_num) n
+  modEq_digits_sum 9 10 (by simp) n
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
     n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
@@ -39,10 +43,10 @@ theorem dvd_iff_dvd_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) :
 
 /-- **Divisibility by 3 Rule** -/
 theorem three_dvd_iff (n : ℕ) : 3 ∣ n ↔ 3 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 3 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 3 10 (by simp) n
 
 theorem nine_dvd_iff (n : ℕ) : 9 ∣ n ↔ 9 ∣ (digits 10 n).sum :=
-  dvd_iff_dvd_digits_sum 9 10 (by norm_num) n
+  dvd_iff_dvd_digits_sum 9 10 (by simp) n
 
 theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ) - c) (n : ℕ) :
     b ∣ n ↔ (b : ℤ) ∣ ofDigits c (digits b' n) := by
@@ -52,7 +56,7 @@ theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ
 
 theorem eleven_dvd_iff :
     11 ∣ n ↔ (11 : ℤ) ∣ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum := by
-  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by norm_num) n
+  have t := dvd_iff_dvd_ofDigits 11 10 (-1 : ℤ) (by simp) n
   rw [ofDigits_neg_one] at t
   exact t
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.LinearAlgebra.Finsupp.Supported
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Order.Group.Action
+public import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -38,6 +40,8 @@ section `set_acting_on_submodules` does not have a counterpart in the files
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
 lemmas from the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 
@@ -85,7 +89,6 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
-  neg := Neg.neg
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
@@ -108,9 +111,6 @@ theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
     exact subset_span
   · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
     exact subset_span
-
-@[deprecated (since := "2025-04-08")]
-alias closure_neg := span_neg_eq_neg
 
 @[simp]
 theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
@@ -168,11 +168,12 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : IsOrderedAddMonoid (Submodule R M) :=
-  { add_le_add_left := fun _a _b => sup_le_sup_left }
+instance : IsOrderedAddMonoid (Submodule R M) where
+  add_le_add_left _ _ := sup_le_sup_right
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
-  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add := fun _a _b => le_sup_left
 
 section
@@ -196,7 +197,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 
@@ -229,6 +230,11 @@ theorem smul_bot' (a : α) : a • (⊥ : Submodule R M) = ⊥ :=
 /-- See also `Submodule.smul_sup`. -/
 theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
+
+/-- See also `Submodule.smul_iSup`. -/
+theorem smul_iSup' (a : α) {ι : Sort*} (f : ι → Submodule R M) :
+    a • ⨆ i, f i = ⨆ i, a • f i :=
+  map_iSup _ _
 
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
@@ -322,7 +328,7 @@ variable (sR : Set R) (s : Set S) (N : Submodule R M)
 
 lemma mem_set_smul_def (x : M) :
     x ∈ s • N ↔
-  x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
+    x ∈ sInf { p : Submodule R M | ∀ ⦃r : S⦄ {n : M}, r ∈ s → n ∈ N → r • n ∈ p } := Iff.rfl
 
 variable {s N} in
 @[aesop safe]
@@ -434,12 +440,12 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
       · refine fun h ↦ h fun r n hr hn ↦ ?_
         rw [mem_set_smul_def, mem_sInf]
         exact fun p hp ↦ hp hr hn
-      · aesop
+      · simp_all
 
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
-  · intros h
+  · intro h
     rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩
@@ -540,7 +546,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseSetDistribMulAction
 lemma sup_set_smul (s t : Set S) :
     (s ⊔ t) • N = s • N ⊔ t • N :=
   set_smul_eq_of_le _ _ _
-    (by rintro _ _ (hr|hr) hn
+    (by rintro _ _ (hr | hr) hn
         · exact Submodule.mem_sup_left (mem_set_smul_of_mem_mem hr hn)
         · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem hr hn))
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))

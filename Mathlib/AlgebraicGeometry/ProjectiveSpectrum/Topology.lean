@@ -3,10 +3,12 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
 -/
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Projective spectrum of a graded ring
@@ -16,9 +18,9 @@ are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
 ## Notation
-- `R` is a commutative semiring;
-- `A` is a commutative ring and an `R`-algebra;
-- `𝒜 : ℕ → Submodule R A` is the grading of `A`;
+- `A` is a commutative ring
+- `σ` is a class of additive submonoids of `A`
+- `𝒜 : ℕ → σ` is the grading of `A`;
 
 ## Main definitions
 
@@ -35,14 +37,16 @@ It is naturally endowed with a topology: the Zariski topology.
   Zariski topology.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
-variable {R A : Type*}
-variable [CommSemiring R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
+variable {A σ : Type*}
+variable [CommRing A] [SetLike σ A] [AddSubmonoidClass σ A]
+variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals
 that are prime and do not contain the irrelevant ideal. -/
@@ -116,13 +120,13 @@ theorem subset_zeroLocus_iff_le_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜
 
 variable (𝒜)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
@@ -273,9 +277,6 @@ theorem mem_compl_zeroLocus_iff_notMem {f : A} {I : ProjectiveSpectrum 𝒜} :
     I ∈ (zeroLocus 𝒜 {f} : Set (ProjectiveSpectrum 𝒜))ᶜ ↔ f ∉ I.asHomogeneousIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
-
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
 of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
 instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
@@ -372,17 +373,17 @@ theorem basicOpen_pow (f : A) (n : ℕ) (hn : 0 < n) : basicOpen 𝒜 (f ^ n) = 
   TopologicalSpace.Opens.ext <| by simpa using zeroLocus_singleton_pow 𝒜 f n hn
 
 theorem basicOpen_eq_union_of_projection (f : A) :
-    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
+    basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedRing.proj 𝒜 i f) :=
   TopologicalSpace.Opens.ext <|
     Set.ext fun z => by
       rw [mem_coe_basicOpen, mem_coe, iSup, TopologicalSpace.Opens.mem_sSup]
       constructor <;> intro hz
-      · rcases show ∃ i, GradedAlgebra.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
+      · rcases show ∃ i, GradedRing.proj 𝒜 i f ∉ z.asHomogeneousIdeal by
           contrapose! hz with H
           classical
           rw [← DirectSum.sum_support_decompose 𝒜 f]
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
-        exact ⟨basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
+        exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
         exact fun rid => hz (z.1.2 i rid)
 

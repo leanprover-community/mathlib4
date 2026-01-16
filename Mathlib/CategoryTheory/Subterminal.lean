@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Subobject.MonoOver
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Subterminal objects
@@ -21,10 +23,12 @@ We also construct the subcategory of subterminal objects.
 ## TODO
 
 * Define exponential ideals, and show this subcategory is an exponential ideal.
-* Use the above to show that in a locally cartesian closed category, every subobject lattice
-  is cartesian closed (equivalently, a Heyting algebra).
+* Use the above to show that in a locally Cartesian closed category, every subobject lattice
+  is Cartesian closed (equivalently, a Heyting algebra).
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -87,7 +91,7 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
         rw [IsSubterminal.def] at hA
-        aesop_cat⟩⟩⟩
+        cat_disch⟩⟩⟩
 
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
@@ -113,8 +117,8 @@ to the lattice of open subsets of `X`. More generally, if `C` is a topos, this i
 def Subterminals (C : Type u₁) [Category.{v₁} C] :=
   ObjectProperty.FullSubcategory fun A : C => IsSubterminal A
 
-instance (C : Type u₁) [Category.{v₁} C] :
-  Category (Subterminals C) := ObjectProperty.FullSubcategory.category _
+instance (C : Type u₁) [Category.{v₁} C] : Category (Subterminals C) :=
+  ObjectProperty.FullSubcategory.category _
 
 instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩
@@ -130,8 +134,8 @@ instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   ObjectProperty.faithful_ι _
 
-instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
-  ⟨fun f g => Y.2 f g⟩
+instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) where
+  allEq _ _ := ObjectProperty.hom_ext _ (Y.2 _ _)
 
 /--
 The category of subterminal objects is equivalent to the category of monomorphisms to the terminal
@@ -141,13 +145,13 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩) }
+      map := fun f => MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩) }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => f.1 }
+      map := fun f => ObjectProperty.homMk f.hom.1 }
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
   counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
   functor_unitIso_comp := by subsingleton

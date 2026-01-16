@@ -3,10 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Polish
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Properties of the extended logarithm and exponential
@@ -29,6 +31,8 @@ and `exp (x * y) = (exp x) ^ y`.
 ## Tags
 ENNReal, EReal, logarithm, exponential
 -/
+
+@[expose] public section
 
 open EReal ENNReal Topology
 section LogExp
@@ -57,6 +61,9 @@ lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
 
 lemma exp_mul (x : EReal) (y : ℝ) : exp (x * y) = (exp x) ^ y := by
   rw [← log_eq_iff, log_rpow, log_exp, log_exp, mul_comm]
+
+lemma ENNReal.rpow_eq_exp_mul_log (x : ℝ≥0∞) (y : ℝ) : x ^ y = exp (y * log x) := by
+  rw [mul_comm, EReal.exp_mul, exp_log]
 
 end EReal
 end Exp
@@ -110,22 +117,64 @@ lemma continuous_log : Continuous log := logOrderIso.continuous
 @[continuity, fun_prop]
 lemma continuous_exp : Continuous exp := expOrderIso.continuous
 
+lemma _root_.EReal.tendsto_exp_nhds_top_nhds_top : Filter.Tendsto exp (𝓝 ⊤) (𝓝 ⊤) :=
+  continuous_exp.tendsto ⊤
+
+lemma _root_.EReal.tendsto_exp_nhds_zero_nhds_one : Filter.Tendsto exp (𝓝 0) (𝓝 1) := by
+  convert continuous_exp.tendsto 0
+  simp
+
+lemma _root_.EReal.tendsto_exp_nhds_bot_nhds_zero : Filter.Tendsto exp (𝓝 ⊥) (𝓝 0) :=
+  continuous_exp.tendsto ⊥
+
+lemma tendsto_rpow_atTop_of_one_lt_base {b : ℝ≥0∞} (hb : 1 < b) :
+    Filter.Tendsto (b ^ · : ℝ → ℝ≥0∞) Filter.atTop (𝓝 ⊤) := by
+  simp_rw [ENNReal.rpow_eq_exp_mul_log]
+  refine EReal.tendsto_exp_nhds_top_nhds_top.comp ?_
+  convert EReal.Tendsto.mul_const tendsto_coe_atTop _ _
+  · rw [EReal.top_mul_of_pos (zero_lt_log_iff.2 hb)]
+  all_goals simp
+
+lemma tendsto_rpow_atTop_of_base_lt_one {b : ℝ≥0∞} (hb : b < 1) :
+    Filter.Tendsto (b ^ · : ℝ → ℝ≥0∞) Filter.atTop (𝓝 0) := by
+  simp_rw [ENNReal.rpow_eq_exp_mul_log]
+  refine EReal.tendsto_exp_nhds_bot_nhds_zero.comp ?_
+  convert EReal.Tendsto.mul_const tendsto_coe_atTop _ _
+  · rw [EReal.top_mul_of_neg (log_lt_zero_iff.2 hb)]
+  all_goals simp
+
+lemma tendsto_rpow_atBot_of_one_lt_base {b : ℝ≥0∞} (hb : 1 < b) :
+    Filter.Tendsto (b ^ · : ℝ → ℝ≥0∞) Filter.atBot (𝓝 0) := by
+  simp_rw [ENNReal.rpow_eq_exp_mul_log]
+  refine EReal.tendsto_exp_nhds_bot_nhds_zero.comp ?_
+  convert EReal.Tendsto.mul_const tendsto_coe_atBot _ _
+  · rw [EReal.bot_mul_of_pos (zero_lt_log_iff.2 hb)]
+  all_goals simp
+
+lemma tendsto_rpow_atBot_of_base_lt_one {b : ℝ≥0∞} (hb : b < 1) :
+    Filter.Tendsto (b ^ · : ℝ → ℝ≥0∞) Filter.atBot (𝓝 ⊤) := by
+  simp_rw [ENNReal.rpow_eq_exp_mul_log]
+  refine EReal.tendsto_exp_nhds_top_nhds_top.comp ?_
+  convert EReal.Tendsto.mul_const tendsto_coe_atBot _ _
+  · rw [EReal.bot_mul_of_neg (log_lt_zero_iff.2 hb)]
+  all_goals simp
+
 end Continuity
 
 section Measurability
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_log : Measurable log := continuous_log.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ennreal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
     {f : α → EReal} (hf : Measurable f) :
     Measurable fun x ↦ exp (f x) := measurable_exp.comp hf

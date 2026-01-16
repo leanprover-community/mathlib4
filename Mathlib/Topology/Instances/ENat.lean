@@ -3,15 +3,19 @@ Copyright (c) 2022 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Filter.Pointwise
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on extended natural numbers
 -/
+
+@[expose] public section
 
 open Filter Set Topology
 
@@ -32,9 +36,6 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 
 theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_natCast := isEmbedding_natCast
 
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
@@ -58,8 +59,8 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
-  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal]
-  exact Option.forall_ne_none
+  simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal, ENat.forall_ne_top,
+    mem_Ioi]
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩
@@ -71,7 +72,7 @@ instance : ContinuousAdd ℕ∞ := by
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
     have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
-      rcases (zero_le a).eq_or_gt with rfl | ha
+      rcases (zero_le a).eq_or_lt with rfl | ha
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
