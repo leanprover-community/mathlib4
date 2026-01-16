@@ -229,7 +229,7 @@ lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n +
   simp
 
 variable {R} in
-lemma extMk_comp {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma extMk_comp_mk₀ {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0)
     {Y' : C} {R' : InjectiveResolution Y'} {g : Y ⟶ Y'} (φ : Hom R R' g) :
     (R.extMk f m hm hf).comp (Ext.mk₀ g) (add_zero _) =

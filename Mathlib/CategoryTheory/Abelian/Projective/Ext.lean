@@ -241,7 +241,7 @@ lemma extMk_comp_mk₀ {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1
   dsimp
 
 variable {R} in
-lemma comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
+lemma mk₀_comp_extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0)
     {X' : C} {R' : ProjectiveResolution X'} {g : X' ⟶ X} (φ : Hom R' R g) :
     (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
