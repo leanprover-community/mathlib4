@@ -130,17 +130,18 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 instance : FunLike (A →A[R] B) A B where
   coe f := f.toAlgHom
-  coe_injective'  f g h  := by
+  coe_injective' f g h := by
     cases f; cases g
     simp only [mk.injEq]
     exact AlgHom.ext (congrFun h)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : AlgHomClass (A →A[R] B) R A B where
-  map_mul f x y    := map_mul f.toAlgHom x y
-  map_one f        := map_one f.toAlgHom
-  map_add f        := map_add f.toAlgHom
-  map_zero f       := map_zero f.toAlgHom
-  commutes f r     := f.toAlgHom.commutes r
+  map_mul f x y := map_mul f.toAlgHom x y
+  map_one f     := map_one f.toAlgHom
+  map_add f     := map_add f.toAlgHom
+  map_zero f    := map_zero f.toAlgHom
+  commutes f r  := f.toAlgHom.commutes r
 
 @[simp]
 theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
@@ -232,6 +233,11 @@ algebra maps equal on `s` are equal. -/
 theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
   ext fun x => eqOn_closure_adjoin h (hs x)
+
+/-- Interpret a `ContinuousAlgHom` as a `ContinuousLinearMap`. -/
+def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where toLinearMap := e.toAlgHom.toLinearMap
+
+@[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
 
 variable [IsTopologicalSemiring A]
 
@@ -358,6 +364,7 @@ instance : Monoid (A →A[R] A) where
 theorem coe_pow (f : A →A[R] A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- coercion from `ContinuousAlgHom` to `AlgHom` as a `RingHom`. -/
 @[simps]
 def toAlgHomMonoidHom : (A →A[R] A) →* A →ₐ[R] A where
@@ -399,6 +406,7 @@ instance {D : Type*} [UniformSpace D] [CompleteSpace D]
 
 variable (R A B)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Prod.fst` as a `ContinuousAlgHom`. -/
 def fst : A × B →A[R] A where
   cont     := continuous_fst
@@ -458,11 +466,12 @@ theorem coe_prodMap' {D : Type*} [Semiring D] [TopologicalSpace D] [Algebra R D]
     (f₂ : C →A[R] D) : ⇑(f₁.prodMap f₂) = Prod.map f₁ f₂ :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `ContinuousAlgHom.prod` as an `Equiv`. -/
 @[simps apply]
 def prodEquiv : (A →A[R] B) × (A →A[R] C) ≃ (A →A[R] B × C) where
-  toFun f     := f.1.prod f.2
-  invFun f    := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
+  toFun f  := f.1.prod f.2
+  invFun f := ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩
 
 end prod
 
@@ -472,6 +481,7 @@ variable {R A}
 variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Restrict codomain of a continuous algebra morphism. -/
 def codRestrict (f : A →A[R] B) (p : Subalgebra R B) (h : ∀ x, f x ∈ p) : A →A[R] p where
   cont     := f.continuous.subtype_mk _

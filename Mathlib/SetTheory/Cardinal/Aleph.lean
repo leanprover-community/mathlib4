@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández P
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
@@ -158,7 +159,7 @@ theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b <
   enumOrd_le_of_forall_lt ha H
 
 theorem isNormal_preOmega : IsNormal preOmega := by
-  rw [isNormal_iff_strictMono_limit]
+  rw [isNormal_iff]
   refine ⟨preOmega_strictMono, fun o ho a ha ↦
     (preOmega_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
   rw [← (isInitial_ord _).card_lt_card, card_ord]
@@ -177,7 +178,7 @@ alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
 
 @[simp]
 theorem preOmega_omega0 : preOmega ω = ω := by
-  simp_rw [← isNormal_preOmega.apply_omega0, preOmega_natCast, iSup_natCast]
+  simp_rw [← apply_omega0_of_isNormal isNormal_preOmega, preOmega_natCast, iSup_natCast]
 
 @[simp]
 theorem omega0_le_preOmega_iff {x : Ordinal} : ω ≤ preOmega x ↔ ω ≤ x := by
@@ -247,7 +248,7 @@ theorem omega0_lt_omega_one : ω < ω₁ := by
 alias omega0_lt_omega1 := omega0_lt_omega_one
 
 theorem isNormal_omega : IsNormal omega :=
-  isNormal_preOmega.trans (isNormal_add_right _)
+  isNormal_preOmega.comp (isNormal_add_right _)
 
 @[simp]
 theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
@@ -346,9 +347,6 @@ theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
   · simp
   · exact isNormal_preAleph.le_iff_forall_le ⟨by simpa, l⟩
 
-@[deprecated (since := "2025-07-08")]
-alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
-
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
   obtain rfl | h := eq_or_ne o 0
@@ -437,9 +435,6 @@ theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
 theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isSuccLimit_ord (aleph0_le_aleph _)
-
-@[deprecated (since := "2025-07-08")]
-alias isLimit_omega := isSuccLimit_omega
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by

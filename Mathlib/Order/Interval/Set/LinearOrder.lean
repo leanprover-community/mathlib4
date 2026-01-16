@@ -14,7 +14,7 @@ Since every pair of elements are comparable in a linear order, intervals over th
 better behaved. This file collects their properties under this assumption.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 
@@ -27,22 +27,14 @@ variable {α : Type*} [LinearOrder α] {a a₁ a₂ b b₁ b₂ c d : α}
 theorem notMem_Ici : c ∉ Ici a ↔ c < a :=
   not_le
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ici := notMem_Ici
-
 theorem notMem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iic := notMem_Iic
 
 theorem notMem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi := notMem_Ioi
-
 theorem notMem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio := notMem_Iio
 
 @[simp]
 theorem compl_Iic : (Iic a)ᶜ = Ioi a :=

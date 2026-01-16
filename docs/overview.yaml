@@ -256,14 +256,14 @@ Topology:
   Metric spaces:
     metric space: 'MetricSpace'
     ball: 'Metric.ball'
-    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'UniformSpace.isCompact_iff_isSeqCompact'
+    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'isCompact_iff_isSeqCompact'
     Heine-Borel theorem (proper metric space version): 'Metric.isCompact_iff_isClosed_bounded'
     Lipschitz continuity: 'LipschitzWith'
     Hölder continuity: 'HolderWith'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
     Baire theorem: 'dense_iInter_of_isOpen'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
-    Hausdorff distance: 'EMetric.hausdorffEdist'
+    Hausdorff distance: 'Metric.hausdorffEDist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'
 
 Analysis:
@@ -357,7 +357,7 @@ Analysis:
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
     change of variables formula: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
-    divergence theorem: 'MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable'
+    divergence theorem: 'MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable'
 
   Complex analysis:
     Cauchy integral formula: 'DiffContOnCl.circleIntegral_sub_inv_smul'

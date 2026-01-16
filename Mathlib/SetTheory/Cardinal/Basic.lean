@@ -959,9 +959,6 @@ theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length <
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
-@[deprecated (since := "2025-05-23")]
-alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
-
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
@@ -977,7 +974,7 @@ def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
 @[inherit_doc]
 infixl:80 " ^< " => powerlt
 
-theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b := by
+theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a ^ c) ≤ a ^< b := by
   refine le_ciSup (f := fun y : Iio b => a ^ (y : Cardinal)) ?_ ⟨c, h⟩
   rw [← image_eq_range]
   exact bddAbove_image.{u, u} _ bddAbove_Iio

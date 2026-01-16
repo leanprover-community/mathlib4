@@ -30,7 +30,7 @@ The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite 
 (in the characteristic p case).
 -/
 
-@[expose] public section
+public section
 
 open Polynomial UniqueFactorizationMonoid
 

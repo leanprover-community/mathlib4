@@ -28,4 +28,4 @@ variable {C : Type u} [SmallCategory C]
 instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
-instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
+instance : MonoidalClosed (LightCondSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))

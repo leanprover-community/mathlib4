@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-import Mathlib.Tactic.ToFun
 
 /-!
 # Multiplicative operations on derivatives
@@ -23,7 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics ContinuousLinearMap Topology
