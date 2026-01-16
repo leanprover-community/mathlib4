@@ -165,8 +165,6 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
     intro i
     exists i.succ
 
-variable {f}
-
 end Part
 
 namespace Part
