@@ -374,7 +374,7 @@ theorem of_isIso_fac_left {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} 
 
 end IsIso
 
-@[to_dual (attr := simp) isIso_comp_right_iff]
+@[to_dual (attr := simp) (reorder := f g) isIso_comp_right_iff]
 theorem isIso_comp_left_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsIso (f ≫ g) ↔ IsIso g :=
   ⟨fun _ ↦ IsIso.of_isIso_comp_left f g, fun _ ↦ inferInstance⟩
