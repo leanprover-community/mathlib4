@@ -15,6 +15,9 @@ public import Mathlib.RingTheory.Morita.Basic
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
   the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix.
+- `moritaEquivalentToMatrix`: The equivalence between `Mod-R` and `Mod-Mₙ(R)` sending `M : Mod-R` to
+  `Mⁿ` and `M : Mod-Mₙ(R)` to `Eᵢᵢ • M`.
+- `IsMoritaEquivalent.matrix`: The proposition showing `R` and `Mₙ(R)` are Morita equivalent.
 
 -/
 
