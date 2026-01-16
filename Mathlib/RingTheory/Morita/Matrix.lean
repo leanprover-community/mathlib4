@@ -174,7 +174,7 @@ def MatrixModCat.counitIso (i : ι) :
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
 @[simps]
-def moritaEquivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
+def equivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι
   inverse := MatrixModCat.toModuleCat R i
   unitIso := MatrixModCat.unitIso R i |>.symm
@@ -196,10 +196,10 @@ open ModuleCat.Algebra in
 @[simps, stacks 074D]
 def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
-  eqv := moritaEquivalentToMatrix R i
+  eqv := equivalentToMatrix R i
   linear.map_smul {X Y} f r := by
     ext (v : ι → X)
-    simp only [moritaEquivalentToMatrix_functor, ModuleCat.toMatrixModCat_obj_carrier,
+    simp only [equivalentToMatrix_functor, ModuleCat.toMatrixModCat_obj_carrier,
       ModuleCat.toMatrixModCat_obj_isAddCommGroup, ModuleCat.toMatrixModCat_obj_isModule,
       ModuleCat.toMatrixModCat_map, ModuleCat.hom_smul, ModuleCat.hom_ofHom, LinearMap.smul_apply]
     ext i
