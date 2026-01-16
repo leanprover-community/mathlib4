@@ -1,7 +1,6 @@
 import Mathlib.Topology.Order
 
 open TopologicalSpace
-open scoped Topology
 
 -- TODO If and when `(try)SynthInstance` in `#check` is fixed, replace `ℕ` and `Prop` with variables
 
@@ -9,6 +8,41 @@ variable {α β : Type*} [TopologicalSpace α]
   (f : ℕ → α) (g : β → α) (h : α → β) (p : ℕ → Prop)
   (s : Set ℕ) (t : Set β)
 
+section
+
+-- Delab should not trigger when `Topology` scope is not open
+
+section applied
+
+/-- info: [IsOpen s, IsClosed s, Continuous p, Continuous p] : List Prop -/
+#guard_msgs(info) in
+#check [@IsOpen _ (induced f inferInstance) s, @IsClosed _ (induced f inferInstance) s,
+  @Continuous _ _ (induced p inferInstance) _ p, @Continuous _ _ _ (coinduced p inferInstance) p]
+
+/-- info: closure s : Set ℕ -/
+#guard_msgs(info) in
+#check @closure _ (induced f inferInstance) s
+
+end applied
+
+section unapplied
+
+/-- info: [IsOpen, IsClosed] : List (Set ℕ → Prop) -/
+#guard_msgs(info) in
+#check [@IsOpen _ (induced f inferInstance), @IsClosed _ (induced f inferInstance)]
+
+/-- info: closure : Set ℕ → Set ℕ -/
+#guard_msgs(info) in
+#check @closure _ (induced f inferInstance)
+
+/-- info: [Continuous, Continuous] : List ((ℕ → Prop) → Prop) -/
+#guard_msgs(info) in
+#check [@Continuous _ _ (induced p inferInstance) _, @Continuous _ _ _ (coinduced p inferInstance)]
+
+end unapplied
+end
+
+open scoped Topology
 section unary
 
 section applied
