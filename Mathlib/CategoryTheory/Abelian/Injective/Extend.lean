@@ -110,7 +110,7 @@ lemma hom'_f (n : ℤ) (m : ℕ) (h : m = n) :
     cochainComplexXIso]
 
 @[reassoc (attr := simp)]
-lemma ι'_comp :
+lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=
   HomologicalComplex.from_single_hom_ext (by
     simp [hom'_f _ 0 0 rfl, ι'_f_zero, CochainComplex.singleFunctor,

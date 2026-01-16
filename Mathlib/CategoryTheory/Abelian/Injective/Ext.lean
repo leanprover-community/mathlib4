@@ -252,6 +252,6 @@ lemma extMk_comp {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m
   rw [Category.assoc, ← NatTrans.naturality, ← Category.assoc, ← Category.assoc]
   congr 1
   simpa only [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq,
-    Functor.map_comp] using DerivedCategory.Q.congr_map φ.ι'_comp.symm
+    Functor.map_comp] using DerivedCategory.Q.congr_map φ.ι'_comp_hom'.symm
 
 end CategoryTheory.InjectiveResolution
