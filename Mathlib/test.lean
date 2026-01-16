@@ -32,14 +32,33 @@ des intervalles semi-ouverts. Alors 3. est satisfait.
 -/
 
 open Filter
-open scoped symmDiff Topology
+open scoped symmDiff Topology NNReal
 
-variable {α : Type*} [MeasurableSpace α] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α : Type*} [MeasurableSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 [CompleteSpace E]
+
+lemma Set.union_symmDiff_subset {α : Type*} (a b c : Set α) : (a ∪ b) ∆ c ⊆ a ∆ c ∪ b ∆ c := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
+
+lemma Set.symmDiff_union_subset {α : Type*} (a b c : Set α) : a ∆ (b ∪ c) ⊆ a ∆ b ∪ a ∆ c := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
+
+lemma Set.union_symmDiff_union_subset {α : Type*} (a b c d : Set α) :
+    (a ∪ b) ∆ (c ∪ d) ⊆ a ∆ c ∪ b ∆ d := by
+  intro x hx
+  simp only [Set.mem_symmDiff, Set.mem_union] at hx ⊢
+  grind
+
 
 namespace MeasureTheory
 
 set_option linter.unusedVariables false in
+/-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
+a distance on it given by `edist s t = μ (s ∆ t)` -/
 def MeasuredSets (μ : Measure α) : Type _ :=
   {s : Set α // MeasurableSet s}
 
@@ -93,14 +112,34 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
       _ ≤ μ x + ε := by
         gcongr
 
+lemma _root_.Dense.lipschitzWith_extend {α β : Type*}
+    [PseudoEMetricSpace α] [MetricSpace β] [CompleteSpace β]
+    {s : Set α} (hs : Dense s) {f : s → β} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (hs.extend f) := by
+  have : IsClosed {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+    have : Continuous (hs.extend f) := (hs.uniformContinuous_extend hf.uniformContinuous).continuous
+    apply isClosed_le (by fun_prop)
+    exact (ENNReal.continuous_const_mul (by simp)).comp (by fun_prop)
+  have : Dense {p : α × α | edist (hs.extend f p.1) (hs.extend f p.2) ≤ K * edist p.1 p.2} := by
+    apply (hs.prod hs).mono
+    rintro ⟨x, y⟩ ⟨hx, hy⟩
+    have Ax : hs.extend f x = f ⟨x, hx⟩ := hs.extend_eq hf.continuous ⟨x, hx⟩
+    have Ay : hs.extend f y = f ⟨y, hy⟩ := hs.extend_eq hf.continuous ⟨y, hy⟩
+    simp only [Set.mem_setOf_eq, Ax, Ay]
+    exact hf ⟨x, hx⟩ ⟨y, hy⟩
+  simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this
+
+open scoped ENNReal
 
 lemma exists_extension (C : Set (Set α)) (hC : ∀ s ∈ C, MeasurableSet s) (m : Set α → E)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
     (h'm : ∀ s ∈ C, ∀ t ∈ C, Disjoint s t → m (s ∪ t) = m s + m t)
-    (hm_diff : ∀ s ∈ C, ∀ t ∈ C, s \ t ∈ C)
-    (hm_inter : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C)
+    (hC_diff : ∀ s ∈ C, ∀ t ∈ C, s \ t ∈ C)
+    (hC_inter : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C)
+    (hC_union : ∀ s ∈ C, ∀ t ∈ C, s ∪ t ∈ C)
     (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, ∀ s ∈ C, m' s = m s ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  classical
   let C' : Set (MeasuredSets μ) := {s | ∃ c ∈ C, s = c}
   have C'C (s : MeasuredSets μ) (hs : s ∈ C') : (s : Set α) ∈ C := by
     rcases hs with ⟨t, ht, rfl⟩
@@ -125,34 +164,94 @@ lemma exists_extension (C : Set (Set α)) (hC : ∀ s ∈ C, MeasurableSet s) (m
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_diff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
-    rw [h'm _ (hm_inter _ (C'C _ t.2) _ (C'C _ s.2)) _ (hm_diff _ (C'C _ t.2) _ (C'C _ s.2)) A,
-      h'm _ (hm_inter _ (C'C _ s.2) _ (C'C _ t.2)) _ (hm_diff _ (C'C _ s.2) _ (C'C _ t.2)) A,
+    rw [h'm _ (hC_inter _ (C'C _ t.2) _ (C'C _ s.2)) _ (hC_diff _ (C'C _ t.2) _ (C'C _ s.2)) A,
+      h'm _ (hC_inter _ (C'C _ s.2) _ (C'C _ t.2)) _ (hC_diff _ (C'C _ s.2) _ (C'C _ t.2)) A,
       Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply enorm_sub_le.trans
     gcongr
-    · exact hm _ (hm_diff _ (C'C _ s.2) _ (C'C _ t.2))
-    · exact hm _ (hm_diff _ (C'C _ t.2) _ (C'C _ s.2))
+    · exact hm _ (hC_diff _ (C'C _ s.2) _ (C'C _ t.2))
+    · exact hm _ (hC_diff _ (C'C _ t.2) _ (C'C _ s.2))
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
-  have m₁_cont : UniformContinuous m₁ := C'_dense.uniformContinuous_extend lip.uniformContinuous
-  have B s : ‖m₁ s‖ₑ ≤ μ s := by
+  have m₁_lip : LipschitzWith 1 m₁ := C'_dense.lipschitzWith_extend lip
+  have B : ∀ s, ‖m₁ s‖ₑ ≤ μ s := by
     have : IsClosed {s | ‖m₁ s‖ₑ ≤ μ s} :=
-      isClosed_le m₁_cont.continuous.enorm MeasuredSets.continuous_measure
+      isClosed_le m₁_lip.continuous.enorm MeasuredSets.continuous_measure
+    have : Dense {s | ‖m₁ s‖ₑ ≤ μ s} := by
+      apply C'_dense.mono
+      intro s hs
+      simp only [Set.mem_setOf_eq]
+      convert hm s (C'C s hs)
+      exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
+    simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq] using this
+  have B' (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :
+      m₁ ⟨s ∪ t, s.2.union t.2⟩ = m₁ s + m₁ t := by
+    suffices ∀ ε > 0, ‖m₁ (⟨s ∪ t, s.2.union t.2⟩) - m₁ s - m₁ t‖ₑ < ε by
+      rw [← sub_eq_zero, ← enorm_eq_zero]
+      contrapose! this
+      exact ⟨‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - (m₁ s + m₁ t)‖ₑ, this.bot_lt, le_of_eq (by abel_nf)⟩
+    intro ε εpos
+    obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ 16 * δ ≤ ε := by
+      refine ⟨ε / 16, (ENNReal.div_pos εpos.ne' (by simp)), le_of_eq ?_⟩
+      exact ENNReal.mul_div_cancel (by simp) (by simp)
+    obtain ⟨s', s'C, hs'⟩ : ∃ s' ∈ C, μ (s' ∆ s) < δ := h'C _ _ s.2 δpos
+    obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t' ∆ t) < δ := h'C _ _ t.2 δpos
+    have It : ‖m t' - m₁ t‖ₑ < δ := by
+      have : m₁ ⟨t', hC _ t'C⟩ = m t' :=
+        C'_dense.extend_eq lip.continuous ⟨⟨t', hC _ t'C⟩, ⟨t', t'C, rfl⟩⟩
+      rw [← this, ← edist_eq_enorm_sub]
+      apply (m₁_lip _ _).trans_lt
+      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      exact ht'
+    have I : s' ∩ t' ⊆ s ∩ t ∪ (s' ∆ s) ∪ (t' ∆ t) := by
+      intro x ⟨hxs', hxt'⟩
+      by_cases hxs : x ∈ s <;> by_cases hxt : x ∈ t <;>
+        simp [hxs, hxt, hxs', hxt', symmDiff]
+    have hμ' : μ (s' ∩ t') < 2 * δ := calc
+      μ (s' ∩ t')
+      _ ≤ μ (s ∩ t ∪ (s' ∆ s) ∪ (t' ∆ t)) := measure_mono I
+      _ = μ ((s' ∆ s) ∪ (t' ∆ t)) := by simp [Set.disjoint_iff_inter_eq_empty.mp h]
+      _ ≤ μ (s' ∆ s) + μ (t' ∆ t) := measure_union_le _ _
+      _ < δ + δ := by gcongr
+      _ = 2 * δ := by ring
+    let s'' := s' \ t'
+    have s''C : s'' ∈ C := hC_diff _ s'C _ t'C
+    have hs'' : μ (s'' ∆ s) < 3 * δ := calc
+      μ (s'' ∆ s)
+      _ ≤ μ (s'' ∆ s') + μ (s' ∆ s) := measure_symmDiff_le _ _ _
+      _ < 2 * δ + δ := by gcongr; simp [s'', symmDiff, hμ']
+      _ = 3 * δ := by ring
+    have Is : ‖m s'' - m₁ s‖ₑ < 3 * δ := by
+      have : m₁ ⟨s'', hC _ s''C⟩ = m s'' :=
+        C'_dense.extend_eq lip.continuous ⟨⟨s'', hC _ s''C⟩, ⟨s'', s''C, rfl⟩⟩
+      rw [← this, ← edist_eq_enorm_sub]
+      apply (m₁_lip _ _).trans_lt
+      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      exact hs''
+    have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.2.union t.2⟩‖ₑ < 4 * δ := by
+      have s''t'C : s'' ∪ t' ∈ C := hC_union _ s''C _ t'C
+      have : m₁ ⟨s'' ∪ t', hC _ s''t'C⟩ = m (s'' ∪ t') :=
+        C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hC _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
+      rw [← this, ← edist_eq_enorm_sub]
+      apply (m₁_lip _ _).trans_lt
+      simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
+      change μ ((s'' ∪ t') ∆ (s ∪ t)) < 4 * δ
+      calc μ ((s'' ∪ t') ∆ (s ∪ t))
+      _ ≤ μ (s'' ∆ s ∪ t' ∆ t) := measure_mono (Set.union_symmDiff_union_subset ..)
+      _ ≤ μ (s'' ∆ s) + μ (t' ∆ t) := measure_union_le _ _
+      _ < 3 * δ + δ := by gcongr
+      _ = 4 * δ := by ring
 
 
 
 
-  classical
-  have A (s : MeasuredSets μ) : Cauchy (map m₀ (𝓝[C'] s)) := by
-    have W := LipschitzOnWith.cauchySeq_comp
-    apply Metric.cauchy_iff.2 ⟨?_, ?_⟩
-    · have : (𝓝[C'] s).NeBot := mem_closure_iff_nhdsWithin_neBot.mp (C'_dense s)
-      exact map_neBot
-    · intro ε εpos
-      simp
 
 
-  let m' (s : Set α) := if h : MeasurableSet s then limUnder (𝓝[C'] ⟨s, h⟩) (fun t ↦ m t) else 0
+
+
+
+
+  let m' (s : Set α) := if hs : MeasurableSet s then m₁ ⟨s, hs⟩ else 0
 
 
 #exit
