@@ -204,6 +204,13 @@ end ConvexSubgroup
 
 variable [IsOrderedMonoid α]
 
+open MulArchimedeanClass in
+@[to_additive] theorem FiniteMulArchimedeanClass.isConvexSubgroup_subgroup
+    (s : UpperSet (FiniteMulArchimedeanClass α)) : IsConvexSubgroup (subgroup s) :=
+  fun _a _b hab b_le ha b_ne ↦
+    s.upper (mk_monotoneOn (hab.trans b_le) b_le hab)
+      (ha <| mk_eq_top_iff.not.mpr (hab.trans_lt (b_le.lt_of_ne <| mk_eq_top_iff.not.mp b_ne)).ne)
+
 @[to_additive] theorem ConvexSubgroup.mem_of_finiteMulArchimedeanClass_mk_le
     {G : ConvexSubgroup α} {a b : α} {ha1 : a ≠ 1} {hb1 : b ≠ 1}
     (le : FiniteMulArchimedeanClass.mk a ha1 ≤ .mk b hb1)
@@ -213,25 +220,7 @@ variable [IsOrderedMonoid α]
   exact mabs_mem_iff.mp <| (IsConvexSubgroup.iff_ordConnected.mp G.convex).1
     G.one_mem (G.pow_mem (by simpa) _) ⟨one_le_mabs _, le⟩
 
-/-- The (convex) subgroup of a linearly ordered group consisting of all elements lying
-in an upper set of `FiniteMulArchimedeanClass`es. -/
-@[to_additive UpperSet.finiteArchimedeanClassToAddSubgroup
-/-- The (convex) subgroup of a linearly ordered additive group consisting of all elements
-lying in an upper set of `FiniteArchimedeanClass`es. -/]
-def UpperSet.finiteMulArchimedeanClassToSubgroup
-    (s : UpperSet (FiniteMulArchimedeanClass α)) : Subgroup α where
-  carrier := {a | ∀ h : a ≠ 1, .mk a h ∈ s}
-  mul_mem' {a b} ha hb hab := by
-    obtain rfl | ha1 := eq_or_ne a 1
-    · simp_rw [one_mul] at hab ⊢; exact hb hab
-    obtain rfl | hb1 := eq_or_ne b 1
-    · simp_rw [mul_one] at hab ⊢; exact ha hab
-    apply s.upper (FiniteMulArchimedeanClass.min_le_mk_mul ha1 hb1 hab)
-    obtain eq | eq := min_choice (FiniteMulArchimedeanClass.mk a ha1) (.mk b hb1) <;> rw [eq]
-    exacts [ha ha1, hb hb1]
-  one_mem' ha := (ha rfl).elim
-  inv_mem' {a} ha ha1 := by rw [FiniteMulArchimedeanClass.mk_inv (by simpa using ha1)]; exact ha _
-
+open MulArchimedeanClass in
 /-- The convex subgroups of a linearly ordered group are in bijection with upper sets of
 `FiniteMulArchimedeanClass`es. -/
 @[to_additive /-- The convex subgroups of a linearly ordered additive group are in bijection with
@@ -244,16 +233,15 @@ def ConvexSubgroup.equivUpperSet :
     refine FiniteMulArchimedeanClass.ind fun b hb1 le ↦ ?_
     exact ⟨b, hb1, mabs_mem_iff.mp <| by
       simpa using G.mem_of_finiteMulArchimedeanClass_mk_le le haG, rfl⟩
-  invFun s := .mk s.finiteMulArchimedeanClassToSubgroup fun a b hab b_le ha b_ne ↦
-    s.upper (MulArchimedeanClass.mk_monotoneOn (hab.trans b_le) b_le hab)
-      (ha (hab.trans_lt (b_le.lt_of_ne b_ne)).ne)
+  invFun s := .mk _ (FiniteMulArchimedeanClass.isConvexSubgroup_subgroup s)
   left_inv G := by
-    refine SetLike.ext fun a ↦ ⟨fun h ↦ ?_, fun h ha ↦ ⟨a, ha, h, rfl⟩⟩
+    refine SetLike.ext fun a ↦ ⟨fun h ↦ ?_, fun h ha ↦ ⟨a, mk_eq_top_iff.not.mp ha, h, rfl⟩⟩
     obtain rfl | ha1 := eq_or_ne a 1; · simp
-    have ⟨b, hb1, hbG, eq⟩ := h ha1
-    exact G.mem_of_finiteMulArchimedeanClass_mk_le eq.ge hbG
+    have ⟨b, hb1, hbG, eq⟩ := h (mk_eq_top_iff.not.mpr ha1)
+    exact G.mem_of_finiteMulArchimedeanClass_mk_le (hb1 := ha1) eq.ge hbG
   right_inv s := UpperSet.ext <| Set.ext <| FiniteMulArchimedeanClass.ind fun a ha1 ↦
-    ⟨fun ⟨b, hb1, hbs, eq⟩ ↦ by simpa only [eq] using hbs hb1, fun h ↦ ⟨a, ha1, fun _ ↦ h, rfl⟩⟩
+    ⟨fun ⟨b, hb1, hbs, eq⟩ ↦ by simpa only [eq] using hbs (mk_eq_top_iff.not.mpr hb1),
+      fun h ↦ ⟨a, ha1, fun _ ↦ h, rfl⟩⟩
 
 /-- The convex subgroups of a linearly ordered group are in order-reversing bijection
 with upper sets of `FiniteMulArchimedeanClass`es. -/

@@ -109,7 +109,7 @@ theorem tfae_le {x y : Quotient s} : List.TFAE
     [ x ≤ y,
       ∀ ax, ⟦ax⟧ = x → ∃ ay, ⟦ay⟧ = y ∧ ax ≤ ay,
       ∀ ay, ⟦ay⟧ = y → ∃ ax, ⟦ax⟧ = x ∧ ax ≤ ay,
-      ∃ ax ay, ⟦ax⟧ = x ∧ ⟦ay⟧ = y ∧ ax ≤ ay] := by
+      ∃ ax ay, ⟦ax⟧ = x ∧ ⟦ay⟧ = y ∧ ax ≤ ay ] := by
   tfae_have 1 → 2 := fun le ax ↦ by
     rintro rfl; obtain ⟨ay⟩ := y
     obtain (le | eq) := mk_le_mk.mp le
@@ -156,7 +156,17 @@ theorem mk_lt_mk {x y : α} : Quotient.mk s x < Quotient.mk s y ↔ x < y ∧ ¬
 theorem lt_of_mk_lt_mk {x y : α} (h : Quotient.mk s x < Quotient.mk s y) : x < y :=
   (mk_lt_mk.1 h).1
 
--- TODO: tfae_lt
+theorem lt_iff_exists_left_forall {x y : Quotient s} :
+    x < y ↔ ∃ ax, ⟦ax⟧ = x ∧ ∀ ay, ⟦ay⟧ = y → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_forall_right_exists]; push_neg; rfl
+
+theorem lt_iff_exists_right_forall {x y : Quotient s} :
+    x < y ↔ ∃ ay, ⟦ay⟧ = y ∧ ∀ ax, ⟦ax⟧ = x → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_forall_left_exists]; push_neg; rfl
+
+theorem lt_iff_forall {x y : Quotient s} : x < y ↔ ∀ ax ay, ⟦ax⟧ = x → ⟦ay⟧ = y → ax < ay := by
+  classical rw [lt_iff_not_ge, le_iff_exists]
+  push_neg; rw [forall_swap]; congr! 2; apply forall_swap
 
 end LinearOrder
 end Quotient
