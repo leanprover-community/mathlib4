@@ -16,7 +16,7 @@ so it contains some lemmas about powers of elements which need imports
 beyond those needed for the basic definition.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

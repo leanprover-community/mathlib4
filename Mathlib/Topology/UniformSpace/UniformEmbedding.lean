@@ -390,18 +390,28 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
         _ ≤ 𝓝 x := le_nhds_of_cauchy_adhp ‹Cauchy g› this
         ⟩⟩
 
+lemma Filter.totallyBounded_map_iff {f : α → β} {F : Filter α} (hf : IsUniformInducing f) :
+    (F.map f).TotallyBounded ↔ F.TotallyBounded := by
+  refine ⟨fun hs ↦ ?_, fun h ↦ h.map hf.uniformContinuous⟩
+  simp_rw [(hf.basis_uniformity (basis_sets _)).filter_totallyBounded_iff]
+  intro t ht
+  rcases exists_subset_image_finite_and.1 (hs.exists_subset_of_mem (F.image_mem_map F.univ_mem) ht)
+    with ⟨u, -, hfin, h⟩
+  use u, hfin
+  simp_rw [SetRel.preimage, exists_mem_image] at h
+  exact h
+
 lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : IsUniformInducing f) :
     TotallyBounded (f '' s) ↔ TotallyBounded s := by
-  refine ⟨fun hs ↦ ?_, fun h ↦ h.image hf.uniformContinuous⟩
-  simp_rw [(hf.basis_uniformity (basis_sets _)).totallyBounded_iff]
-  intro t ht
-  rcases exists_subset_image_finite_and.1 (hs.exists_subset ht) with ⟨u, -, hfin, h⟩
-  use u, hfin
-  rwa [biUnion_image, image_subset_iff, preimage_iUnion₂] at h
+  simp_rw [← totallyBounded_principal_iff, ← map_principal, totallyBounded_map_iff hf]
 
 theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : IsUniformInducing f)
     (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) :=
   (totallyBounded_image_iff hf).1 <| hs.subset <| image_preimage_subset ..
+
+theorem Filter.totallyBounded_comap {f : α → β} {F : Filter β} (hf : IsUniformInducing f)
+    (hF : F.TotallyBounded) : (F.comap f).TotallyBounded :=
+  (totallyBounded_map_iff hf).1 <| hF.mono map_comap_le
 
 instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (α ⊕ β) := by
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]

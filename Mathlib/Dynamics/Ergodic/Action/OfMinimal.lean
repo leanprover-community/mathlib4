@@ -30,7 +30,7 @@ if it is surjective and the preimages of `1` under iterations of `f` are dense i
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set Function
 open scoped Pointwise Topology

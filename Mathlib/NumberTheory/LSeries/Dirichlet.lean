@@ -33,7 +33,7 @@ as special cases.
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
 
-@[expose] public section
+public section
 
 open scoped LSeries.notation
 
