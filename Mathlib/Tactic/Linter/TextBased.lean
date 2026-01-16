@@ -31,6 +31,7 @@ Currently, this file contains linters checking
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
+- for any code containing blocklisted unicode characters
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -57,8 +58,6 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
-  /-- A line contains a non-breaking space character -/
-  | nonbreakingSpace -- TODO look at this. Is it superseeded by the unicode linter?
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
 deriving BEq
@@ -83,7 +82,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
-  | nonbreakingSpace => "This line contains a non-breaking space character"
   | StyleError.unwantedUnicode c => s!"This line contains a bad unicode character \
     '{c}' ({UnicodeLinter.printCodepointHex c})."
 
@@ -96,7 +94,6 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
-  | StyleError.nonbreakingSpace => "ERR_NSP"
 
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -178,7 +175,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
-        | "ERR_NSP" => some (StyleError.nonbreakingSpace)
         | "ERR_UNICODE" => do
           -- extract the offending unicode character from `errorMessage`
           -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
@@ -267,20 +263,6 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
-/-- Lint a collection of input strings for a non-breaking space character. -/
-public register_option linter.nonbreakingSpace : Bool := { defValue := true }
-
-@[inherit_doc linter.nonbreakingSpace]
-def nonbreakingSpaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
-  unless getLinterValue linter.nonbreakingSpace opts do return (#[], none)
-  let mut errors := Array.mkEmpty 0
-  for h : idx in [:lines.size] do
-    let line := lines[idx]
-    let pos := line.find (· == '\u00A0')
-    if pos != line.endPos then
-      errors := errors.push (StyleError.nonbreakingSpace, idx + 1)
-  return (errors, none)
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -352,7 +334,7 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
 def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
     semicolonLinter,
-    trailingWhitespaceLinter, nonbreakingSpaceLinter,
+    trailingWhitespaceLinter,
     unicodeLinter,
   ]
 
