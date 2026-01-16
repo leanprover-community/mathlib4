@@ -1184,20 +1184,20 @@ lemma ContextFreeGrammar.mem_concat_language_iff_mem_mul :
         -- Use splitting to get two separate derivations
         obtain ⟨u'', v'', hu'', hv'', huv''⟩ := concatenation_split _ _ _ hg
         -- Extract words from the combined grammar back to original grammars
-        have good_u : (@g₁g_concat T g₁ g₂).FromEmbeddingOrTerminalString
+        have feot_u : (@g₁g_concat T g₁ g₂).FromEmbeddingOrTerminalString
             [Symbol.nonterminal (some (Sum.inl g₁.initial))] := by
           intro a ha
           simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
           rw [ha]
           exact Embedding.FromEmbeddingOrTerminal.nonterminal g₁.initial
-        have good_v : (@g₂g_concat T g₁ g₂).FromEmbeddingOrTerminalString
+        have feot_v : (@g₂g_concat T g₁ g₂).FromEmbeddingOrTerminalString
             [Symbol.nonterminal (some (Sum.inr g₂.initial))] := by
           intro a ha
           simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
           rw [ha]
           exact Embedding.FromEmbeddingOrTerminal.nonterminal g₂.initial
-        have hu_filter := (@g₁g_concat T g₁ g₂).derives_filterMap hu'' good_u
-        have hv_filter := (@g₂g_concat T g₁ g₂).derives_filterMap hv'' good_v
+        have hu_filter := (@g₁g_concat T g₁ g₂).derives_filterMap hu'' feot_u
+        have hv_filter := (@g₂g_concat T g₁ g₂).derives_filterMap hv'' feot_v
         -- Extract the terminal words
         set w₁ := extractTerminals u''
         set w₂ := extractTerminals v''
