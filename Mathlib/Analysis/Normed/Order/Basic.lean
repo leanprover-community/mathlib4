@@ -13,3 +13,5 @@ public import Mathlib.Analysis.Normed.Group.Basic
 In this file, we define classes for fields and groups that are both normed and ordered.
 These are mostly useful to avoid diamonds during type class inference.
 -/
+
+deprecated_module (since := "2026-01-16")
