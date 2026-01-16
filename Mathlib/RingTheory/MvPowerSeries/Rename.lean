@@ -70,8 +70,7 @@ theorem coeff_renameFun (p : MvPowerSeries σ R) (x : τ →₀ ℕ) :
 theorem renameFun_monomial (x) (r : R) :
     renameFun f (monomial x r) = monomial (embDomain f x) r := by
   classical
-  ext y
-  rw [coeff_monomial]
+  ext y; rw [coeff_monomial]
   split_ifs with h
   · simp [h]
   rw [coeff_renameFun, ← mem_range_embDomain_iff, Set.mem_range, ite_eq_right_iff,
@@ -86,8 +85,8 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
     sum_const_zero, add_zero, filter_filter]
   split_ifs with h
   · simp only [Set.subset_def, SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range] at h
-    have : ∀ x_1 ∈ antidiagonal x, ↑x_1.2.support ⊆ Set.range ⇑f ∧ ↑x_1.1.support ⊆
-      Set.range ⇑f := by
+    have : ∀ x_1 ∈ antidiagonal x, ↑x_1.2.support ⊆ Set.range f ∧ ↑x_1.1.support ⊆
+      Set.range f := by
       simp only [mem_antidiagonal, Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply, Set.subset_def,
         SetLike.mem_coe, mem_support_iff, ne_eq, Set.mem_range, Prod.forall]
       grind only
@@ -156,7 +155,7 @@ theorem rename_rename (g : τ ↪ α) (p : MvPowerSeries σ R) :
     Function.Embedding.trans_apply]
   intro; split_ifs
   · congr
-    simp [Finsupp.ext_iff]
+    ext; simp
   all_goals grind
 
 lemma rename_comp_rename (g : τ ↪ α) :
@@ -227,7 +226,7 @@ theorem killComplFun_mul (p q : MvPowerSeries τ R) :
         intro t _
         simp only [Finsupp.ext_iff, Finsupp.coe_add, Pi.add_apply] at h
         replace h : (embDomain f x) t ≠ 0 := by
-          specialize h t; omega
+          specialize h t; lia
         rw [← mem_support_iff, support_embDomain] at h
         grind only [= mem_map]
       refine ⟨embDomain_injective f ?_, this.left, this.right⟩
@@ -243,7 +242,7 @@ def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial f 0 1
   map_mul' := killComplFun_mul f
-  map_zero' := by simp [MvPowerSeries.ext_iff, coeff_killComplFun]
+  map_zero' _ _ := by ext; simp [coeff_killComplFun]
   map_add' := by simp [MvPowerSeries.ext_iff, coeff_killComplFun]
   commutes' := by simpa using killComplFun_monomial f 0
 }
