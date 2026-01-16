@@ -558,9 +558,15 @@ For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, the fibe
 and equals the (multiplicative or additive) antidiagonal. The `tsum` reduces to `Finset.sum`.
 
 The multiplicative versions use `Finset.mulAntidiagonal`, and the additive versions
-(generated via `@[to_additive]`) use `Finset.antidiagonal`. -/
+(generated via `@[to_additive]`) use `Finset.antidiagonal`.
+
+This also provides the bridge to `MulCauchyProduct`/`CauchyProduct`: ring convolution equals
+the corresponding CauchyProduct for these types.
+See `Mathlib.Algebra.BigOperators.CauchyProduct`. -/
 
 section MulAntidiagonal
+
+open scoped MulCauchyProduct
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
 
@@ -592,7 +598,7 @@ theorem convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f :
   exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => (L (f ab.1.1)) (g ab.1.2))
 
-variable {R : Type*} [Semiring R] [TopologicalSpace R]
+variable [Semiring R] [TopologicalSpace R]
 
 /-- For `HasMulAntidiagonal` types, ring convolution equals a finite sum over the
 mulAntidiagonal. -/
@@ -602,22 +608,6 @@ theorem ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
   convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
-end MulAntidiagonal
-
-/-! ### MulCauchyProduct / CauchyProduct Bridge
-
-For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, ring convolution
-equals the corresponding CauchyProduct. This allows deriving ring axioms from the purely
-algebraic CauchyProduct proofs (essentially alias of the `CauchyProduct` theorems).
-See `Mathlib.Algebra.BigOperators.CauchyProduct` for the standalone algebraic formulation. -/
-
-section CauchyProductBridge
-
-open scoped MulCauchyProduct
-
-variable [Monoid M] [Finset.HasMulAntidiagonal M]
-variable [Semiring R] [TopologicalSpace R]
-
 /-- `ringConvolution` (`⋆ᵣ`) equals `MulCauchyProduct.apply` (`⋆ᶜ`) for `HasMulAntidiagonal`. -/
 @[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
   /-- `addRingConvolution` (`⋆ᵣ₊`) equals `CauchyProduct.apply` (`⋆ᶜ₊`) for `HasAntidiagonal`. -/]
@@ -625,7 +615,7 @@ theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
   ringConvolution_eq_sum_mulAntidiagonal f g x
 
-end CauchyProductBridge
+end MulAntidiagonal
 
 end DiscreteConvolution
 
