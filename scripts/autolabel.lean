@@ -31,8 +31,8 @@ These are printed for testing purposes.
 to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
 Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/pull/10402.
 
-For the time being, the script only adds a label if it finds a **single unique label**
-which would apply. If multiple labels are found, nothing happens.
+The script can add up to `MAX_LABELS` labels (defined below).
+If more than `MAX_LABELS` labels would be applicable, nothing will be added.
 
 ## Workflow
 
@@ -55,23 +55,102 @@ open Lean System
 
 namespace AutoLabel
 
+/-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
+def MAX_LABELS := 1
+
+/-- Mathlib's Github topic labels -/
+inductive Label where
+  | «t-algebra»
+  | «t-algebraic-geometry»
+  | «t-algebraic-topology»
+  | «t-analysis»
+  | «t-category-theory»
+  | «t-combinatorics»
+  | «t-computability»
+  | «t-condensed»
+  | «t-convex-geometry»
+  | «t-data»
+  | «t-differential-geometry»
+  | «t-dynamics»
+  | «t-euclidean-geometry»
+  | «t-geometric-group-theory»
+  | «t-group-theory»
+  | «t-linter»
+  | «t-logic»
+  | «t-measure-probability»
+  | «t-meta»
+  | «t-number-theory»
+  | «t-order»
+  | «t-ring-theory»
+  | «t-set-theory»
+  | «t-topology»
+  | «CI»
+  | «IMO»
+  | «dependency-bump»
+  deriving BEq, Hashable, Repr
+
 /--
-A `Label` consists of the
-* The `label` field is the actual GitHub label name.
+Array of all topic labels which are used in Mathlib.
+
+Note: Since Lean does not know reflection, this needs to be updated manually!
+-/
+def mathlibLabels : Array Label := #[
+  .«t-algebra», .«t-algebraic-geometry», .«t-algebraic-topology», .«t-analysis»,
+  .«t-category-theory», .«t-combinatorics», .«t-computability», .«t-condensed»,
+  .«t-convex-geometry», .«t-data», .«t-differential-geometry», .«t-dynamics»,
+  .«t-euclidean-geometry», .«t-geometric-group-theory», .«t-group-theory», .«t-linter»,
+  .«t-logic», .«t-measure-probability», .«t-meta», .«t-number-theory», .«t-order»,
+  .«t-ring-theory», .«t-set-theory», .«t-topology», .«CI», .«IMO»,
+  .«dependency-bump»
+]
+
+-- Note: Since Lean does not know reflection, this needs to be updated manually!
+def Label.toString : Label → String
+  | .«t-algebra»                    => "t-algebra"
+  | .«t-algebraic-geometry»         => "t-algebraic-geometry"
+  | .«t-algebraic-topology»         => "t-algebraic-topology"
+  | .«t-analysis»                   => "t-analysis"
+  | .«t-category-theory»            => "t-category-theory"
+  | .«t-combinatorics»              => "t-combinatorics"
+  | .«t-computability»              => "t-computability"
+  | .«t-condensed»                  => "t-condensed"
+  | .«t-convex-geometry»            => "t-convex-geometry"
+  | .«t-data»                       => "t-data"
+  | .«t-differential-geometry»      => "t-differential-geometry"
+  | .«t-dynamics»                   => "t-dynamics"
+  | .«t-euclidean-geometry»         => "t-euclidean-geometry"
+  | .«t-geometric-group-theory»     => "t-geometric-group-theory"
+  | .«t-group-theory»               => "t-group-theory"
+  | .«t-linter»                     => "t-linter"
+  | .«t-logic»                      => "t-logic"
+  | .«t-measure-probability»        => "t-measure-probability"
+  | .«t-meta»                       => "t-meta"
+  | .«t-number-theory»              => "t-number-theory"
+  | .«t-order»                      => "t-order"
+  | .«t-ring-theory»                => "t-ring-theory"
+  | .«t-set-theory»                 => "t-set-theory"
+  | .«t-topology»                   => "t-topology"
+  | .«CI»                           => "CI"
+  | .«IMO»                          => "IMO"
+  | .«dependency-bump»              => "dependency-bump"
+
+instance : ToString Label where
+  toString := Label.toString
+
+/--
+A `LabelData` consists of the
 * The `dirs` field is the array of all "root paths" such that a modification in a file contained
   in one of these paths should be labelled with `label`.
 * The `exclusions` field is the array of all "root paths" that are excluded, among the
   ones that start with the ones in `dirs`.
   Any modifications to a file in an excluded path is ignored for the purposes of labelling.
 -/
-structure Label where
-  /-- The label name as it appears on GitHub -/
-  label : String
+structure LabelData (label : Label) where
   /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"`.
 
   For a label of the form `t-set-theory` this defaults to `#["Mathlib" / "SetTheory"]`. -/
-  dirs : Array FilePath := if label.startsWith "t-" then
-      #["Mathlib" / ("".intercalate (label.splitOn "-" |>.drop 1 |>.map .capitalize))]
+  dirs : Array FilePath := if label.toString.startsWith "t-" then
+      #["Mathlib" / ("".intercalate (label.toString.splitOn "-" |>.drop 1 |>.map .capitalize))]
     else #[]
   /-- Array of paths which should be excluded.
   Any modifications to a file in an excluded path are ignored for the purposes of labelling. -/
@@ -79,71 +158,67 @@ structure Label where
   deriving BEq, Hashable
 
 /--
-Mathlib labels and their corresponding folders. Add new labels and folders here!
+Mathlib labels and their corresponding folders.
 -/
-def mathlibLabels : Array Label := #[
-  { label := "t-algebra",
+def mathlibLabelData : (l : Label) → LabelData l
+  | .«t-algebra» => {
     dirs := #[
       "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] },
-  { label := "t-algebraic-geometry",
+      "Mathlib" / "LinearAlgebra"] }
+  | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
-      "Mathlib" / "Geometry" / "RingedSpace"] },
-  { label := "t-algebraic-topology",
-    dirs := #["Mathlib" / "AlgebraicTopology"] },
-  { label := "t-analysis" },
-  { label := "t-category-theory" },
-  { label := "t-combinatorics" },
-  { label := "t-computability" },
-  { label := "t-condensed" },
-  { label := "t-convex-geometry",
-    dirs := #["Mathlib" / "Geometry" / "Convex"] },
-  { label := "t-data"
+      "Mathlib" / "Geometry" / "RingedSpace"] }
+  | .«t-algebraic-topology» => {}
+  | .«t-analysis» => {}
+  | .«t-category-theory» => {}
+  | .«t-combinatorics» => {}
+  | .«t-computability» => {}
+  | .«t-condensed» => {}
+  | .«t-convex-geometry» => {
+    dirs := #["Mathlib" / "Geometry" / "Convex"] }
+  | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
-      "Mathlib" / "Data",] },
-  { label := "t-differential-geometry",
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] },
-  { label := "t-dynamics" },
-  { label := "t-euclidean-geometry",
-    dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
-  { label := "t-geometric-group-theory",
-    dirs := #["Mathlib" / "Geometry" / "Group"] },
-  { label := "t-group-theory",
-    dirs := #["Mathlib" / "GroupTheory"] },
-  { label := "t-linter",
+      "Mathlib" / "Data"] }
+  | .«t-differential-geometry» => {
+    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+  | .«t-dynamics» => {}
+  | .«t-euclidean-geometry» => {
+    dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
+  | .«t-geometric-group-theory» => {
+    dirs := #["Mathlib" / "Geometry" / "Group"] }
+  | .«t-group-theory» => {}
+  | .«t-linter» => {
     dirs := #[
       "Mathlib" / "Tactic" / "Linter",
       "scripts" / "lint-style.lean",
       "scripts" / "lint-style.py",
-    ] },
-  { label := "t-logic",
+    ] }
+  | .«t-logic» => {
     dirs := #[
       "Mathlib" / "Logic",
-      "Mathlib" / "ModelTheory"] },
-  { label := "t-measure-probability",
+      "Mathlib" / "ModelTheory"] }
+  | .«t-measure-probability» => {
     dirs := #[
       "Mathlib" / "MeasureTheory",
       "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory"] },
-  { label := "t-meta",
+      "Mathlib" / "InformationTheory"] }
+  | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
       "Mathlib" / "Util"],
-    exclusions := #["Mathlib" / "Tactic" / "Linter"] },
-  { label := "t-number-theory" },
-  { label := "t-order" },
-  { label := "t-ring-theory",
-    dirs := #["Mathlib" / "RingTheory"] },
-  { label := "t-set-theory" },
-  { label := "t-topology",
-    dirs := #["Mathlib" / "Topology"] },
-  { label := "CI",
+    exclusions := #["Mathlib" / "Tactic" / "Linter"] }
+  | .«t-number-theory» => {}
+  | .«t-order» => {}
+  | .«t-ring-theory» => {}
+  | .«t-set-theory» => {}
+  | .«t-topology» => {}
+  | .«CI» => {
     dirs := #[
       ".github",
       "scripts",
@@ -155,11 +230,11 @@ def mathlibLabels : Array Label := #[
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
-    ] },
-  { label := "IMO",
-    dirs := #["Archive" / "Imo"] },
-  { label := "dependency-bump",
-    dirs := #["lake-manifest.json"] } ]
+    ] }
+  | .«IMO» => {
+    dirs := #["Archive" / "Imo"] }
+  | .«dependency-bump» => {
+    dirs := #["lake-manifest.json"] }
 
 /-- Exceptions inside `Mathlib/` which are not covered by any label. -/
 def mathlibUnlabelled : Array FilePath := #[
@@ -174,20 +249,21 @@ def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
   (dir / "").normalize.toString.isPrefixOf (path / "").normalize.toString
 
 /--
-Return all names of labels in `mathlibLabels` which match
+Return all labels in `mathlibLabels` which match
 at least one of the `files`.
 
 * `files`: array of relative paths starting from the mathlib root directory.
 -/
-def getMatchingLabels (files : Array FilePath) : Array String :=
+def getMatchingLabels (files : Array FilePath) : Array Label :=
   let applicable := mathlibLabels.filter fun label ↦
     -- first exclude all files the label excludes,
     -- then see if any file remains included by the label
+    let data := mathlibLabelData label
     let notExcludedFiles := files.filter fun file ↦
-      label.exclusions.all (!·.isPrefixOf file)
-    label.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
-  -- return sorted list of label names
-  applicable.map (·.label) |>.qsort (· < ·)
+      data.exclusions.all (!·.isPrefixOf file)
+    data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
+  -- return sorted list of labels
+  applicable |>.qsort (·.toString < ·.toString)
 
 /-!
 Testing the functionality of the declarations defined in this script
@@ -202,22 +278,22 @@ section Tests
 
 #guard getMatchingLabels #[] == #[]
 -- Test default value for `label.dirs` works
-#guard getMatchingLabels #["Mathlib" / "SetTheory" / "ZFC"] == #["t-set-theory"]
+#guard getMatchingLabels #["Mathlib" / "SetTheory" / "ZFC"] == #[.«t-set-theory»]
 -- Test exclusion
-#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Abel.lean"] == #["t-meta"]
-#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Linter" / "Lint.lean"] == #["t-linter"]
+#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Abel.lean"] == #[.«t-meta»]
+#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Linter" / "Lint.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #[
   "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
-  "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
+  "Mathlib" / "Tactic" / "Abel.lean" ] == #[.«t-linter», .«t-meta»]
 
 -- Test targeting a file instead of a directory
-#guard getMatchingLabels #["lake-manifest.json"] == #["dependency-bump"]
+#guard getMatchingLabels #["lake-manifest.json"] == #[.«dependency-bump»]
 
 -- Test linting of specific changes touching linting and CI.
-#guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #["CI"]
-#guard getMatchingLabels #["scripts" / "lint-style.lean"] == #["t-linter"]
+#guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #[.«CI»]
+#guard getMatchingLabels #["scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
-  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #["t-linter"]
+  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
 #guard getMatchingLabels #["scripts" / "noshake.json"] == #[]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
@@ -282,24 +358,25 @@ unsafe def main (args : List String): IO UInt32 := do
     return 1
   let prNumber? := args[0]?
 
-  -- test: validate that all paths in `mathlibLabels` actually exist
+  -- test: validate that all paths in `mathlibLabelData` actually exist
   let mut valid := true
   for label in mathlibLabels do
-    for dir in label.dirs do
+    let data := mathlibLabelData label
+    for dir in data.dirs do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
         println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
-          s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
-          s!"directory '{dir}' does not exist but is included by label '{label.label}'. \
-          Please update `{ ``AutoLabel.mathlibLabels }`!"
+          s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
+          s!"directory '{dir}' does not exist but is included by label '{label}'. \
+          Please update `{ ``AutoLabel.mathlibLabelData }`!"
         valid := false
-    for dir in label.exclusions do
+    for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
         println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
-          s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
-          s!"directory '{dir}' does not exist but is excluded by label '{label.label}'. \
-          Please update `{ ``AutoLabel.mathlibLabels }`!"
+          s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
+          s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
+          Please update `{ ``AutoLabel.mathlibLabelData }`!"
         valid := false
   unless valid do
     return 2
@@ -311,7 +388,7 @@ unsafe def main (args : List String): IO UInt32 := do
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
     println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
-      s!"Incomplete `{ ``AutoLabel.mathlibLabels }`"
+      s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- return 3
@@ -326,32 +403,32 @@ unsafe def main (args : List String): IO UInt32 := do
 
   -- find labels covering the modified files
   let labels := getMatchingLabels modifiedFiles
-
   println s!"::notice::Applicable labels: {labels}"
 
   match labels with
   | #[] =>
     println s!"::warning::no label to add"
-  | #[label] =>
+  | newLabels =>
+    if newLabels.size > MAX_LABELS then
+      println s!"::notice::not adding more than {MAX_LABELS} labels: {labels}"
+      return 0
     match prNumber? with
     | some n =>
       let labelsPresent ← IO.Process.run {
         cmd := "gh"
         args := #["pr", "view", n, "--json", "labels", "--jq", ".labels .[] .name"]}
       let labels := labelsPresent.splitToList (· == '\n')
-      let autoLabels := mathlibLabels.map (·.label)
+      let autoLabels := mathlibLabels.map (·.toString)
       match labels.filter autoLabels.contains with
       | [] => -- if the PR does not have a label that this script could add, then we add a label
         let _ ← IO.Process.run {
           cmd := "gh",
-          args := #["pr", "edit", n, "--add-label", label] }
-        println s!"::notice::added label: {label}"
+          args := #["pr", "edit", n, "--add-label", s!"\"{",".intercalate (newLabels.map Label.toString).toList}\""] }
+        println s!"::notice::added labels: {newLabels}"
       | t_labels_already_present =>
-        println s!"::notice::Did not add label '{label}', since {t_labels_already_present} \
+        println s!"::notice::Did not add labels '{newLabels}', since {t_labels_already_present} \
                   were already present"
     | none =>
       println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
-  | _ =>
-    println s!"::notice::not adding multiple labels: {labels}"
   return 0
