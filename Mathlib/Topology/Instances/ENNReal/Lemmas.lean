@@ -1506,3 +1506,5 @@ lemma Dense.lipschitzWith_extend {α β : Type*}
     simp only [Set.mem_setOf_eq, Ax, Ay]
     exact hf ⟨x, hx⟩ ⟨y, hy⟩
   simpa only [Dense, IsClosed.closure_eq, Set.mem_setOf_eq, Prod.forall] using this
+
+set_option linter.style.longFile 1700
