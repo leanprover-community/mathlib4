@@ -372,14 +372,14 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
   projectNT : g.NT → Option g₀.NT
   /-- The two mappings are essentially inverses. -/
-  projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
+  projectNT_embedNT (n₀ : g₀.NT): projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
-  embed_mem_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.map embedNT ∈ g.rules
+  embed_mem_rules (r : ContextFreeRule T g₀.NT): r ∈ g₀.rules → r.map embedNT ∈ g.rules
   /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
   has a corresponding rule in the smaller grammar. -/
   preimage_of_rules (r : ContextFreeRule T g.NT) :
-    ∀ r ∈ g.rules → ∀ n₀ : g₀.NT,
-        embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
+    r ∈ g.rules → ∀ n₀ : g₀.NT,
+      embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
