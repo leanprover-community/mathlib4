@@ -163,8 +163,6 @@ lemma stronglyAdapted_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α
     StronglyAdapted (countableFiltration γ) (fun n x ↦ densityProcess κ ν n a x s) :=
   fun n ↦ stronglyMeasurable_countableFiltration_densityProcess κ ν n a hs
 
-@[deprecated (since := "2025-12-19")] alias adapted_densityProcess := stronglyAdapted_densityProcess
-
 lemma densityProcess_nonneg (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) (x : γ) (s : Set β) :
     0 ≤ densityProcess κ ν n a x s :=

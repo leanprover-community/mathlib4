@@ -57,9 +57,6 @@ theorem StronglyAdapted.isStoppingTime_leastGE (r : ℝ) (hf : StronglyAdapted �
     IsStoppingTime ℱ (leastGE f r) :=
   hittingAfter_isStoppingTime hf measurableSet_Ici
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.isStoppingTime_leastGE := StronglyAdapted.isStoppingTime_leastGE
-
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
 noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ) : ℕ → Ω → ℝ :=
@@ -250,9 +247,6 @@ theorem stronglyAdapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) :
     StronglyAdapted ℱ (process s) :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
-
-@[deprecated (since := "2025-12-19")]
-alias adapted_process := stronglyAdapted_process
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
