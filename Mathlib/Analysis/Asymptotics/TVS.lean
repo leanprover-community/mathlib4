@@ -212,6 +212,11 @@ protected theorem IsBigOTVS.refl (f : α → E) (l : Filter α) : f =O[𝕜; l] 
 
 protected theorem IsBigOTVS.rfl : f =O[𝕜; l] f := .refl f l
 
+protected theorem IsThetaTVS.refl (f : α → E) (l : Filter α) : f =Θ[𝕜; l] f :=
+  ⟨.rfl, .rfl⟩
+
+protected theorem IsThetaTVS.rfl : f =Θ[𝕜; l] f := .refl f l
+
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
   rcases h.1 U hU with ⟨V, hV₀, hV⟩
