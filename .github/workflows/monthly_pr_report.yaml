@@ -27,7 +27,7 @@ jobs:
 
       - name: blog report
         run: |
-          yrMth=2024-07
+          yrMth="$(date +%Y-%m)"  # format: 2024-07
           mth="$(date -d "${yrMth}-01" '+%B')"
           PR="${{ github.event.pull_request.number }}"
           title="### ${mth} in Mathlib summary"
