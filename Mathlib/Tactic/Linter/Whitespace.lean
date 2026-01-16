@@ -118,10 +118,10 @@ Produces a `FormatError` from the input data.  It expects
 In particular, it extracts the position information within the string, both as number of characters
 and as `String.Pos`.
 -/
-def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
-  srcNat := ls.length
+def mkFormatError (ls ms : String.Slice) (msg : String) (length : Nat := 1) : FormatError where
+  srcNat := ls.positions.count
   srcEndPos := ls.rawEndPos
-  fmtPos := ms.length
+  fmtPos := ms.positions.count
   msg := msg
   length := length
   srcStartPos := ls.rawEndPos
@@ -148,7 +148,7 @@ flagging some line-breaking changes.
 (The pretty-printer does not always produce desirably formatted code.)
 -/
 partial
-def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
+def parallelScanAux (as : Array FormatError) (L M : String.Slice) : Array FormatError :=
   if M.trimAscii.isEmpty then as else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
@@ -164,7 +164,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     parallelScanAux as (L.drop 3).copy (M.drop 3).copy else
   if L.take 2 == "--".toSlice then
     let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.copy.length
+    let diff := L.positions.count - newL.copy.length
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
@@ -202,7 +202,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
       pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
-def parallelScan (src fmt : String) : Array FormatError :=
+def parallelScan (src fmt : String.Slice) : Array FormatError :=
   parallelScanAux ∅ src fmt
 
 namespace Style.Whitespace
@@ -298,7 +298,7 @@ to avoid cutting into "words".
 
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
-public def mkWindow (orig : String) (start ctx : Nat) : String :=
+public def mkWindow (orig : String.Slice) (start ctx : Nat) : String.Slice :=
   let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy
   let middle := orig.takeEnd (start + 1)
   let headCtx := head.takeEndWhile (!·.isWhitespace)
