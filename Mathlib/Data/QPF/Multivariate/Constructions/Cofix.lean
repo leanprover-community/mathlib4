@@ -513,11 +513,12 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance mvqpfCofix : MvQPF (Cofix F) where
-  P         := q.P.mp
-  abs       := Quot.mk Mcongr
-  repr      := Cofix.repr
-  abs_repr  := Cofix.abs_repr
-  abs_map   := by intros; rfl
+  P        := q.P.mp
+  abs      := Quot.mk Mcongr
+  repr     := Cofix.repr
+  abs_repr := Cofix.abs_repr
+  abs_map  := by intros; rfl
 
 end MvQPF

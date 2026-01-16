@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Function
 This file contains basic results on piecewise defined functions.
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 

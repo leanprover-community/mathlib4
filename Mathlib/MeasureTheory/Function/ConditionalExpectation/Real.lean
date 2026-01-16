@@ -26,7 +26,7 @@ This file proves some results regarding the conditional expectation of real-valu
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -80,7 +80,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_enorm hf.1]
       simp_rw [Real.norm_eq_abs]
-      rw (config := {occs := .pos [2]}) [← integral_condExp hm]
+      rw (config := { occs := .pos [2] }) [← integral_condExp hm]
       refine integral_congr_ae ?_
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condExp_zero]
@@ -151,7 +151,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     exact (abs_nonneg _).trans hx
   by_contra h
   change μ _ ≠ 0 at h
-  simp only [← zero_lt_iff, Set.compl_def, Set.mem_setOf_eq, not_le] at h
+  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_setOf_eq, not_le] at h
   suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
     exact this.ne rfl
   refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_

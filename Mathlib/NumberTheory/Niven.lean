@@ -10,6 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 
@@ -19,7 +20,7 @@ by π. Equivalently, the only rational numbers that occur as `cos(π * p / q)` a
 values `{-1, -1/2, 0, 1/2, 1}`.
 -/
 
-@[expose] public section
+public section
 
 namespace IsIntegral
 
