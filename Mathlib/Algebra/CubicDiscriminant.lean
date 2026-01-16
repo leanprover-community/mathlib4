@@ -487,8 +487,8 @@ theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.to
     (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
   rwa [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
     ← splits_iff_card_roots ha]
-
-@[deprecated (since := "2025-10-20")] alias disc := discr
+-- fail deprecatedNoSince
+@[deprecated] alias disc := discr
 @[deprecated (since := "2025-10-20")] alias disc_eq_prod_three_roots := discr_eq_prod_three_roots
 @[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_ne := discr_ne_zero_iff_roots_ne
 @[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_nodup :=
