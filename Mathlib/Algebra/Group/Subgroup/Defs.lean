@@ -77,13 +77,12 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 
 export NegMemClass (neg_mem)
 
-@[deprecated
-"Use `AddSubmonoid.IsSpanning` in Algebra.Group.Submonoid.Support" (since := "2026-01-14")]
+/-- Typeclass for substructures `s` such that `s ∪ -s = G`. -/
 class HasMemOrNegMem {S G : Type*} [Neg G] [SetLike S G] (s : S) : Prop where
   mem_or_neg_mem (s) (a : G) : a ∈ s ∨ -a ∈ s
 
-@[to_additive, deprecated
-"Use `Submonoid.IsMulSpanning` in Algebra.Group.Submonoid.Support" (since := "2026-01-14")]
+/-- Typeclass for substructures `s` such that `s ∪ s⁻¹ = G`. -/
+@[to_additive]
 class HasMemOrInvMem {S G : Type*} [Inv G] [SetLike S G] (s : S) : Prop where
   mem_or_inv_mem (s) (a : G) : a ∈ s ∨ a⁻¹ ∈ s
 
@@ -94,14 +93,12 @@ namespace HasMemOrInvMem
 
 variable {S G : Type*} [Inv G] [SetLike S G] (s : S) [HasMemOrInvMem s]
 
-@[to_additive (attr := deprecated
-"Use `Submonoid.inv_mem_of_notMem` in Algebra.Group.Submonoid.Support" (since := "2026-14-01"))]
+@[to_additive (attr := aesop unsafe 70% apply)]
 theorem inv_mem_of_notMem (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
   have := mem_or_inv_mem s x
   simp_all
 
-@[to_additive (attr := deprecated
-"Use `Submonoid.mem_of_inv_notMem` in Algebra.Group.Submonoid.Support" (since := "2026-14-01"))]
+@[to_additive (attr := aesop unsafe 70% apply)]
 theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
   have := mem_or_inv_mem s x
   simp_all
