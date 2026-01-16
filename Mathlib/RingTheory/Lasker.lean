@@ -25,10 +25,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
   each primary ideal is necessary, and each primary ideal has an independent radical.
 - `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
 
-## Implementation details
-
-There is a generalization for submodules that needs to be implemented.
-
 -/
 
 @[expose] public section
