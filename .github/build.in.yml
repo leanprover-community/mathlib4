@@ -519,7 +519,7 @@ jobs:
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 15m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            if timeout 1m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
               break
             fi
             status=${PIPESTATUS[0]}
