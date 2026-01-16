@@ -506,6 +506,7 @@ lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
 
 end hasShiftOfFullyFaithful
 
+@[reassoc]
 lemma map_shiftFunctorComm
     [AddCommMonoid A] [HasShift C A] [HasShift D A]
     (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
