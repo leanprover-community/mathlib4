@@ -36,10 +36,14 @@ public def replaceDisallowed : Char -> Option String
 | '\u00a0' => " " -- replace non-breaking space with normal whitespace
 | _ => none
 
--- TODO maybe remove this or move to unit-tests?
-private theorem test_all_replaced_disallowed (c : Char) (creplaced : replaceDisallowed c ≠ none) :
+-- TODO when moving this to `MathlibTest/LintStyle.lean`, `grind` crashes with
+--     >>  invalid pattern(s) for `replaceDisallowed.match_1.congr_eq_2`
+--   No idea what that means... What to do? Options:
+--   Delete this? Leave it here? Fix the error and move to tests?
+private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
     isAllowedCharacter c == false := by
-  simp_all [isAllowedCharacter, replaceDisallowed]
+  simp_all only [replaceDisallowed, ne_eq, isAllowedCharacter, ↓Char.isValue, beq_false,
+    Bool.not_eq_eq_eq_not, Bool.not_true, bne_eq_false_iff_eq]
   grind only
 
 end Mathlib.Linter.TextBased.UnicodeLinter
