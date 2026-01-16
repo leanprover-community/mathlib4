@@ -3,17 +3,21 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about linear ordered (semi)fields
 -/
+
+@[expose] public section
 
 
 open Function OrderDual
@@ -134,7 +138,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -185,10 +189,9 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
     ⟨(a₁ + a₂) / 2,
       calc
         a₁ = (a₁ + a₁) / 2 := (add_self_div_two a₁).symm
-        _ < (a₁ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_left h _) zero_lt_two
-        ,
+        _ < (a₁ + a₂) / 2 := by gcongr; exact zero_lt_two,
       calc
-        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_right h _) zero_lt_two
+        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := by gcongr; exact zero_lt_two
         _ = a₂ := add_self_div_two a₂
         ⟩
 
@@ -612,6 +615,7 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
+@[simp]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
@@ -622,9 +626,9 @@ theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 
 theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n : ℕ) :
     ∃ δ > 0, ∀ q r : α, |r| ≤ B → |q - r| ≤ δ → |q ^ n - r ^ n| < ε := by
-  wlog B_pos : 0 < B generalizing B
+  wlog! B_pos : 0 < B generalizing B
   · have ⟨δ, δ_pos, cont⟩ := this 1 zero_lt_one
-    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans ((le_of_not_gt B_pos).trans zero_le_one))⟩
+    exact ⟨δ, δ_pos, fun q r hr ↦ cont q r (hr.trans (B_pos.trans zero_le_one))⟩
   have pos : 0 < 1 + ↑n * (B + 1) ^ (n - 1) := zero_lt_one.trans_le <| le_add_of_nonneg_right <|
     mul_nonneg n.cast_nonneg <| (pow_pos (B_pos.trans <| lt_add_of_pos_right _ zero_lt_one) _).le
   refine ⟨min 1 (ε / (1 + n * (B + 1) ^ (n - 1))), lt_min zero_lt_one (div_pos hε pos),
@@ -638,6 +642,17 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 
+lemma two_mul_le_add_mul_sq {ε : α} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
+  calc 2 * a * b
+  _ = 2 * a * b * (ε * ε⁻¹) := by rw [mul_inv_cancel₀ hε.ne', mul_one]
+  _ = (2 * (ε * a) * b) * ε⁻¹ := by simp_rw [mul_assoc, mul_comm ε, mul_assoc]
+  _ ≤ ((ε * a) ^ 2 + b ^ 2) * ε⁻¹ := by gcongr; exact inv_nonneg.mpr hε.le
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+    rw [mul_comm _ ε⁻¹, mul_pow, mul_add, ← mul_assoc, pow_two, ← mul_assoc, inv_mul_cancel₀ hε.ne',
+      one_mul]
+
 end
 
 namespace Mathlib.Meta.Positivity
@@ -646,27 +661,27 @@ open Lean Meta Qq
 section LinearOrderedSemifield
 variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α}
 
-private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   div_nonneg ha.le hb
 
-private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
   div_nonneg ha hb.le
 
 omit [IsStrictOrderedRing α] in
-private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
+lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
   div_ne_zero ha.ne' hb
 
 omit [IsStrictOrderedRing α] in
-private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
+lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
   div_ne_zero ha hb.ne'
 
-private lemma zpow_zero_pos (a : α) : 0 < a ^ (0 : ℤ) := zero_lt_one.trans_eq (zpow_zero a).symm
+lemma zpow_zero_pos (a : α) : 0 < a ^ (0 : ℤ) := zero_lt_one.trans_eq (zpow_zero a).symm
 
 end LinearOrderedSemifield
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
@@ -689,7 +704,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/
 @[positivity _⁻¹]
-def evalInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
   let _a ← synthInstanceQ q(Semifield $α)
@@ -706,7 +721,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
-def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)

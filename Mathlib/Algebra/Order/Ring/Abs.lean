@@ -3,16 +3,20 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Absolute values in linear ordered rings.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -41,6 +45,7 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α] {n : ℕ} {a b : α}
 
 lemma abs_two : |(2 : α)| = 2 := abs_of_nonneg zero_le_two
 
+@[simp]
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
@@ -67,8 +72,7 @@ omit [IsOrderedRing α] in
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
   abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
 
-@[simp]
-lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
+lemma abs_mul_self (a : α) : |a * a| = a * a := by simp
 
 omit [IsOrderedRing α] in
 @[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
@@ -271,3 +275,6 @@ lemma Odd.of_dvd_nat (hn : Odd n) (hm : m ∣ n) : Odd m :=
 lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by
   rintro rfl
   exact absurd (hn.of_dvd_nat hm) (by decide)
+
+lemma Int.le_abs_of_dvd {a b : ℤ} (h₁ : b ≠ 0) (h₂ : a ∣ b) : a ≤ |b| :=
+  le_of_dvd (by simpa) (by simpa)

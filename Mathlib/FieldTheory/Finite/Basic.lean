@@ -3,16 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.Perfect
-import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.ZMod.ValMinAbs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.Galois.Notation
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # Finite fields
@@ -46,6 +49,8 @@ in this file we take the `Fintype Kˣ` argument directly to reduce the chance of
 diamonds, as `Fintype` carries data.
 
 -/
+
+@[expose] public section
 
 
 variable {K : Type*} {R : Type*}
@@ -130,7 +135,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
     have h : u = 1 := by
       rw [← sub_left_inj, sub_self 1]
-      apply pow_eq_zero (n := p)
+      apply eq_zero_of_pow_eq_zero (n := p)
       rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
       exact Commute.one_right u
     -- ... meaning x didn't have order p after all, contradiction
@@ -281,7 +286,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
       map_one' := by simp
-      map_mul' := by intros; simp [mul_pow] }
+      map_mul' := by simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance
   calc (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
       _ = if q - 1 ∣ i then -1 else 0 := by
@@ -325,11 +330,11 @@ variable (R) [CommRing R] [Algebra K R]
   map_add' _ _ := by
     obtain ⟨p, _, _, hp, card_eq⟩ := card' K
     nontriviality R
-    have : CharP R p := charP_of_injective_algebraMap' K R p
+    have : CharP R p := charP_of_injective_algebraMap' K p
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..
-  commutes' _ := by simp [← RingHom.map_pow, pow_card]
+  commutes' _ := by simp [← map_pow, pow_card]
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
@@ -349,7 +354,7 @@ variable (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
   of `L` is an automorphism. -/
-@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : L ≃ₐ[K] L :=
+@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : Gal(L/K) :=
   (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
 
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
@@ -394,7 +399,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
 
-instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
+instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic Gal(L/K) where
   exists_zpow_surjective :=
     have := Finite.of_injective _ (algebraMap K L).injective
     have := Fintype.ofFinite K
@@ -470,11 +475,11 @@ open Polynomial
 
 theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
-  letI := hp
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
   dsimp at hn
-  rw [hn, ← map_expand_pow_char, frobenius_pow hn, RingHom.one_def, map_id]
+  rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
+    frobenius_pow hn, RingHom.one_def, map_id]
 
 end FiniteField
 
@@ -555,7 +560,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 
 /-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
-| 0     => Finite.of_fintype ℤˣ
+| 0 => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
 
 open FiniteField
@@ -632,6 +637,26 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
+
+theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
+    (p : ℤ) ∣ n ^ (p - 1) - 1 :=
+  (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
+
+theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^ p ≡ n [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  simp [← ZMod.intCast_eq_intCast_iff]
+
+theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
+  (ModEq.pow_prime_eq_self hp n).symm.dvd
+
+theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
+    (hy : 0 < y) (n : ℤ) : n ^ x ≡ n ^ y [ZMOD p] := by
+  rw [← Nat.mul_div_eq_iff_dvd] at h
+  by_cases hn : n ≡ 0 [ZMOD p]
+  · grw [hn, zero_pow (hy.trans_le hxy).ne', zero_pow hy.ne']
+  · rw [Int.modEq_zero_iff_dvd, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at hn
+    grw [← pow_sub_mul_pow n hxy, ← h, pow_mul, Int.ModEq.pow_card_sub_one_eq_one hp hn.symm,
+      one_pow, one_mul]
 
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `n ^ (p - 1) ≡ 1 [MOD p]`. -/
@@ -711,7 +736,7 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   exact FiniteField.roots_X_pow_card_sub_X _
 
 theorem Subfield.splits_bot :
-    Splits (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+    Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
@@ -719,7 +744,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).map_roots (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

@@ -3,9 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.RingQuot
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # Universal enveloping algebra
@@ -32,6 +34,8 @@ enveloping algebra of `L`, together with its universal property.
 
 lie algebra, universal enveloping algebra, tensor algebra
 -/
+
+@[expose] public section
 
 
 universe u₁ u₂ u₃
@@ -139,7 +143,7 @@ theorem hom_ext {g₁ g₂ : UniversalEnvelopingAlgebra R L →ₐ[R] A}
       (g₁ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R) =
         (g₂ : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)) :
     g₁ = g₂ :=
-  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by ext; simp [h]
+  have h' : (lift R).symm g₁ = (lift R).symm g₂ := by simp [h]
   (lift R).symm.injective h'
 
 end UniversalEnvelopingAlgebra

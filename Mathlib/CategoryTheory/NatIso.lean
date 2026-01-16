@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Natural isomorphisms
@@ -30,6 +32,8 @@ we put some declarations that are specifically about natural isomorphisms in the
 namespace so that they are available using dot notation.
 -/
 
+@[expose] public section
+
 set_option mathlib.tactic.category.grind true
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
@@ -46,13 +50,11 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps]
+@[simps (attr := grind =)]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
   inv := α.inv.app X
-
-attribute [grind =] app_hom app_inv
 
 @[reassoc (attr := simp), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
@@ -91,14 +93,6 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
-  rfl
-
-@[deprecated Iso.app_hom (since := "2025-03-11")]
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
-  rfl
-
 variable {F G : C ⥤ D}
 
 instance hom_app_isIso (α : F ≅ G) (X : C) : IsIso (α.hom.app X) :=
@@ -116,7 +110,7 @@ because the `simp` normal form is `α.hom.app X`, rather than `α.app.hom X`.
 (With the latter, the morphism would be visibly part of an isomorphism, so general lemmas about
 isomorphisms would apply.)
 
-In the future, we should consider a redesign that changes this simp norm form,
+In the future, we should consider a redesign that changes this simp normal form,
 but for now it breaks too many proofs.
 -/
 
@@ -161,12 +155,15 @@ end
 
 variable {X Y : C}
 
+@[reassoc]
 theorem naturality_1 (α : F ≅ G) (f : X ⟶ Y) : α.inv.app X ≫ F.map f ≫ α.hom.app Y = G.map f := by
   simp
 
+@[reassoc]
 theorem naturality_2 (α : F ≅ G) (f : X ⟶ Y) : α.hom.app X ≫ G.map f ≫ α.inv.app Y = F.map f := by
   simp
 
+@[reassoc]
 theorem naturality_1' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app X)} :
     inv (α.app X) ≫ F.map f ≫ α.app Y = G.map f := by simp
 
@@ -179,21 +176,17 @@ theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
 instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
   ⟨⟨(inv α).app X, ⟨by grind, by grind⟩⟩⟩
 
-@[simp]
-theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by cat_disch
+@[simp, push ←]
+theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by cat_disch
 
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
     inv ((F.map e.inv).app Z) = (F.map e.hom).app Z := by cat_disch
 
--- TODO: `hom_inv_id` and `inv_hom_id` are not yet working via `grind`,
--- but they work fine in my minimization in the `grind` test suite.
--- Investigate on nightly-testing / the next release?
-set_option mathlib.tactic.category.grind false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[simps]
+@[simps (attr := grind =)]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
@@ -205,8 +198,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
-
-attribute [grind =] ofComponents_hom_app ofComponents_inv_app
 
 @[simp]
 theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :
@@ -242,7 +233,6 @@ namespace Functor
 
 variable (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X)
 
-set_option mathlib.tactic.category.grind false in
 /-- Constructor for a functor that is isomorphic to a given functor `F : C ⥤ D`,
 while being definitionally equal on objects to a given map `obj : C → D`
 such that for all `X : C`, we have an isomorphism `F.obj X ≅ obj X`. -/
@@ -257,5 +247,15 @@ def isoCopyObj : F ≅ F.copyObj obj e :=
   NatIso.ofComponents e (by simp [Functor.copyObj])
 
 end Functor
+
+@[reassoc]
+lemma NatTrans.naturality_1 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.inv ≫ α.app X ≫ G.map e.hom = α.app Y := by
+  simp
+
+@[reassoc]
+lemma NatTrans.naturality_2 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.hom ≫ α.app Y ≫ G.map e.inv = α.app X := by
+  simp
 
 end CategoryTheory

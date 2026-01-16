@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Triangle counting lemma
@@ -17,6 +19,8 @@ In this file, we prove the triangle counting lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+public section
 
 -- TODO: This instance is bad because it creates data out of a Prop
 attribute [-instance] decidableEq_of_subsingleton
@@ -118,13 +122,13 @@ lemma triangle_counting'
       exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' <| by positivity)
     have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s :=
       union_subset (filter_subset _ _) (filter_subset _ _)
-    rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
-      mul_assoc, mul_comm ε, two_mul]
+    rw [sub_mul, one_mul, card_sdiff_of_subset i, Nat.cast_sub (card_le_card i),
+      sub_le_sub_iff_left, mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     gcongr
   rintro a _ b _ t
-  rw [Function.onFun, disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
     exists_imp, and_imp, not_and]
   aesop
@@ -137,7 +141,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  grind [disjoint_left]
+  grind [Finset.disjoint_left]
 
 variable [Fintype α]
 

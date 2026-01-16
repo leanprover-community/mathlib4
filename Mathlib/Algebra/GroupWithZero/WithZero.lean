@@ -3,13 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Option.NAry
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Option.NAry
 
 /-!
 # Adjoining a zero to a group
@@ -23,7 +25,7 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 
 ## Notation
 
-In locale `WithZero`:
+In scope `WithZero`:
 * `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions
@@ -33,6 +35,8 @@ In locale `WithZero`:
 * `WithZero.exp`: The "exponential map" `M → Mᵐ⁰`
 * `WithZero.exp`: The "logarithm" `Mᵐ⁰ → M`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -87,6 +91,7 @@ instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) wh
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Coercion as a monoid hom. -/
 @[simps apply]
 def coeMonoidHom : α →* WithZero α where
@@ -363,6 +368,23 @@ lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
 
 @[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
 
+/-- Recursion principle for `Mᵐ⁰`. To construct predicate for all elements of `Mᵐ⁰`, it is enough to
+construct its value at `0` and its value at `exp a` for all `a : M`. -/
+-- TODO: Uncomment once it stops firing on `WithZero M`.
+-- See https://github.com/leanprover-community/mathlib4/issues/31213
+@[elab_as_elim] -- , induction_eliminator, cases_eliminator]
+def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    motive x := Option.recOn x zero exp
+
+@[simp] lemma expRecOn_zero {motive : Mᵐ⁰ → Sort*} (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    expRecOn 0 zero exp = zero := rfl
+
+@[simp] lemma expRecOn_exp {motive : Mᵐ⁰ → Sort*} (x : M) (zero : motive 0)
+    (exp : ∀ a, motive (exp a)) :
+    expRecOn (M := M) (motive := motive) (.exp x) zero exp = exp x := rfl
+
+instance : CanLift Mᵐ⁰ M exp (· ≠ 0) where prf | (.exp a : Mᵐ⁰), _ => ⟨a, rfl⟩
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
@@ -419,13 +441,13 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
-@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b  := rfl
+@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
 
 @[simp]
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
+@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
 
 @[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
@@ -442,18 +464,14 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
-    [MulZeroOneClass G₀'] [Nontrivial G₀']
-    {f : G₀ →*₀ G₀'} {x : G₀} :
-    f x = 0 ↔ x = 0 := by
+protected lemma map_eq_zero_iff {G₀ M₀ : Type*} [GroupWithZero G₀] [MulZeroOneClass M₀]
+    [Nontrivial M₀] {f : G₀ →*₀ M₀} {x : G₀} : f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
   intro hx H
   lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
-  apply one_ne_zero (α := G₀')
+  apply one_ne_zero (α := M₀)
   rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
-
-variable {M₀ N₀}
 
 @[simp]
 lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.FinsetOps
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.FinsetOps
 
 /-!
 # Lattice structure on finite sets
@@ -37,9 +39,11 @@ finite sets, finset
 
 -/
 
+@[expose] public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -78,11 +82,19 @@ instance : Lattice (Finset α) :=
     inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2 }
 
 @[simp]
-theorem sup_eq_union : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
+theorem sup_eq_union' : (Max.max : Finset α → Finset α → Finset α) = Union.union :=
+  rfl
+
+@[grind =]
+theorem sup_eq_union {s t : Finset α} : s ⊔ t = s ∪ t :=
   rfl
 
 @[simp]
-theorem inf_eq_inter : (Min.min : Finset α → Finset α → Finset α) = Inter.inter :=
+theorem inf_eq_inter' : (Min.min : Finset α → Finset α → Finset α) = Inter.inter :=
+  rfl
+
+@[grind =]
+theorem inf_eq_inter {s t : Finset α} : s ⊓ t = s ∩ t :=
   rfl
 
 /-! #### union -/
@@ -109,8 +121,6 @@ theorem forall_mem_union {p : α → Prop} : (∀ a ∈ s ∪ t, p a) ↔ (∀ a
 
 theorem notMem_union : a ∉ s ∪ t ↔ a ∉ s ∧ a ∉ t := by rw [mem_union, not_or]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_union := notMem_union
-
 @[simp, norm_cast]
 theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ : Set α) :=
   Set.ext fun _ => mem_union
@@ -119,7 +129,7 @@ theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
 
 @[simp] lemma subset_union_left : s₁ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_left _
-@[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦  mem_union_right _
+@[simp] lemma subset_union_right : s₂ ⊆ s₁ ∪ s₂ := fun _ ↦ mem_union_right _
 
 @[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=

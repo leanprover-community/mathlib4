@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # The `arctan` function.
 
-Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+Inequalities, identities and `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)`
 and the whole line.
 
 The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
@@ -17,6 +19,8 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 `π / 4 = arctan 1`), including John Machin's original one at
 `four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -79,12 +83,12 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rcases le_or_gt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine hx_lt ?_
-    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_right (half_pos pi_pos)]
+    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_left₀ (half_pos pi_pos)]
     simp [h]
   · rw [lt_iff_not_ge] at hx_gt
     refine hx_gt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, neg_mul_eq_neg_mul,
-      mul_le_mul_right (half_pos pi_pos)]
+      mul_le_mul_iff_left₀ (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff₀]
     · norm_num
@@ -156,18 +160,19 @@ theorem arcsin_eq_arctan (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 
-@[mono]
+@[gcongr, mono]
 theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 
+@[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[gcongr]
+@[deprecated arctan_strictMono (since := "2025-10-20")]
 lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
 
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
 
-@[gcongr]
+@[deprecated arctan_mono (since := "2025-10-20")]
 lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
   arctan_strictMono.monotone hxy
 
@@ -196,6 +201,20 @@ theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)
 @[simp]
 theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
+
+@[simp]
+theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
+  rw [← tan_pi_div_three, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
+theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
+  rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
 
 @[simp]
 theorem arctan_eq_pi_div_four : arctan x = π / 4 ↔ x = 1 := arctan_injective.eq_iff' arctan_one
@@ -252,12 +271,11 @@ theorem arctan_inv_of_neg (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := 
 section ArctanAdd
 
 lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
-  by_contra!
-  obtain ⟨k, h⟩ := this
+  by_contra! ⟨k, h⟩
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
-  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_right (by positivity)] at lb
-  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; omega
+  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
+  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub
+  norm_cast at lb ub; change -1 < _ at lb; lia
 
 lemma arctan_add_arctan_lt_pi_div_two (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   rcases le_or_gt y 0 with hy | hy
@@ -286,9 +304,7 @@ theorem arctan_add_eq_add_pi (h : 1 < x * y) (hx : 0 < x) :
   have k := arctan_add (mul_inv x y ▸ inv_lt_one_of_one_lt₀ h)
   rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
     sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
-  convert k.symm using 3
-  field_simp
-  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+  grind
 
 theorem arctan_add_eq_sub_pi (h : 1 < x * y) (hx : x < 0) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
@@ -350,15 +366,15 @@ theorem sin_arctan_nonneg : 0 ≤ sin (arctan x) ↔ 0 ≤ x := by
 theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
   simpa using sin_arctan_strictMono.le_iff_le (b := 0)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
 
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
-/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)
@@ -387,7 +403,7 @@ open Lean Meta Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
@@ -401,7 +417,7 @@ def evalRealArctan : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -410,7 +426,7 @@ def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
     assumeInstancesCommute

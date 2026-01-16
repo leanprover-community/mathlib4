@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Strictly convex sets
@@ -14,6 +16,8 @@ This file defines strictly convex sets.
 
 A set is strictly convex if the open segment between any two distinct points lies in its interior.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -137,7 +141,7 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 section LinearOrderedCancelAddCommMonoid
 
 variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
@@ -274,7 +278,8 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
       split_ifs
       · exact strictConvex_univ
       · exact strictConvex_empty
-    refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_ (smul_right_injective E hc)
+    refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_
+      (NoZeroSMulDivisors.smul_right_injective E hc)
     unfold LinearMap.lsmul LinearMap.mk₂ LinearMap.mk₂' LinearMap.mk₂'ₛₗ
     exact continuous_const_smul _
 
@@ -362,7 +367,7 @@ theorem strictConvex_iff_div :
     StrictConvex 𝕜 s ↔
       s.Pairwise fun x y =>
         ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → (a / (a + b)) • x + (b / (a + b)) • y ∈ interior s :=
-  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field_simp),
+  ⟨fun h x hx y hy hxy a b ha hb ↦ h hx hy hxy (by positivity) (by positivity) (by field),
     fun h x hx y hy hxy a b ha hb hab ↦ by
     convert h hx hy hxy ha hb <;> rw [hab, div_one]⟩
 

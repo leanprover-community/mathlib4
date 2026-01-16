@@ -3,14 +3,18 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Const
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Derivatives on pi-types.
 -/
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [Fintype ι] [NontriviallyNormedField 𝕜]
+public section
+
+variable {𝕜 ι : Type*} [DecidableEq ι] [Finite ι] [NontriviallyNormedField 𝕜]
 variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
 
 @[fun_prop]
@@ -25,6 +29,7 @@ theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :
       simp
     · simp
   rw [update_eq]
+  have := Fintype.ofFinite ι
   convert (hasFDerivAt_const _ _).add (l.hasFDerivAt.comp y (hasFDerivAt_sub_const (x i)))
   rw [zero_add, ContinuousLinearMap.comp_id]
 
@@ -35,6 +40,7 @@ theorem hasFDerivAt_single {i : ι} (y : E i) :
 
 theorem fderiv_update (x : ∀ i, E i) {i : ι} (y : E i) :
     fderiv 𝕜 (Function.update x i) y = .pi (Pi.single i (.id 𝕜 (E i))) :=
+  have := Fintype.ofFinite ι
   (hasFDerivAt_update x y).fderiv
 
 theorem fderiv_single {i : ι} (y : E i) :

@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.SupClosed
 
 /-!
 # Sublattices
@@ -18,6 +20,8 @@ Subsemilattices, if people care about them.
 
 sublattice
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -181,8 +185,6 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥
@@ -246,7 +248,7 @@ lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.m
 
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
-  SetLike.coe_injective <| f.toEquiv.image_eq_preimage L
+  SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm

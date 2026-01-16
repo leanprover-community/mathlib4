@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalClosure
 
 /-!
 # Local isomorphisms
 
 A local isomorphism of schemes is a morphism that is source-locally an open immersion.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -34,7 +38,7 @@ lemma eq_sourceLocalClosure_isOpenImmersion :
   ext
   rw [isLocalIso_iff, sourceLocalClosure.iff_forall_exists]
 
-instance : IsLocalAtSource @IsLocalIso := by
+instance : IsZariskiLocalAtSource @IsLocalIso := by
   rw [eq_sourceLocalClosure_isOpenImmersion]
   infer_instance
 
@@ -47,20 +51,22 @@ instance : IsStableUnderBaseChange @IsLocalIso := by
   infer_instance
 
 /-- `IsLocalIso` is weaker than every source-Zariski-local property containing identities. -/
-lemma le_of_isLocalAtSource (P : MorphismProperty Scheme.{u}) [P.ContainsIdentities]
-    [IsLocalAtSource P] : @IsLocalIso ≤ P := by
+lemma le_of_isZariskiLocalAtSource (P : MorphismProperty Scheme.{u}) [P.ContainsIdentities]
+    [IsZariskiLocalAtSource P] : @IsLocalIso ≤ P := by
   intro X Y f hf
   obtain ⟨𝒰, h⟩ := eq_sourceLocalClosure_isOpenImmersion ▸ hf
-  rw [IsLocalAtSource.iff_of_openCover 𝒰 (P := P)]
-  exact fun _ ↦ IsLocalAtSource.of_isOpenImmersion _
+  rw [IsZariskiLocalAtSource.iff_of_openCover 𝒰 (P := P)]
+  exact fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _
+
+@[deprecated (since := "2025-10-07")] alias le_of_isLocalAtSource := le_of_isZariskiLocalAtSource
 
 /-- `IsLocalIso` is the weakest source-Zariski-local property containing identities. -/
 lemma eq_iInf :
     @IsLocalIso = ⨅ (P : MorphismProperty Scheme.{u}) (_ : P.ContainsIdentities)
-      (_ : IsLocalAtSource P), P := by
+      (_ : IsZariskiLocalAtSource P), P := by
   refine le_antisymm ?_ ?_
   · simp only [le_iInf_iff]
-    apply le_of_isLocalAtSource
+    apply le_of_isZariskiLocalAtSource
   · refine iInf_le_of_le @IsLocalIso (iInf_le_of_le inferInstance (iInf_le _ ?_))
     infer_instance
 

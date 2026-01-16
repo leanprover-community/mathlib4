@@ -3,10 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Finiteness.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Basic results on finitely generated (sub)modules
@@ -15,10 +18,11 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
+@[expose] public section
+
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -83,6 +87,11 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 
+/-- Maps from a finite module have a finite range. -/
+@[simp] lemma fg_range [Module.Finite R M] (f : M →ₛₗ[σ] P) : f.range.FG := by
+  rw [LinearMap.range_eq_map]
+  exact Module.Finite.fg_top.map f
+
 theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
@@ -90,8 +99,12 @@ theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
-      rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
+      rw [← LinearMap.coe_range, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
+
+theorem fg_map_iff (hf : Function.Injective f) {N : Submodule R M} :
+    (N.map f).FG ↔ N.FG :=
+  ⟨(fg_of_fg_map_injective _ hf ·), (.map _)⟩
 
 end
 
@@ -104,10 +117,13 @@ theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Add
     (hfn : (N.map f).FG) : N.FG :=
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 
-theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
-  ⟨fun h => N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
-    fg_of_fg_map_injective N.subtype Subtype.val_injective <| by rwa [map_top, range_subtype]⟩
+/-- The top submodule of another submodule `N` is FG iff `N` is `FG`.
 
+See also `Module.Finite.fg_top`. -/
+protected theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG := by
+  rw [← fg_map_iff N.subtype Subtype.val_injective, map_top, range_subtype]
+
+/-- See also `Module.Finite.equiv_iff`. -/
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=
   e.symm.range ▸ map_top (e.symm : P →ₗ[R] M) ▸ h.map _
 
@@ -162,7 +178,7 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
     exact le_iSup _ _
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
-theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
+theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
@@ -174,6 +190,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       apply CompleteLattice.isCompactElement_finsetSup
       exact fun n _ => singleton_span_isCompactElement n
     · intro h
+      rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at h
       -- s is the Sup of the spans of its elements.
       have sSup' : s = sSup (sp '' ↑s) := by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, eq_comm, span_eq]
@@ -237,8 +254,7 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N]
-    [Module.Finite R M] (f : F) : Module.Finite R (LinearMap.range f) :=
+instance range [Module.Finite R M] (f : M →ₗ[R] N) : Module.Finite R f.range :=
   of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
@@ -253,10 +269,20 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
     rw [← Submodule.pi_top]
     exact Submodule.fg_pi fun i => (h i).1⟩
 
+theorem of_pi {ι : Type*} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    [Module.Finite R (∀ i, M i)] (i : ι) : Module.Finite R (M i) :=
+  Module.Finite.of_surjective _ <| LinearMap.proj_surjective i
+
+theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] : Module.Finite R (∀ i, M i) ↔ ∀ i, Module.Finite R (M i) :=
+  ⟨fun _ i => of_pi M i, fun _ => inferInstance⟩
+
 variable (R)
 
-instance self : Module.Finite R R :=
-  ⟨⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩⟩
+theorem _root_.Ideal.fg_top : (⊤ : Ideal R).FG :=
+  ⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩
+
+instance self : Module.Finite R R := ⟨Ideal.fg_top R⟩
 
 variable (M)
 
@@ -267,8 +293,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [Add
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
-  rw [hSgen] at this
-  exact this
+  rwa [hSgen] at this
 
 variable {R M}
 
@@ -278,22 +303,32 @@ theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
 theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
 
+instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
+
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
+/-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans N.fg_top
+
+/-- A finitely-generated submodule is finite as a module. -/
+alias ⟨_, of_fg⟩ := iff_fg
+
+/-- A submodule that is finite as a module is finitely generated. -/
+theorem _root_.Submodule.FG.of_finite {N : Submodule R M} [Module.Finite R N] : N.FG :=
+  iff_fg.1 ‹_›
 
 variable (R M)
 
-instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
+instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
-instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr fg_top
+instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
 
 variable {M}
 
 /-- The submodule generated by a finite set is `R`-finite. -/
 theorem span_of_finite {A : Set M} (hA : Set.Finite A) :
     Module.Finite R (Submodule.span R A) :=
-  ⟨(Submodule.fg_top _).mpr ⟨hA.toFinset, hA.coe_toFinset.symm ▸ rfl⟩⟩
+  .of_fg ⟨hA.toFinset, hA.coe_toFinset.symm ▸ rfl⟩
 
 /-- The submodule generated by a single element is `R`-finite. -/
 instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
@@ -301,7 +336,7 @@ instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
 
 /-- The submodule generated by a finset is `R`-finite. -/
 instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
-  ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
+  .of_fg ⟨s, rfl⟩
 
 variable {R}
 
@@ -350,10 +385,10 @@ variable {R V} [Ring R] [AddCommGroup V] [Module R V]
 /-- The sup of two fg submodules is finite. Also see `Submodule.FG.sup`. -/
 instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
     [h₂ : Module.Finite R S₂] : Module.Finite R (S₁ ⊔ S₂ : Submodule R V) := by
-  rw [finite_def] at *
-  exact (fg_top _).2 (((fg_top S₁).1 h₁).sup ((fg_top S₂).1 h₂))
+  rw [Finite.iff_fg] at *
+  exact .sup h₁ h₂
 
-/-- The submodule generated by a finite supremum of finite dimensional submodules is
+/-- The submodule generated by a finite supremum of finite-dimensional submodules is
 finite-dimensional.
 
 Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but that doesn't
@@ -381,6 +416,9 @@ theorem id : Finite (RingHom.id A) :=
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
+
+lemma _root_.RingEquiv.finite (e : A ≃+* B) : e.toRingHom.Finite :=
+  .of_surjective _ e.surjective
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
   algebraize [f, g, g.comp f]
@@ -421,3 +459,23 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+section Ring
+variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+
+local notation3 "R≥0" => {c : R // 0 ≤ c}
+
+private instance instModuleFiniteAux : Module.Finite R≥0 R := by
+  simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
+  refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
+  obtain hx | hx := le_total 0 x
+  · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨x, hx⟩ (x := 1)
+      (Submodule.subset_span <| by simp)
+  · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.2 hx⟩ (x := -1)
+      (Submodule.subset_span <| by simp)
+
+/-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
+scalars. -/
+instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E
+
+end Ring

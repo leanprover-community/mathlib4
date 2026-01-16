@@ -3,8 +3,10 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
-import Mathlib.ModelTheory.DirectLimit
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
@@ -33,6 +35,8 @@ This file defines partial isomorphisms between first-order structures.
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
 -/
+
+@[expose] public section
 
 universe u v w w'
 
@@ -134,6 +138,7 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
     rw [le_def]
     exact ⟨dom_le_dom, by ext; change subtype _ (g.toEquiv _) = _; rw [← h_eq]; rfl⟩
 
+-- probably the initial design intended this to be private, just like `le_refl` and `le_antisymm`?
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
@@ -151,9 +156,9 @@ private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g �
   exact Equiv.injective_toEmbedding ((subtype _).comp_injective (subtype_toEquiv_inclusion le_fg))
 
 instance : PartialOrder (M ≃ₚ[L] N) where
-  le_refl := le_refl
+  le_refl := private le_refl
   le_trans := le_trans
-  le_antisymm := le_antisymm
+  le_antisymm := private le_antisymm
 
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
@@ -302,7 +307,7 @@ namespace DirectLimit
 
 open PartialEquiv
 
-variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
 variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
@@ -322,18 +327,16 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
-      monotone' := monotone_cod.comp S.monotone}
-    ).comp
+      monotone' := monotone_cod.comp S.monotone }).comp
       ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).dom)
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
         (fun i ↦ (S i).toEquiv)
-        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
-      ).comp
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
-          monotone' := monotone_dom.comp S.monotone}).symm)
+          monotone' := monotone_dom.comp S.monotone }).symm)
 
 @[simp]
 theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl

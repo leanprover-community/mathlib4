@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.CategoryTheory.Sites.Canonical
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
@@ -14,6 +16,8 @@ the category of types, and make this an equivalence of categories.
 
 Then we prove that the topology defined is the canonical topology.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -115,7 +119,7 @@ noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
     (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit)) where
   toFun := eval S α
-  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _ ).1 hs) α
+  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α
   left_inv := typesGlue_eval
   right_inv := eval_typesGlue
 
@@ -145,7 +149,7 @@ theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S�
     eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
   (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm
 
-/-- `yoneda'` induces an equivalence of category between `Type u` and
+/-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology (Type u)`. -/
 @[simps!]
 noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u) where

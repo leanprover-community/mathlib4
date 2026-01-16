@@ -3,13 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 /-!
 # The action of bifunctors on graded objects
 
 Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, we construct an obvious functor
 `mapBifunctor F I J : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`.
-When we have a map `p : I × J → K` and that suitable coproducts exists, we also get
+When we have a map `p : I × J → K` and that suitable coproducts exist, we also get
 a functor
 `mapBifunctorMap F p : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃`.
 
@@ -19,11 +21,13 @@ on `GradedObject I C` (TODO @joelriou).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject

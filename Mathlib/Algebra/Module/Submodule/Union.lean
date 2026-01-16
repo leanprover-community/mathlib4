@@ -3,10 +3,15 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.LinearAlgebra.Dual.Defs
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Unions of `Submodule`s
@@ -18,6 +23,8 @@ This file is a home for results about unions of submodules.
 a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
+
+public section
 
 open Function Set
 
@@ -62,7 +69,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
       suffices ∃ z₁ z₂, z₁ ≠ z₂ ∧ f z₁ = f z₂ by
         obtain ⟨z₁, z₂, hne, heq⟩ := this
         exact ⟨f z₁, hf' (mem_univ _), z₁, z₁.property, z₂, z₂.property,
-          Subtype.coe_ne_coe.mpr hne, by specialize hf z₁; aesop, by specialize hf z₂; aesop⟩
+          Subtype.coe_ne_coe.mpr hne, by specialize hf z₁; simp_all, by specialize hf z₂; aesop⟩
       have key : s.card < sxy.encard := by
         refine lt_of_add_lt_add_right <| lt_of_lt_of_le h₂ ?_
         have : Injective (fun t : K ↦ x + t • y) :=
@@ -103,3 +110,10 @@ lemma Module.Dual.exists_forall_mem_ne_zero_of_forall_exists (p : Submodule K M)
   replace h (i : ι) : ∃ x : p, f' i x ≠ 0 := by obtain ⟨x, hxp, hx₀⟩ := h i; exact ⟨⟨x, hxp⟩, hx₀⟩
   obtain ⟨⟨x, hxp⟩, hx₀⟩ := exists_forall_ne_zero_of_forall_exists f' h
   exact ⟨x, hxp, hx₀⟩
+
+lemma Module.exists_dual_forall_apply_ne_zero (v : ι → M) (hv : ∀ i, v i ≠ 0) :
+    ∃ f : Dual K M, ∀ i, f (v i) ≠ 0 := by
+  refine Dual.exists_forall_ne_zero_of_forall_exists (fun i ↦ Dual.eval K M (v i)) fun i ↦ ?_
+  by_contra! contra
+  simp_rw [Dual.eval_apply, forall_dual_apply_eq_zero_iff] at contra
+  exact hv i contra

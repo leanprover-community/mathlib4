@@ -35,8 +35,8 @@ namespace Imo2001Q2
 theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     a ^ 4 / (a ^ 4 + b ^ 4 + c ^ 4) ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + ↑8 * b ^ 3 * c ^ 3) := by
   rw [div_le_div_iff₀ (by positivity) (by positivity)]
-  calc a ^ 4 * sqrt ((a ^ 3) ^ 2 + (8:ℝ) * b ^ 3 * c ^ 3)
-      = a ^ 3 * (a * sqrt ((a ^ 3) ^ 2 + (8:ℝ) * b ^ 3 * c ^ 3)) := by ring
+  calc a ^ 4 * sqrt ((a ^ 3) ^ 2 + (8 : ℝ) * b ^ 3 * c ^ 3)
+      = a ^ 3 * (a * sqrt ((a ^ 3) ^ 2 + (8 : ℝ) * b ^ 3 * c ^ 3)) := by ring
     _ ≤ a ^ 3 * (a ^ 4 + b ^ 4 + c ^ 4) := ?_
   gcongr
   apply le_of_pow_le_pow_left₀ two_ne_zero (by positivity)
@@ -54,7 +54,7 @@ theorem imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
   have H : a ^ 4 + b ^ 4 + c ^ 4 ≠ 0 := by positivity
   calc
     _ ≥ _ := add_le_add (add_le_add (bound ha hb hc) (bound hb hc ha)) (bound hc ha hb)
-    _ = 1 := by ring_nf at H ⊢; field_simp
+    _ = 1 := by ring_nf at H ⊢; field
 
 end Imo2001Q2
 

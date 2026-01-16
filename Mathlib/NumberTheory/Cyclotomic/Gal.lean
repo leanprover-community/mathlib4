@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.PolynomialGaloisGroup
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
 
 /-!
 # Galois group of cyclotomic extensions
@@ -35,6 +37,8 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
 
 -/
+
+@[expose] public section
 
 
 variable {n : ℕ} [NeZero n] (K : Type*) [Field K] {L : Type*} {μ : L}
@@ -75,9 +79,6 @@ end IsPrimitiveRoot
 
 namespace IsCyclotomicExtension
 
-@[deprecated (since := "2025-06-26")]
-alias Aut.commGroup := isMulCommutative
-
 variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
   [IsCyclotomicExtension {n} K L]
 
@@ -86,7 +87,7 @@ variable {K} (L)
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
   `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
-noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
+noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
   let hμ t := hζ.pow_of_coprime _ (ZMod.val_coe_unit_coprime t)
   { (zeta_spec n K L).autToPow K with
@@ -113,13 +114,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
       rw [this, IsPrimitiveRoot.powerBasis_gen] at key
-      -- Porting note: was
-      -- `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
-      conv at key =>
-        congr; congr
-        rw [← hζ.val_toRootsOfUnity_coe]
-        rfl; rfl
-        rw [← hζ.val_toRootsOfUnity_coe]
+      nth_rw 1 5 [← hζ.val_toRootsOfUnity_coe] at key
       simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
       rw [pow_eq_pow_iff_modEq, ← Subgroup.orderOf_coe, ← orderOf_units, hζ.val_toRootsOfUnity_coe,
@@ -130,7 +125,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
 variable (h : Irreducible (cyclotomic n K)) {L}
 
 /-- Maps `μ` to the `AlgEquiv` that sends `IsCyclotomicExtension.zeta` to `μ`. -/
-noncomputable def fromZetaAut : L ≃ₐ[K] L :=
+noncomputable def fromZetaAut : Gal(L/K) :=
   let hζ := (zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one
   (autEquivPow L h).symm <|
     ZMod.unitOfCoprime hζ.choose <|

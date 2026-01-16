@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # Binary biproducts
@@ -26,6 +28,8 @@ Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone
 cocone.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -85,9 +89,9 @@ instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+-- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+the underlying structure. -/
 @[ext]
 theorem BinaryBiconeMorphism.ext {P Q : C} {c c' : BinaryBicone P Q}
     (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by

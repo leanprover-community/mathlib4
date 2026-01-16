@@ -3,11 +3,13 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.NumberTheory.AbelSummation
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Partial sums of coefficients of L-series
@@ -31,6 +33,8 @@ L-series.
   to `l` when `s → 1` with `1 < s`.
 
 -/
+
+public section
 
 open Finset Filter MeasureTheory Topology Complex Asymptotics
 
@@ -137,7 +141,7 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
   have (n : _) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
     Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
-  rw [← LSeries_congr _ (fun _ ↦ if_neg _), LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
+  rw [← LSeries_congr fun _ ↦ if_neg _, LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
   simp_all
 
 /-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
@@ -242,8 +246,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
     _ = ε := by
       rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
-      field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
-      ring
+      field [show -s + 1 ≠ 0 by linarith]
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))

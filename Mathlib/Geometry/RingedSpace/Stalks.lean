@@ -3,17 +3,21 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-# Stalks for presheaved spaces
+# Stalks for presheafed spaces
 
 This file lifts constructions of stalks and pushforwards of stalks to work with
 the category of presheafed spaces. Additionally, we prove that restriction of
 presheafed spaces does not change the stalks.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -25,11 +29,7 @@ open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor Cate
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
--- Porting note: no tidy tactic
--- attribute [local tidy] tactic.auto_cases_opens
--- this could be replaced by
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
--- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
 
@@ -51,7 +51,7 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
-of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`.
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`.
 -/
 def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (X : TopCat.{v})}
     (h : IsOpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta.MetrizableSpace
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Instances.Rat
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # Borel (measurable) space
@@ -26,11 +28,13 @@ import Mathlib.Topology.Instances.Rat
 * `IsOpen.measurableSet`, `IsClosed.measurableSet`: open and closed sets are measurable;
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
-  is continuous, then `fun x => op (f x, g y)` is measurable;
-* `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
+  is continuous, then `fun x => op (f x, g x)` is measurable;
+* `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -126,7 +130,7 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
 /-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
-def addBorelInstance (e : Expr) : TacticM Unit := do
+meta def addBorelInstance (e : Expr) : TacticM Unit := do
   let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
@@ -136,7 +140,7 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
 
 /-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
 replace `i` with `borel e`. -/
-def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+meta def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
   let te ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $te _ _ _)
@@ -157,7 +161,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := withMainContext <| do
+meta def borelize (t : Term) : TacticM Unit := withMainContext do
   let u ← mkFreshLevelMVar
   let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
@@ -199,7 +203,7 @@ instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [Measur
 
 lemma opensMeasurableSpace_iff_forall_measurableSet
     [TopologicalSpace α] [MeasurableSpace α] :
-    OpensMeasurableSpace α ↔  (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
+    OpensMeasurableSpace α ↔ (∀ (s : Set α), IsOpen s → MeasurableSet s) := by
   refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 
@@ -364,6 +368,21 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
+/-- This is not covered by `Pi.opensMeasurableSpace` as it does not require second countability. -/
+instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) where
+  borel_le := by
+    obtain h | h := isEmpty_or_nonempty ι
+    · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
+    have := Classical.choice (nonempty_unique ι)
+    rw [borel, MeasurableSpace.pi, ciSup_unique]
+    refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
+    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+      Set.mem_setOf_eq] at hs
+    obtain ⟨t, ht, rfl⟩ := hs
+    exact ⟨t, ht.measurableSet, rfl⟩
+
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
 the two spaces has second countable topology. This is the right assumption to ensure that continuous
 maps from `α` to `β` are strongly measurable. -/
@@ -386,7 +405,7 @@ product sigma-algebra. -/
 instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
   apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
-  rcases h.out with hα|hβ
+  rcases h.out with hα | hβ
   · let F : Set α → Set β := fun a ↦ {y | ∃ b, IsOpen b ∧ y ∈ b ∧ a ×ˢ b ⊆ s}
     have A : ∀ a, IsOpen (F a) := by
       intro a
@@ -526,7 +545,7 @@ instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSp
 
 section Homeomorph
 
-@[measurability]
+@[fun_prop]
 protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 
@@ -550,7 +569,7 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 
 end Homeomorph
 
-@[measurability]
+@[fun_prop]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 
@@ -571,9 +590,12 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     AEMeasurable (fun a => c (f a) (g a)) μ :=
   h.measurable.comp_aemeasurable (hf.prodMk hg)
 
-instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
-    [HasContinuousInv₀ γ] : MeasurableInv γ :=
+instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
+    [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
+
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
+  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
@@ -589,6 +611,9 @@ instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalS
     [SecondCountableTopologyEither M α] [MeasurableSpace α] [BorelSpace α] [SMul M α]
     [ContinuousSMul M α] : MeasurableSMul₂ M α :=
   ⟨continuous_smul.measurable⟩
+
+instance [SecondCountableTopology α] [T2Space α] : MeasurableEq α :=
+  ⟨isClosed_diagonal.measurableSet⟩
 
 end
 
@@ -614,6 +639,12 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
 
 instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
+  ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
+
+/-- This is not covered by `Pi.borelSpace` as it does not require second countability. -/
+instance Pi.borelSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
     BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 

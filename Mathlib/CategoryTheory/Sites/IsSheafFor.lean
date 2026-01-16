@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 /-!
 # The sheaf condition for a presieve
@@ -63,6 +65,8 @@ which can be convenient.
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
+
+@[expose] public section
 
 
 universe w w' v₁ v₂ u₁ u₂
@@ -168,20 +172,21 @@ using the notation defined there.
 For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
 `CategoryTheory.Presieve.Arrows.PullbackCompatible`.
 -/
-def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
+def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.HasPairwisePullbacks] :
+    Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
-    haveI := hasPullbacks.has_pullbacks h₁ h₂
+    haveI := HasPairwisePullbacks.has_pullbacks h₁ h₂
     P.map (pullback.fst f₁ f₂).op (x f₁ h₁) = P.map (pullback.snd f₁ f₂).op (x f₂ h₂)
 
-theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
+theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.HasPairwisePullbacks] :
     x.Compatible ↔ x.PullbackCompatible := by
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
-    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
+    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
+    haveI := HasPairwisePullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 
@@ -268,9 +273,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R).arrows} (t₁ 
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- Porting note: congr fails to make progress
-  apply congr_arg
-  exact h
+  congr
 
 /-- Compatible families of elements for a presheaf of types `P` and a presieve `R`
 are in 1-1 correspondence with compatible families for the same presheaf and
@@ -348,24 +351,34 @@ end Pullback
 /-- Given a morphism of presheaves `f : P ⟶ Q`, we can take a family of elements valued in `P` to a
 family of elements valued in `Q` by composing with `f`.
 -/
+@[deprecated map (since := "2025-09-25")]
 def FamilyOfElements.compPresheafMap (f : P ⟶ Q) (x : FamilyOfElements P R) :
     FamilyOfElements Q R := fun Y g hg => f.app (op Y) (x g hg)
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_id (x : FamilyOfElements P R) :
-    x.compPresheafMap (𝟙 P) = x :=
+lemma FamilyOfElements.map_id (x : FamilyOfElements P R) :
+    x.map (𝟙 _) = x :=
   rfl
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_comp (x : FamilyOfElements P R) (f : P ⟶ Q)
-    (g : Q ⟶ U) : (x.compPresheafMap f).compPresheafMap g = x.compPresheafMap (f ≫ g) :=
+lemma FamilyOfElements.map_comp (x : FamilyOfElements P R) (f : P ⟶ Q) (g : Q ⟶ U) :
+    (x.map f).map g = x.map (f ≫ g) := by
   rfl
 
-theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfElements P R}
-    (h : x.Compatible) : (x.compPresheafMap f).Compatible := by
+theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
+    (h : x.Compatible) : (x.map f).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
-  unfold FamilyOfElements.compPresheafMap
+  unfold FamilyOfElements.map
   rwa [← FunctorToTypes.naturality, ← FunctorToTypes.naturality, h]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_id :=
+  FamilyOfElements.map_id
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_comp :=
+  FamilyOfElements.map_comp
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.Compatible.compPresheafMap :=
+  FamilyOfElements.Compatible.map
 
 /--
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
@@ -378,12 +391,15 @@ equation (2).
 def FamilyOfElements.IsAmalgamation (x : FamilyOfElements P R) (t : P.obj (op X)) : Prop :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X) (h : R f), P.map f.op t = x f h
 
-theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
-    (h : x.IsAmalgamation t) : (x.compPresheafMap f).IsAmalgamation (f.app (op X) t) := by
+theorem FamilyOfElements.IsAmalgamation.map {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
+    (h : x.IsAmalgamation t) : (x.map f).IsAmalgamation (f.app (op X) t) := by
   intro Y g hg
-  dsimp [FamilyOfElements.compPresheafMap]
+  dsimp [FamilyOfElements.map]
   change (f.app _ ≫ Q.map _) _ = _
   rw [← f.naturality, types_comp_apply, h g hg]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.IsAmalgamation.compPresheafMap :=
+  FamilyOfElements.IsAmalgamation.map
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
@@ -532,8 +548,8 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
   (isSheafFor_iff_yonedaSheafCondition.1 h f).exists.choose
 
 /--
-Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension, ie
-that the triangle below commutes, provided `P` is a sheaf for `S`
+Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension,
+i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
 ```
       f
    S  →  P
@@ -675,6 +691,16 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor
   isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
     (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
 
+theorem isSheafFor_iff_of_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') :
+    IsSheafFor P R ↔ IsSheafFor P' R :=
+  ⟨isSheafFor_iso i, isSheafFor_iso i.symm⟩
+
+/-- The property of being separated for some presieve is preserved under isomorphisms. -/
+theorem isSeparatedFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparatedFor P R) :
+    IsSeparatedFor P' R := by
+  intro x t₁ t₂ ht₁ ht₂
+  simpa using congrArg (i.hom.app _) <| hP (x.map i.inv) _ _ (ht₁.map i.inv) (ht₂.map i.inv)
+
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
@@ -773,7 +799,102 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
-variable [(ofArrows X π).hasPullbacks]
+/-- If `P` is a presheaf of types and `π : (i : I) → X i ⟶ B` is a family
+of morphisms, this is the map from `P.obj (op B)` to the subtype of compatible
+families in `P.obj (op (X i))`. -/
+@[simps]
+def Arrows.toCompatible (s : P.obj (op B)) :
+    Subtype (Arrows.Compatible P π) where
+  val i := P.map (π i).op s
+  property i j Z gi gj h := by
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp, h]
+
+theorem isSheafFor_ofArrows_iff_bijective_toCompabible :
+    IsSheafFor P (ofArrows X π) ↔
+      Function.Bijective (Arrows.toCompatible P π) := by
+  rw [isSheafFor_arrows_iff]
+  refine ⟨fun h ↦ ⟨fun x₁ x₂ hx ↦
+      (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
+        (congr_fun (congr_arg Subtype.val hx.symm)),
+      fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
+  · obtain ⟨x, hx, _⟩ := h y hy
+    exact ⟨x, by ext; apply hx⟩
+  · obtain ⟨y, hy⟩ := h.2 ⟨x, hx⟩
+    rw [Subtype.ext_iff] at hy
+    dsimp at hy
+    subst hy
+    exact ⟨y, fun _ ↦ rfl, fun y' hy' ↦ h.1 (by ext; apply hy')⟩
+
+@[simp]
+lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
+    {Y : C} (f : Y ⟶ X) [IsIso f] :
+    IsSheafFor P (Sieve.pullback f R).arrows ↔ IsSheafFor P R.arrows := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  have := Sieve.pullback_ofArrows_of_iso _ g (asIso f)
+  dsimp at this
+  let e : Subtype (Arrows.Compatible P g) ≃
+    Subtype (Arrows.Compatible P (fun i ↦ g i ≫ inv f)) :=
+    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+        simp only [← cancel_mono f, assoc, IsIso.inv_hom_id, comp_id] at h
+        exact s.property _ _ _ _ _ h⟩
+      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ W g₁ g₂ h ↦ by
+        replace h := h =≫ inv f
+        simp only [Category.assoc] at h
+        exact s.property _ _ _ _ _ h⟩ }
+  simp only [this, ← isSheafFor_iff_generate,
+    isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
+    ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
+  convert Iff.rfl using 2
+  ext
+  simp [e, FunctorToTypes.map_comp_apply]
+
+lemma isSheafFor_over_map_op_comp_ofArrows_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} {Y : I → Over B} (f : ∀ i, Y i ⟶ X) :
+    IsSheafFor ((Over.map p).op ⋙ P) (Presieve.ofArrows _ f) ↔
+      IsSheafFor P (Presieve.ofArrows _ (fun i ↦ (Over.map p).map (f i))) := by
+  let e : Subtype (Arrows.Compatible ((Over.map p).op ⋙ P) f) ≃
+      Subtype (Arrows.Compatible P (fun i ↦ (Over.map p).map (f i))) :=
+    { toFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦ by
+        replace h := (Over.forget _).congr_map h
+        dsimp at h
+        have := s.property i₁ i₂ (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom))
+          (Over.homMk g₁.left) (Over.homMk g₂.left (by
+            have := Over.w (f i₂)
+            dsimp at this ⊢
+            rw [reassoc_of% h, this])) (by cat_disch)
+        let φ : Z ⟶ (Over.map p).obj (Over.mk (g₁.left ≫ (f i₁).left ≫ X.hom)) :=
+          Over.homMk (𝟙 _) (by simpa using Over.w g₁)
+        replace this := congr_arg (P.map φ.op) this
+        dsimp at this
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp] at this
+        convert this <;> cat_disch⟩
+      invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
+        s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
+          (by simp only [← Functor.map_comp, h])⟩ }
+  simp only [isSheafFor_ofArrows_iff_bijective_toCompabible,
+    ← e.bijective.of_comp_iff']
+  rfl
+
+lemma isSheafFor_over_map_op_comp_iff
+    {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
+    {X : Over B} (R : Sieve X) {X' : Over B'}
+    (e : (Over.map p).obj X ≅ X') :
+    IsSheafFor ((Over.map p).op ⋙ P) R.arrows ↔
+      IsSheafFor P (Sieve.pullback e.inv (Sieve.functorPushforward (Over.map p) R)).arrows := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
+    isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
+  convert Iff.rfl
+  refine le_antisymm ?_ ?_
+  · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
+    refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
+    · simpa [(Over.w_assoc b)] using Over.w a
+    · cat_disch
+  · rintro W _ ⟨_, a, _, ⟨i⟩, rfl⟩
+    exact ⟨_, _, _, Sieve.ofArrows_mk _ _ i, rfl⟩
+
+variable [(ofArrows X π).HasPairwisePullbacks]
 
 /--
 A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.

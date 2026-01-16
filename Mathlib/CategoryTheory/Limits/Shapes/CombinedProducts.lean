@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Constructors for combining (co)fans
@@ -16,6 +18,8 @@ We provide constructors for combining (co)fans and show their (co)limit properti
 * Combine (co)fans on sigma types
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂
 

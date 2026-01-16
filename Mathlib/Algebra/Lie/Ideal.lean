@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
+module
+
+public import Mathlib.Algebra.Lie.Submodule
 
 /-!
 # Lie Ideals
@@ -25,6 +27,8 @@ on Lie submodules.
 
 Lie algebra, ideal, submodule, Lie submodule
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -300,7 +304,7 @@ theorem mem_idealRange (x : L) : f x ∈ idealRange f := by
 theorem mem_idealRange_iff (h : IsIdealMorphism f) {y : L'} :
     y ∈ idealRange f ↔ ∃ x : L, f x = y := by
   rw [f.isIdealMorphism_def] at h
-  rw [← LieSubmodule.mem_coe, ← LieIdeal.coe_toLieSubalgebra, h, f.range_coe, Set.mem_range]
+  rw [← LieSubmodule.mem_coe, ← LieIdeal.coe_toLieSubalgebra, h, f.coe_range, Set.mem_range]
 
 theorem le_ker_iff : I ≤ f.ker ↔ ∀ x, x ∈ I → f x = 0 := by
   constructor <;> intro h x hx
@@ -397,7 +401,7 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   erw [LieSubmodule.mem_sup] at hy₁
   obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
   rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rw [map_add, f.coe_toLinearMap, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :
@@ -409,7 +413,7 @@ theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange 
   apply le_antisymm
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
   · rw [f.isIdealMorphism_def] at h
-    rw [← SetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toLieSubalgebra, h]
+    rw [← SetLike.coe_subset_coe, LieSubmodule.coe_inf, ← coe_toLieSubalgebra, h]
     rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂ ⊢; exact mem_map h₂
 
 @[simp]
@@ -465,7 +469,7 @@ variable {I}
   rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
 
 @[simp] theorem comap_incl_eq_bot : I₂.comap I.incl = ⊥ ↔ Disjoint I I₂ := by
-  rw [disjoint_iff, ←LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
+  rw [disjoint_iff, ← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
     LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,
     LieSubmodule.bot_toSubmodule, incl_coe]
   simp_rw [toLieSubalgebra_toSubmodule]

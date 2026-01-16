@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Sequences
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Sequences
 
 /-!
 # Continuity of the norm on (semi)groups
@@ -15,6 +17,8 @@ import Mathlib.Topology.Sequences
 
 normed group
 -/
+
+@[expose] public section
 
 variable {𝓕 α ι κ E F G : Type*}
 
@@ -122,10 +126,12 @@ set_option linter.docPrime false in
 theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
   h.map continuous_nnnorm' |>.eq
 
-@[to_additive Inseparable.enorm_eq_enorm]
-theorem Inseparable.enorm_eq_enorm' {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
+
+@[deprecated (since := "2025-12-23")]
+alias Inseparable.enorm_eq_enorm' := Inseparable.enorm_eq_enorm
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -169,9 +175,10 @@ section ContinuousENorm
 
 variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : α → E}
 
-@[to_additive Filter.Tendsto.enorm]
-lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
+lemma Filter.Tendsto.enorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
   .comp continuous_enorm.continuousAt h
+
+@[deprecated (since := "2025-12-23")] alias Filter.Tendsto.enorm' := Filter.Tendsto.enorm
 
 end ContinuousENorm
 

@@ -3,12 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.RingTheory.Ideal.Span
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -25,10 +26,11 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
+@[expose] public section
+
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 
@@ -47,13 +49,15 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
     exact ⟨t, rfl⟩⟩
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_nat_eq_addSubmonoid_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
 
-theorem fg_iff_add_subgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
+theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_int_eq_addSubgroup_closure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩, fun ⟨S, hS⟩ =>
+    ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+
+@[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
 
 theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), span R (range s) = N := by
@@ -114,7 +118,8 @@ variable (R A B M N : Type*)
 
 /-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  fg_top : (⊤ : Submodule R M).FG
+  of_fg_top ::
+    fg_top : (⊤ : Submodule R M).FG
 
 attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
@@ -122,21 +127,22 @@ namespace Module
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
+/-- See also `Module.Finite.iff_fg` for a version when `M` is itself a submodule. -/
 theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module.Finite R M ↔ (⊤ : Submodule R M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨(·.fg_top), .of_fg_top⟩
 
 namespace Finite
 
 open Submodule Set
 
 theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
-  ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 (finite_def.1 h), fun h =>
-    finite_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
+  ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 h.fg_top, fun h =>
+    .of_fg_top <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
 
 theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
-  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).1 (finite_def.1 h), fun h =>
-    finite_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
+  ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_addSubgroup_fg ⊤).1 h.fg_top, fun h =>
+    .of_fg_top <| (Submodule.fg_iff_addSubgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
 
 variable {R M N}
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Scott topology
@@ -25,10 +27,10 @@ This file introduces the Scott topology on a preorder.
 
 - `Topology.IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
 - `Topology.IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
-- `Topology.IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are
+- `Topology.IsScott.monotone_of_continuous`: Functions continuous w.r.t. the Scott topology are
   monotone.
 - `Topology.IsScott.scottContinuousOn_iff_continuous` - a function is Scott continuous (preserves
-  least upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
+  least upper bounds of directed sets) if and only if it is continuous w.r.t. the Scott topology.
 - `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
@@ -58,6 +60,8 @@ The converse is true in some special cases, but not in general
 
 Scott topology, preorder
 -/
+
+@[expose] public section
 
 open Set
 
@@ -277,8 +281,6 @@ instance [IsScott α univ] : ClosedIicTopology α where
   isClosed_Iic _ :=
     isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
 
-@[deprecated (since := "2025-07-02")] protected alias isClosed_Iic := isClosed_Iic
-
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
@@ -314,9 +316,6 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_setOf] at hb
     exact hfcb <| hb _ hcd
-
-@[deprecated (since := "2025-07-02")]
-alias scottContinuous_iff_continuous := scottContinuousOn_iff_continuous
 
 end Preorder
 

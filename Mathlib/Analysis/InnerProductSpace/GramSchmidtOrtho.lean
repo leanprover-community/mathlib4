@@ -3,8 +3,10 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Kevin Buzzard, Alexander Bentkamp
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.LinearAlgebra.Matrix.Block
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Gram-Schmidt Orthogonalization and Orthonormalization
@@ -30,6 +32,8 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
+
+@[expose] public section
 
 
 open Finset Submodule Module
@@ -264,8 +268,6 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 
-@[deprecated (since := "2025-07-10")] alias gramSchmidt_orthonormal := gramSchmidtNormed_orthonormal
-
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
@@ -275,9 +277,6 @@ theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
-
-@[deprecated (since := "2025-07-10")]
-alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
 
 open Submodule Set Order
 

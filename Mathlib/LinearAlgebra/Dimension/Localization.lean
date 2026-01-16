@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.OreLocalization.OreSet
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.OreLocalization.OreSet
 
 /-!
 # Rank of localization
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 - `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
+
+@[expose] public section
 
 open Cardinal Module nonZeroDivisors
 
@@ -121,8 +125,6 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     lift_lift, ← lift_lift.{max uS uT uP, uM}]
   let _ : Algebra T ST := Algebra.TensorProduct.rightAlgebra
   set pT := Algebra.algebraMapSubmonoid T p
-  have : IsLocalization pT ST := isLocalizedModule_iff_isLocalization.mp
-    (IsLocalization.tensorProduct_isLocalizedModule ..)
   rw [← lift_lift.{max uS uT, max uM uN}, ← lift_umax.{uP},
     ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT,
     ← IsLocalization.rank_eq ST pT hpT, lift_id'.{uP, max uS uT},
@@ -220,8 +222,8 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
 -- TODO: Upgrade this to an iff. See [lam_1999] Exercise 10.21
 lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
     Nonempty (OreLocalization.OreSet R⁰) := by
-  by_contra h
-  have := aleph0_le_rank_of_isEmpty_oreSet (not_nonempty_iff.mp h)
+  by_contra! h
+  have := aleph0_le_rank_of_isEmpty_oreSet h
   rw [rank_self] at this
   exact this.not_gt one_lt_aleph0
 

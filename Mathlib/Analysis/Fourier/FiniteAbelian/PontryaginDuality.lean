@@ -3,11 +3,14 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.DirectSum.AddChar
-import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.GroupTheory.FiniteAbelian.Basic
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.Algebra.DirectSum.AddChar
+public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Algebra.Field.ModEq
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -24,6 +27,8 @@ Structure Theorem.
 Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some
 more glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 

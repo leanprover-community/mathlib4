@@ -3,10 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Logic.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Basic
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -19,6 +20,8 @@ members.
 * `GroupWithZero`
 * `CommGroupWithZero`
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 
@@ -174,7 +177,7 @@ instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
 /-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 
 The obvious use case is groups with zero, but this condition is also satisfied by `ℕ`, `ℤ` and, more
-generally, any euclidean domain. -/
+generally, any Euclidean domain. -/
 class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop where
   protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
 

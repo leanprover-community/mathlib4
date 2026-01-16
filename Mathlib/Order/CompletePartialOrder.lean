@@ -3,7 +3,9 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Complete Partial Orders
@@ -29,6 +31,8 @@ These are partial orders for which every directed set has a least upper bound.
 
 complete partial order, directedly complete partial order
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {α β : Type*}
 

@@ -3,15 +3,17 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FiniteSpan
-import Mathlib.RingTheory.Polynomial.Chebyshev
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FiniteSpan
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Reflections in linear algebra
@@ -19,7 +21,7 @@ import Mathlib.RingTheory.Polynomial.Chebyshev
 Given an element `x` in a module `M` together with a linear form `f` on `M` such that `f x = 2`, the
 map `y ↦ y - (f y) • x` is an involutive endomorphism of `M`, such that:
  1. the kernel of `f` is fixed,
- 2. the point `x ↦ -x`.
+ 2. the point `x` maps to `-x`.
 
 Such endomorphisms are often called reflections of the module `M`. When `M` carries an inner product
 for which `x` is perpendicular to the kernel of `f`, then (with mild assumptions) the endomorphism
@@ -36,20 +38,22 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
   commutative ring. This is used to define reflection representations of Coxeter groups.
-* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
-  finite spanning sets that is useful in the theory of root data / systems.
+* `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections that preserve
+  finite spanning sets. It is useful in the theory of root data / systems.
 
 ## TODO
 
-Related definitions of reflection exists elsewhere in the library. These more specialised
+Related definitions of reflection exist elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
-should connect (or unify) these definitions with `Module.reflecton` defined here.
+should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
 
+@[expose] public section
+
 open Function Set
-open Module hiding Finite
+open Module
 open Submodule (span)
 
 noncomputable section
@@ -73,7 +77,7 @@ lemma preReflection_apply :
 variable {x f}
 
 lemma preReflection_apply_self (h : f x = 2) :
-    preReflection x f x = - x := by
+    preReflection x f x = -x := by
   rw [preReflection_apply, h, two_smul]; abel
 
 lemma involutive_preReflection (h : f x = 2) :
@@ -102,7 +106,7 @@ lemma reflection_apply (h : f x = 2) :
 
 @[simp]
 lemma reflection_apply_self (h : f x = 2) :
-    reflection h x = - x :=
+    reflection h x = -x :=
   preReflection_apply_self h
 
 lemma involutive_reflection (h : f x = 2) :
@@ -133,13 +137,13 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
   intro y hy
   simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
-lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
-    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [IsDomain R] [NeZero (2 : R)]
+    [IsTorsionFree R M] (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
     p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
   refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
   · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
     suffices f y • x ∈ p by
-      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      have aux : f y • x ∈ p ⊓ R ∙ x := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
       rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
       exact aux.resolve_right hx
     specialize h' hy
@@ -201,12 +205,12 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
-    rw [← Int.ediv_add_emod m 2]
+    rw [← Int.mul_ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
       add_mul_ediv_left _ k (by simp : (2 : ℤ) ≠ 0)]
-    have he : e = 0 ∨ e = 1 := by omega
+    have he : e = 0 ∨ e = 1 := by lia
     clear_value e
     /- Now, equate the coefficients on both sides. These linear combinations were
     found using `polyrith`. -/
@@ -250,7 +254,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
       reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
-    have aux (a b : ℤ) (hab : a + b = -3 := by omega) : a / 2 = -(b / 2) - 2 := by omega
+    have aux (a b : ℤ) (hab : a + b = -3 := by lia) : a / 2 = -(b / 2) - 2 := by lia
     rw [aux (-m - 3) m, aux (-m - 2) (m - 1), aux (-m - 1) (m - 2), aux (-m) (m - 3)]
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf
@@ -336,7 +340,7 @@ applies when `Φ` does not span.
 This rather technical-looking lemma exists because it is exactly what is needed to establish various
 uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
 linear algebra and combinatorics since the finiteness assumption is the key. -/
-lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -352,7 +356,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
-    intros n
+    intro n
     induction n with
     | zero => simp
     | succ n ih =>
@@ -370,7 +374,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
-lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -412,13 +416,13 @@ lemma reflection_reflection_iterate
       map_nsmul, map_smul, smul_neg, hz, add_smul]
     abel
 
-lemma infinite_range_reflection_reflection_iterate_iff [NoZeroSMulDivisors ℤ M]
+lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
     (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 
-lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
+lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
@@ -427,7 +431,6 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
   suffices h : f y • x = (2 : R) • y by
     rw [hfy, two_smul R x, two_smul R y, ← two_zsmul, ← two_zsmul] at h
     exact smul_right_injective _ two_ne_zero h
-  rw [← not_infinite] at hΦ
   contrapose! hΦ
   apply ((infinite_range_reflection_reflection_iterate_iff hfx hgy
     (by rw [hfy, hgx]; norm_cast)).mpr hΦ).mono
@@ -437,7 +440,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
   exact mem_image_of_mem _ hyΦ
 
-lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
     (h_two : ∀ i, c i (r i) = 2)
     (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :

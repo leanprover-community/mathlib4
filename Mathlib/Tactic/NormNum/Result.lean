@@ -3,12 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.Cast.Basic
-import Qq.MetaM
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public meta import Mathlib.Data.Sigma.Basic
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Int.Cast.Basic
+public meta import Qq.MetaM
 
 /-!
 ## The `Result` type for `norm_num`
@@ -23,6 +25,8 @@ or is either `true` or `false`.
 
 -/
 
+@[expose] public section
+
 universe u
 variable {α : Type u}
 
@@ -34,9 +38,6 @@ namespace Meta.NormNum
 
 variable {u : Level}
 
-/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
-def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
-
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
@@ -44,17 +45,20 @@ def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := i
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
+/-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
+lemma instAtLeastTwo (n : ℕ) : Nat.AtLeastTwo (n + 2) := inferInstance
+
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
-def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
+meta def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ q(AddMonoidWithOne $α) <|>
     throwError "not an AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `Semiring α` expression. -/
-def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
+meta def inferSemiring (α : Q(Type u)) : MetaM Q(Semiring $α) :=
   return ← synthInstanceQ q(Semiring $α) <|> throwError "not a semiring"
 
 /-- Helper function to synthesize a typed `Ring α` expression. -/
-def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
+meta def inferRing (α : Q(Type u)) : MetaM Q(Ring $α) :=
   return ← synthInstanceQ q(Ring $α) <|> throwError "not a ring"
 
 /--
@@ -66,7 +70,7 @@ We use this internally to avoid unnecessary typeclass searches.
 
 This function is the inverse of `Expr.intLit!`.
 -/
-def mkRawIntLit (n : ℤ) : Q(ℤ) :=
+meta def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
 
@@ -77,14 +81,14 @@ This `.lit (.natVal n)` internally to represent a natural number,
 rather than the preferred `OfNat.ofNat` form.
 We use this internally to avoid unnecessary typeclass searches.
 -/
-def mkRawRatLit (q : ℚ) : Q(ℚ) :=
+meta def mkRawRatLit (q : ℚ) : Q(ℚ) :=
   let nlit : Q(ℤ) := mkRawIntLit q.num
   let dlit : Q(ℕ) := mkRawNatLit q.den
   q(mkRat $nlit $dlit)
 
 /-- Extract the raw natlit representing the absolute value of a raw integer literal
 (of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
-def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
+meta def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
   if n.isAppOfArity ``Int.ofNat 1 then
     have m : Q(ℕ) := n.appArg!
     ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_natCast $m)⟩
@@ -102,7 +106,7 @@ This function is performance-critical, as many higher level tactics have to cons
 So rather than using typeclass search we hardcode the (relatively small) set of solutions
 to the typeclass problem.
 -/
-def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
+meta def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     MetaM ((a' : Q($α)) × Q($lit = $a')) := do
   if α.isConstOf ``Nat then
     let a' : Q(ℕ) := q(OfNat.ofNat $lit : ℕ)
@@ -121,7 +125,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     | k+2 =>
       let k : Q(ℕ) := mkRawNatLit k
       let _x : Q(Nat.AtLeastTwo $lit) :=
-        (q(instNatAtLeastTwo (n := $k)) : Expr)
+        (q(instAtLeastTwo $k) : Expr)
       let a' : Q($α) := q(OfNat.ofNat $lit)
       pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 
@@ -283,6 +287,8 @@ theorem IsNNRat.den_nz {α} [DivisionSemiring α] {a n d} : IsNNRat (a : α) n d
 theorem IsRat.den_nz {α} [DivisionRing α] {a n d} : IsRat (a : α) n d → (d : α) ≠ 0
   | ⟨_, _⟩ => Invertible.ne_zero (d : α)
 
+meta section
+
 /-- The result of `norm_num` running on an expression `x` of type `α`.
 Untyped version of `Result`. -/
 inductive Result' where
@@ -302,33 +308,33 @@ section
 set_option linter.unusedVariables false
 
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
-@[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
+@[nolint unusedArguments, expose] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
 instance {α : Q(Type u)} {x : Q($α)} : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
-@[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
+@[match_pattern, inline, expose] def Result.isTrue {x : Q(Prop)} :
     ∀ (proof : Q($x)), Result q($x) := Result'.isBool true
 
 /-- The result is `proof : ¬x`, where `x` is a (false) proposition. -/
-@[match_pattern, inline] def Result.isFalse {x : Q(Prop)} :
+@[match_pattern, inline, expose] def Result.isFalse {x : Q(Prop)} :
     ∀ (proof : Q(¬$x)), Result q($x) := Result'.isBool false
 
 /-- The result is `lit : ℕ` (a raw nat literal) and `proof : isNat x lit`. -/
-@[match_pattern, inline] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline, expose] def Result.isNat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(AddMonoidWithOne $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsNat $x $lit)),
       Result x := Result'.isNat
 
 /-- The result is `-lit` where `lit` is a raw nat literal
 and `proof : isInt x (.negOfNat lit)`. -/
-@[match_pattern, inline] def Result.isNegNat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline, expose] def Result.isNegNat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(Ring $α) := by assumption) (lit : Q(ℕ)) (proof : Q(IsInt $x (.negOfNat $lit))),
       Result x := Result'.isNegNat
 
 /-- The result is `proof : IsNNRat x n d`,
 where `n` a raw nat literal, `d` is a raw nat literal (not 0 or 1),
 `n` and `d` are coprime, and `q` is the value of `n / d`. -/
-@[match_pattern, inline] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline, expose] def Result.isNNRat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(DivisionSemiring $α) := by assumption) (q : Rat) (n : Q(ℕ)) (d : Q(ℕ))
       (proof : Q(IsNNRat $x $n $d)), Result x := Result'.isNNRat
 
@@ -336,7 +342,7 @@ where `n` a raw nat literal, `d` is a raw nat literal (not 0 or 1),
 where `n` is `.negOfNat lit` with `lit` a raw nat literal,
 `d` is a raw nat literal (not 0 or 1),
 `n` and `d` are coprime, and `q` is the value of `n / d`. -/
-@[match_pattern, inline] def Result.isNegNNRat {α : Q(Type u)} {x : Q($α)} :
+@[match_pattern, inline, expose] def Result.isNegNNRat {α : Q(Type u)} {x : Q($α)} :
     ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℕ)) (d : Q(ℕ))
       (proof : Q(IsRat $x (.negOfNat $n) $d)), Result x := Result'.isNegNNRat
 
@@ -567,6 +573,8 @@ def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b 
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
   | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
   | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
+
+end
 
 end Meta.NormNum
 

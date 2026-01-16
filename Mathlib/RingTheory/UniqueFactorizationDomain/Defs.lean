@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
+public import Mathlib.Order.WellFounded
 
 /-!
 # Unique factorization
@@ -18,6 +20,8 @@ import Mathlib.Order.WellFounded
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finsupp Ideal
 
@@ -159,7 +163,7 @@ instance : DecompositionMonoid α where
   primal a := by
     obtain rfl | ha := eq_or_ne a 0; · exact isPrimal_zero
     obtain ⟨f, hf, u, rfl⟩ := exists_prime_factors a ha
-    exact ((Submonoid.isPrimal α).multiset_prod_mem f (hf · ·|>.isPrimal)).mul u.isUnit.isPrimal
+    exact ((Submonoid.isPrimal α).multiset_prod_mem f (hf · · |>.isPrimal)).mul u.isUnit.isPrimal
 
 end UniqueFactorizationMonoid
 

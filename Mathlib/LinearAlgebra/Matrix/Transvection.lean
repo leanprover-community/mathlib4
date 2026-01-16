@@ -3,11 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Tactic.Field
 
 /-!
 # Transvections
@@ -57,6 +58,8 @@ block matrices.
 
 To proceed with the induction, we reindex our matrices to reduce to the above situation.
 -/
+
+@[expose] public section
 
 
 universe u₁ u₂
@@ -163,7 +166,7 @@ protected theorem det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix 
   det_transvection_of_ne _ _ t.hij _
 
 @[simp]
-theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
+theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n R)) :
     det (L.map toMatrix).prod = 1 := by
   induction L with
   | nil => simp
@@ -304,7 +307,7 @@ end TransvectionStruct
 end Transvection
 
 /-!
-# Reducing matrices by left and right multiplication by transvections
+### Reducing matrices by left and right multiplication by transvections
 
 In this section, we show that any matrix can be reduced to diagonal form by left and right
 multiplication by transvections (or, equivalently, by elementary operations on lines and columns).
@@ -400,7 +403,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp [h]
       simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
           listTransvecCol_mul_last_row_drop _ _ hn]
-      field_simp [hM]
+      simp [field]
     · have hni : n ≠ i := by
         rintro rfl
         cases i
@@ -431,7 +434,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
       simp only [k', listTransvecRow, hkr, dif_pos, List.getElem?_ofFn]
-    simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
+    simp only [List.take_add_one, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
     simp only [Ne, not_false_iff, reduceCtorEq]
@@ -467,7 +470,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
       simp only [n', listTransvecRow, hnr, dif_pos, List.getElem?_ofFn]
-    simp only [List.take_succ, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
+    simp only [List.take_add_one, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i
     · have hni : n = i := by
@@ -477,7 +480,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
       simp only [h, mul_transvection_apply_same, if_false,
         mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, if_true, IH hnr.le]
-      field_simp [hM]
+      field
     · have hni : n ≠ i := by
         rintro rfl
         cases i
@@ -551,12 +554,11 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
   by_cases H : IsTwoBlockDiagonal M
   · refine ⟨List.nil, List.nil, by simpa using H⟩
   -- we have already proved this when the last coefficient is nonzero
-  by_cases hM : M (inr unit) (inr unit) ≠ 0
+  by_cases hM : M (inr unit) (inr unit) = 0; swap
   · exact exists_isTwoBlockDiagonal_of_ne_zero M hM
   -- when the last coefficient is zero but there is a nonzero coefficient on the last row or the
   -- last column, we will first put this nonzero coefficient in last position, and then argue as
   -- above.
-  push_neg at hM
   simp only [not_and_or, IsTwoBlockDiagonal, toBlocks₁₂, toBlocks₂₁, ← Matrix.ext_iff] at H
   have : ∃ i : Fin r, M (inl i) (inr unit) ≠ 0 ∨ M (inr unit) (inl i) ≠ 0 := by
     rcases H with H | H

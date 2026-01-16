@@ -3,7 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 
 /-! # Tactics that transform types into definitionally equal types
 
@@ -12,6 +15,8 @@ change hypotheses and the goal to things that are definitionally equal.
 
 It then provides a number of tactics that transform local hypotheses and/or the target.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -35,7 +40,7 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
           throwTacticEx `changeLocalDecl mvarId
             m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
     let finalize (targetNew : Expr) := do
-      return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
+      return ((), fvars.map some, ← mvarId.replaceTargetDefEq targetNew)
     match ← mvarId.getType with
     | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
     | .letE n t v b ndep => do check t; finalize (.letE n typeNew v b ndep)

@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
-import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
 
 /-!
 # The monoidal category structure on quadratic R-modules
@@ -23,6 +25,8 @@ For now, we simplify by insisting both universe levels are the same.
 
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -49,8 +53,6 @@ abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 
-open MonoidalCategory
-
 end instMonoidalCategory
 
 open instMonoidalCategory
@@ -65,6 +67,45 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   associator X Y Z := ofIso (tensorAssoc X.form Y.form Z.form)
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
+
+
+theorem toIsometry_tensorHom {K L M N : QuadraticModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
+    (f ⊗ₘ g).toIsometry = f.toIsometry.tmul g.toIsometry :=
+  rfl
+
+theorem toIsometry_whiskerLeft
+    (L : QuadraticModuleCat.{u} R) {M N : QuadraticModuleCat.{u} R} (f : M ⟶ N) :
+    (L ◁ f).toIsometry = .tmul (.id _) f.toIsometry :=
+  rfl
+
+theorem toIsometry_whiskerRight
+    {L M : QuadraticModuleCat.{u} R} (f : L ⟶ M) (N : QuadraticModuleCat.{u} R) :
+    (f ▷ N).toIsometry = .tmul f.toIsometry (.id _) :=
+  rfl
+
+theorem toIsometry_hom_leftUnitor {M : QuadraticModuleCat.{u} R} :
+    (λ_ M).hom.toIsometry = (tensorLId _).toIsometry :=
+  rfl
+
+theorem toIsometry_inv_leftUnitor {M : QuadraticModuleCat.{u} R} :
+    (λ_ M).inv.toIsometry = (tensorLId _).symm.toIsometry :=
+  rfl
+
+theorem toIsometry_hom_rightUnitor {M : QuadraticModuleCat.{u} R} :
+    (ρ_ M).hom.toIsometry = (tensorRId _).toIsometry :=
+  rfl
+
+theorem toIsometry_inv_rightUnitor {M : QuadraticModuleCat.{u} R} :
+    (ρ_ M).inv.toIsometry = (tensorRId _).symm.toIsometry :=
+  rfl
+
+theorem hom_hom_associator {M N K : QuadraticModuleCat.{u} R} :
+    (α_ M N K).hom.toIsometry = (tensorAssoc _ _ _).toIsometry :=
+  rfl
+
+theorem hom_inv_associator {M N K : QuadraticModuleCat.{u} R} :
+    (α_ M N K).inv.toIsometry = (tensorAssoc _ _ _).symm.toIsometry :=
+  rfl
 
 @[simp] theorem toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
     (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl

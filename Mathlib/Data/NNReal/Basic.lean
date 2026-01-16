@@ -3,13 +3,15 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Floor
-import Mathlib.Data.Real.Pointwise
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Algebra.BigOperators.Expect
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Floor
+public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Basic results on nonnegative real numbers
@@ -17,10 +19,12 @@ import Mathlib.Order.ConditionallyCompleteLattice.Group
 This file contains all results on `NNReal` that do not directly follow from its basic structure.
 As a consequence, it is a bit of a random collection of results, and is a good target for cleanup.
 
-## Notations
+## Notation
 
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
+
+public section
 
 assert_not_exists TrivialStar
 
@@ -34,7 +38,7 @@ noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 @[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
     ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x => ↑(f x)) a :=
-  (toRealHom : ℝ≥0 →+ ℝ).map_indicator _ _ _
+  map_indicator toRealHom _ _ _
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (↑)).sum :=

@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -38,6 +40,8 @@ or `R` has characteristic zero.
   with linear weights.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -91,11 +95,11 @@ abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
 end Weight
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
-instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
+instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [IsDomain R] [Module.IsTorsionFree R M] :
     LinearWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by
-      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
+      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, map_zero]
     intro χ hχ x y
     simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
       LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ
@@ -236,8 +240,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     [IsTriangularizable k L M] [Nontrivial M] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace M χ) := by
   obtain ⟨χ⟩ : Nonempty (Weight k L M) := by
-    by_contra contra
-    rw [not_nonempty_iff] at contra
+    by_contra! contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
   simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]

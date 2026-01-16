@@ -3,13 +3,16 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.WithOne.Basic
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -23,6 +26,8 @@ from monoids to semigroups.
 * adjunctions related to commutative monoids
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -35,9 +40,9 @@ namespace MonCat
 /-- The functor of adjoining a neutral element `zero` to a semigroup -/]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map f := ofHom (WithOne.map f.hom)
-  map_id _ := MonCat.hom_ext WithOne.map_id
-  map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
+  map f := ofHom (WithOne.mapMulHom f.hom)
+  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where

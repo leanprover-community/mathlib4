@@ -3,8 +3,10 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.CategoryTheory.Sites.Pullback
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+public import Mathlib.CategoryTheory.Sites.Pullback
 
 /-!
 # functors between categories of sheaves
@@ -22,6 +24,8 @@ topological spaces X and Y.
   The adjunction between pullback and pushforward for sheaves on topological spaces.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -100,7 +104,7 @@ def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : (pullback A f).IsLeftAdjoint  := (pullbackPushforwardAdjunction A f).isLeftAdjoint
+instance : (pullback A f).IsLeftAdjoint := (pullbackPushforwardAdjunction A f).isLeftAdjoint
 instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A f).isRightAdjoint
 
 end Sheaf

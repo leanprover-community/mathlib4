@@ -3,12 +3,17 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Tactic.CC.MkProof
+module
+
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.CC.Lemmas
+public import Mathlib.Tactic.CC.MkProof
 
 /-!
-# Process when an new equation is added to a congruence closure
+# Process when a new equation is added to a congruence closure
 -/
+
+public meta section
 
 universe u
 
@@ -304,19 +309,19 @@ def eraseRBHSOccs (lhs rhs : ACApps) : CCM Unit := do
   eraseROccs lhs lhs true
   eraseROccs rhs lhs false
 
-/-- Insert `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Insert `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def insertRRHSOccs (e lhs : ACApps) : CCM Unit :=
   insertROccs e lhs false
 
-/-- Erase `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Erase `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def eraseRRHSOccs (e lhs : ACApps) : CCM Unit :=
   eraseROccs e lhs false
 
-/-- Try to simplify the right hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the right-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastRHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -339,7 +344,7 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRrhs)
 
-/-- Try to simplify the left hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the left-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastLHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -501,7 +506,7 @@ def setACVar (e : Expr) : CCM Unit := do
     let newRootEntry := { rootEntry with acVar := some e }
     modify fun ccs => { ccs with entries := ccs.entries.insert eRoot newRootEntry }
 
-/-- If `e` isn't an AC variable, set `e` as an new AC variable. -/
+/-- If `e` isn't an AC variable, set `e` as a new AC variable. -/
 def internalizeACVar (e : Expr) : CCM Bool := do
   let ccs ← get
   if ccs.acEntries.contains e then return false
@@ -603,7 +608,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
     let state ← get
     if state.ignoreInstances then
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
-    if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
+    if state.hoFns.isSome && fn.isConst && !((state.hoFns.getD default).contains fn.constName) then
       for h : i in [:apps.size] do
         let arg := apps[i].appArg!
         addOccurrence e arg false
@@ -894,11 +899,11 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     ```
     t ▸ p ≍ p
 
-    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), @Eq.rec.{l₁ l₂} A a P p a' H ≍ p
+    theorem eqRec_heq_self.{l₁, l₂} : ∀ {A : Sort l₁} {a : A} {P : (a' : A) → a = a' → Sort l₂}
+      (p : P a rfl) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
+    let proof := mkApp6 (.const ``eqRec_heq_self [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then
@@ -959,7 +964,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
       { ccs with
         subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
-/-- Add an new entry for `e` to the congruence closure. -/
+/-- Add a new entry for `e` to the congruence closure. -/
 partial def mkEntry (e : Expr) (interpreted : Bool) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor ← isConstructorApp e

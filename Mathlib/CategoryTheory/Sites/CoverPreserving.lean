@@ -3,9 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Functor.Flat
-import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.Tactic.ApplyFun
 /-!
 # Cover-preserving functors between sites.
 
@@ -32,6 +34,8 @@ i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheav
 * https://stacks.math.columbia.edu/tag/00WU
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
@@ -120,14 +124,8 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
   let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
-  have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
-    erw [← (c'.π.app left).w]
-    dsimp [c]
-    simp
-  have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
-    erw [← (c'.π.app right).w]
-    dsimp [c]
-    simp
+  have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by simp [c]
+  have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by simp [c]
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
   simp only [c, op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
@@ -165,8 +163,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} 
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _
-        (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       dsimp
       simp only [Functor.map_comp, types_comp_apply]
