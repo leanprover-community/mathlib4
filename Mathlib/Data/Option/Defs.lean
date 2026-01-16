@@ -7,13 +7,12 @@ module
 
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
 
 This file defines more operations involving `Option α`. Lemmas about them are located in other
-files under `Mathlib/Data/Option.lean`.
+files under `Mathlib/Data/Option/`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
@@ -48,26 +47,15 @@ lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
   cases a <;> rfl
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
+@[deprecated "Use `Option.get!` (which will panic on `none`) or \
+    `Option.getD` (which takes an explicit default value)." (since := "2026-01-05")]
 abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 
+set_option linter.deprecated false in
+@[deprecated "Use `Option.getD`." (since := "2026-01-05")]
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
-
-@[deprecated commutative_merge (since := "2025-06-03")]
-theorem merge_isCommutative (f : α → α → α) [Std.Commutative f] :
-    Std.Commutative (merge f) := commutative_merge f
-
-@[deprecated associative_merge (since := "2025-06-03")]
-theorem merge_isAssociative (f : α → α → α) [Std.Associative f] :
-    Std.Associative (merge f) := associative_merge f
-
-@[deprecated idempotentOp_merge (since := "2025-06-03")]
-theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
-    Std.IdempotentOp (merge f) := idempotentOp_merge f
-
-@[deprecated lawfulIdentity_merge (since := "2025-06-03")]
-theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
 
 end Option

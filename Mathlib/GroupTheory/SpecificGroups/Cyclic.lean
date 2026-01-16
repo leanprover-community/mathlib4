@@ -69,6 +69,11 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
+instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
+    IsCyclic (Subgroup.zpowers g) :=
+  (Subgroup.isCyclic_iff_exists_zpowers_eq_top _).mpr ⟨g, rfl⟩
+
+@[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
   ⟨⟨1, fun _ => ⟨0, Subsingleton.elim _ _⟩⟩⟩
 
@@ -113,7 +118,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ nc
+  exact isCyclic_of_subsingleton
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -308,6 +313,18 @@ theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injec
 lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] : IsCyclic H :=
   isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
 
+@[to_additive]
+theorem Subgroup.le_zpowers_iff (g : G) (H : Subgroup G) :
+    H ≤ Subgroup.zpowers g ↔ ∃ n : ℕ, H = Subgroup.zpowers (g ^ n) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨x, rfl⟩ := (H.isCyclic_iff_exists_zpowers_eq_top).mp (isCyclic_of_le h)
+    obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp <| h (mem_zpowers x)
+    obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg k
+    · exact ⟨n, by rw [zpow_natCast]⟩
+    · exact ⟨n, by simp⟩
+  · rintro ⟨k, rfl⟩
+    exact zpowers_le_of_mem <| npow_mem_zpowers g k
+
 open Finset Nat
 
 section Classical
@@ -319,21 +336,18 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   calc
     #{a : α | a ^ n = 1} ≤
-        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset :=
-      card_le_card fun x hx =>
-        let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
-        Set.mem_toFinset.2
-          ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
-            dsimp at hm
-            have hgmn : g ^ (m * Nat.gcd n (Fintype.card α)) = 1 := by
-              rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
-            dsimp only
-            rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
-            refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
-            conv_lhs =>
-              rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ← Nat.card_eq_fintype_card,
-                ← orderOf_eq_card_of_forall_mem_zpowers hg]
-            exact orderOf_dvd_of_pow_eq_one hgmn⟩
+        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset := by
+      gcongr
+      intro x hx
+      let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
+      refine Set.mem_toFinset.2 ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), ?_⟩
+      dsimp only at ⊢ hm
+      rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
+      refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
+      conv_lhs =>
+        rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ← Nat.card_eq_fintype_card,
+          ← orderOf_eq_card_of_forall_mem_zpowers hg]
+      exact orderOf_dvd_of_pow_eq_one <| by simpa [pow_mul, hm] using (mem_filter.1 hx).2
     _ ≤ n := by
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
       have hm0 : 0 < m :=
@@ -454,8 +468,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) : #{b : α | b ^ orderOf
                   rw [← hi, ← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.ext (Subtype.mk.inj h))
-      _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _
-      )
+      _ = #{b : α | b ^ orderOf a = 1} := Fintype.card_ofFinset _ _)
 
 -- Use φ for `Nat.totient`
 open Nat
@@ -585,7 +598,7 @@ end QuotientCenter
 
 namespace IsSimpleGroup
 
-section CommGroup
+section CommSimpleGroup
 
 variable [CommGroup α] [IsSimpleGroup α]
 
@@ -598,39 +611,45 @@ instance (priority := 100) isCyclic : IsCyclic α := by
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
 
 @[to_additive]
-theorem prime_card [Finite α] : (Nat.card α).Prime := by
-  have h0 : 0 < Nat.card α := Nat.card_pos
+theorem prime_card : (Nat.card α).Prime := by
+  have hα : Nontrivial α := IsSimpleGroup.toNontrivial
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
-  rw [Nat.prime_def]
-  refine ⟨Finite.one_lt_card_iff_nontrivial.2 inferInstance, fun n hn => ?_⟩
-  refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp ?_ ?_
-  · intro h
-    have hgo := orderOf_pow (n := n) g
-    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.2 hn,
-      orderOf_eq_card_of_forall_mem_zpowers, eq_comm,
-      Nat.div_eq_iff_eq_mul_left (Nat.pos_of_dvd_of_pos hn h0) hn] at hgo
-    · exact (mul_left_cancel₀ (ne_of_gt h0) ((mul_one (Nat.card α)).trans hgo)).symm
-    · intro x
-      rw [h]
-      exact Subgroup.mem_top _
-  · intro h
-    apply le_antisymm (Nat.le_of_dvd h0 hn)
-    rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
-    apply orderOf_le_of_pow_eq_one (Nat.pos_of_dvd_of_pos hn h0)
-    rw [← Subgroup.mem_bot, ← h]
-    exact Subgroup.mem_zpowers _
+  replace hα : Nat.card α ≠ 1 := by contrapose! hα; exact (Nat.card_eq_one_iff_unique.mp hα).1
+  rw [← orderOf_eq_card_of_forall_mem_zpowers hg] at hα ⊢
+  have h (n : ℕ) : orderOf g ∣ n ∨ n.Coprime (orderOf g) := by
+    refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).imp ?_ fun h ↦ ?_
+    · simp [orderOf_dvd_iff_pow_eq_one]
+    · simp only [Nat.coprime_iff_gcd_eq_one]
+      have hgn : g ∈ Subgroup.zpowers (g ^ n) := by simp_all only [ne_eq, orderOf_eq_one_iff,
+        Subgroup.mem_top]
+      have hgn_int : g ∈ Subgroup.zpowers (g ^ (n : ℤ)) := by simpa [zpow_natCast]
+      have hgcd_int :
+          (n : ℤ).gcd (↑(orderOf g) : ℤ) = 1 :=
+        (mem_zpowers_zpow_iff (g := g) (k := (n : ℤ))).1 hgn_int
+      simp_all only [ne_eq, orderOf_eq_one_iff, Subgroup.mem_top, zpow_natCast,
+        Int.gcd_natCast_natCast]
+  apply Nat.prime_of_coprime
+  · refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨?_, hα⟩
+    contrapose! h
+    exact ⟨37, by simp [h]⟩
+  · intro n hn hn0
+    exact ((h n).resolve_left (Nat.not_dvd_of_pos_of_lt (Nat.pos_iff_ne_zero.mpr hn0) hn)).symm
 
-end CommGroup
+/-- A commutative simple group is a finite group. -/
+@[to_additive /-- A commutative simple group is a finite group. -/]
+theorem finite : Finite α := Nat.finite_of_card_ne_zero prime_card.ne_zero
+
+end CommSimpleGroup
 
 end IsSimpleGroup
 
 @[to_additive]
-theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
+theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
   Group.is_simple_iff_prime_card
@@ -739,7 +758,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by lia
 
 end Exponent
 
@@ -773,6 +792,15 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
   exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
+
+/-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
+theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
+    ∃ p : ℕ, (Nat.Prime p) ∧ Nonempty (Additive G ≃+ ZMod p) := by
+  obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic G)
+  use orderOf g; rw [← (orderOf_eq_card_of_zpowers_eq_top hg).symm]
+  constructor
+  · exact IsSimpleGroup.prime_card
+  · exact ⟨(zmodAddCyclicAddEquiv (G := Additive G) inferInstance).symm⟩
 
 /-- The isomorphism from `Multiplicative (ZMod n)` to any cyclic group of `Nat.card` equal to `n`.
 -/
@@ -923,6 +951,7 @@ section mulEquiv
 
 variable (hg' : ∀ x, x ∈ zpowers g') (h : orderOf g = orderOf g')
 
+set_option backward.proofsInPublic true in
 /-- Given two groups that are generated by elements `g` and `g'` of the same order,
 we obtain an isomorphism sending `g` to `g'`. -/
 @[to_additive

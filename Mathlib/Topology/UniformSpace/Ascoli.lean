@@ -70,7 +70,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 equicontinuity, uniform convergence, ascoli
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Uniformity Topology Function UniformConvergence
 

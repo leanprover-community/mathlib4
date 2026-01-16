@@ -43,7 +43,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
-pushout cones is also available in this file.
+pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
@@ -108,7 +108,8 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
-def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) : PullbackCone f g where
+def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by cat_disch) :
+    PullbackCone f g where
   pt := W
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
@@ -326,7 +327,7 @@ def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : Pu
   pt := W
   ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
          naturality := by
-          rintro (⟨⟩|⟨⟨⟩⟩) (⟨⟩|⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
+          rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
 @[simp]
 theorem mk_ι_app_left {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :

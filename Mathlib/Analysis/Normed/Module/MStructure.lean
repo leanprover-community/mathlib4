@@ -158,7 +158,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 
-instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
+instance Subtype.instCompl : Compl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -293,7 +293,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
 
 instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
-  { IsLprojection.Subtype.hasCompl,
+  { IsLprojection.Subtype.instCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with
     inf_compl_le_bot := fun P =>

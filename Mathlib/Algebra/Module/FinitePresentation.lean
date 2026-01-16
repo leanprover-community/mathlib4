@@ -154,7 +154,7 @@ lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R 
     FinitePresentation R M :=
   have ⟨_n, _f, _g, surj, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   Module.finitePresentation_of_free_of_surjective _ surj
-    (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
+    (LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ .of_finite)
 
 variable {ι} [Finite ι]
 
@@ -215,15 +215,14 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
     · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.fg_top
-    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.fg_top
+    · rw [top_inf_eq, ← Module.Finite.iff_fg]; infer_instance
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp
       (by rw [range_linearCombination, Subtype.range_val, ← hs])
-  have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
-    constructor
-    rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
+  have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) :=
+    .of_fg <| Module.FinitePresentation.fg_ker _ (hl.comp H)
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
@@ -255,8 +254,8 @@ lemma Module.finitePresentation_of_split_exact
   refine Module.finitePresentation_of_surjective (LinearMap.fst _ _ _ ∘ₗ e.toLinearMap)
     (Prod.fst_surjective.comp e.surjective) ?_
   rw [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm,
-    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← Submodule.map_top]
-  exact .map _ (.map _ (Module.Finite.fg_top))
+    LinearMap.exact_iff.mp Function.Exact.inr_fst, ← LinearMap.range_comp]
+  exact Submodule.fg_range _
 
 /-- Given an exact sequence `0 → M → N → P → 0`
 with `N` finitely presented and `P` projective, then `M` is also finitely presented. -/
@@ -323,9 +322,8 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
   · obtain ⟨a, ha⟩ := K.mkQ_surjective (e m)
     exact ⟨a, by simp [f, ha]⟩
   · have : Module.Finite S
-        (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) := by
-      change Module.Finite S (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))
-      simpa [Finite.iff_fg]
+        (Submodule.restrictScalars R (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ))) :=
+      .of_fg <| show (LinearMap.ker (e.symm.toLinearMap ∘ₗ K.mkQ)).FG by simpa
     simp only [f, LinearMap.ker_restrictScalars, ← Module.Finite.iff_fg]
     exact Module.Finite.trans S _
 
@@ -340,11 +338,10 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
     lTensor_exact A f.exact_subtype_ker_map hf
   rw [LinearMap.exact_iff] at this
-  rw [this, ← Submodule.map_top]
-  apply Submodule.FG.map
+  rw [this]
   have : Module.Finite R (LinearMap.ker f) :=
-    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
-  exact Module.Finite.fg_top (R := A) (M := A ⊗[R] LinearMap.ker f)
+    .of_fg (Module.FinitePresentation.fg_ker f hf)
+  exact Submodule.fg_range _
 
 open TensorProduct in
 lemma FinitePresentation.of_isBaseChange
@@ -451,15 +448,13 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
   refine ⟨s₀ * s₁ * s₂, (s₀ * s₁ * s₂).2, fun t ht ↦ ?_⟩
   let Rₛ := Localization (.powers t)
   let lₛ := LocalizedModule.map (.powers t) l
+  have hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩
   have hu₀ : IsUnit (algebraMap R Rₛ s₀) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₁ * s₂, by simp [mul_assoc]⟩ ht)) hu
   have hu₁ : IsUnit (algebraMap R Rₛ s₁) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₂, by ring⟩ ht)) hu
   have hu₂ : IsUnit (algebraMap R Rₛ s₂) := isUnit_of_dvd_unit
-      (hu := IsLocalization.map_units (M := .powers t) Rₛ ⟨t, Submonoid.mem_powers t⟩)
-      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht))
+      (map_dvd (algebraMap R Rₛ) (dvd_trans ⟨s₀ * s₁, by ring⟩ ht)) hu
   let lₛ' := LocalizedModule.map (.powers t) l'
   have H_left : ((hu₀.unit⁻¹).1 • lₛ') ∘ₗ lₛ = LinearMap.id := by
     apply ((Module.End.isUnit_iff _).mp (hu₂.map (algebraMap Rₛ (Module.End Rₛ _)))).1
@@ -565,7 +560,7 @@ instance Module.FinitePresentation.isLocalizedModule_mapExtendScalars
     (Rₛ) [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ M'] [Module Rₛ N']
     [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S Rₛ]
     [Module.FinitePresentation R M] :
-      IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
+    IsLocalizedModule S (IsLocalizedModule.mapExtendScalars S f g Rₛ) :=
   IsLocalizedModule.of_linearEquiv _ _ _
 
 instance [Module.FinitePresentation R M] :
@@ -573,7 +568,7 @@ instance [Module.FinitePresentation R M] :
   Module.FinitePresentation.isLocalizedModule_mapExtendScalars _ _ _ _
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[R] LocalizedModule S N`
 -/
@@ -595,7 +590,7 @@ lemma Module.FinitePresentation.linearEquivMap_symm_apply [Module.FinitePresenta
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
 
 /--
-Let `M` be a finitely presented `R`-module, `N` a `R`-module, `S : Submonoid R`.
+Let `M` be a finitely presented `R`-module, `N` an `R`-module, `S : Submonoid R`.
 The linear equivalence between the `M →ₗ[R] N` localized at `S` and
 `LocalizedModule S M →ₗ[Localization S] LocalizedModule S N`
 -/

@@ -24,7 +24,7 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w z
 
@@ -71,7 +71,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
@@ -114,7 +114,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 end Cyclotomic
@@ -215,7 +215,7 @@ theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Rin
     ext i
     rw [hf i (mem_range.2 (Fin.is_lt i)), ← smul_smul]
   rw [← smul_sum] at hz
-  rw [← smul_right_injective _ hp hz]
+  rw [← NoZeroSMulDivisors.smul_right_injective _ hp hz]
   exact
     Subalgebra.sum_mem _ fun _ _ =>
       Subalgebra.smul_mem _ (Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _) _
@@ -234,7 +234,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R K L
+  have : Module.IsTorsionFree R L := .trans_faithfulSMul R K L
   let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.
@@ -315,7 +315,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←
         minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, natDegree_minpoly, hn, Nat.sub_one,
         Nat.pred_succ]
-      cutsat
+      lia
     -- Using `hQ : aeval B.gen Q = p • z`, we write `p • z` as a sum of terms of degree less than
     -- `j+1`, that are multiples of `p` by induction, and terms of degree at least `j+1`.
     rw [aeval_eq_sum_range, Hj, range_add, sum_union (disjoint_range_addLeftEmbedding _ _),

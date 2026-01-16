@@ -14,8 +14,8 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 # Localization of linear categories
 
 If `L : C ⥤ D` is an additive localization functor between preadditive categories,
-and `C` is `R`-linear, we show that `D` can also be equipped with a `R`-linear
-structure such that `L` is a `R`-linear functor.
+and `C` is `R`-linear, we show that `D` can also be equipped with an `R`-linear
+structure such that `L` is an `R`-linear functor.
 
 -/
 
@@ -68,7 +68,7 @@ end
 
 section
 
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [Preadditive E]
   (R : Type*) [Ring R]
   [Linear R C] [Linear R D] [Linear R E] [L.Linear R]

@@ -171,11 +171,11 @@ theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
 theorem eLpNorm_ne_top (f : Lp E p μ) : eLpNorm f p μ ≠ ∞ :=
   (eLpNorm_lt_top f).ne
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem stronglyMeasurable (f : Lp E p μ) : StronglyMeasurable f :=
   f.val.stronglyMeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem aestronglyMeasurable (f : Lp E p μ) : AEStronglyMeasurable f μ :=
   f.val.aestronglyMeasurable
 
@@ -380,7 +380,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         add_le' := fun f g => by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
-            simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
+            simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Lp.enorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
