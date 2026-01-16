@@ -127,26 +127,26 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
   rcases h with ⟨-, h⟩
   specialize @h (I.colon (span {b ^ n})) (I + (span {b ^ n})) ?_
   · refine le_antisymm (fun r ↦ ?_) (le_inf (fun _ ↦ ?_) ?_)
-    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
+    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_span_singleton,
         mem_span_singleton_sup, and_imp, forall_exists_index]
       rintro hrb t s hs rfl
       refine add_mem ?_ hs
       have := hn (n + n) (by simp)
       simp only [OrderHom.coe_mk, f] at this
       rw [add_mul, mul_assoc, ← pow_add] at hrb
-      rwa [← mem_colon_singleton, this, mem_colon_singleton,
+      rwa [← mem_colon_span_singleton, this, mem_colon_span_singleton,
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
-    · simpa only [mem_colon_singleton] using mul_mem_right _ _
+    · simpa only [mem_colon_span_singleton] using mul_mem_right _ _
     · simp
   rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
       rcases eq_or_ne n 0 with rfl | hn'
-      · simpa [f] using hn 1 zero_le_one
+      · simpa [f, ← Ideal.colon_span (R := R) (S := {1})] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro
-        simpa only [mem_colon_singleton] using mul_mem_right _ _
+        simpa only [mem_colon_span_singleton] using mul_mem_right _ _
       · exact span_singleton_le_span_singleton.mpr (dvd_pow_self b hn')
-    rw [← mem_colon_singleton, ← h] at hab
+    rw [← mem_colon_span_singleton, ← h] at hab
     exact Or.inl hab
   · rw [← h]
     refine Or.inr ⟨n, ?_⟩
