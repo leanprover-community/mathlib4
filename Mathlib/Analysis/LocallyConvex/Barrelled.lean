@@ -40,7 +40,7 @@ The more standard Banach-Steinhaus theorem for normed spaces is then deduced fro
   for all `k` and `x`, the family of real numbers `i ↦ q k (𝓕 i x)` is bounded above.
 * `PolynormableSpace.banach_steinhaus`: a version of the above which does not make reference
   to a fixed seminorm family. Fix `E` a barrelled space and `F` a `PolynormableSpace`.
-  Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps that is pointwise Von Neumann bounded
+  Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps that is pointwise von Neumann bounded
   is (uniformly) equicontinuous.
 
 ## Implementation details
@@ -239,7 +239,7 @@ is a *continuous* linear map as well.
 
 This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
 but the proof ultimately goes back to sequences. -/
-@[deprecated continuousLinearMapOfTendsto (since := "2025-12-05")]
+@[deprecated continuousLinearMapOfTendsto (since := "2026-01-16")]
 protected abbrev WithSeminorms.continuousLinearMapOfTendsto [T2Space F] {l : Filter α}
     [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
     (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
