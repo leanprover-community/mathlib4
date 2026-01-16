@@ -195,6 +195,10 @@ theorem isMaxOn_const {b : β} : IsMaxOn (fun _ => b) s a :=
 theorem isExtrOn_const {b : β} : IsExtrOn (fun _ => b) s a :=
   isExtrFilter_const
 
+lemma eventuallyEq_of_isMinFilter_of_isMaxFilter {β : Type*} [PartialOrder β] {f : α → β}
+    (h₁ : IsMinFilter f l a) (h₂ : IsMaxFilter f l a) : f =ᶠ[l] (fun _ ↦ f a) := by
+  filter_upwards [h₁, h₂] using by grind
+
 /-! ### Order dual -/
 
 
