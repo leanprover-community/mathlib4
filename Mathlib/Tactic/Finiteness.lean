@@ -48,8 +48,13 @@ attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
 set_option linter.unusedTactic false in
 add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). Supports passing additional expressions as local hypotheses. -/
+/-- `finiteness` proves goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
+nonnegative reals (`ℝ≥0∞`). Supports passing additional expressions as local hypotheses.
+
+* `finiteness?` additionally shows the proof that `finiteness` found
+* `finiteness_nonterminal` is a version of `finiteness` that may (but doesn't have to) close the
+  goal.
+-/
 syntax (name := finiteness) "finiteness" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
 
 macro_rules
@@ -60,8 +65,7 @@ macro_rules
 | `(tactic| finiteness $c:Aesop.tactic_clause* [$h,*]) =>
   `(tactic| · ($[have := $h];*); finiteness $c*)
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). Supports passing additional expressions as local hypotheses. -/
+@[tactic_alt finiteness]
 syntax (name := finiteness?) "finiteness?" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
 
 macro_rules
@@ -74,8 +78,7 @@ macro_rules
   `(tactic| · ($[have := $h];*); finiteness? $c*)
 
 
-/-- Tactic to solve goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
-nonnegative reals (`ℝ≥0∞`). Supports passing additional expressions as local hypotheses. -/
+@[tactic_alt finiteness]
 syntax (name := finiteness_nonterminal)
 "finiteness_nonterminal" Aesop.tactic_clause* (ppSpace "[" term,* "]")? : tactic
 
