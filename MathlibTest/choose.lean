@@ -134,9 +134,9 @@ example (h : ∃ n : Nat, n > 0) : True := by
 /--
 error: type mismatch for 'n'
 has type
-  ℕ
+  Nat
 but is expected to have type
-  ℤ
+  Int
 -/
 #guard_msgs in
 example (h : ∃ n : Nat, n > 0) : True := by
