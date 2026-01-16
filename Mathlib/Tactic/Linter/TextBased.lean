@@ -11,12 +11,6 @@ public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Tactic.Linter.UnicodeLinter
 
--- TODO REMOVE
-import Aesop
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Monotonicity
-
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
@@ -66,7 +60,7 @@ inductive StyleError where
   | semicolon
   /-- A unicode character was used that isn't allowed -/
   | unwantedUnicode (c : Char)
-deriving BEq
+deriving BEq, Inhabited
 
 /-- How to format style errors -/
 public inductive ErrorFormat
@@ -111,6 +105,7 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+deriving BEq
 
 /-- Possible results of comparing an `ErrorContext` to an `existing` entry:
 most often, they are different --- if the existing entry covers the new exception,
@@ -183,9 +178,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_UNICODE" => do
           -- extract the offending unicode character from `errorMessage`
+          -- (if the offending character is 'C', `errorMessage[7] == "'C'"` )
           -- and wrap it in the appropriate `StyleError`, which will print it as '+NNNN'
-          let str ← errorMessage[2]?
-          let c ← String.Pos.Raw.get? str ⟨1⟩
+          let str ← errorMessage[7]?
+          let c ← String.Pos.Raw.get? str ⟨1⟩ -- take middle character of expected three
           StyleError.unwantedUnicode c
         | _ => none
       match String.toNat? lineNumber with
@@ -195,6 +191,12 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
     | _ => none
+
+-- Test for `parse?_errorContext`. TODO I think we should keep this (in tests folder?!)
+#guard let errContext : ErrorContext := {
+    error := .unwantedUnicode '\u00a0',
+    lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
@@ -210,7 +212,7 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. If possible,
+return an array of all style errors with (1-based!) line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
@@ -314,7 +316,7 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
 
   let mut changed : Array String := #[]
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
-  let mut lineNumber := 1
+  let mut lineNumber := 1 -- one-based line numbers!
   for line in lines do
     let err := UnicodeLinter.findBadUnicode line
 
@@ -332,7 +334,7 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     changed := changed.push newLine
     errors := errors.append (err.map (fun e => (e, lineNumber)))
     lineNumber := lineNumber + 1
-  return (errors, changed)
+  return (errors, if (changed == lines) then none else some changed)
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
@@ -370,13 +372,34 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   let mut changed := lines
 
   for lint in allLinters do
-    let (err, changes) := lint opts changed
-    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
-    -- TODO: auto-fixes do not take style exceptions into account
+    let (new_errors, changes) := lint opts changed
     if let some c := changes then
-      changed := c
+      -- apply linter's suggested changes only where no exceptions apply.
+      -- Each changed line must correspond to line number of at least one error.
+      if changed.size != c.size then
+        throw <| IO.userError "linter's suggested changes must have same number of lines as input"
+      -- For each line in `changed`,
+      changed := Array.ofFn fun (lineIdx : Fin changed.size) ↦
+        -- check if any exception applies:
+        if (new_errors.filter fun (e, idx) ↦
+            (idx - 1 == lineIdx) -- Subtract 1 since linter's line numbers are one-based
+            ∧ (ErrorContext.find?_comparable ⟨e, lineIdx, path⟩ exceptions).isSome
+            ).isEmpty
+          then
+            c[lineIdx]! -- no exception applies. Assign linter's suggestion.
+          else
+            changed[lineIdx]! -- An least one exception applies. Ignore linter's suggested line.
+      -- Note: to keep logic simple, changed lines where an exception applies are left alone,
+      --   even if there are other suggested changes where no exception applies.
+
+    -- append ALL errors to the output. For this, exception filtering happens later below.
+    allOutput := allOutput.append
+      (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) new_errors)
+    if changed != lines then
       changes_made := true
-  -- This list is not sorted: for github, this is fine.
+    -- Note: we ASSUME that the linters' auto-fixes do not introduce new issues!
+
+  -- Filter exceptions. Note: This list is not sorted. For github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
