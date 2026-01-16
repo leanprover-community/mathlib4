@@ -82,10 +82,10 @@ variable [Fact (Module.finrank ℝ G = 4 + 1)] in
 #guard_msgs in
 #check MDifferentiable 𝓘(ℝ) (𝓡 4) g
 
--- With our elaborators, two tests fail because their domain is a normed space,
--- but not an inner product space.
+-- The following two tests used to fail because the co-domain is an inner product space
+-- and not a normed space: this has been fixed since then.
 variable [Fact (Module.finrank ℝ G = 3)] in
-/-- error: Could not find a model with corners for `E''` -/
+/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
 #guard_msgs in
 #check MDiff f
 
@@ -95,7 +95,7 @@ variable {f' : (Metric.sphere (0 : G) 1) → E'} [Fact (Module.finrank ℝ G = 3
 #check MDiff f'
 
 variable [Fact (Module.finrank ℝ G = 2 + 1)] in
-/-- error: Could not find a model with corners for `E''` -/
+/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
 #guard_msgs in
 #check MDiff f
 

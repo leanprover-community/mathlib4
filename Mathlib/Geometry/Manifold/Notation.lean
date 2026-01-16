@@ -370,8 +370,9 @@ where
         | _ => return none
       | throwError "Couldn't find an `InnerProductSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is an inner product space over the field `{K}`"
-    -- TODO: need to convert to a NormedSpace instance! this will fail...
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+    -- Convert the InnerProductSpace to a NormedSpace instance.
+    let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, inst]
+    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,

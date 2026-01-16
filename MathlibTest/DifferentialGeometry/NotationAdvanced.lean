@@ -47,22 +47,25 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 -- From a manifold into an inner product space.
+-- Make sure to declare a new field; otherwise we get a type mismatch about 𝕜 being a
+-- normed field via being RCLike and via being a nontrivially normed field.
 section
 
-variable [RCLike 𝕜] {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E''] {g' : M → E''}
+variable {k' : Type*} [RCLike k']
+  {E'' : Type*} [NormedAddCommGroup E''] [h: InnerProductSpace k' E'']
+  {E' H' M' : Type*} [NormedAddCommGroup E'] [NormedSpace k' E']
+  [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
+  (I'' : ModelWithCorners k' E' H') {g' : M' → E''}
 
---set_option trace.Elab.DiffGeo.MDiff true in
-/-- error: Could not find a model with corners for `E''` -/
+/-- info: MDifferentiable I'' 𝓘(k', E'') g' : Prop -/
 #guard_msgs in
 #check MDiff g'
 
-/-- error: Could not find a model with corners for `E''` -/
+/-- info: ContMDiff I'' 𝓘(k', E'') n g' : Prop -/
 #guard_msgs in
 #check CMDiff n g'
 
 end
-
-#exit
 
 /-! A partial homeomorphism or partial equivalence. More generally, this works for any type
 with a coercion to (possibly dependent) functions. -/
