@@ -11,7 +11,7 @@ public import Mathlib.Order.PartialSups
 public import Mathlib.MeasureTheory.PiSystem
 
 /-!
-# Accumulate and Dissiate
+# Accumulate and Dissipate
 
 The function `accumulate` takes `s : α → Set β` with `LE α` and returns `⋃ y ≤ x, s y`.
 The function `dissipate` takes `s : α → Set β` with `LE α` and returns `⋂ y ≤ x, s y`.
@@ -93,7 +93,6 @@ lemma partialSups_eq_accumulate (f : ℕ → Set α) :
 
 end accumulate
 
-
 section dissipate
 
 /-- `dissipate s` is the intersection of `s y` for `y ≤ x`. -/
@@ -104,6 +103,12 @@ theorem dissipate_def [LE α] {x : α} : dissipate s x = ⋂ y ≤ x, s y := rfl
 
 theorem dissipate_eq {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
   simp_rw [Nat.lt_add_one_iff, dissipate]
+
+theorem dissipate_eq_ofFin {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ (k : Fin (n + 1)), s k := by
+  rw [dissipate]
+  ext x
+  simp only [mem_iInter]
+  refine ⟨fun h i ↦ h i.val (Fin.is_le i), fun h i hi ↦ h ⟨i, Nat.lt_succ_of_le hi⟩⟩
 
 @[simp]
 theorem dissipate_eq_accumulate_compl [LE α] {s : α → Set β} {x : α} :
@@ -140,14 +145,14 @@ theorem dissipate_dissipate [Preorder α] {s : α → Set β} {x : α} :
   apply Subset.antisymm
   · apply iInter_mono fun z y hy ↦ ?_
     simp only [mem_iInter, mem_dissipate] at *
-    exact fun h ↦ hy h z (le_refl z)
+    exact fun h ↦ hy h z le_rfl
   · simp only [subset_iInter_iff]
     exact fun i j ↦ dissipate_subset_dissipate j
 
 @[simp]
 theorem iInter_dissipate [Preorder α] : ⋂ x, dissipate s x = ⋂ x, s x := by
   apply Subset.antisymm <;> simp_rw [subset_def, dissipate_def, mem_iInter]
-  · exact fun z h x' ↦ h x' x' (le_refl x')
+  · exact fun z h x' ↦ h x' x' le_rfl
   · exact fun z h x' y hy ↦ h y
 
 @[simp]
@@ -158,8 +163,7 @@ open Nat
 
 @[simp]
 theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
-  dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1)
-    := by
+  dissipate s (n + 1) = (dissipate s n) ∩ s (n + 1) := by
   ext x
   simp_all only [dissipate_def, mem_iInter, mem_inter_iff]
   grind
