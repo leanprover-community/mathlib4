@@ -32,7 +32,7 @@ and prove basic properties of this predicate.
 
 ## Implementation notes
 
-In the original paper, `k` is assumed to be a strictly positive number.
+In Moreira's paper, `k` is assumed to be a strictly positive number.
 We define the predicate for any `k : ℕ`, then assume `k ≠ 0` whenever it is necessary.
 -/
 
@@ -48,7 +48,9 @@ variable {E F G : Type*}
   {k l m : ℕ} {α β : I} {f : E → F} {a : E}
 
 /-- A map `f` is said to be $C^{k+(α)}$ at `a`, where `k` is a natural number and `0 ≤ α ≤ 1`,
-if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`. -/
+if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`.
+
+When naming lemmas about this predicate, `k` is called "order", and `α` is called "exponent". -/
 @[mk_iff]
 structure ContDiffPointwiseHolderAt (k : ℕ) (α : I) (f : E → F) (a : E) : Prop where
   /-- A $C^{k+(α)}$ map is a $C^k$ map. -/
@@ -101,15 +103,15 @@ theorem of_exponent_le (hf : ContDiffPointwiseHolderAt k α f a) (hle : β ≤ �
     · exact le_antisymm (le_trans (mod_cast hle) hα.le) β.2.1
     · exact tendsto_norm_sub_self_nhdsGE a
 
-theorem of_lt (hf : ContDiffPointwiseHolderAt k α f a) (hlt : l < k) :
+theorem of_order_lt (hf : ContDiffPointwiseHolderAt k α f a) (hlt : l < k) :
     ContDiffPointwiseHolderAt l β f a :=
   hf.contDiffAt.contDiffPointwiseHolderAt (mod_cast hlt) _
 
 theorem of_toLex_le (hf : ContDiffPointwiseHolderAt k α f a) (hle : toLex (l, β) ≤ toLex (k, α)) :
     ContDiffPointwiseHolderAt l β f a :=
-  (Prod.Lex.le_iff.mp hle).elim hf.of_lt <| by rintro ⟨rfl, hle⟩; exact hf.of_exponent_le hle
+  (Prod.Lex.le_iff.mp hle).elim hf.of_order_lt <| by rintro ⟨rfl, hle⟩; exact hf.of_exponent_le hle
 
-theorem of_le (hf : ContDiffPointwiseHolderAt k α f a) (hl : l ≤ k) :
+theorem of_order_le (hf : ContDiffPointwiseHolderAt k α f a) (hl : l ≤ k) :
     ContDiffPointwiseHolderAt l α f a :=
   hf.of_toLex_le <| Prod.Lex.toLex_mono ⟨hl, le_rfl⟩
 
@@ -167,12 +169,10 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
         iteratedFDeriv_comp hg.contDiffAt hf.contDiffAt le_rfl]
     _ =O[𝓝 a] fun x ↦ ‖x - a‖ ^ (α : ℝ) := by
       apply FormalMultilinearSeries.taylorComp_sub_taylorComp_isBigO <;> intro i hi
-      · intro i hi
-        exact ((hg.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).comp hf.continuousAt)
+      · exact ((hg.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).comp hf.continuousAt)
           |>.norm.isBoundedUnder_le
-      · intro i hi
-        by_cases hfd : DifferentiableAt ℝ f a
-        · refine ((hg.of_le hi).isBigO.comp_tendsto hf.continuousAt).trans ?_
+      · by_cases hfd : DifferentiableAt ℝ f a
+        · refine ((hg.of_order_le hi).isBigO.comp_tendsto hf.continuousAt).trans ?_
           refine .rpow α.2.1 (.of_forall fun _ ↦ norm_nonneg _) <| .norm_norm ?_
           exact hfd.isBigO_sub
         · obtain rfl : k = 0 := by
@@ -183,11 +183,10 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
           simp only [ftaylorSeries, iteratedFDeriv_zero_eq_comp, Function.comp_apply, ← map_sub,
             LinearIsometryEquiv.norm_map, isBigO_norm_left]
           refine ((hd.resolve_right hfd).isBigO_sub.comp_tendsto hf.continuousAt).trans ?_
-          exact (zero_left_iff.mp hf).2
-      · intro i hi
-        exact (hf.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).norm.isBoundedUnder_le
-      · exact fun _ _ ↦ isBoundedUnder_const
-      · exact fun i hi ↦ (hf.of_le hi).isBigO
+          exact (zero_order_iff.mp hf).2
+      · exact (hf.contDiffAt.continuousAt_iteratedFDeriv (mod_cast hi)).norm.isBoundedUnder_le
+      · exact isBoundedUnder_const
+      · exact (hf.of_order_le hi).isBigO
 
 /-- Composition of two $C^{k+(α)}$ functions, `k ≠ 0`, is a $C^{k+(α)}$ function. -/
 theorem comp {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
@@ -230,14 +229,14 @@ protected theorem fderiv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l < k) 
   contDiffAt := hf.contDiffAt.fderiv_right (mod_cast hl)
   isBigO := .of_norm_left <| by
     simpa [iteratedFDeriv_succ_eq_comp_right, Function.comp_def, ← dist_eq_norm_sub]
-      using hf.of_le (Nat.add_one_le_iff.mpr hl) |>.isBigO |>.norm_left
+      using hf.of_order_le (Nat.add_one_le_iff.mpr hl) |>.isBigO |>.norm_left
 
 /-- If `f` is a $C^{k+(α)}$ function and `l + m ≤ k`, then $D^mf$ is a $C^{l + (α)}$ function. -/
 protected theorem iteratedFDeriv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l + m ≤ k) :
     ContDiffPointwiseHolderAt l α (iteratedFDeriv ℝ m f) a := by
   induction m generalizing l with
   | zero =>
-    simpa +unfoldPartialApp [iteratedFDeriv_zero_eq_comp] using hf.of_le hl
+    simpa +unfoldPartialApp [iteratedFDeriv_zero_eq_comp] using hf.of_order_le hl
   | succ m ihm =>
     rw [← add_assoc, add_right_comm] at hl
     simpa +unfoldPartialApp [iteratedFDeriv_succ_eq_comp_left] using (ihm hl).fderiv l.lt_add_one
