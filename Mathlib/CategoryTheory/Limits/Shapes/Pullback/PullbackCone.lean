@@ -60,6 +60,10 @@ Interaction with `IsLimit`:
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point
   of a limit `PullbackCone` are equal.
 
+Interaction with `CommSq`:
+* `CommSq.cone` and `CommSq.cocone` provide the implicit (non-limiting) pullback cone and pushout
+  cocone associated with a commuting square
+
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
@@ -508,4 +512,42 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
   Cocones.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
-end CategoryTheory.Limits
+end Limits
+
+namespace CommSq
+open Limits
+variable {C : Type*} [Category* C]
+
+variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
+
+/-- The (not necessarily limiting) `PullbackCone h i` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cone (s : CommSq f g h i) : PullbackCone h i :=
+  PullbackCone.mk _ _ s.w
+
+/-- The (not necessarily limiting) `PushoutCocone f g` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cocone (s : CommSq f g h i) : PushoutCocone f g :=
+  PushoutCocone.mk _ _ s.w
+
+@[simp]
+theorem cone_fst (s : CommSq f g h i) : s.cone.fst = f :=
+  rfl
+
+@[simp]
+theorem cone_snd (s : CommSq f g h i) : s.cone.snd = g :=
+  rfl
+
+@[simp]
+theorem cocone_inl (s : CommSq f g h i) : s.cocone.inl = h :=
+  rfl
+
+@[simp]
+theorem cocone_inr (s : CommSq f g h i) : s.cocone.inr = i :=
+  rfl
+
+end CommSq
+
+end CategoryTheory
