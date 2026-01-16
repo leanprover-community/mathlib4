@@ -89,11 +89,11 @@ Differences (discrete ↔ MeasureTheory):
 
 To use the simpler `⋆` notation, define a scoped notation in your file:
 ```
-scoped notation:70 f:71 " ⋆ " g:70 => f ⋆ᵣ g   -- multiplicative
-scoped notation:70 f:71 " ⋆ " g:70 => f ⋆ᵣ₊ g  -- additive
+scoped notation:67 f:68 " ⋆ " g:67 => f ⋆ᵣ g   -- multiplicative
+scoped notation:67 f:68 " ⋆ " g:67 => f ⋆ᵣ₊ g  -- additive
 ```
 
-Precedence design: `f:71` and `g:70` gives right associativity (`f ⋆ g ⋆ h` parses as
+Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` parses as
 `f ⋆ (g ⋆ h)`), matching function composition `∘` and `MeasureTheory.convolution`.
 -/
 
@@ -237,10 +237,10 @@ def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : 
   fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
 /-- Notation for discrete convolution with explicit bilinear map. -/
-scoped notation:70 f:71 " ⋆[" L "] " g:70 => convolution L f g
+scoped notation:67 f:68 " ⋆[" L "] " g:67 => convolution L f g
 
 /-- Notation for additive convolution. -/
-scoped notation:70 f:71 " ⋆₊[" L "] " g:70 => addConvolution L f g
+scoped notation:67 f:68 " ⋆₊[" L "] " g:67 => addConvolution L f g
 
 @[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_apply]
 theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
@@ -273,11 +273,11 @@ def ringConvolution (f g : M → R) : M → R := convolution (LinearMap.mul ℕ 
 
 /-- Notation `⋆ᵣ` for ring multiplication convolution (topological/infinite sum version).
 Users who want the simplest `⋆` notation can define their own scoped notation. -/
-scoped notation:70 f:71 " ⋆ᵣ " g:70 => ringConvolution f g
+scoped notation:67 f:68 " ⋆ᵣ " g:67 => ringConvolution f g
 
 /-- Notation `⋆ᵣ₊` for additive ring multiplication convolution.
 Users who want the simplest `⋆` notation can define their own scoped notation. -/
-scoped notation:70 f:71 " ⋆ᵣ₊ " g:70 => addRingConvolution f g
+scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
 
 @[to_additive (dont_translate := R) addRingConvolution_apply]
 theorem ringConvolution_apply (f g : M → R) (x : M) :

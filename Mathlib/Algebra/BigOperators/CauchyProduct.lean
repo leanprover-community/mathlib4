@@ -37,8 +37,8 @@ version `CauchyProduct` uses `Finset.antidiagonal`. The additive versions are ge
 
 To use the simpler `⋆` notation, define a scoped notation in your file:
 ```
-scoped notation:70 a:70 " ⋆ " b:71 => a ⋆ᶜ b   -- multiplicative
-scoped notation:70 a:70 " ⋆ " b:71 => a ⋆ᶜ₊ b  -- additive
+scoped notation:67 a:68 " ⋆ " b:67 => a ⋆ᶜ b   -- multiplicative
+scoped notation:67 a:68 " ⋆ " b:67 => a ⋆ᶜ₊ b  -- additive
 ```
 
 ## Connection to DiscreteConvolution
@@ -71,11 +71,11 @@ def apply (a b : M → R) : M → R :=
 
 /-- Notation `⋆ᶜ` for multiplicative Cauchy product convolution (finite/algebraic version).
 Users who want the simplest `⋆` notation can define their own scoped notation. -/
-scoped notation:70 a:70 " ⋆ᶜ " b:71 => apply a b
+scoped notation:67 a:68 " ⋆ᶜ " b:67 => apply a b
 
 /-- Notation `⋆ᶜ₊` for additive Cauchy product convolution (finite/algebraic version).
 Users who want the simplest `⋆` notation can define their own scoped notation. -/
-scoped[CauchyProduct] notation:70 a:70 " ⋆ᶜ₊ " b:71 => CauchyProduct.apply a b
+scoped[CauchyProduct] notation:67 a:68 " ⋆ᶜ₊ " b:67 => CauchyProduct.apply a b
 
 open scoped CauchyProduct
 
