@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Instances.ENNReal.InfiniteSum
 
 /-!
 # Infinite sums of ENNReal and Set.encard
