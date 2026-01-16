@@ -164,4 +164,11 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
 
 end Precoverage
 
+@[grind .]
+lemma Presieve.IsSheaf.isSheafFor_of_mem_precoverage {J : Precoverage C} {P : Cᵒᵖ ⥤ Type*}
+    (h : Presieve.IsSheaf J.toGrothendieck P) {S : C} {R : Presieve S}
+    (hR : R ∈ J S) : R.IsSheafFor P := by
+  rw [J.isSheaf_toGrothendieck_iff] at h
+  simpa [Presieve.isSheafFor_iff_generate] using h (f := 𝟙 S) R hR
+
 end CategoryTheory
