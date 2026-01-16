@@ -37,11 +37,17 @@ ordered algebra
 
 public section
 
-variable {α β : Type*} [CommSemiring α] [PartialOrder α]
+variable {α β : Type*} [CommSemiring α] [PartialOrder α] [Semiring β] [PartialOrder β] [Algebra α β]
+
+theorem IsOrderedModule.of_algebraMap_mono [PosMulMono β] [MulPosMono β]
+    (h : Monotone (algebraMap α β)) : IsOrderedModule α β where
+  smul_le_smul_of_nonneg_left _ ha _ _ hb := by
+    simpa [Algebra.smul_def] using mul_le_mul_of_nonneg_left hb (by simpa using h ha)
+  smul_le_smul_of_nonneg_right _ ha _ _ hb := by
+    simpa [Algebra.smul_def] using mul_le_mul_of_nonneg_right (h hb) ha
 
 section OrderedSemiring
-variable (β)
-variable [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β] {a : α}
+variable (β) [IsOrderedRing β] [SMulPosMono α β] {a : α}
 
 @[gcongr, mono] lemma algebraMap_mono : Monotone (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
@@ -51,8 +57,13 @@ lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa us
 
 end OrderedSemiring
 
+theorem isOrderedModule_iff_algebraMap_mono {R A : Type*} [IsOrderedRing R] [IsOrderedRing A] :
+    IsOrderedModule R A ↔ Monotone (algebraMap R A) where
+  mp _ := algebraMap_mono _
+  mpr := IsOrderedModule.of_algebraMap_mono
+
 section StrictOrderedSemiring
-variable [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] [Algebra α β]
+variable [IsStrictOrderedRing β]
 
 section SMulPosMono
 variable [SMulPosMono α β] [SMulPosReflectLE α β] {a₁ a₂ : α}
@@ -119,15 +130,15 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
     return .nonnegative q(algebraMap_nonneg $β $pa)
   | _ => pure .none
 
-example [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β]
+example [IsOrderedRing β] [SMulPosMono α β]
     {a : α} (ha : 0 ≤ a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β]
+example [IsOrderedRing β] [SMulPosMono α β]
     {a : α} (ha : 0 < a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] [Algebra α β] [SMulPosStrictMono α β]
+example [IsStrictOrderedRing β] [SMulPosStrictMono α β]
     {a : α} (ha : 0 < a) :
     0 < algebraMap α β a := by positivity
 
