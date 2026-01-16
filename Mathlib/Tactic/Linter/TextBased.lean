@@ -9,7 +9,7 @@ public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
 public import Batteries.Data.String.Basic
 public import Mathlib.Data.Nat.Notation
-public meta import Mathlib.Tactic.Linter.UnicodeLinter
+public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
@@ -158,7 +158,12 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
-/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
+Used for, e.g., parsing the "exceptions" file.
+
+Need to ensure (see unit tests in `MathlibTest/LintStyle.lean`) that
+  `∀ (ec : ErrorContext), (parse?_errorContext <| outputMessage ec .exceptionsFile) = some ec`
+-/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.splitToList (· == ' ')
   match parts with
@@ -191,12 +196,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
     | _ => none
-
--- Test for `parse?_errorContext`. TODO I think we should keep this (in tests folder?!)
-#guard let errContext : ErrorContext := {
-    error := .unwantedUnicode '\u00a0',
-    lineNumber := 22, path:="Mathlib/Tactic/Measurability/Init.lean"}
-  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
