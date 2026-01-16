@@ -164,7 +164,7 @@ end CommSemiring
 section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M]
-variable {N P : Submodule R M} {S : Set M}
+variable {N P : Submodule R M}
 
 @[simp]
 lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon (P : Set M) := by

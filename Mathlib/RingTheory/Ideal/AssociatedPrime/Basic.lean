@@ -200,26 +200,32 @@ variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
     (hx : x ≠ 0) :
     ∃ P : Ideal R, IsAssociatedPrime P M ∧ ((⊥ : Submodule R M).colon {x}).radical ≤ P := by
-  sorry
-  -- have : ker (toSpanSingleton R M x) ≠ ⊤ := by
-  --   rwa [Ne, Ideal.eq_top_iff_one, mem_ker, toSpanSingleton_apply, one_smul]
-  -- obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
-  --   set_has_maximal_iff_noetherian.mpr H
-  --     { P | ker (toSpanSingleton R M x) ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = ker (toSpanSingleton R M y) }
-  --     ⟨_, rfl.le, this, x, rfl⟩
-  -- refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
-  -- intro a b hab
-  -- rw [or_iff_not_imp_left]
-  -- intro ha
-  -- rw [mem_ker, toSpanSingleton_apply] at ha hab
-  -- have H₁ : ker (toSpanSingleton R M y) ≤ ker (toSpanSingleton R M (a • y)) := by
-  --   intro c hc
-  --   rw [mem_ker, toSpanSingleton_apply] at hc ⊢
-  --   rw [smul_comm, hc, smul_zero]
-  -- have H₂ : ker (toSpanSingleton R M (a • y)) ≠ ⊤ := by
-  --   rwa [Ne, ker_eq_top, toSpanSingleton_eq_zero_iff]
-  -- rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
-  --   mem_ker, toSpanSingleton_apply, smul_comm, smul_smul]
+  have : ((⊥ : Submodule R M).colon {x}).radical ≠ ⊤ := by simpa [Ideal.radical_eq_top]
+  obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
+    set_has_maximal_iff_noetherian.mpr H
+      { P | ((⊥ : Submodule R M).colon {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = ((⊥ : Submodule R M).colon {y}).radical }
+      ⟨_, rfl.le, this, x, rfl⟩
+  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
+  intro a b hab
+  rw [or_iff_not_imp_left]
+  intro ha
+  simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hab
+  obtain ⟨k, hk⟩ := hab
+  have H₁ : ((⊥ : Submodule R M).colon {y}).radical ≤
+      ((⊥ : Submodule R M).colon {a ^ k • y}).radical := by
+    intro c hc
+    simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at hc ⊢
+    obtain ⟨n, hc⟩ := hc
+    use n
+    rw [smul_comm, hc, smul_zero]
+  have H₂ : ((⊥ : Submodule R M).colon {a ^ k • y}).radical ≠ ⊤ := by
+    simp [Ideal.radical_eq_top]
+    contrapose! ha
+    use k
+  -- have key := H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩)
+  rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩)]
+  use k
+  simpa [smul_smul, ← mul_pow, mul_comm]
 
 namespace associatedPrimes
 
