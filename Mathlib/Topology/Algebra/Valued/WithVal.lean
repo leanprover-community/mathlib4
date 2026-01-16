@@ -55,9 +55,6 @@ instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceA
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 
-instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) :=
-  inferInstanceAs (SMul S R)
-
 instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
 
@@ -76,10 +73,13 @@ variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 variable [CommRing R] (v : Valuation R Γ₀)
 variable {P S : Type*}
 
+instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) where
+  smul s x := s • WithVal.equiv v x
+
 instance [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) : Algebra S (WithVal v) where
   algebraMap := (WithVal.equiv v).symm.toRingHom.comp (algebraMap S R)
-  commutes' r x := mul_comm ..
-  smul_def' r x := by simp only [Algebra.smul_def, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
+  commutes' _ _ := mul_comm ..
+  smul_def' _ _ := by simp only [Algebra.smul_def, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
     RingHom.coe_coe, Function.comp_apply]; rfl
 
 theorem algebraMap_apply [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) (s : S) :
@@ -170,8 +170,9 @@ variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 /-- The completion of a field with respect to a valuation. -/
 abbrev Completion := UniformSpace.Completion (WithVal v)
 
-instance : Coe R v.Completion :=
-  inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
+-- lower priority so that `Coe (WithVal v) v.Completion` uses `UniformSpace.Completion.instCoe`
+instance (priority := 99) : Coe R v.Completion where
+  coe r := (WithVal.equiv v).symm r
 
 section Equivalence
 
@@ -248,7 +249,8 @@ namespace NumberField.RingOfIntegers
 
 variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
 
-instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (𝓞 K) K)
+instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
+  coe x := RingOfIntegers.val x
 
 instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
 
