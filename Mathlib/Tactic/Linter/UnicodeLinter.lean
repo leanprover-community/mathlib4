@@ -30,8 +30,19 @@ public def printCodepointHex (c : Char) : String :=
   | 3 => "U+0".append <| String.ofList digits
   | _ => "U+".append <| String.ofList digits
 
-/-- If `false`, the character is not allowed in Mathlib. -/
+/-- Blocklist: If `false`, the character is not allowed in Mathlib. -/
 public def isAllowedCharacter (c : Char) : Bool :=
   c != '\u00A0' -- non-breaking space
+
+/-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
+public def replaceDisallowed : Char -> Option String
+| '\u00a0' => " " -- replace non-breaking space with normal whitespace
+| _ => none
+
+-- TODO maybe remove this or move to unit-tests?
+private theorem test_all_replaced_disallowed (c : Char) (creplaced : replaceDisallowed c ≠ none) :
+    isAllowedCharacter c == false := by
+  simp_all [isAllowedCharacter, replaceDisallowed]
+  grind only
 
 end Mathlib.Linter.TextBased.UnicodeLinter

@@ -316,13 +316,10 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
       match e with
       | .unwantedUnicode c =>
-        match c with
-        | '\u00a0' =>
-          -- replace non-breaking space with normal whitespace
-          newLine := newLine.replace "\u00a0" " "
-        | _ =>
-          -- no automatic fixes available
-          pure ()
+        if let some replacement := UnicodeLinter.replaceDisallowed c then
+            newLine := newLine.replace c replacement
+        else
+            pure ()
       | _ => unreachable!
 
     changed := changed.push newLine
