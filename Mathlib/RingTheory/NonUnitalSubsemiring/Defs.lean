@@ -271,16 +271,6 @@ lemma toAddSubmonoid_eq_top {S : NonUnitalSubsemiring R} : S.toAddSubmonoid = ‚ä
 
 end NonUnitalSubsemiring
 
-namespace NonUnitalRingHom
-
-open NonUnitalSubsemiring
-
-variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
-variable (f : F)
-
-end NonUnitalRingHom
-
 namespace NonUnitalSubsemiring
 
 -- should we define this as the range of the zero homomorphism?

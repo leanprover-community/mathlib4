@@ -45,6 +45,4 @@ class Artinian : Prop extends EssentiallySmall C where
 
 attribute [instance] Artinian.isArtinianObject
 
-open Subobject
-
 end CategoryTheory

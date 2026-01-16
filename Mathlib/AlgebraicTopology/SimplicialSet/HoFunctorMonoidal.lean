@@ -399,8 +399,6 @@ instance : hoFunctor₂.{u}.Monoidal :=
 instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
 
-open MonoidalCategory
-
 end Truncated
 
 /-- An equivalence between the vertices of a simplicial set `X` and the

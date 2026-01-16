@@ -21,13 +21,3 @@ Implement a `Traversable` instance for `Tree`.
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
-
-public section
-
-namespace Tree
-
-universe u
-
-variable {α : Type u}
-
-end Tree

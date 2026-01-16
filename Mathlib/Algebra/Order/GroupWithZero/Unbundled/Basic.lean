@@ -1344,8 +1344,6 @@ lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ 
 
 end MulPosMono
 
-variable [MulPosStrictMono G₀]
-
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero

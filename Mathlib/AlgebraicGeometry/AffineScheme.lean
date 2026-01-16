@@ -1216,8 +1216,6 @@ lemma specTargetImageFactorization_comp :
     specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f) = f :=
   f.liftQuotient_comp _ _
 
-open RingHom
-
 end Factorization
 
 section Stalks

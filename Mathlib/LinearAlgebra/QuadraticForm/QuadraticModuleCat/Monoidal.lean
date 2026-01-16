@@ -53,8 +53,6 @@ abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 
-open MonoidalCategory
-
 end instMonoidalCategory
 
 open instMonoidalCategory

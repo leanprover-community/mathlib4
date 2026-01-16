@@ -43,8 +43,6 @@ noncomputable abbrev tensorHom {W X Y Z : AlgCat.{u} R} (f : W ⟶ X) (g : Y ⟶
     tensorObj W Y ⟶ tensorObj X Z :=
   ofHom <| Algebra.TensorProduct.map f.hom g.hom
 
-open MonoidalCategory
-
 end instMonoidalCategory
 
 open instMonoidalCategory

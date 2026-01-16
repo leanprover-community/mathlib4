@@ -28,11 +28,6 @@ open Function
 
 variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
 
-namespace EmbeddingLike
-variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
-
-end EmbeddingLike
-
 variable [EquivLike F α β]
 
 @[to_additive]

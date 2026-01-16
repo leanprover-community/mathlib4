@@ -157,12 +157,6 @@ end Diag
 
 open Matrix
 
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
