@@ -130,7 +130,6 @@ variable {N N' : Submodule R M} {S : Set M}
 theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
 
-open Pointwise in
 theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
   aesop (add simp SetLike.coe_subset_coe)
 
