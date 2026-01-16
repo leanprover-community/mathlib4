@@ -1,6 +1,5 @@
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
@@ -46,6 +45,21 @@ section differentiability
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+-- From a manifold into an inner product space.
+section
+
+variable [RCLike 𝕜] {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E''] {g' : M → E''}
+
+/-- error: Could not find a model with corners for `E''` -/
+#guard_msgs in
+#check MDiff g'
+
+/-- error: Could not find a model with corners for `E''` -/
+#guard_msgs in
+#check CMDiff n g'
+
+end
 
 /-! A partial homeomorphism or partial equivalence. More generally, this works for any type
 with a coercion to (possibly dependent) functions. -/
