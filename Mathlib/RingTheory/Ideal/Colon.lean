@@ -116,6 +116,7 @@ lemma colon_iUnion {ι : Sort*} (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ 
 lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
   aesop (add simp mem_colon)
 
+@[simp]
 lemma colon_singleton_zero : N.colon {0} = ⊤ := by
   aesop (add simp mem_colon)
 
