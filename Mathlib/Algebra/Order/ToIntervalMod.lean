@@ -5,12 +5,13 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.ModEq
+public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Int.SuccPred
 public import Mathlib.Order.Circular
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # Reducing to an interval modulo its length
