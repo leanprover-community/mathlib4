@@ -32,7 +32,7 @@ public def isAllowedCharacter (c : Char) : Bool :=
   c != '\u00A0' -- non-breaking space
 
 /-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
-public def replaceDisallowed : Char -> Option String
+public def replaceDisallowed : Char → Option String
 | '\u00a0' => " " -- replace non-breaking space with normal whitespace
 | _ => none
 
