@@ -713,14 +713,6 @@ theorem range_subset_insert_frange (f : α →₀ M) : Set.range f ⊆ insert 0 
 theorem finite_range (f : α →₀ M) : (Set.range f).Finite :=
   .subset (by simp) (range_subset_insert_frange f)
 
-theorem range_finite (f : α →₀ M) : (Set.range f).Finite := by
-  suffices Set.range f ⊆ insert 0 (f '' f.support) by
-    exact Set.Finite.subset (Set.Finite.insert 0 (Set.Finite.image _ f.support.finite_toSet)) this
-  rintro _ ⟨n, rfl⟩
-  by_cases h : f n = 0
-  · left; exact h
-  · right; exact ⟨n, mem_support_iff.mpr h, rfl⟩
-
 end Frange
 
 /-! ### Declarations about `Finsupp.subtypeDomain` -/
