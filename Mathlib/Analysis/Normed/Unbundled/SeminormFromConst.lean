@@ -119,12 +119,8 @@ theorem tendsTo_seminormFromConst_atTop (x : R) :
   Real.tendsto_ciInf_of_bddBelow_antitone (seminormFromConst_bddBelow c f x)
     (seminormFromConst_seq_antitone hf1 hc hpm x)
 
-/-- We prove that `seminormFromConst' c f x` is the limit of the sequence
-  `seminormFromConst_seq c f x` as `n` tends to infinity. -/
-@[deprecated tendsTo_seminormFromConst_atTop (since := "2026-01-14")]
-theorem seminormFromConst_isLimit (x : R) :
-    Tendsto (seminormFromConst_seq c f x) atTop (𝓝 (seminormFromConst' c f x)) :=
-  tendsTo_seminormFromConst_atTop hf1 hc hpm x
+@[deprecated (since := "2026-01-14")]
+alias seminormFromConst_isLimit := tendsTo_seminormFromConst_atTop
 
 theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
   apply tendsto_nhds_unique_of_eventuallyEq (tendsTo_seminormFromConst_atTop hf1 hc hpm 1)
