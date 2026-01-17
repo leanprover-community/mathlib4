@@ -124,11 +124,13 @@ def funcBinaryBicone.isBilimit : (funcBinaryBicone F G).IsBilimit where
   isLimit := funcBinaryBicone.isLimit F G
   isColimit := funcBinaryBicone.isColimit F G
 
+/-- Construction of the binary biproduct data for functors `F` and `G` -/
 @[simps]
 def funcBinaryBiproductData : BinaryBiproductData F G where
   bicone := funcBinaryBicone F G
   isBilimit := funcBinaryBicone.isBilimit F G
 
+/-- If `C` has binary biproducts, then the functor category `D ⥤ C` does too. -/
 instance functorCategoryHasBinaryBiproducts : HasBinaryBiproducts (D ⥤ C) where
   has_binary_biproduct F G := ⟨⟨funcBinaryBiproductData F G⟩⟩
 
