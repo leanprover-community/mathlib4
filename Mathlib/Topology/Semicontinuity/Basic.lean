@@ -596,8 +596,6 @@ theorem LowerSemicontinuous.inf (hf : LowerSemicontinuous f)
     LowerSemicontinuous fun x ↦ f x ⊓ g x := fun a ↦
   LowerSemicontinuousAt.inf (hf a) (hg a)
 
-variable {ι : Type*} {f : ι → α → β} {a : α} {I : Set ι}
-
 end
 
 section

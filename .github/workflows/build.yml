@@ -512,12 +512,64 @@ jobs:
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
+      - name: kill stray runLinter processes
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Checking for runLinter processes..."
+          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "Killing runLinter processes..."
+            pkill -f runLinter || true
+          else
+            echo "No stray runLinter processes found."
+          fi
+
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
+        timeout-minutes: 40
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --trace Mathlib
+          set -o pipefail
+          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # We use .lake/ for the output file because landrun restricts /tmp access
+          for attempt in 1 2; do
+            if timeout 15m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+              break
+            fi
+            status=${PIPESTATUS[0]}
+            if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
+              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
+              echo "updated linter, then push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+              exit 1
+            fi
+            if [ "$status" -eq 124 ]; then
+              echo "runLinter timed out (attempt $attempt)."
+              if [ "$attempt" -lt 2 ]; then
+                echo "Checking for runLinter processes..."
+                if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+                  echo "Killing runLinter processes..."
+                  pkill -f runLinter || true
+                else
+                  echo "No stray runLinter processes found."
+                fi
+                echo "Retrying runLinter after timeout..."
+                continue
+              fi
+            fi
+            exit $status
+          done
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -541,6 +593,15 @@ jobs:
           then
             printf $'%s\n' "${buildMsgs}"
             exit 1
+          fi
+
+      - name: list stray runLinter processes
+        shell: bash
+        if: always()
+        run: |
+          echo "Checking for runLinter processes..."
+          if ! ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "No stray runLinter processes found."
           fi
 
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
@@ -640,34 +701,7 @@ jobs:
           lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
-      # Instead we run it in a cron job on master: see `lean4checker.yml`.
-      # Output is posted to the zulip topic
-      # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
-
-      - name: checkout lean4checker
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        shell: bash
-        run: |
-          git clone https://github.com/leanprover/lean4checker
-          cd lean4checker
-          # Read lean-toolchain file and checkout appropriate branch
-          TOOLCHAIN=$(cat ../lean-toolchain)
-          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
-            VERSION=${TOOLCHAIN#leanprover/lean4:}
-            git checkout "$VERSION"
-          else
-            git checkout master
-          fi
-
-      - name: run leanchecker on itself
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        run: |
-          cd lean4checker
-          # Build lean4checker using the same toolchain
-          cp ../lean-toolchain .
-          lake build
-          lake -q exe lean4checker Lean4Checker
-
+      # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
     name: Lint style
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'

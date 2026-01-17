@@ -35,7 +35,7 @@ open scoped FundamentalGroupoid CategoryTheory
 
 namespace FundamentalGroupoidFunctor
 
-universe u
+universe u v
 
 section Pi
 
@@ -123,15 +123,15 @@ end Pi
 
 section Prod
 
-variable (A B : TopCat.{u})
+variable (A : TopCat.{u}) (B : TopCat.{v})
 
 /-- The induced map of the left projection map X × Y → X -/
 def projLeft : πₓ (TopCat.of (A × B)) ⥤ πₓ A :=
-  πₘ (TopCat.ofHom ⟨_, continuous_fst⟩)
+  FundamentalGroupoid.map .fst
 
 /-- The induced map of the right projection map X × Y → Y -/
 def projRight : πₓ (TopCat.of (A × B)) ⥤ πₓ B :=
-  πₘ (TopCat.ofHom ⟨_, continuous_snd⟩)
+  FundamentalGroupoid.map .snd
 
 @[simp]
 theorem projLeft_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :

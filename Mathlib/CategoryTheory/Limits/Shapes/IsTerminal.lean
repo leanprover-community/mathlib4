@@ -71,7 +71,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.RightInverse,Function.LeftInverse]
+    dsimp [Function.RightInverse, Function.LeftInverse]
     subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
@@ -236,7 +236,7 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
@@ -265,7 +265,7 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram,
@@ -333,12 +333,6 @@ initial object to a terminal object is a monomorphism. -/
 theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerminal T)
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
   InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
-
-section Comparison
-
-variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
-
-end Comparison
 
 variable {J : Type u} [Category.{v} J]
 

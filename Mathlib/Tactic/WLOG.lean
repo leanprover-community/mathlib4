@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Mu
 -/
 module
 
-public meta import Mathlib.Tactic.Core
 public meta import Lean.Meta.Tactic.Cases
-public meta import Mathlib.Tactic.Push
 import all Lean.MetavarContext
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Push
 
 /-!
 
@@ -135,22 +135,23 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
           (failIfUnchanged := false)
 
-/-- `wlog h : P` will add an assumption `h : P` to the main goal, and add a side goal that requires
-showing that the case `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
-
-The side goal will be at the top of the stack. In this side goal, there will be two additional
-assumptions:
+/-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
+requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
+(typically by symmetry). The side goal will be at the top of the stack. In this side goal,
+there will be two additional assumptions:
 - `h : ¬ P`: the assumption that `P` does not hold
 - `this`: which is the statement that in the old context `P` suffices to prove the goal.
-  By default, the name `this` is used, but the idiom `with H` can be added to specify the name:
-  `wlog h : P with H`.
+  By default, the entire context is reverted to produce `this`.
 
-Typically, it is useful to use the variant `wlog h : P generalizing x y`,
-to revert certain parts of the context before creating the new goal.
-In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
-(exploiting symmetry, which is the typical use case).
-
-By default, the entire context is reverted. -/
+* `wlog h : P with H` gives the name `H` to the statement that `P` proves the goal.
+* `wlog h : P generalizing x y ...` reverts certain parts of the context before creating the new
+  goal. In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
+  (exploiting symmetry, which is the typical use case).
+* `wlog! h : P` also calls `push_neg` at the generated hypothesis `h`.
+  `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`
+* `wlog! +distrib h : P` also calls `push_neg +distrib` at the generated hypothesis `h`.
+  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
+-/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
@@ -158,12 +159,7 @@ elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
   wlogCore h P xs H
 
-/--
-`wlog! h : P` is a variant of the `wlog h : P` tactic that also calls `push_neg` at the generated
-hypothesis `h : ¬ p` in the side goal. `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`,
-while  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P ∨ Q`. For more information, see
-the documentation on `push_neg`.
--/
+@[tactic_alt wlog]
 syntax (name := wlog!) "wlog! " optConfig binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
