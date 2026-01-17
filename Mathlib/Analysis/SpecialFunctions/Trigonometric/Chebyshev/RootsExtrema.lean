@@ -22,6 +22,10 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
 * Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
+
+## TODO
+
+Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
 -/
 
 public section
