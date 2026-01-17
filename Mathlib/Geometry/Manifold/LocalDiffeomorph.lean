@@ -540,9 +540,9 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold J n N]
 
-theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContMDiff I J n f) {p : M}
-    (hp : IsInteriorPoint I p) (hfp : IsInteriorPoint J (f p))
-    (hf' : (mfderiv I J f p).ker = ⊥ ∧ (mfderiv I J f p).range = ⊤) :
+theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp : IsInteriorPoint I p)
+    (hfp : IsInteriorPoint J (f p)) {A : Set M} (hA : IsOpen A) (hpA : p ∈ A)
+    (hf : ContMDiffOn I J n f A) (hf' : (mfderiv I J f p).ker = ⊥ ∧ (mfderiv I J f p).range = ⊤) :
     IsLocalDiffeomorphAt I J n f p := by
   /- todo : change hf to only require ContMDiffOn some open set containing p (should be easy change)
   question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
@@ -555,29 +555,28 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
   set ψ₀ := extChartAt J (f p)
   set ψ₁ := diffeoExtChartAt n hfp
   -- define U ⊆ E, an open set where we can easily show that g is ContDiff
-  set U : Set E := φ₁ '' (φ₁.source ∩ f ⁻¹' ψ₁.source)
+  set U : Set E := φ₁ '' (φ₁.source ∩ (A ∩ f ⁻¹' ψ₁.source))
   have U_open : IsOpen U := by
     refine φ₁.toOpenPartialHomeomorph.isOpen_image_of_subset_source ?_ inter_subset_left
-    exact TopologicalSpace.isOpen_inter _ _ φ₁.open_source
-      (hf.continuous.isOpen_preimage ψ₁.source ψ₁.open_source)
-  -- collect some basic facts about differentiability of g for later use
-  have : U ⊆ φ₀.target ∩ φ₀.symm ⁻¹' (f ⁻¹' ψ₀.source) := by -- needed for hg₀
-    rintro e ⟨m, ⟨hm₁, hm₂⟩, rfl⟩
+    exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
+  have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, mem_image_of_mem _
+    ⟨mem_diffeoExtChartAt_source hp, hpA, mem_diffeoExtChartAt_source (n := n) hfp⟩⟩
+  have : U ⊆ φ₀.target ∩ φ₀.symm ⁻¹' (A ∩ f ⁻¹' ψ₀.source) := by -- needed for hg₀ below
+    rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
     refine ⟨diffeoExtChartAt_target_subset hp (φ₁.map_source hm₁), ?_⟩
-    simp only [mem_preimage] at hm₂ ⊢
+    simp only [mem_preimage] at hm₃ ⊢
     rw [eqOn_diffeoExtChartAt_extChartAt hp hm₁,
       φ₀.left_inv (diffeoExtChartAt_source_subset hp hm₁)]
-    exact diffeoExtChartAt_source_subset hfp hm₂
-  have hg₀ : ContDiffOn 𝕜 n g U := ((contMDiff_iff.mp hf).2 p (f p)).mono this
-  have hg₁ : ContDiffAt 𝕜 n g (φ₀ p) := by -- todo : derive this from hg₀
-    have : _ := (hf.contMDiffAt (x := p)).prop
-    simp [ContDiffWithinAtProp] at this
-    exact this.contDiffAt (range_mem_nhds_isInteriorPoint hp)
+    exact ⟨hm₂, diffeoExtChartAt_source_subset hfp hm₃⟩
+  -- collect some basic facts about differentiability of g for later use
+  have hg₀ : ContDiffOn 𝕜 n g U := ((contMDiffOn_iff.mp hf).2 p (f p)).mono this
+  have hg₁ : ContDiffAt 𝕜 n g (φ₀ p) := hg₀.contDiffAt U_nhd
   have hg₂: DifferentiableWithinAt 𝕜 g (range I) (φ₀ p) :=
-    (hg₁.differentiableWithinAt hn).mono fun _ _ ↦ trivial
+    ((hg₀.differentiableOn hn).differentiableAt U_nhd).differentiableWithinAt
   -- use hf' to show that the derivative of g at φ₀ p is a linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E ≃L[𝕜] F, HasFDerivAt g (g' : E →L[𝕜] F) (φ₀ p) := by
-    rw [mfderiv, if_pos (hf.contMDiffAt.mdifferentiableAt hn), fderivWithin] at hf'
+    have A_nhd : A ∈ nhds p := mem_nhds_iff.mpr ⟨A, subset_refl _, hA, hpA⟩
+    rw [mfderiv, if_pos ((hf.contMDiffAt A_nhd).mdifferentiableAt hn), fderivWithin] at hf'
     by_cases g'_zero: HasFDerivWithinAt g (0 : E →L[𝕜] F) (range I) (φ₀ p)
     · rw [if_pos g'_zero] at hf'
       exact ⟨ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
@@ -632,7 +631,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
       and_assoc]
     refine ⟨mem_diffeoExtChartAt_source hp,
       ContDiffAt.mem_toOpenPartialHomeomorph_source _ _ _,
-      ⟨p, mem_diffeoExtChartAt_source hp, mem_diffeoExtChartAt_source hfp, rfl⟩,
+      ⟨p, mem_diffeoExtChartAt_source hp, hpA, mem_diffeoExtChartAt_source hfp, rfl⟩,
       ⟨g', hg'.fderiv.symm⟩,
       ?_⟩
     suffices ψ₁ (f p) ∈ ψ₁.symm.source by
@@ -653,6 +652,6 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} (hf : ContM
       _ = φ₁.symm (φ₁ m) := by congr 1
       _ = m := (φ₁.left_inv hm.1.1)
     subst this
-    exact extChartAt_source J (f p) ▸ diffeoExtChartAt_source_subset (n := n) hfp hm'₁.2
+    exact extChartAt_source J (f p) ▸ diffeoExtChartAt_source_subset (n := n) hfp hm'₁.2.2
 
 end InverseFunctionTheorem
