@@ -1284,7 +1284,7 @@ theorem inv_equiv (e : M ≃L[R] M) : (e : M →L[R] M)⁻¹ = e.symm := inverse
 
 @[simp] theorem inv_id : (ContinuousLinearMap.id R M)⁻¹ = .id R M := by
   change (1 : M →L[R] M)⁻¹ = .id R M
-  rw [Ring.inv_one]
+  rw [MonoidWithZero.inv_one]
   rfl
 
 end ContinuousLinearMap
