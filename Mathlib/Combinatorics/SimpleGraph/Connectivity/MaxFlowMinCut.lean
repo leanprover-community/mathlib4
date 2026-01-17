@@ -6,8 +6,7 @@ Authors: Julius Tranquilli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Max-Flow / Min-Cut (basic definitions, weak duality)
@@ -29,7 +28,8 @@ namespace SimpleGraph
 
 open scoped BigOperators
 
-variable {V α : Type*} [Fintype V] [DecidableEq V] [LinearOrderedAddCommGroup α]
+variable {V α : Type*} [Fintype V] [DecidableEq V]
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 variable {G : SimpleGraph V} {c : Sym2 V → α} {s t : V}
 
 /-- An `s`-`t` flow on an undirected graph, expressed as a skew-symmetric function `V → V → α`
