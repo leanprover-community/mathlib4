@@ -303,13 +303,13 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     rw [hx]
     exact isExtrOn_T_real hn hk
 
-theorem irrational_of_root_T_real (n : ℕ) {r : ℝ} (hr : r ∈ (T ℝ n).roots) (hr0 : r ≠ 0) :
+theorem irrational_of_root_T_real {n : ℕ} {r : ℝ} (hr : r ∈ (T ℝ n).roots) (hr0 : r ≠ 0) :
     Irrational r := by
-  have hr' : r ∈ (Finset.image (fun k : ℕ => cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
+  have hr' : r ∈ (Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n)))
       (Finset.range n)).val := by
     simpa [Polynomial.Chebyshev.roots_T_real n] using hr
-  have : r ∈ Finset.image (fun k : ℕ => cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
-      (Finset.range n) := (Multiset.mem_coe).1 hr'
+  have : r ∈ Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n))) (Finset.range n) :=
+    (Multiset.mem_coe).1 hr'
   rcases Finset.mem_image.1 this with ⟨k, hkRange, rfl⟩
   norm_cast at ⊢ hr0
   refine irrational_cos_chebyshev_angle (odd_two_mul_add_one k) (even_two_mul n) ?_ hr0
