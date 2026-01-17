@@ -60,6 +60,14 @@ attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instS
 @[deprecated instSMulOfMul (since := "2025-10-18")]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
+-- I don't know the right way to do this because `instSMulOfMul` has priority 910 in core
+-- so let me make another instance of the same thing with high priority just for
+-- benchmarking purposes
+
+/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+@[to_additive /-- See also `AddMonoid.toAddAction` -/]
+instance (priority := high) Mul.toSMul' (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
