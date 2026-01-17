@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.Localization.OfQuotient
 
@@ -41,12 +42,6 @@ lemma quasiIso_f_iff_of_shortExact {S : ShortComplex (CochainComplex C ℤ)} (hS
       apply IsZero.eq_of_src
       simpa [← exactAt_iff_isZero_homology] using h (n -1))
     exact Balanced.isIso_of_mono_of_epi _
-
-instance : (MorphismProperty.monomorphisms C).IsStableUnderCobaseChange := by
-  apply MorphismProperty.IsStableUnderCobaseChange.mk'
-  intro _ _ _ _ _ _ h
-  simp only [MorphismProperty.monomorphisms.iff] at h ⊢
-  infer_instance
 
 instance :
     (HomologicalComplex.quasiIso C (.up ℤ) ⊓
