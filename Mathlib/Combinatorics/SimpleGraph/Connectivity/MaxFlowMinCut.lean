@@ -37,7 +37,7 @@ conservation law away from `s` and `t`. -/
 structure Flow (G : SimpleGraph V) (c : Sym2 V → ℕ) (s t : V) where
   val : V → V → ℤ
   skew : ∀ u v, val u v = -val v u
-  capacity : ∀ u v, |val u v| ≤ (c s(u, v) : ℤ)
+  capacity : ∀ u v, val u v ≤ c s(u, v)
   conserve : ∀ v, v ≠ s → v ≠ t → (∑ u, val v u) = 0
 
 namespace Flow
