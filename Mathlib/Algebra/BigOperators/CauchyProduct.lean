@@ -80,25 +80,25 @@ scoped[CauchyProduct] notation:67 a:68 " ⋆ᶜ₊ " b:67 => CauchyProduct.apply
 open scoped CauchyProduct
 
 @[to_additive (dont_translate := R) CauchyProduct.apply_eq]
-theorem apply_eq (a b : M → R) (n : M) :
+lemma apply_eq (a b : M → R) (n : M) :
     (a ⋆ᶜ b) n = ∑ kl ∈ Finset.mulAntidiagonal n, a kl.1 * b kl.2 := rfl
 
 /-! ### Ring Axioms -/
 
 @[to_additive (dont_translate := R) CauchyProduct.left_distrib]
-theorem left_distrib (a b c : M → R) : a ⋆ᶜ (b + c) = a ⋆ᶜ b + a ⋆ᶜ c := by
+lemma left_distrib (a b c : M → R) : a ⋆ᶜ (b + c) = a ⋆ᶜ b + a ⋆ᶜ c := by
   ext n; simp only [Pi.add_apply, apply_eq, mul_add, Finset.sum_add_distrib]
 
 @[to_additive (dont_translate := R) CauchyProduct.right_distrib]
-theorem right_distrib (a b c : M → R) : (a + b) ⋆ᶜ c = a ⋆ᶜ c + b ⋆ᶜ c := by
+lemma right_distrib (a b c : M → R) : (a + b) ⋆ᶜ c = a ⋆ᶜ c + b ⋆ᶜ c := by
   ext n; simp only [apply_eq, Pi.add_apply, add_mul, Finset.sum_add_distrib]
 
 @[to_additive (dont_translate := R) (attr := simp) CauchyProduct.zero_mul]
-theorem zero_mul (a : M → R) : (0 : M → R) ⋆ᶜ a = 0 := by
+lemma zero_mul (a : M → R) : (0 : M → R) ⋆ᶜ a = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.zero_mul, Finset.sum_const_zero]
 
 @[to_additive (dont_translate := R) (attr := simp) CauchyProduct.mul_zero]
-theorem mul_zero (a : M → R) : a ⋆ᶜ (0 : M → R) = 0 := by
+lemma mul_zero (a : M → R) : a ⋆ᶜ (0 : M → R) = 0 := by
   ext n; simp only [apply_eq, Pi.zero_apply, MulZeroClass.mul_zero, Finset.sum_const_zero]
 
 /-! ### Associativity via bijection on triple sums -/
@@ -121,7 +121,7 @@ theorem assoc (a b c : M → R) : (a ⋆ᶜ b) ⋆ᶜ c = a ⋆ᶜ (b ⋆ᶜ c) 
   · exact mul_assoc (a x.2.1) (b x.2.2) (c x.1.2)
 
 @[to_additive (dont_translate := R) CauchyProduct.smul_mul]
-theorem smul_mul (c : R) (a b : M → R) : (c • a) ⋆ᶜ b = c • (a ⋆ᶜ b) := by
+lemma smul_mul (c : R) (a b : M → R) : (c • a) ⋆ᶜ b = c • (a ⋆ᶜ b) := by
   ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_assoc]
 
 end Product
@@ -151,8 +151,8 @@ section IdentityMulAntidiagonal
 
 variable [Monoid M] [DecidableEq M] [Finset.HasMulAntidiagonal M] [Semiring R]
 
-@[to_additive (dont_translate := R) CauchyProduct.one_mul]
-theorem one_mul (a : M → R) : one ⋆ᶜ a = a := by
+@[to_additive (dont_translate := R) (attr := simp) CauchyProduct.one_mul]
+lemma one_mul (a : M → R) : one ⋆ᶜ a = a := by
   ext n; simp only [apply_eq, one]
   rw [Finset.sum_eq_single (1, n), Pi.single_eq_same, _root_.one_mul]
   · intro ⟨x, y⟩ hxy hne
@@ -160,8 +160,8 @@ theorem one_mul (a : M → R) : one ⋆ᶜ a = a := by
     simp [show x ≠ 1 from fun h => hne (by simp [h])]
   · simp [Finset.mem_mulAntidiagonal]
 
-@[to_additive (dont_translate := R) CauchyProduct.mul_one]
-theorem mul_one (a : M → R) : a ⋆ᶜ one = a := by
+@[to_additive (dont_translate := R) (attr := simp) CauchyProduct.mul_one]
+lemma mul_one (a : M → R) : a ⋆ᶜ one = a := by
   ext n; simp only [apply_eq, one]
   rw [Finset.sum_eq_single (n, 1), Pi.single_eq_same, _root_.mul_one]
   · intro ⟨x, y⟩ hxy hne
@@ -186,7 +186,7 @@ theorem comm (a b : M → R) : a ⋆ᶜ b = b ⋆ᶜ a := by
     Prod.snd_swap, Finset.MulAntidiag.map_swap, mul_comm]
 
 @[to_additive (dont_translate := R) CauchyProduct.mul_smul]
-theorem mul_smul (c : R) (a b : M → R) : a ⋆ᶜ (c • b) = c • (a ⋆ᶜ b) := by
+lemma mul_smul (c : R) (a b : M → R) : a ⋆ᶜ (c • b) = c • (a ⋆ᶜ b) := by
   ext n; simp only [apply_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum]
   apply Finset.sum_congr rfl; intro kl _; ring
 

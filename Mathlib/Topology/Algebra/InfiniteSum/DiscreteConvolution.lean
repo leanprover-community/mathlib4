@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Data.Set.MulAntidiagonal
@@ -63,7 +64,10 @@ Differences (discrete ↔ MeasureTheory):
 
 ## Main Results
 
+- `ConvolutionExistsAt`, `ConvolutionExists`: summability conditions
 - `zero_convolution`, `convolution_zero`: zero laws
+- `distrib_add`, `add_distrib`: distributivity over addition
+- `smul_convolution`, `convolution_smul`: scalar multiplication
 - `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
 - Associativity (three API layers with increasing specialization):
   - `convolution_assoc`: most general, arbitrary bilinear maps `L`, `L₂`, `L₃`, `L₄`
@@ -117,17 +121,17 @@ variable [Monoid M]
 This is `Set.mulAntidiagonal Set.univ Set.univ x`. -/
 @[to_additive /-- The fiber of addition at `x`: all pairs `(a, b)` with `a + b = x`.
 This is `Set.addAntidiagonal Set.univ Set.univ x`. -/]
-abbrev mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ x
+def mulFiber (x : M) : Set (M × M) := Set.mulAntidiagonal Set.univ Set.univ x
 
 @[to_additive]
-theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by
-  simp only [Set.mem_mulAntidiagonal, Set.mem_univ, true_and]
+lemma mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 = x := by
+  unfold mulFiber; simp only [Set.mem_mulAntidiagonal, Set.mem_univ, true_and]
 
 /-- Useful for showing `mulFiber 1` is nonempty, e.g., when proving convolution has an identity. -/
 @[to_additive /-- Useful for showing `addFiber 0` is nonempty,
 e.g., when proving convolution has an identity. -/]
 lemma mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
-  simp only [Set.mem_mulAntidiagonal, Set.mem_univ, mul_one, and_self]
+  unfold mulFiber; simp only [Set.mem_mulAntidiagonal, Set.mem_univ, mul_one, and_self]
 
 end Fiber
 
@@ -162,7 +166,7 @@ def tripleFiber (x : M) : Set (M × M × M) :=
   mulTripleAntidiagonal Set.univ Set.univ Set.univ x
 
 @[to_additive mem_tripleAddFiber]
-theorem mem_tripleFiber {x : M} {abc : M × M × M} :
+lemma mem_tripleFiber {x : M} {abc : M × M × M} :
     abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by
   simp only [tripleFiber, mem_mulTripleAntidiagonal, Set.mem_univ, true_and]
 
@@ -215,19 +219,6 @@ variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCo
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
-/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
-the fiber is summable. -/
-@[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt
-  /-- Additive convolution exists at `x` when the fiber sum is summable. -/]
-def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
-  Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
-
-/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
-@[to_additive (dont_translate := S E E' F) AddConvolutionExists
-  /-- Additive convolution exists when it exists at every point. -/]
-def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
-  ∀ x, ConvolutionExistsAt L f g x
-
 /-- The discrete convolution of `f` and `g` using bilinear map `L`:
 `(f ⋆[L] g) x = ∑' (a, b) : mulFiber x, L (f a) (g b)`. -/
 @[to_additive (dont_translate := S E E' F) addConvolution
@@ -245,6 +236,14 @@ scoped notation:67 f:68 " ⋆₊[" L "] " g:67 => addConvolution L f g
 lemma convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
+end Definition
+
+section BasicProperties
+
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
+
 /-- Left zero: `0 ⋆[L] f = 0`. -/
 @[to_additive (dont_translate := S E E' F) (attr := simp) zero_addConvolution]
 lemma zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
@@ -257,11 +256,46 @@ lemma convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
 
+end BasicProperties
+
+section ExistenceProperties
+
+variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid F]
+variable [Module S E] [Module S E'] [Module S F]
+variable [TopologicalSpace F]
+
+/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
+the fiber is summable. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt
+  /-- Additive convolution exists at `x` when the fiber sum is summable. -/]
+def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
+  Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
+
+/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExists
+  /-- Additive convolution exists when it exists at every point. -/]
+def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
+  ∀ x, ConvolutionExistsAt L f g x
+
+variable {R : Type*} [Semiring R] [TopologicalSpace R]
+
+/-- Ring convolution exists at `x` when the fiber sum is summable. -/
+@[to_additive (dont_translate := R) AddRingConvolutionExistsAt
+  /-- Additive ring convolution exists at `x` when the fiber sum is summable. -/]
+def RingConvolutionExistsAt (f g : M → R) (x : M) : Prop :=
+  ConvolutionExistsAt (LinearMap.mul ℕ R) f g x
+
+/-- Ring convolution exists when it exists at every point. -/
+@[to_additive (dont_translate := R) AddRingConvolutionExists
+  /-- Additive ring convolution exists when it exists at every point. -/]
+def RingConvolutionExists (f g : M → R) : Prop :=
+  ConvolutionExists (LinearMap.mul ℕ R) f g
+
 variable [T2Space F] [ContinuousAdd F]
 
 /-- Right distributivity at a point: `(f ⋆[L] (g + g')) x = (f ⋆[L] g) x + (f ⋆[L] g') x`. -/
 @[to_additive (dont_translate := S E E' F)]
-theorem ConvolutionExistsAt.distrib_add {f : M → E} {g g' : M → E'} {x : M}
+lemma ConvolutionExistsAt.distrib_add {f : M → E} {g g' : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
     (hfg' : ConvolutionExistsAt L f g' x) :
     (f ⋆[L] (g + g')) x = (f ⋆[L] g) x + (f ⋆[L] g') x := by
@@ -270,14 +304,14 @@ theorem ConvolutionExistsAt.distrib_add {f : M → E} {g g' : M → E'} {x : M}
 
 /-- Right distributivity: `f ⋆[L] (g + g') = f ⋆[L] g + f ⋆[L] g'`. -/
 @[to_additive (dont_translate := S E E' F)]
-theorem ConvolutionExists.distrib_add {f : M → E} {g g' : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+lemma ConvolutionExists.distrib_add {f : M → E} {g g' : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
     (hfg : ConvolutionExists L f g) (hfg' : ConvolutionExists L f g') :
     f ⋆[L] (g + g') = f ⋆[L] g + f ⋆[L] g' := by
   ext x; exact (hfg x).distrib_add L (hfg' x)
 
 /-- Left distributivity at a point: `((f + f') ⋆[L] g) x = (f ⋆[L] g) x + (f' ⋆[L] g) x`. -/
 @[to_additive (dont_translate := S E E' F)]
-theorem ConvolutionExistsAt.add_distrib {f f' : M → E} {g : M → E'} {x : M}
+lemma ConvolutionExistsAt.add_distrib {f f' : M → E} {g : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
     (hfg' : ConvolutionExistsAt L f' g x) :
     ((f + f') ⋆[L] g) x = (f ⋆[L] g) x + (f' ⋆[L] g) x := by
@@ -286,12 +320,45 @@ theorem ConvolutionExistsAt.add_distrib {f f' : M → E} {g : M → E'} {x : M}
 
 /-- Left distributivity: `(f + f') ⋆[L] g = f ⋆[L] g + f' ⋆[L] g`. -/
 @[to_additive (dont_translate := S E E' F)]
-theorem ConvolutionExists.add_distrib {f f' : M → E} {g : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+lemma ConvolutionExists.add_distrib {f f' : M → E} {g : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
     (hfg : ConvolutionExists L f g) (hfg' : ConvolutionExists L f' g) :
     (f + f') ⋆[L] g = f ⋆[L] g + f' ⋆[L] g := by
   ext x; exact (hfg x).add_distrib L (hfg' x)
 
-end Definition
+variable {F : Type*}
+variable [AddCommMonoid F] [Module S F] [TopologicalSpace F] [ContinuousConstSMul S F] [T2Space F]
+
+/-- Left scalar multiplication at a point: `((c • f) ⋆[L] g) x = c • ((f ⋆[L] g) x)`. -/
+@[to_additive (dont_translate := S E E' F)]
+lemma ConvolutionExistsAt.smul_convolution {c : S} {f : M → E} {g : M → E'} {x : M}
+    (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x) :
+    ((c • f) ⋆[L] g) x = c • ((f ⋆[L] g) x) := by
+  simp only [convolution_apply, Pi.smul_apply, map_smul, LinearMap.smul_apply]
+  exact Summable.tsum_const_smul (L := .unconditional _) c hfg
+
+/-- Left scalar multiplication: `(c • f) ⋆[L] g = c • (f ⋆[L] g)`. -/
+@[to_additive (dont_translate := S E E' F)]
+lemma ConvolutionExists.smul_convolution {c : S} {f : M → E} {g : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+    (hfg : ConvolutionExists L f g) :
+    (c • f) ⋆[L] g = c • (f ⋆[L] g) := by
+  ext x; exact (hfg x).smul_convolution L
+
+/-- Right scalar multiplication at a point: `(f ⋆[L] (c • g)) x = c • ((f ⋆[L] g) x)`. -/
+@[to_additive (dont_translate := S E E' F)]
+lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} {x : M}
+    (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x) :
+    (f ⋆[L] (c • g)) x = c • ((f ⋆[L] g) x) := by
+  simp only [convolution_apply, Pi.smul_apply, LinearMap.map_smul]
+  exact Summable.tsum_const_smul (L := .unconditional _) c hfg
+
+/-- Right scalar multiplication: `f ⋆[L] (c • g) = c • (f ⋆[L] g)`. -/
+@[to_additive (dont_translate := S E E' F)]
+lemma ConvolutionExists.convolution_smul {c : S} {f : M → E} {g : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+    (hfg : ConvolutionExists L f g) :
+    f ⋆[L] (c • g) = c • (f ⋆[L] g) := by
+  ext x; exact (hfg x).convolution_smul L
+
+end ExistenceProperties
 
 /-! ### Ring Multiplication Specialization -/
 
@@ -324,6 +391,36 @@ lemma zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ᵣ f = 0 := by
 lemma ringConvolution_zero (f : M → R) : f ⋆ᵣ (0 : M → R) = 0 := by
   ext x; simp only [ringConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
 
+variable [T2Space R] [ContinuousAdd R]
+
+/-- Left scalar multiplication for ring convolution at a point. -/
+@[to_additive (dont_translate := R)]
+lemma RingConvolutionExistsAt.smul_ringConvolution {c : ℕ} {f g : M → R} {x : M}
+    (hfg : RingConvolutionExistsAt f g x) :
+    ((c • f) ⋆ᵣ g) x = c • ((f ⋆ᵣ g) x) :=
+  hfg.smul_convolution (LinearMap.mul ℕ R)
+
+/-- Left scalar multiplication for ring convolution. -/
+@[to_additive (dont_translate := R)]
+lemma RingConvolutionExists.smul_ringConvolution {c : ℕ} {f g : M → R}
+    (hfg : RingConvolutionExists f g) :
+    (c • f) ⋆ᵣ g = c • (f ⋆ᵣ g) :=
+  hfg.smul_convolution (LinearMap.mul ℕ R)
+
+/-- Right scalar multiplication for ring convolution at a point. -/
+@[to_additive (dont_translate := R)]
+lemma RingConvolutionExistsAt.ringConvolution_smul {c : ℕ} {f g : M → R} {x : M}
+    (hfg : RingConvolutionExistsAt f g x) :
+    (f ⋆ᵣ (c • g)) x = c • ((f ⋆ᵣ g) x) :=
+  hfg.convolution_smul (LinearMap.mul ℕ R)
+
+/-- Right scalar multiplication for ring convolution. -/
+@[to_additive (dont_translate := R)]
+lemma RingConvolutionExists.ringConvolution_smul {c : ℕ} {f g : M → R}
+    (hfg : RingConvolutionExists f g) :
+    f ⋆ᵣ (c • g) = c • (f ⋆ᵣ g) :=
+  hfg.convolution_smul (LinearMap.mul ℕ R)
+
 end RingMul
 
 /-! ### Commutativity -/
@@ -335,8 +432,8 @@ variable [CommMonoid M] [CommSemiring S] [AddCommMonoid E] [Module S E] [Topolog
 /-- Swap equivalence for `mulFiber`: `(a, b) ↦ (b, a)` is an equivalence on the fiber. -/
 @[to_additive /-- Swap equivalence for `addFiber`. -/]
 private def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
-  toFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
-  invFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mul_comm]⟩
+  toFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mem_mulFiber, mul_comm]⟩
+  invFun := fun ⟨p, h⟩ => ⟨p.swap, by simp_all [mem_mulFiber, mul_comm]⟩
   left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
   right_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
 
