@@ -56,8 +56,6 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   contrapose! hi
   simp [hi]
 
-theorem coeff_range_finite : (Set.range p.coeff).Finite := Finsupp.range_finite _
-
 open scoped Pointwise in
 theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
   calc #(p * q).support
