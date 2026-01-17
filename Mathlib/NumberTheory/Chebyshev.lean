@@ -81,7 +81,7 @@ theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
 theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
   refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
   · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
-  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ y)).2 hy, Nat.prime_two⟩
+  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ x)).2 hy, Nat.prime_two⟩
 
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
