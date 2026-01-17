@@ -35,6 +35,11 @@ curves to be a complete normed space.
 def compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) : ℝ → E :=
   fun t ↦ α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t)
 
+lemma compProj_of_mem {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} {t : ℝ}
+    (ht : t ∈ Icc tmin tmax) :
+    compProj t₀ α t = α ⟨t, ht⟩ := by
+  rw [compProj, projIcc_of_mem (le_trans t₀.2.1 t₀.2.2) ht]
+
 @[continuity, fun_prop]
 lemma continuous_compProj {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     Continuous (compProj t₀ α) :=
@@ -92,12 +97,6 @@ but with `n` replaced by `n + 1` and `g` replaced by its derivative.
 def integralFun {n : ℕ} (g : E → E [×n]→L[ℝ] E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (α : C(Icc tmin tmax, E)) (dα : Fin n → C(Icc tmin tmax, E)) (t : Icc tmin tmax) : E :=
   ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)
-
-lemma integralFun_def {n : ℕ} {g : E → E [×n]→L[ℝ] E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax}
-    {α : C(Icc tmin tmax, E)} {dα : Fin n → C(Icc tmin tmax, E)} :
-    integralFun g t₀ α dα =
-      fun t : Icc tmin tmax ↦ ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ) :=
-  rfl
 
 /--
 The integrand is continuous in the integration variable.
@@ -176,6 +175,18 @@ lemma integralCM_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg
     integralCM hg t₀ α = fun _ ↦ 0 := by
   simp [integralCM_def, dif_neg hα]
 
+lemma integralCM_apply_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u)
+    {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
+    integralCM hg t₀ α dα t = integralFun g t₀ α dα t := by
+  simp [integralCM_def, dif_pos hα, integralCMAux]
+
+lemma integralCM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : ¬ MapsTo α univ u)
+    {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
+    integralCM hg t₀ α dα t = 0 := by
+  simp [integralCM_def, dif_neg hα]
+
 -- TODO: Should this proof and `integralCM_update_smul` be pushed up to `integralFun`?
 lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
@@ -240,188 +251,80 @@ lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {h
     {dα : Fin n → C(Icc tmin tmax, E)} :
     integralCMLM hg t₀ α dα = integralCM hg t₀ α dα := rfl
 
-/-
-Strategy for proving the continuity of `α ↦ dα ↦ t ↦ ∫ τ in t₀..t, g (α τ) (fun i ↦ dα i τ)` as a
-function `F → F [×n]→L[ℝ] F`:
+def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g : E → F} {u : Set E}
+    (hg : ContinuousOn g u) (α : {α : C(I, E) | MapsTo α univ u}) : C(I, F) :=
+  ⟨g ∘ α, hg.comp_continuous α.1.continuous_toFun (fun _ ↦ α.2 trivial)⟩
 
-* Embed `F [×n]→L[ℝ] F` into `UniformOnFun (Fin n → F) F`
-(`ContinuousMultilinearMap.isEmbedding_toUniformOnFun`)
-* Translate continuity `Topology.IsEmbedding.continuous_iff` across the embedding
-* Translate continuity in the topology of uniform convergence on bounded sets to equicontinuity
-(`UniformOnFun.continuous_rng_iff`, `equicontinuous_iff_continuous`, missing lemma combining them)
-* Translate equicontinuity to finding witness sets (`equicontinuousAt_iff_pair`)
-* Translate uniformity to `ε` witness (`Metric.mem_uniformity_dist`)
-* Translate von Neumann boundedness to boundedness (`NormedSpace.isVonNBounded_iff`)
-* Prove key inequality
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+lemma gComp_apply_projIcc {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E}
+    (hg : ContinuousOn g u) {tmin tmax : ℝ} {t₀ : Icc tmin tmax}
+    {α : {α : C(Icc tmin tmax, E) | MapsTo α univ u}} (t : ℝ) :
+    gComp (Icc tmin tmax) hg α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) =
+      g (compProj t₀ α t) := rfl
 
-(look into uniform equicontinuity, perhaps a missing lemma like iff_pair could remove the need for
-`ε/2`)
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E}
+    (hg : ContinuousOn g u) (tmin tmax : ℝ) :
+    Continuous (gComp (Icc tmin tmax) hg) := by
+  apply ContinuousMap.continuous_of_continuous_uncurry
+  refine hg.comp_continuous ?_ fun ⟨α, _⟩ ↦ α.2 trivial
+  exact continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
 
--/
-
-omit [CompleteSpace E] in
-/-- The norm of a multilinear map difference applied to vectors is bounded by the operator norm
-difference times the product of vector norms. -/
-lemma norm_sub_continuousMultilinearMap_apply_le {n : ℕ} {f₁ f₂ : E [×n]→L[ℝ] E}
-    {ε M : ℝ} (hε : ‖f₁ - f₂‖ ≤ ε) {v : Fin n → E} (hv : ∏ i, ‖v i‖ ≤ M) :
-    ‖(f₁ - f₂) v‖ ≤ ε * M := by
-  calc ‖(f₁ - f₂) v‖
-      ≤ ‖f₁ - f₂‖ * ∏ i, ‖v i‖ := ContinuousMultilinearMap.le_opNorm ..
-    _ ≤ ε * M := by
-        apply mul_le_mul hε hv (Finset.prod_nonneg fun _ _ ↦ norm_nonneg _)
-        exact (norm_nonneg _).trans hε
-
-/-- The distance between two `integralCMLM` values is bounded by the sup-norm distance of `g ∘ α`
-times the norm bound on `dα` times the interval length. -/
-lemma dist_integralCMLM_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α α' : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) (hα' : MapsTo α' univ u)
-    {ε M : ℝ} (hε : 0 < ε) (hM : 0 ≤ M)
-    (hg_close : ∀ t : Icc tmin tmax, ‖g (α t) - g (α' t)‖ ≤ ε)
-    {dα : Fin n → C(Icc tmin tmax, E)} (hdα : ∀ i, ‖dα i‖ ≤ M) :
-    dist ((integralCMLM hg t₀ α) dα) ((integralCMLM hg t₀ α') dα) ≤
-      ε * M ^ n * (tmax - tmin) := by
-  have hnn : 0 ≤ ε * M ^ n * (tmax - tmin) := by
-    apply mul_nonneg (mul_nonneg (le_of_lt hε) (pow_nonneg hM n))
-    linarith [t₀.2.1, t₀.2.2]
-  rw [ContinuousMap.dist_le hnn]
-  intro t
-  simp only [integralCMLM_apply, integralCM_if_pos hα, integralCM_if_pos hα',
-    integralCMAux, ContinuousMap.coe_mk, integralFun, dist_eq_norm,
-    ← intervalIntegral.integral_sub
-      (intervalIntegrable_integrand hg t₀ hα dα ..)
-      (intervalIntegrable_integrand hg t₀ hα' dα ..)]
-  have hdα_eval_bound : ∀ i τ, ‖compProj t₀ (dα i) τ‖ ≤ M := fun i τ ↦ by
-    simp only [compProj]
-    exact ((dα i).norm_coe_le_norm _).trans (hdα i)
-  have hprod_bound : ∀ τ, ∏ i : Fin n, ‖compProj t₀ (dα i) τ‖ ≤ M ^ n := fun τ ↦
-    (Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ hdα_eval_bound i τ)).trans_eq
-      (by simp [Finset.prod_const])
-  have hintegrand_bound : ∀ τ : ℝ,
-      ‖(g (compProj t₀ α τ) - g (compProj t₀ α' τ)) (fun i ↦ compProj t₀ (dα i) τ)‖ ≤
-        ε * M ^ n := fun τ ↦ by
-    simp only [compProj] at hprod_bound ⊢
-    exact norm_sub_continuousMultilinearMap_apply_le (hg_close _) (hprod_bound τ)
-  have ht_bound : |(t : ℝ) - (t₀ : ℝ)| ≤ tmax - tmin := by
-    rw [← Real.dist_eq]
-    exact Real.dist_le_of_mem_Icc t.2 t₀.2
-  calc ‖∫ x in ↑t₀..↑t, ((g (compProj t₀ α x) - g (compProj t₀ α' x))
-          fun i ↦ compProj t₀ (dα i) x)‖
-      ≤ (ε * M ^ n) * |(t : ℝ) - (t₀ : ℝ)| := by
-        apply intervalIntegral.norm_integral_le_of_norm_le_const
-        intro τ _
-        exact hintegrand_bound τ
-    _ ≤ ε * M ^ n * (tmax - tmin) := by
-        apply mul_le_mul_of_nonneg_left ht_bound
-        apply mul_nonneg (le_of_lt hε) (pow_nonneg hM n)
-
-omit [CompleteSpace E] in
-/-- The integrand `(α, dα, τ) ↦ g(compProj t₀ α τ)(fun i ↦ compProj t₀ (dα i) τ)` is continuous
-when `g` is continuous on the open set `u` and `α` maps into `u`. This is the fully parametric
-version of `continuous_integrand`, varying in both `α` and `dα`. -/
-lemma continuous_integrand_param {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
-    Continuous
-      (fun p : ({α : C(Icc tmin tmax, E) | MapsTo α univ u} × (Fin n → C(Icc tmin tmax, E))) × ℝ ↦
-      g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2)
-        (fun i ↦ compProj t₀ (p.1.2 i) p.2)) := by
-  let S := {α : C(Icc tmin tmax, E) | MapsTo α univ u}
-  have hmem : ∀ p : (S × (Fin n → C(Icc tmin tmax, E))) × ℝ,
-      compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2 ∈ u := fun ⟨⟨α, _⟩, _⟩ ↦ α.2 (mem_univ _)
-  have hcomp : Continuous (fun p : (S × (Fin n → C(Icc tmin tmax, E))) × ℝ ↦
-      compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2) :=
-    (continuous_compProj₂ t₀).comp
-      ((continuous_subtype_val.comp (continuous_fst.comp continuous_fst)).prodMk continuous_snd)
-  have hg_comp : Continuous (fun p : (S × (Fin n → C(Icc tmin tmax, E))) × ℝ ↦
-      g (compProj t₀ (p.1.1 : C(Icc tmin tmax, E)) p.2)) := hg.comp_continuous hcomp hmem
-  have hvec : Continuous (fun p : (S × (Fin n → C(Icc tmin tmax, E))) × ℝ ↦
-      fun i ↦ compProj t₀ (p.1.2 i) p.2) :=
-    continuous_snd.continuous_compProj_pi_apply₂ t₀
-  exact continuous_eval.comp (hg_comp.prodMk hvec)
-
-omit [CompleteSpace E] in
-/-- The epsilon bound cancellation: when `ε' = ε / (4 * (1 + |T|) * (1 + M^n))`, we have
-`ε' * M^n * T ≤ ε / 4`. This is the key arithmetic fact used in equicontinuity estimates. -/
-lemma epsilon_bound_cancellation {ε M T : ℝ} (hε : 0 < ε) (hM : 0 ≤ M) (hT : 0 ≤ T) (n : ℕ) :
-    ε / (4 * (1 + |T|) * (1 + M ^ n)) * M ^ n * T ≤ ε / 4 := by
-  have h1 : T ≤ 1 + |T| := (le_abs_self _).trans (le_add_of_nonneg_left (by linarith))
-  have h2 : M ^ n ≤ 1 + M ^ n := le_add_of_nonneg_left (by linarith)
-  have hε' : 0 < ε / (4 * (1 + |T|) * (1 + M ^ n)) := by
-    refine div_pos hε (mul_pos (mul_pos (by linarith) ?_) ?_) <;> positivity
-  calc ε / (4 * (1 + |T|) * (1 + M ^ n)) * M ^ n * T
-      ≤ ε / (4 * (1 + |T|) * (1 + M ^ n)) * (1 + M ^ n) * (1 + |T|) := by
-        apply mul_le_mul _ h1 hT (by positivity)
-        exact mul_le_mul_of_nonneg_left h2 (le_of_lt hε')
-    _ = ε / 4 := by
-      have : 1 + M ^ n ≠ 0 := by positivity
-      have : 1 + |T| ≠ 0 := by positivity
-      field_simp
-
-/-- Key neighborhood estimate for equicontinuity: near any `α₀`, all `α` in a neighborhood satisfy
-a distance bound for `integralCMLM` applied to bounded `dα`. -/
-lemma integralCMLM_eventually_dist_lt {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
-    (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
-    {M : ℝ} (hM : 0 ≤ M) {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : ∀ dα ∈ B, ‖dα‖ ≤ M) :
-    ∀ᶠ α in 𝓝 α₀, ∀ dα ∈ B, dist ((integralCMLM hg t₀ ↑α₀) dα)
-      ((integralCMLM hg t₀ ↑α) dα) < ε := by
-  let S := {α : C(Icc tmin tmax, E) | MapsTo α univ u}
-  have hS_open : IsOpen S := ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
-  let M' := max M 0
-  let ε' := ε / (2 * (1 + |tmax - tmin|) * (1 + M' ^ n))
-  have hε' : 0 < ε' := by
-    refine div_pos hε (mul_pos (mul_pos (by linarith) ?_) ?_) <;> positivity
-  have hS_nhd : ∀ᶠ x in 𝓝 (α₀ : C(Icc tmin tmax, E)), x ∈ S := hS_open.mem_nhds α₀.2
-  rw [← map_nhds_subtype_coe_eq_nhds α₀.2 hS_nhd, Filter.eventually_map]
-  let gComp : S → C(Icc tmin tmax, E [×n]→L[ℝ] E) := fun α ↦
-    ⟨fun t ↦ g (α.1 t), hg.comp_continuous α.1.continuous_toFun (fun t ↦ α.2 (mem_univ t))⟩
-  have hg_unif : Continuous gComp := by
-    apply ContinuousMap.continuous_of_continuous_uncurry
-    have h1 : Continuous (fun p : S × Icc tmin tmax ↦ (p.1 : C(Icc tmin tmax, E)) p.2) :=
-      continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
-    exact hg.comp_continuous h1 fun ⟨α, t⟩ ↦ α.2 (mem_univ t)
-  have hV_mem : gComp ⁻¹' Metric.ball (gComp α₀) ε' ∈ 𝓝 α₀ :=
-    hg_unif.continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds _ hε')
-  apply Filter.eventually_of_mem hV_mem
-  intro α hα dα hdα
-  have hα_ball : dist (gComp α₀) (gComp α) < ε' := by
-    rw [dist_comm]
-    exact Metric.mem_ball.mp hα
-  have hg_close : ∀ s : Icc tmin tmax, ‖g (α₀.1 s) - g (α.1 s)‖ ≤ ε' := fun s ↦ by
-    calc ‖g (α₀.1 s) - g (α.1 s)‖ = ‖gComp α₀ s - gComp α s‖ := rfl
-      _ ≤ dist (gComp α₀) (gComp α) := by
-        rw [← dist_eq_norm]
-        exact ContinuousMap.dist_apply_le_dist s
-      _ ≤ ε' := le_of_lt hα_ball
-  have hdα_bound : ∀ i, ‖dα i‖ ≤ M' := fun i ↦
-    (norm_le_pi_norm dα i).trans ((hB dα hdα).trans (le_max_left M 0))
-  have hε'_eq : ε' * M' ^ n * (tmax - tmin) ≤ ε / 2 := by
-    have h1 : tmax - tmin ≤ 1 + |tmax - tmin| :=
-      (le_abs_self _).trans (le_add_of_nonneg_left (by linarith))
-    have h2 : M' ^ n ≤ 1 + M' ^ n := le_add_of_nonneg_left (by linarith)
-    calc ε' * M' ^ n * (tmax - tmin)
-        ≤ ε' * (1 + M' ^ n) * (1 + |tmax - tmin|) := by
-          apply mul_le_mul _ h1 (by linarith [t₀.2.1, t₀.2.2]) (by positivity)
-          exact mul_le_mul_of_nonneg_left h2 (le_of_lt hε')
-      _ = ε / 2 := by
-        change ε / (2 * (1 + |tmax - tmin|) * (1 + M' ^ n)) *
-          (1 + M' ^ n) * (1 + |tmax - tmin|) = ε / 2
-        have h3 : (1 + M' ^ n) ≠ 0 := by positivity
-        have h4 : (1 + |tmax - tmin|) ≠ 0 := by positivity
-        field_simp [h3, h4]
-  calc dist ((integralCMLM hg t₀ ↑α₀) dα) ((integralCMLM hg t₀ ↑α) dα)
-      ≤ ε' * M' ^ n * (tmax - tmin) := dist_integralCMLM_le hg t₀ α₀.2 α.2 hε'
-          (le_max_right M 0) hg_close hdα_bound
-    _ ≤ ε / 2 := hε'_eq
-    _ < ε := by linarith
+-- TODO: general lemma
+lemma _root_.Finset.prod_le_pow_card' {ι : Type*} {R : Type*} [CommMonoidWithZero R]
+    [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R] {f : ι → R} {s : Finset ι} {n : R}
+    (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ n) :
+    s.prod f ≤ n ^ s.card :=
+  (Finset.prod_le_prod h0 h1).trans_eq (Finset.prod_const n)
 
 lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    {α₀ : C(Icc tmin tmax, E)} (hα₀ : MapsTo α₀ univ u) {ε : ℝ} (hε : 0 < ε)
+    (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
     {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : Bornology.IsBounded B) :
-    ∀ᶠ α in 𝓝 α₀, ∀ dα ∈ B, dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε := by
-
-  sorry
+    ∀ᶠ (α : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀, ∀ dα ∈ B,
+      dist ((integralCMLM hg t₀ α₀) dα) ((integralCMLM hg t₀ α) dα) < ε := by
+  obtain ⟨C, hC⟩ := hB.exists_norm_le
+  -- `max C 0` to avoid needing `B` to be nonempty
+  -- `1 +` to ensure strict positivity
+  let δ := ε / ((1 + |tmax - tmin|) * (1 + (max C 0) ^ n))
+  have hδ : 0 < δ := div_pos hε (mul_pos (by positivity) (by positivity))
+  let V := Metric.ball (gComp (Icc tmin tmax) hg α₀) δ
+  have hV : (gComp (Icc tmin tmax) hg) ⁻¹' Metric.ball (gComp (Icc tmin tmax) hg α₀) δ ∈ 𝓝 α₀ :=
+    (continuous_gComp hg tmin tmax).continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds _ hδ)
+  apply Filter.eventually_of_mem hV
+  intro α hα dα hdα
+  rw [mem_preimage, mem_ball, ContinuousMap.dist_lt_iff hδ] at hα
+  rw [integralCMLM_apply, integralCMLM_apply, ContinuousMap.dist_lt_iff hε]
+  intro t
+  rw [integralCM_apply_if_pos α₀.2, integralCM_apply_if_pos α.2, dist_eq_norm, integralFun,
+    integralFun, ← intervalIntegral.integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
+      (intervalIntegrable_integrand hg _ α.2 ..)]
+  calc
+    _ ≤ δ * (max C 0) ^ n * |↑t - ↑t₀| := by
+      apply intervalIntegral.norm_integral_le_of_norm_le_const
+      intro τ hτ
+      replace hτ : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
+      rw [← ContinuousMultilinearMap.sub_apply, compProj_of_mem hτ, compProj_of_mem hτ]
+      apply (ContinuousMultilinearMap.le_opNorm _ _).trans
+      rw [← dist_eq_norm, dist_comm]
+      apply mul_le_mul (hα _).le _ (by positivity) (by positivity)
+      have heq' : n = (Finset.univ : Finset (Fin n)).card := by simp
+      nth_rw 5 [heq']
+      apply (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) _).trans_eq (Finset.prod_const _)
+      intro i _
+      rw [compProj_of_mem hτ]
+      exact (ContinuousMap.norm_coe_le_norm _ _).trans
+        ((norm_le_pi_norm dα i).trans ((hC dα hdα).trans (le_max_left ..)))
+    _ ≤ δ * max C 0 ^ n * |↑tmax - ↑tmin| := by
+      gcongr 1
+      apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
+    _ = ε * ((|tmax - tmin| * (max C 0 ^ n)) / ((1 + |tmax - tmin|) * (1 + max C 0 ^ n))) := by
+      simp_rw [δ]
+      field_simp
+    _ < ε := by
+      apply mul_lt_of_lt_one_right hε
+      rw [div_lt_one (by positivity)]
+      exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
 
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
@@ -439,10 +342,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   intro U hU
   -- express in terms of `ε` inequality
   obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
-  rw [eventually_nhds_subtype_iff _ _
-      (fun α ↦ ∀ dα ∈ B, ((integralCMLM hg t₀ α₀) dα, (integralCMLM hg t₀ α) dα) ∈ U),
-    (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu).nhdsWithin_eq α₀.2]
-  apply integralCMLM_eventually_dist_lt' hg hu t₀ α₀.2 hε hB |>.mono
+  apply integralCMLM_eventually_dist_lt' hg hu t₀ α₀ hε hB |>.mono
   exact fun _ ↦ forall₂_imp (fun _ _ h ↦ hεU h)
 
 end
