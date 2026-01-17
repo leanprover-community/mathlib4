@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria
@@ -40,12 +41,6 @@ submonoid, submonoids
 assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
-
-section Assoc
-
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-
-end Assoc
 
 section NonAssoc
 

@@ -184,7 +184,7 @@ lemma packingNumber_zero {E : Type*} [EMetricSpace E] (A : Set E) :
     packingNumber 0 A = A.encard :=
   le_antisymm (packingNumber_le_encard_self A) (le_iSup_of_le A (by simp))
 
-lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
+lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : ediam A ≤ ε) :
     coveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
@@ -195,21 +195,21 @@ lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.
   · simpa [Order.one_le_iff_pos]
 
 lemma externalCoveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty)
-    (hA : EMetric.diam A ≤ ε) :
+    (hA : ediam A ≤ ε) :
     externalCoveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · exact (externalCoveringNumber_le_coveringNumber ε A).trans_eq
       (coveringNumber_eq_one_of_ediam_le h_nonempty hA)
   · simpa [Order.one_le_iff_pos]
 
-lemma externalCoveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) :
+lemma externalCoveringNumber_le_one_of_ediam_le (hA : ediam A ≤ ε) :
     externalCoveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← externalCoveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]
   · exact (externalCoveringNumber_eq_one_of_ediam_le h_nonempty hA).le
 
-lemma coveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) : coveringNumber ε A ≤ 1 := by
+lemma coveringNumber_le_one_of_ediam_le (hA : ediam A ≤ ε) : coveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← coveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]

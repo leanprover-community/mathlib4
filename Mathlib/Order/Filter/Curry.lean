@@ -46,7 +46,7 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 uniform convergence, curried filters, product filters
 -/
 
-@[expose] public section
+public section
 
 
 namespace Filter

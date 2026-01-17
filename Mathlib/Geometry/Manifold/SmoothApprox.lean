@@ -62,7 +62,7 @@ about the need for a non-manifold version of `SmoothPartitionOfUnity`.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 open scoped Topology ContDiff Manifold

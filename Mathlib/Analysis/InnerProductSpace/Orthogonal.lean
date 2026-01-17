@@ -114,7 +114,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, (innerSL 𝕜 (v : E)).ker := by
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
-  simp only [coe_iInf]
+  simp
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
@@ -385,8 +385,6 @@ theorem OrthogonalFamily.isOrtho {ι} {V : ι → Submodule 𝕜 E}
     V i ⟂ V j :=
   hV.pairwise hij
 
-open ClosedSubmodule
-
 namespace ClosedSubmodule
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -399,75 +397,33 @@ variable (K : ClosedSubmodule 𝕜 E)
 
 /-- The closed subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : ClosedSubmodule 𝕜 E where
-  carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
-  zero_mem' _ _ := inner_zero_right _
-  add_mem' hx hy u hu := by rw [inner_add_right, hx u hu, hy u hu, add_zero]
-  smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, mul_zero]
-  isClosed' := by
-    suffices h :
-        { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
-        = (⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap).carrier by
-      rw [h]
-      simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf]
-      convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
-    apply le_antisymm
-    · simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf, Set.le_eq_subset,
-      Set.subset_iInter_iff, Subtype.forall]
-      intro v hv w hw
-      simpa using hw _ hv
-    · intro v hv w hw
-      simp only [Submodule.carrier_eq_coe, Submodule.coe_iInf, Set.mem_iInter, SetLike.mem_coe,
-        LinearMap.mem_ker, ContinuousLinearMap.coe_coe, coe_innerSL_apply, Subtype.forall] at hv
-      exact Submodule.inner_right_of_mem_orthogonal hw hv
+  toSubmodule := K.toSubmodule.orthogonal
+  isClosed' := K.toSubmodule.isClosed_orthogonal
 
 @[inherit_doc]
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = (K.toSubmodule).orthogonal := rfl
+lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
+
+lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
 
 /-- When a vector is in `Kᗮ`. -/
-theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 :=
-  Iff.rfl
+@[simp]
+theorem mem_orthogonal (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪u, v⟫ = 0 := Iff.rfl
 
 /-- When a vector is in `Kᗮ`, with the inner product the
 other way round. -/
-theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 := by
-  simp_rw [mem_orthogonal, inner_eq_zero_symm]
+theorem mem_orthogonal' (v : E) : v ∈ Kᗮ ↔ ∀ u ∈ K, ⟪v, u⟫ = 0 :=
+  Submodule.mem_orthogonal' K.toSubmodule v
 
 variable {K}
 
-/-- A vector in `K` is orthogonal to one in `Kᗮ`. -/
-theorem inner_right_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪u, v⟫ = 0 :=
-  (K.mem_orthogonal v).1 hv u hu
-
-/-- A vector in `Kᗮ` is orthogonal to one in `K`. -/
-theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) : ⟪v, u⟫ = 0 := by
-  rw [inner_eq_zero_symm]; exact inner_right_of_mem_orthogonal hu hv
-
-/-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
-  refine ⟨fun hv => Submodule.mem_orthogonal_singleton_iff_inner_right.mp hv, ?_⟩
-  intro hv w hw
-  rw [Submodule.mem_span_singleton] at hw
-  obtain ⟨c, rfl⟩ := hw
-  simp [inner_smul_left, hv]
-
-/-- A vector in `(𝕜 ∙ u)ᗮ` is orthogonal to `u`. -/
-theorem mem_orthogonal_singleton_iff_inner_left {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪v, u⟫ = 0 := by
-  rw [mem_orthogonal_singleton_iff_inner_right, inner_eq_zero_symm]
-
-theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ := by
-  rw [mem_orthogonal']
-  intro u hu
-  rw [inner_sub_left, sub_eq_zero]
-  exact h ⟨u, hu⟩
+theorem sub_mem_orthogonal_of_inner_left {x y : E} (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x - y ∈ Kᗮ :=
+  Submodule.sub_mem_orthogonal_of_inner_left h
 
 theorem sub_mem_orthogonal_of_inner_right {x y : E} (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
-    x - y ∈ Kᗮ := by
-  intro u hu
-  rw [inner_sub_right, sub_eq_zero]
-  exact h ⟨u, hu⟩
+    x - y ∈ Kᗮ := Submodule.sub_mem_orthogonal_of_inner_right h
 
 variable (K)
 
@@ -485,17 +441,8 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 /-- `Kᗮ` can be characterized as the intersection of the kernels of the operations of
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
-  apply le_antisymm
-  · rw [le_iInf_iff]
-    rintro ⟨v, hv⟩ w hw
-    simpa using hw _ hv
-  · intro v hv w hw
-    rw [Submodule.mem_iInf] at hv
-    exact hv ⟨w, hw⟩
-
-/-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
-instance [CompleteSpace E] : CompleteSpace Kᗮ :=
-  Kᗮ.isClosed.completeSpace_coe
+  ext
+  simpa using mem_orthogonal_iff _ _
 
 variable (𝕜 E)
 
@@ -504,8 +451,8 @@ variable (𝕜 E)
 theorem orthogonal_gc :
     @GaloisConnection (ClosedSubmodule 𝕜 E) (ClosedSubmodule 𝕜 E)ᵒᵈ _ _ orthogonal orthogonal :=
   fun _K₁ _K₂ =>
-  ⟨fun h _v hv _u hu => inner_left_of_mem_orthogonal hv (h hu), fun h _v hv _u hu =>
-    inner_left_of_mem_orthogonal hv (h hu)⟩
+  ⟨fun h _v hv _u hu => Submodule.inner_left_of_mem_orthogonal hv (h hu), fun h _v hv _u hu =>
+    Submodule.inner_left_of_mem_orthogonal hv (h hu)⟩
 
 variable {𝕜 E}
 
@@ -542,32 +489,27 @@ theorem bot_orthogonal_eq_top : (⊥ : ClosedSubmodule 𝕜 E)ᗮ = ⊤ := by ex
 @[simp]
 theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   refine
-    ⟨?_, by
-      rintro rfl
-      exact bot_orthogonal_eq_top⟩
+    ⟨?_, by rintro rfl; exact bot_orthogonal_eq_top⟩
   intro h
   have : K ⊓ Kᗮ = ⊥ := K.orthogonal_disjoint.eq_bot
   rwa [h, inf_comm, top_inf_eq] at this
 
-/-- The closure of a submodule has the same orthogonal complement as the submodule itself. -/
+/-- The orthogonal complement of the closure of a submodule (as a `Submodule`) is equal to
+the orthogonal complement. -/
 @[simp]
-lemma orthogonal_closure (K : Submodule 𝕜 E) : K.closureᗮ = Kᗮ.closure := by
-  apply le_antisymm
-  · intro x hx
-    suffices h : x ∈ Kᗮ by
-      exact subset_closure h
-    simp only [orthogonal_toSubmodule_eq] at hx
-    apply (Submodule.mem_orthogonal K x).mpr
-    intro y hy
-    rw [Submodule.mem_orthogonal _ x] at hx
-    apply hx
-    exact subset_closure hy
-  · intro x hx
-    apply (Submodule.mem_orthogonal _ x).mpr
-    intro y hy
-    rw [← Submodule.mem_closure_iff', Submodule.mem_closure_iff,
-      IsClosed.submodule_topologicalClosure_eq (Submodule.isClosed_orthogonal K)] at hx
-    apply (Submodule.orthogonal_closure' K x).mp (fun y a ↦ hx y a)
-    exact hy
+lemma orthogonal_closure (K : Submodule 𝕜 E) : (K.closure : Submodule 𝕜 E)ᗮ = Kᗮ := by
+  rw [← Submodule.orthogonal_closure K]
+  congr
+
+/-- The orthogonal complement of the closure of a submodule (as a `ClosedSubmodule`) is equal to
+the orthogonal complement. -/
+lemma orthogonal_closure' (K : Submodule 𝕜 E) : K.closureᗮ = ⟨Kᗮ, K.isClosed_orthogonal⟩ := by
+  ext x; simp
+
+/-- The orthogonal complement of the closure of a submodule (as a `ClosedSubmodule`) is equal to
+the closure of the orthogonal complement. -/
+lemma orthogonal_closure'' (K : Submodule 𝕜 E) : K.closureᗮ = Kᗮ.closure := by
+  rw [Submodule.closure_eq' K.isClosed_orthogonal]
+  exact orthogonal_closure' K
 
 end ClosedSubmodule

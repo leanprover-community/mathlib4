@@ -315,8 +315,8 @@ namespace Subgroup
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
   coe_injective' p q h := by
-    obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
-    obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
+    obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
+    obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
