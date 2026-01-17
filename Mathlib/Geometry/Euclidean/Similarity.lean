@@ -148,3 +148,85 @@ theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :
   ⟨h.angle_eq, h.comm_left.comm_right.angle_eq, h.comm_right.comm_left.angle_eq⟩
 
 end EuclideanGeometry
+
+namespace Orientation
+open Module EuclideanGeometry
+variable {ι V₁ V₂ P₁ P₂ : Type*}
+  [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+  [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
+  [MetricSpace P₁] [MetricSpace P₂]
+  [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
+  [Fact (finrank ℝ V₁ = 2)] [Fact (finrank ℝ V₂ = 2)]
+  [Oriented ℝ V₁ (Fin 2)][Oriented ℝ V₂ (Fin 2)]
+  {v₁ : ι → P₁} {v₂ : ι → P₂}
+  {a b c : P₁} {a' b' c' : P₂}
+
+theorem similar_of_oangle_oangle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : ∡ a b c = ∡ a' b' c')
+    (h₂ : ∡ b c a = ∡ b' c' a') : ![a, b, c] ∼ ![a', b', c'] := by
+  have h_ne_ab : a ≠ b := ne₁₂_of_not_collinear h_not_col
+  have h_ne_bc : b ≠ c := ne₂₃_of_not_collinear h_not_col
+  have h_ne_ac : a ≠ c := ne₁₃_of_not_collinear h_not_col
+  have h_not_col2: ¬ Collinear ℝ ({a', b', c'} : Set P₂) := by
+    rw [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h₁, oangle_eq_zero_or_eq_pi_iff_collinear]
+    exact h_not_col
+  have h_ne_a'b' : a' ≠ b' := ne₁₂_of_not_collinear h_not_col2
+  have h_ne_b'c' : b' ≠ c' := ne₂₃_of_not_collinear h_not_col2
+  have h_ne_a'c' : a' ≠ c' := ne₁₃_of_not_collinear h_not_col2
+  apply similar_of_angle_angle h_not_col
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_ab h_ne_bc.symm,
+      EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_a'b' h_ne_b'c'.symm, h₁]
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_bc h_ne_ac,
+      EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_b'c' h_ne_a'c', h₂]
+
+theorem similar_of_oangle_oangle_neg (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h₁ : ∡ a b c = -∡ a' b' c') (h₂ : ∡ b c a = -∡ b' c' a') : ![a, b, c] ∼ ![a', b', c'] := by
+  have h_ne_ab : a ≠ b := ne₁₂_of_not_collinear h_not_col
+  have h_ne_bc : b ≠ c := ne₂₃_of_not_collinear h_not_col
+  have h_ne_ac : a ≠ c := ne₁₃_of_not_collinear h_not_col
+  rw [← neg_eq_iff_eq_neg] at h₁ h₂
+
+  have h_not_col2: ¬ Collinear ℝ ({a', b', c'} : Set P₂) := by
+    rw [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h₁, ← EuclideanGeometry.oangle_rev,
+      EuclideanGeometry.oangle_eq_zero_iff_oangle_rev_eq_zero,
+      EuclideanGeometry.oangle_eq_pi_iff_oangle_rev_eq_pi, oangle_eq_zero_or_eq_pi_iff_collinear]
+    exact h_not_col
+  have h_ne_a'b' : a' ≠ b' := ne₁₂_of_not_collinear h_not_col2
+  have h_ne_b'c' : b' ≠ c' := ne₂₃_of_not_collinear h_not_col2
+  have h_ne_a'c' : a' ≠ c' := ne₁₃_of_not_collinear h_not_col2
+  apply similar_of_angle_angle h_not_col
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_ab h_ne_bc.symm,
+      EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_a'b' h_ne_b'c'.symm, ← h₁]
+    simp only [Real.Angle.abs_toReal_neg]
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_bc h_ne_ac,
+      EuclideanGeometry.angle_eq_abs_oangle_toReal h_ne_b'c' h_ne_a'c', ← h₂]
+    simp only [Real.Angle.abs_toReal_neg]
+
+theorem similar_of_side_oangle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h_not_col' : ¬ Collinear ℝ {a', b', c'}) (h : ∡ a b c = ∡ a' b' c')
+    (hd : dist a b * dist b' c' = dist b c * dist a' b') :
+    ![a, b, c] ∼ ![a', b', c'] := by
+  refine similar_of_side_angle_side h_not_col h_not_col' ?_ hd
+  rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+    (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+    (ne₁₂_of_not_collinear h_not_col') (ne₂₃_of_not_collinear h_not_col').symm, h]
+
+theorem similar_of_side_oangle_neg_side (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h_not_col' : ¬ Collinear ℝ {a', b', c'}) (h : ∡ a b c = -∡ a' b' c')
+    (hd : dist a b * dist b' c' = dist b c * dist a' b') :
+    ![a, b, c] ∼ ![a', b', c'] := by
+  refine similar_of_side_angle_side h_not_col h_not_col' ?_ hd
+  rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+    (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+    (ne₁₂_of_not_collinear h_not_col') (ne₂₃_of_not_collinear h_not_col').symm, h,
+    Real.Angle.abs_toReal_neg]
+
+theorem _root_.Similar.oangle_eq_or_neg (h : ![a, b, c] ∼ ![a', b', c'])
+    (h_not_col : ¬ Collinear ℝ {a, b, c}) : ∡ a b c = ∡ a' b' c' ∨ ∡ a b c = -∡ a' b' c' := by
+  have h1 := h.angle_eq
+  have h_not_col2: ¬ Collinear ℝ ({a', b', c'} : Set P₂) := by
+    rw [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h₁, oangle_eq_zero_or_eq_pi_iff_collinear]
+    exact h_not_col
+  sorry
+
+
+end Orientation
