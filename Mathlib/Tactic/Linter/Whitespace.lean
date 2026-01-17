@@ -319,8 +319,8 @@ If, however, the linter finds an error somewhere in the file, then it sets `gitM
 `some true` anyway, since a file with an error is likely a file being modified and hence a file
 where running this linter is probably expected.
 -/
---  TODO: if this works well with the `whitespace` linter, then switch more linters towards
---  using `gitModifiedRef`.
+-- TODO: if this works well with the `whitespace` linter, switch more linters towards
+-- using `gitModifiedRef`.
 initialize gitModifiedRef : IO.Ref (Option Bool) ← IO.mkRef none
 
 /--
