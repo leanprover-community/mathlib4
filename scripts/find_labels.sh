@@ -52,11 +52,13 @@ yr_mth="${2}" #"$(date +%Y-%m)"
 yr_mth_day=${yr_mth}-01
 
 start_date="${yr_mth_day}T00:00:00"
-end_date="$(date -d "${yr_mth_day} + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
+#end_date="$(date -d "${yr_mth_day} + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
+end_date="$(date -d "${yr_mth_day} + 2 weeks" +%Y-%m-%d)T23:59:59"
 
 mth="$(date -d "${yr_mth_day}" '+%B')"
 prev_mth="$(date -d "${yr_mth_day} - 1 day" '+%B')"
-next_mth="$(date -d "${yr_mth_day} + 1 month" '+%B')"
+#next_mth="$(date -d "${yr_mth_day} + 1 month" '+%B')"
+next_mth="$(date -d "${yr_mth_day} + 2 weeks" '+%B')"
 
 commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
 
