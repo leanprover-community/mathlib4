@@ -222,7 +222,7 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
-theorem constantCoeff_subst_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
+theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
   rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]
   intro d
