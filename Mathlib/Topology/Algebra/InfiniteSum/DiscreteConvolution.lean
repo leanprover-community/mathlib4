@@ -147,7 +147,6 @@ set_option backward.privateInPublic true in
 private def mulTripleAntidiagonal (s t u : Set S) (a : S) : Set (S × S × S) :=
   {x | x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a}
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private theorem mem_mulTripleAntidiagonal {s t u : Set S} {a : S} {x : S × S × S} :
     x ∈ mulTripleAntidiagonal s t u a ↔
