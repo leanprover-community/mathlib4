@@ -429,6 +429,11 @@ def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm 
   mul_le'   := norm_mul_le
   neg'      := norm_neg
 
+@[simp]
+theorem SeminormedRing.toRingSeminorm_apply (R : Type*) [SeminormedRing R] (x : R) :
+    (SeminormedRing.toRingSeminorm R) x = ‖x‖ :=
+  rfl
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedRing`, as a `RingNorm`. -/
 @[simps]

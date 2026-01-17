@@ -46,8 +46,10 @@ variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
 
 namespace Polynomial
 
-/-- The sup norm of a polynomial on a semi-normed space, defined as the maximum of its coefficients
-(or `0` when `q = 0`). Often called the _(naive) height_ of the polynomial. -/
+/-- The sup norm of a polynomial on a semi-normed ring, defined as the maximum of its coefficients.
+Often called the _(naive) height_ of the polynomial.
+
+This is defined in terms of `Polynomial.guassNorm`. -/
 noncomputable def supNorm : ℝ := p.gaussNorm (SeminormedRing.toRingSeminorm A) 1
 
 /-- The direct definition of the supNorm -/
@@ -55,55 +57,41 @@ lemma supNorm_def' : p.supNorm =
     if hp : p.support.Nonempty then p.support.sup' hp (norm ∘ p.coeff) else 0 := by
   split_ifs with h
   · simp only [supNorm, gaussNorm, h, ↓reduceDIte, one_pow, mul_one, Function.comp_apply]
-    have : (fun x => SeminormedRing.toRingSeminorm A (p.coeff x)) = fun x => ‖p.coeff x‖ := by rfl
-    rw [this]
+    congr
   · simp [supNorm, gaussNorm, h]
 
 @[simp]
-lemma supNorm_zero : (0 : A[X]).supNorm = 0 := gaussNorm_zero _ _
+lemma supNorm_zero : (0 : A[X]).supNorm = 0 := gaussNorm_zero ..
 
 lemma supNorm_nonneg : 0 ≤ p.supNorm := by
   apply gaussNorm_nonneg
   norm_num
 
 @[simp]
-lemma supNorm_C {a : A} : (C a).supNorm = ‖a‖ := by
-  apply gaussNorm_C
+lemma supNorm_C {a : A} : (C a).supNorm = ‖a‖ := gaussNorm_C ..
 
 @[simp]
 lemma supNorm_monomial (n : ℕ) {a : A} : (monomial n a).supNorm = ‖a‖ := by
   by_cases ha : a = 0
   · simp [ha]
   · simp [supNorm, gaussNorm, support_monomial n ha]
-    norm_cast
 
 @[simp]
 lemma supNorm_X [NormOneClass A] : (X : A[X]).supNorm = 1 := by
-  rw [show (X : A[X]) = monomial 1 1 from rfl, supNorm_monomial, norm_one]
+  rw [← monomial_one_one_eq_X, supNorm_monomial, norm_one]
 
 lemma le_supNorm (i : ℕ) : ‖p.coeff i‖ ≤ p.supNorm := by
-  have := le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
-  simpa using this
+  simpa using le_gaussNorm (SeminormedRing.toRingSeminorm A) p (by norm_num : (0 : ℝ) ≤ 1) i
 
 lemma exists_eq_supNorm : ∃ i : ℕ, p.supNorm = ‖p.coeff i‖ := by
-  obtain ⟨i, hi⟩ := p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
-  use i
-  simpa using hi
+  simpa using p.exists_eq_gaussNorm (SeminormedRing.toRingSeminorm A) 1
+
+lemma isGreatest_supNorm : IsGreatest (Set.range (‖p.coeff ·‖)) p.supNorm :=
+  ⟨by simpa [eq_comm] using exists_eq_supNorm p, by simpa [mem_upperBounds] using le_supNorm p⟩
 
 /-- The supNorm can also be defined with an iSup. Note that this uses the fact that `norm` is both
 a `ZeroHom` and `NonnegHom` so is not _a priori_ true from the `gaussNorm` definition. -/
-lemma supNorm_eq_iSup : p.supNorm = ⨆ i, ‖p.coeff i‖ := by
-  apply le_antisymm
-  · obtain ⟨i, hi⟩ := exists_eq_supNorm p
-    calc p.supNorm
-      _ = ‖p.coeff i‖ := hi
-      _ ≤ ⨆ j, ‖p.coeff j‖ := le_ciSup ⟨p.supNorm, by
-          intro x hx
-          obtain ⟨j, rfl⟩ := hx
-          exact le_supNorm p j⟩ i
-  · apply ciSup_le
-    intro i
-    exact le_supNorm p i
+lemma supNorm_eq_iSup : p.supNorm = ⨆ i, ‖p.coeff i‖ := p.isGreatest_supNorm.csSup_eq.symm
 
 end Polynomial
 end supnorm_seminorm
@@ -114,13 +102,7 @@ namespace Polynomial
 
 variable {A : Type*} [NormedRing A] (p : Polynomial A)
 
-lemma supNorm_eq_zero_iff : p.supNorm = 0 ↔ p = 0 := by
-  unfold supNorm
-  apply gaussNorm_eq_zero_iff
-  · intro x hx
-    rw [show SeminormedRing.toRingSeminorm A x = ‖x‖ by rfl] at hx
-    exact norm_eq_zero.mp hx
-  · norm_num
+lemma supNorm_eq_zero_iff : p.supNorm = 0 ↔ p = 0 := gaussNorm_eq_zero_iff _ _ (by simp) (by simp)
 
 end Polynomial
 
