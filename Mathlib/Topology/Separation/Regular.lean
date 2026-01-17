@@ -549,8 +549,6 @@ instance [NormalSpace X] : NormalSpace (SeparationQuotient X) where
 
 end SeparationQuotient
 
-variable (X)
-
 end Normality
 
 section CompletelyNormal
