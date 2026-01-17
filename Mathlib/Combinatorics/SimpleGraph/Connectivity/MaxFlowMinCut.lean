@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026. All rights reserved.
+Copyright (c) 2026 Julius Tranquilli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julius Tranquilli
 -/
@@ -55,22 +55,24 @@ def netOut (v : V) : α := ∑ u, f.val v u
 def value : α := f.netOut s
 
 /-- For a set `S` of vertices, the total flow leaving `S`. -/
-def cutValue (S : Finset V) : α := ∑ u in S, ∑ v in Sᶜ, f.val u v
+def cutValue (S : Finset V) : α := ∑ u ∈ S, ∑ v ∈ Sᶜ, f.val u v
 
 /-- For a set `S` of vertices, the total capacity leaving `S`. -/
 def cutCapacity (S : Finset V) : α := by
   classical
-  exact ∑ u in S, ∑ v in Sᶜ, if G.Adj u v then c s(u, v) else 0
+  exact ∑ u ∈ S, ∑ v ∈ Sᶜ, if G.Adj u v then c s(u, v) else 0
 
+omit [DecidableEq V] [IsOrderedAddMonoid α] in
 lemma value_def : f.value = ∑ v, f.val s v := rfl
 
+omit [DecidableEq V] [IsOrderedAddMonoid α] in
 lemma netOut_def (v : V) : f.netOut v = ∑ u, f.val v u := rfl
 
 private lemma sum_sum_skew_eq_zero (S : Finset V) :
-    (∑ u in S, ∑ v in S, f.val u v) = 0 := by
+    (∑ u ∈ S, ∑ v ∈ S, f.val u v) = 0 := by
   classical
   have hrewrite :
-      (∑ u in S, ∑ v in S, f.val u v) = ∑ p in S ×ˢ S, f.val p.1 p.2 := by
+      (∑ u ∈ S, ∑ v ∈ S, f.val u v) = ∑ p ∈ S ×ˢ S, f.val p.1 p.2 := by
     simpa using
       (Finset.sum_product' (s := S) (t := S) (f := fun u v => f.val u v)).symm
   refine hrewrite.trans ?_
@@ -95,7 +97,7 @@ private lemma sum_sum_skew_eq_zero (S : Finset V) :
 lemma value_eq_cutValue (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
     f.value = f.cutValue S := by
   classical
-  have h_other : (∑ v in S.erase s, f.netOut v) = 0 := by
+  have h_other : (∑ v ∈ S.erase s, f.netOut v) = 0 := by
     refine Finset.sum_eq_zero ?_
     intro v hv
     have hv' : v ≠ s ∧ v ∈ S := Finset.mem_erase.mp hv
@@ -103,22 +105,23 @@ lemma value_eq_cutValue (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
       intro hvt
       exact ht (hvt ▸ hv'.2)
     simpa [Flow.netOut, netOut] using f.conserve v hv'.1 hv_ne_t
-  have hsum : f.netOut s = ∑ v in S, f.netOut v := by
+  have hsum : f.netOut s = ∑ v ∈ S, f.netOut v := by
     have h := (Finset.sum_erase_add (s := S) (a := s) (f := fun v => f.netOut v) hs)
     -- `h : (∑ v in S.erase s, netOut v) + netOut s = ∑ v in S, netOut v`.
     -- The first summand is `0` by conservation away from `s` and `t`.
     simpa [h_other, Flow.netOut, netOut, f.netOut_def] using h
   have hsplit :
-      (∑ v in S, f.netOut v) = (∑ u in S, ∑ v in S, f.val u v) + (∑ u in S, ∑ v in Sᶜ, f.val u v) := by
+      (∑ v ∈ S, f.netOut v) =
+        (∑ u ∈ S, ∑ v ∈ S, f.val u v) + (∑ u ∈ S, ∑ v ∈ Sᶜ, f.val u v) := by
     -- Split the inner sum over `univ` as `S + Sᶜ`.
     simpa [Flow.netOut, netOut, Finset.sum_add_sum_compl, Finset.sum_add_distrib, Finset.sum_sum,
-      add_comm, add_left_comm, add_assoc] using congrArg (fun x => (∑ u in S, x u))
+      add_comm, add_left_comm, add_assoc] using congrArg (fun x => (∑ u ∈ S, x u))
         (funext fun u => (Finset.sum_add_sum_compl (s := S) (f := fun v => f.val u v)).symm)
   -- Internal edges cancel by skew-symmetry.
   calc
     f.value = f.netOut s := rfl
-    _ = ∑ v in S, f.netOut v := hsum
-    _ = (∑ u in S, ∑ v in S, f.val u v) + (∑ u in S, ∑ v in Sᶜ, f.val u v) := hsplit
+    _ = ∑ v ∈ S, f.netOut v := hsum
+    _ = (∑ u ∈ S, ∑ v ∈ S, f.val u v) + (∑ u ∈ S, ∑ v ∈ Sᶜ, f.val u v) := hsplit
     _ = 0 + f.cutValue S := by
           simp [Flow.cutValue, cutValue, f.sum_sum_skew_eq_zero S]
     _ = f.cutValue S := by simp
@@ -138,7 +141,7 @@ lemma cutValue_le_cutCapacity (S : Finset V) : f.cutValue S ≤ f.cutCapacity S 
 /-- Weak duality: the value of any flow is bounded by the capacity of any `s`-`t` cut. -/
 theorem value_le_cutCapacity (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
     f.value ≤ f.cutCapacity S := by
-  simpa [f.value_eq_cutValue S hs ht] using f.cutValue_le_cutCapacity (S := S)
+  simp [f.value_eq_cutValue S hs ht] using f.cutValue_le_cutCapacity (S := S)
 
 end Flow
 
