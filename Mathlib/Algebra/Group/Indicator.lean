@@ -196,11 +196,7 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
 
 end Group
 
-end Set
-
 /-! ### Relationship with Pi.mulSingle/Pi.single -/
-
-namespace Pi
 
 variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
 
@@ -212,7 +208,7 @@ theorem mulIndicator_singleton_eq_mulSingle (i : ι) (x : M) :
   ext j
   simp only [Set.mulIndicator_apply, Pi.mulSingle_apply, Set.mem_singleton_iff]
 
-end Pi
+end Set
 
 @[to_additive]
 theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
