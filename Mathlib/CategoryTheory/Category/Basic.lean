@@ -203,7 +203,6 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
 
 attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
-attribute [instance high] Category.toCategoryStruct
 
 initialize_simps_projections Category (-Hom)
 
