@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Algebra.BigOperators.CauchyProduct
 
 /-!
 # Discrete Convolution
@@ -80,11 +79,7 @@ Differences (discrete ↔ MeasureTheory):
   - `mulFiber_eq_mulAntidiagonal` / `addFiber_eq_antidiagonal`: fiber equals antidiagonal
   - `convolution_eq_sum_mulAntidiagonal` / `addConvolution_eq_sum_antidiagonal`:
     `tsum` reduces to `Finset.sum`
-  - `ringConvolution_eq_mulCauchyProduct` / `addRingConvolution_eq_cauchyProduct`:
-    bridge to `MulCauchyProduct` / `CauchyProduct`
-  - `ringConvolution_single_one_left/right`: identity via `Pi.single` (matches CauchyProduct)
-- MulCauchyProduct / CauchyProduct (see `Mathlib.Algebra.BigOperators.CauchyProduct`):
-  - Purely algebraic finite-sum convolution (no topology needed)
+  - `ringConvolution_single_one_left/right`: identity via `Pi.single`
 
 ## Notation
 
@@ -732,15 +727,9 @@ For types with `Finset.HasMulAntidiagonal` or `Finset.HasAntidiagonal`, the fibe
 and equals the (multiplicative or additive) antidiagonal. The `tsum` reduces to `Finset.sum`.
 
 The multiplicative versions use `Finset.mulAntidiagonal`, and the additive versions
-(generated via `@[to_additive]`) use `Finset.antidiagonal`.
-
-This also provides the bridge to `MulCauchyProduct`/`CauchyProduct`: ring convolution equals
-the corresponding CauchyProduct for these types.
-See `Mathlib.Algebra.BigOperators.CauchyProduct`. -/
+(generated via `@[to_additive]`) use `Finset.antidiagonal`. -/
 
 section MulAntidiagonal
-
-open scoped MulCauchyProduct
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable [CommSemiring S] [AddCommMonoid E] [Module S E]
@@ -782,13 +771,6 @@ lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
   convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
-/-- `ringConvolution` (`⋆ᵣ`) equals `MulCauchyProduct.apply` (`⋆ᶜ`) for `HasMulAntidiagonal`. -/
-@[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
-  /-- `addRingConvolution` (`⋆ᵣ₊`) equals `CauchyProduct.apply` (`⋆ᶜ₊`) for `HasAntidiagonal`. -/]
-lemma ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
-    (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
-  ringConvolution_eq_sum_mulAntidiagonal f g x
-
 section PiSingleOneEqIndicator
 
 variable {M : Type*} [DecidableEq M] [One M]
@@ -808,15 +790,13 @@ section RingConvolutionPiSingleOne
 variable {M : Type*} [Monoid M] [DecidableEq M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
-/-- Left identity: `Pi.single 1 1 ⋆ᵣ f = f` for `HasMulAntidiagonal` types.
-This matches `MulCauchyProduct.one_mul`. -/
+/-- Left identity: `Pi.single 1 1 ⋆ᵣ f = f` for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_single_zero_left
   /-- Left identity for additive ring convolution with `HasAntidiagonal`. -/]
 lemma ringConvolution_single_one_left (f : M → R) : Pi.single 1 (1 : R) ⋆ᵣ f = f := by
   rw [piSingle_one_eq_indicator]; exact ringConvolution_indicator_one_left f
 
-/-- Right identity: `f ⋆ᵣ Pi.single 1 1 = f` for `HasMulAntidiagonal` types.
-This matches `MulCauchyProduct.mul_one`. -/
+/-- Right identity: `f ⋆ᵣ Pi.single 1 1 = f` for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_single_zero_right
   /-- Right identity for additive ring convolution with `HasAntidiagonal`. -/]
 lemma ringConvolution_single_one_right (f : M → R) : f ⋆ᵣ Pi.single 1 (1 : R) = f := by
