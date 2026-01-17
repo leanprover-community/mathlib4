@@ -149,6 +149,7 @@ theorem prodMk {g : E → G} (hf : ContDiffPointwiseHolderAt k α f a)
       simp only [ContinuousMultilinearMap.opNorm_prod, ← Prod.norm_mk]
       exact (hf.isBigO.prod_left hg.isBigO).norm_left
 
+variable (a) in
 /-- Composition of two $C^{k+(α)}$ functions is a $C^{k+(α)}$ function,
 provided that one of them is differentiable.
 
@@ -188,11 +189,22 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
       · exact isBoundedUnder_const
       · exact (hf.of_order_le hi).isBigO
 
+variable (a) in
 /-- Composition of two $C^{k+(α)}$ functions, `k ≠ 0`, is a $C^{k+(α)}$ function. -/
 theorem comp {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
     (hf : ContDiffPointwiseHolderAt k α f a) (hk : k ≠ 0) :
     ContDiffPointwiseHolderAt k α (g ∘ f) a :=
-  hg.comp_of_differentiableAt hf (.inl <| hg.differentiableAt hk)
+  hg.comp_of_differentiableAt a hf (.inl <| hg.differentiableAt hk)
+
+variable (a) in
+theorem comp₂_of_differentiableAt {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    {g : F × G → H} {f₁ : E → F} {f₂ : E → G} (hg : ContDiffPointwiseHolderAt k α g (f₁ a, f₂ a))
+    (hf₁ : ContDiffPointwiseHolderAt k α f₁ a) (hf₂ : ContDiffPointwiseHolderAt k α f₂ a)
+    (hdiff : DifferentiableAt ℝ g (f₁ a, f₂ a) ∨
+      DifferentiableAt ℝ f₁ a ∧ DifferentiableAt ℝ f₂ a) :
+    ContDiffPointwiseHolderAt k α (fun x ↦ g (f₁ x, f₂ x)) a :=
+  hg.comp_of_differentiableAt a (hf₁.prodMk hf₂) <| hdiff.imp_right fun h ↦
+    h.left.prodMk h.right
 
 theorem _root_.ContinuousLinearMap.contDiffPointwiseHolderAt (f : E →L[ℝ] F) :
     ContDiffPointwiseHolderAt k α f a :=
@@ -204,7 +216,7 @@ theorem _root_.ContinuousLinearEquiv.contDiffPointwiseHolderAt (f : E ≃L[ℝ] 
 
 theorem continuousLinearMap_comp (hf : ContDiffPointwiseHolderAt k α f a) (g : F →L[ℝ] G) :
     ContDiffPointwiseHolderAt k α (g ∘ f) a :=
-  g.contDiffPointwiseHolderAt.comp_of_differentiableAt hf <| .inl g.differentiableAt
+  g.contDiffPointwiseHolderAt.comp_of_differentiableAt a hf <| .inl g.differentiableAt
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.contDiffPointwiseHolderAt_left_comp (g : F ≃L[ℝ] G) :
@@ -254,6 +266,6 @@ theorem clm_apply {f : E → F →L[ℝ] G} {g : E → F} (hf : ContDiffPointwis
     (hg : ContDiffPointwiseHolderAt k α g a) :
     ContDiffPointwiseHolderAt k α (fun x ↦ f x (g x)) a :=
   (contDiffAt_fst.clm_apply contDiffAt_snd).contDiffPointwiseHolderAt (WithTop.coe_lt_top _) _
-    |>.comp_of_differentiableAt (hf.prodMk hg) <| .inl (by fun_prop)
+    |>.comp₂_of_differentiableAt a hf hg <| .inl (by fun_prop)
 
 end ContDiffPointwiseHolderAt
