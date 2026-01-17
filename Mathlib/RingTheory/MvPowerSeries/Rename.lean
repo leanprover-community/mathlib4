@@ -90,7 +90,7 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
   rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h', mul_zero]
 
 /-- Rename all the variables in a multivariable power series by an embedding, as an `AlgHom`. -/
-@[simps] def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
+def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
@@ -100,6 +100,8 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
     nth_rw 1 [← add_zero (0 : (τ →₀ ℕ) → R), Function.extend_add]
   commutes' := renameFun_monomial f 0
 }
+
+theorem rename_apply {p : MvPowerSeries σ R} : rename f p = renameFun f p := rfl
 
 @[simp]
 theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := renameFun_monomial f 0 r
@@ -113,8 +115,8 @@ theorem map_rename (F : R →+* S) (p : MvPowerSeries σ R) :
   ext x
   by_cases h : x ∈ Set.range (embDomain f)
   · rcases h with ⟨_, rfl⟩
-    simp
-  simp [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h]
+    simp [rename_apply]
+  simp [rename_apply, coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h]
 
 @[simp]
 theorem rename_rename (g : τ ↪ α) (p : MvPowerSeries σ R) :
@@ -141,7 +143,7 @@ lemma rename_comp_rename (g : τ ↪ α) :
 
 @[simp]
 theorem rename_id : rename (Function.Embedding.refl _) = AlgHom.id R (MvPowerSeries σ R) :=
-  AlgHom.ext fun p ↦ by simp [renameFun]
+  AlgHom.ext fun p ↦ by simp [rename_apply, renameFun]
 
 lemma rename_id_apply (p : MvPowerSeries σ R) :
     rename (Function.Embedding.refl _) p = p := by simp
@@ -189,7 +191,7 @@ theorem killComplFun_mul (p q : MvPowerSeries τ R) :
       embDomain_injective f⟩)))]
 
 /-- The `AlgHom` version of `killComplFun`. -/
-@[simps] def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
+def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial_embDomain f 0 1
   map_mul' := killComplFun_mul f
@@ -198,13 +200,16 @@ theorem killComplFun_mul (p q : MvPowerSeries τ R) :
   commutes' := by simpa using killComplFun_monomial_embDomain f 0
 }
 
+lemma killCompl_apply (p : MvPowerSeries τ R) :
+    killCompl f p = killComplFun f p := rfl
+
 lemma killCompl_C (r : R) : killCompl f (C r) = C r := by
   simpa using killComplFun_monomial_embDomain f 0 r
 
 theorem killCompl_X (i : σ) : killCompl (R := R) f (X (f i)) = X i := by
   classical
   ext
-  simp [coeff_killComplFun, coeff_X, ← embDomain_single]
+  simp [killCompl_apply, coeff_killComplFun, coeff_X, ← embDomain_single]
 
 theorem killCompl_X_eq_zero_of_notMem_range {t} (h : t ∉ Set.range f) :
     killCompl (R := R) f (X t) = 0 := by
@@ -216,7 +221,7 @@ theorem killCompl_X_eq_zero_of_notMem_range {t} (h : t ∉ Set.range f) :
   simp [embDomain_notin_range _ _ _ h] at h'
 
 theorem killCompl_comp_rename : (killCompl f).comp (rename f) = AlgHom.id R _ := by
-  ext; simp [coeff_killComplFun]
+  ext; simp [rename_apply, killCompl_apply, coeff_killComplFun]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl f (rename f p) = p :=
@@ -229,8 +234,8 @@ variable (R)
 def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R := {
   rename e with
   invFun := rename e.symm
-  left_inv _ := by simp [-rename_apply]
-  right_inv _ := by simp [-rename_apply]
+  left_inv _ := by simp
+  right_inv _ := by simp
 }
 
 @[simp]
