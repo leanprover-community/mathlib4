@@ -69,6 +69,9 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 noncomputable def algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
 
+@[deprecated (since := "2025-12-15")]
+alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
+
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
     (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
