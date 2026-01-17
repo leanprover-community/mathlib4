@@ -1143,7 +1143,7 @@ theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding 
     left_inv _ := rfl
     right_inv _ := rfl
     continuous_toFun := continuous_toPiNat <| fun i ↦ continuous_distDenseSeq i
-    continuous_invFun := continuous_distDenseSeq_inv}
+    continuous_invFun := continuous_distDenseSeq_inv }
   let secondstep : PiNatEmbed X (fun i => I) (distDenseSeq X) → ℕ → I := embed _ _ _
   let isEmbedding_secondstep : IsEmbedding secondstep :=
       (isUniformEmbedding_embed injective_distDenseSeq).isEmbedding

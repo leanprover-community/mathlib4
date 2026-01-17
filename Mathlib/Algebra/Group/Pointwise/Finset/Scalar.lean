@@ -340,38 +340,12 @@ theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Fi
 
 end SMul
 
-
-section IsRightCancelMul
-
-variable [Mul α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
-
-
-end IsRightCancelMul
-
-section CancelMonoid
-variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
-
-
-end CancelMonoid
-
-section Group
-variable [Group α] [DecidableEq α] {s t : Finset α}
-
-
-end Group
-
 @[to_additive]
 theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
     (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
   image_comm
 
 end Finset
-
-namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-  [∀ i, DecidableEq (α i)]
-
-end Fintype
 
 open Pointwise
 
