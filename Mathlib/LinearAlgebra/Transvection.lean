@@ -265,8 +265,8 @@ theorem one_mem_dilatransvections : 1 ∈ dilatransvections R V :=
 @[simp]
 theorem symm_mem_dilatransvections_iff {e : V ≃ₗ[R] V} :
     e.symm ∈ dilatransvections R V ↔ e ∈ dilatransvections R V := by
-  suffices ∀ e ∈ dilatransvections R V, e.symm ∈ dilatransvections R V by
-    refine ⟨by simpa using this e.symm, this e⟩
+  suffices ∀ e ∈ dilatransvections R V, e.symm ∈ dilatransvections R V from
+    ⟨by simpa using this e.symm, this e⟩
   rintro e ⟨f, v, he⟩
   use f, - e.symm v
   ext x

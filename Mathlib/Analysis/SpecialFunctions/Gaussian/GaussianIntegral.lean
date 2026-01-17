@@ -71,7 +71,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
       · refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
         exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
-        change ContinuousWithinAt ((fun x => exp (-x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
+        rw [← Function.comp_def (fun x => exp (-x)) (· ^ p)]
         refine ContinuousAt.comp_continuousWithinAt (h_exp _) ?_
         exact continuousWithinAt_id.rpow_const (Or.inr (le_of_lt (lt_trans zero_lt_one hp)))
     · have h_rpow : ∀ (x r : ℝ), x ∈ Ici 1 → ContinuousWithinAt (fun x => x ^ r) (Ici 1) x := by
@@ -80,7 +80,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤
         exact ne_of_gt (lt_of_lt_of_le zero_lt_one hx)
       refine integrable_of_isBigO_exp_neg (by simp : (0 : ℝ) < 1 / 2)
         (ContinuousOn.mul (fun x hx => h_rpow x s hx) (fun x hx => ?_)) (IsLittleO.isBigO ?_)
-      · change ContinuousWithinAt ((fun x => exp (-x)) ∘ (fun x => x ^ p)) (Ici 1) x
+      · rw [← Function.comp_def (fun x => exp (-x)) (· ^ p)]
         exact ContinuousAt.comp_continuousWithinAt (h_exp _) (h_rpow x p hx)
       · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by simp : (0 : ℝ) < 1) using 3
         rw [neg_mul, one_mul]

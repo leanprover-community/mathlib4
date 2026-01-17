@@ -614,8 +614,6 @@ def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
 
 open BigOperators
 
-
-
 end GradedRing
 
 end ModularForm

@@ -496,7 +496,7 @@ lemma Module.FinitePresentation.exists_notMem_bijective [Module.Finite R M]
     (hf : Function.Bijective (IsLocalizedModule.map p.primeCompl fM fN f)) :
     ∃ (g : R), g ∉ p ∧ Function.Bijective (LocalizedModule.map (Submonoid.powers g) f) := by
   obtain ⟨g, hg, h⟩ := exists_bijective_map_powers p.primeCompl fM fN f hf
-  exact ⟨g, hg, h g (by rfl)⟩
+  exact ⟨g, hg, h g dvd_rfl⟩
 
 open IsLocalizedModule in
 /--

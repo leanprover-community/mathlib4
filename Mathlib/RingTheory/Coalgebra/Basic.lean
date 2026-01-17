@@ -330,7 +330,8 @@ theorem comul_comp_lsingle (i : ι) :
 
 theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A i) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
-  ext j; have := eq_or_ne i j
+  ext j
+  have := eq_or_ne i j
   aesop (add simp [TensorProduct.map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A i →ₗ[R] _) = counit := by

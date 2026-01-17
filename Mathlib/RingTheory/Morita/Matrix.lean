@@ -144,7 +144,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
   toFun m i := ⟨single j i (1 : R) • m, single j i (1 : R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
-  map_add' _ _ := by simpa using funext fun _ ↦ by rfl
+  map_add' _ _ := by ext; simp
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     haveI := MatrixModCat.isScalarTower_toModuleCat R M
@@ -163,7 +163,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     ext i
     simp only [Finset.smul_sum]
     rw [Finset.sum_eq_single i (fun b _ hb ↦ by
-      simp [← SemigroupAction.mul_smul, single_mul_single_of_ne _ _ _ _ (Ne.symm hb)]) (by simp)]
+      simp [← SemigroupAction.mul_smul, single_mul_single_of_ne _ _ _ _ hb.symm]) (by simp)]
     obtain ⟨y, hy⟩ := by simpa [-SetLike.coe_mem] using (v i).2
     simp [← SemigroupAction.mul_smul, ← hy]
 

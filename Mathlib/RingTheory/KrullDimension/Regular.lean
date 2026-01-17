@@ -153,8 +153,7 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
   apply ringKrullDim_le_ringKrullDim_quotient_add_card
   rwa [IsLocalRing.ringJacobson_eq_maximalIdeal]
 
-@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank
-  (since := "2026-01-12026-01-122")]
+@[deprecated ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (since := "2026-01-12")]
 lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
   apply ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank

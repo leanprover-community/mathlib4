@@ -139,7 +139,7 @@ lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := 
   · simp [huv]
   · simp only [huv, or_false]
     have h : 0 < G.edist u v := edist_pos_of_ne huv
-    rw [LE.le.ge_iff_eq' (Order.one_le_iff_pos.mpr h)]
+    rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
     exact edist_eq_one_iff_adj
 
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by

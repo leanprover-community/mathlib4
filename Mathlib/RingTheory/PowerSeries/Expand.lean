@@ -73,8 +73,8 @@ theorem map_expand (f : R →+* S) (φ : PowerSeries R) :
 
 theorem expand_subst {f : MvPowerSeries τ S} [Finite τ] (hf : HasSubst f) (φ : PowerSeries S) :
     (subst f φ).expand p hp = subst (f.expand p hp) φ := by
-  rw [PowerSeries.subst, MvPowerSeries.expand_subst _ hp (HasSubst.const hf) (φ := φ)]
-  rfl
+  rw [PowerSeries.subst, MvPowerSeries.expand_subst _ hp (HasSubst.const hf) (φ := φ),
+    PowerSeries.subst]
 
 /- TODO : In the original file of multi variate polynomial, there are two theorem about rename
 here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`

@@ -36,7 +36,7 @@ namespace Subrepresentation
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
-  rintro ⟨_,_⟩
+  rintro ⟨_, _⟩
   congr!
 
 instance : SetLike (Subrepresentation ρ) W where
@@ -146,8 +146,9 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
     exact h
 
 @[simp]
-lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
-  by rfl
+lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} :
+    w ∈ ofSubmodule' N ↔ w ∈ N := by
+  rfl
 
 /-- An order-preserving equivalence between subrepresentations of `ρ` and submodules of
 `ρ.asModule`. -/
