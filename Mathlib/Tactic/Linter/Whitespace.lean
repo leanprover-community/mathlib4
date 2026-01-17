@@ -350,7 +350,7 @@ def isGitModified (leanFile : String) : IO Bool := do
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
+  unless getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     -- If there are errors, then the file is "modified" and we set `gitModifiedRef` to `true`.
@@ -361,7 +361,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     gitModifiedRef.set (← isGitModified (← getFileName))
   unless (← gitModifiedRef.get) == some true do
     return
-  if stx.find? (·.isOfKind ``runCmd) |>.isSome then
+  if stx.find? (#[``runCmd, `Lean.Parser.Command.macro_rules].contains ·.getKind ) |>.isSome then
     return
   -- If a command does not start on the first column, emit a warning.
   if let some pos := stx.getPos? then
@@ -371,8 +371,6 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
   -- We skip `macro_rules`, since they cause parsing issues.
-  if stx.find? (·.isOfKind `Lean.Parser.Command.macro_rules) |>.isSome then
-    return
   let some upTo := Whitespace.endPos stx | return
 
   let fmt : Option Format := ←
