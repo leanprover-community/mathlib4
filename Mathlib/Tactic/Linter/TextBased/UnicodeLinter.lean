@@ -29,21 +29,22 @@ public def printCodepointHex (c : Char) : String :=
 
 /-- Blocklist: If `false`, the character is not allowed in Mathlib. -/
 public def isAllowedCharacter (c : Char) : Bool :=
-  c != '\u00A0' -- non-breaking space
+  !#['\u00A0'].contains c -- non-breaking space
 
 /-- Provide default replacement (`String`) for a blocklisted character, or `none` if none defined -/
 public def replaceDisallowed : Char → Option String
 | '\u00a0' => " " -- replace non-breaking space with normal whitespace
 | _ => none
 
--- TODO when moving this to `MathlibTest/LintStyle.lean`, `grind` crashes with
---     >>  invalid pattern(s) for `replaceDisallowed.match_1.congr_eq_2`
---   No idea what that means... What to do? Options:
---   Delete this? Leave it here? Fix the error and move to tests?
+set_option linter.unusedTactic false in
+set_option linter.flexible false in
+/-- An error in this proof could mean that `replaceDisallowed` contains a character
+which is not dissallowed by `isAllowedCharacter`. -/
 private theorem disallowed_of_replaceable (c : Char) (creplaced : replaceDisallowed c ≠ none) :
-    isAllowedCharacter c == false := by
-  simp_all only [replaceDisallowed, ne_eq, isAllowedCharacter, ↓Char.isValue, beq_false,
-    Bool.not_eq_eq_eq_not, Bool.not_true, bne_eq_false_iff_eq]
-  grind only
+    !isAllowedCharacter c := by
+  contrapose creplaced
+  simp [isAllowedCharacter, Array.contains] at creplaced
+  repeat obtain ⟨_, creplaced⟩ := creplaced
+  simp [replaceDisallowed]
 
 end Mathlib.Linter.TextBased.UnicodeLinter
