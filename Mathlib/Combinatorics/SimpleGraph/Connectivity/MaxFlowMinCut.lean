@@ -30,17 +30,17 @@ namespace SimpleGraph
 open scoped BigOperators
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
-variable {G : SimpleGraph V} {c : Sym2 V → ℕ} {s t : V}
+variable {G : SimpleGraph V} {c : Sym2 V → ℤ} {s t : V}
 
 /-- An `s`-`t` flow on an undirected graph, expressed as a skew-symmetric function `V → V → ℤ`
 supported on the edges of `G` and bounded above by a capacity on unordered pairs, together with the
 usual flow conservation law away from `s` and `t`.
 
 (Skew-symmetry plus the upper bound applied to `(v, u)` yields the corresponding lower bound.) -/
-structure Flow (G : SimpleGraph V) (c : Sym2 V → ℕ) (s t : V) where
+structure Flow (G : SimpleGraph V) (c : Sym2 V → ℤ) (s t : V) where
   val : V → V → ℤ
   skew : ∀ u v, val u v = -val v u
-  capacity : ∀ u v, val u v ≤ (c s(u, v) : ℤ)
+  capacity : ∀ u v, val u v ≤ c s(u, v)
   support : ∀ u v, ¬ G.Adj u v → val u v = 0
   conserve : ∀ v, v ≠ s → v ≠ t → (∑ u, val v u) = 0
 
@@ -60,7 +60,7 @@ def cutValue (S : Finset V) : ℤ := ∑ u in S, ∑ v in Sᶜ, f.val u v
 /-- For a set `S` of vertices, the total capacity leaving `S`. -/
 def cutCapacity (S : Finset V) : ℤ := by
   classical
-  exact ∑ u in S, ∑ v in Sᶜ, if G.Adj u v then (c s(u, v) : ℤ) else 0
+  exact ∑ u in S, ∑ v in Sᶜ, if G.Adj u v then c s(u, v) else 0
 
 lemma value_def : f.value = ∑ v, f.val s v := rfl
 
