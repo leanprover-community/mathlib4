@@ -7,7 +7,7 @@ Authors: Arthur Paulino, Jon Eugster
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
-Usage: cache [COMMAND]
+Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
   # No privilege required
@@ -20,15 +20,17 @@ Commands:
   unpack!       Decompress linked already downloaded files (no skipping)
   clean         Delete non-linked files
   clean!        Delete everything on the local cache
-  lookup [ARGS] Show information about cache files for the given lean files
+  lookup [ARGS] Show information about cache files for the given Lean files
 
   # Privilege required
-  put          Run 'mk' then upload linked files missing on the server
-  put!         Run 'mk' then upload all linked files
+  put          Run 'pack' then upload linked files missing on the server
+  put!         Run 'pack' then upload all linked files
   put-unpacked 'put' only files not already 'pack'ed; intended for CI use
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
-  collect      TODO
+
+Options:
+  --repo=OWNER/REPO  Override the repository to fetch/push cache from
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -46,6 +48,15 @@ Valid arguments are:
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
   'Mathlib/**/Order/*.lean'.
+
+# Environment variables
+
+* MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
+* MATHLIB_CACHE_USE_CLOUDFLARE  Set to '1' to use Cloudflare instead of Azure
+* MATHLIB_CACHE_GET_URL   Override the download URL
+* MATHLIB_CACHE_PUT_URL   Override the upload URL
+
+See Cache/README.md for more details.
 "
 
 /-- Commands which (potentially) call `curl` for downloading files -/

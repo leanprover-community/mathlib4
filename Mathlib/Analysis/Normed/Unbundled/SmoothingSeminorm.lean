@@ -289,7 +289,7 @@ private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ
   (Classical.choose_spec (hn n)).2
 
 private theorem mu_le (n : ℕ) : mu μ hn n ≤ n := by
-  simpa [mu, ← Nat.lt_succ_iff] using (Classical.choose_spec (hn n)).1
+  simpa [mu] using (Classical.choose_spec (hn n)).1
 
 private theorem mu_bdd (n : ℕ) : (mu μ hn n : ℝ) / n ∈ Set.Icc (0 : ℝ) 1 := by
   refine Set.mem_Icc.mpr ⟨div_nonneg (cast_nonneg (mu μ hn n)) (cast_nonneg n), ?_⟩
@@ -515,6 +515,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
 
 end IsNonarchimedean
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
 def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSeminorm R where
   toFun     := smoothingFun μ
@@ -527,7 +528,7 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     simp only [smoothingSeminormSeq]
     rw [zero_pow (pos_iff_ne_zero.mp hn), map_zero, zero_rpow]
     exact one_div_ne_zero (cast_ne_zero.mpr (one_le_iff_ne_zero.mp hn))
-  add_le' _ _ :=  (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ hμ1)
+  add_le' _ _ := (isNonarchimedean_smoothingFun μ hμ1 hna).add_le (smoothingFun_nonneg μ hμ1)
   neg' n := by
     simp only [smoothingFun]
     congr

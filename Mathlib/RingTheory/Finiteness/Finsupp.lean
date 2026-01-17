@@ -117,7 +117,7 @@ theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.F
     [Module.Finite R (M ⧸ N)] : Module.Finite R M where
   fg_top := fg_of_fg_map_of_fg_inf_ker N.mkQ
     (by simpa only [map_top, range_mkQ] using Module.finite_def.mp ‹_›) <| by
-    simpa only [top_inf_eq, ker_mkQ] using Module.Finite.iff_fg.mp ‹_›
+    simpa only [top_inf_eq, ker_mkQ] using .of_finite
 
 end Submodule
 

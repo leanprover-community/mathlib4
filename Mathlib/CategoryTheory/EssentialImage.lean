@@ -175,7 +175,7 @@ functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorComp
     F.preimage <|
     (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG i⟩).hom.hom ≫ G.map f ≫
       (F.toEssImage.objObjPreimageIso ⟨G.obj j, hG j⟩).inv.hom
-  map_id _ := F.map_injective  (by simp)
+  map_id _ := F.map_injective (by simp)
   map_comp _ _ := F.map_injective (by simp)
 
 /-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does

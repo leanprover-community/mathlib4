@@ -128,7 +128,7 @@ theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := 
   unfold theta primorial
   rw [cast_prod, log_prod (fun p hp ↦ mod_cast (mem_filter.mp hp).2.pos.ne')]
   congr 1 with p
-  simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
+  simp_all [Nat.Prime.pos]
 
 /-- Chebyshev's upper bound: `θ x ≤ c x` with the constant `c = log 4`. -/
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
@@ -365,9 +365,9 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
 -- Somewhat arbitrary bound which we use to estimate the second term.
 private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
-  apply isLittleO_mul_iff_isLittleO_div _|>.mp
+  apply isLittleO_mul_iff_isLittleO_div _ |>.mp
   · conv => arg 2; ext; rw [mul_comm]
-    apply isLittleO_mul_iff_isLittleO_div _|>.mpr
+    apply isLittleO_mul_iff_isLittleO_div _ |>.mpr
     · simp_rw [div_sqrt, sqrt_eq_rpow, ← rpow_two]
       apply isLittleO_log_rpow_rpow_atTop _ (by norm_num)
     filter_upwards [eventually_gt_atTop 0] with x hx using sqrt_ne_zero'.mpr hx
@@ -376,7 +376,7 @@ private theorem sqrt_isLittleO :
 
 theorem integral_one_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, 1 / log t ^ 2) =O[atTop] (fun x ↦ x / log x ^ 2) := by
-  trans (fun x ↦  4 * x / log x ^ 2 + √x / log 2 ^ 2)
+  trans (fun x ↦ 4 * x / log x ^ 2 + √x / log 2 ^ 2)
   · apply IsBigO.of_bound'
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)

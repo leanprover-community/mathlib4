@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -82,6 +82,9 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
+
+When troubleshooting, you can see what `to_dual` is doing by replacing it with `to_dual?` and/or
+by using `set_option trace.translate_detail true`.
  -/
 syntax (name := to_dual) "to_dual" "?"? attrArgs : attr
 
@@ -135,10 +138,24 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("maximal", ["Minimal"]),
   ("lower", ["Upper"]),
   ("upper", ["Lower"]),
+  ("below", ["Above"]),
+  ("above", ["Below"]),
+  ("least", ["Greatest"]),
+  ("greatest", ["Least"]),
+  ("glb", ["LUB"]),
+  ("lub", ["GLB"]),
+  ("cofinal", ["Coinitial"]),
+  ("coinitial", ["Cofinal"]),
   ("succ", ["Pred"]),
   ("pred", ["Succ"]),
   ("disjoint", ["Codisjoint"]),
   ("codisjoint", ["Disjoint"]),
+  ("ioi", ["Iio"]),
+  ("iio", ["Ioi"]),
+  ("ici", ["Iic"]),
+  ("iic", ["Ici"]),
+  ("ioc", ["Ico"]),
+  ("ico", ["Ioc"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -169,8 +186,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cospan", ["Span"]),
   ("kernel", ["Cokernel"]),
   ("cokernel", ["Kernel"]),
-  ("kernels", ["Cokernel"]),
-  ("cokernels", ["Kernel"]),
+  ("kernels", ["Cokernels"]),
+  ("cokernels", ["Kernels"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),

@@ -159,6 +159,12 @@ theorem quasiSeparatedSpace_of_quasiSeparated (f : X ⟶ Y)
   rw [← terminalIsTerminal.hom_ext (f ≫ terminal.from Y) (terminal.from X)]
   infer_instance
 
+lemma Scheme.Hom.isQuasiSeparated_preimage [QuasiSeparated f] {U : Opens Y}
+    (hU : IsQuasiSeparated (U : Set Y)) : IsQuasiSeparated (f ⁻¹ᵁ U : Set X) := by
+  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.2).mp hU
+  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).2).mpr
+    (quasiSeparatedSpace_of_quasiSeparated (f ∣_ U))
+
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
   (quasiSeparatedSpace_congr X.isoSpec.hom.homeomorph).2 PrimeSpectrum.instQuasiSeparatedSpace
 
