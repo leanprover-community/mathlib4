@@ -92,7 +92,7 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       one_mem' := S.zero_mem'
-      mul_mem' := fun ha hb => S.add_mem' ha hb}
+      mul_mem' := fun ha hb => S.add_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -134,7 +134,7 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       zero_mem' := S.one_mem'
-      add_mem' := fun ha hb => S.mul_mem' ha hb}
+      add_mem' := fun ha hb => S.mul_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -619,7 +619,7 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
-library_note2 «range copy pattern» /--
+library_note «range copy pattern» /--
 For many categories (monoids, modules, rings, ...) the set-theoretic image of a morphism `f` is
 a subobject of the codomain. When this is the case, it is useful to define the range of a morphism
 in such a way that the underlying carrier set of the range subobject is definitionally

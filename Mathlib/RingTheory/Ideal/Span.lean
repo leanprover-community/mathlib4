@@ -90,7 +90,7 @@ theorem span_eq : span (I : Set α) = I :=
 theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 
-theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+theorem isCompactElement_top : IsCompactElement (⊤ : Ideal α) := by
   simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
 
 theorem mem_span_insert {s : Set α} {x y} :
