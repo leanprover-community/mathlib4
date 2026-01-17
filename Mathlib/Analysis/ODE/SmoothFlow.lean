@@ -320,7 +320,7 @@ lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} 
       exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
 
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
     ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
   -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
   rw [continuousOn_iff_continuous_restrict,
@@ -335,7 +335,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   intro U hU
   -- express in terms of `ε` inequality
   obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
-  apply integralCMLM_eventually_dist_lt' hg hu t₀ α₀ hε hB |>.mono
+  apply integralCMLM_eventually_dist_lt' hg t₀ α₀ hε hB |>.mono
   exact fun _ ↦ forall₂_imp (fun _ _ h ↦ hεU h)
 
 end
