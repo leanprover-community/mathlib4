@@ -57,8 +57,8 @@ lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa us
 
 end OrderedSemiring
 
-theorem isOrderedModule_iff_algebraMap_mono {R A : Type*} [IsOrderedRing R] [IsOrderedRing A] :
-    IsOrderedModule R A ↔ Monotone (algebraMap R A) where
+theorem isOrderedModule_iff_algebraMap_mono [IsOrderedRing α] [IsOrderedRing β] :
+    IsOrderedModule α β ↔ Monotone (algebraMap α β) where
   mp _ := algebraMap_mono _
   mpr := IsOrderedModule.of_algebraMap_mono
 
