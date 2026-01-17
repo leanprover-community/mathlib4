@@ -126,7 +126,7 @@ theorem mem_mulFiber {x : M} {ab : M × M} : ab ∈ mulFiber x ↔ ab.1 * ab.2 =
 /-- Useful for showing `mulFiber 1` is nonempty, e.g., when proving convolution has an identity. -/
 @[to_additive /-- Useful for showing `addFiber 0` is nonempty,
 e.g., when proving convolution has an identity. -/]
-theorem mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
+lemma mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
   simp only [Set.mem_mulAntidiagonal, Set.mem_univ, mul_one, and_self]
 
 end Fiber
@@ -243,18 +243,18 @@ scoped notation:67 f:68 " ⋆[" L "] " g:67 => convolution L f g
 scoped notation:67 f:68 " ⋆₊[" L "] " g:67 => addConvolution L f g
 
 @[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_apply]
-theorem convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
+lemma convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
     (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
 
 /-- Left zero: `0 ⋆[L] f = 0`. -/
 @[to_additive (dont_translate := S E E' F) (attr := simp) zero_addConvolution]
-theorem zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
+lemma zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
     (0 : M → E) ⋆[L] f = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, LinearMap.zero_apply, tsum_zero]
 
 /-- Right zero: `f ⋆[L] 0 = 0`. -/
 @[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_zero]
-theorem convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
+lemma convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
 
@@ -280,15 +280,15 @@ Users who want the simplest `⋆` notation can define their own scoped notation.
 scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
 
 @[to_additive (dont_translate := R) addRingConvolution_apply]
-theorem ringConvolution_apply (f g : M → R) (x : M) :
+lemma ringConvolution_apply (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
 
 @[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
-theorem zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ᵣ f = 0 := by
+lemma zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ᵣ f = 0 := by
   ext x; simp only [ringConvolution_apply, Pi.zero_apply, zero_mul, tsum_zero]
 
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
-theorem ringConvolution_zero (f : M → R) : f ⋆ᵣ (0 : M → R) = 0 := by
+lemma ringConvolution_zero (f : M → R) : f ⋆ᵣ (0 : M → R) = 0 := by
   ext x; simp only [ringConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
 
 end RingMul
@@ -577,13 +577,13 @@ variable [Semiring R] [TopologicalSpace R]
 /-- For types with `HasMulAntidiagonal`, the multiplicative fiber equals the mulAntidiagonal. -/
 @[to_additive addFiber_eq_antidiagonal
   /-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/]
-theorem mulFiber_eq_mulAntidiagonal (x : M) : mulFiber x = ↑(Finset.mulAntidiagonal x) := by
+lemma mulFiber_eq_mulAntidiagonal (x : M) : mulFiber x = ↑(Finset.mulAntidiagonal x) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
 
 /-- The multiplicative fiber is finite when `HasMulAntidiagonal` is available. -/
 @[to_additive /-- The additive fiber is finite when `HasAntidiagonal` is available. -/]
-theorem mulFiber_finite (x : M) : (mulFiber x).Finite := by
+lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
   rw [mulFiber_eq_mulAntidiagonal]
   exact (Finset.mulAntidiagonal x).finite_toSet
 
@@ -591,7 +591,7 @@ theorem mulFiber_finite (x : M) : (mulFiber x).Finite := by
 @[to_additive (dont_translate := S) addConvolution_eq_sum_antidiagonal
   /-- For `HasAntidiagonal` types, additive convolution equals a finite sum
   over the antidiagonal. -/]
-theorem convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
+lemma convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
     (x : M) : (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
   simp only [convolution_apply]
   rw [← (Finset.mulAntidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
@@ -602,14 +602,14 @@ theorem convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f :
 mulAntidiagonal. -/
 @[to_additive (dont_translate := R) addRingConvolution_eq_sum_antidiagonal
   /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal. -/]
-theorem ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
+lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
   convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
 /-- `ringConvolution` (`⋆ᵣ`) equals `MulCauchyProduct.apply` (`⋆ᶜ`) for `HasMulAntidiagonal`. -/
 @[to_additive (dont_translate := R) addRingConvolution_eq_cauchyProduct
   /-- `addRingConvolution` (`⋆ᵣ₊`) equals `CauchyProduct.apply` (`⋆ᶜ₊`) for `HasAntidiagonal`. -/]
-theorem ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
+lemma ringConvolution_eq_mulCauchyProduct (f g : M → R) (x : M) :
     (f ⋆ᵣ g) x = (f ⋆ᶜ g) x :=
   ringConvolution_eq_sum_mulAntidiagonal f g x
 
