@@ -28,7 +28,7 @@ def delabCheckingCanonical : DelabM (Bool × Term) := do
   -- if there is no synthesized instance, still return `false`
   -- (because `inst` is still non-canonical)
   let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
-  return (← Meta.isDefEq inst synthInst, instD)
+  withReducibleAndInstances <| return (← Meta.isDefEq inst synthInst, instD)
 
 /-- Delaborate an expression with arity `arity` into a unary notation `mkStx` iff the argument
 `arg` is a non-canonical instance (is not defeq to what is synthesized for its type, or else
