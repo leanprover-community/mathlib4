@@ -66,10 +66,23 @@ def IsCompleteMultipartiteWith (G : SimpleGraph α) (f : α → ι) : Prop :=
 
 namespace IsCompleteMultipartiteWith
 
-variable {G : SimpleGraph α} {f : α → ι}
+variable {G : SimpleGraph α} {f : α → ι} {C : G.IsCompleteMultipartiteWith f}
+include C
 
-def adj_iff_ne (C : G.IsCompleteMultipartiteWith f) ⦃u v : α⦄ :
-    G.Adj u v ↔ f u ≠ f v := C u v
+/-- For a complete multipartite graph labelled via `f`, `u` and `v` are adjacent iff `f u ≠ f v`. -/
+def adj_iff_ne ⦃u v : α⦄ : G.Adj u v ↔ f u ≠ f v := C u v
+
+/-- The neighbors of `v` are vertices which do not match on `f`. -/
+lemma neighborSet_eq (v : α) : G.neighborSet v = {u | f v ≠ f u} := Set.ext <| C v
+
+section finite
+
+variable (v : α) [Fintype (G.neighborSet v)] [Fintype {u | f v ≠ f u}]
+
+lemma neighborFinset_eq : G.neighborFinset v = {u | f v ≠ f u}.toFinset :=
+  Set.toFinset_inj.mpr <| C.neighborSet_eq v
+
+end finite
 
 end IsCompleteMultipartiteWith
 
@@ -80,6 +93,7 @@ theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultiparti
   simp [IsCompleteMultipartite, Transitive]
 
 variable {G : SimpleGraph α}
+
 /-- The setoid given by non-adjacency -/
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
