@@ -371,10 +371,10 @@ theorem FG.of_le {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG :=
 
 /-- The intersection of a submodule with an FG submodule is FG. -/
 theorem FG.inf_le_right (S : Submodule R M) {T : Submodule R M} (hT : T.FG) : (S ⊓ T).FG :=
-  isNoetherian_submodule_right.mp (isNoetherian_of_fg_of_noetherian _ hT) S
+  hT.of_le _root_.inf_le_right
 
 /-- The intersection of a submodule with an FG submodule is FG. -/
 theorem FG.inf_le_left {S : Submodule R M} (hS : S.FG) (T : Submodule R M) : (S ⊓ T).FG :=
-  isNoetherian_submodule_left.mp (isNoetherian_of_fg_of_noetherian _ hS) T
+  hS.of_le _root_.inf_le_left
 
 end Submodule
