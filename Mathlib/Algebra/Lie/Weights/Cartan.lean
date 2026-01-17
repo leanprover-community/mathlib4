@@ -200,7 +200,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   specialize hx y (le_zeroRootSubalgebra R L H hy)
   rw [mem_zeroRootSubalgebra] at hx
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
-  rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
+  rw [← lie_skew, map_neg, neg_eq_zero] at hk
   use k + 1
   rw [Module.End.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
@@ -285,5 +285,21 @@ lemma mem_corootSpace' {x : H} :
   convert
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
+
+section FiniteDimensional
+
+variable {K : Type*} [Field K] [LieAlgebra K L]
+variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
+variable [LieModule.IsTriangularizable K H L]
+
+lemma cartan_sup_iSup_rootSpace_eq_top :
+    H.toLieSubmodule ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), rootSpace H α = ⊤ := by
+  rw [eq_top_iff, ← LieModule.iSup_genWeightSpace_eq_top', iSup_le_iff]
+  intro α
+  by_cases hα : α.IsZero
+  · simp [hα]
+  · exact le_sup_of_le_right <| le_iSup₂_of_le α hα (le_refl _)
+
+end FiniteDimensional
 
 end LieAlgebra

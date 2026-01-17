@@ -6,7 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
@@ -21,7 +21,7 @@ that logarithms of trigonometric functions are interval integrable. In the compl
 functions are circle integrable over every circle in the complex plane.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 

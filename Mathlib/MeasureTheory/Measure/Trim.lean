@@ -145,4 +145,11 @@ lemma Measure.AbsolutelyContinuous.trim {ν : Measure α} (hμν : μ ≪ ν) (h
   rw [trim_measurableSet_eq hm hs] at hsν ⊢
   exact hμν hsν
 
+theorem _root_.ae_eq_trim_of_measurable {α β} {m m0 : MeasurableSpace α} {μ : Measure α}
+    [MeasurableSpace β] [MeasurableEq β]
+    (hm : m ≤ m0) {f g : α → β} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
+    f =ᵐ[μ.trim hm] g := by
+  rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
+  measurability
+
 end MeasureTheory

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Set
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.AssertExists
 
 /-!
@@ -206,7 +206,10 @@ This is protected so that it does not conflict with global `Infinite`. -/
 protected def Infinite (s : Set α) : Prop :=
   ¬s.Finite
 
-@[simp]
+@[simp, push]
+theorem not_finite {s : Set α} : ¬s.Finite ↔ s.Infinite := .rfl
+
+@[simp, push]
 theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 

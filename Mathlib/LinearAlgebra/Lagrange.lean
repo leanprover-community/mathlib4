@@ -14,9 +14,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 # Lagrange interpolation
 
 ## Main definitions
-* In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-  indexing of the field over some type. We call the image of v on s the interpolation nodes,
-  though strictly unique nodes are only defined when v is injective on s.
+* In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
+  indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
+  though strictly unique nodes are only defined when `v` is injective on `s`.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
   the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
   are distinct.
@@ -24,7 +24,7 @@ public import Mathlib.RingTheory.Polynomial.Basic
   and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
   Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
-  associated with the _nodes_`x i`.
+  associated with the _nodes_ `x i`.
 -/
 
 @[expose] public section
@@ -276,6 +276,13 @@ theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     sum_insert (notMem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 
+theorem leadingCoeff_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
+    (Lagrange.basis s v i).leadingCoeff = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
+  have : (∏ j ∈ s.erase i, (X - C (v j))).coeff (#s - 1) = 1 := by
+    simpa [hi] using (monic_prod_X_sub_C v (s.erase i)).coeff_natDegree
+  simp_rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
+  simp [basisDivisor, Finset.prod_mul_distrib, ← map_prod, this]
+
 end Basis
 
 section Interpolate
@@ -442,6 +449,30 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
+@[deprecated eq_interpolate (since := "2026-01-14")]
+theorem interpolate_poly_eq_self
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
+    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+
+theorem coeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
+    P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
+  rw (occs := [1]) [eq_interpolate hvs hP]
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
+
+theorem leadingCoeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
+  lift P.degree to ℕ using (by contrapose! hP; simp [hP]) with deg hdeg
+  rw [← WithBot.coe_one, ← WithBot.coe_add] at hP
+  replace hP : #s = deg + 1 := WithBot.coe_eq_coe.mp hP
+  have hdegree : P.degree = ↑(#s - 1) := hdeg.symm.trans (WithBot.coe_eq_coe.mpr (by grind))
+  rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
+  exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; omega)
+
 end Interpolate
 
 section Nodal
@@ -568,9 +599,6 @@ theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
 theorem nodalWeight_eq_eval_derivative_nodal (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
-
-@[deprecated (since := "2025-07-08")]
-alias nodalWeight_eq_eval_nodal_derative := nodalWeight_eq_eval_derivative_nodal
 
 theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s v i ≠ 0 := by
   rw [nodalWeight, prod_ne_zero_iff]

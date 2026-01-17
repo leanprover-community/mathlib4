@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
 /-!
 # Towers of algebras
 
@@ -108,7 +110,7 @@ variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
-  ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
+  ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
 /-- See note [partially-applied ext lemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
@@ -390,7 +392,7 @@ variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
-  smul_right_injective M hx
+  NoZeroSMulDivisors.smul_right_injective M hx
 
 end Algebra
 
@@ -404,4 +406,4 @@ theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [Co
     algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
   algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
 
-end  Algebra.algebraMapSubmonoid
+end Algebra.algebraMapSubmonoid

@@ -31,7 +31,7 @@ for the Bochner integral.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Metric
 
@@ -197,7 +197,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
+    grw [(h_anti (zero_le n)).subset]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono

@@ -106,7 +106,7 @@ instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_
 
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     AddLeftMono (Kernel α β) :=
-  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+  ⟨fun _ _ _ hμ a ↦ add_le_add_right (hμ a) _⟩
 
 noncomputable
 instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
@@ -207,8 +207,7 @@ end Kernel
 
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
-  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
-      simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
+  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by simp⟩⟩
 
 instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by

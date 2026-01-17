@@ -35,7 +35,7 @@ namespace Functor
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 
 /-- When `F : C ⥤ D` and `P : D ⥤ Type _`, this is the obvious map
-`P.section → (F ⋙ P).sections`. -/
+`P.sections → (F ⋙ P).sections`. -/
 @[simps]
 def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ Type w} (x : P.sections) :
     (F ⋙ P).sections where

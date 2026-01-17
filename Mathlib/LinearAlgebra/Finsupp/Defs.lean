@@ -276,16 +276,20 @@ variable {α β R M : Type*} [DecidableEq α] [Semiring R] [AddCommMonoid M] [Mo
 variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
-This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
+This is the `LinearEquiv` version of `Finsupp.curryEquiv`. -/
 @[simps +simpRhs]
-noncomputable def finsuppProdLEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
-  { finsuppProdEquiv with
-    map_add' f g := by ext; simp
-    map_smul' c f := by ext; simp }
+noncomputable def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M where
+  toAddEquiv := curryAddEquiv
+  map_smul' c f := by ext; simp
 
-theorem finsuppProdLEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
-    (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 :=
+@[deprecated (since := "2026-01-03")] alias finsuppProdLEquiv := curryLinearEquiv
+
+theorem curryLinearEquiv_symm_apply_apply (f : α →₀ β →₀ M) (xy) :
+    (curryLinearEquiv R).symm f xy = f xy.1 xy.2 :=
   rfl
+
+@[deprecated (since := "2026-01-03")]
+alias finsuppProdLEquiv_symm_apply_apply := curryLinearEquiv_symm_apply_apply
 
 end Prod
 
@@ -340,7 +344,7 @@ that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
 
 variable {ι}
 
-/-- If `M` is an `R`-module and `ι` is an nonempty type, then every additive endomorphism
+/-- If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
 endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
 See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
@@ -358,5 +362,14 @@ See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
     change f (Finsupp.lsingle (R := R) (M := M) i ∘ₗ Finsupp.lapply j • x) i = _
     rw [map_smul]
     simp
+
+variable (R M ι)
+
+theorem ringHomEndFinsupp_surjective :
+    Function.Surjective (ringHomEndFinsupp (R := R) (M := M) ι) := by
+  intro f
+  obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+  · exact ⟨0, Subsingleton.elim ..⟩
+  · exact ⟨_, (ringEquivEndFinsupp i).right_inv f⟩
 
 end Module.End

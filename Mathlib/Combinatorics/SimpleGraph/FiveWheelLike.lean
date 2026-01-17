@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -106,7 +105,7 @@ private lemma IsNClique.insert_insert (h1 : G.IsNClique r (insert a s))
 private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (hc : c ∈ s)
     (ha : a ∉ s) (hd : ∀ w ∈ insert a s, w ≠ c → G.Adj w b) :
     G.IsNClique r (insert a (insert b (erase s c))) := by
-  rw [insert_comm, ← erase_insert_of_ne (fun h : a = c ↦ ha (h ▸ hc)|>.elim)]
+  rw [insert_comm, ← erase_insert_of_ne (fun h : a = c ↦ ha (h ▸ hc) |>.elim)]
   simp_rw [adj_comm, ← notMem_singleton] at hd
   exact hs.insert_erase (fun _ h ↦ hd _ (mem_sdiff.1 h).1 (mem_sdiff.1 h).2) (mem_insert_of_mem hc)
 
@@ -228,9 +227,12 @@ lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartit
 lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ k) :
     G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_ge hk
 
+end withDecEq
+
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
 theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
+  classical
   match r with
   | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
@@ -240,8 +242,6 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     obtain ⟨_, _, _, _, _, hw⟩ :=
       exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hc
     exact hw.not_colorable_succ
-
-end withDecEq
 
 section AES
 variable {i j n : ℕ} {d x v w₁ w₂ : α} {s t : Finset α}
@@ -261,7 +261,7 @@ private lemma sum_degree_le_of_le_not_adj [Fintype α] [DecidableEq α] [Decidab
   _ ≤ _ := by
     simp_rw [← union_compl X, sum_union disjoint_compl_right (s₁ := X), neighborFinset_eq_filter,
              filter_inter, univ_inter, card_eq_sum_ones X, card_eq_sum_ones Xᶜ, sum_mul, one_mul]
-    gcongr <;> grind [filter_card_add_filter_neg_card_eq_card]
+    gcongr <;> grind [card_filter_add_card_filter_not]
 
 end Counting
 
@@ -338,7 +338,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
                wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz)
                  (fun h ↦ hav <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
   case h8 => exact hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem fun _ hz hZ ↦
-               wa (h2t hz) (fun h ↦  haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
+               wa (h2t hz) (fun h ↦ haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
   case h9 =>
     -- Finally check that this new `IsFiveWheelLike` structure has `k + 1` common clique
     -- vertices i.e. `#((insert x (s.erase a)) ∩ (insert x (s.erase b))) = k + 1`.
@@ -404,14 +404,12 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
           simp [Xu, Wc, mul_comm]
         have w3 : 3 ≤ #W := two_lt_card.2 ⟨_, mem_insert_self .., _, by simp [W], _, by simp [W],
           hw.isPathGraph3Compl.ne_fst, hw.isPathGraph3Compl.ne_snd, hw.isPathGraph3Compl.fst_ne_snd⟩
-        have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
+        have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by lia
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
-        cutsat
+        lia
 
 end IsFiveWheelLike
-
-variable [DecidableEq α]
 
 /-- **Andrasfái-Erdős-Sós** theorem
 
@@ -425,6 +423,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
   match r with
   | 0 | 1 => aesop
   | r + 2 =>
+    classical
     -- There is an edge maximal `Kᵣ₊₃`-free supergraph `H` of `G`
     obtain ⟨H, hle, hmcf⟩ := @Finite.exists_le_maximal _ _ _ (fun H ↦ H.CliqueFree (r + 3)) G hf
     -- If `H` is `r + 2`-colorable then so is `G`
@@ -436,7 +435,6 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- Hence `H` contains `Wᵣ₊₁,ₖ` but not `Wᵣ₊₁,ₖ₊₁`, for some `k < r + 1`
     obtain ⟨k, _, _, _, _, _, hw, hlt, hm⟩ :=
       exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite hmcf hn
-    classical
     -- But the minimum degree of `G`, and hence of `H`, is too large for it to be `Wᵣ₊₁,ₖ₊₁`-free,
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _

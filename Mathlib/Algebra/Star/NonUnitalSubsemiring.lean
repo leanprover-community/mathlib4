@@ -117,7 +117,7 @@ section Center
 variable (R)
 
 /-- The center of a non-unital non-associative semiring `R` is the set of elements that
-commute and associate with everything in `R`, here realized as non-unital star
+commute and associate with everything in `R`, here realized as a non-unital star
 subsemiring. -/
 def center (R) [NonUnitalNonAssocSemiring R] [StarRing R] : NonUnitalStarSubsemiring R where
   toNonUnitalSubsemiring := NonUnitalSubsemiring.center R

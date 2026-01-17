@@ -65,8 +65,8 @@ theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 
-protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass R α R]
-    [NoZeroSMulDivisors α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
+protected theorem smul {α : Type*} [Semiring α] [IsDomain α] [Module α R] [SMulCommClass R α R]
+    [IsTorsionFree α R] (a : α) {B : BilinForm R M} (hB : B.IsRefl) :
     (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)
@@ -167,7 +167,7 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨fy, ty, iy, -, hy⟩ := Submodule.mem_span_iff_exists_finset_subset.1
       (by simp : y ∈ Submodule.span R (Set.range b))
     rw [← hx, ← hy]
-    simp only [map_sum, map_smul, coeFn_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
+    simp only [map_sum, map_smul, coe_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
       Finset.mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)

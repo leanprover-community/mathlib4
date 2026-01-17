@@ -264,20 +264,20 @@ theorem isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
   · simp [h0]
   unfold IsUnit
   refine
-    ⟨⟨C ↑(normUnit r)⁻¹, C ↑(normUnit r), by rw [← RingHom.map_mul, Units.inv_mul, C_1], by
-        rw [← RingHom.map_mul, Units.mul_inv, C_1]⟩,
+    ⟨⟨C ↑(normUnit r)⁻¹, C ↑(normUnit r), by rw [← map_mul, Units.inv_mul, C_1], by
+        rw [← map_mul, Units.mul_inv, C_1]⟩,
       ?_⟩
   rw [← normalize_eq_zero, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0
   conv_rhs => rw [← content_C, ← (C r).eq_C_content_mul_primPart]
-  simp only [normalize_apply, RingHom.map_mul]
-  rw [mul_assoc, ← RingHom.map_mul, Units.mul_inv, C_1, mul_one]
+  simp only [normalize_apply, map_mul]
+  rw [mul_assoc, ← map_mul, Units.mul_inv, C_1, mul_one]
 
 theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
 
 theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
+    [Module.IsTorsionFree R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero ?_ hp
@@ -310,7 +310,7 @@ theorem content_mul_aux {p q : R[X]} :
   rw [gcd_comm (content _) _, gcd_comm (content _) _]
   apply gcd_content_eq_of_dvd_sub
   rw [← self_sub_C_mul_X_pow, ← self_sub_C_mul_X_pow, sub_mul, sub_sub, add_comm, sub_add,
-    sub_sub_cancel, leadingCoeff_mul, RingHom.map_mul, mul_assoc, mul_assoc]
+    sub_sub_cancel, leadingCoeff_mul, map_mul, mul_assoc, mul_assoc]
   apply dvd_sub (Dvd.intro _ rfl) (Dvd.intro _ rfl)
 
 @[simp]
@@ -370,7 +370,7 @@ theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
   conv_lhs =>
     rw [← (p * q).eq_C_content_mul_primPart, p.eq_C_content_mul_primPart,
       q.eq_C_content_mul_primPart]
-  rw [content_mul, RingHom.map_mul]
+  rw [content_mul, map_mul]
   ring
 
 theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq : q ≠ 0) :
