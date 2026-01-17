@@ -509,6 +509,7 @@ noncomputable abbrev coprod.inl {X Y : C} [HasBinaryCoproduct X Y] : X ⟶ X ⨿
 noncomputable abbrev coprod.inr {X Y : C} [HasBinaryCoproduct X Y] : Y ⟶ X ⨿ Y :=
   colimit.ι (pair X Y) ⟨WalkingPair.right⟩
 
+set_option linter.style.whitespace false in -- unsure which style is better; disable for now
 /-- The binary fan constructed from the projection maps is a limit. -/
 noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
@@ -518,6 +519,7 @@ noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     · simp [Category.id_comp]
   ))
 
+set_option linter.style.whitespace false in -- unsure which style is better; disable for now
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
 noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=

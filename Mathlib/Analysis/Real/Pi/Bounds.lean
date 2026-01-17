@@ -168,6 +168,8 @@ theorem pi_lt_d2 : π < 3.15 := by
   -- bound[315*^-2, Iters -> 4, Rounding -> 1.4, Precision -> 7]
   pi_upper_bound [41 / 29, 109 / 59, 865 / 441, 412 / 207]
 
+set_option linter.style.whitespace false -- linter suggestions are undesirable
+
 theorem pi_gt_d4 : 3.1415 < π := by
   -- bound[31415*^-4, Iters -> 6, Rounding -> 1.1, Precision -> 10]
   pi_lower_bound [

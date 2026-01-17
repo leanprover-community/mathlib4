@@ -206,6 +206,7 @@ open WithTop in
     · obtain ⟨i, rfl⟩ := ne_top_iff_exists.mp (h.trans <| coe_lt_top _).ne
       exact strictMono_filtration (coe_lt_coe.mp h)
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- Extend the family `X i := E⟮<i⟯ →ₐ[F] Ē` from `ι` to `WithTop ι`. -/
 def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 

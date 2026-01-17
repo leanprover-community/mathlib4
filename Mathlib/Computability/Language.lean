@@ -414,6 +414,7 @@ lemma compl_compl (l : Language α) : lᶜᶜ = l := by
 
 end Language
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/

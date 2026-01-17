@@ -183,6 +183,7 @@ lemma integrable_needleCrossesIndicator :
       neg_div, sub_neg_eq_add, add_halves, sub_zero, ← ENNReal.ofReal_mul hd.le,
       ENNReal.ofReal_lt_top]
 
+set_option linter.style.whitespace false in
 include hd hB hBₘ in
 /--
 This is a common step in both the short and the long case to simplify the expectation of the

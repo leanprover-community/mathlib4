@@ -118,6 +118,10 @@ end LocalLYM
 
 section LYM
 
+-- A bug in the linter causes false positives around the use of Finset.slice
+-- TODO: fix the linter and/or disable it properly around this construct
+set_option linter.style.whitespace false
+
 section Falling
 
 variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))

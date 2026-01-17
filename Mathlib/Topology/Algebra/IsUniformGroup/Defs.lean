@@ -275,6 +275,7 @@ theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : 
     simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
   this.comp (hf.prodMk hg)
 
+set_option linter.style.whitespace false in -- linter false positive
 @[to_additive]
 theorem Filter.Tendsto.uniformity_inv {ι : Type*} {f : ι → α × α} {l : Filter ι}
     (hf : Tendsto f l (𝓤 α)) :

@@ -187,6 +187,7 @@ theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : Ω → F
   filter_upwards with ω
   by_cases hωs : ω ∈ sets n <;> simp [hωs, h_norm]
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_bilin_of_stronglyMeasurable_right [CompleteSpace F] {f : Ω → F} {g : Ω → E}
     (hg : StronglyMeasurable[m] g)
@@ -211,6 +212,7 @@ theorem condExp_bilin_of_aestronglyMeasurable_left [CompleteSpace E]
   _ =ᵐ[μ] fun ω ↦ B (f ω) (μ[g|m] ω) := by
     filter_upwards [hf.ae_eq_mk] with a ha using by rw [ha]
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_bilin_of_aestronglyMeasurable_right [CompleteSpace F] {f : Ω → F} {g : Ω → E}
     (hg : AEStronglyMeasurable[m] g μ)
@@ -236,6 +238,7 @@ theorem condExp_mul_of_aestronglyMeasurable_left {f g : Ω → ℝ} (hf : AEStro
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
   condExp_bilin_of_aestronglyMeasurable_left (.mul ℝ ℝ) hf hfg hg
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_mul_of_aestronglyMeasurable_right {f g : Ω → ℝ} (hg : AEStronglyMeasurable[m] g μ)
     (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g :=
@@ -247,6 +250,7 @@ theorem condExp_mul_of_stronglyMeasurable_left {f g : Ω → ℝ} (hf : Strongly
   condExp_bilin_of_aestronglyMeasurable_left (.mul ℝ ℝ)
     hf.aestronglyMeasurable hfg hg
 
+set_option linter.style.whitespace false in -- TODO decide on the right style
 /-- Pull-out property of the conditional expectation. -/
 lemma condExp_mul_of_stronglyMeasurable_right {f g : Ω → ℝ} (hg : StronglyMeasurable[m] g)
     (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g :=

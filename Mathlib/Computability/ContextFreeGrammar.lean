@@ -55,6 +55,7 @@ variable {T : Type*}
 namespace ContextFreeRule
 variable {N : Type*} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- Inductive definition of a single application of a given context-free rule `r` to a string `u`;
 `r.Rewrites u v` means that the `r` sends `u` to `v` (there may be multiple such strings `v`). -/
 inductive Rewrites (r : ContextFreeRule T N) : List (Symbol T N) → List (Symbol T N) → Prop

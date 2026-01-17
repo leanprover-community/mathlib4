@@ -128,6 +128,7 @@ attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
   rightUnitor_tensor_inv rightUnitor_tensor_inv_assoc
 
+set_option linter.style.whitespace false in -- linter false positive
 attribute [mon_tauto ←] tensorHom_id id_tensorHom
 
 @[reassoc (attr := mon_tauto)]

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Tactic.Linter.Header
 
 /-!
 # A parser for superscripts and subscripts
@@ -67,6 +67,20 @@ def Mapping.superscript := mkMapping
 def Mapping.subscript := mkMapping
   "₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡʏᴢᵦᵧᵨᵩᵪ₊₋₌₍₎"
   "0123456789aehijklmnoprstuvxABCDEFGHIJKLMNOPQRSTUVWYZβγρφχ+-=()"
+
+/--
+Convert a single character from subscript into the corresponding normal character, if possible.
+If the character is not a subscript, it is returned unchanged.
+-/
+def unSubscript' : Char → Char := fun c ↦
+  Mapping.subscript.toNormal.getD c c
+
+/--
+Convert a single character from superscript into the corresponding normal character, if possible.
+If the character is not a superscript, it is returned unchanged.
+-/
+def unSuperscript' : Char → Char := fun c ↦
+  Mapping.superscript.toNormal.getD c c
 
 /-- Collects runs of text satisfying `p` followed by whitespace. Fails if the first character does
 not satisfy `p`. If `many` is true, it will parse 1 or more many whitespace-separated runs,

@@ -36,7 +36,7 @@ following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `X - μ[X | m]` is not square-integrable. -/
-noncomputable def condVar : Ω → ℝ := μ[(X - μ[X | m]) ^ 2 | m]
+noncomputable def condVar : Ω → ℝ := μ[(X - μ[X|m]) ^ 2|m]
 
 @[inherit_doc] scoped notation "Var[" X "; " μ " | " m "]" => condVar m X μ
 
@@ -55,18 +55,18 @@ lemma condVar_of_not_sigmaFinite (hμm : ¬SigmaFinite (μ.trim hm)) :
 open scoped Classical in
 lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
     Var[X; μ | m] =
-      if Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ then
-        if StronglyMeasurable[m] (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) then
-          fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2
-        else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2)
+      if Integrable (fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2) μ then
+        if StronglyMeasurable[m] (fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2) then
+          fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2
+        else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2)
       else 0 := condExp_of_sigmaFinite _
 
 lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
     (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
-    Var[X; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
+    Var[X; μ | m] = fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
-lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2) μ) :
+lemma condVar_of_not_integrable (hXint : ¬ Integrable (fun ω ↦ (X ω - (μ[X|m]) ω) ^ 2) μ) :
     Var[X; μ | m] = 0 := condExp_of_not_integrable hXint
 
 @[simp] lemma condVar_zero : Var[0; μ | m] = 0 := by simp [condVar]
@@ -88,7 +88,7 @@ lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X; μ | m] =ᵐ[μ] Var[Y; μ | 
 
 lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
     (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
-    Var[X; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
+    Var[X; μ | m] =ᵐ[μ] (X - μ[X|m]) ^ 2 :=
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
 
@@ -98,23 +98,23 @@ lemma integrable_condVar : Integrable Var[X; μ | m] μ := integrable_condExp
 the integral of `(X - μ[X | m]) ^ 2` on that set. -/
 lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X|m]) ^ 2) μ)
     (hs : MeasurableSet[m] s) :
-    ∫ ω in s, (Var[X; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X | m]) ω) ^ 2 ∂μ :=
+    ∫ ω in s, (Var[X; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X|m]) ω) ^ 2 ∂μ :=
   setIntegral_condExp _ hX hs
 
 -- `(· ^ 2)` is a postfix operator called `_sq` in lemma names, but
 -- `condVar_ae_eq_condExp_sq_sub_condExp_sq` is a bit ridiculous, so we exceptionally denote it by
 -- `sq_` as it were a prefix.
 lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
-    Var[X; μ | m] =ᵐ[μ] μ[X ^ 2 | m] - μ[X | m] ^ 2 := by
+    Var[X; μ | m] =ᵐ[μ] μ[X ^ 2|m] - μ[X|m] ^ 2 := by
   calc
     Var[X; μ | m]
-    _ = μ[X ^ 2 - 2 * X * μ[X | m] + μ[X | m] ^ 2 | m] := by rw [condVar, sub_sq]
-    _ =ᵐ[μ] μ[X ^ 2 | m] - 2 * μ[X | m] ^ 2 + μ[X | m] ^ 2 := by
+    _ = μ[X ^ 2 - 2 * X * μ[X|m] + μ[X|m] ^ 2|m] := by rw [condVar, sub_sq]
+    _ =ᵐ[μ] μ[X ^ 2|m] - 2 * μ[X|m] ^ 2 + μ[X|m] ^ 2 := by
       have aux₀ : Integrable (X ^ 2) μ := hX.integrable_sq
-      have aux₁ : Integrable (2 * X * μ[X | m]) μ := by
+      have aux₁ : Integrable (2 * X * μ[X|m]) μ := by
         rw [mul_assoc]
         exact (memLp_one_iff_integrable.1 <| hX.condExp.mul hX).const_mul _
-      have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
+      have aux₂ : Integrable (μ[X|m] ^ 2) μ := hX.condExp.integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
@@ -122,24 +122,24 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       simp [hω₀, hω₁, hω₂, hω₃,
         condExp_of_stronglyMeasurable hm (stronglyMeasurable_condExp.pow _) aux₂]
       simp [mul_assoc, sq]
-    _ = μ[X ^ 2 | m] - μ[X | m] ^ 2 := by ring
+    _ = μ[X ^ 2|m] - μ[X|m] ^ 2 := by ring
 
 lemma condVar_ae_le_condExp_sq (hm : m ≤ m₀) [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
-    Var[X; μ | m] ≤ᵐ[μ] μ[X ^ 2 | m] := by
+    Var[X; μ | m] ≤ᵐ[μ] μ[X ^ 2|m] := by
   filter_upwards [condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX] with ω hω
   dsimp at hω
   nlinarith
 
 /-- **Law of total variance** -/
 lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeasure μ]
-    (hX : MemLp X 2 μ) : μ[Var[X; μ | m]] + Var[μ[X | m]; μ] = Var[X; μ] := by
+    (hX : MemLp X 2 μ) : μ[Var[X; μ | m]] + Var[μ[X|m]; μ] = Var[X; μ] := by
   calc
-    μ[Var[X; μ | m]] + Var[μ[X | m]; μ]
-    _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
+    μ[Var[X; μ | m]] + Var[μ[X|m]; μ]
+    _ = μ[(μ[X ^ 2|m] - μ[X|m] ^ 2 : Ω → ℝ)] + (μ[μ[X|m] ^ 2] - μ[μ[X|m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
       · exact variance_eq_sub hX.condExp
-    _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
+    _ = μ[X ^ 2] - μ[μ[X|m] ^ 2] + (μ[μ[X|m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
       exact hX.condExp.integrable_sq
     _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
@@ -162,7 +162,7 @@ lemma condVar_bot [IsProbabilityMeasure μ] (hX : AEMeasurable X μ) :
 lemma condVar_smul (c : ℝ) (X : Ω → ℝ) : Var[c • X; μ | m] =ᵐ[μ] c ^ 2 • Var[X; μ | m] := by
   calc
     Var[c • X; μ | m]
-    _ =ᵐ[μ] μ[c ^ 2 • (X - μ[X | m]) ^ 2 | m] := by
+    _ =ᵐ[μ] μ[c ^ 2 • (X - μ[X|m]) ^ 2|m] := by
       rw [condVar]
       refine condExp_congr_ae ?_
       filter_upwards [condExp_smul (m := m) c X] with ω hω

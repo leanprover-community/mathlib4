@@ -26,6 +26,7 @@ open Lean Parser Term
 meta def fun₀.matchAlts : Parser :=
   leading_parser withPosition <| ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
 `fun₀ ... | i => a` is notation for `Finsupp.update (fun₀ ...) i a`.
 
@@ -86,6 +87,7 @@ meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
     | _ => throw ()
   | _ => throw ()
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 /-- Display `Finsupp` using `fun₀` notation. -/
 unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=

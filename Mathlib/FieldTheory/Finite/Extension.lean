@@ -88,15 +88,19 @@ instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
 example : IsGalois k (Extension k p n) :=
   inferInstance
 
+set_option linter.style.whitespace false in -- manually added spaces seem worth preserving
 example : IsCyclic Gal(Extension k p n / k) :=
   inferInstance
 
+set_option linter.style.whitespace false in -- manually added spaces seem worth preserving
 theorem natCard_algEquiv_extension : Nat.card Gal(Extension k p n / k) = n :=
   (IsGalois.card_aut_eq_finrank _ _).trans <| finrank_extension k p n
 
+set_option linter.style.whitespace false in -- manually added spaces seem worth preserving
 theorem card_algEquiv_extension : Fintype.card Gal(Extension k p n / k) = n :=
   Fintype.card_eq_nat_card.trans <| natCard_algEquiv_extension k p n
 
+set_option linter.style.whitespace false in -- manually added spaces seem worth preserving
 /-- The Frobenius automorphism `x ↦ x ^ Nat.card k` that fixes `k`. -/
 noncomputable def Extension.frob :
     Gal(Extension k p n / k) :=

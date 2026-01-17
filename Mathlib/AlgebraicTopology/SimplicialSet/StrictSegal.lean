@@ -38,6 +38,9 @@ open Opposite SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
+set_option linter.style.whitespace false -- The linter asks for spaces in subscript ₙ₊₁,
+-- which is undesirable.
+
 /-- An `n + 1`-truncated simplicial set satisfies the strict Segal condition if
 its `m`-simplices are uniquely determined by their spine for all `m ≤ n + 1`. -/
 structure StrictSegal where

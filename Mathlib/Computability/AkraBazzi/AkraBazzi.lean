@@ -450,6 +450,7 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                            _ = n := by simp
   exact_mod_cast this
 
+set_option linter.style.whitespace false in -- manual styling of the filter_upwards call
 /-- The main proof of the upper-bound part of the Akra-Bazzi theorem. The factor `1 - ε n` does not
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
@@ -598,6 +599,7 @@ This linter is only enabled on `nightly-testing`, but it causes a deterministic 
 Can this proof be refactored into some smaller pieces?
 -/
 set_option linter.tacticAnalysis.regressions.linarithToGrind false in
+set_option linter.style.whitespace false in -- manual styling of the filter_upwards call
 /-- The main proof of the lower-bound part of the Akra-Bazzi theorem. The factor `1 + ε n` does not
 change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
