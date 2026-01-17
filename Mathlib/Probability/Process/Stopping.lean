@@ -211,7 +211,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
     · obtain ⟨j, hk_seq_j⟩ := h_exists_k_le_seq
       exact hk_seq_j.trans_lt (mod_cast h_bound j)
   have h_lt_eq_preimage : {ω | τ ω < i} = τ ⁻¹' Set.Iio i := by
-    ext1 ω; push _ ∈ _
+    ext1 ω; push _ ∈ _; rfl
   rw [h_lt_eq_preimage, h_Iio_eq_Union]
   simp only [Set.preimage_iUnion, Set.preimage_setOf_eq]
   exact MeasurableSet.iUnion fun n => f.mono (h_bound n).le _ (hτ.measurableSet_le (seq n))

@@ -309,7 +309,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
         simp only [P', pow_one]
-    · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
+    · rw [degree_le_zero_iff] at hy
       rw [hy]
       refine ⟨X - C (algebraMap _ _ ((Ideal.Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, ?_⟩
       simp only [eval₂_sub, eval₂_X, eval₂_C]

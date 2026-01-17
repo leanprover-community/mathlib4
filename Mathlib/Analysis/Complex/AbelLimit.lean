@@ -67,7 +67,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   simp only [eventually_iff, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
   push _ ∈ _ at hx
-  simp only [stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
+  simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
