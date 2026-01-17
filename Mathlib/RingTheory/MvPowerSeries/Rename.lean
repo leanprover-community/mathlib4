@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 This file establishes the `rename` operation on multivariate power series under an embedding,
 which modifies the set of variables.
 
-This file is patterned after `MvPolynomials/rename.lean`
+This file is patterned after `MvPolynomials/Rename.lean`
 
 ## Main declarations
 
