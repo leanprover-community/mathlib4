@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+public import Mathlib.CategoryTheory.Localization.OfQuotient
 
 /-!
 # The K-injective derivability structure
@@ -247,20 +248,66 @@ def toHomotopyCategory : KInjectives C ⥤ HomotopyCategory.KInjectives C :=
   ObjectProperty.lift _ (KInjectives.ι ⋙ HomotopyCategory.quotient _ _) (fun K ↦ by
     simpa [← CochainComplex.isKInjective_iff_rightOrthogonal] using K.property)
 
+@[simp]
+lemma toHomotopyCategory_obj (K : CochainComplex C ℤ) [K.IsKInjective] :
+    toHomotopyCategory.obj (mk K) = HomotopyCategory.KInjectives.mk K := rfl
+
+instance : (toHomotopyCategory (C := C)).Full where
+  map_surjective {K L} f:= by
+    obtain ⟨K, _, rfl⟩ := K.mk_surjective
+    obtain ⟨L, _, rfl⟩ := L.mk_surjective
+    obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+    exact ⟨ObjectProperty.homMk f, rfl⟩
+
+instance : (toHomotopyCategory (C := C)).EssSurj where
+  mem_essImage X := by
+    obtain ⟨K, _, rfl⟩ := X.mk_surjective
+    exact ⟨mk K, ⟨Iso.refl _⟩⟩
+
 lemma isIso_toHomotopyCategory_map_iff {K L : KInjectives C} (f : K ⟶ L) :
     IsIso (toHomotopyCategory.map f) ↔ QuasiIso f.hom := by
   have := HasDerivedCategory.standard C
   rw [← isIso_iff_of_reflects_iso _ HomotopyCategory.KInjectives.Qh]
-  dsimp
   obtain ⟨K, _, rfl⟩ := K.mk_surjective
   obtain ⟨L, _, rfl⟩ := L.mk_surjective
   obtain ⟨f, rfl⟩ := ObjectProperty.homMk_surjective f
   exact DerivedCategory.isIso_Q_map_iff_quasiIso C f
 
+instance (K : CochainComplex C ℤ) [K.IsKInjective] :
+    CochainComplex.IsKInjective (HomologicalComplex.cylinder K) := by
+  rw [CochainComplex.isKInjective_iff_rightOrthogonal]
+  refine ObjectProperty.ext_of_isTriangulatedClosed₃ _ _
+    (HomotopyCategory.mappingCone_triangleh_distinguished _) ?_ ?_
+  · dsimp
+    rwa [← CochainComplex.isKInjective_iff_rightOrthogonal]
+  · dsimp
+    rw [← CochainComplex.isKInjective_iff_rightOrthogonal]
+    infer_instance
+
 variable [HasKInjectiveResolutions C]
 
-/-instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
-  sorry
+instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
+  refine Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _ ?_ ?_
+  · intro K L f hf
+    rwa [isIso_toHomotopyCategory_map_iff]
+  · intro K L f₀ f₁ h
+    obtain ⟨K, _, rfl⟩ := K.mk_surjective
+    obtain ⟨L, _, rfl⟩ := L.mk_surjective
+    obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
+    obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
+    dsimp at f₀ f₁ h
+    let H : Homotopy f₀ f₁ :=
+      HomotopyCategory.homotopyOfEq _ _ (HomotopyCategory.KInjectives.ι.congr_map h)
+    refine ⟨mk (HomologicalComplex.cylinder K),
+      ObjectProperty.homMk (HomologicalComplex.cylinder.ι₀ K),
+      ObjectProperty.homMk (HomologicalComplex.cylinder.ι₁ K),
+      ObjectProperty.homMk (HomologicalComplex.cylinder.π K), ?_,
+      by cat_disch, by cat_disch,
+      ObjectProperty.homMk (HomologicalComplex.cylinder.desc f₀ f₁ H),
+      by cat_disch, by cat_disch⟩
+    · exact (HomologicalComplex.cylinder.homotopyEquiv K
+        (fun n ↦ ⟨n - 1, by simp⟩)).quasiIso_hom
 
 instance [HasDerivedCategory C] :
     (ι ⋙ DerivedCategory.Q).IsLocalization (quasiIso C) := by
@@ -297,7 +344,7 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   exact .of_isLocalization_of_isLocalization _ (DerivedCategory.Q)
 
 instance : (localizerMorphism C).IsRightDerivabilityStructure :=
-  .mk' _-/
+  .mk' _
 
 end KInjectives
 

@@ -353,8 +353,13 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangula
 
 lemma binary_product_stable_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     (X₁ X₂ : C) (hX₁ : P X₁) (hX₂ : P X₂) :
-    P (X₁ ⨯ X₂)  :=
+    P (X₁ ⨯ X₂) :=
   P.ext_of_isTriangulatedClosed₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
+
+lemma biprod_stable_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
+    (X₁ X₂ : C) (hX₁ : P X₁) (hX₂ : P X₂) :
+    P (X₁ ⊞ X₂) :=
+  P.ext_of_isTriangulatedClosed₂ _ (binaryBiproductTriangle_distinguished X₁ X₂) hX₁ hX₂
 
 lemma pi_finite_stable [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
     {J : Type} [Finite J] (X : J → C) (hX : ∀ j, P (X j)) :
