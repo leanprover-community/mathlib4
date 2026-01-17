@@ -21,22 +21,23 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
 class my_has_pow (α : Type u) (β : Type v) where
-  (pow : α → β → α)
+  pow : α → β → α
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
 class my_has_scalar (M : Type u) (α : Type v) where
-  (smul : M → α → α)
+  smul : M → α → α
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
 /--
-error: Cannot apply attribute @[to_additive] to 'Test.my_has_pow.pow': it is already translated to 'Test.my_has_scalar.smul'. ⏎
-If you need to set the `reorder` or `relevant_arg` option, this is still possible with the ⏎
-`@[to_additive (reorder := ...)]` or `@[to_additive (relevant_arg := ...)]` syntax.
+error: `to_additive` validation failed: expected
+  {α : Type u} → {β : Type v} → [self : my_has_scalar β α] → α → β → α
+but 'Test.my_has_scalar.smul' has type
+  {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive] my_has_pow.pow
+attribute [to_additive existing] my_has_pow.pow
 /--
 error: `to_additive` validation failed: expected
   {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
@@ -44,8 +45,8 @@ but 'Test.my_has_scalar.smul' has type
   {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
 -/
 #guard_msgs in
-attribute [to_additive (reorder := α β)] my_has_pow.pow
-attribute [to_additive (reorder := α β, 4 5)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -285,6 +286,7 @@ end instances
 lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
   rw [npowRec]
 
+set_option linter.translateRedundant false in
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
 lemma optiontest (x : Option α) : x.elim none some = x := by
@@ -557,13 +559,32 @@ fun {α} [Add α] a => Add.add a
 #print myAdd
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+/--
+warning: `to_additive self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_additive` to translate expressions involving `test1`,
+use `to_additive_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+/--
+warning: `to_additive` did not change the type of theorem `test1'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
+@[simp, to_additive none]
+theorem test1' : 5 = 5 := rfl
 
 /-! Test that we can't write `to_additive self (attr := ..)`. -/
 
 /--
-error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+error: invalid `(attr := ...)` after `self` or `none`, as there is no other declaration for the attributes.
 Instead, you can write the attributes in the usual way.
 -/
 #guard_msgs in
@@ -581,6 +602,12 @@ def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 
 /-! Test that additive docstrings work -/
 
+/--
+warning: `to_additive` did not change the type of theorem `mulTrivial`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
@@ -596,6 +623,10 @@ warning: String syntax for `to_additive` docstrings is deprecated: Use docstring
 
 Update deprecated syntax to:
   [apply] /-- (via `str` syntax) I am an additive docstring! -/
+---
+warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
@@ -807,3 +838,17 @@ set_option pp.proofs true in
 /-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
 #guard_msgs in
 #check abstractAdd
+
+-- We give a warning if an existing translation is overwritten:
+/--
+warning: `abstractMul` was already translated to `abstractAdd` instead of `someOtherTranslation`.
+Unless the original translation was wrong, please remove this `to_additive` attribute.
+
+Note: This linter can be disabled with `set_option linter.translateOverwrite false`
+-/
+#guard_msgs in
+attribute [to_additive someOtherTranslation] abstractMul
+
+-- Test that we don't blindly translate the prefix of a name.
+def Mul.test : Nat := 5
+@[to_additive] def Mul.test' := Mul.test
