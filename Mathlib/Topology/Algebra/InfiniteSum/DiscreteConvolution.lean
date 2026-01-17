@@ -257,6 +257,40 @@ lemma convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
   ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
 
+variable [T2Space F] [ContinuousAdd F]
+
+/-- Right distributivity at a point: `(f ⋆[L] (g + g')) x = (f ⋆[L] g) x + (f ⋆[L] g') x`. -/
+@[to_additive (dont_translate := S E E' F)]
+theorem ConvolutionExistsAt.distrib_add {f : M → E} {g g' : M → E'} {x : M}
+    (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
+    (hfg' : ConvolutionExistsAt L f g' x) :
+    (f ⋆[L] (g + g')) x = (f ⋆[L] g) x + (f ⋆[L] g') x := by
+  simp only [convolution_apply, Pi.add_apply, map_add]
+  exact hfg.tsum_add hfg'
+
+/-- Right distributivity: `f ⋆[L] (g + g') = f ⋆[L] g + f ⋆[L] g'`. -/
+@[to_additive (dont_translate := S E E' F)]
+theorem ConvolutionExists.distrib_add {f : M → E} {g g' : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+    (hfg : ConvolutionExists L f g) (hfg' : ConvolutionExists L f g') :
+    f ⋆[L] (g + g') = f ⋆[L] g + f ⋆[L] g' := by
+  ext x; exact (hfg x).distrib_add L (hfg' x)
+
+/-- Left distributivity at a point: `((f + f') ⋆[L] g) x = (f ⋆[L] g) x + (f' ⋆[L] g) x`. -/
+@[to_additive (dont_translate := S E E' F)]
+theorem ConvolutionExistsAt.add_distrib {f f' : M → E} {g : M → E'} {x : M}
+    (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
+    (hfg' : ConvolutionExistsAt L f' g x) :
+    ((f + f') ⋆[L] g) x = (f ⋆[L] g) x + (f' ⋆[L] g) x := by
+  simp only [convolution_apply, Pi.add_apply, LinearMap.map_add₂]
+  exact hfg.tsum_add hfg'
+
+/-- Left distributivity: `(f + f') ⋆[L] g = f ⋆[L] g + f' ⋆[L] g`. -/
+@[to_additive (dont_translate := S E E' F)]
+theorem ConvolutionExists.add_distrib {f f' : M → E} {g : M → E'} (L : E →ₗ[S] E' →ₗ[S] F)
+    (hfg : ConvolutionExists L f g) (hfg' : ConvolutionExists L f' g) :
+    (f + f') ⋆[L] g = f ⋆[L] g + f' ⋆[L] g := by
+  ext x; exact (hfg x).add_distrib L (hfg' x)
+
 end Definition
 
 /-! ### Ring Multiplication Specialization -/
