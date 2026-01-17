@@ -123,8 +123,6 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 @[reassoc]
 lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
