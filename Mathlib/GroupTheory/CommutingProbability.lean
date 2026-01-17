@@ -138,13 +138,6 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   congr
   norm_num
 
--- private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
---   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
-
--- private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
---   | 0 | 1 | 2 | 3 => by decide
---   | n + 4 => by lia
-
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
   if _ : n = 0 then [0]
