@@ -227,11 +227,10 @@ theorem one_le_order_iff_constCoeff_eq_zero :
     simp [hd, h]
 
 theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
-    φ.order ≠ 0 ↔ φ.constantCoeff = 0 :=
-  ⟨fun h => one_le_order_iff_constCoeff_eq_zero.mp (ENat.one_le_iff_ne_zero.mpr h),
-    fun h => ENat.one_le_iff_ne_zero.mp (one_le_order_iff_constCoeff_eq_zero.mpr h)⟩
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
 
-theorem le_order_pow' (n : ℕ) (hf : φ.constantCoeff = 0) :
+theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : φ.constantCoeff = 0) :
     n ≤ (φ ^ n).order := by
   refine .trans ?_ (le_order_pow _ n)
   simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
