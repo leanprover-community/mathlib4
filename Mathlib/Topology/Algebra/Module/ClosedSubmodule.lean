@@ -293,7 +293,7 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
   le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
     Submodule.mem_iSup_of_mem ha hx
   sSup_le s a h x := by
-    rw [← Submodule.closure_toSubmodule_eq (s := a)]
+    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy
