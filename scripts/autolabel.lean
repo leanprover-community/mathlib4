@@ -180,7 +180,8 @@ def mathlibLabelData : (l : Label) → LabelData l
   | .«t-algebraic-geometry» => {
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
-      "Mathlib" / "Geometry" / "RingedSpace"] }
+      "Mathlib" / "Geometry" / "RingedSpace"]
+    dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
   | .«t-category-theory» => {}
@@ -194,7 +195,8 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Control",
       "Mathlib" / "Data"] }
   | .«t-differential-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] }
+    dirs := #["Mathlib" / "Geometry" / "Manifold"]
+    dependencies := #[.«t-analysis»] }
   | .«t-dynamics» => {}
   | .«t-euclidean-geometry» => {
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] }
