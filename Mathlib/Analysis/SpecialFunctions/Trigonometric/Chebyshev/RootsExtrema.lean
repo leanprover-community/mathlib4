@@ -340,8 +340,8 @@ theorem irrational_cos_chebyshev_angle {n k : ℕ} (hk : k < n)
     norm_cast at h
     grind
 
-theorem irrational_of_root_T_real (n : ℕ) {r : ℝ}
-    (hr : r ∈ (Polynomial.Chebyshev.T ℝ (n : ℤ)).roots) (hr0 : r ≠ 0) : Irrational r := by
+theorem irrational_of_root_T_real (n : ℕ) {r : ℝ} (hr : r ∈ (T ℝ n).roots) (hr0 : r ≠ 0) :
+    Irrational r := by
   have hr' : r ∈ (Finset.image (fun k : ℕ => Real.cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
       (Finset.range n)).val := by
     simpa [Polynomial.Chebyshev.roots_T_real n] using hr
