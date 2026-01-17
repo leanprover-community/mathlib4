@@ -74,15 +74,15 @@ protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x �
 lemma isSeparated_zero {X : Type*} [EMetricSpace X] (s : Set X) : IsSeparated 0 s := by
   simp [IsSeparated, Set.Pairwise]
 
-lemma IsSeparated.image_antilipschitz {s : Set X} {ε K₁ : ℝ≥0} {f : X → Y}
-  (hs : IsSeparated ε s) (hf : AntilipschitzWith K₁ f) (hK₁ : 0 < K₁) :
-  IsSeparated (↑(ε / K₁)) (f '' s) := by
-rintro x' ⟨x, hx, rfl⟩ y' ⟨y, hy, rfl⟩ hne
-have hne' : x ≠ y := by grind
-have hsep : (ε : ℝ≥0∞) < edist x y := hs hx hy hne'
-have hmul : (↑ε : ℝ≥0∞) < edist (f x) (f y) * ↑K₁ :=
-  lt_of_lt_of_le hsep (by rw [mul_comm]; exact hf x y)
-exact (ENNReal.coe_div hK₁.ne').symm ▸ ENNReal.div_lt_of_lt_mul hmul
+lemma IsSeparated.image_antilipschitz {ε K₁ : ℝ≥0} {f : X → Y}
+    (hs : IsSeparated ε s) (hf : AntilipschitzWith K₁ f) (hK₁ : 0 < K₁) :
+    IsSeparated ↑(ε / K₁) (f '' s) := by
+  rintro x' ⟨x, hx, rfl⟩ y' ⟨y, hy, rfl⟩ hne
+  have hne' : x ≠ y := by grind
+  have hsep : (ε : ℝ≥0∞) < edist x y := hs hx hy hne'
+  have hmul : (↑ε : ℝ≥0∞) < edist (f x) (f y) * ↑K₁ :=
+    lt_of_lt_of_le hsep (by rw [mul_comm]; exact hf x y)
+  exact (ENNReal.coe_div hK₁.ne').symm ▸ ENNReal.div_lt_of_lt_mul hmul
 
 /-!
 ### Metric separated pairs of sets

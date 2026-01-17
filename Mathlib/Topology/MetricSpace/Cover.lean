@@ -75,7 +75,7 @@ calc
   _ = ↑(K₂ * ε) := Eq.symm (ENNReal.coe_mul K₂ ε)
 
 lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X} {ε K₂ : ℝ≥0}
-    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : Function.Surjective f) :
+    (hs : IsCover ε (s.preimage f) N) (hf : LipschitzWith K₂ f) (hf_surj : f.Surjective) :
     IsCover (K₂ * ε) s (f '' N) := by
   have : IsCover (K₂ * ε) (f '' s.preimage f) (f '' N) := IsCover.image_lipschitz hs hf
   simp_all only [image_preimage_eq]
