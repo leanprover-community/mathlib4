@@ -3,12 +3,11 @@ Copyright (c) 2025 Zhipeng Chen, Haolun Tang, Jing Yi Zhan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 -/
-module
-
-public import Mathlib.NumberTheory.Divisors
-public import Mathlib.NumberTheory.ArithmeticFunction.Defs
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.NumberTheory.Divisors
+import Mathlib.NumberTheory.ArithmeticFunction.Defs
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Tactic
 
 /-!
 # Unitary Divisors and the Unitary Divisor Sum Function
@@ -19,6 +18,8 @@ A divisor `d` of `n` is called a *unitary divisor* if `gcd(d, n/d) = 1`. The uni
 divisor sum function `σ*(n)` is the sum of all unitary divisors of `n`. This function
 is multiplicative: `σ*(mn) = σ*(m) · σ*(n)` when `m` and `n` are coprime.
 
+Note: In group theory, unitary divisors are also known as *Hall divisors*.
+
 ## Main Definitions
 
 * `Nat.UnitaryDivisor d n`: Predicate stating that `d` is a unitary divisor of `n`.
@@ -27,7 +28,6 @@ is multiplicative: `σ*(mn) = σ*(m) · σ*(n)` when `m` and `n` are coprime.
 
 ## Main Results
 
-* `Nat.isMultiplicative_unitaryDivisorSum`: The function `σ*` is multiplicative.
 * `Nat.unitaryDivisorSum_mul`: Multiplicativity of `σ*` for coprime arguments.
 * `Nat.unitaryDivisorSum_prime_pow`: For prime `p` and `k ≥ 1`, `σ*(p^k) = p^k + 1`.
 * `Nat.unitaryDivisors_prime_pow`: The unitary divisors of `p^k` are exactly `{1, p^k}`.
@@ -54,7 +54,7 @@ unitary divisor, divisor sum, multiplicative function, number theory
 
 namespace Nat
 
-open BigOperators Finset
+open Finset
 
 /-! ### Basic Definitions -/
 
@@ -67,20 +67,19 @@ def UnitaryDivisor (d n : ℕ) : Prop :=
 def unitaryDivisors (n : ℕ) : Finset ℕ :=
   (Nat.divisors n).filter fun d => Nat.gcd d (n / d) = 1
 
-/-- The unitary divisor sum function `σ*(n)`, equal to the sum of all unitary divisors.
+/-- Helper function: sum of unitary divisors as a plain function. -/
+private def unitaryDivisorSumAux (n : ℕ) : ℕ :=
+  ∑ d ∈ unitaryDivisors n, d
 
-This is defined as an `ArithmeticFunction` to integrate with mathlib's framework for
-multiplicative arithmetic functions. -/
-def unitaryDivisorSum : ArithmeticFunction ℕ :=
-  ⟨fun n => ∑ d ∈ unitaryDivisors n, d, by simp [unitaryDivisors]⟩
+/-- The unitary divisor sum function `σ*` as an ArithmeticFunction.
+This is the sum of all unitary divisors of `n`. -/
+def unitaryDivisorSum : ArithmeticFunction ℕ where
+  toFun := unitaryDivisorSumAux
+  map_zero' := by
+    unfold unitaryDivisorSumAux unitaryDivisors
+    simp [Nat.divisors_zero]
 
-@[inherit_doc]
-scoped[ArithmeticFunction.UnitaryDivisorSum] notation "σ*" => Nat.unitaryDivisorSum
-
-open scoped ArithmeticFunction.UnitaryDivisorSum
-
-/-- The unitary divisor sum of `n` equals the sum over unitary divisors. -/
-theorem unitaryDivisorSum_apply (n : ℕ) : σ* n = ∑ d ∈ unitaryDivisors n, d := rfl
+@[inherit_doc] scoped notation "σ*" => unitaryDivisorSum
 
 /-! ### Basic Properties -/
 
@@ -199,7 +198,8 @@ pairs `(d₁, d₂)` of unitary divisors of `m` and `n` respectively. The biject
 `d ↦ (gcd(d,m), gcd(d,n))` with inverse `(d₁, d₂) ↦ d₁ * d₂`. -/
 theorem unitaryDivisorSum_mul {m n : ℕ} (hcoprime : Nat.Coprime m n) (hm : m ≠ 0) (hn : n ≠ 0) :
     σ* (m * n) = σ* m * σ* n := by
-  simp only [unitaryDivisorSum_apply]
+  show unitaryDivisorSumAux (m * n) = unitaryDivisorSumAux m * unitaryDivisorSumAux n
+  unfold unitaryDivisorSumAux
   let i : ℕ → ℕ × ℕ := fun d => (Nat.gcd d m, Nat.gcd d n)
   let j : ℕ × ℕ → ℕ := fun p => p.1 * p.2
   have h_sum_bij : ∑ d ∈ unitaryDivisors (m * n), d =
@@ -330,7 +330,9 @@ theorem unitaryDivisors_prime_pow {p k : ℕ} (hp : Nat.Prime p) :
 theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0) :
     σ* (p ^ k) = p ^ k + 1 := by
   have hk_pos : 0 < k := Nat.pos_of_ne_zero hk
-  simp only [unitaryDivisorSum_apply, unitaryDivisors_prime_pow hp]
+  show unitaryDivisorSumAux (p ^ k) = p ^ k + 1
+  unfold unitaryDivisorSumAux
+  rw [unitaryDivisors_prime_pow hp]
   have h_ne : 1 ≠ p ^ k := by
     intro h_eq
     have hp_ge : p ≥ 2 := hp.two_le
@@ -338,7 +340,7 @@ theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0
       calc p ^ k ≥ p ^ 1 := Nat.pow_le_pow_right hp.pos hk_pos
         _ = p := pow_one p
     omega
-  simp only [Finset.sum_insert (Finset.notMem_singleton.mpr h_ne), Finset.sum_singleton]
+  simp only [Finset.sum_insert (notMem_singleton.mpr h_ne), Finset.sum_singleton]
   ac_rfl
 
 /-! ### Additional Properties -/
@@ -346,14 +348,22 @@ theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0
 /-- `σ*(1) = 1`. -/
 @[simp]
 theorem unitaryDivisorSum_one : σ* 1 = 1 := by
-  simp only [unitaryDivisorSum_apply, unitaryDivisors, Nat.divisors_one,
-    Finset.filter_singleton, Nat.gcd_self, ite_true, Finset.sum_singleton]
+  show unitaryDivisorSumAux 1 = 1
+  unfold unitaryDivisorSumAux unitaryDivisors
+  simp only [Nat.divisors_one, Finset.filter_singleton, Nat.gcd_self,
+    ite_true, Finset.sum_singleton]
 
-/-- The unitary divisor sum function is multiplicative. -/
-@[arith_mult]
-theorem isMultiplicative_unitaryDivisorSum : ArithmeticFunction.IsMultiplicative σ* := by
-  refine ArithmeticFunction.IsMultiplicative.iff_ne_zero.mpr ⟨unitaryDivisorSum_one, ?_⟩
-  intro m n hm hn hcoprime
-  exact unitaryDivisorSum_mul hcoprime hm hn
+/-- The unitary divisor sum function σ* is multiplicative. -/
+theorem unitaryDivisorSum_isMultiplicative : σ*.IsMultiplicative := by
+  constructor
+  · -- σ*(1) = 1
+    exact unitaryDivisorSum_one
+  · -- For coprime m, n: σ*(m*n) = σ*(m) * σ*(n)
+    intro m n hcoprime
+    by_cases hm : m = 0
+    · simp [hm]
+    by_cases hn : n = 0
+    · simp [hn]
+    exact unitaryDivisorSum_mul hcoprime hm hn
 
 end Nat
