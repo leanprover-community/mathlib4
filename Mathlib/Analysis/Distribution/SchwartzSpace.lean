@@ -1227,8 +1227,6 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
 
-variable {E}
-
 end BoundedContinuousFunction
 
 section ZeroAtInfty

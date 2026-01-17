@@ -276,7 +276,7 @@ variable (s)
 @[simp]
 theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
     s.diag.image f = s.image fun x ↦ f (x, x) := by
-  aesop
+  grind
 
 @[simp, norm_cast]
 theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=

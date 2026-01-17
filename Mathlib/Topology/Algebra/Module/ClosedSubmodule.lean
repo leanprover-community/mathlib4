@@ -74,6 +74,10 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
 
 @[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+  rfl
+
+@[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
 lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
@@ -192,30 +196,25 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
-lemma mem_closure_iff' {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.closure.toSubmodule := by
-  rfl
-
-lemma mem_closure_iff_of_isClosed {x : M} {s : Submodule R M} (hs : IsClosed s.carrier) :
-    x ∈ s.closure ↔ x ∈ s := by
-  rw [mem_closure_iff, IsClosed.submodule_topologicalClosure_eq hs]
-
 @[simp]
-lemma closure_toSubmodule_eq {s : ClosedSubmodule R M} : s.toSubmodule.closure = s := by
-  ext x
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
   simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
-  rw [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
-  exact SetLike.mem_coe
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
 
-lemma mem_toSubmodule_iff {x : M} {t : ClosedSubmodule R M} :
-    x ∈ t.toSubmodule ↔ x ∈ t.toSubmodule.closure := by
-  simp only [closure_toSubmodule_eq]
-  exact Eq.to_iff rfl
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
 
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
+
+lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
+  ext x; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -294,7 +293,7 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
   le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
     Submodule.mem_iSup_of_mem ha hx
   sSup_le s a h x := by
-    rw [← Submodule.closure_toSubmodule_eq (s := a)]
+    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy
