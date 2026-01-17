@@ -365,16 +365,16 @@ variable [Ring R] [IsNoetherianRing R]
 variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup N] [Module R N]
 
+/-- A submodule contained in an FG submodule is FG. -/
+theorem FG.of_le {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG :=
+  isNoetherian_submodule.mp (isNoetherian_of_fg_of_noetherian _ hT) _ hST
+
 /-- The intersection of a submodule with an FG submodule is FG. -/
-theorem inf_fg_right (S : Submodule R M) {T : Submodule R M} (hT : T.FG) : (S ⊓ T).FG :=
+theorem FG.inf_le_right (S : Submodule R M) {T : Submodule R M} (hT : T.FG) : (S ⊓ T).FG :=
   isNoetherian_submodule_right.mp (isNoetherian_of_fg_of_noetherian _ hT) S
 
 /-- The intersection of a submodule with an FG submodule is FG. -/
-theorem inf_fg_left {S : Submodule R M} (hS : S.FG) (T : Submodule R M) : (S ⊓ T).FG :=
+theorem FG.inf_le_left {S : Submodule R M} (hS : S.FG) (T : Submodule R M) : (S ⊓ T).FG :=
   isNoetherian_submodule_left.mp (isNoetherian_of_fg_of_noetherian _ hS) T
-
-/-- A submodule contained in an FG submodule is FG. -/
-theorem fg_of_le {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG :=
-    isNoetherian_submodule.mp (isNoetherian_of_fg_of_noetherian _ hT) _ hST
 
 end Submodule
