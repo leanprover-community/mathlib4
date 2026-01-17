@@ -136,7 +136,7 @@ lemma LocallyFiniteOrder.orderAddMonoidHom_bijective [Nontrivial G] :
   have : 0 ≤ b.1 := hb.1.le
   suffices Ico 0 b.1 = {0} by simpa [orderAddMonoidHom, addMonoidHom, this]
   ext x
-  push _ ∈ _
+  simp only [mem_Ico, mem_singleton]
   constructor
   · rintro ⟨h₁, h₂⟩
     by_contra hx'
