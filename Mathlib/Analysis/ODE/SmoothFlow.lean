@@ -270,13 +270,6 @@ lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E
   refine hg.comp_continuous ?_ fun ⟨α, _⟩ ↦ α.2 trivial
   exact continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
 
--- TODO: general lemma
-lemma _root_.Finset.prod_le_pow_card' {ι : Type*} {R : Type*} [CommMonoidWithZero R]
-    [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R] {f : ι → R} {s : Finset ι} {n : R}
-    (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ n) :
-    s.prod f ≤ n ^ s.card :=
-  (Finset.prod_le_prod h0 h1).trans_eq (Finset.prod_const n)
-
 lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
