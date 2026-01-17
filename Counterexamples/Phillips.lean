@@ -459,25 +459,7 @@ We need the continuum hypothesis to construct it.
 
 theorem sierpinski_pathological_family [ContinuumHypothesis] :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  have Hcont : #ℝ = ℵ₁ := by rw [← ContinuumHypothesis.continuum_eq_aleph_one, Cardinal.mk_real]
-  rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
-  · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
-      ext y
-      simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
-      rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff, not_true]
-        constructor
-        · rintro rfl; exact irrefl_of r y h
-        · exact asymm h
-      · simp only [true_or, iff_true]; exact irrefl x
-      · simp only [h, iff_true, or_true]; exact asymm h
-    rw [this]
-    apply Countable.union _ (countable_singleton _)
-    rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r x H
-  · rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r y H
+  simpa [← Set.compl_eq_univ_diff] using ContinuumHypothesis.exists_sierpinski_pathological_pred
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
