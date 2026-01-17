@@ -40,9 +40,12 @@ abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
 
 namespace Matrix
 
-@[simp]
-lemma permMatrix_one [Zero R] [One R] : (1 : Equiv.Perm n).permMatrix R = 1 := by
+@[simp] lemma permMatrix_refl [Zero R] [One R] : Equiv.Perm.permMatrix R (.refl n) = 1 := by
   simp [← Matrix.ext_iff, Matrix.one_apply]
+
+@[simp]
+lemma permMatrix_one [Zero R] [One R] : (1 : Equiv.Perm n).permMatrix R = 1 :=
+  permMatrix_refl
 
 @[simp]
 lemma transpose_permMatrix [Zero R] [One R] : (σ.permMatrix R).transpose = (σ⁻¹).permMatrix R := by
