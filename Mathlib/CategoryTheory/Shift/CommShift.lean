@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Functors which commute with shifts
@@ -30,20 +31,6 @@ shift functors.)
 @[expose] public section
 
 namespace CategoryTheory
-
--- to be moved
-@[reassoc]
-lemma NatTrans.naturality_1 {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
-    F.map e.inv ≫ α.app X ≫ G.map e.hom = α.app Y := by
-  simp
-
--- to be moved
-@[reassoc]
-lemma NatTrans.naturality_2 {C D : Type*} [Category C] [Category D]
-    {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
-    F.map e.hom ≫ α.app Y ≫ G.map e.inv = α.app X := by
-  simp
 
 open Category
 
@@ -148,17 +135,15 @@ lemma isoAdd'_assoc {a b c ab bc abc : A}
     (ec : shiftFunctor C c ⋙ F ≅ F ⋙ shiftFunctor D c)
     (hab : a + b = ab) (hbc : b + c = bc) (h : a + b + c = abc) :
     isoAdd' (show ab + c = abc by rwa [← hab]) (isoAdd' hab ea eb) ec =
-      isoAdd' (by rwa [← hbc, ← add_assoc]) ea (isoAdd' hbc eb ec) := by
+      isoAdd' (show a + bc = abc by grind) ea (isoAdd' hbc eb ec) := by
   ext X
-  have := NatTrans.naturality_2 ec.hom
-    ((shiftFunctorAdd' C a b ab hab).app X)
+  have := NatTrans.naturality_2 ec.hom ((shiftFunctorAdd' C a b ab hab).app X)
   dsimp at this ⊢
   simp only [isoAdd'_hom_app, Category.assoc]
   rw [← NatTrans.naturality_assoc, ← this, Category.assoc, ← F.map_comp_assoc,
     shiftFunctorAdd'_assoc_hom_app a b c ab bc abc hab hbc h,
     Functor.map_comp_assoc, Category.assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
-  nth_rw 2 [← Functor.map_comp_assoc]
+  simp_rw [← Functor.map_comp_assoc]
   simp [shiftFunctorAdd'_assoc_inv_app a b c ab bc abc hab hbc h]
 
 end CommShift
@@ -319,11 +304,17 @@ variable {C D E J : Type*} [Category* C] [Category* D] [Category* E] [Category* 
     [G.CommShift A] [G'.CommShift A] [H.CommShift A]
 
 variable {A} in
+/-- Auxiliary structure for `NatTrans.CommShift` when we need to
+show a compatibility of a natural transformation `τ : F₁ ⟶ F₂` with
+respect to the shift by a specific element `a`. See also
+`NatTrans.CommShift.of_core` -/
 structure CommShiftCore (a : A) : Prop where
   shift_comm : (F₁.commShiftIso a).hom ≫ Functor.whiskerRight τ _ =
     Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 
 namespace CommShiftCore
+
+attribute [reassoc] shift_comm
 
 section
 
@@ -504,69 +495,63 @@ end Functor
 
 namespace Functor
 
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E] {A : Type*}
+
 section hasShiftOfFullyFaithful
 
-variable {C D : Type _} [Category C] [Category D]
-  {A : Type _} [AddMonoid A] [HasShift D A]
+variable [AddMonoid A] [HasShift D A]
   {F : C ⥤ D} (hF : F.FullyFaithful)
   (s : A → C ⥤ C) (i : ∀ i, s i ⋙ F ≅ F ⋙ shiftFunctor D i)
 
 namespace CommShift
 
-def of_hasShiftOfFullyFaithful :
+/-- If `F : C ⥤ D` is a fully faithful functor which is used
+to construct a shift by `A` on `C` from a shift on `D`,
+then the functor `F` itself commutes with the shift by `A`. -/
+def ofHasShiftOfFullyFaithful :
     letI := hF.hasShift s i; F.CommShift A := by
   letI := hF.hasShift s i
   exact
   { commShiftIso := i
     commShiftIso_zero := by
       ext X
-      simp only [comp_obj, isoZero_hom_app, ShiftMkCore.shiftFunctorZero_eq,
-        FullyFaithful.hasShift.map_zero_hom_app, id_obj, Category.assoc,
-        Iso.hom_inv_id_app, Category.comp_id]
+      simp [ShiftMkCore.shiftFunctorZero_eq]
     commShiftIso_add := fun a b => by
       ext X
-      simp only [comp_obj, isoAdd_hom_app, ShiftMkCore.shiftFunctorAdd_eq,
-        FullyFaithful.hasShift.map_add_hom_app, Category.assoc, ShiftMkCore.shiftFunctor_eq,
-        Iso.inv_hom_id_app_assoc, ← (shiftFunctor D b).map_comp_assoc, Iso.inv_hom_id_app,
-        Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, Category.comp_id] }
+      simp [ShiftMkCore.shiftFunctorAdd_eq, ShiftMkCore.shiftFunctor_eq,
+        ← Functor.map_comp_assoc] }
 
 end CommShift
 
-lemma shiftFunctorIso_of_hasShiftOfFullyFaithful (a : A) :
-    letI := hF.hasShift s i;
-    letI := CommShift.of_hasShiftOfFullyFaithful hF s i;
+lemma shiftFunctorIso_ofHasShiftOfFullyFaithful (a : A) :
+    letI := hF.hasShift s i
+    letI := CommShift.ofHasShiftOfFullyFaithful hF s i
     F.commShiftIso a = i a := by
   rfl
 
 end hasShiftOfFullyFaithful
 
-lemma map_shiftFunctorComm {C D : Type _} [Category C] [Category D] {A : Type _} [AddCommMonoid A]
-  [HasShift C A] [HasShift D A] (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
+@[reassoc]
+lemma map_shiftFunctorComm
+    [AddCommMonoid A] [HasShift C A] [HasShift D A]
+    (F : C ⥤ D) [F.CommShift A] (X : C) (a b : A) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
-  have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
+  have := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add a b)) X
   simp only [comp_obj, CommShift.isoAdd_hom_app,
     ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at this
   simp only [shiftFunctorComm_eq D a b _ rfl]
   dsimp
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
-    ← reassoc_of% eq,
-    shiftFunctorComm_eq C a b _ rfl]
-  dsimp
-  rw [Functor.map_comp]
-  congr 1
-  simp only [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
-    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
-  dsimp
-  simp only [Functor.map_id, Category.id_comp, Iso.hom_inv_id_app, comp_obj, Category.comp_id]
+    ← reassoc_of% this, shiftFunctorComm_eq C a b _ rfl]
+  simp [NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' (add_comm b a))) X,
+    ← Functor.map_comp_assoc]
 
 namespace CommShift
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
-  {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+variable {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
   [Full G] [Faithful G]
   (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] [HasShift E A]
   [G.CommShift A] [H.CommShift A]
@@ -575,13 +560,14 @@ namespace OfComp
 
 variable {A}
 
+/-- Auxiliary definition for `Functor.CommShift.ofComp`. -/
 noncomputable def iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
-  ((whiskeringRight C D E).obj G).preimageIso (Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ e ≪≫
-    H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
+  ((whiskeringRight C D E).obj G).preimageIso
+    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫
+      H.commShiftIso a ≪≫ isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft F (G.commShiftIso a).symm ≪≫ (Functor.associator _ _ _).symm)
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_hom_app (a : A) (X : C) :
     G.map ((iso e a).hom.app X) = e.hom.app (X⟦a⟧) ≫
       (H.commShiftIso a).hom.app X ≫ (e.inv.app X)⟦a⟧' ≫
@@ -590,7 +576,7 @@ lemma map_iso_hom_app (a : A) (X : C) :
     Functor.map_preimage _ _
   simpa using congr_app h X
 
-@[simp]
+@[simp, reassoc]
 lemma map_iso_inv_app (a : A) (X : C) :
     G.map ((iso e a).inv.app X) =
       (G.commShiftIso a).hom.app (F.obj X) ≫ (e.hom.app X)⟦a⟧' ≫
@@ -603,6 +589,8 @@ attribute [irreducible] iso
 
 end OfComp
 
+/-- Given an isomorphism `e : F ⋙ G ≅ H` where `G` is fully faithful,
+the functor `F` commutes with shifts by `A` if `G` and `H` do. -/
 noncomputable def ofComp : F.CommShift A where
   commShiftIso := OfComp.iso e
   commShiftIso_zero := by
@@ -615,9 +603,8 @@ noncomputable def ofComp : F.CommShift A where
     simp only [comp_obj, OfComp.map_iso_hom_app, H.commShiftIso_add, isoAdd_hom_app,
       G.commShiftIso_add, isoAdd_inv_app, NatTrans.naturality_assoc, comp_map, assoc,
       Iso.inv_hom_id_app_assoc, map_comp]
-    erw [← NatTrans.naturality_assoc, ← NatTrans.naturality_assoc]
-    dsimp
-    simp only [← Functor.map_comp_assoc]
+    simp only [← NatTrans.naturality_assoc, ← commShiftIso_inv_naturality_assoc,
+      ← Functor.map_comp_assoc]
     congr 4
     simp
 
@@ -625,15 +612,12 @@ lemma ofComp_compatibility :
     letI := ofComp e
     NatTrans.CommShift e.hom A := by
   letI := ofComp e
-  refine ⟨fun a => ?_⟩
+  refine ⟨fun a ↦ ?_⟩
   ext X
-  have : commShiftIso F a = OfComp.iso e a := rfl
-  simp only [comp_obj, NatTrans.comp_app, commShiftIso_comp_hom_app, this,
-    OfComp.map_iso_hom_app, assoc, Iso.inv_hom_id_app, comp_id, whiskerRight_app,
-    whiskerLeft_app, ← Functor.map_comp, Functor.map_id]
+  simp [commShiftIso_comp_hom_app, show F.commShiftIso a = OfComp.iso e a from rfl,
+    ← Functor.map_comp]
 
 end CommShift
-
 
 end Functor
 

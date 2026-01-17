@@ -271,7 +271,7 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
 def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op ⦋n⦌)
-  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
+  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ) (Cofan.ext (e.app Δ)
     (fun A => by simp [cofan, cofan']))
 
 @[reassoc]

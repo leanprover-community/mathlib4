@@ -488,6 +488,8 @@ def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
       hom₂ := obj₂.map φ
       hom₃ := obj₃.map φ }
 
+/-- Constructor for natural transformations between functors to the
+category of triangles. -/
 @[simps]
 def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
@@ -508,7 +510,8 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     · exact hom₂.naturality φ
     · exact hom₃.naturality φ
 
-/-- Constructor for morphisms between functors constructed by `functorHomMk`. -/
+/-- Constructor for natural transformations between functors constructed
+with `functorMk`. -/
 @[simps!]
 def functorHomMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}
@@ -523,6 +526,8 @@ def functorHomMk'
     functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
   functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
 
+/-- Constructor for natural isomorphisms between functors to the
+category of triangles. -/
 @[simps]
 def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
     (iso₂ : A ⋙ π₂ ≅ B ⋙ π₂) (iso₃ : A ⋙ π₃ ≅ B ⋙ π₃)
@@ -541,7 +546,8 @@ def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
         ← whiskerRight_comp, Iso.hom_inv_id, whiskerRight_id']
       apply comp_id)
 
-/-- Constructor for isomorphisms between functors constructed by `functorHomMk`. -/
+/-- Constructor for natural isomorphisms between functors constructed
+with `functorMk`. -/
 @[simps!]
 def functorIsoMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}

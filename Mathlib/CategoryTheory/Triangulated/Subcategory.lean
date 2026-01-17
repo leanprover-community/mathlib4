@@ -434,7 +434,7 @@ noncomputable instance hasShift :
     (fun X ↦ P.le_shift n _ X.2)) (fun _ => P.liftCompιIso _ _)
 
 instance commShiftι : P.ι.CommShift ℤ :=
-  Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
+  Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _
 
 -- these definitions are made irreducible to prevent (at least temporarily) any abuse of defeq
 attribute [irreducible] hasShift commShiftι

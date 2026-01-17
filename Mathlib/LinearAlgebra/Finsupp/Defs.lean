@@ -363,4 +363,13 @@ See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
     rw [map_smul]
     simp
 
+variable (R M ι)
+
+theorem ringHomEndFinsupp_surjective :
+    Function.Surjective (ringHomEndFinsupp (R := R) (M := M) ι) := by
+  intro f
+  obtain _ | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+  · exact ⟨0, Subsingleton.elim ..⟩
+  · exact ⟨_, (ringEquivEndFinsupp i).right_inv f⟩
+
 end Module.End

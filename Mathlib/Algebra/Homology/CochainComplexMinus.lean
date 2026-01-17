@@ -63,7 +63,7 @@ noncomputable instance : HasShift (Minus C) ℤ :=
     (fun n => ObjectProperty.liftCompιIso _ _ _)
 
 instance : (ι C).CommShift ℤ :=
-  Functor.CommShift.of_hasShiftOfFullyFaithful _ _ _
+  Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _
 
 end Minus
 
