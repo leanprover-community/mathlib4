@@ -603,9 +603,6 @@ open scoped MulCauchyProduct
 
 variable [Monoid M] [Finset.HasMulAntidiagonal M]
 variable [CommSemiring S] [AddCommMonoid E] [Module S E]
-variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
-variable [TopologicalSpace F]
-variable [Semiring R] [TopologicalSpace R]
 
 /-- For types with `HasMulAntidiagonal`, the multiplicative fiber equals the mulAntidiagonal. -/
 @[to_additive addFiber_eq_antidiagonal
@@ -620,6 +617,9 @@ lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
   rw [mulFiber_eq_mulAntidiagonal]
   exact (Finset.mulAntidiagonal x).finite_toSet
 
+variable [AddCommMonoid E'] [Module S E'] [AddCommMonoid F] [Module S F]
+variable [TopologicalSpace F]
+
 /-- For `HasMulAntidiagonal` types, convolution equals a finite sum over the mulAntidiagonal. -/
 @[to_additive (dont_translate := S) addConvolution_eq_sum_antidiagonal
   /-- For `HasAntidiagonal` types, additive convolution equals a finite sum
@@ -630,6 +630,8 @@ lemma convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M
   rw [← (Finset.mulAntidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
   exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => (L (f ab.1.1)) (g ab.1.2))
+
+variable [Semiring R] [TopologicalSpace R]
 
 /-- For `HasMulAntidiagonal` types, ring convolution equals a finite sum over the
 mulAntidiagonal. -/
