@@ -156,73 +156,7 @@ class LawfulInv (M₀ : Type*) [MonoidWithZero M₀] [Inv M₀] where
 
 export LawfulInv (inv_unit inv_of_not_isUnit)
 
-grind_pattern inv_of_not_isUnit => IsUnit x, x⁻¹
-
-namespace IsUnit
-
-variable [Inv M₀] [LawfulInv M₀]
-
-theorem inv_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ = ((h.unit⁻¹ : M₀ˣ) : M₀) := by
-  rw [← inv_unit]; simp
-
-theorem mul_inv_cancel₀ (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
-  rcases h with ⟨u, rfl⟩
-  rw [inv_unit, Units.mul_inv]
-
-theorem inv_mul_cancel₀ (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
-  rcases h with ⟨u, rfl⟩
-  rw [inv_unit, Units.inv_mul]
-
-@[grind =]
-theorem _root_.isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 := by
-  refine ⟨mul_inv_cancel₀ _, ?_⟩
-  by_cases hzero : NeZero (1 : M₀)
-  · contrapose
-    intro h
-    simp [inv_of_not_isUnit _ h]
-  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
-    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
-
-@[grind =]
-theorem _root_.isUnit_iff_inv_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ * x = 1 := by
-  refine ⟨inv_mul_cancel₀ _, ?_⟩
-  by_cases hzero : NeZero (1 : M₀)
-  · contrapose
-    intro h
-    simp [inv_of_not_isUnit _ h]
-  · replace hzero : (0 : M₀) = 1 := by rw [not_neZero] at hzero; exact hzero.symm
-    exact fun _ => ⟨1, eq_of_zero_eq_one hzero _ _⟩
-
-theorem mul_inv_cancel_right₀ (x y : M₀) (h : IsUnit x) : y * x * x⁻¹ = y := by grind
-
-theorem inv_mul_cancel_right₀ (x y : M₀) (h : IsUnit x) : y * x⁻¹ * x = y := by grind
-
-theorem mul_inv_cancel_left₀ (x y : M₀) (h : IsUnit x) : x * (x⁻¹ * y) = y := by grind
-
-theorem inv_mul_cancel_left₀ (x y : M₀) (h : IsUnit x) : x⁻¹ * (x * y) = y := by grind
-
-theorem inv_mul_eq_iff_eq_mul₀ (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z :=
-  ⟨fun h1 => by rw [← h1, mul_inv_cancel_left₀ _ _ h],
-  fun h1 => by rw [h1, inv_mul_cancel_left₀ _ _ h]⟩
-
-theorem eq_mul_inv_iff_mul_eq₀ (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ ↔ x * z = y := by grind
-
-theorem inv₀ {a : M₀} : IsUnit a → IsUnit a⁻¹
-  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inv_unit u).symm⟩
-
-@[simp, grind =]
-theorem _root_.isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a :=
-  ⟨fun h => by
-    cases subsingleton_or_nontrivial M₀
-    · convert h
-    · contrapose h
-      rw [inv_of_not_isUnit _ h]
-      exact not_isUnit_zero,
-    inv₀⟩
-
-end IsUnit
-
-namespace Ring
+namespace MonoidWithZero
 
 variable (M₀) [Inv M₀] [LawfulInv M₀]
 
@@ -251,7 +185,83 @@ theorem lawfulInv_invOfLawful (M₀' : Type*) [MonoidWithZero M₀'] : LawfulInv
 
 end ofLawful
 
-end Ring
+end MonoidWithZero
+
+namespace IsUnit
+
+variable [Inv M₀] [LawfulInv M₀]
+
+theorem inv_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ = ((h.unit⁻¹ : M₀ˣ) : M₀) := by
+  rw [← inv_unit]; simp
+
+theorem mul_inv_cancel₀ (x : M₀) (h : IsUnit x) : x * x⁻¹ = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.mul_inv]
+
+theorem inv_mul_cancel₀ (x : M₀) (h : IsUnit x) : x⁻¹ * x = 1 := by
+  rcases h with ⟨u, rfl⟩
+  rw [inv_unit, Units.inv_mul]
+
+theorem inv₀ {a : M₀} : IsUnit a → IsUnit a⁻¹
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inv_unit u).symm⟩
+
+theorem _root_.isUnit_iff_inv_ne_zero [Nontrivial M₀] {x : M₀} : IsUnit x ↔ x⁻¹ ≠ 0 :=
+  ⟨(IsUnit.inv₀ · |>.ne_zero), by simpa using mt <| inv_of_not_isUnit (x := x)⟩
+
+grind_pattern _root_.isUnit_iff_inv_ne_zero => IsUnit x, x⁻¹
+
+theorem _root_.not_isUnit_iff_inv_eq_zero [Nontrivial M₀] {x : M₀} : ¬ IsUnit x ↔ x⁻¹ = 0 := by
+  simpa using not_iff_not.mpr isUnit_iff_inv_ne_zero
+
+@[grind =]
+theorem _root_.isUnit_iff_mul_inv_cancel (x : M₀) : IsUnit x ↔ x * x⁻¹ = 1 := by
+  nontriviality M₀
+  refine ⟨mul_inv_cancel₀ _, ?_⟩
+  contrapose
+  simp +contextual [not_isUnit_iff_inv_eq_zero]
+
+@[grind =]
+theorem _root_.isUnit_iff_inv_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ * x = 1 := by
+  nontriviality M₀
+  refine ⟨inv_mul_cancel₀ x, ?_⟩
+  contrapose
+  simp +contextual [not_isUnit_iff_inv_eq_zero]
+
+theorem mul_inv_cancel_right₀ {x : M₀} (y : M₀) (h : IsUnit x) : y * x * x⁻¹ = y := by grind
+
+theorem inv_mul_cancel_right₀ {x : M₀} (y : M₀) (h : IsUnit x) : y * x⁻¹ * x = y := by grind
+
+theorem mul_inv_cancel_left₀ {x : M₀} (y : M₀) (h : IsUnit x) : x * (x⁻¹ * y) = y := by grind
+
+theorem inv_mul_cancel_left₀ {x : M₀} (y : M₀) (h : IsUnit x) : x⁻¹ * (x * y) = y := by grind
+
+theorem inv_mul_eq_iff_eq_mul₀ (x y z : M₀) (h : IsUnit x) : x⁻¹ * y = z ↔ y = x * z :=
+  ⟨fun h1 => by rw [← h1, mul_inv_cancel_left₀ _ h],
+  fun h1 => by rw [h1, inv_mul_cancel_left₀ _ h]⟩
+
+theorem eq_mul_inv_iff_mul_eq₀ (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ ↔ x * z = y := by grind
+
+@[simp, grind =]
+theorem _root_.isUnit_inv_iff {a : M₀} : IsUnit a⁻¹ ↔ IsUnit a := by
+  nontriviality M₀
+  refine ⟨?_, inv₀⟩
+  contrapose
+  simp +contextual [not_isUnit_iff_inv_eq_zero]
+
+theorem inv_inv₀ {a : M₀} (h : IsUnit a) : a⁻¹⁻¹ = a := by
+  obtain ⟨u, rfl⟩ := h
+  rw [inv_unit, inv_unit, inv_inv]
+
+grind_pattern inv_inv₀ => IsUnit a, a⁻¹⁻¹
+
+@[simp, grind =]
+theorem _root_.inv_inv_inv₀ {a : M₀} : a⁻¹⁻¹⁻¹ = a⁻¹ := by
+  nontriviality M₀
+  by_cases h : IsUnit a
+  · rw [h.inv_inv₀]
+  · simp [not_isUnit_iff_inv_eq_zero.mp h]
+
+end IsUnit
 
 namespace Units
 
