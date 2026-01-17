@@ -494,8 +494,6 @@ def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
   map_mul' x y :=
     (mul_apply ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
 
-variable [DecidableEq M]
-
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R)
 /-- An additive product monoid algebra is a nested additive monoid algebra. -/]

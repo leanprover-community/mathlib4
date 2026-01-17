@@ -143,8 +143,6 @@ def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
   commutes' r := by simp [Unique.eq_default]
 
-variable [DecidableEq M]
-
 variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/
 @[to_additive (dont_translate := R A)
@@ -311,8 +309,6 @@ theorem domCongr_refl : domCongr R A (.refl M) = .refl := by ext; simp
 
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : M ≃* N) : (domCongr R A e).symm = domCongr R A e.symm := rfl
-
-variable [DecidableEq M] [DecidableEq N]
 
 variable (R) in
 /-- Nested monoid algebras can be taken in an arbitrary order. -/
