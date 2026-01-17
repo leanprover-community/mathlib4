@@ -383,7 +383,7 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 
-/-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
+/-- Production by `g₀` can be mirrored by production by `g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Produces w₁ w₂) :
     g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -395,7 +395,7 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
-/-- Derivation by `G.g₀` can be mirrored by derivation by `G.g`. -/
+/-- Derivation by `g₀` can be mirrored by derivation by `g`. -/
 lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Derives w₁ w₂) :
     g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -403,7 +403,7 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
-/-- A `Symbol` comes from the embedding or is a terminal iff it is one of those nonterminals that
+/-- A `Symbol` stems from the embedding or is a terminal iff it is one of those nonterminals that
 result from projecting or it is any terminal. -/
 inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
   | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
@@ -417,8 +417,8 @@ lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
     (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
   simpa [FromEmbeddingOrTerminalString] using hs
 
-/-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
-nonterminals that `G.g₀` lacks. -/
+/-- Production by `g` can be mirrored by `g₀` production if the first word does not contain any
+nonterminals that `g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Produces w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Produces
@@ -488,8 +488,8 @@ private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
     have both := produces_filterMap orig ih.right
     exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
 
-/-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
-any nonterminals that `G.g₀` lacks. -/
+/-- Derivation by `g` can be mirrored by `g₀` derivation if the starting word does not contain
+any nonterminals that `g₀` lacks. -/
 lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
     g₀.Derives
