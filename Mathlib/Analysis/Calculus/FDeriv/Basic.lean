@@ -672,13 +672,6 @@ protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x)
     ContinuousAt f x :=
   hf.hasFDerivAt.continuousAt
 
-theorem HasFDerivAtFilter.isBigOTVS_sub_rev (hf : HasFDerivAtFilter f f' x L)
-    (hf' : Topology.IsInducing f') :
-    (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
-  have : (· - x) =O[𝕜; L] (f' <| · - x) :=
-    f'.toLinearMap.isBigOTVS_rev_comp <| by rw  [hf'.nhds_eq_comap, map_zero, f'.coe_coe]
-  _
-
 theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
     (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
