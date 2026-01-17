@@ -50,6 +50,7 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 namespace IsUltrametricDist
 section algNormOfAlgEquiv
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a normed field `K`, a finite algebraic extension `L/K` and `σ : L ≃ₐ[K] L`, the function
 `L → ℝ` sending `x : L` to `‖ σ x ‖`, where `‖ ⬝ ‖` is any power-multiplicative algebra norm on `L`
 extending the norm on `K`, is an algebra norm on `K`. -/
