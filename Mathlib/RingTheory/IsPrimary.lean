@@ -58,7 +58,7 @@ lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ 
     m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
   h.right hrm
 
-protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
+protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
     (h : (S.colon Set.univ).radical = (T.colon Set.univ).radical) :
     (S ⊓ T).IsPrimary := by
   obtain ⟨_, hS⟩ := hS
