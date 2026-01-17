@@ -328,9 +328,7 @@ section projectiveSeminorm_tprod
 theorem projectiveSeminorm_tprod_eq_of_dual_vectors {f : Π i, StrongDual 𝕜 (E i)}
     (m : Π i, E i) (hf₁ : ∀ i, ‖f i‖ ≤ 1) (hf₂ : ∀ i, ‖f i (m i)‖ = ‖m i‖) :
     ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ := by
-  apply eq_of_le_of_ge (projectiveSeminorm_tprod_le m)
-  haveI := nonempty_subtype.mpr (nonempty_lifts (⨂ₜ[𝕜] i, m i))
-  apply le_ciInf (fun x ↦ ?_)
+  apply eq_of_le_of_ge (projectiveSeminorm_tprod_le m) (le_ciInf (fun x ↦ ?_))
   have hx := congr_arg (norm ∘ dualDistrib (⨂ₜ[𝕜] i, f i)) ((mem_lifts_iff _ _).mp x.prop)
   simp only [Function.comp_apply, dualDistrib_apply, ContinuousLinearMap.coe_coe, hf₂, norm_prod,
      map_list_sum, List.map_map] at hx

@@ -22,6 +22,8 @@ Nothing builds on this file. It could be removed.
    agrees with the primal definition
 -/
 
+set_option linter.privateModule false
+
 open scoped TensorProduct
 
 namespace PiTensorProduct
