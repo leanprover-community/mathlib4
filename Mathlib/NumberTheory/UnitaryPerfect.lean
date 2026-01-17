@@ -3,9 +3,11 @@ Copyright (c) 2025 Zhipeng Chen, Haolun Tang, Jing Yi Zhan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhipeng Chen, Haolun Tang, Jing Yi Zhan
 -/
-import Mathlib.NumberTheory.UnitaryDivisor
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Factorization.Induction
+module
+
+public import Mathlib.NumberTheory.UnitaryDivisor
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Induction
 
 /-!
 # Unitary Perfect Numbers
@@ -27,8 +29,8 @@ divisible by exactly 2.
 
 * `Nat.no_odd_unitary_perfect`: There are no odd unitary perfect numbers greater than 1.
 * `Nat.UnitaryPerfect.even`: Every unitary perfect number is even.
-* `Nat.UnitaryPerfect.structure_divides_odd_part`: If `m = 2^a × M` is a UPN with `M` odd,
-  then `(1 + 2^a) ∣ M`.
+* `Nat.UnitaryPerfect.eq_two_pow_mul_odd`: Every unitary perfect number has the form `2^a * k`
+  where `a ≥ 1` and `k` is odd.
 
 ## References
 
@@ -45,6 +47,8 @@ unitary perfect number, perfect number, number theory
 @[expose] public section
 
 namespace Nat
+
+open scoped ArithmeticFunction.UnitaryDivisorSum
 
 /-! ### Definition -/
 
@@ -170,49 +174,18 @@ theorem UnitaryPerfect.even {n : ℕ} (h : UnitaryPerfect n) : Even n := by
     | inr hgt1 =>
       exact absurd ⟨hn0, hsum⟩ (no_odd_unitary_perfect hodd hgt1)
 
-/-! ### Structural Constraints -/
-
-/-- **Structural Divisibility Theorem**: If `m = 2^a × M` is a unitary perfect number
-with `M` odd and `a ≥ 1`, then `(1 + 2^a)` divides `M`.
-
-This is a key structural constraint on unitary perfect numbers. It follows from the
-multiplicativity of `σ*` and the UPN equation `σ*(m) = 2m`:
-
-From `σ*(2^a × M) = σ*(2^a) × σ*(M) = (1 + 2^a) × σ*(M) = 2 × 2^a × M = 2^{a+1} × M`,
-we get `(1 + 2^a) × σ*(M) = 2^{a+1} × M`, which implies `(1 + 2^a) | M`. -/
-theorem UnitaryPerfect.structure_divides_odd_part
-    (a M : ℕ) (hM : Odd M) (ha : a ≠ 0)
-    (h : σ* (2 ^ a * M) = 2 * (2 ^ a * M)) :
-    (1 + 2 ^ a) ∣ M := by
-  have hM0 : M ≠ 0 := Odd.pos hM |>.ne'
-  have h2a0 : 2 ^ a ≠ 0 := pow_ne_zero _ (by norm_num)
-  have hcop : Nat.Coprime (2 ^ a) M :=
-    Nat.Coprime.pow_left a (Odd.coprime_two_left hM)
-  have hmul : σ* (2 ^ a * M) = σ* (2 ^ a) * σ* M :=
-    unitaryDivisorSum_mul hcop h2a0 hM0
-  have htwo : σ* (2 ^ a) = 1 + 2 ^ a := by
-    rw [unitaryDivisorSum_prime_pow Nat.prime_two ha]
-    ring
-  -- From the equations: (1 + 2^a) × σ*(M) = 2^{a+1} × M
-  have hdiv_eq : (1 + 2 ^ a) * σ* M = 2 ^ (a + 1) * M := by
-    calc (1 + 2 ^ a) * σ* M = σ* (2 ^ a) * σ* M := by rw [htwo]
-      _ = σ* (2 ^ a * M) := hmul.symm
-      _ = 2 * (2 ^ a * M) := h
-      _ = 2 ^ (a + 1) * M := by ring
-  -- So (1 + 2^a) | M × 2^{a+1}
-  have hdiv' : (1 + 2 ^ a) ∣ M * 2 ^ (a + 1) := by
-    use σ* M
-    calc M * 2 ^ (a + 1) = 2 ^ (a + 1) * M := by ring
-      _ = (1 + 2 ^ a) * σ* M := hdiv_eq.symm
-  -- Since gcd(1 + 2^a, 2^{a+1}) = 1 (as 1 + 2^a is odd), we have (1 + 2^a) | M
-  have hcop2a : Nat.Coprime (1 + 2 ^ a) (2 ^ (a + 1)) := by
-    have h_odd : Odd (1 + 2 ^ a) := by
-      have heven : Even (2 ^ a) := Even.pow_of_ne_zero (by decide) ha
-      have : 2 ^ a + 1 = 1 + 2 ^ a := by ring
-      rw [← this]
-      exact Even.add_one heven
-    have hcop2 : Nat.Coprime 2 (1 + 2 ^ a) := Odd.coprime_two_left h_odd
-    exact Nat.Coprime.pow_right _ hcop2.symm
-  exact Nat.Coprime.dvd_of_dvd_mul_right hcop2a hdiv'
+/-- Every unitary perfect number can be written as `2^a * k` where `a ≥ 1` and `k` is odd. -/
+theorem UnitaryPerfect.eq_two_pow_mul_odd {n : ℕ} (h : UnitaryPerfect n) :
+    ∃ a k : ℕ, a ≥ 1 ∧ Odd k ∧ n = 2 ^ a * k := by
+  have heven := h.even
+  obtain ⟨hn0, _⟩ := h
+  obtain ⟨a, k, hk_odd, hdecomp⟩ := Nat.exists_eq_two_pow_mul_odd hn0
+  refine ⟨a, k, ?_, hk_odd, hdecomp⟩
+  by_contra ha_zero
+  push_neg at ha_zero
+  have : a = 0 := by omega
+  subst this
+  rw [hdecomp, pow_zero, one_mul] at heven
+  exact absurd hk_odd (Nat.not_odd_iff_even.mpr heven)
 
 end Nat
