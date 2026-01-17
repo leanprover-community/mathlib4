@@ -308,7 +308,7 @@ lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
   exact mem_or_neg_mem_closure_baseOf P.coroot (g : N →+ ℚ) i (hg₀ i) (by simp)
 
 /-- An alternate constructor for `RootPairing.Base` which demands the axioms for roots but not for
-coroots. -/
+coroots. (This requires the ambient root system to be crystallographic and reduced.) -/
 noncomputable def Base.mk' (s : Set ι)
     (hli : LinearIndepOn R P.root s)
     (hsp : ∀ i, P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
