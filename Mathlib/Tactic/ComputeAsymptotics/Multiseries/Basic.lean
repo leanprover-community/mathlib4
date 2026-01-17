@@ -109,6 +109,12 @@ theorem zero_def {basis_hd basis_tl} : (0 : PreMS (basis_hd :: basis_tl)) = mk .
 theorem SeqMS.zero_def {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (0 : SeqMS basis_hd basis_tl) = .nil := rfl
 
+#check SeqMS.const.eq_def
+
+theorem SeqMS.const_def {basis_hd basis_tl} (c : ℝ) :
+    SeqMS.const basis_hd basis_tl c = SeqMS.cons 0 (PreMS.const basis_tl c) .nil := by
+  simp [SeqMS.const]
+
 @[simp]
 theorem const_toFun' {basis : Basis} {c : ℝ} : (const basis c).toFun = fun _ ↦ c := by
   match basis with
@@ -141,6 +147,10 @@ theorem zero_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {co
     {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
     0 ≠ mk (basis_hd := basis_hd) (.cons exp coef tl) f :=
   cons_ne_zero.symm
+
+theorem SeqMS.one_def {basis_hd basis_tl} :
+    @SeqMS.one basis_hd basis_tl = SeqMS.cons 0 PreMS.one .nil := by
+  simp [SeqMS.one, SeqMS.const_def, PreMS.one]
 
 @[simp]
 theorem one_toFun {basis : Basis} : (@one basis).toFun = 1 := by
@@ -314,15 +324,24 @@ theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}
 
 section BasisOperations
 
+mutual
+
+def SeqMS.updateBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
+    (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd ex.getBasis :=
+  ms.map id (updateBasis ex ·)
+
 /-- Given a basis extension `ex`, and a multiseries `ms`, immerses `ms` into the
 basis `ex.getBasis`. -/
 def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
     PreMS ex.getBasis :=
   match ex with
   | .nil => ms
-  | .keep basis_hd ex_tl => mk (ms.seq.map id (updateBasis ex_tl ·)) ms.toFun
+  | .keep basis_hd ex_tl => mk (ms.seq.updateBasis ex_tl) ms.toFun
   | .insert _ ex_tl => mk (.cons 0 (ms.updateBasis ex_tl) .nil) ms.toFun
 
+end
+
+-- TODO: remove. Unused
 /-- Extends basis with `f` in the middle. -/
 def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : PreMS (left ++ right)) :
     PreMS (left ++ f :: right) :=
@@ -330,12 +349,21 @@ def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : PreMS (left +
   | [] => mk (.cons 0 ms .nil) ms.toFun
   | List.cons _ _ => mk (ms.seq.map id (fun coef => extendBasisMiddle f coef)) ms.toFun
 
+mutual
+
+def SeqMS.extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
+    (ms : SeqMS basis_hd basis_tl) :
+    SeqMS basis_hd (basis_tl ++ [f]) :=
+  ms.map id (extendBasisEnd f ·)
+
 /-- Extends basis with `f` at right end. -/
 -- TODO: it's just extendMiddle with right = [].
 def extendBasisEnd {basis : Basis} (f : ℝ → ℝ) (ms : PreMS basis) : PreMS (basis ++ [f]) :=
   match basis with
   | [] => const [f] ms
-  | List.cons _ _ => mk (ms.seq.map id (fun coef => extendBasisEnd f coef)) ms.toFun
+  | List.cons _ _ => mk (ms.seq.extendBasisEnd f) ms.toFun
+
+end
 
 -- TODO: move
 @[simp]
@@ -390,9 +418,35 @@ lemma map_id_Approximates {basis_hd basis_tl basis_tl'}
   simp [h_tl]
 
 @[simp]
+theorem updateBasis_keep_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
+    {ms : PreMS (basis_hd :: basis_tl)} :
+    (ms.updateBasis (.keep _ ex)).seq = ms.seq.updateBasis ex := by
+  simp [PreMS.updateBasis]
+
+@[simp]
 theorem updateBasis_toFun {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis} :
     (ms.updateBasis ex).toFun = ms.toFun := by
-  fun_cases updateBasis <;> rfl
+  fun_cases updateBasis <;> simp [updateBasis]
+
+theorem SeqMS.updateBasis_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex : BasisExtension basis_tl} :
+    (SeqMS.updateBasis (basis_hd := basis_hd) ex (.nil)) = .nil := by
+  simp [SeqMS.updateBasis]
+
+theorem SeqMS.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex : BasisExtension basis_tl}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
+    (SeqMS.updateBasis ex (.cons exp coef tl)) =
+    .cons exp (coef.updateBasis ex) (tl.updateBasis ex) := by
+  simp [SeqMS.updateBasis]
+
+mutual
+
+theorem SeqMS.updateBasis_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
+    {ms : SeqMS basis_hd basis_tl}
+    (h_wo : ms.WellOrdered) :
+    (ms.updateBasis ex).WellOrdered := by
+  simp [SeqMS.updateBasis]
+  apply SeqMS.map_id_WellOrdered h_wo
+  apply updateBasis_WellOrdered
 
 theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) :
@@ -404,9 +458,10 @@ theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms 
     apply WellOrdered.cons_nil
     exact updateBasis_WellOrdered h_wo
   | @keep basis_hd basis_tl ex_tl =>
-    simp [updateBasis]
-    apply SeqMS.map_id_WellOrdered (by simpa using h_wo)
-    apply updateBasis_WellOrdered
+    simp [updateBasis] at h_wo ⊢
+    apply SeqMS.updateBasis_WellOrdered ex_tl h_wo
+
+end
 
 theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
     (h_basis : WellFormedBasis ex.getBasis)
@@ -415,7 +470,7 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis} {ms
   cases ex with
   | nil => simp
   | keep basis_hd ex_tl =>
-    simp [updateBasis]
+    simp [updateBasis, SeqMS.updateBasis]
     apply map_id_Approximates h_approx
     · intro coef h_coef
       apply updateBasis_Approximates h_basis.tail h_coef
@@ -477,14 +532,38 @@ theorem extendBasisEnd_toFun {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis
   | nil => simp [extendBasisEnd, toReal]
   | cons => simp [extendBasisEnd]
 
+@[simp]
+theorem extendBasisEnd_seq {basis_hd basis_tl} {b : ℝ → ℝ} {ms : PreMS (basis_hd :: basis_tl)} :
+    (ms.extendBasisEnd b).seq = SeqMS.extendBasisEnd b ms.seq := by
+  simp [extendBasisEnd]
+
+theorem SeqMS.extendBasisEnd_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} :
+    (SeqMS.extendBasisEnd (basis_hd := basis_hd) (basis_tl := basis_tl) f (.nil)) = .nil := by
+  simp [SeqMS.extendBasisEnd]
+
+theorem SeqMS.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
+    (SeqMS.extendBasisEnd f (.cons exp coef tl)) = .cons exp (coef.extendBasisEnd f) (tl.extendBasisEnd f) := by
+  simp [SeqMS.extendBasisEnd]
+
+mutual
+
+theorem SeqMS.extendBasisEnd_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    {ms : SeqMS basis_hd basis_tl} (h_wo : ms.WellOrdered) :
+    (ms.extendBasisEnd f).WellOrdered := by
+  simp [SeqMS.extendBasisEnd]
+  apply SeqMS.map_id_WellOrdered h_wo
+  apply extendBasisEnd_WellOrdered
+
 theorem extendBasisEnd_WellOrdered {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : (ms.extendBasisEnd b).WellOrdered := by
   cases basis with
   | nil => simpa only [extendBasisEnd] using const_WellOrdered
   | cons basis_hd basis_tl =>
-  simp [List.cons_append, extendBasisEnd, List.append_eq]
-  apply SeqMS.map_id_WellOrdered (by simpa using h_wo)
-  apply extendBasisEnd_WellOrdered
+  simp at *
+  exact SeqMS.extendBasisEnd_WellOrdered h_wo
+
+end
 
 theorem extendBasisEnd_Approximates {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
     (h_basis : WellFormedBasis (basis ++ [b]))
@@ -495,7 +574,7 @@ theorem extendBasisEnd_Approximates {basis : Basis} {b : ℝ → ℝ} {ms : PreM
     simp only [List.nil_append, extendBasisEnd]
     apply const_Approximates h_basis
   | cons basis_hd basis_tl =>
-  simp only [List.cons_append, extendBasisEnd, List.append_eq]
+  simp only [List.cons_append, extendBasisEnd, SeqMS.extendBasisEnd, List.append_eq]
   apply map_id_Approximates h_approx
   · intro coef h_coef
     apply extendBasisEnd_Approximates h_basis.tail h_coef

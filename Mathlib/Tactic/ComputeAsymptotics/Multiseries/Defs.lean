@@ -453,7 +453,7 @@ end simp
 
 end SeqMS
 
-def ofReal (c : ℝ) : PreMS [] := c
+abbrev ofReal (c : ℝ) : PreMS [] := c
 
 /-- Convert a multiseries in empty basis to a real number. -/
 def toReal (ms : PreMS []) : ℝ := ms

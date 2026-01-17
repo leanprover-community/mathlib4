@@ -38,10 +38,25 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
   | _ => panic! "Unexpected basis in getLeadingTerm"
 
 /-- Given a trimmed multiseries `ms`, computes its leading term with a proof. -/
-def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
+partial def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     MetaM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
-  let rhs ← getLeadingTerm ms
-  return ⟨rhs, (q(Eq.refl $rhs) : Expr)⟩
+  match basis with
+  | ~q(List.nil) =>
+    return ⟨q(⟨($ms).toReal, List.nil⟩), q(PreMS.const_leadingTerm)⟩
+  | ~q(List.cons $basis_hd $basis_tl) =>
+    match ms with
+    | ~q(PreMS.mk .nil $f) =>
+      return ⟨q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩), q(PreMS.nil_leadingTerm)⟩
+    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
+      let ⟨coef_t, coef_h_eq⟩ ← getLeadingTermWithProof coef
+      match coef_t with
+      | ~q(⟨$coef_coef, $coef_exps⟩) =>
+        return ⟨q(⟨$coef_coef, $exp :: $coef_exps⟩), q(PreMS.cons_leadingTerm' $coef_h_eq)⟩
+      | _ =>
+        return ⟨q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩), q(PreMS.cons_leadingTerm)⟩
+    | _ =>
+      return ⟨q(PreMS.leadingTerm $ms), q(rfl)⟩
+  | _ => panic! "Unexpected basis in getLeadingTerm"
 
 /-- Proves that the coefficient of the leading term of a trimmed multiseries is positive.
 Return `none` if cannot prove it. -/

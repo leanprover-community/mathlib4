@@ -174,10 +174,10 @@ returns the multiseries representing `f ^ a`. -/
 def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   logBasis := x.logBasis
-  val := q(PreMS.pow $x.val $a)
+  val := q(PreMS.npow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
-  h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
+  h_wo := q(PreMS.npow_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.npow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
@@ -186,9 +186,9 @@ returns the multiseries representing `f ^ a`. -/
 def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   logBasis := x.logBasis
-  val := q(PreMS.pow $x.val $a)
+  val := q(PreMS.zpow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.zpow_WellOrdered $x.h_wo)
   h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis

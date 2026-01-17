@@ -27,6 +27,12 @@ namespace ComputeAsymptotics
 theorem init_basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] :=
   WellFormedBasis.single _ (fun _ a ↦ a)
 
+theorem monomialRpow_toFun_eq_inv (basis : Basis) (n : Fin (List.length basis)) :
+    (@PreMS.monomialRpow basis n (-1)).toFun =ᶠ[atTop] basis[n]⁻¹ := by
+  apply EventuallyEq.of_eq
+  ext
+  simp [Real.rpow_neg_one]
+
 -- theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : ℝ → ℝ)
 --     (h_approx : ms.Approximates (f ^ (-1 : ℝ))) :
 --     ms.Approximates (f⁻¹) := by
@@ -77,9 +83,11 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
       return MS.mul ms1 ms2
   | (``Inv.inv, #[_, _, (arg : Q(ℝ))]) =>
     if arg == x then
+      -- let n := (← get).n_id
       let res ← BasisM.monomialRpow (← get).n_id q(-1)
       let f : Q(ℝ → ℝ) := ← mkLambdaFVars #[x] q($arg⁻¹)
-      return ← res.replaceFun q($f) (← mkSorry q(($res.val).toFun =ᶠ[atTop] $f) false)
+      return ← res.replaceFun q($f) <|
+        ← mkAppM ``monomialRpow_toFun_eq_inv #[res.basis, (← get).n_id]
       -- return {res with
       --   f := ← mkLambdaFVars #[x] q($arg⁻¹)
       --   h_approx := ← mkAppM ``monomial_rpow_Approximates_inv
@@ -160,9 +168,9 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     let #[x] := args | throwError ("Function must me in the form fun x ↦ ...\n" ++
       "Calling `eta_expand` before `compute asymptotics might help.")
     let ms ← createMS x body
-    dbg_trace ← ppExpr ms.val
+    -- dbg_trace ← ppExpr ms.val
     let ⟨ms_trimmed, h_trimmed?⟩ ← trimPartialMS ms
-    dbg_trace "Trimmed: {← ppExpr ms_trimmed.val}"
+    -- dbg_trace "Trimmed: {← ppExpr ms_trimmed.val}"
     let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis
       | panic! "Unexpected basis in computeTendstoAtTop"
     -- I don't know how to avoid Expr here.
@@ -170,32 +178,34 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     | ~q(PreMS.mk .nil $f) =>
       pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
+      dbg_trace "f: {← ppExpr f}"
       let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
-      dbg_trace f!"leading: {← ppExpr leading}"
+      -- dbg_trace f!"leading: {← ppExpr leading}"
       let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>
         match ← compareReal coef with
         | .neg h_coef =>
-          pure (q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+          pure q(PreMS.tendsto_bot_of_FirstIsPos (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
+            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef rfl)
         | .pos h_coef =>
-          pure (q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx
-            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+          pure q(PreMS.tendsto_top_of_FirstIsPos (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
+            $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef rfl)
         | .zero _ => panic! "Unexpected zero coef with FirstIsPos"
       | .neg h_exps =>
-        pure (q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx
-          $h_leading_eq $h_exps) : Expr)
+        pure q(PreMS.tendsto_zero_of_FirstIsNeg (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
+          $h_leading_eq $h_exps rfl)
       | .zero h_exps =>
-        pure (q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx
-          $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
+        pure (q(PreMS.tendsto_const_of_AllZero (f := $f) $ms_trimmed.h_wo $ms_trimmed.h_approx
+          $h_trimmed?.get! $ms_trimmed.h_basis $h_leading_eq $h_exps rfl) : Expr)
     | _ => panic! "Unexpected result of trimMS"
     let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto
       | panic! "Unexpected h_tendsto's universe level"
     let ~q(@Tendsto ℝ ℝ $g atTop $limit) := t | panic! "Unexpected h_tendsto's type"
-    haveI' : $g =Q ($ms.val).toFun := ⟨⟩
-    let res := h_tendsto
-    return ⟨limit, res⟩
+
+
+    -- haveI' : $g =Q ($ms.val).toFun := ⟨⟩
+    return ⟨limit, h_tendsto⟩
 
 /-- Given a function `f`, returns the limit and the proof that `f` tends to it at `source`. -/
 def computeTendsto (f : Q(ℝ → ℝ)) (source : Q(Filter ℝ)) :
@@ -203,6 +213,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) (source : Q(Filter ℝ)) :
   match source with
   | ~q(atTop) =>
     let ⟨limit, h_tendsto⟩ ← computeTendstoAtTop q($f)
+    -- dbg_trace "h_tendsto: {← ppExpr (← inferType h_tendsto)}"
     return ⟨q($limit), q($h_tendsto)⟩
   | ~q(atBot) =>
     let ⟨limit, h_tendsto⟩ ← computeTendstoAtTop q(fun x ↦ $f (-x))
@@ -255,6 +266,7 @@ def proveTendstoReal (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
       throwError m!"The tactic proved that the function {← ppExpr f} tends to {← ppExpr limit}, " ++
         m!"not {← ppExpr target}."
   else
+    dbg_trace "h_tendsto: {← ppExpr (← inferType h_tendsto)}"
     pure h_tendsto
 
 /-- Proves that `f : α → ℝ` tends to `target` at `source`. -/

@@ -141,10 +141,20 @@ noncomputable def SeqMS.pow {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) (
 then `ms.pow a` approximates `f^a`. -/
 noncomputable def pow {basis : Basis} (ms : PreMS basis) (a : ℝ) : PreMS basis :=
   match basis with
-  | [] => Real.rpow ms a
+  | [] => ms.toReal ^ a
   | List.cons _ _ => mk (SeqMS.pow ms.seq a) (ms.toFun ^ a)
 
 end
+
+noncomputable def npow {basis : Basis} (ms : PreMS basis) (a : ℕ) : PreMS basis :=
+  match basis with
+  | [] => ms.toReal ^ a
+  | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
+
+noncomputable def zpow {basis : Basis} (ms : PreMS basis) (a : ℤ) : PreMS basis :=
+  match basis with
+  | [] => ms.toReal ^ a
+  | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
 
 @[simp]
 theorem pow_toFun {basis : Basis} {ms : PreMS basis} {a : ℝ} :
@@ -390,16 +400,51 @@ theorem pow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℝ}
       · exact this
       · positivity
 
+theorem npow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℕ} :
+    (ms.npow a) = ms.pow a := by
+  cases basis with
+  | nil => simp [npow, pow, toReal]
+  | cons basis_hd basis_tl =>
+    simp [npow, pow]
+    ext t
+    simp
+
+theorem zpow_eq_pow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
+    (ms.zpow a) = ms.pow a := by
+  cases basis with
+  | nil => simp [zpow, pow, toReal]
+  | cons basis_hd basis_tl =>
+    simp [zpow, pow]
+    ext t
+    simp
+
+@[simp]
+theorem npow_toFun {basis : Basis} {ms : PreMS basis} {a : ℕ} :
+    (ms.npow a).toFun = ms.toFun ^ a := by
+  ext t
+  simp [npow_eq_pow]
+
 @[simp]
 theorem zpow_toFun {basis : Basis} {ms : PreMS basis} {a : ℤ} :
-    (ms.pow a).toFun = ms.toFun ^ a := by
+    (ms.zpow a).toFun = ms.toFun ^ a := by
   ext t
-  simp
+  simp [zpow_eq_pow]
+
+theorem npow_WellOrdered {basis : Basis} {ms : PreMS basis} {a : ℕ}
+    (h_wo : ms.WellOrdered) : (ms.npow a).WellOrdered := by
+  rw [npow_eq_pow]
+  apply pow_WellOrdered h_wo
+
+theorem zpow_WellOrdered {basis : Basis} {ms : PreMS basis} {a : ℤ}
+    (h_wo : ms.WellOrdered) : (ms.zpow a).WellOrdered := by
+  rw [zpow_eq_pow]
+  apply pow_WellOrdered h_wo
 
 theorem zpow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℤ}
     (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
-    (ms.pow a).Approximates := by
+    (ms.zpow a).Approximates := by
+  rw [zpow_eq_pow]
   rcases lt_trichotomy 0 ms.realCoef with (h_leading | h_leading | h_leading)
   · apply pow_Approximates <;> assumption
   · have : IsZero ms := by apply IsZero_of_leadingTerm_zero_coef h_trimmed h_leading.symm
@@ -428,6 +473,13 @@ theorem zpow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℤ}
       simp [← mul_zpow]
     rw [h_eq]
     apply mulConst_Approximates h_neg_approx
+
+theorem npow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℕ}
+    (h_basis : WellFormedBasis basis) (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed) :
+    (ms.npow a).Approximates := by
+  rw [npow_eq_pow, show (a : ℝ) = (a : ℤ) by simp, ← zpow_eq_pow]
+  apply zpow_Approximates h_basis h_wo h_approx h_trimmed
 
 end PreMS
 

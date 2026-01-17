@@ -32,16 +32,20 @@ inductive CheckZeroResult {basis : Q(Basis)} (ms : Q(PreMS $basis))
 | neq (h_ne_zero : Q(¬ PreMS.IsZero $ms))
 | eq (h_eq_zero : Q(PreMS.IsZero $ms))
 
+theorem const_not_zero_not_IsZero {ms : PreMS []} (h : ms.toReal ≠ 0) :
+  ¬ PreMS.IsZero ms := by
+  simpa
+
 def checkZero {basis : Q(Basis)} (ms : Q(PreMS $basis)) : TacticM (CheckZeroResult ms) := do
   match basis with
   | ~q(List.nil) =>
     match ← CompareReal.checkZero q(($ms).toReal) with
     | .eq h => return .eq q(PreMS.IsZero.const $h) --q($h)
-    | .neq h => return .neq q(sorry) --q($h)
+    | .neq h => return .neq q(const_not_zero_not_IsZero $h) --q($h)
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(PreMS.mk .nil $f) => return .eq q(PreMS.IsZero.nil $f)
-    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) => return .neq q(sorry)
+    | ~q(PreMS.mk (.cons $exp $coef $tl) $f) => return .neq q(PreMS.cons_not_IsZero)
     | _ => throwError "checkZero: unexpected ms"
 
 
@@ -185,7 +189,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
     let ⟨ms_extracted, h_eq_extracted⟩ ← normalizePreMS ms
-    dbg_trace f!"Normalized ms: {← ppExpr ms_extracted}"
+    -- dbg_trace f!"Normalized ms: {← ppExpr ms_extracted}"
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q($h_eq_extracted ▸ $h_wo)
     match ms_extracted with
     | ~q(PreMS.mk .nil $f) =>

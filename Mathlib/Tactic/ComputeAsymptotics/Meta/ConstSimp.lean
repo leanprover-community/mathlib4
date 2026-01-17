@@ -20,6 +20,10 @@ namespace ComputeAsymptotics.PreMS
 
 section Const
 
+@[PreMS_const low]
+theorem real_toReal (c : ℝ) : PreMS.toReal c = c := by
+  rfl
+
 @[PreMS_const]
 theorem const_const (c : ℝ) : (PreMS.const [] c).toReal = c := by
   simp [PreMS.const, ofReal, toReal]
@@ -54,7 +58,8 @@ theorem pow_const (x : PreMS []) (a : ℝ) :
 
 @[PreMS_const]
 theorem extendBasisEnd_const (f : ℝ → ℝ) (x : PreMS []) : (PreMS.extendBasisEnd f x) =
-    PreMS.const [f] x := rfl
+    PreMS.mk (.cons 0 x .nil) (fun _ ↦ x.toReal) := by
+  simp [PreMS.extendBasisEnd, PreMS.const, SeqMS.const, toReal]
 
 @[PreMS_const]
 theorem updateBasis_const (ms : PreMS []) (ex : BasisExtension []) :
@@ -77,7 +82,6 @@ theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
     simp only [BasisExtension.getBasis, updateBasis, const_toFun, toReal, const, SeqMS.const,
       ms_eq_mk_iff, mk_seq, SeqMS.cons_eq_cons, and_true, true_and, mk_toFun]
     rw [updateBasis_const]
-
 
 @[PreMS_const]
 theorem BasisExtension.nil_getBasis : BasisExtension.nil.getBasis = [] := rfl

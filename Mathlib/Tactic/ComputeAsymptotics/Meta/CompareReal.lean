@@ -26,6 +26,8 @@ In this file we implement the procedure of comparing real numbers.
 
 public meta section
 
+namespace ComputeAsymptotics
+
 open Qq Lean Elab Meta Tactic
 
 namespace CompareReal
@@ -40,13 +42,12 @@ open Mathlib.Meta.NormNum in
 /-- Normalize a real number using `norm_num` and `PreMS_const` simp lemmas. -/
 def normalizeReal (x : Q(ℝ)) : TacticM <| (x' : Q(ℝ)) × Q($x = $x') := do
   let simpCtx ← Elab.Tactic.mkSimpContext (← `(tactic| simp -failIfUnchanged [PreMS_const])) false
-  -- let simpCtx := {simpCtx.ctx with config := {simpCtx.ctx.config with failIfUnchanged := false}}
   let simpCtx := simpCtx.ctx
   let ⟨⟨(x1 : Q(ℝ)), pf1?, _⟩, _⟩ := ← simp x simpCtx
   let pf1 : Q($x = $x1) := pf1?.getD (← mkEqRefl x)
   let ⟨(x2 : Q(ℝ)), pf2?, _⟩ ← deriveSimp simpCtx true x1
   let pf2 : Q($x1 = $x2) := pf2?.getD (← mkEqRefl x1)
-  let pf : Q($x = $x2) := q(Eq.trans $pf1 $pf2)
+  let pf : Q($x = $x2) := q(($pf1).trans $pf2)
   return ⟨x2, pf⟩
 
 /-- Compare a real number `x` with zero assuming that `x` is normalized. -/
@@ -71,7 +72,9 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
 
 /-- Compare a real number `x` with zero. -/
 def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
+  dbg_trace "compareReal: {← ppExpr x}"
   let ⟨x', pf⟩ ← normalizeReal x
+  dbg_trace "x': {x'}"
   let r ← compareRealCore x'
   return match r with
   | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)
@@ -124,4 +127,6 @@ def compareTwoReals (x y : Q(ℝ)) : TacticM (CompareTwoRealsResult x y) := do
 
 end CompareReal
 
-export CompareReal (normalizeReal compareReal checkZero checkLtZero compareTwoReals)
+export CompareReal (normalizeReal compareReal checkLtZero compareTwoReals)
+
+end ComputeAsymptotics

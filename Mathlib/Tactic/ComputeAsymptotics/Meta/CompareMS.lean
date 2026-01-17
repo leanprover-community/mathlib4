@@ -172,7 +172,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
   apply WellFormedBasis.insert h_basis
   · apply Tendsto.comp Real.tendsto_exp_atTop
     apply h_equiv.tendsto_atTop
-    exact PreMS.tendsto_top_of_FirstIsPos h_wo h_approx h_trimmed h_basis rfl h_exps h_coef
+    exact PreMS.tendsto_top_of_FirstIsPos h_wo h_approx h_trimmed h_basis rfl h_exps h_coef rfl
   · exact log_congr_IsEquivalent_left left h_equiv h_left
   · exact log_congr_IsEquivalent_right' right_hd right_tl h_equiv h_right
 

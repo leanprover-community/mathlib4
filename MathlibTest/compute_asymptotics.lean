@@ -196,8 +196,19 @@ example :
     Tendsto f atTop atTop := by
   compute_asymptotics
 
+example : (Tendsto ((log ∘ fun x => x) - log ∘ ((fun x => x) ^ ↑2)) atTop atBot) =
+    (let f := fun x => log x - log (x ^ 2);
+  Tendsto f atTop atBot) := rfl
+
+example : ComputeAsymptotics.PreMS.toReal
+  (ComputeAsymptotics.PreMS.toReal
+    ((1 : ℝ) +
+      ComputeAsymptotics.PreMS.toReal
+        (ComputeAsymptotics.PreMS.toReal (ComputeAsymptotics.PreMS.toReal (ComputeAsymptotics.PreMS.toReal (2 : ℝ)))))) > 0 := by
+  simp
+
 example :
-    let f := fun (x : ℝ) ↦ Real.log x - Real.log (x^2);
+    let f := fun (x : ℝ) ↦ Real.log x - Real.log (x ^ 2);
     Tendsto f atTop atBot := by
   compute_asymptotics
 
@@ -561,6 +572,11 @@ example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
   Tendsto f atTop (𝓝 0) := by
   intro f
   dsimp only [f]
+  compute_asymptotics
+
+example :
+    let f := fun x ↦ x * ((log x + 1)⁻¹ - (log x + 1)⁻¹);
+    Tendsto f atTop (𝓝 0) := by
   compute_asymptotics
 
 section Gruntz

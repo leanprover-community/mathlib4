@@ -11,6 +11,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 # Trimming of multiseries
 -/
 
+set_option linter.style.multiGoal false
 set_option linter.flexible false
 set_option linter.style.longLine false
 
@@ -188,24 +189,35 @@ theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : PreMS bas
   · simp [extendBasisEnd, const, SeqMS.const]
   cases ms
   · simp at h
-  simp [extendBasisEnd]
+  simp [extendBasisEnd, SeqMS.extendBasisEnd]
+
+mutual
+
+theorem SeqMS.extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
+    {ms : SeqMS basis_hd basis_tl} (h_trimmed : ms.Trimmed) :
+    (ms.extendBasisEnd b).Trimmed := by
+  cases ms with
+  | nil => simp [SeqMS.extendBasisEnd]
+  | cons exp coef tl =>
+  simp [SeqMS.extendBasisEnd]
+  constructor
+  · cases basis_tl with
+    | nil =>
+      simp [List.nil_append, extendBasisEnd]
+      apply const_Trimmed
+      simpa using (Trimmed_cons h_trimmed).right
+    | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_Trimmed (Trimmed_cons h_trimmed).left
+  · obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
+    · simp [extendBasisEnd, const, SeqMS.const]
+    · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
 
 theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
     {ms : PreMS (basis_hd :: basis_tl)}
     (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
-  cases ms with
-  | nil => constructor
-  | cons exp coef tl =>
-  simp [extendBasisEnd]
-  constructor
-  · obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
-    · simp [List.nil_append, extendBasisEnd]
-      apply const_Trimmed
-      simpa using (Trimmed_cons h_trimmed).right
-    · exact extendBasisEnd_Trimmed (Trimmed_cons h_trimmed).left
-  · obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
-    · simp [extendBasisEnd, const, SeqMS.const]
-    · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
+  simp [Trimmed_iff_seq_Trimmed] at *
+  apply SeqMS.extendBasisEnd_Trimmed h_trimmed
+
+end
 
 theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → ℝ}
     {ms : PreMS (left ++ right_hd :: right_tl)}
@@ -226,10 +238,10 @@ theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → 
     constructor
     · exact extendBasisMiddle_Trimmed h_trimmed.left h_trimmed.right
     · obtain _ | ⟨left_tl_hd, left_tl_tl⟩ := left_tl
-      · simp [extendBasisMiddle, zero]
+      · simp [extendBasisMiddle]
       · cases coef
-        · simp [zero] at h_trimmed
-        simp [extendBasisMiddle, zero]
+        · simp at h_trimmed
+        simp [extendBasisMiddle]
 
 -- -- TODO: Where should I put it? Trimming is not needed here.
 -- /-- If `f` can be approximated by multiseries with negative leading exponent, then
