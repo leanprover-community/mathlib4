@@ -211,7 +211,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
     have hl (i : ι) : 0 < l i := by
       simpa only [l, ← posRootForm_eq] using RootPositiveForm.zero_lt_posForm_apply_root _ _
     refine ⟨l i / l j, by simp [hl], l i / l k, by simp [hl], ?_⟩
-    simp only [P.polarizationEquiv_apply_root, ← map_smul, ← map_add,
+    simp only [P.coroot_eq_polarizationEquiv_apply_root, ← map_smul, ← map_add,
       P.PolarizationEquiv.injective.eq_iff] at contra
     let l' (i : ι) := P.RootForm (P.root i) (P.root i)
     have hll' (i : ι) : l i = l' i := P.algebraMap_rootFormIn ℚ _ _
@@ -300,10 +300,10 @@ lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
   let g : Dual ℚ N := f ∘ₗ (P.PolarizationEquiv.symm.restrictScalars ℚ).toLinearMap
   have hg₀ (i : ι) : g (P.coroot i) ≠ 0 := by
     obtain ⟨q, hq₀, hq⟩ := aux i
-    simp [g, polarizationEquiv_apply_root, ← hq, Rat.cast_smul_eq_qsmul, hq₀.ne', hf₀ i]
+    simp [g, coroot_eq_polarizationEquiv_apply_root, ← hq, Rat.cast_smul_eq_qsmul, hq₀.ne', hf₀ i]
   have hg (i : ι) : 0 < g (P.coroot i) ↔ 0 < f (P.root i) := by
     obtain ⟨q, hq₀, hq⟩ := aux i
-    simp [g, polarizationEquiv_apply_root, ← hq, Rat.cast_smul_eq_qsmul, hq₀]
+    simp [g, coroot_eq_polarizationEquiv_apply_root, ← hq, Rat.cast_smul_eq_qsmul, hq₀]
   rw [hf, P.baseOf_root_eq_baseOf_coroot f hf₀ g hg₀ (fun i ↦ (hg i).symm)]
   exact mem_or_neg_mem_closure_baseOf P.coroot (g : N →+ ℚ) i (hg₀ i) (by simp)
 
