@@ -149,7 +149,7 @@ theorem partialSups_disjointed (f : ι → α) :
       apply lt_of_lt_of_le (b := #(Iic x))
       · simpa only [Iic_eq_cons_Iio, card_cons] using Nat.lt_succ_self _
       · refine card_le_card (fun r hr ↦ ?_)
-        push _ ∈ _ at hx hr ⊢
+        simp only [mem_Iic, mem_Iio] at hx hr ⊢
         exact hr.trans_lt hx
 
 lemma Fintype.sup_disjointed [Fintype ι] (f : ι → α) :
