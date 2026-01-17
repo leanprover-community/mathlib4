@@ -35,7 +35,7 @@ The script can add up to `MAX_LABELS` labels (defined below),
 but it filters them by a hand-curated dependency list:
 For example if `t-ring-theory` and `t-algebra` are both applicable, only the former will
 be added. Dependencies are transitive.
-This list is defined in `mathlibLabelData` below..
+This list is defined in `mathlibLabelData` below.
 
 If more than `MAX_LABELS` labels would be applicable, nothing will be added.
 
