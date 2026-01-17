@@ -27,21 +27,13 @@ lemma neighborFinset_eq_empty_of_notMem_union
      {S : Set V} [Fintype ↑S] [Fintype ↑Sᶜ] [DecidableEq V] [Fintype ↑(G.neighborSet v)]
   (hv : v ∉ S.toFinset ∪ Sᶜ.toFinset) : G.neighborFinset v = ∅ := by grind
 
-variable (G) in
-def IsCompleteMultipartiteWith (f : V → ι) : Prop :=
-  G.Adj = Ne.onFun f
-
 namespace IsCompleteMultipartiteWith
 
 variable {C : G.IsCompleteMultipartiteWith f}
 include C
 
-@[simp]
-lemma adj_iff_ne : G.Adj v u ↔ f v ≠ f u :=
-  congrFun (congrFun C v) u |>.to_iff
-
 lemma neighborSet_eq (v : V) : G.neighborSet v = {u | f v ≠ f u} :=
-  Filter.principal_eq_iff_eq.mp (congrArg Filter.principal (congrFun C v))
+  Set.ext (C v)
 
 section finite
 
@@ -66,19 +58,15 @@ include C
 
 lemma isCompleteMultipartiteWith : G.IsCompleteMultipartiteWith (· ∈ left) := C
 
-@[simp]
 lemma adj_iff_not_mem (hv : v ∈ left) : G.Adj v u ↔ u ∉ left := by
   simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
 
-@[simp]
 lemma adj_iff_mem (hv : v ∉ left) : G.Adj v u ↔ u ∈ left := by
   simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
 
-@[simp]
 lemma neighborSet_eq_of_mem_left (hv : v ∈ left) : G.neighborSet v = leftᶜ := by
   grind [C.isCompleteMultipartiteWith.neighborSet_eq v, Set.compl_def]
 
-@[simp]
 lemma neighborSet_eq_of_not_mem_left (hv : v ∉ left) : G.neighborSet v = left := by
   ext u
   simp [C.isCompleteMultipartiteWith.neighborSet_eq, hv]
@@ -94,12 +82,10 @@ section finite
 
 variable [Fintype ↑left] [Fintype ↑(G.neighborSet v)]
 
-@[simp]
 lemma neighborFinset_eq_of_mem_left [Fintype ↑leftᶜ] (hv : v ∈ left.toFinset) :
     G.neighborFinset v = leftᶜ.toFinset := by
   grind only [neighborFinset_def, Set.mem_toFinset, neighborSet_eq_of_mem_left, Set.toFinset_congr]
 
-@[simp]
 lemma neighborFinset_eq_of_not_mem_left (hv : v ∉ left.toFinset) :
     G.neighborFinset v = left.toFinset := by
   grind only [neighborFinset_def, neighborSet_eq_of_not_mem_left,

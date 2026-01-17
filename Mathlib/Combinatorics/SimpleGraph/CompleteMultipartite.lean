@@ -57,7 +57,21 @@ open Finset Fintype
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {ι : Type*}
+
+/-- `G` is `IsCompleteMultipartiteWith f` iff adjacency in `G`
+    is determined by inequality of `f`-values. -/
+def IsCompleteMultipartiteWith (G : SimpleGraph α) (f : α → ι) : Prop :=
+  ∀ u v, G.Adj u v ↔ f u ≠ f v
+
+namespace IsCompleteMultipartiteWith
+
+variable {G : SimpleGraph α} {f : α → ι}
+
+def adj_iff_ne (C : G.IsCompleteMultipartiteWith f) ⦃u v : α⦄ :
+    G.Adj u v ↔ f u ≠ f v := C u v
+
+end IsCompleteMultipartiteWith
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := Transitive (¬ G.Adj · ·)
