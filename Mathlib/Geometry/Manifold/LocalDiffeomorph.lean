@@ -548,7 +548,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp
   The hf' hypothesis and the process of using it to obtain g' seems a bit awkward -/
 
   -- write the function in coordinates and obtain coordinate charts
-  set g : E → F := writtenInExtChartAt I J p f with g_def
+  set g : E → F := writtenInExtChartAt I J p f
   set φ₀ := extChartAt I p
   set φ₁ := diffeoExtChartAt n hp
   set ψ₀ := extChartAt J (f p)
@@ -560,44 +560,43 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp
     exact φ₁.open_source.inter (hf.continuousOn.isOpen_inter_preimage hA ψ₁.open_source)
   have U_nhd : U ∈ nhds (φ₀ p) := mem_nhds_iff.mpr ⟨U, subset_refl _, U_open, mem_image_of_mem _
     ⟨mem_diffeoExtChartAt_source hp, hpA, mem_diffeoExtChartAt_source (n := n) hfp⟩⟩
-  have : U ⊆ φ₀.target ∩ φ₀.symm ⁻¹' (A ∩ f ⁻¹' ψ₀.source) := by -- needed for hg₀ below
+  have hg : ContDiffOn 𝕜 n g U := by
+    refine ((contMDiffOn_iff.mp hf).2 p (f p)).mono ?_
     rintro e ⟨m, ⟨hm₁, hm₂, hm₃⟩, rfl⟩
     refine ⟨diffeoExtChartAt_target_subset hp (φ₁.map_source hm₁), ?_⟩
     simp only [mem_preimage] at hm₃ ⊢
     rw [eqOn_diffeoExtChartAt_extChartAt hp hm₁,
       φ₀.left_inv (diffeoExtChartAt_source_subset hp hm₁)]
     exact ⟨hm₂, diffeoExtChartAt_source_subset hfp hm₃⟩
-  -- collect some basic facts about differentiability of g for later use
-  have hg₀ : ContDiffOn 𝕜 n g U := ((contMDiffOn_iff.mp hf).2 p (f p)).mono this
-  have hg₁ : ContDiffAt 𝕜 n g (φ₀ p) := hg₀.contDiffAt U_nhd
-  have hg₂: DifferentiableWithinAt 𝕜 g (range I) (φ₀ p) :=
-    ((hg₀.differentiableOn hn).differentiableAt U_nhd).differentiableWithinAt
   -- use hf' to show that the derivative of g at φ₀ p is a linear equivalence
   have ⟨g', hg'⟩ : ∃ g' : E ≃L[𝕜] F, HasFDerivAt g (g' : E →L[𝕜] F) (φ₀ p) := by
     have A_nhd : A ∈ nhds p := mem_nhds_iff.mpr ⟨A, subset_refl _, hA, hpA⟩
+    have g_diff: DifferentiableWithinAt 𝕜 g (range I) (φ₀ p) :=
+      ((hg.differentiableOn hn).differentiableAt U_nhd).differentiableWithinAt
     rw [mfderiv, if_pos ((hf.contMDiffAt A_nhd).mdifferentiableAt hn), fderivWithin] at hf'
     by_cases g'_zero: HasFDerivWithinAt g (0 : E →L[𝕜] F) (range I) (φ₀ p)
     · rw [if_pos g'_zero] at hf'
       exact ⟨ContinuousLinearEquiv.ofBijective 0 hf'.1 hf'.2,
         g'_zero.hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
-    · rw [if_neg g'_zero, dif_pos hg₂] at hf'
-      exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose hg₂) hf'.1 hf'.2,
-        (Classical.choose_spec hg₂).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
+    · rw [if_neg g'_zero, dif_pos g_diff] at hf'
+      exact ⟨ContinuousLinearEquiv.ofBijective (Classical.choose g_diff) hf'.1 hf'.2,
+        (Classical.choose_spec g_diff).hasFDerivAt (range_mem_nhds_isInteriorPoint hp)⟩
   -- define V, the open set where g' is a linear equivalence
   set V := fderiv 𝕜 g ⁻¹' range ContinuousLinearEquiv.toContinuousLinearMap
   have hUV: IsOpen (U ∩ V) :=
-    (hg₀.continuousOn_fderiv_of_isOpen U_open (ENat.one_le_iff_ne_zero_withTop.mpr hn)
+    (hg.continuousOn_fderiv_of_isOpen U_open (ENat.one_le_iff_ne_zero_withTop.mpr hn)
     ).isOpen_inter_preimage U_open (ContinuousLinearEquiv.isOpen)
   /- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
   restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
   todo : refactor this part to a separate function since it could be independently useful -/
-  set homeo := (hg₁.toOpenPartialHomeomorph g hg' hn).restrOpen _ hUV
+  set homeo := ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph g hg' hn).restrOpen _ hUV
   have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
-    (hg₁.toOpenPartialHomeomorph g hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
+    ((hg.contDiffAt U_nhd).toOpenPartialHomeomorph g hg' hn).restrOpen_source _ hUV ▸
+    inter_subset_right
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
     have : homeo.source ⊆ U := subset_trans homeo_source_sub_UV inter_subset_left
-    exact (hg₀.contDiffWithinAt (this hx)).mono (subset_trans homeo_source_sub_UV inter_subset_left)
+    exact (hg.contDiffWithinAt (this hx)).mono (subset_trans homeo_source_sub_UV inter_subset_left)
   -- upgrade to a PartialDiffeomorph using the properties of U and V
   set coord_diffeo : PartialDiffeomorph 𝓘(𝕜, E) 𝓘(𝕜, F) E F n := {
     toPartialEquiv := homeo.toPartialEquiv
