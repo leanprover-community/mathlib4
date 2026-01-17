@@ -544,8 +544,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp
     (hfp : IsInteriorPoint J (f p)) {A : Set M} (hA : IsOpen A) (hpA : p ∈ A)
     (hf : ContMDiffOn I J n f A) (hf' : (mfderiv I J f p).ker = ⊥ ∧ (mfderiv I J f p).range = ⊤) :
     IsLocalDiffeomorphAt I J n f p := by
-  /- todo : change hf to only require ContMDiffOn some open set containing p (should be easy change)
-  question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
+  /- question : would it be better to have f' (linear equiv) and HasMFDerivAt f p f' as hypotheses?
   The hf' hypothesis and the process of using it to obtain g' seems a bit awkward -/
 
   -- write the function in coordinates and obtain coordinate charts
@@ -592,13 +591,13 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp
   /- obtain an OpenPartialHomeomorph E → F using the standard inverse function theorem. We must
   restrict to U ∩ V so that we can later show ContDiff of the forward and inverse function
   todo : refactor this part to a separate function since it could be independently useful -/
-  set homeo := (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen _ hUV
+  set homeo := (hg₁.toOpenPartialHomeomorph g hg' hn).restrOpen _ hUV
   have homeo_source_sub_UV : homeo.source ⊆ U ∩ V :=
-    (ContDiffAt.toOpenPartialHomeomorph g hg₁ hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
+    (hg₁.toOpenPartialHomeomorph g hg' hn).restrOpen_source _ hUV ▸ inter_subset_right
   have homeo_contdiff : ContDiffOn 𝕜 n homeo.toFun homeo.source := by
     intro x hx
     have : homeo.source ⊆ U := subset_trans homeo_source_sub_UV inter_subset_left
-    exact ContDiffWithinAt.mono (hg₀.contDiffWithinAt (this hx)) this
+    exact (hg₀.contDiffWithinAt (this hx)).mono (subset_trans homeo_source_sub_UV inter_subset_left)
   -- upgrade to a PartialDiffeomorph using the properties of U and V
   set coord_diffeo : PartialDiffeomorph 𝓘(𝕜, E) 𝓘(𝕜, F) E F n := {
     toPartialEquiv := homeo.toPartialEquiv
@@ -618,7 +617,7 @@ theorem localDiffeomorph_of_mfderiv_iso (hn : n ≠ 0) {f : M → N} {p : M} (hp
         mem_nhds_iff.mpr ⟨homeo.source, subset_refl _, homeo.open_source, homeo.map_target hy⟩
       have : DifferentiableAt 𝕜 homeo (homeo.symm y) := (homeo_contdiff.differentiableOn hn
         (homeo.symm y) (homeo.map_target hy)).differentiableAt source_nhd
-      exact (OpenPartialHomeomorph.contDiffAt_symm homeo hy (hg' ▸ this.hasFDerivAt)
+      exact (homeo.contDiffAt_symm hy (hg' ▸ this.hasFDerivAt)
         (homeo_contdiff.contDiffAt source_nhd)).contDiffWithinAt
   }
   -- compose with the charts to obtain our partial diffeomorphism M → N
