@@ -13,7 +13,8 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Max-Flow / Min-Cut (basic definitions, weak duality)
 
 This file sets up a convenient notion of an `s`-`t` flow on an undirected simple graph, modelled as
-a skew-symmetric function `V → V → ℤ` bounded by a (symmetric) capacity on unordered pairs.
+a skew-symmetric function `V → V → ℤ` bounded by a (symmetric) capacity on unordered pairs and
+supported on the edges of the given graph.
 
 At the moment, we only prove the "easy" inequality: the value of any flow is bounded above by the
 capacity of any `s`-`t` cut.
@@ -32,12 +33,15 @@ variable {V : Type*} [Fintype V] [DecidableEq V]
 variable {G : SimpleGraph V} {c : Sym2 V → ℕ} {s t : V}
 
 /-- An `s`-`t` flow on an undirected graph, expressed as a skew-symmetric function `V → V → ℤ`
-whose absolute value is bounded by a capacity on unordered pairs, together with the usual flow
-conservation law away from `s` and `t`. -/
+supported on the edges of `G` and bounded above by a capacity on unordered pairs, together with the
+usual flow conservation law away from `s` and `t`.
+
+(Skew-symmetry plus the upper bound applied to `(v, u)` yields the corresponding lower bound.) -/
 structure Flow (G : SimpleGraph V) (c : Sym2 V → ℕ) (s t : V) where
   val : V → V → ℤ
   skew : ∀ u v, val u v = -val v u
-  capacity : ∀ u v, val u v ≤ c s(u, v)
+  capacity : ∀ u v, val u v ≤ (c s(u, v) : ℤ)
+  support : ∀ u v, ¬ G.Adj u v → val u v = 0
   conserve : ∀ v, v ≠ s → v ≠ t → (∑ u, val v u) = 0
 
 namespace Flow
@@ -54,7 +58,9 @@ def value : ℤ := f.netOut s
 def cutValue (S : Finset V) : ℤ := ∑ u in S, ∑ v in Sᶜ, f.val u v
 
 /-- For a set `S` of vertices, the total capacity leaving `S`. -/
-def cutCapacity (S : Finset V) : ℤ := ∑ u in S, ∑ v in Sᶜ, (c s(u, v) : ℤ)
+def cutCapacity (S : Finset V) : ℤ := by
+  classical
+  exact ∑ u in S, ∑ v in Sᶜ, if G.Adj u v then (c s(u, v) : ℤ) else 0
 
 lemma value_def : f.value = ∑ v, f.val s v := rfl
 
@@ -111,17 +117,15 @@ lemma value_eq_cutValue (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
 
 lemma cutValue_le_cutCapacity (S : Finset V) : f.cutValue S ≤ f.cutCapacity S := by
   classical
-  -- Pointwise bound: `f.val u v ≤ c s(u,v)` since `f.val u v ≤ |f.val u v| ≤ c s(u,v)`.
-  have hle : ∀ u ∈ S, ∀ v ∈ Sᶜ, f.val u v ≤ (c s(u, v) : ℤ) := by
-    intro u hu v hv
-    exact (le_abs_self (f.val u v)).trans (f.capacity u v)
-  -- Sum the pointwise bounds.
   unfold Flow.cutValue Flow.cutCapacity cutValue cutCapacity
   refine Finset.sum_le_sum ?_
   intro u hu
   refine Finset.sum_le_sum ?_
   intro v hv
-  exact hle u hu v hv
+  by_cases hAdj : G.Adj u v
+  · simpa [hAdj] using f.capacity u v
+  · have hzero : f.val u v = 0 := f.support u v hAdj
+    simpa [hAdj, hzero]
 
 /-- Weak duality: the value of any flow is bounded by the capacity of any `s`-`t` cut. -/
 theorem value_le_cutCapacity (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
