@@ -55,12 +55,12 @@ public register_option linter.style.whitespace.verbose : Bool := {
 }
 
 /--
-`CommandStart.endPos stx` returns the position up until the `whitespace` linter checks the
+`Whitespace.endPos stx` returns the position up until the `whitespace` linter checks the
 formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
+def Whitespace.endPos (stx : Syntax) : Option String.Pos.Raw :=
   if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
@@ -306,7 +306,7 @@ public def mkWindow (orig : String) (start ctx : Nat) : String :=
   s!"{headCtx}{middle.take ctx}{tail}"
 
 /--
-`gitModifiedRef` is the `IO.Ref` tracking whether the `commandStart` linter should run on the
+`gitModifiedRef` is the `IO.Ref` tracking whether the `whitespace` linter should run on the
 current file, *based on the `git diff`*.
 
 `gitModifiedRef` is initially set to `none`.
@@ -319,7 +319,7 @@ If, however, the linter finds an error somewhere in the file, then it sets `gitM
 `some true` anyway, since a file with an error is likely a file being modified and hence a file
 where running this linter is probably expected.
 -/
---  TODO: if this works well with the `commandStart` linter, then switch more linters towards
+--  TODO: if this works well with the `whitespace` linter, then switch more linters towards
 --  using `gitModifiedRef`.
 initialize gitModifiedRef : IO.Ref (Option Bool) ← IO.mkRef none
 
@@ -331,9 +331,9 @@ If `git diff --name-only master...` fails for some reason, then we assume that t
 Otherwise, we check whether or not `modName` appears in the output.
 -/
 def isGitModified (modName : Name) : IO Bool := do
-  -- On the `commandStart` test file we always return `true`, since we want the linter to inspect
+  -- On the `whitespace` test file we always return `true`, since we want the linter to inspect
   -- the file.
-  if modName == `MathlibTest.CommandStart then
+  if modName == `MathlibTest.Whitespace then
     return true
   let diffFiles ← (do
     let gd ← IO.Process.run {cmd := "git", args := #["diff", "--name-only", "master..."]}
@@ -346,7 +346,7 @@ def isGitModified (modName : Name) : IO Bool := do
   else
     return true
 
-@[inherit_doc Mathlib.Linter.linter.style.commandStart]
+@[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
@@ -371,7 +371,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We skip `macro_rules`, since they cause parsing issues.
   if stx.find? (·.isOfKind `Lean.Parser.Command.macro_rules) |>.isSome then
     return
-  let some upTo := CommandStart.endPos stx | return
+  let some upTo := Whitespace.endPos stx | return
 
   let fmt : Option Format := ←
       try
