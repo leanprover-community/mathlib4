@@ -1322,4 +1322,9 @@ lemma embDomain_refl {α M : Type*} [Zero M] :
     embDomain (M := M) (Function.Embedding.refl α) = id := by
   ext; simp [embDomain_apply]
 
+theorem embDomain_comp {α β γ M : Type*} [AddCommMonoid M] {v : α →₀ M}
+    {f : α ↪ β} {g : β ↪ γ} : embDomain (f.trans g) v = embDomain g (embDomain f v) := by
+  simp only [embDomain_eq_mapDomain, ← mapDomain_comp]
+  rfl
+
 end Finsupp
