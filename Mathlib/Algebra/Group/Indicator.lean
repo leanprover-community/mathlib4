@@ -196,7 +196,7 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
 
 end Group
 
-/-! ### Relationship with Pi.mulSingle/Pi.single -/
+/- Relationship with Pi.mulSingle/Pi.single -/
 
 variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
 
