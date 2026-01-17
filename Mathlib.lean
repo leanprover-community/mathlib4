@@ -58,7 +58,6 @@ public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.Algebra.Azumaya.Matrix
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.BigOperators.Balance
-public import Mathlib.Algebra.BigOperators.CauchyProduct
 public import Mathlib.Algebra.BigOperators.Expect
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Algebra.BigOperators.Fin
