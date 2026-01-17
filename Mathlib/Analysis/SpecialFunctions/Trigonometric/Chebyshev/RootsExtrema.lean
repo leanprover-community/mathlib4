@@ -303,51 +303,17 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     rw [hx]
     exact isExtrOn_T_real hn hk
 
-open scoped Real
-
-theorem irrational_cos_chebyshev_angle {n k : ℕ} (hk : k < n)
-    (hx0 : cos (((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ))) ≠ 0) :
-    Irrational (cos (((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)))) := by
-  intro ⟨q, hq⟩
-  have htheta1 : ∃ r : ℚ, ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = (r : ℝ) * π :=
-    ⟨(2 * k + 1) / (2 * n), by simp [field]⟩
-  have hcos : ∃ q' : ℚ, cos (((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ))) = (q' : ℝ) :=
-    ⟨q, by simp [hq]⟩
-  have : (0 : ℝ) < (n : ℝ) := by
-    norm_cast
-    lia
-  have hIcc : ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) ∈ Set.Icc (0 : ℝ) π := by
-    simpa [field] using ⟨by nlinarith [pi_pos], by norm_cast; lia⟩
-  have := niven_angle_eq htheta1 hcos hIcc
-  have : ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = 0 ∨
-      ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = π / 3 ∨
-      ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = π / 2 ∨
-      ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = π * (2 / 3) ∨
-      ((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ)) = π := by tauto
-  rcases this with h | h | h | h | h
-  · simp [field] at h
-    norm_cast at h
-    grind
-  · simp [field] at h
-    norm_cast at h
-    grind
-  · have : cos (((2 * (k : ℝ) + 1) * π) / (2 * (n : ℝ))) = 0 := by simp [h]
-    exact hx0 this
-  · simp [field] at h
-    norm_cast at h
-    grind
-  · simp [field] at h
-    norm_cast at h
-    grind
-
 theorem irrational_of_root_T_real (n : ℕ) {r : ℝ} (hr : r ∈ (T ℝ n).roots) (hr0 : r ≠ 0) :
     Irrational r := by
-  have hr' : r ∈ (Finset.image (fun k : ℕ => Real.cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
+  have hr' : r ∈ (Finset.image (fun k : ℕ => cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
       (Finset.range n)).val := by
     simpa [Polynomial.Chebyshev.roots_T_real n] using hr
-  have hrFin : r ∈ Finset.image (fun k : ℕ => Real.cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
+  have : r ∈ Finset.image (fun k : ℕ => cos ((2 * (k : ℝ) + 1) * π / (2 * (n : ℝ))))
       (Finset.range n) := (Multiset.mem_coe).1 hr'
-  rcases Finset.mem_image.1 hrFin with ⟨k, hkRange, rfl⟩
-  exact irrational_cos_chebyshev_angle (Finset.mem_range.1 hkRange) hr0
+  rcases Finset.mem_image.1 this with ⟨k, hkRange, rfl⟩
+  norm_cast at ⊢ hr0
+  refine irrational_cos_chebyshev_angle (odd_two_mul_add_one k) (even_two_mul n) ?_ hr0
+  have : k < n := List.mem_range.mp hkRange
+  lia
 
 end Polynomial.Chebyshev

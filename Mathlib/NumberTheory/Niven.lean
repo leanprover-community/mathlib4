@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Qify
@@ -160,3 +161,28 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     have h₂ := cos_pi_div_three;
     have h₂ := cos_zero] <;>
   simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
+
+theorem irrational_cos_chebyshev_angle {q p : ℕ} (hq : Odd q) (hp : Even p) (hlt : q < p)
+    (hx0 : cos ((q * π) / p) ≠ 0) : Irrational (cos ((q * π) / p)) := by
+  intro ⟨s, hs⟩
+  have htheta1 : ∃ r : ℚ, (q * π) / p = r * π := ⟨q / p, by simp [field]⟩
+  have hcos : ∃ q' : ℚ, cos ((q * π) / p) = (q' : ℝ) := ⟨s, by simp [hs]⟩
+  have : (0 : ℝ) < p := by norm_cast; lia
+  have hIcc : (q * π) / p ∈ Set.Icc (0 : ℝ) π := by
+    simpa [field] using ⟨by nlinarith [pi_pos], by lia⟩
+  have := niven_angle_eq htheta1 hcos hIcc
+  have : (q * π) / p = 0 ∨ (q * π) / p = π / 3 ∨ (q * π) / p = π / 2 ∨
+      (q * π) / p = π * (2 / 3) ∨ (q * π) / p = π := by tauto
+  rcases this with h | h | h | h | h
+  · simp [field] at h
+    grind
+  · simp [field] at h
+    norm_cast at h
+    grind
+  · have : cos ((q * π) / p) = 0 := by simp [h]
+    exact hx0 this
+  · simp [field] at h
+    norm_cast at h
+    grind
+  · simp [field] at h
+    grind
