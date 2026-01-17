@@ -383,6 +383,30 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
   conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by simp_all), inter_comm]
   exact prod_congr rfl (by simpa)
 
+/-- If a function `g` is injective on `s`, except for some points where `f (g i) = 1`, then
+the product of `f (g x)` over `s` equals the product of `f i` over the image of `s`. -/
+@[to_additive /-- If a function `g` is injective on `s`, except for some points
+where `f (g i) = 0`, then the sum of `f (g x)` over `s` equals the sum of `f i` over the
+image of `s`. -/]
+theorem prod_image_of_apply_eq_one_of_eq [DecidableEq ι] {s : Finset κ} {g : κ → ι}
+    (hg : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → g i = g j → f (g i) = 1) :
+    ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) := by
+  classical
+  let s' : Finset κ := s.filter (fun i ↦ f (g i) ≠ 1)
+  have : ∏ x ∈ s, f (g x) = ∏ x ∈ s', f (g x) := by
+    apply Finset.prod_congr_of_eq_on_inter <;> simp +contextual [s']
+  rw [this, ← prod_image (s := s')]; swap
+  · intro i hi j hj hij
+    simp only [ne_eq, coe_filter, Set.mem_setOf_eq, s'] at hi hj
+    contrapose! hg
+    exact ⟨i, hi.1, j, hj.1, hg, hij, hi.2⟩
+  apply Finset.prod_congr_of_eq_on_inter
+  · simp +contextual [s']
+    grind
+  · simp +contextual [s']
+    grind
+  · simp
+
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x ∈ s, f x = f a * f b := by
