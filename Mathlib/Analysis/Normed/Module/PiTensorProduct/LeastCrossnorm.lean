@@ -6,22 +6,22 @@ Authors: David Gross, Davood Therani
 module
 
 public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
-public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 public import Mathlib.RingTheory.PiTensorProduct
-public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Module.Dual
 
 /-!
-# Define the least reasonable crossnorm
+
+# Define the smallest reasonable crossnorm
+
+*THIS FILE IS WIP*.
 
 For `x : ⨂ Eᵢ`, we define `leastCrossnorm x` as the norm of the multilinear map
 that sends a family `fᵢ : StrongDual Eᵢ` to `(⨂ fᵢ) x`. If the `Eᵢ` are normed
-spaces over `ℝ` or `ℂ`, this is the "least reasonable crossnorm".
+spaces over `ℝ` or `ℂ`, this is the "smallest reasonable crossnorm".
 
-Terminology: The "least reasonable crossnorm" is often called the "injective
+Terminology: The "smallest reasonable crossnorm" is often called the "injective
 norm". In contrast, Mathlib currently uses "injective seminorm" to refer to an
 alternative construction of the projective seminorm.
-
-This is WIP.
 
 See also:
 
@@ -40,11 +40,6 @@ https://www.ams.org/bookstore/pspdf/mbk-52-prev.pdf
   `(leastCrossnorm x) * (∏ ‖fᵢ‖)`.
 * `PiTensorProduct.leastCrossnorm_le_bound`: If `‖dualDistribL (⨂ fᵢ) x‖ ≤ M * (∏ ‖fᵢ‖))`
   for all families `fᵢ : StrongDual Eᵢ`, then `leastCrossnorm x ≤ M`.
-* `PiTensorProduct.projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective
-  seminorm satisfies the multiplicativity property `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if, for
-  each `mᵢ`, there is an `fᵢ` in the dual unit ball such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`.
-  [This fits into ProjectiveSeminorm.lean; included here pending comments on the
-  proposed refactoring of that file.]
 
 ## Implementation notes
 
@@ -54,7 +49,7 @@ values in `(⨂[𝕜] _ : ι, 𝕜)`. Only later do we define an isometric equiv
 
 ## TODO
 
-* Mainly: Get feedback.
+* Get feedback.
 * Show that the `leastCrossnorm` (and hence the `projectiveSeminorm`) are norms, assuming
   `∀ i, SeparatingDual Eᵢ`.
 * Show the eponymous "injectivity property": Given submodules `pᵢ ⊆ Eᵢ` and `x : ⨂ pᵢ`, then
@@ -142,42 +137,6 @@ end LeastReasonable
 -/
 
 /-
-## Sufficient conditions for multiplicativity of the projective seminorm
--/
-
-section projectiveSeminorm_tprod
-
-theorem projectiveSeminorm_tprod_eq_of_dual_vectors {f : Π i, StrongDual 𝕜 (E i)}
-    (m : Π i, E i) (hf₁ : ∀ i, ‖f i‖ ≤ 1) (hf₂ : ∀ i, ‖f i (m i)‖ = ‖m i‖) :
-    ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ := by
-  apply eq_of_le_of_ge (projectiveSeminorm_tprod_le m)
-  haveI := nonempty_subtype.mpr (nonempty_lifts (⨂ₜ[𝕜] i, m i))
-  apply le_ciInf (fun x ↦ ?_)
-  have hx := congr_arg (norm ∘ dualDistrib (⨂ₜ[𝕜] i, f i)) ((mem_lifts_iff _ _).mp x.prop)
-  simp only [Function.comp_apply, dualDistrib_apply, ContinuousLinearMap.coe_coe, hf₂, norm_prod,
-     map_list_sum, List.map_map] at hx
-  grw [← hx, List.le_sum_of_subadditive norm norm_zero.le norm_add_le, List.map_map]
-  apply List.sum_le_sum (fun _ _ ↦ ?_)
-  simp only [Function.comp_apply, map_smul, dualDistrib_apply, ContinuousLinearMap.coe_coe,
-    smul_eq_mul, norm_mul, norm_prod]
-  gcongr
-  grw [ContinuousLinearMap.le_opNorm, hf₁, one_mul]
-
-end projectiveSeminorm_tprod
-
-section RCLike
-
-variable {𝕜 : Type u𝕜} [RCLike 𝕜]
-variable {E : ι → Type uE} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-
-theorem projectiveSeminorm_tprod (m : Π i, E i)
-    : projectiveSeminorm (⨂ₜ[𝕜] i, m i) = ∏ i, ‖m i‖ := by
-  choose g hg₁ hg₂ using fun i ↦ exists_dual_vector'' 𝕜 (m i)
-  exact projectiveSeminorm_tprod_eq_of_dual_vectors m hg₁ (by simp [hg₂])
-
-end RCLike
-
-/-
 ## Isometric version of `constantBaseRingIsometry`
 -/
 
@@ -191,7 +150,7 @@ variable [Algebra R' R]
 variable [∀ i, Algebra R (A i)]
 
 /-
-The following definitonal equality is used in `PiTensorProduct.algebraMap_apply`, but does not seem
+The following definitional equality is used in `PiTensorProduct.algebraMap_apply`, but does not seem
 to be registered as a `simp` lemma.
 
 Adding this to RingTheory/PiTensorProduct.lean would mirror the idiom used for the pair
@@ -204,6 +163,7 @@ end RingTheory
 
 section mulL
 
+/-- TBD. -/
 def mulL : 𝕜 → StrongDual 𝕜 𝕜 := fun a ↦
   LinearMap.mkContinuous (LinearMap.mul 𝕜 𝕜 a) ‖a‖ (by simp)
 
@@ -221,6 +181,7 @@ theorem projectiveSeminorm_tprod_field (m : ι → 𝕜) : ‖⨂ₜ[𝕜] i, m 
   projectiveSeminorm_tprod_eq_of_dual_vectors m (f := fun _ ↦ mulL (1 : 𝕜)) (by simp) (by simp)
 
 variable (ι 𝕜) in
+/-- TBD. -/
 noncomputable def constantBaseRingIsometry : (⨂[𝕜] _ : ι, 𝕜) ≃ₗᵢ[𝕜] 𝕜 :=
   { (constantBaseRingEquiv ι 𝕜).toLinearEquiv with
     norm_map' x := by
@@ -243,6 +204,7 @@ section dualDistribL
 
 variable (f : Π i, E i →L[𝕜] E' i)
 
+/-- TBD -/
 noncomputable def piTensorHomMapL :
     (⨂[𝕜] i, E i →L[𝕜] E' i) →L[𝕜] (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
   (liftIsometry 𝕜 _ _) (mapLMultilinear 𝕜 E E')
@@ -260,6 +222,7 @@ theorem opNorm_piTensorHomMapL_le : ‖piTensorHomMapL (𝕜:=𝕜) (E:=E) (E':=
   simp only [piTensorHomMapL, LinearIsometryEquiv.norm_map]
   apply MultilinearMap.mkContinuous_norm_le _ zero_le_one
 
+/-- TBD -/
 noncomputable def dualDistribL : (⨂[𝕜] i, StrongDual 𝕜 (E i)) →L[𝕜] StrongDual 𝕜 (⨂[𝕜] i, E i) :=
   (ContinuousLinearMap.compL 𝕜 _ _ 𝕜 (constantBaseRingIsometry ι 𝕜)).comp piTensorHomMapL
 
