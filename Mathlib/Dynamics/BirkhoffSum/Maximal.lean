@@ -190,6 +190,8 @@ lemma birkhoffSupSet_eq_iSup_birkhoffMax_support {f : α → α} {g : α → ℝ
       rcases exists_partialSups_eq (birkhoffSum f g · x) n with ⟨m, _, hm₂⟩
       exact ⟨m, hm₂ ▸ h⟩
 
+/-- The set of `x` for which `birkhoffAverage ℝ f g n x` greater than some `a`
+for at least one value of `n`. -/
 public def birkhoffAverageSupSet (f : α → α) (g : α → ℝ) (a : ℝ) : Set α :=
   {x | ∃ n : ℕ, a < birkhoffAverage ℝ f g n x}
 
