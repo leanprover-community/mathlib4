@@ -7,7 +7,6 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.ArithmeticFunction.Defs
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Tactic
 
 /-!
 # Unitary Divisors and the Unitary Divisor Sum Function
@@ -198,7 +197,7 @@ pairs `(d₁, d₂)` of unitary divisors of `m` and `n` respectively. The biject
 `d ↦ (gcd(d,m), gcd(d,n))` with inverse `(d₁, d₂) ↦ d₁ * d₂`. -/
 theorem unitaryDivisorSum_mul {m n : ℕ} (hcoprime : Nat.Coprime m n) (hm : m ≠ 0) (hn : n ≠ 0) :
     σ* (m * n) = σ* m * σ* n := by
-  show unitaryDivisorSumAux (m * n) = unitaryDivisorSumAux m * unitaryDivisorSumAux n
+  change unitaryDivisorSumAux (m * n) = unitaryDivisorSumAux m * unitaryDivisorSumAux n
   unfold unitaryDivisorSumAux
   let i : ℕ → ℕ × ℕ := fun d => (Nat.gcd d m, Nat.gcd d n)
   let j : ℕ × ℕ → ℕ := fun p => p.1 * p.2
@@ -330,7 +329,7 @@ theorem unitaryDivisors_prime_pow {p k : ℕ} (hp : Nat.Prime p) :
 theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0) :
     σ* (p ^ k) = p ^ k + 1 := by
   have hk_pos : 0 < k := Nat.pos_of_ne_zero hk
-  show unitaryDivisorSumAux (p ^ k) = p ^ k + 1
+  change unitaryDivisorSumAux (p ^ k) = p ^ k + 1
   unfold unitaryDivisorSumAux
   rw [unitaryDivisors_prime_pow hp]
   have h_ne : 1 ≠ p ^ k := by
@@ -348,7 +347,7 @@ theorem unitaryDivisorSum_prime_pow {p k : ℕ} (hp : Nat.Prime p) (hk : k ≠ 0
 /-- `σ*(1) = 1`. -/
 @[simp]
 theorem unitaryDivisorSum_one : σ* 1 = 1 := by
-  show unitaryDivisorSumAux 1 = 1
+  change unitaryDivisorSumAux 1 = 1
   unfold unitaryDivisorSumAux unitaryDivisors
   simp only [Nat.divisors_one, Finset.filter_singleton, Nat.gcd_self,
     ite_true, Finset.sum_singleton]
