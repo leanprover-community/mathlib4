@@ -799,7 +799,7 @@ variable {R : Type*} [Zero R]
   /-- `Pi.single 0 e` equals `Set.indicator {0} (fun _ => e)` for decidable equality. -/]
 lemma piSingle_one_eq_indicator
     (e : R) : Pi.single (1 : M) e = Set.indicator {1} (fun _ => e) := by
-  ext x; simp [Pi.single_apply, Set.indicator_apply]
+  ext x; simp only [Pi.single_apply, Set.indicator_apply, Set.mem_singleton_iff]
 
 end PiSingleOneEqIndicator
 
