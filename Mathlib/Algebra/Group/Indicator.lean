@@ -198,6 +198,24 @@ end Group
 
 end Set
 
+/-! ### Relationship with Pi.mulSingle/Pi.single -/
+
+namespace Pi
+
+variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
+
+/-- On non-dependent functions, `Pi.mulSingle` equals `Set.mulIndicator` on a singleton set.
+This is the Pi analog of `Finsupp.single_eq_set_indicator`. -/
+@[to_additive
+  /-- On non-dependent functions, `Pi.single` equals `Set.indicator` on a singleton set.
+  This is the Pi analog of `Finsupp.single_eq_set_indicator`. -/]
+theorem mulSingle_eq_mulIndicator (i : ι) (x : M) :
+    (Pi.mulSingle i x : ι → M) = Set.mulIndicator {i} (fun _ => x) := by
+  ext j
+  simp only [Pi.mulSingle_apply, Set.mulIndicator_apply, Set.mem_singleton_iff]
+
+end Pi
+
 @[to_additive]
 theorem map_mulIndicator {M N F : Type*} [One M] [One N] [FunLike F M N] [OneHomClass F M N] (f : F)
     (s : Set α) (g : α → M) (x : α) : f (s.mulIndicator g x) = s.mulIndicator (f ∘ g) x := by
