@@ -324,27 +324,29 @@ where running this linter is probably expected.
 initialize gitModifiedRef : IO.Ref (Option Bool) ← IO.mkRef none
 
 /--
-Checks whether the input `modName` corresponds to a file that `git` considers to be modified.
+Checks whether the input `leanFile` corresponds to a file that `git` considers to be modified.
 
-If `git diff --name-only master...` fails for some reason, then we assume that the file is modified.
+This uses the exit code of the command `git diff --quiet master... -- leanFile`
+which is `0` for any tracked file that has no committed modification.
 
-Otherwise, we check whether or not `modName` appears in the output.
+A file that is tracked, modified, but the changes have not yet been committed yields `false`.
+The linter picks these up anyway, by checking if the file ever had an error.
+
+If the `git` call fails for some reason, then we assume that the file is modified.
 -/
-def isGitModified (modName : Name) : IO Bool := do
+def isGitModified (leanFile : String) : IO Bool := do
   -- On the `whitespace` test file we always return `true`, since we want the linter to inspect
   -- the file.
-  if modName == `MathlibTest.Whitespace then
+  let testFile := (("MathlibTest" / "WhitespaceLinter" : System.FilePath).addExtension "lean").toString
+  if leanFile.endsWith testFile then
     return true
-  let diffFiles ← (do
-    let gd ← IO.Process.run {cmd := "git", args := #["diff", "--name-only", "master..."]}
-    pure (some gd)) <|> pure none
-  if let some diffFiles := diffFiles then
-    if diffFiles.isEmpty then return false
-    let diffModules ← (diffFiles.trimAscii.toString.splitOn "\n").mapM
-      fun s : String => (moduleNameOfFileName s none <|> return Name.anonymous : IO Name)
-    return diffModules.contains modName
-  else
-    return true
+  -- The command misses files that only have unstaged changes,
+  -- though these are picked up later by the linter.
+  let gitDiff ← --git diff --quiet master... -- Mathlib/Tactic/Linter/Whitespace.lean
+    IO.Process.output
+      {cmd := "git", args := #["diff", "--quiet", "master...", "--", leanFile]} <|>
+      pure {exitCode := 1, stdout := "Should not be here", stderr := "Should not be here"}
+  return gitDiff.exitCode != 0
 
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -356,7 +358,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     gitModifiedRef.set (some true)
     return
   if (← gitModifiedRef.get) == none then
-    gitModifiedRef.set (← isGitModified (← getMainModule))
+    gitModifiedRef.set (← isGitModified (← getFileName))
   unless (← gitModifiedRef.get) == some true do
     return
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
