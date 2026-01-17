@@ -64,8 +64,7 @@ theorem expand_monomial (d : ℕ) (r : R) :
 theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (PowerSeries R) := by
   simp [expand]
 
-theorem expand_one_apply (f : PowerSeries R) : expand 1 one_ne_zero f = f := by
-  rw [expand_one, AlgHom.id_apply]
+theorem expand_one_apply (f : PowerSeries R) : expand 1 one_ne_zero f = f := by simp
 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : PowerSeries R) :

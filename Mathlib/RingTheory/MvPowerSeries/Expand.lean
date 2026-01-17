@@ -56,8 +56,7 @@ theorem expand_one : expand 1 one_ne_zero = AlgHom.id R (MvPowerSeries σ R) := 
   ext1 i
   simp [expand, subst_self]
 
-theorem expand_one_apply (f : MvPowerSeries σ R) : expand 1 one_ne_zero f = f := by
-  rw [expand_one, AlgHom.id_apply]
+theorem expand_one_apply (f : MvPowerSeries σ R) : expand 1 one_ne_zero f = f := by simp
 
 @[simp]
 theorem map_expand (f : R →+* S) (φ : MvPowerSeries σ R) :
