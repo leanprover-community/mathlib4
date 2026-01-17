@@ -513,6 +513,17 @@ def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
 
 end Over
 
+/--
+Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
+`Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
+-/
+@[simps]
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
+  pt := Over.mk (c.π.app j)
+  π.app k := Over.homMk (c.π.app k.left)
+
 namespace CostructuredArrow
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
@@ -926,6 +937,17 @@ def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
+
+/--
+Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
+`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+-/
+@[simps]
+def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
+    {D : J ⥤ C} (c : Cocone D) (j : J) :
+    Cocone (Under.post (X := j) D) where
+  pt := Under.mk (c.ι.app j)
+  ι.app k := Under.homMk (c.ι.app k.right)
 
 namespace StructuredArrow
 

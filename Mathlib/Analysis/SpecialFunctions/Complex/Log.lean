@@ -64,48 +64,6 @@ theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
   rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
   simp [mul_assoc]
 
-/-- Complex exponential is a branched covering over `{0}ᶜ`.
-This partial equivalence gives a trivialization of this covering over `slitPlane`.
-
-Since these maps are inverse of each other on a larger sets,
-we define this equivalence on `ℂ` and `{0}ᶜ × ℤ`,
-even though it is not continuous on that set.
-
-See also `expPartialEquivProd` below for a version that is continuous. -/
-@[simps apply_fst source target, simps -isSimp apply apply_snd symm_apply]
-def expPartialEquivProd' : PartialEquiv ℂ (ℂ × ℤ) where
-  toFun z := (exp z, -toIocDiv Real.two_pi_pos (-π) z.im)
-  invFun z := z.fst.log - z.snd * (2 * π * I)
-  source := Set.univ
-  target := {0}ᶜ ×ˢ Set.univ
-  map_source' z := by simp
-  map_target' z := by simp
-  left_inv' z _ := by simp [log_exp_eq_sub_toIocDiv]
-  right_inv' z hz := by
-    ext
-    · simp [exp_sub, exp_log hz.1]
-    · simpa [toIocDiv_eq_iff, log_im, two_mul] using z.1.arg_mem_Ioc
-
-/-- Complex exponential is a branched covering over `{0}ᶜ`.
-This partial equivalence gives a trivialization of this covering over `slitPlane`.
-
-See also `expPartialEquivProd'` above for a discontinuous version with larger source and target. -/
-@[simps! apply_fst source target, simps! -isSimp apply apply_snd symm_apply]
-def expPartialEquivProd : PartialEquiv ℂ (ℂ × ℤ) where
-  __ := expPartialEquivProd'
-  source := exp ⁻¹' slitPlane
-  target := slitPlane ×ˢ Set.univ
-  map_source' z := by simp
-  map_target' z hz := by
-    simp [exp_log (slitPlane_ne_zero hz.1), expPartialEquivProd', exp_sub, hz.1]
-  left_inv' z _ := expPartialEquivProd'.leftInvOn trivial
-  right_inv' z hz := expPartialEquivProd'.rightInvOn ⟨slitPlane_ne_zero hz.1, trivial⟩
-
-@[simp]
-lemma exp_expPartialEquivProd_symm_apply {x : ℂ × ℤ} (h : x.1 ≠ 0) :
-    exp (expPartialEquivProd.symm x) = x.1 :=
-  congr($(expPartialEquivProd'.rightInvOn ⟨h, trivial⟩) |>.fst)
-
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]

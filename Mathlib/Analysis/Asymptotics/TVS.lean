@@ -430,6 +430,11 @@ theorem IsLittleOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) : (f₁ - f₃) =o[𝕜; l] g := by
   simpa using h₁.add h₂
 
+theorem IsBigOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
+    (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) : (f₁ - f₃) =O[𝕜; l] g := by
+  simpa using h₁.add h₂
+
 section NegLeft
 
 variable [ContinuousNeg E]
@@ -441,6 +446,10 @@ theorem IsBigOTVS.neg_left (h : f =O[𝕜; l] g) : (-f) =O[𝕜; l] g :=
 theorem isBigOTVS_neg_left : (-f) =O[𝕜; l] g ↔ f =O[𝕜; l] g :=
   ⟨fun h ↦ by simpa using h.neg_left, .neg_left⟩
 
+@[simp]
+theorem isBigOTVS_fun_neg_left : (-f ·) =O[𝕜; l] g ↔ f =O[𝕜; l] g :=
+  isBigOTVS_neg_left
+
 theorem IsLittleOTVS.neg_left (h : f =o[𝕜; l] g) : (-f) =o[𝕜; l] g :=
   IsBigOTVS.rfl.neg_left.trans_isLittleOTVS h
 
@@ -448,9 +457,35 @@ theorem IsLittleOTVS.neg_left (h : f =o[𝕜; l] g) : (-f) =o[𝕜; l] g :=
 theorem isLittleOTVS_neg_left : (-f) =o[𝕜; l] g ↔ f =o[𝕜; l] g :=
   ⟨fun h ↦ by simpa using h.neg_left, .neg_left⟩
 
-protected theorem IsLittleOTVS.symm {f₁ f₂ : α → E} (h₁₂ : (f₁ - f₂) =o[𝕜; l] g) :
+@[simp]
+theorem isLittleOTVS_fun_neg_left : (-f ·) =o[𝕜; l] g ↔ f =o[𝕜; l] g :=
+  isLittleOTVS_neg_left
+
+@[to_fun]
+protected theorem IsLittleOTVS.symm {f₁ f₂ : α → E} (h : (f₁ - f₂) =o[𝕜; l] g) :
     (f₂ - f₁) =o[𝕜; l] g := by
-  simpa using h₁₂.neg_left
+  simpa using h.neg_left
+
+theorem isLittleOTVS_comm {f₁ f₂ : α → E} :
+    (f₁ - f₂) =o[𝕜; l] g ↔ (f₂ - f₁) =o[𝕜; l] g :=
+  ⟨.symm, .symm⟩
+
+theorem isLittleOTVS_fun_comm {f₁ f₂ : α → E} :
+    (fun a ↦ f₁ a - f₂ a) =o[𝕜; l] g ↔ (fun a ↦ f₂ a - f₁ a) =o[𝕜; l] g :=
+  isLittleOTVS_comm
+
+@[to_fun]
+protected theorem IsBigOTVS.symm {f₁ f₂ : α → E} (h : (f₁ - f₂) =O[𝕜; l] g) :
+    (f₂ - f₁) =O[𝕜; l] g := by
+  simpa using h.neg_left
+
+theorem isBigOTVS_comm {f₁ f₂ : α → E} :
+    (f₁ - f₂) =O[𝕜; l] g ↔ (f₂ - f₁) =O[𝕜; l] g :=
+  ⟨.symm, .symm⟩
+
+theorem isBigOTVS_fun_comm {f₁ f₂ : α → E} :
+    (fun a ↦ f₁ a - f₂ a) =O[𝕜; l] g ↔ (fun a ↦ f₂ a - f₁ a) =O[𝕜; l] g :=
+  isBigOTVS_comm
 
 end NegLeft
 
@@ -465,12 +500,20 @@ theorem IsBigOTVS.neg_right (h : f =O[𝕜; l] g) : f =O[𝕜; l] (-g) :=
 theorem isBigOTVS_neg_right : f =O[𝕜; l] (-g) ↔ f =O[𝕜; l] g :=
   ⟨fun h ↦ by simpa using h.neg_right, .neg_right⟩
 
+@[simp]
+theorem isBigOTVS_fun_neg_right : f =O[𝕜; l] (-g ·) ↔ f =O[𝕜; l] g :=
+  isBigOTVS_neg_right
+
 theorem IsLittleOTVS.neg_right (h : f =o[𝕜; l] g) : f =o[𝕜; l] (-g) :=
   h.trans_isBigOTVS (.neg_right .rfl)
 
 @[simp]
 theorem isLittleOTVS_neg_right : f =o[𝕜; l] (-g) ↔ f =o[𝕜; l] g :=
   ⟨fun h ↦ by simpa using h.neg_right, .neg_right⟩
+
+@[simp]
+theorem isLittleOTVS_fun_neg_right : f =o[𝕜; l] (-g ·) ↔ f =o[𝕜; l] g :=
+  isLittleOTVS_neg_right
 
 end NegRight
 
