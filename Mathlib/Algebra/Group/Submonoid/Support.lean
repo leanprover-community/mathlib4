@@ -13,7 +13,7 @@ public import Mathlib.Tactic.ApplyFun
 # Supports of submonoids
 
 Let `G` be an (additive) group, and let `M` be a submonoid of `G`.
-The *support* of `M` is `M ∩ -M`, the largest subgroup of `M`.
+The *support* of `M` is `M ∩ -M`, the largest subgroup of `G` contained in `M`.
 A submonoid `C` is *pointed*, or a *positive cone*, if it has zero support.
 A submonoid `C` is *spanning* if the subgroup it generates is `G` itself.
 
@@ -61,11 +61,11 @@ variable {G : Type*} [Group G] (M : Submonoid G)
 
 /--
 The support of a submonoid `M` of a group `G` is `M ∩ M⁻¹`,
-the largest subgroup contained in `M`.
+the largest subgroup of `G` contained in `M`.
 -/
 @[to_additive
 /-- The support of a submonoid `M` of a group `G` is `M ∩ -M`,
-the largest subgroup contained in `M`. -/]
+the largest subgroup of `G` contained in `M`. -/]
 def mulSupport : Subgroup G where
   carrier := M ∩ M⁻¹
   one_mem' := by aesop
