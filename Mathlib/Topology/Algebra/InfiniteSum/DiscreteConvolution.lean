@@ -795,7 +795,7 @@ variable {M : Type*} [DecidableEq M] [One M]
 variable {R : Type*} [Zero R]
 
 /-- `Pi.single 1 e` equals `Set.indicator {1} (fun _ => e)` for decidable equality. -/
-@[to_additive (attr := simp)
+@[to_additive
   /-- `Pi.single 0 e` equals `Set.indicator {0} (fun _ => e)` for decidable equality. -/]
 lemma piSingle_one_eq_indicator
     (e : R) : Pi.single (1 : M) e = Set.indicator {1} (fun _ => e) := by
