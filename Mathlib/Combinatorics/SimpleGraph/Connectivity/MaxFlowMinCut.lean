@@ -6,14 +6,14 @@ Authors: Julius Tranquilli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Data.Int.Order.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 # Max-Flow / Min-Cut (basic definitions, weak duality)
 
 This file sets up a convenient notion of an `s`-`t` flow on an undirected simple graph, modelled as
-a skew-symmetric function `V → V → ℤ` bounded by a (symmetric) capacity on unordered pairs and
+a skew-symmetric function `V → V → α` bounded by a (symmetric) capacity on unordered pairs and
 supported on the edges of the given graph.
 
 At the moment, we only prove the "easy" inequality: the value of any flow is bounded above by the
@@ -29,16 +29,16 @@ namespace SimpleGraph
 
 open scoped BigOperators
 
-variable {V : Type*} [Fintype V] [DecidableEq V]
-variable {G : SimpleGraph V} {c : Sym2 V → ℤ} {s t : V}
+variable {V α : Type*} [Fintype V] [DecidableEq V] [LinearOrderedAddCommGroup α]
+variable {G : SimpleGraph V} {c : Sym2 V → α} {s t : V}
 
-/-- An `s`-`t` flow on an undirected graph, expressed as a skew-symmetric function `V → V → ℤ`
+/-- An `s`-`t` flow on an undirected graph, expressed as a skew-symmetric function `V → V → α`
 supported on the edges of `G` and bounded above by a capacity on unordered pairs, together with the
 usual flow conservation law away from `s` and `t`.
 
 (Skew-symmetry plus the upper bound applied to `(v, u)` yields the corresponding lower bound.) -/
-structure Flow (G : SimpleGraph V) (c : Sym2 V → ℤ) (s t : V) where
-  val : V → V → ℤ
+structure Flow (G : SimpleGraph V) (c : Sym2 V → α) (s t : V) where
+  val : V → V → α
   skew : ∀ u v, val u v = -val v u
   capacity : ∀ u v, val u v ≤ c s(u, v)
   support : ∀ u v, ¬ G.Adj u v → val u v = 0
@@ -49,16 +49,16 @@ namespace Flow
 variable (f : Flow G c s t)
 
 /-- The net outflow at a vertex. -/
-def netOut (v : V) : ℤ := ∑ u, f.val v u
+def netOut (v : V) : α := ∑ u, f.val v u
 
 /-- The value of an `s`-`t` flow (net outflow at `s`). -/
-def value : ℤ := f.netOut s
+def value : α := f.netOut s
 
 /-- For a set `S` of vertices, the total flow leaving `S`. -/
-def cutValue (S : Finset V) : ℤ := ∑ u in S, ∑ v in Sᶜ, f.val u v
+def cutValue (S : Finset V) : α := ∑ u in S, ∑ v in Sᶜ, f.val u v
 
 /-- For a set `S` of vertices, the total capacity leaving `S`. -/
-def cutCapacity (S : Finset V) : ℤ := by
+def cutCapacity (S : Finset V) : α := by
   classical
   exact ∑ u in S, ∑ v in Sᶜ, if G.Adj u v then c s(u, v) else 0
 
@@ -69,20 +69,28 @@ lemma netOut_def (v : V) : f.netOut v = ∑ u, f.val v u := rfl
 private lemma sum_sum_skew_eq_zero (S : Finset V) :
     (∑ u in S, ∑ v in S, f.val u v) = 0 := by
   classical
-  set A : ℤ := ∑ u in S, ∑ v in S, f.val u v
-  have hA : A = -A := by
-    -- Swap the two sums and use skew-symmetry.
-    simp [A, Finset.sum_comm, f.skew, Finset.sum_neg_distrib]
-  have h2A : (2 : ℤ) * A = 0 := by
-    -- From `A = -A`, conclude `A + A = 0`, hence `2*A = 0`.
-    have : A + A = 0 := by
-      calc
-        A + A = A + (-A) := by simpa [hA]
-        _ = 0 := by simp
-    simpa [two_mul] using this
-  -- `2 ≠ 0` in `ℤ`, so `A = 0`.
-  have : A = 0 := (mul_eq_zero.mp h2A).resolve_left (by decide)
-  simpa [A] using this
+  have hrewrite :
+      (∑ u in S, ∑ v in S, f.val u v) = ∑ p in S ×ˢ S, f.val p.1 p.2 := by
+    simpa using
+      (Finset.sum_product' (s := S) (t := S) (f := fun u v => f.val u v)).symm
+  refine hrewrite.trans ?_
+  refine Finset.sum_involution (s := S ×ˢ S) (f := fun p : V × V => f.val p.1 p.2)
+      (g := fun p _ => (p.2, p.1)) ?_ ?_ ?_ ?_
+  · intro p hp
+    rcases p with ⟨u, v⟩
+    simpa [f.skew u v]
+  · intro p hp hpne
+    intro hfix
+    have huv : p.1 = p.2 := by
+      have := congrArg Prod.fst hfix
+      simpa using this.symm
+    have hdiag : f.val p.1 p.1 = 0 := f.support _ _ (G.loopless _)
+    exact hpne (by simpa [huv] using hdiag)
+  · intro p hp
+    have hp' : p.1 ∈ S ∧ p.2 ∈ S := by simpa [Finset.mem_product] using hp
+    simpa [Finset.mem_product] using hp'.symm
+  · intro p hp
+    rfl
 
 lemma value_eq_cutValue (S : Finset V) (hs : s ∈ S) (ht : t ∉ S) :
     f.value = f.cutValue S := by
