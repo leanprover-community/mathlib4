@@ -179,7 +179,7 @@ def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
   (isPFilter_gabrielComposition F G).toPFilter
 
 /-- `F • G` is the Gabriel composition of ideal filters `F` and `G`. -/
-infixl:70 " • " => gabrielComposition
+scoped infixl:70 " • " => gabrielComposition
 
 /-- A *Gabriel filter* is a filter satisfying `IsUniform` and axiom T4. -/
 structure IsGabriel (F : IdealFilter A) extends F.IsUniform where
