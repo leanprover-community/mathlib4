@@ -255,8 +255,8 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
     sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
   ext ⟨f, sf, hf⟩
-  change (∑ i ∈ _, _) = _
-  dsimp
+  simp only [sumZeroHom, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk', ZeroHom.coe_comp,
+    Function.comp_apply]
   rw [Finset.sum_eq_single i (fun j _ hji => ?_) (fun hi => ?_), Pi.single_eq_same]
   · simp [hji]
   · simp [(hf i).resolve_left (by simpa using hi)]

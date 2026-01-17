@@ -139,13 +139,14 @@ noncomputable def basisOfBase
     (hli : LinearIndepOn R P.root s)
     (hsp : ∀ i, P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
                -P.root i ∈ AddSubmonoid.closure (P.root '' s)) :
-    Basis s R M := Basis.mk hli <| by
-      rw [← IsRootSystem.span_root_eq_top (P := P), span_le, ← span_span_of_tower (R := ℤ)]
-      rintro - ⟨i, rfl⟩
-      apply subset_span
-      rcases hsp i with hi | hi <;>
-        simpa [SetLike.mem_coe, ← Submodule.mem_toAddSubgroup, span_int_eq_addSubgroupClosure,
-          ← image_eq_range] using AddSubgroup.le_closure_toAddSubmonoid (P.root '' s) hi
+    Basis s R M :=
+  Basis.mk hli <| by
+    rw [← IsRootSystem.span_root_eq_top (P := P), span_le, ← span_span_of_tower (R := ℤ)]
+    rintro - ⟨i, rfl⟩
+    apply subset_span
+    rcases hsp i with hi | hi <;>
+      simpa [SetLike.mem_coe, ← Submodule.mem_toAddSubgroup, span_int_eq_addSubgroupClosure,
+        ← image_eq_range] using AddSubgroup.le_closure_toAddSubmonoid (P.root '' s) hi
 
 lemma exists_dual_baseOf_eq [Module ℚ M] [Module ℚ N]
     (s : Set ι)

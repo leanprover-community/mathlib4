@@ -104,7 +104,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
   __ := AddEquiv.refl _
   map_smul' _ _ := Subtype.ext <| scalar_smul _ _
 
-/-- Auxilary isomorphism showing that compose two functors gives `id` on objects. -/
+/-- Auxiliary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
 def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
     MatrixModCat.toModuleCatObj R (ι → M) i ≃ₗ[R] M where
