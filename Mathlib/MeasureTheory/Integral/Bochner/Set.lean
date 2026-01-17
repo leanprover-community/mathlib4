@@ -195,7 +195,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
   simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
   have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
     refine u.measurableSet_biInter fun i hi ↦ hs i ?_
-    aesop
+    grind
   have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
       = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
         (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by

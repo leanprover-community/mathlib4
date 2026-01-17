@@ -542,7 +542,7 @@ lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
   · refine lintegral_congr fun b ↦ ?_
     rw [comapRight_apply']
     · congr with x
-      aesop
+      grind
     · exact measurable_prodMk_left ht
   · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 

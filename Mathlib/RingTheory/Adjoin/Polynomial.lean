@@ -72,7 +72,7 @@ theorem _root_.Algebra.adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
     M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
     M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
-  aesop
+  grind
 
 instance instCommSemiringAdjoinSingleton :
     CommSemiring <| adjoin R {x} :=
