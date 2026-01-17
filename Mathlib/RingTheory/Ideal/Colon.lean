@@ -65,8 +65,6 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
   ext x
   simp [mem_colon, mem_annihilator]
 
-@[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
-
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| (mem_colon).mp hrns s₁ <| hs hs₁
 
@@ -96,7 +94,7 @@ lemma iInf_colon {ι : Sort*} (f : ι → Submodule R M) : (⨅ i, f i).colon S 
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+lemma colon_finsetInf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
     (s.inf f).colon S = s.inf (fun i ↦ (f i).colon S) := by
   aesop (add simp mem_colon)
 
@@ -118,6 +116,10 @@ lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
 
 @[simp]
 lemma colon_singleton_zero : N.colon {0} = ⊤ := by
+  aesop (add simp mem_colon)
+
+@[simp]
+lemma colon_bot : N.colon ((⊥ : Submodule R M) : Set M) = ⊤ := by
   aesop (add simp mem_colon)
 
 end Semiring
