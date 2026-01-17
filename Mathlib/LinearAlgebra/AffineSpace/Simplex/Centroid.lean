@@ -314,7 +314,7 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   have : (n : k)⁻¹ • n • (s.points j -ᵥ s.points i) =
       (n : k)⁻¹ • (n : k) • (s.points j -ᵥ s.points i) := by
     norm_cast0
-    congr 1
+    congr 1 -- TODO review
   rw [this, smul_smul, inv_eq_one_div, one_div_mul_cancel (NeZero.ne (n : k)), one_smul]
 
 /-- The vector from a vertex to its `faceOppositeCentroid` is `(n+1)` times the vector from the
