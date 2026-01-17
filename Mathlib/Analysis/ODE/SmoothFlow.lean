@@ -271,7 +271,7 @@ lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E
   exact continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
 
 lemma integralCMLM_eventually_dist_lt' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
-    (hg : ContinuousOn g u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (α₀ : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) {ε : ℝ} (hε : 0 < ε)
     {B : Set (Fin n → C(Icc tmin tmax, E))} (hB : Bornology.IsBounded B) :
     ∀ᶠ (α : {α : C(Icc tmin tmax, E) | MapsTo α univ u}) in 𝓝 α₀, ∀ dα ∈ B,
