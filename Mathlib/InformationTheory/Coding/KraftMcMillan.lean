@@ -6,7 +6,6 @@ Authors: Elazar Gershuni
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Real.Basic
-
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Analysis.SpecificLimits.Normed
@@ -14,7 +13,7 @@ import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 
-import InformationTheory.Coding.UniquelyDecodable
+import Mathlib.InformationTheory.Coding.UniquelyDecodable
 
 /-!
 # Kraft-McMillan Inequality
