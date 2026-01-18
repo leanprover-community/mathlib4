@@ -15,7 +15,7 @@ This file proves that a finite-dimensional inner product space has a
 colagebra structure if it has an algebra structure, where
 the comultiplication and counit maps are given by taking adjoints of the
 multiplication and algebra linear maps, respectively.
-This is implemented by providing an isometric linear equivalence between the inner product space
+This is implemented by providing a linear equivalence between the inner product space
 and a normed algebra.
 
 And similarly, a finite-dimensional inner product space has an algebra
@@ -48,11 +48,11 @@ PR#24040 addresses this. -/
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
 
-This is implemented by providing an isometric linear equivalence between the inner product
+This is implemented by providing a linear equivalence between the inner product
 space and a normed algebra.
 
 See note [reducible non-instances]. -/
-noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
+noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
   counit := innerₛₗ 𝕜 (e.symm 1)
   coassoc := by
