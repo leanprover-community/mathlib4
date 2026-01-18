@@ -1,7 +1,7 @@
 #!/bin/bash
  : << 'BASH_MODULE_DOCS'
 
-Usage: ./script.sh owner/repo YYYY-MM
+Usage: ./scripts/find_labels.sh owner/repo YYYY-MM
 
 The script summarizes PRs by label and author in the given year-month range in the input GitHub repository.
 
@@ -28,7 +28,7 @@ repository="${1}"
 startDate="${2}"
 endDate="${3}"
 
-# find how many commits to master there have been in the last month
+# find how many commits to master there have been in the given range
 commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty=oneline | wc -l)"
 
 # Retrieve merged PRs from the given range
