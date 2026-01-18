@@ -43,7 +43,7 @@ section SchwarzTransform
 when divided by `M - f z`. -/
 private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
     DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
-  DifferentiableOn.div hf (DifferentiableOn.const_sub hf M) 
+  DifferentiableOn.div hf (DifferentiableOn.const_sub hf M)
     fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
 
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
