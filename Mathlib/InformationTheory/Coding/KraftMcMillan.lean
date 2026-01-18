@@ -3,17 +3,18 @@ Copyright (c) 2026 Elazar Gershuni. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Elazar Gershuni
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Analysis.SpecificLimits.Normed
+module
 
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Linarith
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
-import Mathlib.InformationTheory.Coding.UniquelyDecodable
+public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 
 /-!
 # Kraft-McMillan Inequality
@@ -53,12 +54,12 @@ private def concatFn (w : Fin r → S) : List α :=
   (List.ofFn (fun i : Fin r => (w i).val)).flatten
 
 @[simp]
-private lemma concatFn.def (w : Fin r → S):
+private lemma concatFn.def (w : Fin r → S) :
   concatFn w = (List.ofFn (fun i : Fin r => (w i).val)).flatten :=
   rfl
 
 /-- The length of a concatenation is the sum of the codeword lengths. -/
-private lemma concatFn.length (w : Fin r → S):
+private lemma concatFn.length (w : Fin r → S) :
   (concatFn w).length = ∑ i : Fin r, (w i).val.length := by
   simp [List.sum_ofFn]
 
@@ -70,21 +71,19 @@ private lemma concatFn.length_le_mul_sup {Sf : Finset (List α)} {r : ℕ}
     intro i
     -- (w i).property : (w i).val ∈ (S : Set _)
     exact Finset.le_sup (f := List.length) (by simp)
-
   have hsum :
       (∑ i : Fin r, (ws i).val.length) ≤ ∑ i : Fin r, Sf.sup List.length := by
     -- `Fintype.sum` is definitionaly `Finset.univ.sum`
     simpa using
       (Finset.sum_le_sum (s := (Finset.univ : Finset (Fin r)))
         (fun i _ => h_each i))
-
   calc
     (concatFn ws).length = ∑ i, (ws i).val.length := concatFn.length ws
     _ ≤ ∑ _i, Sf.sup List.length := Finset.sum_le_sum (fun i _ => Finset.le_sup (by simp))
     _ = r * Sf.sup List.length := by simp
 
 /-- If `S` contains no empty string, then concatenating `r` codewords yields length at least `r`. -/
-private lemma concatFn.le_length_of_no_empty (w : Fin r → S) (h_nil : ([] : List α) ∉ S):
+private lemma concatFn.le_length_of_no_empty (w : Fin r → S) (h_nil : ([] : List α) ∉ S) :
   r ≤ (concatFn w).length := by
   have h_each : ∀ i : Fin r, 1 ≤ (w i).val.length := by
     intro i
@@ -95,7 +94,6 @@ private lemma concatFn.le_length_of_no_empty (w : Fin r → S) (h_nil : ([] : Li
     -- `0 < length` -> `1 ≤ length`
     have : 0 < (w i).val.length := List.length_pos_iff.2 hne
     simpa using (Nat.succ_le_iff.2 this)
-
   calc
     r = ∑ i : Fin r, 1 := by simp [Fintype.card_fin]
     _ ≤ ∑ i : Fin r, (w i).val.length := by
@@ -115,7 +113,6 @@ private lemma uniquely_decodable_concatFn_injective
   {S : Set (List α)} (h : UniquelyDecodable S) (r : ℕ) :
   Function.Injective (concatFn (S := S) (r := r)) := by
   intro w1 w2 hflat
-
   -- package tuples as subtype-lists
   let pack : (Fin r → S) → {L : List (List α) // ∀ x ∈ L, x ∈ S} :=
     fun w =>
@@ -124,20 +121,16 @@ private lemma uniquely_decodable_concatFn_injective
          intro x hx
          rcases List.mem_ofFn.mp hx with ⟨i, rfl⟩
          exact (w i).property⟩
-
   have hpack : pack w1 = pack w2 := by
     apply (UniquelyDecodable.flatten_injective h)
     simpa using hflat
-
   have hOf :
       List.ofFn (fun j : Fin r => (w1 j).val)
         = List.ofFn (fun j : Fin r => (w2 j).val) :=
     congrArg Subtype.val hpack
-
   have hf :
       (fun j : Fin r => (w1 j).val) = (fun j : Fin r => (w2 j).val) :=
     List.ofFn_injective hOf
-
   funext i
   apply Subtype.ext
   simpa using congrArg (fun f => f i) hf
@@ -161,7 +154,6 @@ lemma sum_pow_len_filter_le_one_of_card_le
   let D : ℕ := Fintype.card α
   have hD0 : (D : ℝ) ≠ 0 := by
     exact_mod_cast (Nat.ne_of_gt (Fintype.card_pos : 0 < D))
-
   -- rewrite exponents x.length = s on the filter
   have : (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ x.length)
        = (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ s) := by
@@ -169,7 +161,6 @@ lemma sum_pow_len_filter_le_one_of_card_le
     intro x hx
     have hxlen : x.length = s := (Finset.mem_filter.1 hx).2
     simp [hxlen]
-
   -- now it is card * (1/D)^s, use card bound
   calc
     (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ x.length)
@@ -230,9 +221,7 @@ private lemma kraft_sum_pow_eq_sum_concatFn
     have hsum :
         (∑ i : Fin r, (w i).val.length) = (concatFn w).length := by
       simpa using (concatFn.length w).symm
-
     simpa [hsum] using hprod
-
   calc
     (∑ w ∈ S, (1 / (D : ℝ)) ^ w.length) ^ r
         = ∑ w : Fin r → S, ∏ i : Fin r, (1 / (D : ℝ)) ^ (w i).val.length := h_expand
@@ -247,7 +236,6 @@ private lemma card_filter_length_eq_le
   let D : ℕ := Fintype.card α
   let all_words : Finset (List α) :=
     (Finset.univ : Finset (Fin s → α)).image List.ofFn
-
   have hsub : T.filter (fun x => x.length = s) ⊆ all_words := by
     intro a ha
     have halen : a.length = s := (Finset.mem_filter.1 ha).2
@@ -258,7 +246,6 @@ private lemma card_filter_length_eq_le
       apply List.ext_get
       · simp [halen]
       · simp
-
   have hcard_all : all_words.card = D ^ s := by
     -- `List.ofFn` is injective, so the image has the same cardinality as the domain.
     simpa using
@@ -266,7 +253,6 @@ private lemma card_filter_length_eq_le
         (s := (Finset.univ : Finset (Fin s → α)))
         (f := (List.ofFn : (Fin s → α) → List α))
         List.ofFn_injective)
-
   calc
     (T.filter (fun x => x.length = s)).card
         ≤ all_words.card := Finset.card_le_card hsub
@@ -284,17 +270,14 @@ lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq α] [Fin
   -- Let $maxLen = \max_{w \in S} |w|$.
   set maxLen := (S.sup List.length) with hmaxLen_def
   let D := Fintype.card α
-
   -- By definition of $C$, we have $C^r = \sum_{w_1,\dots,w_r \in S} 2^{-|w_1 \cdots w_r|}$.
   have h_sum :
     (∑ w ∈ S, (1 / D : ℝ) ^ w.length) ^ r
       = ∑ w : Fin r → S, (1 / D : ℝ) ^ (concatFn w).length := by
     simpa using (kraft_sum_pow_eq_sum_concatFn D r)
-
   -- Since the map $(w_1,\dots,w_r) \mapsto w_1 \cdots w_r$ is injective,
   -- the sum $\sum_{w_1,\dots,w_r \in S} 2^{-|w_1 \cdots w_r|}$ is at most $\sum_{s=r}^{r\ell} \sum_{x \in \{0,1\}^s} 2^{-|x|}$.
   let T : Finset (List α) := Finset.image concatFn (Finset.univ : Finset (Fin r → S))
-
   have h_injective :
     ∑ w : Fin r → S, (1 / D : ℝ) ^ ((concatFn w).length)
       ≤ ∑ s ∈ Finset.Icc r (r * maxLen),
@@ -312,7 +295,6 @@ lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq α] [Fin
         exact uniquely_decodable_concatFn_injective h r h_eq
     · intro _ _ _ _ hst
       exact disjoint_filter_eq_of_ne _ hst
-
   -- Since $\sum_{x \in \{0,1\}^s} 2^{-|x|} = 1$ for any $s$, we have $\sum_{s=r}^{r\ell} \sum_{x \in \{0,1\}^s} 2^{-|x|} = \sum_{s=r}^{r\ell} 1 = r\ell - r + 1 \le r\ell$.
   have h_sum_one :
       ∀ s ∈ Finset.Icc r (r * maxLen),
@@ -332,17 +314,14 @@ open Filter
 private lemma tendsto_nat_div_pow_atTop_nhds_0 {K : ℝ} (hK : 1 < K) :
   Tendsto (fun r : ℕ => (r : ℝ) / K ^ r) atTop (nhds 0) := by
   have hK0 : 0 < K := lt_trans (by norm_num) hK
-
   have hAbs : |1 / K| < 1 := by
     calc
       |1 / K| = 1 / K := abs_of_pos (by positivity)
       _ < 1 := (div_lt_one hK0).2 hK
-
   -- main limit: r * (1/K)^r → 0
   have hmain :
       Tendsto (fun r : ℕ => (r : ℝ) * ((1 : ℝ) / K) ^ r) atTop (nhds 0) := by
     simpa using (tendsto_self_mul_const_pow_of_abs_lt_one hAbs)
-
   simpa using hmain
 
 private lemma tendsto_mul_const_nat_div_pow_atTop_nhds_0 {K c : ℝ} (hK : 1 < K) :
@@ -355,24 +334,18 @@ then `Σ D^{-|w|} ≤ 1`. -/
 theorem kraft_mcmillan_inequality {S : Finset (List α)} [DecidableEq α] [Fintype α] [Nonempty α] (h : UniquelyDecodable (S: Set (List α))) :
     ∑ w ∈ S, (1 / Fintype.card α : ℝ) ^ w.length ≤ 1 := by
   let D : ℝ := Fintype.card α
-
   have h_kraft := kraft_mcmillan_inequality_aux h
-
   contrapose! h_kraft
   let K := ∑ w ∈ S, (1 / D) ^ w.length
-
   have hK1 : 1 < K := by
     simpa [K] using h_kraft
-
   have hr_exists : Filter.Tendsto (fun r : ℕ =>
         (r * (Finset.sup S List.length) : ℝ) / K ^ r) Filter.atTop (nhds 0) := by
     let maxLen : ℕ := S.sup List.length
     have h0 :
         Tendsto (fun r : ℕ => (maxLen * (r : ℝ)) / K ^ r) atTop (nhds 0) := by
       exact tendsto_mul_const_nat_div_pow_atTop_nhds_0 hK1
-
     simpa [div_eq_mul_inv, mul_assoc, mul_left_comm] using h0
-
   obtain ⟨r, hr⟩ := Filter.eventually_atTop.mp (hr_exists.eventually (gt_mem_nhds zero_lt_one))
   refine ⟨r + 1, by linarith, ?_⟩
   have := hr (r + 1) (by linarith)
