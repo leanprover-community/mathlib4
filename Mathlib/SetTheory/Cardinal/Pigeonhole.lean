@@ -107,7 +107,6 @@ theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β
 /-- If an infinite type `β` can be expressed as a union of finite sets,
 then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`. -/
--- TODO: write `Set.univ` instead of `⊤` and rename the theorem accordingly.
 theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α → Finset β)
     (w : ⋃ a, (f a : Set β) = Set.univ) : #β ≤ #(range f) := by
   by_contra h
