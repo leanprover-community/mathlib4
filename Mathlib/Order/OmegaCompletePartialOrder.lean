@@ -344,38 +344,38 @@ lemma dropOption_some (n) : dropOption (some n c) ⟨n, by simp⟩ = c := by
   simp only [this, Nat.add_sub_cancel]
 
 /-- Converts a `Chain` of `Option`s into an `Option`al `Chain`. -/
-noncomputable def unlift (c : Chain (Option α)) : Option (Chain α) :=
+noncomputable def toOption (c : Chain (Option α)) : Option (Chain α) :=
   open Classical in
   if h : ∃n, (c n).isSome
   then .some (dropOption c h)
   else .none
 
 @[simp]
-lemma unlift_none : unlift (const none) = (.none : Option (Chain α)) := by
-  simp only [unlift, const_coe, Option.isSome_none, Bool.false_eq_true, exists_const, ↓reduceDIte]
+lemma toOption_none : toOption (const none) = (.none : Option (Chain α)) := by
+  simp only [toOption, const_coe, Option.isSome_none, Bool.false_eq_true, exists_const, ↓reduceDIte]
 
 @[simp]
-lemma unlift_some (n) : unlift (some n c) = (.some c : Option (Chain α)) := by
+lemma toOption_some (n) : toOption (some n c) = (.some c : Option (Chain α)) := by
   simp only [
-    unlift, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
+    toOption, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
     ite_eq_left_iff, not_exists, not_le, reduceCtorEq, imp_false, not_forall]
   use n
 
 @[elab_as_elim]
-lemma unlift_cases
+lemma option_cases
     {p : Chain (Option α) → Prop}
     (none : p (const .none))
     (some : ∀ n c, p (.some n c))
     (c : Chain (Option α)) : p c := by
   classical
   let ℓ := if h : ∃n, (c n).isSome then Nat.find h else 0
-  suffices this : c.unlift.elim (const .none) (.some ℓ) = c by
+  suffices this : c.toOption.elim (const .none) (.some ℓ) = c by
     rw [← this]
-    cases c.unlift with
+    cases c.toOption with
     | none => simp only [Option.elim_none, none]
     | some _ => simp only [Option.elim_some, some]
   by_cases h : ∃n, (c n).isSome
-  · simp only [unlift, h, ↓reduceDIte, Option.elim_some]
+  · simp only [toOption, h, ↓reduceDIte, Option.elim_some]
     ext n
     simp only [
       h, ↓reduceDIte, some_coe, Nat.lt_find_iff, Bool.not_eq_true,
@@ -398,7 +398,7 @@ lemma unlift_cases
   · ext n
     have : ∀ (x : ℕ), c x = .none := by simpa using h
     simp only [
-      unlift, this, Option.isSome_none, Bool.false_eq_true, exists_const,
+      toOption, this, Option.isSome_none, Bool.false_eq_true, exists_const,
       ↓reduceDIte, Option.elim_none, const_coe, reduceCtorEq]
 
 end Chain
@@ -873,20 +873,20 @@ namespace Option
 variable [OmegaCompletePartialOrder α]
 
 noncomputable instance : OmegaCompletePartialOrder (Option α) where
-  ωSup c := c.unlift.map ωSup
+  ωSup c := c.toOption.map ωSup
   le_ωSup c i := by
-    cases c using Chain.unlift_cases with
-    | none => simp only [const_coe, unlift_none, map_none, le_refl]
+    cases c using option_cases with
+    | none => simp only [const_coe, toOption_none, map_none, le_refl]
     | some j =>
-      simp only [some_coe, unlift_some, map_some]
+      simp only [some_coe, toOption_some, map_some]
       by_cases h : i < j
       · simp only [h, ↓reduceIte, none_le]
       · simp only [h, ↓reduceIte, some_le_some]
         apply le_ωSup
   ωSup_le := by
     rintro c x h
-    cases c using Chain.unlift_cases with
-    | none => simp only [unlift_none, map_none, none_le]
+    cases c using option_cases with
+    | none => simp only [toOption_none, map_none, none_le]
     | some n c =>
       cases x with
       | none =>
@@ -895,13 +895,13 @@ noncomputable instance : OmegaCompletePartialOrder (Option α) where
         grind
       | some x =>
         replace h i := h (i + n)
-        simp only [unlift_some, map_some, some_le_some, ωSup_le_iff]
+        simp only [toOption_some, map_some, some_le_some, ωSup_le_iff]
         simp only [some_coe, Nat.add_sub_cancel] at h
         grind
 
 @[simp]
 lemma ωSup_some (n) (c : Chain α) : ωSup (.some n c) = ωSup c := by
-  simp only [ωSup, unlift_some, map_some]
+  simp only [ωSup, toOption_some, map_some]
 
 @[fun_prop]
 lemma ωScottContinuous_some : ωScottContinuous (.some : α → Option α) := by
@@ -924,7 +924,7 @@ lemma ωScottContinuous_bind
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Option.bind_mono hf.monotone hg.monotone
   · rw [hf.map_ωSup]
-    cases hc : c.map ⟨f, hf.monotone⟩ using Chain.unlift_cases with
+    cases hc : c.map ⟨f, hf.monotone⟩ using option_cases with
     | none =>
       simp only [ωSup_const, bind_none]
       apply le_antisymm
