@@ -58,7 +58,21 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
+/-
+α : Type u_1
+M✝ : Type u_2
+N✝ : Type u_3
+P : Type u_4
+R✝ : Type u_5
+R₂ : Type u_6
+R₃ : Type u_7
+S✝ : Type u_8
+-/
+
+universe u_1 u_2 u_3 u_4 u_5 u_6 u_7 u_8
+
+variable {α : Type u_1} {M : Type u_2} {N : Type u_3} {P : Type u_4}
+variable {R : Type u_5} {R₂ : Type u_6} {R₃ : Type u_7} {S : Type u_8}
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
@@ -94,7 +108,10 @@ variable [Module S N] [SMulCommClass R₂ S N]
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-def lsum : (α → M →ₛₗ[σ] N) ≃ₗ[S] (α →₀ M) →ₛₗ[σ] N where
+def lsum :
+    LinearEquiv.{u_8, u_8, max u_3 u_2 u_1, max u_3 u_2 u_1} (RingHom.id.{u_8} S)
+      (α → LinearMap.{u_5, u_6, u_2, u_3} σ M N)
+      (LinearMap.{u_5, u_6, max u_2 u_1, u_3} σ (Finsupp.{u_1, u_2} α M) N) where
   toFun F :=
     { toFun := fun d => d.sum fun i => F i
       map_add' := (liftAddHom (α := α) (M := M) (N := N) fun x => (F x).toAddMonoidHom).map_add
