@@ -132,7 +132,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     ext i
     trans IsLocalizedModule.map p.primeCompl l₁ l₂ e <| l₁ <| Finsupp.single i 1
     · simp [eₚ, -IsLocalizedModule.map_apply, l₁]
-    · simp [l₂, e, hb, v]
+    · simp [l₂, e, hb]
   have heₚ : Function.Bijective eₚ := this ▸ b.repr.symm.bijective
   have : Finite κ := Module.Finite.finite_basis b
   obtain ⟨g, hg, h⟩ := Module.FinitePresentation.exists_notMem_bijective e p l₁ l₂ heₚ
