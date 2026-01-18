@@ -112,12 +112,12 @@ instance : Category.{v₁} (Mat_ C) where
     simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
-    intros
+    intro i k
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
     rw [Finset.sum_comm]
 
 @[ext]
-theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
+theorem hom_ext {M N : Mat_ C} {f g : M ⟶ N} (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
 open scoped Classical in
@@ -202,7 +202,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
-                simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
+                simp only [eqToHom_refl, Mat_.id_apply_self]
               · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
               · rfl }
@@ -214,8 +214,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
             dsimp
             rw [Finset.sum_eq_single i]; rotate_left
             · intro b _ hb
-              apply Finset.sum_eq_zero
-              intro x _
+              refine Finset.sum_eq_zero (fun _ _ => ?_)
               rw [dif_neg hb.symm, zero_comp]
             · intro hi
               simp at hi
@@ -374,9 +373,10 @@ theorem natTrans_ext
   let p : M ⟶ (embedding C).obj (M.X i) :=
     M.isoBiproductEmbedding.hom ≫
       biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
-  have : η.app M ≫ G.map p = θ.app M ≫ G.map p := by
-    rw [← η.naturality p, ← θ.naturality p, h]
-  simpa [p, additiveObjIsoBiproduct_hom_π] using this
+  simp only [Category.assoc, additiveObjIsoBiproduct_hom_π]
+  change η.app M ≫ G.map p = θ.app M ≫ G.map p
+  rw [← η.naturality p, ← θ.naturality p]
+  simpa using congrArg (fun t => F.map p ≫ t) (h (M.X i))
 
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
