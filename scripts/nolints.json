@@ -221,14 +221,11 @@
  ["docBlame", "Mathlib.Tactic.CC.CongruencesKey"],
  ["docBlame", "Mathlib.Tactic.CC.SymmCongruencesKey"],
  ["docBlame", "Mathlib.Tactic.CC.TodoEntry"],
- ["docBlame", "Mathlib.Tactic.Conv.convLHS"],
- ["docBlame", "Mathlib.Tactic.Conv.convRHS"],
  ["docBlame", "Mathlib.Tactic.Conv.convRun_conv_"],
  ["docBlame", "Mathlib.Tactic.ElimApp.evalNames"],
  ["docBlame", "Mathlib.Tactic.Find.findDeclsPerHead"],
  ["docBlame", "Mathlib.Tactic.Find.findType"],
  ["docBlame", "Mathlib.Tactic.GCongr.exact"],
- ["docBlame", "Mathlib.Tactic.GCongr.tacticGcongr_discharger"],
  ["docBlame", "Module.End.Eigenvalues.val"],
  ["docBlame", "Order.Ideal.PrimePair.F"],
  ["docBlame", "Order.Ideal.PrimePair.I"],
@@ -256,7 +253,4 @@
  ["docBlame", "Mathlib.Tactic.Coherence.LiftObj.lift"],
  ["docBlame", "Mathlib.Tactic.GCongr.ForwardExt.eval"],
  ["docBlame", "Mathlib.Tactic.Monotonicity.mono.side"],
- ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
- ["tacticDocs", "Mathlib.Tactic.Conv.convLHS"],
- ["tacticDocs", "Mathlib.Tactic.Conv.convRHS"],
- ["tacticDocs", "Mathlib.Tactic.GCongr.tacticGcongr_discharger"]]
+ ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"]]
