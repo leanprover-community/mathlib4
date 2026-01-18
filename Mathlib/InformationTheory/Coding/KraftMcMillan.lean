@@ -45,46 +45,37 @@ variable {α : Type*}
 
 section concatFn
 
-variable {S : Set (List α)} {r : ℕ}
+variable {S : Finset (List α)} {r : ℕ}
 
-/-- Concatenation of `r` codewords from `S` into a single string.
-
-Given a tuple `w : Fin r → S` of codewords, `concatFn w` is their concatenation
-`w₀ ++ w₁ ++ ... ++ wᵣ₋₁`. -/
+/-- Concatenation of `r` codewords from a finite code `Sf`. -/
 private def concatFn (w : Fin r → S) : List α :=
   (List.ofFn (fun i : Fin r => (w i).val)).flatten
 
-@[simp]
-private lemma concatFn.def (w : Fin r → S) :
-  concatFn w = (List.ofFn (fun i : Fin r => (w i).val)).flatten :=
-  rfl
+@[simp] private lemma concatFn.def (w : Fin r → S) :
+  concatFn w = (List.ofFn (fun i => (w i).val)).flatten := rfl
 
-/-- The length of a concatenation is the sum of the codeword lengths. -/
 private lemma concatFn.length (w : Fin r → S) :
     (concatFn w).length = ∑ i : Fin r, (w i).val.length := by
-  simp [List.sum_ofFn]
+  simp [concatFn, List.sum_ofFn]
 
-/-- The concatenation length is at most `r` times the maximum codeword length. -/
-private lemma concatFn.length_le_mul_sup {Sf : Finset (List α)} {r : ℕ}
-    (ws : Fin r → Sf) :
-  (concatFn ws).length ≤ r * (Sf.sup List.length) := by
-  have h_each : ∀ i : Fin r, (ws i).val.length ≤ Sf.sup List.length := by
+/-- Upper bound in terms of `sup` (now it fits perfectly). -/
+private lemma concatFn.length_le_mul_sup (w : Fin r → S) :
+    (concatFn w).length ≤ r * (S.sup List.length) := by
+  have h_each : ∀ i : Fin r, (w i).val.length ≤ S.sup List.length := by
     intro i
-    -- (w i).property : (w i).val ∈ (S : Set _)
     exact Finset.le_sup (f := List.length) (by simp)
-  have hsum :
-      (∑ i : Fin r, (ws i).val.length) ≤ ∑ i : Fin r, Sf.sup List.length := by
-    -- `Fintype.sum` is definitionaly `Finset.univ.sum`
+  have : (∑ i : Fin r, (w i).val.length) ≤ ∑ _i : Fin r, S.sup List.length := by
     simpa using
       (Finset.sum_le_sum (s := (Finset.univ : Finset (Fin r)))
         (fun i _ => h_each i))
   calc
-    (concatFn ws).length = ∑ i, (ws i).val.length := concatFn.length ws
-    _ ≤ ∑ _i, Sf.sup List.length := Finset.sum_le_sum (fun i _ => Finset.le_sup (by simp))
-    _ = r * Sf.sup List.length := by simp
+    (concatFn w).length = ∑ i : Fin r, (w i).val.length := concatFn.length w
+    _ ≤ ∑ _i : Fin r, S.sup List.length := this
+    _ = r * S.sup List.length := by simp
 
-/-- If `S` contains no empty string, then concatenating `r` codewords yields length at least `r`. -/
-private lemma concatFn.le_length_of_no_empty (w : Fin r → S) (h_nil : ([] : List α) ∉ S) :
+/-- Lower bound using the derived lemma `[] ∉ (Sf : Set _)` from unique decodability. -/
+private lemma concatFn.le_length_of_no_empty
+    (w : Fin r → S) (h_nil : ([] : List α) ∉ (S : Set (List α))) :
     r ≤ (concatFn w).length := by
   have h_each : ∀ i : Fin r, 1 ≤ (w i).val.length := by
     intro i
@@ -92,15 +83,13 @@ private lemma concatFn.le_length_of_no_empty (w : Fin r → S) (h_nil : ([] : Li
       intro h0
       apply h_nil
       simpa [h0] using (w i).property
-    -- `0 < length` -> `1 ≤ length`
     have : 0 < (w i).val.length := List.length_pos_iff.2 hne
-    simpa using (Nat.succ_le_iff.2 this)
+    simpa using Nat.succ_le_iff.2 this
   calc
     r = ∑ i : Fin r, 1 := by simp [Fintype.card_fin]
     _ ≤ ∑ i : Fin r, (w i).val.length := by
       simpa using
-        (Finset.sum_le_sum
-          (s := (Finset.univ : Finset (Fin r)))
+        (Finset.sum_le_sum (s := (Finset.univ : Finset (Fin r)))
           (fun i _ => h_each i))
     _ = (concatFn w).length := by
       simpa using (concatFn.length w).symm
@@ -111,7 +100,7 @@ end concatFn
 
 This is the key property: distinct tuples of codewords produce distinct concatenations. -/
 private lemma uniquely_decodable_concatFn_injective
-    {S : Set (List α)} (h : UniquelyDecodable S) (r : ℕ) :
+    {S : Finset (List α)} (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) :
     Function.Injective (concatFn (S := S) (r := r)) := by
   intro w1 w2 hflat
   -- package tuples as subtype-lists
@@ -259,14 +248,17 @@ private lemma card_filter_length_eq_le
     _ = D ^ s := hcard_all
     _ = (Fintype.card α) ^ s := by rfl
 
-/-- If `S` is uniquely decodable, then `(Σ 2^{-|w|})^r ≤ r·maxLen` where `maxLen` is the maximum codeword length.
+/-- If `S` is uniquely decodable, then `(Σ 2^{-|w|})^r ≤ r·maxLen`
+where `maxLen` is the maximum codeword length.
 
 This auxiliary bound is the heart of the Kraft-McMillan proof. The r-th power of the Kraft sum
-counts concatenations of r codewords, which by unique decodability are distinct. Since these
-concatenations have lengths between r and r·maxLen, we get at most r·maxLen - r + 1 ≤ r·maxLen terms. -/
-private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq α] [Fintype α] [Nonempty α]
-    (h : UniquelyDecodable (S: Set (List α))) (r : ℕ) (hr : r ≥ 1) :
+counts concatenations of r codewords, which by unique decodability are distinct.
+Since these concatenations have lengths between r and r·maxLen, we get at most
+r·maxLen - r + 1 ≤ r·maxLen terms. -/
+private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] [Nonempty α]
+    (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) (hr : r ≥ 1) :
     (∑ w ∈ S, (1 / (Fintype.card α) : ℝ) ^ w.length) ^ r ≤ r * (Finset.sup S List.length) := by
+  classical
   -- Let $maxLen = \max_{w \in S} |w|$.
   set maxLen := (S.sup List.length) with hmaxLen_def
   let D := Fintype.card α
@@ -276,7 +268,8 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq 
       = ∑ w : Fin r → S, (1 / D : ℝ) ^ (concatFn w).length := by
     simpa using (kraft_sum_pow_eq_sum_concatFn D r)
   -- Since the map $(w_1,\dots,w_r) \mapsto w_1 \cdots w_r$ is injective,
-  -- the sum $\sum_{w_1,\dots,w_r \in S} 2^{-|w_1 \cdots w_r|}$ is at most $\sum_{s=r}^{r\ell} \sum_{x \in \{0,1\}^s} 2^{-|x|}$.
+  -- the sum $\sum_{w_1,\dots,w_r \in S} 2^{-|w_1 \cdots w_r|}$ is at most
+  -- $\sum_{s=r}^{r\ell} \sum_{x \in \{0,1\}^s} 2^{-|x|}$.
   let T : Finset (List α) := Finset.image concatFn (Finset.univ : Finset (Fin r → S))
   have h_injective :
     ∑ w : Fin r → S, (1 / D : ℝ) ^ ((concatFn w).length)
@@ -286,7 +279,8 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq 
     · refine le_of_eq ?_
       refine Finset.sum_bij (fun w _ => concatFn w) ?_ ?_ (by simp [T]) (by simp)
       · intro a _
-        simp only [T, Finset.mem_biUnion, Finset.mem_Icc, Finset.mem_filter, Finset.mem_image, Finset.mem_univ, true_and]
+        simp only [T, Finset.mem_biUnion, Finset.mem_Icc, Finset.mem_filter, Finset.mem_image,
+                   Finset.mem_univ, true_and]
         use (concatFn a).length
         refine ⟨⟨?_, ?_⟩, ⟨a, rfl⟩, rfl⟩
         · simpa using (concatFn.le_length_of_no_empty a h.epsilon_not_mem)
@@ -295,7 +289,6 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq 
         exact uniquely_decodable_concatFn_injective h r h_eq
     · intro _ _ _ _ hst
       exact disjoint_filter_eq_of_ne _ hst
-  -- Since $\sum_{x \in \{0,1\}^s} 2^{-|x|} = 1$ for any $s$, we have $\sum_{s=r}^{r\ell} \sum_{x \in \{0,1\}^s} 2^{-|x|} = \sum_{s=r}^{r\ell} 1 = r\ell - r + 1 \le r\ell$.
   have h_sum_one :
       ∀ s ∈ Finset.Icc r (r * maxLen),
         ∑ x ∈ T.filter (fun x => x.length = s), (1 / D : ℝ) ^ x.length ≤ 1 := by
@@ -303,7 +296,6 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [DecidableEq 
     simpa using
       (sum_pow_len_filter_le_one_of_card_le (T := T) (s := s)
         (by simpa using (card_filter_length_eq_le (T := T) (s := s))))
-
   refine le_trans h_sum.le <| h_injective.trans <| le_trans (Finset.sum_le_sum h_sum_one) ?_
   rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
   · positivity
@@ -331,7 +323,8 @@ private lemma tendsto_mul_const_nat_div_pow_atTop_nhds_0 {K c : ℝ} (hK : 1 < K
 
 /-- **Kraft-McMillan Inequality**: If `S` is a finite uniquely decodable code,
 then `Σ D^{-|w|} ≤ 1`. -/
-public theorem kraft_mcmillan_inequality {S : Finset (List α)} [DecidableEq α] [Fintype α] [Nonempty α] (h : UniquelyDecodable (S: Set (List α))) :
+public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [Nonempty α]
+    (h : UniquelyDecodable (S : Set (List α))) :
     ∑ w ∈ S, (1 / Fintype.card α : ℝ) ^ w.length ≤ 1 := by
   let D : ℝ := Fintype.card α
   have h_kraft := kraft_mcmillan_inequality_aux h
