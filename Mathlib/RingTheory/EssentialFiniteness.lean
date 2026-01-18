@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Essentially of finite type algebras
@@ -284,6 +285,12 @@ lemma of_comp (f : R →+* S) {g : S →+* T} (h : (g.comp f).EssFiniteType) :
     g.EssFiniteType := by
   algebraize [f, g, g.comp f]
   exact Algebra.EssFiniteType.of_comp R S T
+
+lemma stableUnderComposition : StableUnderComposition EssFiniteType :=
+  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
+
+lemma respectsIso : RespectsIso EssFiniteType :=
+  stableUnderComposition.respectsIso fun e ↦ (FiniteType.of_surjective _ e.surjective).essFiniteType
 
 lemma isLocalizationMap {M : Submonoid R} [Algebra R S] [IsLocalization M S]
     {P : Type*} [CommRing P] {T : Submonoid P} (Q : Type*) [CommRing Q] [Algebra P Q]
