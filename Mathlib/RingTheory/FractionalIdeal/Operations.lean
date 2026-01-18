@@ -833,12 +833,10 @@ theorem num_le (I : FractionalIdeal S P) :
 /-- If the numerator ideal of a fractional ideal is principal, then so is the fractional ideal. -/
 theorem isPrincipal_of_num_isPrincipal [IsDomain R]
     (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
-    (I : Submodule R (FractionRing R)).IsPrincipal := by
-  apply Module.isPrincipal_submodule_iff.1
-  have hI' : Module.IsPrincipal R I.num :=
-    Module.isPrincipal_submodule_iff.2 (by simpa using hI)
-  exact (LinearEquiv.isPrincipal_iff (FractionalIdeal.equivNumOfIsLocalization (S := (R⁰))
-        I)).2 (by simpa using hI')
+    (I : Submodule R (FractionRing R)).IsPrincipal :=
+    Module.isPrincipal_submodule_iff.mp
+    <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
+    <| Module.isPrincipal_submodule_iff.mpr hI
 
 end PrincipalIdeal
 

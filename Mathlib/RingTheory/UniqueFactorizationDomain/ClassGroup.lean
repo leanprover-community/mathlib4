@@ -6,8 +6,6 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 module
 
 public import Mathlib.RingTheory.ClassGroup
-import Mathlib.Algebra.GCDMonoid.Finset
-
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
@@ -16,44 +14,28 @@ The main application is to Unique Factorization Domains,
 which are known to be Normalized GCD Domains.
 
 ## Main result
-- `NormalizedGCDMonoid.instSubsingletonClassGroup` : the class group of a
-  Normalized GCD Domain is trivial.
-- `UniqueFactorizationMonoid.instSubsingletonClassGroup` : the class group of a UFD is trivial.
+- `NormalizedGCDMonoid.instSubsingletonClassGroup` : the class group of a domain with
+normalizable gcd is trivial. This includes unique factorization domains.
 
 ## References
 
 - [stacks-project]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
 -/
 
-open scoped nonZeroDivisors Pointwise BigOperators
+open scoped nonZeroDivisors
 
-open IsLocalization IsFractionRing FractionalIdeal
+open FractionalIdeal Ideal
 
-section CommRing
+@[expose] public section
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
+namespace NormalizedGCDMonoid
 
-section Domain
-variable [IsDomain R]
-
-/-- Bridge lemma: if `J` is a unit after coercion to fractional ideals, then `J` admits an
-integral inverse up to a principal ideal. -/
-lemma Ideal.exists_mul_eq_span_singleton_of_isUnit_coe (J : Ideal R)
-    (hJ : IsUnit (J : FractionalIdeal R⁰ (FractionRing R))) :
-    ∃ (K : Ideal R) (x : R), x ≠ 0 ∧ J * K = Ideal.span ({x} : Set R) := by
-  obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (J : FractionalIdeal R⁰ (FractionRing R))⁻¹
-  refine ⟨K, a, ha0, (coeIdeal_inj (K := FractionRing R)).mp ?_⟩
-  rw [coeIdeal_mul, coeIdeal_span_singleton]
-  rw [← mul_inv_cancel_iff_isUnit] at hJ
-  replace ha0 := spanSingleton_mul_inv (R₁ := R) (FractionRing R)
-    (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (mem_nonZeroDivisors_iff_ne_zero.2 ha0))
-  replace h := congr(spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * J * $h.symm)
-  rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0, one_mul, mul_assoc, hJ, mul_one] at h
-
-lemma Ideal.isPrincipal_of_exists_mul_eq_span_singleton [NormalizedGCDMonoid R]
+lemma isPrincipal_of_exists_mul_eq_span_singleton
     {J K : Ideal R} {x : R} (hx0 : x ≠ 0) (hJK : J * K = span {x}) :
     J.IsPrincipal := by
-  classical
+  letI : NormalizedGCDMonoid R :=
+    Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
   have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
   -- Shrink `K` to a finitely generated subideal `K'` witnessing `x ∈ J * K'`.
   have : ∃ T : Finset R, (T : Set R) ⊆ K ∧ x ∈ J * span T := by
@@ -89,62 +71,42 @@ lemma Ideal.isPrincipal_of_exists_mul_eq_span_singleton [NormalizedGCDMonoid R]
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
 is principal. -/
-theorem Ideal.isPrincipal_of_isUnit_fractionalIdeal [NormalizedGCDMonoid R] (I : Ideal R)
+theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
-  obtain ⟨K, x, hx0, hIK⟩ := Ideal.exists_mul_eq_span_singleton_of_isUnit_coe I hI
-  exact Ideal.isPrincipal_of_exists_mul_eq_span_singleton hx0 hIK
-
-@[expose] public section
-
-/-- In a normalized GCD domain, every invertible fractional ideal is principal. -/
-theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
-    IsUnit (I.num  : FractionalIdeal R⁰ (FractionRing R)) ↔ IsUnit I := by
-  have hden0 : algebraMap R (FractionRing R) I.den ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.2
-  let u : (FractionRing R)ˣ := Units.mk0 (algebraMap R (FractionRing R) I.den) hden0
-  have hdenUnit : IsUnit (spanSingleton R⁰ (algebraMap R (FractionRing R) I.den)) :=
-    ⟨toPrincipalIdeal R (FractionRing R) u, by simp [u]⟩
-  obtain ⟨c, hc⟩ := hdenUnit
-  rw [← den_mul_self_eq_num', ← hc, Units.isUnit_units_mul]
-
-section NormalizedGCDMonoid
-variable [NormalizedGCDMonoid R]
+  obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (I : FractionalIdeal R⁰ (FractionRing R))⁻¹
+  have hIK : I * K = Ideal.span ({a} : Set R) :=
+    (coeIdeal_inj (K := FractionRing R)).mp <| by
+      rw [coeIdeal_mul, coeIdeal_span_singleton]
+      rw [← mul_inv_cancel_iff_isUnit] at hI
+      have ha0' := spanSingleton_mul_inv (R₁ := R) (FractionRing R)
+        (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
+          (mem_nonZeroDivisors_iff_ne_zero.mpr ha0))
+      replace h := congr(spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * $h.symm)
+      rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
+  exact isPrincipal_of_exists_mul_eq_span_singleton (J := I) (K := K) (x := a) ha0 hIK
 
 /-- In a normalized GCD domain, every invertible fractional ideal is principal. -/
-theorem NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit
+theorem fractionalIdeal_isPrincipal_of_isUnit
   (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) :=
     FractionalIdeal.isUnit_num.mpr ⟨I, rfl⟩
-  have hJprin : J.IsPrincipal := Ideal.isPrincipal_of_isUnit_fractionalIdeal J hJunit
+  have hJprin : J.IsPrincipal := isPrincipal_of_isUnit_fractionalIdeal J hJunit
   exact FractionalIdeal.isPrincipal_of_num_isPrincipal
     (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
 
-/-- In a normalized GCD Domain, every class in the ideal class group is `1`. -/
-theorem NormalizedGCDMonoid.classGroup_eq_one (x : ClassGroup R) : x = 1 :=
-  ClassGroup.induction (FractionRing R)
-    (fun I ↦ ClassGroup.mk_eq_one_iff.mpr (fractionalIdeal_isPrincipal_of_isUnit I)) x
+/-- The ideal class group of a domain with normalizable gcd is trivial.
+This includes unique factorization domains. -/
+instance subsingleton_classGroup : Subsingleton (ClassGroup R) := by
+  refine subsingleton_of_forall_eq 1 ?_
+  intro x
+  refine ClassGroup.induction (FractionRing R)
+    ?_ x
+  intro I
+  exact ClassGroup.mk_eq_one_iff.mpr
+    (NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit I)
 
-/-- The ideal class group of a normalized GCD Domain is trivial. -/
-instance NormalizedGCDMonoid.instSubsingletonClassGroup : Subsingleton (ClassGroup R) :=
-  subsingleton_of_forall_eq 1 NormalizedGCDMonoid.classGroup_eq_one
 
 end NormalizedGCDMonoid
-section UFD
-
-variable [UniqueFactorizationMonoid R]
-
-/-- The ideal class group of a UFD is trivial. -/
-noncomputable instance UniqueFactorizationMonoid.instSubsingletonClassGroup :
-    Subsingleton (ClassGroup R) :=
-  letI : NormalizedGCDMonoid R :=
-    Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
-  NormalizedGCDMonoid.instSubsingletonClassGroup
-
-end UFD
-end
-
-end Domain
-end CommRing
