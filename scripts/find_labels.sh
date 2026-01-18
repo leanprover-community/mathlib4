@@ -14,7 +14,8 @@ BASH_MODULE_DOCS
 
 # Check if required arguments are provided
 if [ "$#" -ne 2 ]; then
-    printf $'Usage: %s <repo_owner/repo_name> <YYYY-MM>\n\nFor instance `%s leanprover-community/mathlib4`\n\n' "${0}" "${0}"
+    printf $'Usage: %s <repo_owner/repo_name> <YYYY-MM>\n\n' "${0}"
+    printf $'For instance `%s leanprover-community/mathlib4 %s`\n\n' "${0}" "$(date +%Y-%m)"
     exit 1
 fi
 
