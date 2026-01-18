@@ -105,10 +105,6 @@ lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
 
-lean_exe all_names where
-  srcDir := "scripts"
-  supportInterpreter := true
-
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where
   srcDir := "scripts"
