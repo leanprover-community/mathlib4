@@ -118,7 +118,7 @@ theorem kroneckerMap_single_single
     kroneckerMap f (single i₁ j₁ a) (single i₂ j₂ b) = single (i₁, i₂) (j₁, j₂) (f a b) := by
   ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
   dsimp [single]
-  aesop
+  grind
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
