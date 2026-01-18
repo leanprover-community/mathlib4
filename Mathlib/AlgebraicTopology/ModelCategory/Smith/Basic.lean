@@ -83,74 +83,67 @@ end Index
 
 variable (hJ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
   ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
-  [I.IsCardinalForSmallObjectArgument κ]
+  [HasCoproducts.{w} C] [LocallySmall.{w} C]
+  [MorphismProperty.IsSmall.{w} I]
 
 open MorphismProperty in
 variable (I) in
-include κ in
 lemma hasCoproductsOfShape_index : HasCoproductsOfShape (Index I g) C := by
-  have := IsCardinalForSmallObjectArgument.locallySmall I κ
-  have : Small.{w} I.toSet := by
-    have := IsCardinalForSmallObjectArgument.isSmall (I := I) κ
-    infer_instance
   have : Small.{w} (Index I g) := by
     let φ (x : Σ (l : I.toSet), Arrow.mk l.1.hom ⟶ Arrow.mk g.hom) : Index I g :=
       { l := x.1.1.hom
         hl := x.1.prop
         γ := x.2 }
     exact small_of_surjective (f := φ) (fun i ↦ ⟨⟨⟨Arrow.mk i.l, i.hl⟩, i.γ⟩, rfl⟩)
-  have := IsCardinalForSmallObjectArgument.hasCoproducts I κ
   exact hasCoproductsOfShape_of_small.{w} C (Index I g)
 
 noncomputable abbrev sigmaSrc : C :=
-  haveI := hasCoproductsOfShape_index I g κ
+  haveI := hasCoproductsOfShape_index I g
   ∐ fun (i : Index I g) ↦ (i.factorization hJ).A'
 
 noncomputable abbrev sigmaTgt : C :=
-  haveI := hasCoproductsOfShape_index I g κ
+  haveI := hasCoproductsOfShape_index I g
   ∐ fun (i : Index I g) ↦ (i.factorization hJ).B'
 
-noncomputable abbrev sigmaMap : sigmaSrc g hJ κ ⟶ sigmaTgt g hJ κ :=
-  haveI := hasCoproductsOfShape_index I g κ
+noncomputable abbrev sigmaMap : sigmaSrc g hJ ⟶ sigmaTgt g hJ :=
+  haveI := hasCoproductsOfShape_index I g
   Limits.Sigma.map (fun i ↦ (i.factorization hJ).m)
 
-noncomputable abbrev sigmaDesc : sigmaSrc g hJ κ ⟶ g.left :=
-  haveI := hasCoproductsOfShape_index I g κ
+noncomputable abbrev sigmaDesc : sigmaSrc g hJ ⟶ g.left :=
+  haveI := hasCoproductsOfShape_index I g
   Sigma.desc (fun i ↦ (i.factorization hJ).β.left)
 
-noncomputable abbrev succObj : C :=
-  haveI := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts I κ
-  pushout (sigmaDesc g hJ κ) (sigmaMap g hJ κ)
+variable [HasPushouts C]
 
-noncomputable abbrev ιSuccObj : g.left ⟶ succObj g hJ κ :=
-  haveI := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts I κ
+noncomputable abbrev succObj : C :=
+  pushout (sigmaDesc g hJ) (sigmaMap g hJ)
+
+noncomputable abbrev ιSuccObj : g.left ⟶ succObj g hJ :=
   pushout.inl _ _
 
-noncomputable abbrev πSuccObj : succObj g hJ κ ⟶ Y :=
-  haveI := hasCoproductsOfShape_index I g κ
-  haveI := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts I κ
+noncomputable abbrev πSuccObj : succObj g hJ ⟶ Y :=
+  haveI := hasCoproductsOfShape_index I g
   pushout.desc g.hom (Sigma.desc (fun i ↦ (i.factorization hJ).β.right))
 
 /-noncomputable abbrev succ : W.Over ⊤ Y :=
-  MorphismProperty.Over.mk _ (πSuccObj g hJ κ) (by
+  MorphismProperty.Over.mk _ (πSuccObj g hJ) (by
     sorry)
 
-noncomputable def toSucc : g ⟶ succ g hJ κ :=
-  MorphismProperty.Over.homMk (ιSuccObj g hJ κ) (by simp) (by simp)-/
+noncomputable def toSucc : g ⟶ succ g hJ :=
+  MorphismProperty.Over.homMk (ιSuccObj g hJ) (by simp) (by simp)-/
 
 end
 
-/-variable {X Y : C} {f : X ⟶ Y} (hf : W f)
+/-variable [HasCoproducts.{w} C] [LocallySmall.{w} C] [HasPushouts C]
+  [MorphismProperty.IsSmall.{w} I]
+  {X Y : C} {f : X ⟶ Y} (hf : W f)
   (hJ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
   ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
-  [I.IsCardinalForSmallObjectArgument κ]
 
 noncomputable def succStruct : SuccStruct (W.Over ⊤ Y) where
   X₀ := MorphismProperty.Over.mk _ f hf
-  succ g := succ g hJ κ
-  toSucc g := toSucc g hJ κ-/
+  succ g := succ g hJ
+  toSucc g := toSucc g hJ-/
 
 end lemma_1_8
 
