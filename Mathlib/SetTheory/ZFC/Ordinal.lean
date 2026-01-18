@@ -394,13 +394,6 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
 
-theorem isOrdinal_omega : IsOrdinal omega := by
-  rw [← toZFSet_omega0]
-  exact isOrdinal_toZFSet ω
-
-theorem mem_omega_iff {x : ZFSet} : x ∈ omega ↔ ∃ (n : ℕ), Ordinal.toZFSet n = x := by
-  simp [← toZFSet_omega0, Ordinal.mem_toZFSet_iff, Ordinal.lt_omega0]
-
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
 noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal x} where
@@ -409,5 +402,12 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
+
+theorem isOrdinal_omega : IsOrdinal omega := by
+  rw [← toZFSet_omega0]
+  exact isOrdinal_toZFSet ω
+
+theorem mem_omega_iff {x : ZFSet} : x ∈ omega ↔ ∃ (n : ℕ), Ordinal.toZFSet n = x := by
+  simp [← toZFSet_omega0, Ordinal.mem_toZFSet_iff, Ordinal.lt_omega0]
 
 end ZFSet

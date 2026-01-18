@@ -6,7 +6,7 @@ Authors: Dexin Zhang
 module
 
 public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.SetTheory.ZFC.Basic
+public import Mathlib.SetTheory.ZFC.Ordinal
 
 /-!
 # Cardinalities of ZFC sets
@@ -88,5 +88,20 @@ theorem lift_card_iUnion_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v
   rw [← lift_le.{max u (v + 1)}, lift_umax.{max u v, v + 1}]
   simpa [cardinalMk_coe_sort, ← coe_iUnion, -mem_iUnion] using
     mk_iUnion_le_sum_mk_lift (f := SetLike.coe ∘ f)
+
+open Ordinal
+
+@[simp]
+theorem _root_.Ordinal.card_toZFSet (o : Ordinal) : o.toZFSet.card = o.card := by
+  simpa [← coe_toZFSet, cardinalMk_coe_sort, mk_Iio_ordinal, ← lift_card] using
+    mk_image_eq (s := Set.Iio o) toZFSet_injective
+
+@[simp]
+theorem card_mk_ofNat {n : ℕ} : card (mk (PSet.ofNat n)) = n := by
+  rw [← toZFSet_natCast, card_toZFSet, card_nat]
+
+@[simp]
+theorem card_omega : card omega = ℵ₀ := by
+  rw [← toZFSet_omega0, card_toZFSet, card_omega0]
 
 end ZFSet
