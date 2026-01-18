@@ -86,10 +86,6 @@ lemma colon_eq_top_iff_subset (S : Set M) : N.colon S = ⊤ ↔ S ⊆ N := by
   aesop (add simp [mem_colon, Ideal.eq_top_iff_one])
 
 @[simp]
-lemma colon_singleton_zero : N.colon {0} = ⊤ := by
-  simp
-
-@[simp]
 lemma inf_colon : (N₁ ⊓ N₂).colon S = N₁.colon S ⊓ N₂.colon S := by
   aesop (add simp mem_colon)
 
@@ -117,6 +113,9 @@ lemma colon_iUnion {ι : Sort*} (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ 
 @[simp]
 lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
   aesop (add simp mem_colon)
+
+lemma colon_singleton_zero : N.colon {0} = ⊤ := by
+  simp
 
 lemma colon_bot : N.colon ((⊥ : Submodule R M) : Set M) = ⊤ := by
   simp
