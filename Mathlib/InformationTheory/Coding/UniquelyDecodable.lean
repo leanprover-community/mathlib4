@@ -33,9 +33,9 @@ variable {α : Type*}
 
 /-- A set of lists is uniquely decodable if distinct concatenations yield distinct strings. -/
 def UniquelyDecodable (S : Set (List α)) : Prop :=
-  ∀ (L1 L2 : List (List α)),
-    (∀ w ∈ L1, w ∈ S) → (∀ w ∈ L2, w ∈ S) →
-    L1.flatten = L2.flatten → L1 = L2
+  ∀ (L₁ L₂ : List (List α)),
+    (∀ w ∈ L₁, w ∈ S) → (∀ w ∈ L₂, w ∈ S) →
+    L₁.flatten = L₂.flatten → L₁ = L₂
 
 variable {S : Set (List α)}
 
@@ -46,15 +46,9 @@ violating unique decodability. -/
 lemma UniquelyDecodable.epsilon_not_mem
     (h : UniquelyDecodable S) :
     [] ∉ S := by
-  intro h_in
-  -- UniquelyDecodable implies [] cannot be decomposed in two ways.
-  -- But if [] ∈ S, then [] = [] (1 part) and [] = [] ++ [] (2 parts).
-  unfold UniquelyDecodable at h
-  specialize h (L1 := [[]]) (L2 := [[], []]) (by simp [h_in]) (by simp [h_in]) (by simp)
-  simp at h
+  simpa using @h [[]] [[], []]
 
-lemma UniquelyDecodable.flatten_injective
-    (h : UniquelyDecodable S) :
+lemma UniquelyDecodable.flatten_injective (h : UniquelyDecodable S) :
     Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.1.flatten) := by
   intro L1 L2 hflat
   apply Subtype.ext

@@ -61,17 +61,11 @@ private lemma concatFn.length (w : Fin r → S) :
 /-- Upper bound in terms of `sup` (now it fits perfectly). -/
 private lemma concatFn.length_le_mul_sup (w : Fin r → S) :
     (concatFn w).length ≤ r * (S.sup List.length) := by
-  have h_each : ∀ i : Fin r, (w i).val.length ≤ S.sup List.length := by
-    intro i
-    exact Finset.le_sup (f := List.length) (by simp)
+  have h_each (i : Fin r) : (w i).val.length ≤ S.sup List.length := Finset.le_sup (by simp)
   have : (∑ i : Fin r, (w i).val.length) ≤ ∑ _i : Fin r, S.sup List.length := by
-    simpa using
-      (Finset.sum_le_sum (s := (Finset.univ : Finset (Fin r)))
-        (fun i _ => h_each i))
-  calc
-    (concatFn w).length = ∑ i : Fin r, (w i).val.length := concatFn.length w
-    _ ≤ ∑ _i : Fin r, S.sup List.length := this
-    _ = r * S.sup List.length := by simp
+    simpa using Finset.sum_le_sum (s := Finset.univ) (fun i _ => h_each i)
+  grw [concatFn.length w, this]
+  simp
 
 /-- Lower bound using the derived lemma `[] ∉ (Sf : Set _)` from unique decodability. -/
 private lemma concatFn.le_length_of_no_empty
@@ -130,7 +124,7 @@ private lemma disjoint_filter_eq_of_ne
     Disjoint (S.filter (fun x => f x = a)) (S.filter (fun x => f x = b)) := by
   refine Finset.disjoint_left.2 ?_
   intro x hx hx'
-  have hlen1: f x = a := (Finset.mem_filter.1 hx).2
+  have hlen1: f x = a := (Finset.mem_filter.mp hx).2
   have hlen2: f x = b := (Finset.mem_filter.1 hx').2
   exact hab (hlen1.symm.trans hlen2)
 
