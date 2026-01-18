@@ -249,6 +249,14 @@ instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
 
 end Empty
 
+section Module.IsTorsionFree
+
+-- Can't be an instance because the basis can't be inferred.
+protected lemma isTorsionFree (b : Basis ι R M) :
+    Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)
+
+end Module.IsTorsionFree
+
 section NoZeroSMulDivisors
 
 -- Can't be an instance because the basis can't be inferred.
@@ -269,8 +277,8 @@ end NoZeroSMulDivisors
 
 section Singleton
 
-theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
+theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩

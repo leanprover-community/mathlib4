@@ -76,15 +76,9 @@ variable {k G : Type u} [CommRing k] {n : ℕ}
 
 open CategoryTheory
 
-namespace groupCohomology
-
-variable [Monoid G]
-
-end groupCohomology
-
 namespace inhomogeneousCochains
 
-open Rep groupCohomology
+open Rep
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
@@ -128,8 +122,8 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
     simp only [d_eq]
-    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
+    slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
+    slice_lhs 2 4 => {rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]}
     simp
 
 variable {A n} in

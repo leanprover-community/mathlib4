@@ -9,7 +9,6 @@ public import Batteries.Data.List.Pairwise
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Order.Fin.Basic
 import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
@@ -159,15 +158,15 @@ theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort
 alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
-theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
+theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind [Std.Refl]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [IsRefl]
+  induction xs <;> grind
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
@@ -249,6 +248,7 @@ alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -274,6 +274,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
@@ -341,12 +342,12 @@ theorem sublist_of_subperm_of_pairwise {l₁ l₂ : List α} (hp : l₁ <+~ l₂
 @[deprecated (since := "2025-10-11")]
 alias sublist_of_subperm_of_sorted := sublist_of_subperm_of_pairwise
 
-theorem Subset.antisymm_of_pairwise [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Subset.antisymm_of_pairwise [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (hl₁₂ : l₁ ⊆ l₂) (hl₁₂' : l₂ ⊆ l₁) : l₁ = l₂ :=
   ((subperm_of_subset h₁.nodup hl₁₂).antisymm
     (subperm_of_subset h₂.nodup hl₁₂')).eq_of_pairwise' h₁ h₂
 
-theorem Pairwise.eq_of_mem_iff [IsIrrefl α r] {l₁ l₂ : List α}
+theorem Pairwise.eq_of_mem_iff [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
   Subset.antisymm_of_pairwise h₁ h₂ (by grind) (by grind)
 

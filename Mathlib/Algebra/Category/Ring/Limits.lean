@@ -22,7 +22,7 @@ the underlying types are just the limits in the category of types.
 
 
 -- We use the following trick a lot of times in this file.
-library_note2 «change elaboration strategy with `by apply`» /--
+library_note «change elaboration strategy with `by apply`» /--
 Some definitions may be extremely slow to elaborate, when the target type to be constructed
 is complicated and when the type of the term given in the definition is also complicated and does
 not obviously match the target type. In this case, instead of just giving the term, prefixing it
@@ -95,7 +95,7 @@ def limitCone : Cone F where
 -/
 def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
-    (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
+    (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_ })
     (fun s => rfl)
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
