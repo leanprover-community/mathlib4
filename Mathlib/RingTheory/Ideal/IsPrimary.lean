@@ -72,11 +72,11 @@ theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
   Submodule.IsPrimary.inf hi hj (by simpa)
 
 open Finset in
-lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
+lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
     IsPrimary (s.inf f) :=
-  Submodule.isPrimary_finset_inf hi hs (by simpa)
+  Submodule.isPrimary_finsetInf hi hs (by simpa)
 
 lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢

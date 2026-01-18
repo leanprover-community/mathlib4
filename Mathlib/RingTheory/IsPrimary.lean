@@ -67,7 +67,7 @@ protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
   exact and_or_right.mpr ⟨hS, hT⟩
 
 open Finset in
-lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
+lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon Set.univ).radical = ((f i).colon Set.univ).radical) :
     (s.inf f).IsPrimary := by
@@ -85,7 +85,7 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : 
     refine IsPrimary.inf (hs (by simp)) (IH hy ?_ H) ?_
     · intro x hx
       exact hs (by simp [hx])
-    · rw [colon_finset_inf, Ideal.radical_finset_inf hy H,
+    · rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
         hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left

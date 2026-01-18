@@ -33,34 +33,6 @@ section for_mathlib
 
 open Ideal
 
-theorem IsLocalization.map_inf {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] (I J : Ideal R) :
-    (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
-  refine le_antisymm (map_inf_le (algebraMap R S)) fun x hx ↦ ?_
-  simp only [mem_inf, IsLocalization.mem_map_algebraMap_iff M, Prod.exists] at hx ⊢
-  obtain ⟨⟨⟨i, hi⟩, mi, hi'⟩, ⟨j, hj⟩, mj, hj'⟩ := hx
-  simp only [← IsLocalization.eq_mk'_iff_mul_eq] at hi' hj'
-  obtain ⟨m, hm⟩ := IsLocalization.eq.mp (hi'.symm.trans hj')
-  rw [← mul_assoc, ← mul_assoc, mul_comm, ← mul_comm (j : R)] at hm
-  refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
-  rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
-
-/-- `IsLocalization.map_inf` as an `FrameHom`. -/
-def IsLocalization.mapFrameHom
-    {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] :
-    FrameHom (Ideal R) (Ideal S) where
-  toFun := Ideal.map (algebraMap R S)
-  map_inf' := IsLocalization.map_inf M S
-  map_top' := Ideal.map_top (algebraMap R S)
-  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
-
-@[simp]
-lemma IsLocalization.mapFrameHom_apply {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization M S] (I : Ideal R) :
-    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
-  rfl
-
 theorem Submodule.comap_finset_inf {R M M' : Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M')
     {ι : Type*} (s : Finset ι) (g : ι → Submodule R M') : (s.inf g).comap f =
@@ -140,7 +112,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
-    refine isPrimary_finset_inf (i := J) ?_ ?_ (by simp)
+    refine isPrimary_finsetInf (i := J) ?_ ?_ (by simp)
     · simp [hJ]
     · simp only [Finset.mem_filter, id_eq, and_imp]
       intro y hy
@@ -153,9 +125,9 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Submodule R M}
     contrapose! hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, colon_finset_inf,
+    · rw [← hI, colon_finsetInf,
         radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, colon_finset_inf,
+      rw [hIJ, ← hJ, colon_finsetInf,
         radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
@@ -205,7 +177,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
     · exact (ht.primary hq).radical_ann_of_notMem hx
   replace h x :
       radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
-    rw [← ht.inf_eq, colon_finset_inf, ← radicalInfTopHom_apply]
+    rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
     simp [Function.comp_def, Finset.inf_congr rfl h, Finset.inf_ite]
   constructor
   · rintro ⟨q, hqt, rfl⟩
@@ -256,8 +228,8 @@ theorem IsMinimalPrimaryDecomposition.foobar
   let f := mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
   change (Submodule.localized₀ S f I).comap f = ⨅ q ∈ s, q
-  rw [← ht.inf_eq, ← localized₀_frameHom_apply, map_finset_inf, Submodule.comap_finset_inf]
-  simp only [Function.comp_def, id_eq, localized₀_frameHom_apply]
+  rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finset_inf]
+  simp only [Function.comp_def, id_eq, localized₀FrameHom_apply]
   rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
   have key0 : ∀ q ∈ s, (S : Set R) ⊆ (q.colon Set.univ).radicalᶜ := by
     intro q hq

@@ -63,7 +63,7 @@ theorem technical [h : IsNoetherianRing R] (P : Ideal R) (m : M)
   have hP' := hP.1.1
   by_cases hm : m = 0
   · simp [hm] at hP
-    simp [Ideal.minimalPrimes_top] at hP
+    simp [Ideal.minimalPrimes_top, colon_singleton_zero] at hP
   classical
   set ann := (⊥ : Submodule R M).colon {m}
   have key : ∃ k > 0, ∃ Q : Ideal R, P ^ k * Q ≤ ann ∧ ¬ Q ≤ P := by
