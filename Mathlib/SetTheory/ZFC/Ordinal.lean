@@ -401,9 +401,17 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
 
+@[simp]
+theorem rank_natCast {n : ℕ} : rank n = n := by
+  rw [← toZFSet_natCast, rank_toZFSet]
+
 theorem isOrdinal_natCast {n : ℕ} : IsOrdinal n := by
   rw [← toZFSet_natCast]
   exact isOrdinal_toZFSet n
+
+@[simp]
+theorem rank_omega : rank omega = ω := by
+  rw [← toZFSet_omega0, rank_toZFSet]
 
 theorem isOrdinal_omega : IsOrdinal omega := by
   rw [← toZFSet_omega0]
