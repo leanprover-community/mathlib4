@@ -116,7 +116,6 @@ theorem IsSkewHermitian.ext_iff {A : Matrix n n α} :
     A.IsSkewHermitian ↔ ∀ i j, star (A j i) = -A i j :=
   ⟨IsSkewHermitian.apply, IsSkewHermitian.ext⟩
 
-
 theorem IsSkewHermitian.transpose {A : Matrix n n α} (h : A.IsSkewHermitian) :
     Aᵀ.IsSkewHermitian := by
   rw [IsSkewHermitian, conjTranspose, transpose_map, ← transpose_neg, ← transpose_map]
