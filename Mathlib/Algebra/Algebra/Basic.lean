@@ -431,8 +431,8 @@ instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M 
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
--- see Note [lower instance priority]
-instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
 
@@ -474,6 +474,10 @@ end FaithfulSMul
 
 namespace Module
 variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
+
+instance (priority := 100) IsTorsionFree.to_faithfulSMul [Nontrivial A] [IsTorsionFree R A] :
+    FaithfulSMul R A where
+  eq_of_smul_eq_smul h := smul_left_injective _ one_ne_zero <| h 1
 
 lemma isTorsionFree_iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩

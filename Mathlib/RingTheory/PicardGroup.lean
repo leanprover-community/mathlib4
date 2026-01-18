@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.LocalRing.Module
@@ -525,7 +525,7 @@ variable (R) (A B : Type*) [CommSemiring A] [CommSemiring B] [Algebra R A]
 
 open AlgebraTensorModule in
 /-- Every `R`-algebra `A` gives rise to a homomorphism between Picard groups of `R` and `A`. -/
-@[simps] noncomputable def mapAlgebra [Algebra R A] : Pic R →* Pic A where
+@[simps] noncomputable def mapAlgebra : Pic R →* Pic A where
   toFun M := .mk A (A ⊗[R] M)
   map_one' := mk_eq_one_iff.mpr (Invertible.free_iff_linearEquiv.mp inferInstance)
   map_mul' _ _ := by
@@ -776,7 +776,7 @@ noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃�
   .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
     convert (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
     ext x
-    refine x.induction_on (by simp) ?_ (by simp+contextual)
+    refine x.induction_on (by simp) ?_ (by simp +contextual)
     intro a x
     obtain ⟨m, rfl⟩ := (submoduleAlgebraEquiv e).symm.surjective x
     suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this
@@ -859,7 +859,9 @@ open CommRing Pic
 
 section Ideal
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+variable (R M N : Type*) [CommRing R]
+variable [AddCommGroup M] [Module R M] [Module.Invertible R M]
+variable [AddCommGroup N] [Module R N] [Module.Invertible R N]
 
 /-- If `FractionRing R` has trivial Picard group,
 every invertible `R`-module is isomorphic to an ideal. -/
@@ -879,5 +881,23 @@ example [IsDomain R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
 See https://mathoverflow.net/a/499611. -/
 example [IsNoetherianRing R] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   Module.Invertible.exists_linearEquiv_ideal R M
+
+variable {R} in
+/-- In a total ring of fractions, if two ideals are inverse to each other in the Picard group,
+the only possibility is that they are both the whole ring. -/
+theorem Ideal.eq_top_of_mk_tensor_eq_one [IsFractionRing R R] (I J : Ideal R)
+    [Module.Invertible R I] [Module.Invertible R J] (h : Pic.mk R (I ⊗[R] J) = 1) :
+    I = ⊤ ∧ J = ⊤ := by
+  have ⟨e⟩ := mk_eq_one_iff.mp h
+  have e := e.symm ≪≫ₗ Submodule.LinearDisjoint.mulMap
+    (.of_left_le_one_of_flat I J <| le_top.trans one_eq_top.ge)
+  have : IsUnit (e 1 : R) := IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_› <|
+      IsRegular.mem_nonZeroDivisors <| isRightRegular_iff_isRegular.mp <| by
+    rw [IsRightRegular]
+    convert Subtype.val_injective.comp e.injective using 2
+    rw [← smul_eq_mul, ← Submodule.coe_smul, ← map_smul, smul_eq_mul, mul_one]
+    rfl
+  constructor <;> refine eq_top_of_isUnit_mem _ ?_ this
+  exacts [mul_le_right (e 1).2, mul_le_left (e 1).2]
 
 end Ideal
