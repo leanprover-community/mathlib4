@@ -186,7 +186,7 @@ instance : Preorder OrderType where
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
       ⟨fun ⟨h⟩ ↦ ⟨(f.symm.toOrderEmbedding.trans h).trans g.toOrderEmbedding⟩, fun ⟨h⟩ ↦
         ⟨(f.toOrderEmbedding.trans h).trans g.symm.toOrderEmbedding⟩⟩
-  le_refl o := inductionOn o (fun α _ ↦  ⟨(OrderIso.refl _).toOrderEmbedding⟩)
+  le_refl o := inductionOn o fun α _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
   le_trans o₁ o₂ o₃ := inductionOn₃ o₁ o₂ o₃ fun _ _ _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 instance : NeZero (1 : OrderType) :=
@@ -208,7 +208,7 @@ alias _root_.OrderEmbedding.type_le_type := type_le_type
 
 @[simp]
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
-  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
+  inductionOn o fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type
 
 instance : OrderBot OrderType where
   bot := 0
@@ -219,15 +219,15 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
   rfl
 
 @[simp]
-protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
+protected theorem not_lt_zero {o : OrderType} : ¬o < 0 :=
   not_lt_bot
 
 @[simp]
 theorem pos_iff_ne_zero (o : OrderType) : 0 < o ↔ o ≠ 0 :=
   ⟨ne_bot_of_gt, fun ho ↦ by
-    convert type_lt_type (α := PEmpty) (β := o.ToType) ⟨Function.Embedding.ofIsEmpty, by simp⟩
-      (fun ⟨f⟩ ↦ PEmpty.elim (f (Classical.choice (OrderType.nonempty_toType_iff.mpr ho))))
-    simp⟩
+    have := nonempty_toType_iff.2 ho
+    rw [← type_toType o]
+    exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩⟩
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 -- TODO: define `OrderType.lift` and redefine this using it.
