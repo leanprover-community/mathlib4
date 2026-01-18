@@ -33,10 +33,6 @@ commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty
 # Retrieve merged PRs from the given range
 prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${startDate}..${endDate}" --json number,labels,title,author --limit "$((commits_in_range * 2))")
 
-printf $'\n\nBetween %s and %s there were\n' "${startDate}" "${endDate/%T*}"
-
-printf $'* %s commits to `master` and\n' "${commits_in_range}"
-
 formattedPRs="$(echo "$prs" |
   jq -S -r '.[] |
     select(.title | startswith("[Merged by Bors]")) |
@@ -125,6 +121,12 @@ reports="$(
     printf $'\n* PRs not found by `gh` (merged by %s, closed after %s?)\n%s\n' "${endDate}" "${endDate}" "${only_git}"
   fi
 )"
+
+printf $'### Commits to `%s` between %s and %s\n' "$(basename "${repository}")" "${startDate//T*/}" "${endDate//T*/}"
+
+printf $'\n\nBetween %s and %s there were\n' "${startDate}" "${endDate/%T*}"
+
+printf $'* %s commits to `master` and\n' "${commits_in_range}"
 
 if [ "${forZulip}" == "true" ]
 then
