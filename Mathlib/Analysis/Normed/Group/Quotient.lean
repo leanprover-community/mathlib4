@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Group.QuotientSeminorm
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -112,20 +113,8 @@ private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Q
 @[to_additive
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x + S`. -/]
-noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
-  toFun x := infDist 1 {m : M | (m : M ⧸ S) = x}
-  map_one' := infDist_zero_of_mem (by simp)
-  mul_le' x y := by
-    simp only [infDist_eq_iInf]
-    have := (norm_aux x).to_subtype
-    have := (norm_aux y).to_subtype
-    refine le_ciInf_add_ciInf ?_
-    rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-    refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ dist_nonneg⟩ ⟨a * b, rfl⟩ ?_
-    simpa using norm_mul_le' _ _
-  inv' x := eq_of_forall_le_iff fun r ↦ by
-    simp only [le_infDist (norm_aux _)]
-    exact (Equiv.inv _).forall_congr (by simp [← inv_eq_iff_eq_inv])
+noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) :=
+  normGroupSeminorm M |>.map (QuotientGroup.mk' S)
 
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x * S`. -/
@@ -138,7 +127,8 @@ noncomputable instance instNorm : Norm (M ⧸ S) where norm := groupSeminorm
 lemma norm_eq_groupSeminorm (x : M ⧸ S) : ‖x‖ = groupSeminorm x := rfl
 
 @[to_additive]
-lemma norm_eq_infDist (x : M ⧸ S) : ‖x‖ = infDist 1 {m : M | (m : M ⧸ S) = x} := rfl
+lemma norm_eq_infDist (x : M ⧸ S) : ‖x‖ = infDist 1 {m : M | (m : M ⧸ S) = x} := by
+  sorry
 
 @[to_additive]
 lemma le_norm_iff : r ≤ ‖x‖ ↔ ∀ m : M, ↑m = x → r ≤ ‖m‖ := by
