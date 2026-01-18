@@ -66,6 +66,13 @@ theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b
   ext
   simp [single_apply, Set.indicator, @eq_comm _ a]
 
+theorem single_eq_set_indicator' (a : α) (f : α → M) :
+    ⇑(single a (f a)) = Set.indicator {a} f := by
+  classical
+  ext x
+  simp only [single_apply, Set.indicator, Set.mem_singleton_iff, @eq_comm _ a]
+  split_ifs with h <;> simp [h]
+
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
   classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
