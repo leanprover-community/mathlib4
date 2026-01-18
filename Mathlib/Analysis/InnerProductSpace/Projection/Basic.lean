@@ -80,6 +80,10 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjec
 
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
+instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
+  letI := K.isClosed'
+  infer_instance
+
 noncomputable section
 
 section orthogonalProjection
