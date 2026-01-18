@@ -50,7 +50,7 @@ printf $'\n\nBetween %s and %s there were\n' "${startDate}" "${endDate/%T*}"
 
 printf $'* %s commits to `master` and\n' "${commits_in_range}"
 
-echo "$prs" |
+formattedPRs="$(echo "$prs" |
   jq -S -r '.[] |
     select(.title | startswith("[Merged by Bors]")) |
     "\(.labels | map(.name | select(startswith("t-"))) ) PR #\(.number) \(if .author.name == "" then .author.login else .author.name end): \(.title)"' |
@@ -72,12 +72,42 @@ echo "$prs" |
         printf("\n%s, %s PR%s%s\n", tag, noPR, noPR == "1" ? "" : "s", acc[order[i]])
       }
     }
-  '
+  ')"
+
+formatForGitHub () {
+  echo "${1}" |
+    sed '
+      / [0-9]* PRs$/{
+        s=^=</details><details><summary>\n=
+        s=$=\n</summary>\n=
+      }
+      s=^PR \(#[0-9]* [^:]*\): .*=* \1 =' |
+    sed -z '
+      s=</details><details><summary>=<details><summary>=
+      s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
+      s=\n---[\n]*$=\n\n</details>\n&=
+    '
+}
+
+formatForZulip () {
+  echo "${1}" |
+  sed '
+  / [0-9]* PR[s]*$/{
+    s=^=```\n\n```spoiler =
+    }' |
+    sed -z '
+    s=\n```\n=\n=
+    s=\n\n```\n=\n```\n=g
+    s=\n$=\n```\n=
+    '
+}
+
+formatForZulip "${formattedPRs}"
 
 only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^=  =' | tr -d '()')"
 only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^=  =' | tr -d '()')"
 
-printf $'\n---\nReports\n\n'
+printf $'\n```spoiler Reports\n\n'
 
 if [ -z "${only_gh}" ]
 then
@@ -93,6 +123,6 @@ else
   printf $'\n* PRs not found by `gh` (merged by %s, closed after %s?)\n%s\n' "${endDate}" "${endDate}" "${only_git}"
 fi
 
-printf -- $'---\n'
+printf -- $'```\n'
 
 rm -rf found_by_gh.txt found_by_git.txt

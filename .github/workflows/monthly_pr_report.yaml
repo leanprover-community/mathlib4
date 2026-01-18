@@ -43,37 +43,7 @@ jobs:
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
           message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}-01" "$(date -d "$(date +%Y%m01) +1 month -1 day" +%Y-%m-%d)")")"
-          echo "${message}"
 
-          formatForGitHub () {
-            echo "${1}" |
-              sed '
-                / [0-9]* PRs$/{
-                  s=^=</details><details><summary>\n=
-                  s=$=\n</summary>\n=
-                }
-                s=^PR \(#[0-9]* [^:]*\): .*=* \1 =' |
-              sed -z '
-                s=</details><details><summary>=<details><summary>=
-                s=\n---\nReports\n\n=\n</details>\n\n---\n\n<details><summary>Reports</summary>\n\n=
-                s=\n---[\n]*$=\n\n</details>\n&=
-              '
-            }
-
-          # shellcheck disable=SC2016 # backticks should not be expanded, since they are Zulip markdown syntax
-          formatForZulip () {
-            echo "${1}" |
-            sed '
-            / [0-9]* PR[s]*$/{
-              s=^=```\n\n```spoiler =
-              }' |
-              sed -z '
-              s=\n```\n=\n=
-              s=\n\n```\n=\n```\n=g
-              s=\n$=\n```\n=
-              '
-          }
-
-          formatForZulip "${message}" | tee "${tmp_file}"
+          echo "${message}" | tee "${tmp_file}"
 
           ./scripts/update_PR_comment.sh "${tmp_file}" "${title}" "${PR}"
