@@ -117,7 +117,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     refine Ideal.IsPrime.mul_notMem ‹_› hg fun hmem ↦ hg' ?_
     rw [Ideal.mem_iff_of_associated (IsLocalization.Away.associated_sec_fst g g').symm]
     exact Ideal.mem_map_of_mem (algebraMap S (Localization.Away g)) hmem
-  -- `Ω[Localization.AtPrime p⁄R]` is projective, so free over the local ring `Sₚ` and
+  -- `Ω[Sₚ⁄R]` is projective, so free over the local ring `Sₚ` and
   -- a basis extends to a neighbourhood `D(g)`.
   let v (s : S) : Ω[Localization.AtPrime p⁄R] :=
     map R R S (Localization.AtPrime p) (D R S s)
