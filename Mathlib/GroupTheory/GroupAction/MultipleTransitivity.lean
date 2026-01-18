@@ -743,3 +743,16 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
+
+namespace AlternatingGroup
+
+@[deprecated (since := "2025-12-16")]
+alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
+@[deprecated (since := "2025-12-16")]
+alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
+@[deprecated (since := "2025-12-16")]
+alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
+@[deprecated (since := "2025-12-16")]
+alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
+
+end AlternatingGroup

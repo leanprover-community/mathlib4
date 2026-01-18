@@ -343,11 +343,13 @@ theorem comm_of (r : α → α → Prop) [Std.Symm r] {a b : α} : r a b ↔ r b
 protected theorem Std.Asymm.antisymm (r : α → α → Prop) [Std.Asymm r] : Std.Antisymm r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isAntisymm := Std.Asymm.antisymm
 @[deprecated (since := "2026-01-06")] protected alias Std.Asymm.isAntisymm := Std.Asymm.antisymm
 
 protected theorem Std.Asymm.irrefl [Std.Asymm r] : Std.Irrefl r :=
   inferInstance
 
+@[deprecated (since := "2026-01-05")] protected alias IsAsymm.isIrrefl := Std.Asymm.irrefl
 @[deprecated (since := "2026-01-07")] protected alias Std.Asymm.isIrrefl := Std.Asymm.irrefl
 
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
