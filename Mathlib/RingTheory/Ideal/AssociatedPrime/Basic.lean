@@ -147,7 +147,6 @@ theorem prod : associatedPrimes R (M × M') = associatedPrimes R M ∪ associate
 
 end associatedPrimes
 
-
 theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
     associatedPrimes R M = associatedPrimes R M' :=
   le_antisymm (associatedPrimes.subset_of_injective l.injective)
@@ -201,7 +200,6 @@ theorem isAssociatedPrime_iff_exists_injective_linearMap :
     simp [SetLike.ext_iff, ← Ideal.Quotient.algebraMap_eq, Algebra.algebraMap_eq_smul_one]
 
 variable {I J M}
-variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
