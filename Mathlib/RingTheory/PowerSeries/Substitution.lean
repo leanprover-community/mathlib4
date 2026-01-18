@@ -291,6 +291,26 @@ theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeri
   refine .trans ?_ (MvPowerSeries.le_order_subst (PowerSeries.hasSubst_iff.mp ha) _)
   simp [order_eq_order]
 
+theorem le_order_subst_left {f : MvPowerSeries τ R} {φ : PowerSeries R}
+    (hf : f.constantCoeff = 0) : φ.order ≤ (φ.subst f).order :=
+  .trans (ENat.self_le_mul_left φ.order (f.order_ne_zero_iff_constCoeff_eq_zero.mpr hf))
+    (PowerSeries.le_order_subst f (HasSubst.of_constantCoeff_zero hf) _)
+
+theorem le_order_subst_right {f : MvPowerSeries τ R} {φ : PowerSeries R}
+    (hf : f.constantCoeff = 0) (hφ : φ.constantCoeff = 0) : f.order ≤ (φ.subst f).order :=
+  .trans (ENat.self_le_mul_right _ (order_ne_zero_iff_constCoeff_eq_zero.mpr hφ))
+    (PowerSeries.le_order_subst f (HasSubst.of_constantCoeff_zero hf) _)
+
+theorem le_order_subst_left' {f φ : PowerSeries R} (hf : f.constantCoeff = 0) :
+    φ.order ≤ PowerSeries.order (φ.subst f) := by
+  conv_rhs => rw [order_eq_order]
+  exact le_order_subst_left hf
+
+theorem le_order_subst_right' {f φ : PowerSeries R} (hf : f.constantCoeff = 0)
+    (hφ : φ.constantCoeff = 0) : f.order ≤ PowerSeries.order (φ.subst f) := by
+  simp_rw [order_eq_order]
+  exact le_order_subst_right hf hφ
+
 end
 
 theorem HasSubst.comp
