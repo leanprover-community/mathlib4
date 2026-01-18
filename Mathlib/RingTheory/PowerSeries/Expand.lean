@@ -48,6 +48,9 @@ theorem expand_mul (q : ℕ) (hq : q ≠ 0) (φ : PowerSeries R) :
     φ.expand (p * q) (p.mul_ne_zero hp hq) = (φ.expand q hq).expand p hp :=
   DFunLike.congr_fun (expand_mul_eq_comp p hp q hq) φ
 
+theorem expand_smul (a : R) (φ : PowerSeries R) :
+    expand p hp (a • φ) = a • φ.expand p hp := AlgHom.map_smul_of_tower _ _ _
+
 @[simp]
 theorem expand_X : expand p hp (X (R := R)) = X ^ p :=
   substAlgHom_X (HasSubst.X_pow hp)
@@ -68,28 +71,50 @@ theorem map_expand (f : R →+* S) (φ : PowerSeries R) :
     map f (expand p hp φ) = expand p hp (map f φ) := by
   simp [map, expand, MvPowerSeries.map_expand]
 
+theorem expand_subst {f : MvPowerSeries τ S} [Finite τ] (hf : HasSubst f) (φ : PowerSeries S) :
+    (subst f φ).expand p hp = subst (f.expand p hp) φ := by
+  rw [PowerSeries.subst, MvPowerSeries.expand_subst _ hp (HasSubst.const hf) (φ := φ)]
+  rfl
+
 /- TODO : In the original file of multi variate polynomial, there are two theorem about rename
 here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
 and `aevel`, the expression does't look good. -/
 
-variable (q : ℕ) (hq : 0 < q)
+variable (φ : PowerSeries R) (q : ℕ) (hq : 0 < q)
 
 @[simp]
-theorem coeff_expand_mul (φ : PowerSeries R) (m : ℕ) :
+theorem coeff_expand_mul (m : ℕ) :
     (expand p hp φ).coeff (p * m) = φ.coeff m := by
   rw [coeff, coeff, expand, ← smul_eq_mul, ← Finsupp.smul_single, MvPowerSeries.coeff_expand_smul]
 
-theorem coeff_expand_of_not_dvd (φ : PowerSeries R) {m : ℕ} (h : ¬ p ∣ m) :
+@[simp]
+theorem constantCoeff_expand (φ : PowerSeries R) :
+    (φ.expand p hp).constantCoeff = φ.constantCoeff := by
+  conv_lhs => rw [← coeff_zero_eq_constantCoeff, ← mul_zero p, coeff_expand_mul]
+  simp
+
+theorem coeff_expand_of_not_dvd {m : ℕ} (h : ¬ p ∣ m) :
     (expand p hp φ).coeff m = 0 := by
   rw [coeff, expand, MvPowerSeries.coeff_expand_of_not_dvd (i := ())]
   simpa
 
-theorem support_expand_subset (φ : PowerSeries R) :
+theorem support_expand_subset :
     (expand p hp φ).support ⊆ φ.support.image (p • ·) := by
   rw [expand, MvPowerSeries.support_expand]
 
-theorem support_expand (φ : PowerSeries R) :
+theorem support_expand :
     (expand p hp φ).support = φ.support.image (p • ·) := by
   rw [expand, MvPowerSeries.support_expand]
+
+theorem coeff_expand {n : ℕ} :
+    (φ.expand p hp).coeff n = if p ∣ n then φ.coeff (n / p) else 0 := by
+  split_ifs with h
+  · obtain ⟨q, hq⟩ := h
+    rw [hq, coeff_expand_mul, Nat.mul_div_cancel_left _ (p.pos_of_ne_zero hp)]
+  exact coeff_expand_of_not_dvd p hp _ h
+
+@[simp]
+theorem order_expand : (φ.expand p hp).order = p • φ.order := by
+  simp_rw [expand, order_eq_order, MvPowerSeries.order_expand p hp φ]
 
 end PowerSeries
