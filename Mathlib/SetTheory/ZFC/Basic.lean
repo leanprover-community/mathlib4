@@ -408,7 +408,7 @@ theorem omega_succ {x} : x ∈ omega.{u} → insert x x ∈ omega.{u} := by
   exact ⟨n + 1, by simp⟩
 
 /-- `omega` is the smallest inductive set. -/
-theorem subset_omega {x} : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
+theorem omega_subset {x} : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
   intro _ _ _ h
   rw [mem_omega] at h
   rcases h with ⟨n, rfl⟩
