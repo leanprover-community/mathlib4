@@ -609,11 +609,8 @@ theorem add_mul_mul_inv_eq_sub' (hA : IsUnit A) (h : IsUnit (C + C * V * A⁻¹ 
 
 end Woodbury
 
-@[simp]
-theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
-  by_cases h : IsUnit A.det
-  · rw [nonsing_inv_nonsing_inv _ h]
-  · simp [nonsing_inv_apply_not_isUnit _ h]
+@[deprecated inv_inv_inv₀ (since := "2026-01-17")]
+theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := inv_inv_inv₀
 
 /-- The `Matrix` version of `inv_add_inv'` -/
 theorem inv_add_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
