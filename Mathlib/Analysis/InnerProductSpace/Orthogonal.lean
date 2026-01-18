@@ -406,8 +406,12 @@ notation:1200 K "ᗮ" => orthogonal K
 @[simp]
 lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
+@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
+
 @[simp]
 lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+
+@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
