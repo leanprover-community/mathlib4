@@ -280,7 +280,7 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
-@[deprecated Adj.diff_dist_adj (since := "2025-12-11")]
+@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
 theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
   apply Adj.diff_dist_adj hadj
