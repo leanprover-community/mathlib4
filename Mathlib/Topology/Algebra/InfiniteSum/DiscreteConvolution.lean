@@ -676,13 +676,13 @@ variable [CommSemiring S] [AddCommMonoid E] [Module S E]
 /-- For types with `HasMulAntidiagonal`, the multiplicative fiber equals the mulAntidiagonal. -/
 @[to_additive addFiber_eq_antidiagonal
   /-- For types with `HasAntidiagonal`, the additive fiber equals the antidiagonal. -/]
-lemma mulFiber_eq_mulAntidiagonal (x : M) : mulFiber x = ↑(Finset.mulAntidiagonal x) := by
+private lemma mulFiber_eq_mulAntidiagonal (x : M) : mulFiber x = ↑(Finset.mulAntidiagonal x) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_coe, Finset.mem_mulAntidiagonal, mem_mulFiber]
 
 /-- The multiplicative fiber is finite when `HasMulAntidiagonal` is available. -/
 @[to_additive /-- The additive fiber is finite when `HasAntidiagonal` is available. -/]
-lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
+private lemma mulFiber_finite (x : M) : (mulFiber x).Finite := by
   rw [mulFiber_eq_mulAntidiagonal]
   exact (Finset.mulAntidiagonal x).finite_toSet
 
@@ -708,7 +708,7 @@ variable {R : Type*} [Zero R]
 /-- `Pi.single 1 e` equals `Set.indicator {1} (fun _ => e)` for decidable equality. -/
 @[to_additive
   /-- `Pi.single 0 e` equals `Set.indicator {0} (fun _ => e)` for decidable equality. -/]
-lemma piSingle_one_eq_indicator
+private lemma piSingle_one_eq_indicator
     (e : R) : Pi.single (1 : M) e = Set.indicator {1} (fun _ => e) := by
   ext x; simp only [Pi.single_apply, Set.indicator_apply, Set.mem_singleton_iff]
 
