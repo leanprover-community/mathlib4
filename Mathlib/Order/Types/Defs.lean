@@ -182,7 +182,7 @@ instance : Preorder OrderType where
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
       ⟨fun ⟨h⟩ ↦ ⟨(f.symm.toOrderEmbedding.trans h).trans g.toOrderEmbedding⟩, fun ⟨h⟩ ↦
         ⟨(f.toOrderEmbedding.trans h).trans g.symm.toOrderEmbedding⟩⟩
-  le_refl o := inductionOn o (fun α _ ↦  ⟨(OrderIso.refl _).toOrderEmbedding⟩)
+  le_refl o := inductionOn o fun α _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
   le_trans o₁ o₂ o₃ := inductionOn₃ o₁ o₂ o₃ fun _ _ _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 instance : NeZero (1 : OrderType) :=
@@ -204,7 +204,7 @@ alias _root_.OrderEmbedding.type_le_type := type_le_type
 
 @[simp]
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
-  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
+  inductionOn o fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type
 
 instance : OrderBot OrderType where
   bot := 0
@@ -215,7 +215,7 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
   rfl
 
 @[simp]
-protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
+protected theorem not_lt_zero {o : OrderType} : ¬o < 0 :=
   not_lt_bot
 
 @[simp]
