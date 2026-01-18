@@ -173,7 +173,7 @@ lemma norm_root_le_one_of_mahlerMeasure_eq_one : ‖z‖ ≤ 1 := by
   calc
   ‖z‖ ≤ max 1 ‖z‖ := le_max_right 1 ‖z‖
   _   ≤ ((p.map (castRingHom ℂ)).roots.map (fun a ↦ max 1 ‖a‖)).prod :=
-        mem_le_prod_of_one_le (fun a => le_max_left 1 ‖a‖) hz
+        mem_le_prod_of_one_le (fun a ↦ le_max_left 1 ‖a‖) hz
   _   ≤ 1 := by grind [prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff,
         norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one]
 
