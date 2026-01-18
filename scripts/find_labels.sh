@@ -1,7 +1,7 @@
 #!/bin/bash
  : << 'BASH_MODULE_DOCS'
 
-Usage: ./scripts/find_labels.sh owner/repo start_date end_date
+Usage: ./scripts/find_labels.sh owner/repo startDate endDate
 
 The script summarizes PRs by label and author in the given year-month range in the input GitHub repository.
 
@@ -14,15 +14,13 @@ BASH_MODULE_DOCS
 
 # Check if required arguments are provided
 if [ "$#" -ne 3 ]; then
-    printf $'Usage: %s <repo_owner/repo_name> <start_date[YYYY-MM-DD]> <end_date[YYYY-MM-DD]>\n\n' "${0}"
+    printf $'Usage: %s <repo_owner/repo_name> <startDate[YYYY-MM-DD]> <endDate[YYYY-MM-DD]>\n\n' "${0}"
     printf $'For instance `%s leanprover-community/mathlib4 %s %s`\n\n' "${0}" "$(date -d "today - 2 weeks" +%Y-%m-%d)" "$(date -d "today" +%Y-%m-%d)"
     printf $'The dates can also include time signatures, as in %s\n' "$(date -d '+1 hour' '+%FT%T')"
     exit 1
 fi
 
 rm -rf found_by_gh.txt found_by_git.txt
-
-findInRange () {
 
 repository="${1}"
 
@@ -46,34 +44,16 @@ echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#
 git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
   sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
 
-echo "$prs"
-}
+commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty=oneline | wc -l)"
 
-# the current year and month
-yr_mth="${2}" #"$(date +%Y-%m)"
-yr_mth_day=${yr_mth}-01
-
-start_date="${yr_mth_day}T00:00:00"
-#end_date="$(date -d "${yr_mth_day} + 1 month - 1 day" +%Y-%m-%d)T23:59:59"
-end_date="$(date -d "${yr_mth_day} + 2 weeks" +%Y-%m-%d)T23:59:59"
-
-mth="$(date -d "${yr_mth_day}" '+%B')"
-prev_mth="$(date -d "${yr_mth_day} - 1 day" '+%B')"
-#next_mth="$(date -d "${yr_mth_day} + 1 month" '+%B')"
-next_mth="$(date -d "${yr_mth_day} + 2 weeks" '+%B')"
-
-commits_in_range="$(git log --since="${start_date}" --until="${end_date}" --pretty=oneline | wc -l)"
-
-printf $'\n\nBetween %s and %s there were\n' "${yr_mth_day}" "${end_date/%T*}"
+printf $'\n\nBetween %s and %s there were\n' "${startDate}" "${endDate/%T*}"
 
 printf $'* %s commits to `master` and\n' "${commits_in_range}"
 
-(
-findInRange "${1}" "${start_date}" "${yr_mth}-15T23:59:59" | sed -z 's=]\n*$=,\n='
-findInRange "${1}" "${yr_mth}-16T00:00:00" "${end_date}"   | sed -z 's=^\[=='
-) | jq -S -r '.[] |
-  select(.title | startswith("[Merged by Bors]")) |
-  "\(.labels | map(.name | select(startswith("t-"))) ) PR #\(.number) \(if .author.name == "" then .author.login else .author.name end): \(.title)"' |
+echo "$prs" |
+  jq -S -r '.[] |
+    select(.title | startswith("[Merged by Bors]")) |
+    "\(.labels | map(.name | select(startswith("t-"))) ) PR #\(.number) \(if .author.name == "" then .author.login else .author.name end): \(.title)"' |
   sort |
   awk 'BEGIN{ labels=""; con=0; total=0 }
     { total++
@@ -103,14 +83,14 @@ if [ -z "${only_gh}" ]
 then
   printf $'* All PRs are accounted for!\n'
 else
-  printf $'* PRs not corresponding to a commit (merged in %s, closed in %s?)\n%s\n' "${prev_mth}" "${mth}" "${only_gh}"
+  printf $'* PRs not corresponding to a commit (merged before %s, closed on %s?)\n%s\n' "${startDate}" "${startDate}" "${only_gh}"
 fi
 
 if [ -z "${only_git}" ]
 then
   printf $'\n* All commits are accounted for!\n'
 else
-  printf $'\n* PRs not found by `gh` (merged in %s, closed in %s?)\n%s\n' "${mth}" "${next_mth}" "${only_git}"
+  printf $'\n* PRs not found by `gh` (merged by %s, closed after %s?)\n%s\n' "${endDate}" "${endDate}" "${only_git}"
 fi
 
 printf -- $'---\n'
