@@ -799,19 +799,14 @@ theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ
     ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   classical
   let t' k := (t k).filter (fun i ↦ f i ≠ 1)
-  have : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s.biUnion t', f x := by
-    apply prod_congr_of_eq_on_inter
-    · simp +contextual; grind
-    · simp +contextual; grind
-    · simp
-  rw [this, prod_biUnion]; swap
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by ext; simp [t']; grind
+  rw [← prod_filter_ne_one, ← this, prod_biUnion]; swap
   · intro i hi j hj hij a hai haj k hk
     have hki : k ∈ t' i := hai hk
     have hkj : k ∈ t' j := haj hk
     simp only [ne_eq, mem_filter, t'] at hki hkj
     exact (hki.2 (hs hi hj hij k (by grind) )).elim
-  apply Finset.prod_congr rfl (fun i hi ↦ ?_)
-  exact prod_filter_ne_one (t i)
+  exact Finset.prod_congr rfl (fun i hi ↦ prod_filter_ne_one (t i))
 
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι → M} {n : κ} {I : Finset κ}

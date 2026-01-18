@@ -225,18 +225,20 @@ theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Se
       exact hJ' ht
 
 open scoped Classical in
-noncomputable def AddContent.extendUnion (m : AddContent G C) (s : Set α) : G :=
+/-- Extend a content over `C` to the finite unions of elements of `C` by additivity.
+Use instead `AddContent.extendUnion` which is the same function bundled as an `AddContent`. -/
+noncomputable def AddContent.extendUnionFun (m : AddContent G C) (s : Set α) : G :=
   if h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J
     then ∑ s ∈ h.choose, m s
   else 0
 
-lemma AddContent.extendUnion_eq (hC : IsSetSemiring C)
+lemma AddContent.extendUnionFun_eq (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
     (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
-    m.extendUnion s = ∑ s ∈ J, m s := by
+    m.extendUnionFun s = ∑ s ∈ J, m s := by
   have h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J :=
     ⟨J, hJ, h'J, hs⟩
-  simp only [extendUnion, h, ↓reduceDIte]
+  simp only [extendUnionFun, h, ↓reduceDIte]
   apply sum_addContent_eq_of_sUnion_eq hC
   · exact h.choose_spec.1
   · exact h.choose_spec.2.1
@@ -245,75 +247,65 @@ lemma AddContent.extendUnion_eq (hC : IsSetSemiring C)
   · rw [← hs]
     exact h.choose_spec.2.2.symm
 
-lemma AddContent.extendUnion_eq_of_mem (hC : IsSetSemiring C)
+lemma AddContent.extendUnionFun_eq_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
-    m.extendUnion s = m s := by
-  have : m.extendUnion s = ∑ t ∈ {s}, m t :=
-    m.extendUnion_eq hC (by simp [hs]) (by simp) (by simp)
+    m.extendUnionFun s = m s := by
+  have : m.extendUnionFun s = ∑ t ∈ {s}, m t :=
+    m.extendUnionFun_eq hC (by simp [hs]) (by simp) (by simp)
   simp [this]
 
-def _root_.Set.extendUnion (C : Set (Set α)) : Set (Set α) :=
+/-- Finite disjoint unions of elements of a set of sets. -/
+def _root_.Set.finiteUnions (C : Set (Set α)) : Set (Set α) :=
   {s | ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J}
 
-#check Finset.biUnion
-
-def AddContent.extendUnion' (m : AddContent G C) (hC : IsSetSemiring C) :
-    AddContent G C.extendUnion where
-  toFun := m.extendUnion
-  empty' := by rw [m.extendUnion_eq_of_mem hC hC.empty_mem, addContent_empty]
+/-- Extend a content over `C` to the finite unions of elements of `C` by additivity. -/
+noncomputable def AddContent.extendUnion (m : AddContent G C) (hC : IsSetSemiring C) :
+    AddContent G C.finiteUnions where
+  toFun := m.extendUnionFun
+  empty' := by rw [m.extendUnionFun_eq_of_mem hC hC.empty_mem, addContent_empty]
   sUnion' I hI h'I hh'I := by
     classical
     have A (s) (hs : s ∈ I) : ∃ (J : Finset (Set α)),
         ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J := hI hs
     choose! J hJC hJdisj hJs using A
+    have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
+      rw [hJs i hi]
+      simp only [sUnion_eq_biUnion, SetLike.mem_coe]
+      exact Set.subset_biUnion_of_mem (u := id) ha
     let K : Finset (Set α) := Finset.biUnion I J
     have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
       simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
-    rw [this, m.extendUnion_eq hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
+    rw [this, m.extendUnionFun_eq hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
     · intro a ha b hb hab
       simp only [coe_biUnion, SetLike.mem_coe, mem_iUnion, exists_prop, K] at ha hb
       rcases ha with ⟨i, iI, hi⟩
       rcases hb with ⟨j, jI, hj⟩
       rcases eq_or_ne i j with rfl | hij
       · exact hJdisj i iI hi hj hab
-      · apply (h'I iI jI hij).mono
-        · simp only [id_eq, Set.le_eq_subset]
-          rw [hJs i iI]
-          simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-          exact Set.subset_biUnion_of_mem (u := id) hi
-        · simp only [id_eq, Set.le_eq_subset]
-          rw [hJs j jI]
-          simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-          exact Set.subset_biUnion_of_mem (u := id) hj
+      · exact (h'I iI jI hij).mono (H iI hi) (H jI hj)
     simp only [K]
-    rw [sum_biUnion]; swap
-    · intro i hi j hj hij
-      intro k hk hl u hu
-      simp only [Finset.le_eq_subset] at hk hl
-      have : Disjoint i j := h'I hi hj hij
-      have : Disjoint u u := by
-        apply this.mono
-        · simp only [Set.le_eq_subset]
-          rw [hJs i hi]
-          simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-          apply Set.subset_biUnion_of_mem (u := id) (hk hu)
-        · simp only [Set.le_eq_subset]
-          rw [hJs j hj]
-          simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-          apply Set.subset_biUnion_of_mem (u := id) (hl hu)
-      simp at this
+    rw [sum_biUnion_of_pairwise_eq_zero]; swap
+    · intro i hi j hj hij k hk
+      simp only [Finset.mem_inter] at hk
+      have : Disjoint k k := by
+        have : Disjoint i j := h'I hi hj hij
+        exact this.mono (H hi hk.1) (H hj hk.2)
+      simp only [disjoint_self, Set.bot_eq_empty] at this
+      simp [this]
+    apply Finset.sum_congr rfl (fun i hi ↦ ?_)
+    exact (m.extendUnionFun_eq hC (hJC i hi) (hJdisj i hi) (hJs i hi)).symm
 
+lemma AddContent.extendUnion_eq (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
+    (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
+    m.extendUnion hC s = ∑ s ∈ J, m s :=
+  m.extendUnionFun_eq hC hJ h'J hs
 
+lemma AddContent.extendUnion_eq_of_mem (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
+    m.extendUnion hC s = m s :=
+  m.extendUnionFun_eq_of_mem hC hs
 
-
-
-
-
-
-
-
-
-#exit
 
 
 
