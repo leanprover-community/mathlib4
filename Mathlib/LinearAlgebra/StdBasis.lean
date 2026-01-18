@@ -38,12 +38,7 @@ this is a basis over `Fin 3 → R`.
 open Function Module Set Submodule
 
 namespace Pi
-
-open LinearMap
-
-open Set
-
-variable {R : Type*}
+variable {ι R M : Type*}
 
 section Module
 
@@ -60,12 +55,11 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
-lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+lemma linearIndependent_single_of_ne_zero [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -101,7 +95,7 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
     LinearEquiv.piCongrRight]
   dsimp
-  rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
+  rw [Pi.single_eq_of_ne (Ne.symm hj), map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
   rintro ⟨⟩
   contradiction

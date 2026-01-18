@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Batteries.Linter.UnreachableTactic
 public meta import Qq.Match
 public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Tactic.Basic
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `says` tactic combinator.
@@ -39,13 +39,11 @@ namespace Mathlib.Tactic.Says
 /-- If this option is `true`, verify for `X says Y` that `X says` outputs `Y`. -/
 register_option says.verify : Bool :=
   { defValue := false
-    group := "says"
     descr := "Verify the output" }
 
 /-- This option is only used in CI to negate `says.verify`. -/
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
-    group := "says"
     descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic

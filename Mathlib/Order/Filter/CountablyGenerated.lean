@@ -101,7 +101,7 @@ protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι →
     (hs : l.HasAntitoneBasis s) (i : ι) : s i ∈ l :=
   hs.toHasBasis.mem_of_mem trivial
 
-theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {l : Filter α}
+theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirectedOrder ι] {l : Filter α}
     {s : ι → Set α} (hs : l.HasAntitoneBasis s) (i : ι) : l.HasBasis (fun j => i ≤ j) s :=
   hs.1.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.2 hk.2⟩) fun j _ =>
     ⟨j, trivial, Subset.rfl⟩

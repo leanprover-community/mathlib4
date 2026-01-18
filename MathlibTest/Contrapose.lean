@@ -153,3 +153,8 @@ example (p q : Prop) (h : q → ¬p) : p → MyNot q := by
   fail_if_success (contrapose; exact h)
   unfold MyNot
   contrapose; exact h
+
+example (p q r : Prop) (h' : ¬p ∨ ¬q) (h : p ∧ q) : r := by
+  fail_if_success contrapose! +fdsewfjdsk h
+  contrapose! +distrib h
+  exact h'

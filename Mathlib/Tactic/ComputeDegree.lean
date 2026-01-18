@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -529,3 +529,4 @@ end Mathlib.Tactic.ComputeDegree
  We register `compute_degree` with the `hint` tactic.
  -/
 register_hint 1000 compute_degree
+register_try?_tactic (priority := 1000) compute_degree

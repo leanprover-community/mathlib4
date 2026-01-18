@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integration
 
 /-!
 # Moments and moment-generating function
@@ -104,6 +105,13 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
 
 lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
   (variance_eq_integral hX).symm
+
+/-- Central moments are equal for almost-everywhere equal random variables. -/
+lemma centralMoment_congr_ae {X Y : Ω → ℝ} (hXY : X =ᵐ[μ] Y) :
+    centralMoment X p μ = centralMoment Y p μ := by
+  simp only [centralMoment, integral_congr_ae hXY]
+  refine integral_congr_ae ?_
+  filter_upwards [hXY] with x hx using by simp [hx]
 
 section MomentGeneratingFunction
 
@@ -227,6 +235,8 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 
 theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
+
+theorem mgf_const_mul (α : ℝ) : mgf (fun ω ↦ α * X ω) μ t = mgf X μ (α * t) := mgf_smul_left α
 
 theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
   rw [mgf, mgf, ← integral_const_mul]

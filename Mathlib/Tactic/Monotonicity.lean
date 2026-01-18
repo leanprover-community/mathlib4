@@ -1,4 +1,4 @@
 module
 
-public meta import Mathlib.Tactic.Monotonicity.Basic
-public meta import Mathlib.Tactic.Monotonicity.Lemmas
+public import Mathlib.Tactic.Monotonicity.Basic
+public import Mathlib.Tactic.Monotonicity.Lemmas

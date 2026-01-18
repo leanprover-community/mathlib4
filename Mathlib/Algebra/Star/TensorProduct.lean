@@ -38,10 +38,10 @@ noncomputable instance : InvolutiveStar (A ⊗[R] B) where
     convert congr($congr_refl_refl x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
-  star_add := LinearMap.map_add _
+  star_add := map_add _
 
 instance : StarModule R (A ⊗[R] B) where
-  star_smul := LinearMap.map_smulₛₗ _
+  star_smul := map_smulₛₗ _
 
 theorem _root_.starLinearEquiv_tensor :
     starLinearEquiv R (A := A ⊗[R] B) = congr (starLinearEquiv R) (starLinearEquiv R) := rfl

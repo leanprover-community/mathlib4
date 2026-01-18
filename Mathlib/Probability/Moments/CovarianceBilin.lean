@@ -89,8 +89,8 @@ lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
-    rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
-    rfl
+    rw [covariance_const_mul_left, covariance_const_mul_right, ← mul_assoc,
+      covariance_self aemeasurable_id', Function.id_def]
   · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
 lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
@@ -170,7 +170,7 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
   · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner]
     rw [covariance_fun_sum_fun_sum]
     · refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
-      rw [covariance_mul_left, covariance_mul_right]
+      rw [covariance_const_mul_left, covariance_const_mul_right]
       ring
     all_goals exact fun i ↦ (hX i).const_mul _
   any_goals exact Measurable.aestronglyMeasurable (by fun_prop)

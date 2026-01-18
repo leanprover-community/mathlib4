@@ -175,3 +175,19 @@ example : ∀ n, n < n + 1 := by
   have : m < _ := Nat.lt_succ_of_lt (Nat.lt_add_one m)
   extract_goal
   sorry
+
+/--
+info: theorem foralls_variants.extracted_1_1 : ∀ (n : ℕ), n + 0 = n → n + 1 + 0 = n + 1 := sorry
+---
+info: theorem foralls_variants.extracted_1_3 (n : ℕ) : n + 0 = n → n + 1 + 0 = n + 1 := sorry
+-/
+#guard_msgs in
+theorem foralls_variants : ∀ (n : Nat), n + 0 = n := by
+  intro n
+  have step1 : ∀ n, n + 0 = n → (n + 1) + 0 = n + 1 := by
+    extract_goal
+    simp
+  have step2 : n + 0 = n → (n + 1) + 0 = n + 1 := by
+    extract_goal
+    simp
+  simp

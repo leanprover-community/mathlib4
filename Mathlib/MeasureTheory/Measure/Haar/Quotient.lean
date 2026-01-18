@@ -239,14 +239,12 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
   erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
-    haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
+    have i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
     apply IsOpenPosMeasure.open_pos (interior K) (μ := ν) (self := i')
     · exact isOpen_interior
     · exact K.interior_nonempty
-    rw [← le_zero_iff,
-      ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
-    apply measure_mono
-    refine interior_subset.trans ?_
+    refine measure_mono_null (interior_subset.trans ?_) <|
+      fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
     rw [QuotientGroup.coe_mk']
     change (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K

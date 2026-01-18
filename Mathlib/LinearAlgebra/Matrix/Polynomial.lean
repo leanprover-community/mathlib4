@@ -26,7 +26,7 @@ In particular, we give results about the polynomial given by
 matrix determinant, polynomial
 -/
 
-@[expose] public section
+public section
 
 
 open Matrix Polynomial
@@ -88,9 +88,9 @@ theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
   cases subsingleton_or_nontrivial α
   · simp [eq_iff_true_of_subsingleton]
   rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leadingCoeff]
-  simp only [Matrix.map_one, C_eq_zero, RingHom.map_one]
+  simp only [Matrix.map_one, C_eq_zero, map_one]
   rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
-  · simp only [RingHom.map_one, Matrix.map_one, C_eq_zero] at h
+  · simp only [map_one, Matrix.map_one, C_eq_zero] at h
     rw [h]
   · -- contradiction. we have a hypothesis that the degree is less than |n|
     -- but we know that coeff _ n = 1

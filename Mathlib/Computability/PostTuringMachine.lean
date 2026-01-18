@@ -10,6 +10,7 @@ public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Turing machines
@@ -1082,8 +1083,8 @@ theorem tr_respects :
       refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
-        trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
-      apply IH
+        trTape'_move_left enc0]
+      simpa using IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH

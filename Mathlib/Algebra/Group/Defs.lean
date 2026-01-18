@@ -13,6 +13,7 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Tactic.Basic
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -194,7 +195,7 @@ end Semigroup
 /-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an commutative additive magma. -/
+  /-- Addition is commutative in a commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
@@ -222,10 +223,15 @@ variable [CommMagma G] {a : G}
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
-@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+@[to_additive]
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
-@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+@[to_additive (attr := simp)]
+lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
@@ -260,7 +266,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note2 «lower cancel priority» /--
+library_note «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -310,8 +316,32 @@ class AddZero (M : Type*) extends Zero M, Add M
 
 /-- Bundling a `Mul` and `One` structure together without any axioms about their
 compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
-@[to_additive, ext]
+@[to_additive (attr := ext)]
 class MulOne (M : Type*) extends One M, Mul M
+
+/-- An additive monoid is Dedekind-finite if every left inverse is also a right inverse.
+Also called von Neumann-finite or directly finite. -/
+class IsDedekindFiniteAddMonoid (M : Type*) [AddZero M] : Prop where
+  add_eq_zero_symm {a b : M} : a + b = 0 → b + a = 0
+
+/-- A monoid is Dedekind-finite if every left inverse is also a right inverse.
+It is more common to talk about Dedekind-finite rings, but https://arxiv.org/abs/2102.01598
+does define Dedekind-finite monoids in §2.2. -/
+@[to_additive (attr := mk_iff)] class IsDedekindFiniteMonoid (M : Type*) [MulOne M] : Prop where
+  mul_eq_one_symm {a b : M} : a * b = 1 → b * a = 1
+
+export IsDedekindFiniteMonoid (mul_eq_one_symm)
+export IsDedekindFiniteAddMonoid (add_eq_zero_symm)
+attribute [to_additive existing] isDedekindFiniteMonoid_iff
+
+@[to_additive] theorem mul_eq_one_comm {M} [MulOne M] [IsDedekindFiniteMonoid M] {a b : M} :
+    a * b = 1 ↔ b * a = 1 where
+  mp := mul_eq_one_symm
+  mpr := mul_eq_one_symm
+
+@[to_additive] instance (priority := low) (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (Std.Commutative.comm ..).trans
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
@@ -320,7 +350,6 @@ class AddZeroClass (M : Type u) extends AddZero M where
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
-
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -373,7 +402,7 @@ include hn ha
 
 end
 
-library_note2 «forgetful inheritance» /--
+library_note «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -522,15 +551,15 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
     npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
   unfold go
   generalize hk : k + 1 = k'
-  replace hk : k' ≠ 0 := by omega
+  replace hk : k' ≠ 0 := by lia
   induction k' using Nat.binaryRecFromOne generalizing n m with
   | zero => simp at hk
   | one => simp [npowRec']
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by cutsat), mul_assoc]
+    rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by lia), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -613,7 +642,7 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive one_nsmul, simp]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 
 @[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
@@ -665,6 +694,40 @@ lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul
 lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   rw [← pow_mul, Nat.mul_comm, pow_mul]
 
+@[to_additive] protected lemma IsLeftRegular.mul_eq_one_symm {a b : M} (reg : IsLeftRegular a)
+    (eq : a * b = 1) : b * a = 1 :=
+  reg <| by simp [← mul_assoc, eq]
+
+@[to_additive] protected lemma IsRightRegular.mul_eq_one_symm {a b : M} (reg : IsRightRegular a)
+    (eq : b * a = 1) : a * b = 1 :=
+  reg <| by simp [mul_assoc, eq]
+
+variable (M)
+
+@[to_additive] instance [IsLeftCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsLeftCancelMul.mul_left_cancel _).mul_eq_one_symm
+
+@[to_additive] instance [IsRightCancelMul M] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm := (IsRightCancelMul.mul_right_cancel _).mul_eq_one_symm
+
+namespace IsDedekindFiniteMonoid
+
+/-- A monoid is Dedekind-finite if every element with a left inverse also has a right inverse. -/
+@[to_additive] lemma of_exists_self_mul_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, y * z = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show x = z by simpa [← mul_assoc, h] using congr_arg (x * ·) hz.symm]
+
+/-- A monoid is Dedekind-finite if every element with a right inverse also has a left inverse. -/
+@[to_additive] lemma of_exists_mul_self_eq_one (ex : ∀ x y : M, x * y = 1 → ∃ z, z * x = 1) :
+    IsDedekindFiniteMonoid M where
+  mul_eq_one_symm {x y} h := by
+    have ⟨z, hz⟩ := ex x y h
+    rwa [show y = z by simpa [mul_assoc, h] using congr_arg (· * y) hz.symm]
+
+end IsDedekindFiniteMonoid
+
 end Monoid
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
@@ -686,6 +749,11 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+/- This is assigned default rather than low priority because it gives the most common examples
+of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
+priority performs better than low or high priority. -/
+@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
@@ -1107,10 +1175,13 @@ variable [Group G] {a b : G}
 theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=
   Group.inv_mul_cancel a
 
+set_option backward.privateInPublic true in
 @[to_additive]
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_cancel a) h
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   rw [← inv_mul_cancel a⁻¹, inv_eq_of_mul (inv_mul_cancel a)]
@@ -1142,6 +1213,8 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
 theorem div_mul_cancel (a b : G) : a / b * b = a := by
   rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
   { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
@@ -1163,6 +1236,7 @@ end Group
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
+-- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 

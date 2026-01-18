@@ -253,7 +253,7 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
 
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
-    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl} := by
+    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
   ext ⟨f, sf, hf⟩
   change (∑ i ∈ _, _) = _
   dsimp
@@ -294,14 +294,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hf i).resolve_left H2, map_zero]
     · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hg i).resolve_left H2, map_zero]
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)

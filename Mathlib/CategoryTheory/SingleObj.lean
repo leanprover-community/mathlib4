@@ -152,8 +152,8 @@ induces a functor `SingleObj M ⥤ C`. -/
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
   map a := f a
-  map_id _ := MonoidHom.map_one f
-  map_comp a b := MonoidHom.map_mul f b a
+  map_id _ := map_one f
+  map_comp a b := map_mul f b a
 
 /-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
 giving a compatible morphism `SingleObj.star M`. -/
@@ -238,14 +238,14 @@ open CategoryTheory
 /-- The fully faithful functor from `MonCat` to `Cat`. -/
 def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
-  map {x y} f := SingleObj.mapHom x y f.hom
+  map {x y} f := (SingleObj.mapHom x y f.hom).toCatHom
 
 instance toCat_full : toCat.Full where
   map_surjective y :=
-    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y
-    ⟨ofHom x, h⟩
+    let ⟨x, h⟩ := (SingleObj.mapHom _ _).surjective y.toFunctor
+    ⟨ofHom x, Cat.Hom.ext h⟩
 
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := MonCat.hom_ext <| by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
+  map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
 
 end MonCat

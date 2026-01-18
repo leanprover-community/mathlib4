@@ -45,14 +45,16 @@ variable {M : Type*} [AddCommMonoid M]
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat
 
 variable (M) in
-/-- The divisible hull of a `AddCommMonoid` (as a ℕ-module) is the localized module by
-`ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisble group, or a `ℚ≥0`-module. -/
+/-- The divisible hull of an `AddCommMonoid` (as a ℕ-module) is the localized module by
+`ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisible group, or a `ℚ≥0`-module. -/
 abbrev DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
 
 namespace DivisibleHull
 
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
+
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
 
 /-- Define coercion as `m ↦ m / 1`. -/
 @[coe]
@@ -218,7 +220,7 @@ instance : Module ℚ (DivisibleHull M) where
     simp_rw [qsmul_mk, mk_add_mk, mk_eq_mk]
     use 1
     suffices ((a + b).num * a.den * b.den * (s * s)) • m =
-        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m  by
+        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m by
       convert this using 1
       all_goals
       simp [← natCast_zsmul, smul_smul, ← add_smul]
@@ -243,6 +245,7 @@ end Group
 section LinearOrder
 variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
+set_option backward.privateInPublic true in
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
@@ -254,6 +257,8 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
     ring_nf
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : LE (DivisibleHull M) where
   le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
 
@@ -301,7 +306,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
     simp_rw [mk_add_mk]
     rw [mk_lt_mk] at ⊢ h
     simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
-    have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
+    have := add_lt_add_right (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
     simp_rw [PNat.mul_coe, smul_smul] at this
     convert this using 3 <;> ring)
 
@@ -353,12 +358,14 @@ theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
     exact this
   simp_rw [zsmul_mk, mk_eq_mk_iff_smul_eq_smul, natCast_zsmul, smul_smul, mul_comm s'.val]
 
+set_option backward.privateInPublic true in
 variable (M) in
 /-- Forward direction of `archimedeanClassOrderIso`. -/
 private noncomputable
 def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
+set_option backward.privateInPublic true in
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
     ArchimedeanClass.mk (mk m s) = archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
@@ -370,6 +377,7 @@ private theorem aux_archimedeanClassOrderHom_injective :
     Function.Injective (archimedeanClassOrderHom M) :=
   ArchimedeanClass.orderHom_injective coe_injective
 
+set_option backward.privateInPublic true in
 variable (M) in
 /-- Backward direction of `archimedeanClassOrderIso`. -/
 private noncomputable
@@ -386,6 +394,8 @@ def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Archim
       simpa using ((archimedeanClassOrderHom M).monotone.strictMono_of_injective
         aux_archimedeanClassOrderHom_injective).le_iff_le.mp h)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable

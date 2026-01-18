@@ -85,8 +85,8 @@ instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where
   mul_le_mul_left := fun a b =>
     Localization.induction_on₂ a b fun a b hab c =>
       Localization.induction_on c fun c => by
-        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ c.1] at hab ⊢
-        exact mul_le_mul_left' hab _
+        simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ (c.2 : α)] at hab ⊢
+        exact mul_le_mul_left hab _
   le_of_mul_le_mul_left := fun a b c =>
     Localization.induction_on₃ a b c fun a b c hab => by
       simp only [mk_mul, mk_le_mk, Submonoid.coe_mul, mul_mul_mul_comm _ _ a.1] at hab ⊢

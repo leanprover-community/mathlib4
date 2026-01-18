@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Affine combinations of points
@@ -351,7 +350,7 @@ hypothesis on those lemmas that require it. -/
 def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
-  map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
+  map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, map_add]
 
 /-- The linear map corresponding to `affineCombination` is
 `weightedVSub`. -/
@@ -581,8 +580,8 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw b,
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]
-  simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd,
-    LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
+  simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd, map_smulₛₗ,
+    AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
 /-- The value of `affineCombination`, where the given points take only two values. -/
 lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)

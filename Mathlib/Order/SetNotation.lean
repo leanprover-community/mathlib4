@@ -45,30 +45,24 @@ class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
 
-
 /-- Class for the `sInf` operator -/
+@[to_dual existing]
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
-
 
 export SupSet (sSup)
 
 export InfSet (sInf)
 
 /-- Indexed supremum -/
+@[to_dual /-- Indexed infimum -/]
 def iSup [SupSet α] (s : ι → α) : α :=
   sSup (range s)
 
-/-- Indexed infimum -/
-def iInf [InfSet α] (s : ι → α) : α :=
-  sInf (range s)
-
+@[to_dual]
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
-
-instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
-  ⟨sSup ∅⟩
 
 /-- Indexed supremum. -/
 notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
@@ -139,6 +133,18 @@ end delaborators
 
 namespace Set
 
+/-
+We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
+This is because for example the following theorems should be dual
+```
+theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
+theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
+```
+Additionally, dualizing the order on sets would mean that a set is dual to its complement.
+But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
+-/
+attribute [to_dual_dont_translate] Set
+
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
@@ -159,11 +165,11 @@ def sUnion (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 
@@ -243,12 +249,12 @@ meta def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
 
 end delaborators
 
-@[simp]
+@[simp, push]
 theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
   ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
 
-@[simp]
+@[simp, push]
 theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩

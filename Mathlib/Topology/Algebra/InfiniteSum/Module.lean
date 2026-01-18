@@ -125,7 +125,7 @@ protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M�
 alias HasSum.mapL := ContinuousLinearMap.hasSum
 
 protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f L) :
-    Summable (fun b : ι ↦ φ (f b)) L:=
+    Summable (fun b : ι ↦ φ (f b)) L :=
   (hf.hasSum.mapL φ).summable
 
 alias Summable.mapL := ContinuousLinearMap.summable

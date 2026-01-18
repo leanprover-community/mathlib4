@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -22,7 +23,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-@[expose] public section
+public section
 
 open scoped nonZeroDivisors
 
@@ -41,7 +42,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
     rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
-  have := Ideal.Quotient.nontrivial hr'
+  have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial
   rw [ringKrullDim_quotient, Order.krullDim_eq_iSup_length, ringKrullDim,
     Order.krullDim_eq_iSup_length, ← WithBot.coe_one, ← WithBot.coe_add,

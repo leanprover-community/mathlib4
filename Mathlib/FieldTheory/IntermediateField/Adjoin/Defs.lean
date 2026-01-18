@@ -324,7 +324,14 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
+
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_adjoin_of_mem {S : Set E} {s : E} (hs : s ∈ S) : s ∈ adjoin F S := subset_adjoin F S hs
+
+theorem notMem_of_notMem_adjoin {S : Set E} {s : E} (hs : s ∉ adjoin F S) : s ∉ S := fun h =>
+  hs <| mem_adjoin_of_mem F h
 
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
@@ -353,9 +360,7 @@ theorem adjoin_univ (F E : Type*) [Field F] [Field E] [Algebra F E] :
 /-- If `K` is a field with `F ⊆ K` and `S ⊆ K` then `adjoin F S ≤ K`. -/
 theorem adjoin_le_subfield {K : Subfield E} (HF : Set.range (algebraMap F E) ⊆ K) (HS : S ⊆ K) :
     (adjoin F S).toSubfield ≤ K := by
-  apply Subfield.closure_le.mpr
-  rw [Set.union_subset_iff]
-  exact ⟨HF, HS⟩
+  simpa using ⟨HF, HS⟩
 
 theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : Set E} :
     (adjoin F S : Set E) ⊆ adjoin F' S' ↔
@@ -523,7 +528,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab

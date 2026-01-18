@@ -10,7 +10,8 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.Cleanup
 public meta import Lean.PrettyPrinter
 public meta import Batteries.Lean.Meta.Inaccessible
-public meta import Mathlib.Tactic.MinImports
+public import Lean.Elab.Command
+public import Mathlib.Tactic.MinImports
 
 /-!
 # `extract_goal`: Format the current goal as a stand-alone example
@@ -143,10 +144,19 @@ The return values are:
 * A formatted piece of `MessageData`, like `m!"myTheorem (a b : Nat) : a + b = b + a"`.
 * The full type of the declaration, like `∀ a b, a + b = b + a`.
 * The imports needed to state this declaration, as an array of module names.
+* A boolean indicating whether the original goal type had top-level foralls.
 -/
-def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr × Array Name) :=
+def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr × Array Name × Bool) :=
   withoutModifyingEnv <| withoutModifyingState do
     let (g, _) ← g.renameInaccessibleFVars
+    -- Check if the original goal has foralls before reverting
+    -- We only consider it to have "original foralls" if it has a named forall,
+    -- not just implications (which have anonymous or internal hygienic names)
+    let originalTy ← instantiateMVars (← g.getType)
+    let hasOriginalForalls :=
+      originalTy.isForall &&
+      !originalTy.bindingName!.isAnonymous &&
+      !originalTy.bindingName!.isInternal
     let (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) (← g.getDecl).lctx.getFVarIds
     let ty ← instantiateMVars (← g.getType)
     if ty.hasExprMVar then
@@ -179,7 +189,7 @@ def goalSignature (name : Name) (g : MVarId) : TermElabM (MessageData × Expr ×
       if !fins.contains new then fins := fins.insert new
     let tot := Mathlib.Command.MinImports.getIrredundantImports (← getEnv) (fins.erase .anonymous)
     let fileNames := tot.toArray.qsort Name.lt
-    return (sig, ty, fileNames)
+    return (sig, ty, fileNames, hasOriginalForalls)
 
 elab_rules : tactic
   | `(tactic| extract_goal $cfg:config $[using $name?]?) => do
@@ -200,9 +210,15 @@ elab_rules : tactic
           -- Note: `getFVarIds` does `withMainContext`
           g.cleanup (toPreserve := (← getFVarIds fvars)) (indirectProps := false)
         | _ => throwUnsupportedSyntax
-      let (sig, ty, _) ← goalSignature name g
+      let (sig, ty, _, hasOriginalForalls) ← goalSignature name g
       let cmd := if ← Meta.isProp ty then "theorem" else "def"
-      pure m!"{cmd} {sig} := sorry"
+      let msg ← if hasOriginalForalls then
+        -- Preserve foralls: format as "theorem name : ty := sorry"
+        pure m!"{cmd} {name} : {ty} := sorry"
+      else
+        -- Convert foralls to parameters: format using signature
+        pure m!"{cmd} {sig} := sorry"
+      pure msg
     logInfo msg
 
 end Mathlib.Tactic.ExtractGoal

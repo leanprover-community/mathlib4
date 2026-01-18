@@ -135,7 +135,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       apply_fun f at hb
       rw [map_smul, map_zero, h, ← mul_smul, ← LinearMap.toSpanSingleton_apply,
         ← LinearMap.mem_ker, ← hx] at hb
-      contrapose! hb
+      contrapose hb
       exact p.primeCompl.mul_mem hb ha
   · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
@@ -145,7 +145,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
     · rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, ← map_smul, ← LinearMap.mem_ker,
         hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
-      by_contra! H
+      by_contra H
       exact h b H y hy
 
 variable (R M M') in

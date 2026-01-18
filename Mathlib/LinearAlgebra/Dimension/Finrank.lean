@@ -5,8 +5,8 @@ Authors: Chris Hughes, Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Finite dimension of vector spaces
@@ -104,6 +104,9 @@ theorem finrank_le_finrank_of_rank_le_rank
 end Semiring
 
 end Module
+
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
 
 open Module
 
