@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
+public import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 
@@ -71,14 +72,6 @@ instance {C : Type*} [Category C] (A : Cᵒᵖ) : HasInitial ((coyoneda.obj A).E
 
 instance {C : Type*} [Category C] (A : C) : HasInitial ((yoneda.obj A).Elements) :=
   (Functor.Elements.isInitial A).hasInitial
-
-instance (C : Type*) [Category C] [HasInitial C] : InitiallySmall.{u} C :=
-  have := Functor.initial_const_initial (C := PUnit.{u + 1}) (D := C)
-  .mk' ((Functor.const PUnit.{u + 1}).obj (⊥_ C))
-
-instance (C : Type*) [Category C] [HasTerminal C] : FinallySmall.{u} C :=
-  have := Functor.final_const_terminal (C := PUnit.{u + 1}) (D := C)
-  .mk' ((Functor.const PUnit.{u + 1}).obj (⊤_ C))
 
 /-- A separably closed field `Ω` defines a point on the étale topology by the fiber
 functor `X ↦ Hom(Spec Ω, X)`. -/
