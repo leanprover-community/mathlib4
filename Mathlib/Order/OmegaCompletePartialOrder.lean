@@ -192,27 +192,27 @@ lemma projr_coe [hB : Inhabited β] (c : Chain (α ⊕ β)) (n : ℕ)
   cases c n <;> rfl
 
 /-- Splits a chain of sums into a sum of chains. -/
-def split (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
+def toSum (c : Chain (α ⊕ β)) : Chain α ⊕ Chain β :=
   Sum.map
     (fun d ↦ let : Inhabited α := ⟨d⟩; projl c)
     (fun d ↦ let : Inhabited β := ⟨d⟩; projr c)
     (c 0)
 
 @[simp]
-lemma split_inl (c : Chain α) : split (inl c : Chain (α ⊕ β)) = .inl c := rfl
+lemma toSum_inl (c : Chain α) : toSum (inl c : Chain (α ⊕ β)) = .inl c := rfl
 
 @[simp]
-lemma split_inr (c : Chain β) : split (inr c : Chain (α ⊕ β)) = .inr c := rfl
+lemma toSum_inr (c : Chain β) : toSum (inr c : Chain (α ⊕ β)) = .inr c := rfl
 
 @[elab_as_elim]
-lemma split_cases
+lemma sum_cases
     {p : Chain (α ⊕ β) → Prop}
     (inl : ∀ c, p (inl c))
     (inr : ∀ c, p (inr c))
     (c : Chain (α ⊕ β)) : p c := by
-  suffices this : Sum.elim .inl .inr (split c) = c by
+  suffices this : Sum.elim .inl .inr (toSum c) = c by
     rw [← this]
-    cases c.split with
+    cases c.toSum with
     | inl _ => simp only [Sum.elim_inl, inl]
     | inr _ => simp only [Sum.elim_inr, inr]
   apply Chain.ext
@@ -222,8 +222,8 @@ lemma split_cases
   have hc := c.monotone (Nat.zero_le n)
   simp only [h₀, hₙ] at hc
   cases hc with
-  | inl _ => simp only [split, h₀, Sum.map_inl, Sum.elim_inl, inl_coe, projl_coe, hₙ, id_eq]
-  | inr _ => simp only [split, h₀, Sum.map_inr, Sum.elim_inr, inr_coe, projr_coe, hₙ, id_eq]
+  | inl _ => simp only [toSum, h₀, Sum.map_inl, Sum.elim_inl, inl_coe, projl_coe, hₙ, id_eq]
+  | inr _ => simp only [toSum, h₀, Sum.map_inr, Sum.elim_inr, inr_coe, projr_coe, hₙ, id_eq]
 
 end Chain
 
@@ -545,24 +545,24 @@ variable
   [OmegaCompletePartialOrder δ] [OmegaCompletePartialOrder γ]
 
 noncomputable instance : OmegaCompletePartialOrder (α ⊕ β) where
-  ωSup c := Sum.map ωSup ωSup (Chain.split c)
+  ωSup c := Sum.map ωSup ωSup (toSum c)
   le_ωSup c i := by
-    cases c using Chain.split_cases with
+    cases c using sum_cases with
     | inl c =>
-      simp only [inl_coe, split_inl, map_inl, ge_iff_le, inl_le_inl_iff]
+      simp only [inl_coe, toSum_inl, map_inl, ge_iff_le, inl_le_inl_iff]
       apply le_ωSup
     | inr c =>
-      simp only [inr_coe, split_inr, map_inr, ge_iff_le, inr_le_inr_iff]
+      simp only [inr_coe, toSum_inr, map_inr, ge_iff_le, inr_le_inr_iff]
       apply le_ωSup
   ωSup_le c x hc := by
-    cases c using Chain.split_cases with
+    cases c using sum_cases with
     | inl c =>
       rcases hc 0
-      simp_all only [inl_coe, ge_iff_le, inl_le_inl_iff, split_inl, map_inl, ωSup_le_iff,
+      simp_all only [inl_coe, ge_iff_le, inl_le_inl_iff, toSum_inl, map_inl, ωSup_le_iff,
         implies_true]
     | inr c =>
       rcases hc 0
-      simp_all only [inr_coe, ge_iff_le, inr_le_inr_iff, split_inr, map_inr, ωSup_le_iff,
+      simp_all only [inr_coe, ge_iff_le, inr_le_inr_iff, toSum_inr, map_inr, ωSup_le_iff,
         implies_true]
 
 @[simp]
@@ -597,7 +597,7 @@ lemma ωScottContinuous_elim
   · apply Sum.elim_mono hf.monotone hg.monotone hh.monotone
   · rw [hh.map_ωSup]
     generalize hc' : c.map ⟨h, hh.monotone⟩ = c'
-    cases c' using Chain.split_cases with
+    cases c' using sum_cases with
     | inl c' =>
       simp only [ωSup_inl, elim_inl]
       apply Eq.trans (hf.map_ωSup (c.zip c'))
