@@ -81,14 +81,9 @@ variable {A : Type u} [Ring A]
 structure IsUniform (F : IdealFilter A) : Prop where
   /-- If `I ∈ F`, then for every `a : A` the colon ideal `I.colon {a}`
   also belongs to `F`. -/
-  colon_closed {I : Ideal A} (h_I : I ∈ F) (a : A) : (I.colon {a}) ∈ F
+  colon_mem {I : Ideal A} (h_I : I ∈ F) (a : A) : (I.colon {a}) ∈ F
 
 namespace IsUniform
-
-/-- Convenience lemma for `colon_closed`. -/
-lemma colon_mem {F : IdealFilter A} (h : F.IsUniform) {I : Ideal A} (h_I : I ∈ F) (a : A) :
-    I.colon {a} ∈ F :=
-  h.colon_closed h_I a
 
 end IsUniform
 
