@@ -490,6 +490,48 @@ lemma finiteUnions (hC : IsSetSemiring C) :
       apply iUnion_congr (fun i ↦ iUnion_congr (fun hi ↦ ?_))
       simpa [sUnion_eq_biUnion] using hiJ' i hi
 
+lemma Ioc_mem_Ioc_le {α : Type*} [LinearOrder α] (u v : α) :
+    Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} := by
+  rcases le_or_gt u v with h | h
+  · exact ⟨u, v, h, rfl⟩
+  · have : Set.Ioc u v = ∅ := by
+      simpa only [Set.Ioc_eq_empty_iff, not_lt] using h.le
+    rw [this]
+    exact ⟨u, u, le_rfl, by simp⟩
+
+/-- The set of open-closed intervals is a semi-ring of sets. -/
+lemma Ioc {α : Type*} [LinearOrder α] [Nonempty α] :
+    IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  empty_mem := by
+    inhabit α
+    exact ⟨default, default, le_rfl, by simp⟩
+  inter_mem := by
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rw [Set.Ioc_inter_Ioc]
+    apply Ioc_mem_Ioc_le
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rcases le_or_gt u' u with hu | hu
+    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc (max u v') v := by
+        ext; simp; grind
+      rcases Ioc_mem_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      rw [this, heq]
+      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
+    rcases le_or_gt v v' with hv | hv
+    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u (min u' v) := by
+        ext; simp; grind
+      rcases Ioc_mem_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      rw [this, heq]
+      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
+    have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v := by
+      ext; simp; grind
+    rw [this]
+    refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
+    intro a ha b hb hab
+    simp [Function.onFun]
+    grind
+
 end IsSetSemiring
 
 /-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.

@@ -39,6 +39,19 @@ variable {α : Type*} [MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
 
 namespace MeasureTheory
 
+open scoped ENNReal symmDiff
+
+lemma glou {α : Type*}
+    [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] (hC : IsSetRing C)
+    (h'C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ univ = ⋃ n, f n) (h : mα = generateFrom C)
+    (s : Set α) (hs : MeasurableSet s) (ε : ℝ≥0∞) :
+    ∃ t ∈ t, μ (s ∆ t) < ε := by
+
+
+
+#exit
+
+
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
 a distance on it given by `edist s t = μ (s ∆ t)` -/
