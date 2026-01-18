@@ -141,6 +141,18 @@ lemma isTorsionQuot.mono_left {F : IdealFilter A}
     {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
   fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono I_leq_J .rfl))
 
+lemma IsTorsionQuot.mono_right {F : IdealFilter A}
+    {I J K : Ideal A} (hJK : J ≤ K) (hI : IsTorsionQuot F I K) : IsTorsionQuot F I J :=
+  fun x hx ↦ hI x (hJK hx)
+
+lemma IsTorsionQuot.inf {F : IdealFilter A}
+    {I J K : Ideal A} (hI : IsTorsionQuot F I K) (hJ : IsTorsionQuot F J K) :
+    IsTorsionQuot F (I ⊓ J) K := by
+  intro x hx
+  obtain ⟨I', hI'F, hI'x⟩ := hI x hx
+  obtain ⟨J', hJ'F, hJ'x⟩ := hJ x hx
+  exact ⟨_, F.inf_mem hI'F hJ'F, (inf_le_inf hI'x hJ'x).trans Submodule.inf_colon.ge⟩
+
 /-- `isPFilter_gabrielComposition` shows that the set defining `gabrielComposition` is a
 `PFilter`. -/
 lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
@@ -150,17 +162,10 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     exact ⟨J, J, h_J, isTorsionQuot_self F J⟩
   · rintro I ⟨K, h_K, h_IK⟩ J ⟨L, h_L, h_JL⟩
     refine ⟨I ⊓ J, ?_, inf_le_left, inf_le_right⟩
-    · refine ⟨K ⊓ L, ?_, ?_⟩
-      · exact Order.PFilter.inf_mem h_K h_L
-      · rintro x h_x
-        rcases h_x with ⟨x_K, x_L⟩
-        obtain ⟨K₁, h_K₁F, h_K₁⟩ := h_IK x x_K
-        obtain ⟨K₂, h_K₂F, h_K₂⟩ := h_JL x x_L
-        refine ⟨K₁ ⊓ K₂, Order.PFilter.inf_mem h_K₁F h_K₂F, ?_⟩
-        rintro y ⟨h_y₁, h_y₂⟩
-        simpa using (⟨h_K₁ h_y₁, h_K₂ h_y₂⟩ : y ∈ I.colon {x} ⊓ J.colon {x})
+    exact ⟨K ⊓ L, G.inf_mem h_K h_L,
+      (h_IK.mono_right inf_le_left).inf (h_JL.mono_right inf_le_right)⟩
   · intro I J h_IJ ⟨K, h_K, h_IK⟩
-    exact ⟨K, h_K, isTorsionQuot_mono_left F h_IJ h_IK⟩
+    exact ⟨K, h_K, isTorsionQuot.mono_left h_IJ h_IK⟩
 
 /-- `gabrielComposition F G` is the Gabriel composition of ideal filters `F` and `G`. -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
