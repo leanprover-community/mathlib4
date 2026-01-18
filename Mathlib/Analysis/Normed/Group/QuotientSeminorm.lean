@@ -249,6 +249,17 @@ lemma quotient_comp_eq : (q.comp (QuotientGroup.mk' S)).quotient S = q :=
 
 end Quotient
 
+section extend
+
+variable {E F G : Type*} [CommGroup E] [CommGroup F] [CommGroup G]
+variable {p : GroupSeminorm E} {f : E →* F} {q : GroupSeminorm F}
+
+variable (p f q) in
+protected noncomputable def extend : GroupSeminorm F :=
+  .map ((p.comp <| .fst E F) + (q.comp <| .snd E F)) (.coprod f (.id F))
+
+end extend
+
 end GroupSeminorm
 
 end
