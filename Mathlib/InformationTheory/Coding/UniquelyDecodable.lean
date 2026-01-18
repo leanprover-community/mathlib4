@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Elazar Gershuni
 -/
 module
-@[expose] public section
 
 public import Mathlib.Data.Set.Basic
 
@@ -25,6 +24,8 @@ This file defines uniquely decodable codes and proves basic properties.
 * `UniquelyDecodable.flatten_injective`: The flatten function is injective on lists of
   codewords from a uniquely decodable code.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 
