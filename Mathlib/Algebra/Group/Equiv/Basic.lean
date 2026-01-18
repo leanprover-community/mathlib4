@@ -28,11 +28,6 @@ open Function
 
 variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
 
-namespace EmbeddingLike
-variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
-
-end EmbeddingLike
-
 variable [EquivLike F α β]
 
 @[to_additive]
@@ -53,8 +48,6 @@ namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P]
 
-section unique
-
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
@@ -67,7 +60,13 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
-end unique
+variable (α M) in
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/
+@[to_additive (attr := simps!)
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/]
+def funUnique [Unique α] : (α → M) ≃* M where
+  toEquiv := .funUnique ..
+  map_mul' := by simp
 
 end Mul
 

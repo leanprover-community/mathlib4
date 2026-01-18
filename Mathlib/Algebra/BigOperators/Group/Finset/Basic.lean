@@ -15,7 +15,7 @@ public import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
@@ -200,12 +200,6 @@ theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
-@[deprecated (since := "2025-06-11")]
-alias sum_disj_sum := sum_disjSum
-
-@[to_additive existing, deprecated (since := "2025-06-11")]
-alias prod_disj_sum := prod_disjSum
-
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
@@ -281,9 +275,9 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → M) :
 end bij
 
 @[to_additive (attr := simp)]
-lemma prod_diag [DecidableEq ι] (s : Finset ι) (f : ι × ι → M) :
+lemma prod_diag (s : Finset ι) (f : ι × ι → M) :
     ∏ i ∈ s.diag, f i = ∏ i ∈ s, f (i, i) := by
-  apply prod_nbij' Prod.fst (fun i ↦ (i, i)) <;> simp
+  simp [diag]
 
 @[to_additive]
 theorem prod_image' [DecidableEq ι] {s : Finset κ} {g : κ → ι} (h : κ → M)
@@ -353,7 +347,7 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
 @[to_additive (attr := simp)]
 lemma prod_ite_mem_eq [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
     (∏ i, if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
-  rw [← Finset.prod_filter]; congr; aesop
+  rw [← Finset.prod_filter]; congr; grind
 
 @[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
@@ -361,7 +355,7 @@ lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
   by_cases h : a ∈ s
   · simp [Finset.prod_eq_single_of_mem a h h₀, h]
-  · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
+  · replace h₀ : ∀ b ∈ s, f b = 1 := by grind
     simp +contextual [h₀]
 
 @[to_additive]

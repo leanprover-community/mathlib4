@@ -268,6 +268,16 @@ theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.I
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (f x) := by
   ext; simp [hf]
 
+@[simp] lemma _root_.InnerProductSpace.adjoint_rankOne (x : E) (y : F) :
+    adjoint (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
+  simp [rankOne_def', adjoint_comp, ← adjoint_innerSL_apply]
+
+lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+    (x : E) (y : F) (f : G →L[𝕜] F) :
+    rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
+  simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
+
 end ContinuousLinearMap
 
 /-! ### Self-adjoint operators -/
@@ -317,16 +327,11 @@ theorem _root_.isSelfAdjoint_starProjection
     IsSelfAdjoint U.starProjection :=
   U.starProjection_isSymmetric.isSelfAdjoint
 
-@[deprecated (since := "2025-07-05")] alias _root_.orthogonalProjection_isSelfAdjoint :=
-  isSelfAdjoint_starProjection
-
 theorem conj_starProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T)
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     IsSelfAdjoint (U.starProjection ∘L T ∘L U.starProjection) := by
   rw [← mul_def, ← mul_def, ← mul_assoc]
   exact hT.conjugate_self <| isSelfAdjoint_starProjection U
-
-@[deprecated (since := "2025-07-05")] alias conj_orthogonalProjection := conj_starProjection
 
 end IsSelfAdjoint
 
@@ -395,15 +400,19 @@ theorem isStarProjection_iff_isSymmetricProjection :
   simp [isStarProjection_iff, LinearMap.isSymmetricProjection_iff,
     isSelfAdjoint_iff_isSymmetric, IsIdempotentElem, End.mul_eq_comp, ← coe_comp, mul_def]
 
+alias ⟨IsStarProjection.isSymmetricProjection, LinearMap.IsSymmetricProjection.isStarProjection⟩ :=
+  isStarProjection_iff_isSymmetricProjection
+
 /-- Star projection operators are equal iff their range are. -/
 theorem IsStarProjection.ext_iff {S : E →L[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ S.range = T.range := by
-  simpa using LinearMap.IsSymmetricProjection.ext_iff
-    (isStarProjection_iff_isSymmetricProjection.mp hS)
-    (isStarProjection_iff_isSymmetricProjection.mp hT)
+  simpa using hS.isSymmetricProjection.ext_iff hT.isSymmetricProjection
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
+
+theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
+    IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
 
 end ContinuousLinearMap
 
@@ -418,7 +427,7 @@ open ContinuousLinearMap in
 theorem isStarProjection_iff_eq_starProjection_range [CompleteSpace E] {p : E →L[𝕜] E} :
     IsStarProjection p ↔ ∃ (_ : p.range.HasOrthogonalProjection),
     p = p.range.starProjection := by
-  simp_rw [← p.isStarProjection_iff_isSymmetricProjection.symm.eq,
+  simp_rw [p.isStarProjection_iff_isSymmetricProjection.eq,
     LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range, coe_inj]
 
 lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜] E} :
@@ -640,9 +649,10 @@ section Unitary
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 
-namespace ContinuousLinearMap
-
+section linearIsometryEquiv
 variable {K : Type*} [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
+
+namespace ContinuousLinearMap
 
 theorem inner_map_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x y : H, ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜) ↔ adjoint u ∘L u = 1 := by
@@ -681,6 +691,36 @@ theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H
   u.inner_map_map_iff_adjoint_comp_self.mpr this x y
 
 end ContinuousLinearMap
+
+namespace LinearIsometryEquiv
+
+open ContinuousLinearMap ContinuousLinearEquiv in
+/-- An isometric linear equivalence of two Hilbert spaces induces an equivalence of
+⋆-algebras of their endomorphisms. -/
+def conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) : (H →L[𝕜] H) ≃⋆ₐ[𝕜] (K →L[𝕜] K) :=
+  .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
+    simp [star_eq_adjoint, conjContinuousAlgEquiv_apply, ← toContinuousLinearEquiv_symm, comp_assoc]
+
+@[simp] lemma conjStarAlgEquiv_apply_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) (y : K) :
+    e.conjStarAlgEquiv x y = e (x (e.symm y)) := rfl
+
+theorem symm_conjStarAlgEquiv_apply_apply (e : H ≃ₗᵢ[𝕜] K) (f : K →L[𝕜] K) (x : H) :
+    e.conjStarAlgEquiv.symm f x = e.symm (f (e x)) := rfl
+
+lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
+    e.conjStarAlgEquiv x = e ∘L x ∘L e.symm := rfl
+
+@[simp] lemma symm_conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) :
+    e.conjStarAlgEquiv.symm = e.symm.conjStarAlgEquiv := rfl
+
+@[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl := rfl
+
+theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+    [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
+    (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
+
+end LinearIsometryEquiv
+end linearIsometryEquiv
 
 namespace Unitary
 

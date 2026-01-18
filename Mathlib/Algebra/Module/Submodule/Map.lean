@@ -307,9 +307,6 @@ theorem map_iSup_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M�
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
 
-@[deprecated (since := "2025-07-08")]
-alias map_iSup_comap_of_sujective := map_iSup_comap_of_surjective
-
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=
   (giMapComap hf).l_inf_u _ _
@@ -686,8 +683,6 @@ variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
-
-@[deprecated (since := "2025-06-18")] alias map_eq_comap := Submodule.map_equiv_eq_comap_symm
 
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.

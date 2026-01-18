@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
@@ -82,8 +82,6 @@ def trivial : Grp C :=
 
 instance : Inhabited (Grp C) where
   default := trivial C
-
-@[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))

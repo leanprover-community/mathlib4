@@ -24,13 +24,13 @@ We provide various results concerning the minimal primes above an ideal.
 - `Ideal.sInf_minimalPrimes`: The intersection of minimal primes over `I` is `I.radical`.
 
 Further results that need the theory of localizations can be found in
-`RingTheory/Ideal/Minimal/Localization.lean`.
+`Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`.
 
 -/
 
 @[expose] public section
 
-assert_not_exists Localization -- See `RingTheory/Ideal/Minimal/Localization.lean`
+assert_not_exists Localization -- See `Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`
 
 section
 
@@ -132,7 +132,6 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 variable (R) in
 theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
     minimalPrimes R = {⊥} :=
-  have := Ideal.bot_prime (α := R)
   Ideal.minimalPrimes_eq_subsingleton_self
 
 end

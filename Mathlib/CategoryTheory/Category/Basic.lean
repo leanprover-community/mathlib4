@@ -34,7 +34,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 @[expose] public section
 
 
-library_note2 «category theory universes»
+library_note «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -176,7 +176,7 @@ meta def categoryTheoryDischarger : TacticM Unit := do
     if ← getBoolOption `mathlib.tactic.category.log_grind then
       logInfo "Category theory discharger using `grind`."
     evalTacticSeq (← `(tacticSeq|
-      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
+      intros; (try dsimp only) <;> ((try ext) <;> grind (gen := 20) (ematch := 20))))
   else
     if ← getBoolOption `mathlib.tactic.category.log_aesop then
       logInfo "Category theory discharger using `aesop`."
