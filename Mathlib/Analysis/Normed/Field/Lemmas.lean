@@ -129,10 +129,11 @@ theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
   simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
   exact hf.inv₀ hf₀
 
+@[to_fun]
 theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
     (hF : TendstoLocallyUniformlyOn F f l s) (hf : ∀ x ∈ s, Disjoint (map f (𝓝[s] x)) (𝓝 0)) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l s := by
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s := by
   rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
   intro x hx
   rcases basis_sets _ |>.map _ |>.disjoint_iff nhds_basis_ball
@@ -146,24 +147,27 @@ theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [Topological
     linarith [hy₁, norm_sub_norm_le (f y.2) (F y.1 y.2)]
   simp_all [(half_lt_self hr₀).trans_le]
 
+@[to_fun]
 theorem TendstoLocallyUniformly.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
     {F : ι → X → α} {f : X → α} {l : Filter ι}
     (hF : TendstoLocallyUniformly F f l) (hf : ∀ x, Disjoint (map f (𝓝 x)) (𝓝 0)) :
-    TendstoLocallyUniformly (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l := by
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l := by
   rw [← tendstoLocallyUniformlyOn_univ] at *
   apply hF.inv₀_of_disjoint
   simpa
 
+@[to_fun]
 theorem TendstoLocallyUniformlyOn.inv₀ {X ι : Type*} [TopologicalSpace X]
     {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
     (hF : TendstoLocallyUniformlyOn F f l s) (hf : ContinuousOn f s) (hf₀ : ∀ x ∈ s, f x ≠ 0) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l s :=
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
   hF.inv₀_of_disjoint fun x hx ↦ disjoint_nhds_nhds.2 (hf₀ x hx) |>.mono_left (hf x hx)
 
+@[to_fun]
 theorem TendstoLocallyUniformly.inv₀ {X ι : Type*} [TopologicalSpace X]
     {F : ι → X → α} {f : X → α} {l : Filter ι}
     (hF : TendstoLocallyUniformly F f l) (hf : Continuous f) (hf₀ : ∀ x, f x ≠ 0) :
-    TendstoLocallyUniformly (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l :=
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
   hF.inv₀_of_disjoint fun x ↦ disjoint_nhds_nhds.2 (hf₀ x) |>.mono_left (hf.tendsto x)
 
 -- see Note [lower instance priority]
