@@ -15,7 +15,7 @@ public import Mathlib.Analysis.Convex.PartitionOfUnity
 The main lemma in this file (see `Metric.exists_continuous_real_forall_closedBall_subset`) says the
 following. Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets,
 let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
-positive continuous function `δ : C(X, → ℝ)` such that for any `i` and `x ∈ K i`, we have
+positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`, we have
 `Metric.closedBall x (δ x) ⊆ U i`. We also formulate versions of this lemma for extended metric
 spaces and for different codomains (`ℝ`, `ℝ≥0`, and `ℝ≥0∞`).
 
