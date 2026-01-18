@@ -20,6 +20,7 @@ if [ "$#" -ne 3 ]; then
     exit 1
 fi
 
+forZulip=true
 repository="${1}"
 
 # Get the start and end dates
@@ -88,8 +89,6 @@ formatForZulip () {
     '
 }
 
-formatForZulip "${formattedPRs}"
-
 # Store to variable `found_by_gh` the PR numbers, as found by `gh`
 found_by_gh="$(
   echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort -u
@@ -111,20 +110,29 @@ only_git="$(
     sed 's=^=  =' | tr -d '()'
 )"
 
-printf $'\n```spoiler Reports\n\n'
+reports="$(
+  if [ -z "${only_gh}" ]
+  then
+    printf $'* All PRs are accounted for!\n'
+  else
+    printf $'* PRs not corresponding to a commit (merged before %s, closed on %s?)\n%s\n' "${startDate}" "${startDate}" "${only_gh}"
+  fi
 
-if [ -z "${only_gh}" ]
+  if [ -z "${only_git}" ]
+  then
+    printf $'\n* All commits are accounted for!\n'
+  else
+    printf $'\n* PRs not found by `gh` (merged by %s, closed after %s?)\n%s\n' "${endDate}" "${endDate}" "${only_git}"
+  fi
+)"
+
+if [ "${forZulip}" == "true" ]
 then
-  printf $'* All PRs are accounted for!\n'
+  formatForZulip "${formattedPRs}"
+  printf $'\n```spoiler Reports\n\n%s\n' "${reports}"
+  printf -- $'```\n'
 else
-  printf $'* PRs not corresponding to a commit (merged before %s, closed on %s?)\n%s\n' "${startDate}" "${startDate}" "${only_gh}"
+  formatForGitHub "${formattedPRs}"
+  printf $'</details>\n\n<details><summary>Reports</summary>\n\n%s\n' "${reports}"
+  printf $'</details>\n'
 fi
-
-if [ -z "${only_git}" ]
-then
-  printf $'\n* All commits are accounted for!\n'
-else
-  printf $'\n* PRs not found by `gh` (merged by %s, closed after %s?)\n%s\n' "${endDate}" "${endDate}" "${only_git}"
-fi
-
-printf -- $'```\n'
