@@ -137,7 +137,7 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
   exact ⟨J, h_J, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
-lemma isTorsionQuot_mono_left (F : IdealFilter A)
+lemma isTorsionQuot.mono_left {F : IdealFilter A}
     {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
   fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono I_leq_J .rfl))
 
