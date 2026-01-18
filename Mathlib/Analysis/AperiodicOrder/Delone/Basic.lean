@@ -132,11 +132,11 @@ noncomputable abbrev mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet 
   D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
     f.isometry.antilipschitz f.isometry.lipschitz
 
-@[simp] lemma packingRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
+lemma packingRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
     (D.mapIsometry f).packingRadius = D.packingRadius := by
   simp only [mapBilipschitz, div_one]
 
-@[simp] lemma coveringRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
+lemma coveringRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
     (D.mapIsometry f).coveringRadius = D.coveringRadius := by
   simp only [mapBilipschitz, IsometryEquiv.coe_toEquiv, div_one, one_mul]
 
