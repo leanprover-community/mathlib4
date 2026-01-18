@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 
 @[expose] public section
 
-open Function intervalIntegral MeasureTheory Metric Set
+open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
 namespace SmoothFlow
@@ -274,26 +274,25 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
     ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
   -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
-  rw [continuousOn_iff_continuous_restrict,
-    ContinuousMultilinearMap.isEmbedding_toUniformOnFun.continuous_iff,
+  rw [continuousOn_iff_continuous_restrict, isEmbedding_toUniformOnFun.continuous_iff,
     UniformOnFun.continuous_rng_iff]
   intro B hB
   rw [mem_setOf, NormedSpace.isVonNBounded_iff] at hB
   rw [← equicontinuous_iff_continuous]
-  simp_rw [comp_apply, restrict_apply, ContinuousMultilinearMap.toUniformOnFun_toFun]
+  simp_rw [comp_apply, restrict_apply, toUniformOnFun_toFun]
   intro α₀
   simp_rw [EquicontinuousAt, Subtype.forall] -- redundant?
   intro U hU
   -- express in terms of `ε`-`δ`
-  obtain ⟨ε, hε, hεU⟩ := Metric.mem_uniformity_dist.mp hU
+  obtain ⟨ε, hε, hεU⟩ := mem_uniformity_dist.mp hU
   obtain ⟨C, hC⟩ := hB.exists_norm_le
   -- `max C 0` to avoid needing `B` to be nonempty
   -- `1 +` to ensure strict positivity
   let δ := ε / ((1 + |tmax - tmin|) * (1 + (max C 0) ^ n))
   have hδ : 0 < δ := div_pos hε (mul_pos (by positivity) (by positivity))
-  let V := Metric.ball (gComp (Icc tmin tmax) hg α₀) δ
-  have hV : (gComp (Icc tmin tmax) hg) ⁻¹' Metric.ball (gComp (Icc tmin tmax) hg α₀) δ ∈ 𝓝 α₀ :=
-    (continuous_gComp hg tmin tmax).continuousAt.preimage_mem_nhds (Metric.ball_mem_nhds _ hδ)
+  let V := ball (gComp (Icc tmin tmax) hg α₀) δ
+  have hV : (gComp (Icc tmin tmax) hg) ⁻¹' ball (gComp (Icc tmin tmax) hg α₀) δ ∈ 𝓝 α₀ :=
+    (continuous_gComp hg tmin tmax).continuousAt.preimage_mem_nhds (ball_mem_nhds _ hδ)
   apply Filter.eventually_of_mem hV
   intro α hα dα hdα
   rw [mem_preimage, mem_ball, ContinuousMap.dist_lt_iff hδ] at hα
@@ -301,19 +300,20 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   rw [integralCMLM_apply, integralCMLM_apply, ContinuousMap.dist_lt_iff hε]
   intro t
   rw [integralCM_apply_if_pos α₀.2, integralCM_apply_if_pos α.2, dist_eq_norm, integralFun,
-    integralFun, ← intervalIntegral.integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
+    integralFun, ← integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
       (intervalIntegrable_integrand hg _ α.2 ..)]
   calc
     _ ≤ δ * (max C 0) ^ n * |↑t - ↑t₀| := by
       apply intervalIntegral.norm_integral_le_of_norm_le_const
       intro τ hτ
       replace hτ : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
-      rw [← ContinuousMultilinearMap.sub_apply, compProj_of_mem hτ, compProj_of_mem hτ]
-      apply (ContinuousMultilinearMap.le_opNorm _ _).trans
+      rw [← sub_apply, compProj_of_mem hτ, compProj_of_mem hτ]
+      apply (le_opNorm _ _).trans
       rw [← dist_eq_norm, dist_comm]
       apply mul_le_mul (hα _).le _ (by positivity) (by positivity)
       have heq' : n = (Finset.univ : Finset (Fin n)).card := by simp
       nth_rw 5 [heq']
+      -- replace with `prod_le_pow_card'` that works on `ℝ`, not just `ℝ≥0`
       apply (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) _).trans_eq (Finset.prod_const _)
       intro i _
       rw [compProj_of_mem hτ]
@@ -329,6 +329,102 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       apply mul_lt_of_lt_one_right hε
       rw [div_lt_one (by positivity)]
       exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
+
+/-
+`I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`
+to prepare for the induction proof
+-/
+
+section
+
+universe u v v' wE wE₁ wE' wEi wG wG'
+
+variable
+  {𝕜 : Type u} {ι : Type v} {n : ℕ} {E : ι → Type wE}
+  {G : Type wG} {G' : Type wG'} [Fintype ι] [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+
+-- TODO: also make a version for `MultilinearMap`
+-- think whether to use `h` in the hypothesis and `n` in the target type or just `k + l`
+def _root_.ContinuousMultilinearMap.curryFinSum {k l n : ℕ} (h : k + l = n) :
+    (G [×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G [×k]→L[𝕜] G [×l]→L[𝕜] G' :=
+  h ▸ (domDomCongrₗᵢ 𝕜 G G' finSumFinEquiv.symm).trans (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
+
+end
+
+/-
+First figure out how to express `integralCMLM` of the `n`-th derivative of a `C^n` function `f`.
+-/
+
+omit [CompleteSpace E] in
+lemma _root_.ContDiffOn.continuousOn_iteratedFDeriv_of_isOpen
+    {F : Type*} [TopologicalSpace F] [NormedAddCommGroup F] [NormedSpace ℝ F] {n : ℕ}
+    {f : E → F} {u : Set E} (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) :
+    ContinuousOn (iteratedFDeriv ℝ n f) u := by
+  have hu' := hu.uniqueDiffOn (𝕜 := ℝ)
+  apply (hf.continuousOn_iteratedFDerivWithin le_rfl hu').congr
+  intro x hx
+  rw [iteratedFDerivWithin_eq_iteratedFDeriv hu' (hf.contDiffAt (hu.mem_nhds hx)) hx]
+
+section test
+
+variable {n k l : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ l f u) (hu : IsOpen u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) (h : k + l = n)
+
+#check iteratedFDeriv ℝ n f
+-- E → E [×l]→L[ℝ] E
+#check integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀ α
+-- C(Icc tmin tmax, E) [×l]→L[ℝ] C(Icc tmin tmax, E)
+#check iteratedFDeriv ℝ k (integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀)
+-- C(Icc tmin tmax, E) → C(Icc tmin tmax, E) [×k]→L[ℝ] C(Icc tmin tmax, E) [×l]→L[ℝ] C(Icc tmin tmax, E)
+#check (curryFinSum (𝕜 := ℝ) (G := C(Icc tmin tmax, E)) (G' := C(Icc tmin tmax, E)) h).symm
+  (iteratedFDeriv ℝ k (integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀) α)
+-- C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E)
+-- investigate why we need to explicitly provide `𝕜` and `G`, otherwise we have to add `.toFun`
+-- also have to provide `G'`, otherwise it's extremely slow
+
+end test
+
+-- long term proofs in the definition, not ideal. change definition of `integralCMLM`?
+-- consider generalising `f` to `g`
+def iteratedFDerivIntegralCMLM {k l m n : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) (hm : m ≤ n)
+    (h : k + l = m) :
+    C(Icc tmin tmax, E) [×m]→L[ℝ] C(Icc tmin tmax, E) :=
+  have hle := Nat.cast_le.mpr <| (h ▸ Nat.le_add_left l k).trans hm
+  (curryFinSum (𝕜 := ℝ) (G := C(Icc tmin tmax, E)) (G' := C(Icc tmin tmax, E)) h).symm
+    (iteratedFDeriv ℝ k
+      (integralCMLM ((hf.of_le hle).continuousOn_iteratedFDeriv_of_isOpen hu) t₀) α)
+
+/--
+If `I^(k) f^(l)` represents the `k`-th derivative of the integral of the `l`-th deriative of `f`
+(properly composed with curves `α` and `dα`), then this lemma states that
+`I^(k) g^(l+1) = I^(k+1) g^(l)`.
+-/
+-- generalise `f` to `g`?
+lemma iteratedFDerivIntegralCMLM_succ {k l n : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
+    (hle : k + l + 1 ≤ n) :
+    have h₁ : k + (l + 1) = k + l + 1 := by group
+    have h₂ : k + 1 + l = k + l + 1 := by group
+    iteratedFDerivIntegralCMLM hf hu t₀ α hle h₁ =
+      iteratedFDerivIntegralCMLM hf hu t₀ α hle h₂ := sorry
+
+/--
+`I^(n) f = I f^(n)`, stated in less ideal types
+-/
+lemma iteratedFDerivIntegralCMLM_eq_integralCMLM {n : ℕ} {f : E → E} {u : Set E}
+    (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) :
+    iteratedFDerivIntegralCMLM hf hu t₀ α le_rfl (add_zero _) =
+      iteratedFDerivIntegralCMLM hf hu t₀ α le_rfl (zero_add _) := sorry
+
+-- need to define a special case for `integralCMLM f`, where `n = 0`
+-- prove lemmas specialising `iteratedFDerivIntegralCMLM` to `k = 0` or `l = 0`
+lemma iteratedFDeriv_integralCMLM_eq_integralCMLM {n : ℕ} {f : E → E} {u : Set E}
+    (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) :
+    iteratedFDeriv ℝ n (integralCMLM )
 
 end
 
