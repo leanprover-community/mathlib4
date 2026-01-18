@@ -6,6 +6,7 @@ Authors: Anthony Vandikas
 module
 
 import Mathlib.Data.Option.Basic
+public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Monotone.Defs
@@ -23,6 +24,12 @@ instance [Preorder α] : Preorder (Option α) where
 
 instance [PartialOrder α] : PartialOrder (Option α) where
   le_antisymm a b := by cases a <;> cases b <;> grind
+
+instance : Bot (Option α) where
+  bot := none
+
+instance [LE α] : OrderBot (Option α) where
+  bot_le _ := none_le
 
 lemma some_mono [Preorder α] : Monotone (some : α → Option α) := by
   simp only [Monotone, some_le_some, imp_self, implies_true]
