@@ -678,7 +678,7 @@ scoped[FirstOrder]
 
 variable {L} {M} {N}
 
-@[simp]
+@[simp, grind =]
 theorem mem_completeTheory {φ : Sentence L} : φ ∈ L.completeTheory M ↔ M ⊨ φ :=
   Iff.rfl
 

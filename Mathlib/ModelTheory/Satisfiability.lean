@@ -415,15 +415,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
 /-- A complete theory is the `completeTheory` Th(M) of one of its models. -/
 theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
-  ext φ
-  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
-  refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
-  cases h.2 φ with
-  | inl hT => exact hT
-  | inr hT =>
-      have : M ⊨ φ.not := hT.realize_sentence M
-      rw [Sentence.realize_not] at this
-      contradiction
+  grind [realize_sentence_iff]
 
 /-- A theory is complete iff it is satisfiable and all its models are elementarily equivalent. -/
 theorem isComplete_iff_models_elementarily_equivalent :

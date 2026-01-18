@@ -86,7 +86,7 @@ def stepSet (S : Set σ) (a : α) : Set σ :=
 
 variable {M}
 
-@[simp]
+@[simp, grind =]
 theorem mem_stepSet_iff : s ∈ M.stepSet S a ↔ ∃ t ∈ S, s ∈ M.εClosure (M.step t a) := by
   simp_rw [stepSet, mem_iUnion₂, exists_prop]
 
@@ -295,7 +295,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
   start := M.start
   accept := M.accept
 
-@[simp]
+@[simp, grind =]
 theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
   ext a
   refine ⟨?_, εNFA.εClosure.base _⟩
@@ -308,13 +308,7 @@ theorem toεNFA_evalFrom_match (M : NFA α σ) (start : Set σ) :
     M.toεNFA.evalFrom start = M.evalFrom start := by
   rw [evalFrom, εNFA.evalFrom, toεNFA_εClosure]
   suffices εNFA.stepSet (toεNFA M) = stepSet M by rw [this]
-  ext S s
-  simp only [stepSet, εNFA.stepSet, exists_prop, Set.mem_iUnion]
-  apply exists_congr
-  simp only [and_congr_right_iff]
-  intro _ _
-  rw [M.toεNFA_εClosure]
-  rfl
+  grind [mem_stepSet, εNFA.mem_εClosure_iff_exists]
 
 @[simp]
 theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
