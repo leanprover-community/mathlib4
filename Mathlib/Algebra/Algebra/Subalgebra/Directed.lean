@@ -45,10 +45,7 @@ it on each subalgebra, and proving that it agrees on the intersection of subalge
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : Subalgebra R A) (hT : T ≤ iSup K) : ↥T →ₐ[R] B :=
-  let hT' : (T : Set A) ⊆ ⋃ i, (K i : Set A) := by
-    intro x hx
-    have hx' : x ∈ (↑(iSup K) : Set A) := hT hx
-    simpa [coe_iSup_of_directed (K := K) dir] using hx'
+by
   let compat :
       ∀ (i j) (x : A) (hxi : x ∈ (K i : Set A)) (hxj : x ∈ (K j : Set A)),
         f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩ := by
@@ -56,79 +53,30 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
     rcases dir i j with ⟨k, hik, hjk⟩
     rw [hf i k hik, hf j k hjk]
     rfl
-  { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x) compat
-        (T : Set A) hT'
-    map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
-    map_zero' := by apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
-    map_mul' := by
-      intro x y
-      rcases Set.mem_iUnion.1 (hT' x.prop) with ⟨i, hi⟩
-      rcases Set.mem_iUnion.1 (hT' y.prop) with ⟨j, hj⟩
-      rcases dir i j with ⟨k, hik, hjk⟩
-      have hxk : (x : A) ∈ K k := hik hi
-      have hyk : (y : A) ∈ K k := hjk hj
-      have hxyk : ((x * y : T) : A) ∈ K k := by
-        simpa using (K k).mul_mem hxk hyk
-      have hx :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT' x =
-            f k ⟨x, hxk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := x) (i := k) hxk
-      have hy :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT' y =
-            f k ⟨y, hyk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := y) (i := k) hyk
-      have hxy :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT'
-              (x * y) =
-            f k ⟨x * y, hxyk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := x * y) (i := k) hxyk
-      rw [hx, hy, hxy]
-      have hxyk' :
-          (⟨(x * y : A), hxyk⟩ : K k) = (⟨x, hxk⟩ : K k) * ⟨y, hyk⟩ := by
-        ext
-        rfl
-      have hmap :
-          f k ⟨x * y, hxyk⟩ = f k ((⟨x, hxk⟩ : K k) * ⟨y, hyk⟩) :=
-        congrArg (fun z => f k z) hxyk'
-      exact hmap.trans ((f k).map_mul (⟨x, hxk⟩ : K k) ⟨y, hyk⟩)
-    map_add' := by
-      intro x y
-      rcases Set.mem_iUnion.1 (hT' x.prop) with ⟨i, hi⟩
-      rcases Set.mem_iUnion.1 (hT' y.prop) with ⟨j, hj⟩
-      rcases dir i j with ⟨k, hik, hjk⟩
-      have hxk : (x : A) ∈ K k := hik hi
-      have hyk : (y : A) ∈ K k := hjk hj
-      have hxyk : ((x + y : T) : A) ∈ K k := by
-        simpa using (K k).add_mem hxk hyk
-      have hx :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT' x =
-            f k ⟨x, hxk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := x) (i := k) hxk
-      have hy :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT' y =
-            f k ⟨y, hyk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := y) (i := k) hyk
-      have hxy :
-          Set.iUnionLift (fun i => (K i : Set A)) (fun i x => f i x) compat (T : Set A) hT'
-              (x + y) =
-            f k ⟨x + y, hxyk⟩ :=
-        Set.iUnionLift_of_mem (S := fun i => (K i : Set A)) (f := fun i x => f i x)
-          (hf := compat) (T := (T : Set A)) (hT := hT') (x := x + y) (i := k) hxyk
-      rw [hx, hy, hxy]
-      have hxyk' :
-          (⟨(x + y : A), hxyk⟩ : K k) = (⟨x, hxk⟩ : K k) + ⟨y, hyk⟩ := by
-        ext
-        rfl
-      have hmap :
-          f k ⟨x + y, hxyk⟩ = f k ((⟨x, hxk⟩ : K k) + ⟨y, hyk⟩) :=
-        congrArg (fun z => f k z) hxyk'
-      exact hmap.trans ((f k).map_add (⟨x, hxk⟩ : K k) ⟨y, hyk⟩)
-    commutes' := fun r => by apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
+  let liftSup : ((iSup K : Subalgebra R A)) →ₐ[R] B :=
+    { toFun :=
+        Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x) compat
+          ((iSup K : Subalgebra R A) : Set A)
+          (le_of_eq <| coe_iSup_of_directed (K := K) dir)
+      map_one' := by
+        dsimp
+        exact Set.iUnionLift_const _ (fun i : ι => (1 : K i)) (fun _ => rfl) _ (by simp)
+      map_zero' := by
+        dsimp
+        exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
+      map_mul' := by
+        dsimp
+        apply Set.iUnionLift_binary (coe_iSup_of_directed (K := K) dir) dir _ (fun _ => (· * ·))
+        all_goals simp
+      map_add' := by
+        dsimp
+        apply Set.iUnionLift_binary (coe_iSup_of_directed (K := K) dir) dir _ (fun _ => (· + ·))
+        all_goals simp
+      commutes' := fun r => by
+        dsimp
+        exact
+          Set.iUnionLift_const _ (fun i : ι => algebraMap R (K i) r) (fun _ => rfl) _ (by simp) }
+  exact liftSup.comp (inclusion hT)
 
 
 @[simp]
@@ -138,6 +86,7 @@ theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_inclusion]
+  exact SetLike.coe_subset_coe.mpr fun ⦃x⦄ a ↦ hT (h a)
 
 @[simp]
 theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
