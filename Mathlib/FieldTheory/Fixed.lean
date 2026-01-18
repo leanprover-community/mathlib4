@@ -203,7 +203,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul',
     ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
-    ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
+    ← MulSemiringActionHom.coe_polynomial, ← map_smul, smul_polynomial,
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
@@ -258,12 +258,11 @@ variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
-  splits' x :=
-    by
-      cases nonempty_fintype G
-      rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
-        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
-      exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
+  splits' x := by
+    cases nonempty_fintype G
+    rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
+      Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
+    exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical

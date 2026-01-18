@@ -266,7 +266,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
-          omega
+          lia
         rw [IH _ hwf] at hu
         rcases hu with ⟨S', hsum, helem⟩
         use (a :: t) :: S'

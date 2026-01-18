@@ -146,7 +146,7 @@ theorem continuous_of_bound (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m,
   f.toMultilinearMap.continuous_of_bound C H
 
 /-- Construct a continuous alternating map
-from a alternating map satisfying a boundedness condition. -/
+from an alternating map satisfying a boundedness condition. -/
 def mkContinuous (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : E [⋀^ι]→L[𝕜] F :=
   { f with cont := f.continuous_of_bound C H }
 
@@ -365,8 +365,6 @@ def restrictScalarsLI : E [⋀^ι]→L[𝕜] F →ₗᵢ[𝕜'] E [⋀^ι]→L[�
   map_smul' _ _ := rfl
   norm_map' _ := rfl
 
-variable {𝕜'}
-
 end restrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
@@ -390,14 +388,14 @@ end ContinuousAlternatingMap
 
 variable [Fintype ι]
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ C :=
   f.toMultilinearMap.mkContinuous_norm_le hC H
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mk_continuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le' (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ}
@@ -467,6 +465,11 @@ def compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
+@[simp]
+lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[𝕜] G) :
+    compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
+  rfl
+
 variable [DecidableEq ι]
 
 /-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
@@ -511,6 +514,43 @@ lemma fderivCompContinuousLinearMap_apply (f : F [⋀^ι]→L[𝕜] G) (g dg : E
     f.fderivCompContinuousLinearMap g dg v =
       ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j) := by
   simp [fderivCompContinuousLinearMap]
+
+@[nontriviality]
+lemma fderivCompContinuousLinearMap_of_isEmpty [IsEmpty ι] :
+    fderivCompContinuousLinearMap (ι := ι) (𝕜 := 𝕜) (E := E) (F := F) (G := G) = 0 := by
+  ext; simp
+
+variable (G) in
+/-- `fderivCompContinuousLinearMap` as a continuous linear map -/
+def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
+    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+  LinearMap.mkContinuous
+    { toFun := (fderivCompContinuousLinearMap · g)
+      map_add' f₁ f₂ := by ext; simp [Finset.sum_add_distrib]
+      map_smul' c f := by ext; simp [Finset.smul_sum] }
+    (Fintype.card ι * ‖g‖ ^ (Fintype.card ι - 1))
+    fun f ↦ by
+      refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun dg ↦ ?_
+      refine opNorm_le_bound _ (by positivity) fun v ↦ ?_
+      simp? [mul_assoc] says
+        simp only [LinearMap.coe_mk, AddHom.coe_mk, fderivCompContinuousLinearMap_apply, mul_assoc]
+      refine (norm_sum_le _ _).trans ?_
+      grw [← nsmul_eq_mul]
+      apply Finset.sum_le_card_nsmul
+      rintro i -
+      grw [le_opNorm]
+      simp only [Fintype.prod_eq_mul_prod_compl i, Function.update_self, mul_left_comm (‖g‖ ^ _)]
+      grw [dg.le_opNorm, mul_assoc]
+      gcongr
+      rw [← Finset.card_singleton i, ← Finset.card_compl, ← Finset.prod_const,
+        ← Finset.prod_mul_distrib]
+      gcongr with j hj
+      simpa [Function.update_of_ne (by simpa using hj)] using g.le_opNorm _
+
+@[simp]
+lemma fderivCompContinuousLinearMapCLM_apply (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
+    fderivCompContinuousLinearMapCLM G g f = fderivCompContinuousLinearMap f g :=
+  rfl
 
 end ContinuousAlternatingMap
 
@@ -558,7 +598,7 @@ which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] 
 def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
-    { toFun x :=  (f x).mkContinuous (C * ‖x‖) <| H x
+    { toFun x := (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' x y := by ext1; simp
       map_smul' c x := by ext1; simp }
     (max C 0) fun x ↦ by
@@ -581,7 +621,7 @@ variable {ι' : Type*} [Fintype ι']
 to `ContinuousAlternatingMap`s. -/
 def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G))
     (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
-    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
+    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G) :=
   mkContinuous
     { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
       map_update_add' m i x y := by ext1; simp

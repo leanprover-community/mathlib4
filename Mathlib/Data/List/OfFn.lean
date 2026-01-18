@@ -135,6 +135,9 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
 
+@[deprecated (since := "2025-10-11")]
+alias sorted_ofFn_iff := pairwise_ofFn
+
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _
@@ -150,7 +153,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
       ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
       ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
-        fun j hj ↦ by simpa using h ⟨j, by cutsat⟩ (by simpa using hj)⟩⟩⟩
+        fun j hj ↦ by simpa using h ⟨j, by lia⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :

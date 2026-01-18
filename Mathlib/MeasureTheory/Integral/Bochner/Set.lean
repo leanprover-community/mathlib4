@@ -138,17 +138,21 @@ theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw 
 
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
-  rw [
-    ← integral_union_ae disjoint_compl_right.aedisjoint hs.compl hfi.integrableOn hfi.integrableOn,
-    union_compl_self, setIntegral_univ]
+  have := integral_union_ae disjoint_compl_right.aedisjoint
+    hs.compl hfi.integrableOn hfi.integrableOn
+  rw [← this, union_compl_self, setIntegral_univ]
 
 theorem integral_add_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ :=
   integral_add_compl₀ hs.nullMeasurableSet hfi
 
-theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
+theorem setIntegral_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ := by
-  rw [← integral_add_compl (μ := μ) hs hfi, add_sub_cancel_left]
+  rw [← integral_add_compl₀ (μ := μ) hs hfi, add_sub_cancel_left]
+
+theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
+    ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ :=
+  setIntegral_compl₀ hs.nullMeasurableSet hfi
 
 /-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
 over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
@@ -191,7 +195,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
   simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
   have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
     refine u.measurableSet_biInter fun i hi ↦ hs i ?_
-    aesop
+    grind
   have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
       = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
         (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
@@ -608,7 +612,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
     setIntegral_pos_iff_support_of_nonneg_ae]
-  · rw [← zero_lt_iff] at hμ
+  · rw [← pos_iff_ne_zero] at hμ
     rwa [Set.inter_eq_self_of_subset_right]
     exact fun x hx => Ne.symm (ne_of_lt <| sub_pos.2 hx)
   · rw [Pi.zero_def, EventuallyLE, ae_restrict_iff₀]
@@ -1037,7 +1041,7 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
   have : Set.indicator s (Function.const X c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, smul_eq_mul,
         ← Function.const_def]
     · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   rw [this, integrable_indicator_iff hs]

@@ -24,7 +24,7 @@ As a consequence, it is a bit of a random collection of results, and is a good t
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TrivialStar
 
@@ -36,9 +36,24 @@ namespace NNReal
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 
 @[simp, norm_cast]
+theorem coe_mulIndicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
+    ((s.mulIndicator f a : ℝ≥0) : ℝ) = s.mulIndicator (fun x => ↑(f x)) a :=
+  map_mulIndicator toRealHom _ _ _
+
+@[simp, norm_cast]
 theorem coe_indicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
     ((s.indicator f a : ℝ≥0) : ℝ) = s.indicator (fun x => ↑(f x)) a :=
-  (toRealHom : ℝ≥0 →+ ℝ).map_indicator _ _ _
+  map_indicator toRealHom _ _ _
+
+@[simp, norm_cast]
+theorem coe_mulSingle {α} [DecidableEq α] (a : α) (b : ℝ≥0) (c : α) :
+    ((Pi.mulSingle a b : α → ℝ≥0) c : ℝ) = (Pi.mulSingle a b : α → ℝ) c := by
+  simpa using coe_mulIndicator {a} (fun _ ↦ b) c
+
+@[simp, norm_cast]
+theorem coe_single {α} [DecidableEq α] (a : α) (b : ℝ≥0) (c : α) :
+    ((Pi.single a b : α → ℝ≥0) c : ℝ) = (Pi.single a b : α → ℝ) c := by
+  simpa using coe_indicator {a} (fun _ ↦ b) c
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℝ≥0) : ((l.sum : ℝ≥0) : ℝ) = (l.map (↑)).sum :=

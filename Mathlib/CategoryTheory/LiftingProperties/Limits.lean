@@ -5,7 +5,7 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # Lifting properties and (co)limits
@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y Z W : C}
+variable {C : Type*} [Category* C] {X Y Z W : C}
   {f : X ⟶ Y} {s : X ⟶ Z} {g : Z ⟶ W} {t : Y ⟶ W}
 
 lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)

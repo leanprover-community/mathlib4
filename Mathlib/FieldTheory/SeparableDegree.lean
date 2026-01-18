@@ -169,10 +169,8 @@ theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
 
 @[simp]
 theorem finSepDegree_self : finSepDegree F F = 1 := by
-  have : Cardinal.mk (Emb F F) = 1 := le_antisymm
-    (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
-    (Cardinal.one_le_iff_ne_zero.2 <| Cardinal.mk_ne_zero _)
-  rw [finSepDegree, Nat.card, this, Cardinal.one_toNat]
+  rw [finSepDegree, Nat.card_eq_one_iff_unique]
+  constructor <;> infer_instance
 
 end Field
 
@@ -213,7 +211,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
   Classical.choice <| Function.Embedding.antisymm
     (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F E (S := S) hK (hS ▸ mem_top)) _)
-    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits _) _)
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
 if `E = F(S)` such that every element
@@ -227,7 +225,7 @@ and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed [Algebra.IsAlgebraic F E] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) fun s _ ↦
-    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+    ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
 /-- The `Field.finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
@@ -333,10 +331,10 @@ theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
 /-- A non-constant polynomial has non-zero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
   rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
-  use rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)
+  use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
-  exact ⟨ne_of_apply_ne _ h, map_rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)⟩
+  exact ⟨ne_of_apply_ne _ h, by simp only [← eval_map_algebraMap, eval_rootOfSplits]⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
@@ -371,7 +369,7 @@ theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    roots_map _ (SplittingField.splits f),
+    (SplittingField.splits f).map_roots,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
@@ -379,7 +377,7 @@ variable (E) in
 the number of distinct roots of it over any algebraically closed field. -/
 theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
-  natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
+  natSepDegree_eq_of_splits f (IsAlgClosed.splits _)
 
 theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical
@@ -559,7 +557,7 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
     (hs : f.Splits)
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
   classical
-  have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
+  have h1 := hs.eq_prod_roots_of_monic hm
   have h2 := (natSepDegree_eq_of_splits f (hs.map <| .id F)).symm
   rw [h, aroots_def, Algebra.algebraMap_self, map_id, Multiset.toFinset_card_eq_one_iff] at h2
   obtain ⟨h2, y, h3⟩ := h2
@@ -894,12 +892,15 @@ end Field
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Splits f := by
-  refine ⟨fun ⟨h⟩ f hf ↦ splits_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
-      fun h ↦ ?_⟩
-  · have := natSepDegree_le_of_dvd g f hd hn
-    rw [hf, (h hg).natSepDegree_eq_natDegree] at this
-    exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
-      natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
+  refine ⟨fun ⟨h⟩ f hf ↦ ?_, fun h ↦ ?_⟩
+  · have hf0 : f ≠ 0 := by aesop
+    obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hf0
+    rw [← hu]
+    refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
+    specialize h (UniqueFactorizationMonoid.irreducible_of_factor g hg)
+    have key := natSepDegree_le_of_dvd g f (UniqueFactorizationMonoid.dvd_of_mem_factors hg) hf0
+    rw [h.natSepDegree_eq_natDegree, hf] at key
+    exact Splits.of_natDegree_le_one key
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, hy⟩ := Splits.exists_eval_eq_zero

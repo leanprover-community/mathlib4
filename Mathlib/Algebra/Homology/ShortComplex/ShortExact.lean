@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace ShortComplex
 

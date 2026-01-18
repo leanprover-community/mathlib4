@@ -16,7 +16,7 @@ In this file we prove basic lemmas about `tangentConeAt`, `UniqueDiffWithinAt`,
 and `UniqueDiffOn`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Metric NormedField
 open scoped Topology Pointwise
@@ -74,8 +74,6 @@ variable [AddCommMonoid E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x :
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := fun y hy ↦
   hy.mono <| by gcongr
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_mono := tangentConeAt_mono
-
 /--
 Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
 respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to `𝕜'`.
@@ -111,19 +109,13 @@ theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
   refine .inf ?_ (mapsTo_preimage _ _).tendsto
   exact (continuous_add_left x).tendsto' 0 x (add_zero _)
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
-
 /-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
 theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
   Subset.antisymm (tangentConeAt_mono_nhds h.le) (tangentConeAt_mono_nhds h.ge)
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_congr := tangentConeAt_congr
-
 /-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
 end SMulMonoid
 
@@ -150,8 +142,6 @@ theorem tangentConeAt_univ [DivisionSemiring 𝕜] [AddCommMonoid E] [Module �
     [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot] [TopologicalSpace E] [ContinuousSMul 𝕜 E] {x : E} :
     tangentConeAt 𝕜 univ x = univ := by
   simp [tangentConeAt]
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
 
 /-
 TODO: restore, deprecate

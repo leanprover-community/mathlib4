@@ -48,8 +48,8 @@ class ModObj (X : D) where
 attribute [reassoc] ModObj.mul_smul' ModObj.one_smul'
 
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
-@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ["Y"]" => ModObj.smul (X := Y)
-@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ["N","Y"]" =>
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" Y "]" => ModObj.smul (X := Y)
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" N "," Y "]" =>
   ModObj.smul (M := N) (X := Y)
 
 variable {M}
@@ -76,7 +76,7 @@ abbrev regular : ModObj M M where
   smul := μ
 
 attribute [local instance] regular in
-@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M, M] = μ[M] := rfl
+@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
@@ -221,7 +221,7 @@ monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f.hom ⊵ₗ M ≫ γ[B, M]`. -/
 @[simps!]
 def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
-  smul := f ⊵ₗ M ≫ γ[B, M]
+  smul := f ⊵ₗ M ≫ γ[B,M]
   one_smul' := by
     rw [← comp_actionHomLeft_assoc]
     rw [IsMonHom.one_hom, ModObj.one_smul]
@@ -248,10 +248,7 @@ lemma scalarRestriction_hom
   letI := scalarRestriction f M
   letI := scalarRestriction f N
   { smul_hom := by
-      dsimp
-      slice_rhs 1 2 => rw [action_exchange]
-      slice_rhs 2 3 => rw [← IsMod_Hom.smul_hom]
-      rw [Category.assoc] }
+      simpa using (action_exchange_assoc f g γ).symm }
 
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.

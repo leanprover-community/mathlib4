@@ -7,13 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.Polynomial.DegreeLT
 
 /-!
 # Resultant of two polynomials
@@ -92,17 +88,17 @@ noncomputable def sylvesterDeriv (f : R[X]) :
     Matrix (Fin (f.natDegree - 1 + f.natDegree)) (Fin (f.natDegree - 1 + f.natDegree)) R :=
   letI n := f.natDegree
   if hn : n = 0 then 0
-  else (f.derivative.sylvester f (n - 1) n).updateRow ⟨2 * n - 2, by cutsat⟩
+  else (f.derivative.sylvester f (n - 1) n).updateRow ⟨2 * n - 2, by lia⟩
     (fun j ↦ if ↑j = n - 2 then 1 else (if ↑j = 2 * n - 2 then n else 0))
 
 /-- We can get the usual Sylvester matrix of `f` and `f.derivative` back from the modified one
 by multiplying the last row by the leading coefficient of `f`. -/
 lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
-    (sylvesterDeriv f).updateRow ⟨2 * f.natDegree - 2, by cutsat⟩
-      (f.leadingCoeff • (sylvesterDeriv f ⟨2 * f.natDegree - 2, by cutsat⟩)) =
+    (sylvesterDeriv f).updateRow ⟨2 * f.natDegree - 2, by lia⟩
+      (f.leadingCoeff • (sylvesterDeriv f ⟨2 * f.natDegree - 2, by lia⟩)) =
     (f.derivative.sylvester f (f.natDegree - 1) f.natDegree) := by
   by_cases hn : f.natDegree = 0
-  · ext ⟨i, hi⟩; cutsat
+  · ext ⟨i, hi⟩; lia
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [sylvesterDeriv, dif_neg hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
@@ -115,9 +111,9 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
       mul_ite, mul_one, mul_zero, Matrix.of_apply, Fin.castLT_mk, tsub_le_iff_right, Fin.cast_mk,
       Fin.subNat_mk, dite_eq_ite]
     split_ifs
-    on_goal 2 => rw [show f.natDegree = 1 by cutsat]
+    on_goal 2 => rw [show f.natDegree = 1 by lia]
     on_goal 3 =>
-      rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by cutsat]
+      rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by lia]
       norm_num
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
@@ -167,8 +163,8 @@ lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m :=
   simp_rw [← finSumFinEquiv.prod_comp, ← Finset.prod_map_equiv finSumFinEquiv.symm]
   simp only [Equiv.symm_apply_apply, ← Fin.val_fin_lt, Equiv.symm_symm, Function.comp_apply,
     ← Finset.prod_ite_mem_eq (Finset.map _ _), Finset.mem_map_equiv, Finset.mem_Ioi,
-    Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.coe_castAdd, Sum.swap_inl,
-    finSumFinEquiv_apply_right, Fin.coe_natAdd, Sum.swap_inr, add_lt_add_iff_left,
+    Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.val_castAdd, Sum.swap_inl,
+    finSumFinEquiv_apply_right, Fin.val_natAdd, Sum.swap_inr, add_lt_add_iff_left,
     ← ite_not (α := R) (p := _ < _) (y := 1), ← ite_and, and_not_self]
   simp [(Fin.isLt _).trans_le, (Fin.isLt _).le.trans, pow_mul]
 
@@ -181,7 +177,7 @@ theorem resultant_C_zero_right (r : R) : resultant f (C r) m 0 = r ^ m := by sim
 @[simp]
 theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
   obtain _ | m := m; · simp
-  have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by cutsat⟩ = 0 := by
+  have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by lia⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
   simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by simp⟩ this
 
@@ -205,8 +201,8 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
     induction i with
     | zero => simp [M]; rfl
     | succ i IH =>
-      rw [← IH (by cutsat), ← Matrix.det_updateCol_add_smul_self (i := ⟨i, by cutsat⟩)
-        (j := ⟨i + k + m, by cutsat⟩) (c := -r) (M (i + 1)) (by simp; omega)]
+      rw [← IH (by lia), ← Matrix.det_updateCol_add_smul_self (i := ⟨i, by lia⟩)
+        (j := ⟨i + k + m, by lia⟩) (c := -r) (M (i + 1)) (by simp; lia)]
       congr 1
       ext j₁ j₂
       simp only [Matrix.of_apply, lt_add_iff_pos_right, zero_lt_one, ↓reduceIte, add_assoc,
@@ -218,24 +214,24 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
         induction j₂ using Fin.addCases with
         | left j₂ =>
           dsimp at hi
-          have : Fin.mk (n := m + n) (↑j₂ + (k + m)) (by cutsat) = .natAdd m ⟨j₂ + k, by cutsat⟩ :=
-            Fin.ext (by simp; omega)
-          simp only [Fin.addCases_left, Fin.coe_castAdd, this, Fin.addCases_right, mul_ite,
+          have : Fin.mk (n := m + n) (↑j₂ + (k + m)) (by lia) = .natAdd m ⟨j₂ + k, by lia⟩ :=
+            Fin.ext (by simp; lia)
+          simp only [Fin.addCases_left, Fin.val_castAdd, this, Fin.addCases_right, mul_ite,
             mul_zero, ← C_mul_X_pow_eq_monomial, ← mul_assoc, coeff_mul_X_pow', ite_add_zero,
             coeff_mul_C, add_assoc, add_eq_left, ← ite_and, ← mul_comm r, tsub_add_eq_tsub_tsub,
             add_sub_assoc, sub_eq_zero]
           split_ifs with h₁ h₂ h₂ <;> try rfl
           · rw [coeff_eq_zero_of_natDegree_lt, mul_zero]
-            exact hf.trans_lt (by cutsat)
-          · omega
+            exact hf.trans_lt (by lia)
+          · lia
         | right i =>
-          simp only [Fin.coe_natAdd] at hi
-          have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by cutsat) =
-              Fin.natAdd m ⟨↑i + (k + m), by cutsat⟩ := Fin.ext (by simp; omega)
-          simp only [Fin.addCases_right, Fin.coe_natAdd, sub_eq_self, this]
+          simp only [Fin.val_natAdd] at hi
+          have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by lia) =
+              Fin.natAdd m ⟨↑i + (k + m), by lia⟩ := Fin.ext (by simp; lia)
+          simp only [Fin.addCases_right, Fin.val_natAdd, sub_eq_self, this]
           rw [if_neg, mul_zero]
-          omega
-      split_ifs with h₁ h₂ h₃ h₄ h₅ <;> try first | omega | rfl
+          lia
+      lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1
   ext i j
@@ -246,7 +242,7 @@ lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤
     resultant f (g + f * p) m n = resultant f g m n := by
   have H : p.support ⊆ Finset.range (n - m + 1) := by
     simp only [Finset.subset_iff, Finset.mem_range]
-    exact fun x hx ↦ (le_natDegree_of_mem_supp _ hx).trans_lt (by cutsat)
+    exact fun x hx ↦ (le_natDegree_of_mem_supp _ hx).trans_lt (by lia)
   rw [← p.sum_monomial_eq, Polynomial.sum_eq_of_subset _ (by simp) H]
   set k := n - m + 1
   replace H := show k ≤ n - m + 1 from le_rfl
@@ -256,7 +252,7 @@ lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤
     simp only [Finset.range_zero, Finset.sum_empty]
     rw [mul_zero, add_zero]
   | succ k IH =>
-    rw [Finset.sum_range_succ, mul_add, ← add_assoc, resultant_add_mul_monomial_right, IH] <;> omega
+    rw [Finset.sum_range_succ, mul_add, ← add_assoc, resultant_add_mul_monomial_right, IH] <;> lia
 
 /-- `Res(f + gp, g) = Res(f, g)` if `deg g + deg p ≤ deg f`. -/
 lemma resultant_add_mul_left (hk : p.natDegree + n ≤ m) (hg : g.natDegree ≤ n) :
@@ -276,8 +272,8 @@ lemma resultant_C_mul_right (r : R) :
     induction i with
     | zero => simp [M]; rfl
     | succ i IH =>
-      suffices (M i).updateCol ⟨i, by cutsat⟩ (r • fun j ↦ M i j ⟨i, by cutsat⟩) = (M (i + 1)) by
-        rw [pow_succ', mul_assoc, ← IH (by cutsat), ← this, Matrix.det_updateCol_smul,
+      suffices (M i).updateCol ⟨i, by lia⟩ (r • fun j ↦ M i j ⟨i, by lia⟩) = (M (i + 1)) by
+        rw [pow_succ', mul_assoc, ← IH (by lia), ← this, Matrix.det_updateCol_smul,
           Matrix.updateCol_eq_self]
       ext j₁ j₂
       simp only [Matrix.of_apply, lt_self_iff_false, ↓reduceIte, Matrix.updateCol_apply,
@@ -287,8 +283,8 @@ lemma resultant_C_mul_right (r : R) :
           lt_add_iff_pos_right, zero_lt_one, coeff_C_mul, M₁]
         induction j₂ using Fin.addCases with
         | left j₂ => simp
-        | right i => simp at hi; omega
-      split_ifs with h₁ h₂ h₃ h₄ h₅ <;> try first | omega | rfl
+        | right i => simp at hi
+      lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1
   ext i j
@@ -307,18 +303,18 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
   rw [resultant, Matrix.det_succ_row (i := .last _),
       Finset.sum_eq_single (by exact ((Fin.last m).castAdd (n + 1))) _ (by simp)]
   · rw [resultant, ← Matrix.det_reindex_self (finCongr (show (m + 1).add n = m + (n + 1) by grind))]
-    simp only [Nat.add_eq, Nat.succ_eq_add_one, Fin.val_last, Fin.coe_castAdd, Fin.succAbove_last,
+    simp only [Nat.add_eq, Nat.succ_eq_add_one, Fin.val_last, Fin.val_castAdd, Fin.succAbove_last,
       Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_submatrix]
     congr 2
     · trans (-1) ^ (2 * m + (n + 1))
-      · congr 1; omega
+      · congr 1; lia
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by cutsat)]
+      rw [if_pos (by lia)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
-        finCongr_apply, Matrix.of_apply, Fin.coe_castSucc, Fin.coe_cast]
+        finCongr_apply, Matrix.of_apply, Fin.val_castSucc, Fin.val_cast]
       induction j using Fin.addCases with
       | left j =>
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.castAdd (n + 1)).cast (by grind)) =
@@ -328,19 +324,19 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.natAdd m).cast (by grind)) =
           j.natAdd _ := by ext; simp [Fin.succAbove, Fin.lt_def, add_right_comm]
         simp only [ite_and, this, Fin.addCases_right]
-        split_ifs with h₁ h₂ h₃ h₃ <;> try first | omega | rfl
-        exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+        split_ifs with h₁ h₂ h₃ h₃ <;> try lia
+        exact coeff_eq_zero_of_natDegree_lt (by lia)
   · rintro (b : Fin ((m + 1) + (n + 1))) - hb
     suffices f.sylvester g (m + 1) (n + 1) (.last (m + 1 + n)) b = 0 by simp [this]
     induction b using Fin.addCases with
     | left b =>
-      simp only [Nat.add_eq, Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.coe_castAdd,
+      simp only [Nat.add_eq, Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.val_castAdd,
         Fin.val_last] at hb
       simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left,
         ite_eq_right_iff, and_imp]
       intros
-      omega
-    | right i => simpa [sylvester] using fun _ _ ↦ coeff_eq_zero_of_natDegree_lt (by cutsat)
+      lia
+    | right i => simpa [sylvester] using fun _ _ ↦ coeff_eq_zero_of_natDegree_lt (by lia)
 
 lemma resultant_add_left_deg (hf : f.natDegree ≤ m) :
     resultant f g (m + k) n = (-1) ^ (n * k) * g.coeff n ^ k * resultant f g m n := by
@@ -358,9 +354,9 @@ lemma resultant_add_right_deg (k : ℕ) (hg : g.natDegree ≤ n) :
 
 lemma resultant_eq_zero_of_lt_lt (hf : f.natDegree < m) (hg : g.natDegree < n) :
     resultant f g m n = 0 := by
-  obtain _ | m := m; · omega
-  obtain _ | n := n; · omega
-  rw [resultant_add_left_deg _ _ _ _ _ (by cutsat), resultant_add_right_deg _ _ _ _ _ (by cutsat)]
+  obtain _ | m := m; · lia
+  obtain _ | n := n; · lia
+  rw [resultant_add_left_deg _ _ _ _ _ (by lia), resultant_add_right_deg _ _ _ _ _ (by lia)]
   simp [coeff_eq_zero_of_natDegree_lt hg]
 
 @[simp]
@@ -390,7 +386,7 @@ theorem resultant_C_left (r : R) :
   rw [resultant_add_mul_right _ _ _ _ _ _ (natDegree_X_sub_C_le _), modByMonic_X_sub_C_eq_C_eval]
   · simp
   · rw [natDegree_divByMonic g (monic_X_sub_C r), natDegree_sub_C, natDegree_X]
-    omega
+    lia
 
 /-- `Res(X + r, g) = g(-r)` -/
 @[simp] lemma resultant_X_add_C_left (r : R) (hg : g.natDegree ≤ n) :
@@ -448,7 +444,7 @@ lemma resultant_eq_prod_roots_sub
     rw [Monic, leadingCoeff, natDegree_C_mul (by simpa), coeff_C_mul, leadingCoeff,
       inv_mul_cancel₀ (by simpa)]
   let L := r.SplittingField
-  have := IH _ (by simp; cutsat)
+  have := IH _ (by simp; lia)
     (g.map (algebraMap K L)) (r.map (algebraMap K L)) (hg.map _) (hr.map _)
     (hg'.map _) (SplittingField.splits _) (by simpa [r, natDegree_C_mul, hr₀] using hrd.le) rfl
   rw [resultant_map_map, natDegree_map, natDegree_map, resultant_C_mul_right,
@@ -458,7 +454,7 @@ lemma resultant_eq_prod_roots_sub
   · apply (algebraMap K L).injective
     rw [map_mul, map_mul, map_mul, this, map_sub_roots_sprod_eq_prod_map_eval _ _ hf hf',
       map_sub_sprod_roots_eq_prod_map_eval _ _ (hr.map _) (SplittingField.splits _), map_mul,
-        roots_map _ (by simpa only [Splits, map_id])]
+      hg'.map_roots]
     have : (g.roots.map (eval · f)).prod =
         (f %ₘ g).leadingCoeff ^ g.natDegree * (g.roots.map (eval · r)).prod := by
       trans (g.roots.map ((f %ₘ g).leadingCoeff * eval · r)).prod
@@ -525,7 +521,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   rw [← resultant_map_map, ← Nat.add_sub_cancel' hg, resultant_add_right_deg _ _ _ _ _ (by simp),
     this, coeff_map, coeff_natDegree, hfm.leadingCoeff, map_one, one_pow, one_mul,
     map_sub_sprod_roots_eq_prod_map_eval _ _ (hgm.map _) (SplittingField.splits _),
-    roots_map _ (by simp [hf]), map_multiset_prod, Multiset.map_map]
+    hf.map_roots, map_multiset_prod, Multiset.map_map]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
@@ -634,7 +630,7 @@ lemma resultant_dvd_leadingCoeff_pow [IsDomain R] (f g : R[X]) (H : IsCoprime f 
     rw [← natDegree_mul ha hf, ← natDegree_mul hb hg] at H
     have := natDegree_add_eq_left_of_natDegree_lt H
     simp only [e, natDegree_one] at this
-    cutsat
+    lia
 
 lemma resultant_ne_zero [IsDomain R] (f g : R[X]) (H : IsCoprime f g) :
     resultant f g ≠ 0 := by
@@ -764,7 +760,7 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
   have := resultant_scaleRoots f g g.leadingCoeff
   rw [natDegree_scaleRoots, natDegree_scaleRoots,
     ← integralNormalization_mul_C_leadingCoeff, mul_comm, resultant_C_mul_right] at this
-  rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by cutsat)]
+  rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by lia)]
 
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
 nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
@@ -837,13 +833,13 @@ lemma toMatrix_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDeg
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
-    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+    exact coeff_eq_zero_of_natDegree_lt (by lia)
   · suffices (if j.1 ≤ i then f.coeff (i - j) else 0) =
       if j ≤ i.1 ∧ ↑i ≤ j + m then f.coeff (i - j) else 0 by
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
-    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+    exact coeff_eq_zero_of_natDegree_lt (by lia)
 
 lemma toMatrix_sylvesterMap' (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
     (sylvesterMap f g hf hg).toMatrix
@@ -889,6 +885,42 @@ lemma exists_mul_add_mul_eq_C_resultant
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
+lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
+    IsUnit (resultant f g) ↔ IsCoprime f g := by
+  by_cases hf0 : f.natDegree = 0
+  · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
+  refine ⟨fun H ↦ ?_, ?_⟩
+  · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
+    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
+      mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
+  · intro ⟨a, b, e⟩
+    suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩
+    have := resultant_mul_right f b g _ le_rfl
+    obtain rfl | hb0 := eq_or_ne a 0
+    · rw [show b * g = 1 by simpa using e, resultant_one_right] at this
+      simpa [hf.leadingCoeff] using this
+    · rw [← resultant_add_mul_right _ _ a _ _ _ le_rfl, add_comm, mul_comm, e, ← C.map_one] at this
+      · simpa [hf.leadingCoeff] using this
+      · by_contra! H
+        replace H := natDegree_mul_le.trans_lt H
+        rw [add_comm, ← hf.natDegree_mul' hb0, mul_comm f] at H
+        have := natDegree_add_eq_left_of_natDegree_lt H
+        simp only [e, natDegree_one] at this
+        lia
+
+lemma resultant_eq_zero_iff {K : Type*} [Field K] {f g : K[X]} :
+    resultant f g = 0 ↔ (f ≠ 0 ∨ g ≠ 0) ∧ ¬ IsCoprime f g := by
+  obtain rfl | hf := eq_or_ne f 0
+  · obtain rfl | hg := eq_or_ne g 0; · simp
+    simpa [isCoprime_zero_left, isUnit_iff, hg, natDegree_eq_zero] using
+      show (∀ x, C x ≠ g) ↔ ∀ x ≠ 0, C x ≠ g by aesop
+  have H : (C f.leadingCoeff⁻¹ * f).Monic := by
+    rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simpa), coeff_C_mul]; simp [hf]
+  have := isUnit_resultant_iff_isCoprime (f := C f.leadingCoeff⁻¹ * f) (g := g) H
+  rw [resultant_C_mul_left, IsUnit.mul_iff, natDegree_C_mul (by simp [hf]),
+    isCoprime_mul_unit_left_left (isUnit_C.mpr (by simp [hf]))] at this
+  simp [← this, hf]
+
 end sylvesterMap
 
 section disc
@@ -911,20 +943,21 @@ noncomputable def discr (f : R[X]) : R :=
 /-- The discriminant of a linear polynomial is `1`. -/
 lemma discr_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : discr f = 1 := by
   rw [← Nat.cast_one, degree_eq_iff_natDegree_eq_of_pos one_pos] at hf
-  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 1 := finCongr (by cutsat)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 1 := finCongr (by lia)
   have : f.sylvesterDeriv.reindex e e = !![1] := by
-    have : NeZero (f.natDegree - 1 + f.natDegree) := ⟨by cutsat⟩
+    have : NeZero (f.natDegree - 1 + f.natDegree) := ⟨by lia⟩
     ext ⟨i, hi⟩ ⟨j, hj⟩
-    obtain ⟨rfl⟩ : i = 0 := by cutsat
-    obtain ⟨rfl⟩ : j = 0 := by cutsat
+    obtain ⟨rfl⟩ : i = 0 := by lia
+    obtain ⟨rfl⟩ : j = 0 := by lia
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [discr, ← Matrix.det_reindex_self e, this, hf]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Standard formula for the discriminant of a quadratic polynomial. -/
 lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
     discr f = f.coeff 1 ^ 2 - 4 * f.coeff 0 * f.coeff 2 := by
   rw [← Nat.cast_two, degree_eq_iff_natDegree_eq_of_pos two_pos] at hf
-  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 3 := finCongr (by cutsat)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 3 := finCongr (by lia)
   rw [discr, ← Matrix.det_reindex_self e]
   have : f.sylvesterDeriv.reindex e e =
     !![f.coeff 0,     f.coeff 1,         0;
@@ -953,8 +986,9 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
   rw [resultant_comm, resultant, ← sylvesterDeriv_updateRow f hf, Matrix.det_updateRow_smul,
     Matrix.updateRow_eq_self, discr, mul_comm f.natDegree]
   ring_nf
-  rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; omega)]
+  rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :
     f.sylvesterDeriv.reindex (finCongr <| by rw [hf]) (finCongr <| by rw [hf]) =
     !![ f.coeff 0,         0, 1 * f.coeff 1,             0,             0;
@@ -967,7 +1001,7 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
   -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed;
   -- but the proof runs much faster this way.
   simp only [sylvesterDeriv, hf, OfNat.ofNat_ne_zero, ↓reduceDIte, sylvester, Fin.addCases,
-    Nat.add_one_sub_one, Fin.coe_castLT, mem_Icc, Fin.val_fin_le, Fin.coe_subNat, Fin.coe_cast,
+    Nat.add_one_sub_one, Fin.val_castLT, mem_Icc, Fin.val_fin_le, Fin.val_subNat, Fin.val_cast,
     tsub_le_iff_right, coeff_derivative, eq_rec_constant, dite_eq_ite, Nat.reduceMul, Nat.reduceSub,
     Nat.cast_ofNat, Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_apply, finCongr_apply,
     Fin.cast_mk, Matrix.updateRow_apply, Fin.mk.injEq, Matrix.of_apply, Fin.mk_le_mk, one_mul,

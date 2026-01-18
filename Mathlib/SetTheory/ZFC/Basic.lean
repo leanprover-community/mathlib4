@@ -231,7 +231,7 @@ instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : IsRefl ZFSet (· ⊆ ·) :=
+instance : @Std.Refl ZFSet (· ⊆ ·) :=
   ⟨fun _ _ => id⟩
 
 instance : IsTrans ZFSet (· ⊆ ·) :=
@@ -256,7 +256,7 @@ theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u
 @[deprecated SetLike.coe_set_eq (since := "2025-11-05")]
 lemma toSet_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_set_eq
 
-instance : IsAntisymm ZFSet (· ⊆ ·) :=
+instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
 
 instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
@@ -275,8 +275,6 @@ instance : Inhabited ZFSet :=
 @[simp]
 theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
   Quotient.inductionOn x PSet.notMem_empty
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp, norm_cast] lemma coe_empty : ((∅ : ZFSet.{u}) : Set ZFSet.{u}) = ∅ := by ext; simp
 
@@ -521,8 +519,6 @@ theorem mem_sUnion_of_mem {x y z : ZFSet} (hy : y ∈ z) (hz : z ∈ x) : y ∈ 
 theorem notMem_sInter_of_notMem {x y z : ZFSet} (hy : y ∉ z) (hz : z ∈ x) : y ∉ ⋂₀ x :=
   fun hx => hy <| mem_of_mem_sInter hx hz
 
-@[deprecated (since := "2025-05-23")] alias not_mem_sInter_of_not_mem := notMem_sInter_of_notMem
-
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sUnion, mem_singleton, exists_eq_left]
@@ -610,6 +606,9 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   left_inv := by simp +contextual [Function.LeftInverse]
   right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
 
+theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
+  ext; simp
+
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
@@ -636,8 +635,6 @@ theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
 
 theorem notMem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
   imp_not_comm.2 not_subset_of_mem h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_subset := notMem_of_subset
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
