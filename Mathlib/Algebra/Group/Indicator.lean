@@ -201,7 +201,7 @@ end Group
 variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
 
 /-- On non-dependent functions, `Set.mulIndicator` on a singleton set equals `Pi.mulSingle`. -/
-@[to_additive (attr := simp)
+@[to_additive
   /-- On non-dependent functions, `Set.indicator` on a singleton set equals `Pi.single`. -/]
 theorem mulIndicator_singleton (i : ι) (f : ι → M) :
     Set.mulIndicator {i} f = Pi.mulSingle i (f i) := by
