@@ -462,7 +462,7 @@ theorem splits_prod_iff {ι : Type*} {f : ι → R[X]} {s : Finset ι} (hf : ∀
   ⟨fun h _ hx ↦ h.of_dvd (Finset.prod_ne_zero_iff.mpr hf) (Finset.dvd_prod_of_mem f hx),
     Splits.prod⟩
 
--- Todo: Remove or fix name once `Splits` is gone.
+@[deprecated "Use `Splits.degree_le_one_of_irreducible` instead." (since := "2026-01-13")]
 theorem Splits.splits (hf : Splits f) :
     f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
   or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
@@ -588,11 +588,11 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
   Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
 open UniqueFactorizationMonoid in
--- Todo: Remove or fix name.
+@[deprecated "Use `Splits.degree_eq_one_of_irreducible` instead." (since := "2026-01-13")]
 theorem splits_iff_splits {f : R[X]} :
     Splits f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
-  refine ⟨fun hf ↦ hf.splits.imp_right (forall₃_imp fun g hg hgf ↦
-    (le_antisymm · (Nat.WithBot.one_le_iff_zero_lt.mpr hg.degree_pos))), ?_⟩
+  refine ⟨fun hf ↦ or_iff_not_imp_left.mpr fun h0 g hg hgf ↦
+    (hf.of_dvd h0 hgf).degree_eq_one_of_irreducible hg, ?_⟩
   rintro (rfl | hf)
   · aesop
   classical

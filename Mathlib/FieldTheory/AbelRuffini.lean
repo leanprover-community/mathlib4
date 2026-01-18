@@ -114,9 +114,9 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   have mem_range : ∀ {c : (X ^ n - C a).SplittingField},
       (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
     RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c
-      ((splits_iff_splits.mp h).resolve_left (map_ne_zero hn''')
-      (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
-      (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
+      (Splits.degree_eq_one_of_irreducible (h.of_dvd (map_ne_zero hn''')
+        (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one])))
+          (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))))
   apply isSolvable_of_comm
   intro σ τ
   ext b hb
