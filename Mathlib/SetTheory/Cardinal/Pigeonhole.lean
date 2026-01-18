@@ -64,7 +64,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     rfl
   rintro x ⟨_, hx'⟩; exact hx'
 
-/-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
+/-- A function whose domain's cardinality is infinite but strictly greater than its domain's
 has a fiber with cardinality strictly great than the codomain. -/
 theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < #β) (hβ : ℵ₀ ≤ #β) :
     ∃ a : α, #α < #(f ⁻¹' {a}) := by
@@ -75,7 +75,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
       ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
 
-/-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
+/-- A function whose domain's cardinality is infinite but strictly greater than its domain's
 has an infinite fiber. -/
 theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Infinite β) :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
@@ -85,6 +85,15 @@ theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) (
   · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h hβ
     exact ⟨a, hα.trans ha.le⟩
 
+/-- A weaker version of `exists_infinite_fiber` that requires codomain to be infinite. -/
+theorem exists_infinite_fiber' {β α : Type u} (f : β → α) (h : #α < #β) (hα : Infinite α) :
+    ∃ a : α, Infinite (f ⁻¹' {a}) :=
+  exists_infinite_fiber f h (by
+    rw [Cardinal.infinite_iff] at hα ⊢
+    exact hα.trans h.le)
+
+/-- A function whose domain's cardinality is uncountable but strictly greater than its domain's
+has an uncountable fiber. -/
 theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Uncountable β) :
     ∃ a : α, Uncountable (f ⁻¹' {a}) := by
   simp_rw [← Cardinal.aleph0_lt_mk_iff, ← Order.succ_le_iff, succ_aleph0] at hβ ⊢
@@ -99,13 +108,8 @@ theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β
 then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`. -/
 -- TODO: write `Set.univ` instead of `⊤` and rename the theorem accordingly.
-theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α → Finset β)
-    (w : ⋃ a, (f a : Set β) = ⊤) : #β ≤ #(range f) := by
-  have k : _root_.Infinite (range f) := by
-    rw [infinite_coe_iff]
-    apply mt (union_finset_finite_of_range_finite f)
-    rw [w]
-    exact infinite_univ
+theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α → Finset β)
+    (w : ⋃ a, (f a : Set β) = Set.univ) : #β ≤ #(range f) := by
   by_contra h
   simp only [not_le] at h
   let u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge :) (Set.mem_univ b)
@@ -115,7 +119,10 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
     have m : f (u p).choose = f a := by simpa [u'] using m
     rw [← m]
     apply fun b => (u b).choose_spec
-  obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k
+  obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h (by infer_instance)
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
+
+@[deprecated (since := "2026-01-17")] alias le_range_of_union_finset_eq_top :=
+  le_range_of_union_finset_eq_univ
 
 end Cardinal
