@@ -251,7 +251,7 @@ def inj {i} (c : Chain (ρ i)) : Chain ((i : ι) × ρ i) where
 lemma inj_coe {i} (c : Chain (ρ i)) (n : ℕ) : inj c n = ⟨i, c n⟩ := rfl
 
 /-- Converts a chain of coproducts into a coproduct of chains. -/
-def distrib (c : Chain ((i : ι) × ρ i)) : (i : ι) × Chain (ρ i) where
+def toSigma (c : Chain ((i : ι) × ρ i)) : (i : ι) × Chain (ρ i) where
   fst := (c 0).fst
   snd := {
     toFun n :=
@@ -272,19 +272,19 @@ def distrib (c : Chain ((i : ι) × ρ i)) : (i : ι) × Chain (ρ i) where
   }
 
 @[simp]
-lemma distrib_inj {i} (c : Chain (ρ i)) : distrib (inj c) = ⟨i, c⟩ := rfl
+lemma toSigma_inj {i} (c : Chain (ρ i)) : toSigma (inj c) = ⟨i, c⟩ := rfl
 
 @[elab_as_elim]
-lemma distrib_cases
+lemma sigma_cases
     {p : Chain ((i : ι) × ρ i) → Prop}
     (mk : ∀ i (c : Chain (ρ i)), p (inj c))
     (c : Chain ((i : ι) × ρ i)) : p c := by
   classical
-  suffices this : c = inj (distrib c).snd by
+  suffices this : c = inj (toSigma c).snd by
     rw [this]
     apply mk
   ext n : 2
-  simp only [distrib, Lean.Elab.WF.paramLet, inj_coe]
+  simp only [toSigma, Lean.Elab.WF.paramLet, inj_coe]
   have := c.monotone (Nat.zero_le n)
   simp only [Sigma.le_def] at this
   ext : 1
@@ -705,19 +705,19 @@ variable {ι : Type*} {ρ : ι → Type*} [∀ ι, OmegaCompletePartialOrder (ρ
 
 instance : OmegaCompletePartialOrder ((i : ι) × ρ i) where
   ωSup c :=
-    let c' := Chain.distrib c
+    let c' := toSigma c
     ⟨c'.fst, ωSup c'.snd⟩
   le_ωSup c i := by
-    cases c using Chain.distrib_cases
-    simp only [ge_iff_le, Chain.inj_coe, Chain.distrib_inj, Sigma.mk_le_mk_iff]
+    cases c using sigma_cases
+    simp only [ge_iff_le, Chain.inj_coe, toSigma_inj, Sigma.mk_le_mk_iff]
     apply le_ωSup
   ωSup_le := by
     rintro c ⟨x, y⟩ h
-    cases c using Chain.distrib_cases
+    cases c using sigma_cases
     simp only [Chain.inj_coe, ge_iff_le, Sigma.le_def] at h
     have h' := (h 0).choose
     subst h'
-    simp only [ge_iff_le, exists_const, Chain.distrib_inj, Sigma.mk_le_mk_iff, ωSup_le_iff] at ⊢ h
+    simp only [ge_iff_le, exists_const, toSigma_inj, Sigma.mk_le_mk_iff, ωSup_le_iff] at ⊢ h
     exact h
 
 @[simp]
@@ -733,7 +733,7 @@ lemma ωScottContinuous_fst
     : ωScottContinuous (Sigma.fst : Sigma ρ → ι) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Sigma.fst_mono
-  · cases c using Chain.distrib_cases
+  · cases c using sigma_cases
     change _ = ωSup (Chain.const _)
     simp only [ωSup_inj, ωSup_const]
 
@@ -743,7 +743,7 @@ lemma ωScottContinuous_snd
     : ωScottContinuous (Sigma.snd : (_ : ι) × α → α) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Sigma.snd_mono
-  · cases c using Chain.distrib_cases
+  · cases c using sigma_cases
     rfl
 
 lemma ωScottContinuous_elim
@@ -752,7 +752,7 @@ lemma ωScottContinuous_elim
     : ωScottContinuous (fun x : Σ i, ρ i ↦ f x.1 x.2) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · apply Sigma.elim_mono fun i ↦ (hf i).monotone
-  · cases c using Chain.distrib_cases
+  · cases c using sigma_cases
     simp only [ωSup_inj, (hf _).map_ωSup]
     rfl
 
