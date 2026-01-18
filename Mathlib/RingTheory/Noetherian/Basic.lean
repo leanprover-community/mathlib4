@@ -361,20 +361,20 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
 namespace Submodule
 
 variable {R M N : Type*}
-variable [Ring R] [IsNoetherianRing R]
+variable [Ring R]
 variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup N] [Module R N]
 
+/-- A submodule contained in an noetherian submodule is FG. -/
+theorem FG.of_le_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
+  isNoetherian_submodule.mp inferInstance _ hST
+
+/-- A submodule contained in a finite dimensional submodule is FG. -/
+alias FG.of_le_finite := FG.of_le_isNoetherian
+
 /-- A submodule contained in an FG submodule is FG. -/
-theorem FG.of_le {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG :=
-  isNoetherian_submodule.mp (isNoetherian_of_fg_of_noetherian _ hT) _ hST
-
-/-- The intersection of a submodule with an FG submodule is FG. -/
-theorem FG.inf_le_right (S : Submodule R M) {T : Submodule R M} (hT : T.FG) : (S ⊓ T).FG :=
-  hT.of_le _root_.inf_le_right
-
-/-- The intersection of a submodule with an FG submodule is FG. -/
-theorem FG.inf_le_left {S : Submodule R M} (hS : S.FG) (T : Submodule R M) : (S ⊓ T).FG :=
-  hS.of_le _root_.inf_le_left
+lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
+  rw [← Module.Finite.iff_fg] at hT
+  exact FG.of_le_isNoetherian hST
 
 end Submodule
