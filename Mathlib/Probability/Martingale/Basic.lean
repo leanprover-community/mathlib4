@@ -546,7 +546,7 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
   choose C hC using hξbdd
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := fun m =>
       integrable_finset_sum' _ fun i _ => Integrable.bdd_smul
-        ((hf.integrable _).sub (hf.integrable _)) (C i)
+        ((hf.integrable _).sub (hf.integrable _))
         hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i))
   have hadp : StronglyAdapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k) := by
     intro m
@@ -561,7 +561,7 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
   filter_upwards [hf.condExp_sub_nonneg i.le_succ,
     condExp_smul_of_aestronglyMeasurable_left (hξ i).aestronglyMeasurable
       (((hf.integrable (i + 1)).sub (hf.integrable i)).bdd_smul
-      (C i) hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i)))
+      hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i)))
       ((hf.integrable _).sub (hf.integrable _))] with ω hω1 hω2
   simp only [Pi.zero_apply, Nat.succ_eq_add_one, Pi.smul_apply'] at hω1 hω2 ⊢
   grw [← smul_zero (0 : ℝ), hnonneg i ω, hω1, hω2]
