@@ -245,11 +245,6 @@ lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
     [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
   rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
-lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
-  algebraize [f]
-  change Algebra.EssFiniteType R S
-  infer_instance
-
 /-- A choice of "essential generators" for a ring hom essentially of finite type.
 See `Algebra.EssFiniteType.ext`. -/
 noncomputable
@@ -257,6 +252,11 @@ def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
   letI := f.toAlgebra
   haveI : Algebra.EssFiniteType R S := hf
   Algebra.EssFiniteType.finset R S
+
+lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
+  algebraize [f]
+  change Algebra.EssFiniteType R S
+  infer_instance
 
 lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
     (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
