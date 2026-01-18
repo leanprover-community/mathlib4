@@ -5,10 +5,14 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
+
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Smooth immersions
 
@@ -51,6 +55,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
+* `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
+* `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
+  in the sense of `ContMDiff`..
 
 ## Implementation notes
 
@@ -70,8 +77,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
-* `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
@@ -162,6 +167,17 @@ Unless you have a particular reason, prefer to use `IsImmersionAt` instead.
 irreducible_def IsImmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N)
 
+open Lean Elab Meta Qq Manifold.Elab in
+/-- `IsImmersionAtOfComplement% F n f x` elaborates to `IsImmersionAtOfComplement F I J n f x`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersionAtOfComplement%" ppSpace F:term:arg ppSpace nt:term:arg ppSpace
+    f:term:arg : term => do
+  let eF ← Term.elabTerm F none
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``IsImmersionAtOfComplement #[eF, srcI, tgtI, ne, ef]
+
 -- Lift the universe from `E''`, to avoid a free universe parameter.
 variable (I J n) in
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -180,6 +196,15 @@ irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
+open Lean Elab Meta Qq Manifold.Elab in
+/-- `IsImmersionAt% n f x` elaborates to `IsImmersionAt I J n f x`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersionAt%" ppSpace nt:term:arg ppSpace f:term:arg : term => do
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``IsImmersionAt #[srcI, tgtI, ne, ef]
+
 variable {f g : M → N} {x : M}
 
 namespace IsImmersionAtOfComplement
@@ -191,7 +216,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHome
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAtOfComplement F I J n f x := by
+      (domChart.extend I).target) : IsImmersionAtOfComplement% F n f x := by
   rw [IsImmersionAtOfComplement_def]
   use domChart, codChart
   use equiv
@@ -206,7 +231,7 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAtOfComplement F I J n f x := by
+      (domChart.extend I).target) : IsImmersionAtOfComplement% F n f x := by
   rw [IsImmersionAtOfComplement_def]
   exact LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
@@ -216,7 +241,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-def domChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph M H := by
+def domChart (h : IsImmersionAtOfComplement% F n f x) : OpenPartialHomeomorph M H := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.domChart h
 
@@ -225,48 +250,53 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-def codChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph N G := by
+def codChart (h : IsImmersionAtOfComplement% F n f x) : OpenPartialHomeomorph N G := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.codChart h
 
-lemma mem_domChart_source (h : IsImmersionAtOfComplement F I J n f x) : x ∈ h.domChart.source := by
+lemma mem_domChart_source (h : IsImmersionAtOfComplement% F n f x) : x ∈ h.domChart.source := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.mem_domChart_source h
 
-lemma mem_codChart_source (h : IsImmersionAtOfComplement F I J n f x) :
+lemma mem_codChart_source (h : IsImmersionAtOfComplement% F n f x) :
     f x ∈ h.codChart.source := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.mem_codChart_source h
 
-lemma domChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
+lemma domChart_mem_maximalAtlas (h : IsImmersionAtOfComplement% F n f x) :
     h.domChart ∈ IsManifold.maximalAtlas I n M := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.domChart_mem_maximalAtlas h
 
-lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
+lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement% F n f x) :
     h.codChart ∈ IsManifold.maximalAtlas J n N := by
   rw [IsImmersionAtOfComplement_def] at h
   exact LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
 
-lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) :
+lemma source_subset_preimage_source (h : IsImmersionAtOfComplement% F n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source := by
   rw [IsImmersionAtOfComplement_def] at h
-  exact LiftSourceTargetPropertyAt.source_subset_preimage_source h
+  exact h.source_subset_preimage_source
+
+lemma mapsto_domChart_source_codChart_source (h : IsImmersionAtOfComplement% F n f x) :
+    MapsTo f h.domChart.source h.codChart.source := by
+  rw [IsImmersionAtOfComplement_def] at h
+  exact h.source_subset_preimage_source
 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
+def equiv (h : IsImmersionAtOfComplement% F n f x) : (E × F) ≃L[𝕜] E'' := by
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose <| LiftSourceTargetPropertyAt.property h
 
-lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
+lemma writtenInCharts (h : IsImmersionAtOfComplement% F n f x) :
     EqOn ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target := by
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
-lemma property (h : IsImmersionAtOfComplement F I J n f x) :
+lemma property (h : IsImmersionAtOfComplement% F n f x) :
     LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N) := by
   rwa [IsImmersionAtOfComplement_def] at h
 
@@ -289,7 +319,7 @@ continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in prac
 
 See `target_subset_preimage_target` for a version stated using preimages instead of images.
 -/
-lemma map_target_subset_target (h : IsImmersionAtOfComplement F I J n f x) :
+lemma map_target_subset_target (h : IsImmersionAtOfComplement% F n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target := by
   rw [← h.writtenInCharts.image_eq, Set.image_comp, Set.image_comp,
     PartialEquiv.symm_image_target_eq_source, OpenPartialHomeomorph.extend_source,
@@ -301,14 +331,14 @@ lemma map_target_subset_target (h : IsImmersionAtOfComplement F I J n f x) :
 /-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
 is mapped to its codomain chart's target `(h.domChart.extend J).target`:
 see `map_target_subset_target` for a version stated using images. -/
-lemma target_subset_preimage_target (h : IsImmersionAtOfComplement F I J n f x) :
+lemma target_subset_preimage_target (h : IsImmersionAtOfComplement% F n f x) :
     (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
   fun _x hx ↦ h.map_target_subset_target (mem_image_of_mem _ hx)
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-lemma congr_of_eventuallyEq (hf : IsImmersionAtOfComplement F I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAtOfComplement F I J n g x := by
+lemma congr_of_eventuallyEq (hf : IsImmersionAtOfComplement% F n f x) (hfg : f =ᶠ[𝓝 x] g) :
+    IsImmersionAtOfComplement% F n g x := by
   rw [IsImmersionAtOfComplement_def]
   exact LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_immersionAtProp hf.property hfg
@@ -316,26 +346,26 @@ lemma congr_of_eventuallyEq (hf : IsImmersionAtOfComplement F I J n f x) (hfg : 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
 lemma congr_iff_of_eventuallyEq (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x := by
+    IsImmersionAtOfComplement% F n f x ↔ IsImmersionAtOfComplement% F n g x := by
   simpa only [IsImmersionAtOfComplement_def] using
     LiftSourceTargetPropertyAt.congr_iff_of_eventuallyEq
       isLocalSourceTargetProperty_immersionAtProp hfg
 
-lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F :=
+lemma small (hf : IsImmersionAtOfComplement% F n f x) : Small.{u} F :=
   small_of_injective <| hf.equiv.injective.comp (Prod.mk_right_injective 0)
 
 /-- Given an immersion `f` at `x`, this is a choice of complement which lives in the same universe
 as the model space for the co-domain of `f`: this is useful to avoid universe restrictions. -/
-def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
+def smallComplement (hf : IsImmersionAtOfComplement% F n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement% F n f x) : NormedAddCommGroup hf.smallComplement := by
   haveI := hf.small
   unfold smallComplement
   infer_instance
 
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
+instance (hf : IsImmersionAtOfComplement% F n f x) : NormedSpace 𝕜 hf.smallComplement := by
   haveI := hf.small
   unfold smallComplement
   infer_instance
@@ -344,12 +374,12 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
 a continuous linear equivalence from `F` to the small complement of `F`:
 mathematically, this is just the identity map; however, this is technically useful as it enables
 us to always work with `hf.smallComplement`. -/
-def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
+def smallEquiv (hf : IsImmersionAtOfComplement% F n f x) : F ≃L[𝕜] hf.smallComplement :=
   haveI := hf.small
   ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
 
-lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
-    IsImmersionAtOfComplement F' I J n f x := by
+lemma trans_F (h : IsImmersionAtOfComplement% F n f x) (e : F ≃L[𝕜] F') :
+    IsImmersionAtOfComplement% F' n f x := by
   rewrite [IsImmersionAtOfComplement_def]
   refine ⟨h.domChart, h.codChart, h.mem_domChart_source, h.mem_codChart_source,
     h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, h.source_subset_preimage_source, ?_⟩
@@ -360,12 +390,12 @@ lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') 
 
 /-- Being an immersion at `x` w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
-    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
+    IsImmersionAtOfComplement% F n f x ↔ IsImmersionAtOfComplement% F' n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
 lemma _root_.IsOpen.isImmersionAtOfComplement :
-    IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
+    IsOpen {x | IsImmersionAtOfComplement% F n f x} := by
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
@@ -373,7 +403,7 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
-    (hf : IsImmersionAtOfComplement F I J n f x) (hg : IsImmersionAtOfComplement F' I' J' n g x') :
+    (hf : IsImmersionAtOfComplement% F n f x) (hg : IsImmersionAtOfComplement% F' n g x') :
     IsImmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
   rw [IsImmersionAtOfComplement_def]
   apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
@@ -388,8 +418,7 @@ Note that the proof contains a small formalisation-related subtlety: `F` can liv
 while being an immersion at `x` requires the existence of a complement in the same universe as
 the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
 -/
-lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
-    IsImmersionAt I J n f x := by
+lemma isImmersionAt (h : IsImmersionAtOfComplement% F n f x) : IsImmersionAt% n f x := by
   rw [IsImmersionAt_def]
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
@@ -409,6 +438,39 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (y : s) :
     simp_all
   · exact I.right_inv (by simp_all)
 
+/-- Prefer using `IsImmersionAtOfComplement.continuousAt` instead -/
+theorem continuousOn (h : IsImmersionAtOfComplement% F n f x) :
+    ContinuousOn f h.domChart.source := by
+  rw [← h.domChart.continuousOn_writtenInExtend_iff le_rfl
+      h.mapsto_domChart_source_codChart_source (I' := J) (I := I),
+    ← h.domChart.extend_target_eq_image_source]
+  have : ContinuousOn (h.equiv ∘ fun x ↦ (x, 0)) (h.domChart.extend I).target := by fun_prop
+  exact this.congr h.writtenInCharts
+
+/-- A `C^n` immersion at `x` is continuous at `x`. -/
+theorem continuousAt (h : IsImmersionAtOfComplement% F n f x) : ContinuousAt f x :=
+  h.continuousOn.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
+variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+
+/-- Prefer using `IsImmersionAtOfComplement.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsImmersionAtOfComplement% F n f x) : CMDiff[h.domChart.source] n f := by
+  rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
+    h.codChart_mem_maximalAtlas le_rfl h.mapsto_domChart_source_codChart_source,
+    ← h.domChart.extend_target_eq_image_source]
+  have : ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E'') n (h.equiv ∘ fun x ↦ (x, 0)) := by
+    have : ContMDiff (𝓘(𝕜, E × F)) 𝓘(𝕜, E'') n h.equiv := by
+      rw [contMDiff_iff_contDiff]
+      exact h.equiv.contDiff
+    apply this.comp
+    rw [contMDiff_iff_contDiff, contDiff_prod_iff]
+    exact ⟨contDiff_id, contDiff_const (c := (0 : F))⟩
+  exact this.contMDiffOn.congr h.writtenInCharts
+
+/-- A `C^n` immersion at `x` is `C^n` at `x`. -/
+theorem contMDiffAt (h : IsImmersionAtOfComplement% F n f x) : CMDiffAt n f x :=
+  h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -420,9 +482,9 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAt I J n f x := by
+      (domChart.extend I).target) : IsImmersionAt% n f x := by
   rw [IsImmersionAt_def]
-  have aux : IsImmersionAtOfComplement F I J n f x := by
+  have aux : IsImmersionAtOfComplement% F n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
@@ -437,29 +499,29 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAt I J n f x := by
+      (domChart.extend I).target) : IsImmersionAt% n f x := by
   rw [IsImmersionAt_def]
-  have aux : IsImmersionAtOfComplement F I J n f x := by
+  have aux : IsImmersionAtOfComplement% F n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-def complement (h : IsImmersionAt I J n f x) : Type u := by
+def complement (h : IsImmersionAt% n f x) : Type u := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
+noncomputable instance (h : IsImmersionAt% n f x) : NormedAddCommGroup h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
+noncomputable instance (h : IsImmersionAt% n f x) : NormedSpace 𝕜 h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
-lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
-    IsImmersionAtOfComplement h.complement I J n f x := by
+lemma isImmersionAtOfComplement_complement (h : IsImmersionAt% n f x) :
+    IsImmersionAtOfComplement% h.complement n f x := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
@@ -468,7 +530,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-def domChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph M H :=
+def domChart (h : IsImmersionAt% n f x) : OpenPartialHomeomorph M H :=
   h.isImmersionAtOfComplement_complement.domChart
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
@@ -476,39 +538,39 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-def codChart (h : IsImmersionAt I J n f x) : OpenPartialHomeomorph N G :=
+def codChart (h : IsImmersionAt% n f x) : OpenPartialHomeomorph N G :=
   h.isImmersionAtOfComplement_complement.codChart
 
-lemma mem_domChart_source (h : IsImmersionAt I J n f x) : x ∈ h.domChart.source :=
+lemma mem_domChart_source (h : IsImmersionAt% n f x) : x ∈ h.domChart.source :=
   h.isImmersionAtOfComplement_complement.mem_domChart_source
 
-lemma mem_codChart_source (h : IsImmersionAt I J n f x) : f x ∈ h.codChart.source :=
+lemma mem_codChart_source (h : IsImmersionAt% n f x) : f x ∈ h.codChart.source :=
   h.isImmersionAtOfComplement_complement.mem_codChart_source
 
-lemma domChart_mem_maximalAtlas (h : IsImmersionAt I J n f x) :
+lemma domChart_mem_maximalAtlas (h : IsImmersionAt% n f x) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
   h.isImmersionAtOfComplement_complement.domChart_mem_maximalAtlas
 
-lemma codChart_mem_maximalAtlas (h : IsImmersionAt I J n f x) :
+lemma codChart_mem_maximalAtlas (h : IsImmersionAt% n f x) :
     h.codChart ∈ IsManifold.maximalAtlas J n N :=
   h.isImmersionAtOfComplement_complement.codChart_mem_maximalAtlas
 
-lemma source_subset_preimage_source (h : IsImmersionAt I J n f x) :
+lemma source_subset_preimage_source (h : IsImmersionAt% n f x) :
     h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
   h.isImmersionAtOfComplement_complement.source_subset_preimage_source
 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAt I J n f x) : (E × h.complement) ≃L[𝕜] E'' :=
+def equiv (h : IsImmersionAt% n f x) : (E × h.complement) ≃L[𝕜] E'' :=
   h.isImmersionAtOfComplement_complement.equiv
 
-lemma writtenInCharts (h : IsImmersionAt I J n f x) :
+lemma writtenInCharts (h : IsImmersionAt% n f x) :
     EqOn ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target :=
   h.isImmersionAtOfComplement_complement.writtenInCharts
 
-lemma property (h : IsImmersionAt I J n f x) :
+lemma property (h : IsImmersionAt% n f x) :
     LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp h.complement I J M N) :=
   h.isImmersionAtOfComplement_complement.property
 
@@ -531,21 +593,21 @@ continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in prac
 
 See `target_subset_preimage_target` for a version stated using preimages instead of images.
 -/
-lemma map_target_subset_target (h : IsImmersionAt I J n f x) :
+lemma map_target_subset_target (h : IsImmersionAt% n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target :=
   h.isImmersionAtOfComplement_complement.map_target_subset_target
 
 /-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
 is mapped to its codomain chart's target `(h.domChart.extend J).target`:
 see `map_target_subset_target` for a version stated using images. -/
-lemma target_subset_preimage_target (h : IsImmersionAt I J n f x) :
+lemma target_subset_preimage_target (h : IsImmersionAt% n f x) :
     (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
   fun _x hx ↦ h.map_target_subset_target (mem_image_of_mem _ hx)
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAt I J n g x := by
+lemma congr_of_eventuallyEq (hf : IsImmersionAt% n f x) (hfg : f =ᶠ[𝓝 x] g) :
+    IsImmersionAt% n g x := by
   rw [IsImmersionAt_def]
   use hf.complement, by infer_instance, by infer_instance
   exact hf.isImmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
@@ -553,14 +615,14 @@ lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x]
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
 lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAt I J n f x ↔ IsImmersionAt I J n g x :=
+    IsImmersionAt% n f x ↔ IsImmersionAt% n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
 /- The set of points where `IsImmersionAt` holds is open. -/
 lemma _root_.IsOpen.isImmersionAt :
-    IsOpen {x | IsImmersionAt I J n f x} := by
+    IsOpen {x | IsImmersionAt% n f x} := by
   rw [isOpen_iff_forall_mem_open]
-  exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
+  exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement% hx.complement n f x },
     fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
     by simp [hx.isImmersionAtOfComplement_complement]⟩
 
@@ -568,7 +630,7 @@ lemma _root_.IsOpen.isImmersionAt :
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
-    (hf : IsImmersionAt I J n f x) (hg : IsImmersionAt I' J' n g x') :
+    (hf : IsImmersionAt% n f x) (hg : IsImmersionAt I' J' n g x') :
     IsImmersionAt (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
   hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
     |>.isImmersionAt
@@ -579,6 +641,24 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) 
   rw [IsImmersionAt_def]
   use PUnit, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
+
+/-- Prefer using `IsImmersionAt.continuousAt` instead -/
+theorem continuousOn (h : IsImmersionAt% n f x) : ContinuousOn f h.domChart.source :=
+  h.isImmersionAtOfComplement_complement.continuousOn
+
+/-- A `C^n` immersion at `x` is continuous at `x`. -/
+theorem continuousAt (h : IsImmersionAt% n f x) : ContinuousAt f x :=
+  h.isImmersionAtOfComplement_complement.continuousAt
+
+variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+
+/-- Prefer using `IsImmersionAt.contMDiffAt` instead -/
+theorem contMDiffOn (h : IsImmersionAt% n f x) : CMDiff[h.domChart.source] n f :=
+  h.isImmersionAtOfComplement_complement.contMDiffOn
+
+/-- A `C^n` immersion at `x` is `C^n` at `x`. -/
+theorem contMDiffAt (h : IsImmersionAt% n f x) : CMDiffAt n f x :=
+  h.isImmersionAtOfComplement_complement.contMDiffAt
 
 end IsImmersionAt
 
@@ -610,13 +690,23 @@ each `x ∈ M` w.r.t. potentially varying complements: see `isImmersionAt` for d
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
 
+open Lean Elab Meta Qq Manifold.Elab in
+/-- `IsImmersion% n f` elaborates to `IsImmersion I J n f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "IsImmersion%" ppSpace nt:term:arg ppSpace f:term:arg : term => do
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``IsImmersion #[srcI, tgtI, ne, ef]
+
 namespace IsImmersionOfComplement
 
 variable {f g : M → N}
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
+-- TODO: using the elaborator in the hypothesis fails; investigate and fix!
 lemma isImmersionAt (h : IsImmersionOfComplement F I J n f) (x : M) :
-    IsImmersionAtOfComplement F I J n f x := h x
+    IsImmersionAtOfComplement% F n f x := h x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersionOfComplement F I J n f) (heq : f = g) :
@@ -673,6 +763,11 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersionOfComplement PUnit I I n (Subtype.val : s → M) :=
   fun y ↦ IsImmersionAtOfComplement.of_opens s y
 
+/-- A `C^n` immersion is `C^n`. -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersionOfComplement F I J n f) : ContMDiff I J n f :=
+  fun x ↦ (h x).contMDiffAt
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -681,16 +776,16 @@ variable {f g : M → N}
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
+def complement (h : IsImmersion% n f) : Type u := Classical.choose h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+noncomputable instance (h : IsImmersion% n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+noncomputable instance (h : IsImmersion% n f) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
-lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
-    IsImmersionOfComplement h.complement I J n f :=
+lemma isImmersionOfComplement_complement (h : IsImmersion% n f) :
+    IsImmersionOfComplement h.complement I J n f := -- TODO: using the elaborator here errors!
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 /-- If `f` is an immersion, it is an immersion at each point.
@@ -704,31 +799,35 @@ of `f` at (even nearby) points `x` and `x'` are not directly related. They have 
 is not conclusive. If `E''` is infinite-dimensional, this dimension can indeed change between
 different connected components of `M`.
 -/
-lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
+lemma isImmersionAt (h : IsImmersion% n f) (x : M) : IsImmersionAt% n f x := by
   rw [IsImmersionAt_def]
   use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
-theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
+theorem congr (h : IsImmersion% n f) (heq : f = g) : IsImmersion% n g :=
   heq ▸ h
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
 theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
-    (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
+    (hf : IsImmersion% n f) (hg : IsImmersion% n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement).isImmersion
 
 open IsManifold in
 /-- The identity map is an immersion. -/
-protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
+protected lemma id [IsManifold I n M] : IsImmersion% n (@id M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
   ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
+
+/-- A `C^n` immersion is `C^n`. -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N] (h : IsImmersion% n f) : CMDiff n f :=
+  h.isImmersionOfComplement_complement.contMDiff
 
 end IsImmersion
 
