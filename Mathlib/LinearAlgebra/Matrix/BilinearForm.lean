@@ -395,16 +395,18 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matr
     (b : Basis ι R₁ M₁) : M.toBilin'.Nondegenerate ↔ (Matrix.toBilin b M).Nondegenerate :=
   (nondegenerate_congr_iff b.equivFun.symm).symm
 
--- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
+/-! Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
+
+TODO: Do we need the SeparatingLeft and SeparatingRight versions here? -/
+
 theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nondegenerate) :
-    M.toBilin'.Nondegenerate := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
+    M.toBilin'.Nondegenerate :=
+  h.toLinearMap₂'
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
-    M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
-  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
-  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
+    M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
+  Matrix.nondegenerate_toLinearMap₂'_iff
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=
@@ -415,7 +417,9 @@ theorem _root_.Matrix.nondegenerate_toBilin_iff {M : Matrix ι ι R₂} (b : Bas
     (Matrix.toBilin b M).Nondegenerate ↔ M.Nondegenerate := by
   rw [← Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin, Matrix.nondegenerate_toBilin'_iff]
 
-/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix -/
+/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
+
+TODO: Do we need the SeparatingLeft and SeparatingRight versions here? -/
 
 @[simp]
 theorem nondegenerate_toMatrix'_iff {B : BilinForm R₂ (ι → R₂)} :
