@@ -66,13 +66,11 @@ This is defined through the axiom of choice. -/
 def ToType (o : OrderType) : Type u :=
   o.out.carrier
 
-def ToLinord (o : OrderType) : LinearOrder o.ToType :=
- o.out.str
-
 /-- The local instance for some arbitrary linear order on `Type u` , order isomorphic within
 order type `o`. -/
+@[no_expose]
 instance (o : OrderType) : LinearOrder o.ToType :=
-  o.ToLinord
+  o.out.str
 
 /-! ### Basic properties of the order type -/
 
@@ -96,13 +94,11 @@ theorem type_eq_type {α β : Type u} [LinearOrder α] [LinearOrder β] :
     type α = type β ↔ Nonempty (α ≃o β) :=
   Quotient.eq'
 
-theorem _root_.OrderIso.orderTypeType_congr {α β} [LinearOrder α]
-    [LinearOrder β] (h : α ≃o β) : type α = type β :=
-  type_eq_type.2 ⟨h⟩
-
 theorem type_congr {α β} [LinearOrder α]
     [LinearOrder β] (h : α ≃o β) : type α = type β :=
   type_eq_type.2 ⟨h⟩
+
+alias _root_.OrderIso.type_congr := type_congr
 
 @[simp]
 theorem type_of_isEmpty [LinearOrder α] [IsEmpty α] : type α = 0 :=
@@ -122,7 +118,7 @@ theorem type_ne_zero [LinearOrder α] [h : Nonempty α] : type α ≠ 0 :=
 @[simp]
 theorem type_of_unique [LinearOrder α] [Nonempty α] [Subsingleton α] : type α = 1 := by
   cases nonempty_unique α
-  exact (OrderIso.ofUnique α _).orderTypeType_congr
+  exact (OrderIso.ofUnique α _).type_congr
 
 @[simp]
 theorem type_eq_one [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
@@ -186,7 +182,7 @@ instance : Preorder OrderType where
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
       ⟨fun ⟨h⟩ ↦ ⟨(f.symm.toOrderEmbedding.trans h).trans g.toOrderEmbedding⟩, fun ⟨h⟩ ↦
         ⟨(f.toOrderEmbedding.trans h).trans g.symm.toOrderEmbedding⟩⟩
-  le_refl o := inductionOn o fun α _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
+  le_refl o := inductionOn o (fun α _ ↦  ⟨(OrderIso.refl _).toOrderEmbedding⟩)
   le_trans o₁ o₂ o₃ := inductionOn₃ o₁ o₂ o₃ fun _ _ _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 instance : NeZero (1 : OrderType) :=
@@ -201,14 +197,14 @@ theorem type_le_type {α β}
   ⟨h⟩
 
 theorem type_lt_type {α β}
-    [LinearOrder α] [LinearOrder β] (h : α ↪o β) (hne : ¬(Nonempty (β ↪o α))) : type α < type β :=
-  ⟨⟨h⟩, hne⟩
+    [LinearOrder α] [LinearOrder β] (h : α ↪o β) (hne : IsEmpty (β ↪o α)) : type α < type β :=
+  ⟨⟨h⟩, not_nonempty_iff.mpr hne⟩
 
 alias _root_.OrderEmbedding.type_le_type := type_le_type
 
 @[simp]
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
-  inductionOn o fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type
+  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le_type)
 
 instance : OrderBot OrderType where
   bot := 0
@@ -219,15 +215,18 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
   rfl
 
 @[simp]
-protected theorem not_lt_zero {o : OrderType} : ¬o < 0 :=
+protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
   not_lt_bot
 
 @[simp]
-theorem pos_iff_ne_zero (o : OrderType) : 0 < o ↔ o ≠ 0 :=
-  ⟨ne_bot_of_gt, fun ho ↦ by
+theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
+  mp := ne_bot_of_gt
+  mpr ho := by
     have := nonempty_toType_iff.2 ho
     rw [← type_toType o]
-    exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩⟩
+    exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
+
+
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 -- TODO: define `OrderType.lift` and redefine this using it.
