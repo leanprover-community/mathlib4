@@ -360,10 +360,7 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
 
 namespace Submodule
 
-variable {R M N : Type*}
-variable [Ring R]
-variable [AddCommGroup M] [Module R M]
-variable [AddCommGroup N] [Module R N]
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 /-- A submodule contained in an noetherian submodule is FG. -/
 theorem FG.of_le_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
