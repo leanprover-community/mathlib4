@@ -7,13 +7,11 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct
-public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
-public import Mathlib.Analysis.Normed.Module.HahnBanach
 
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
 
-Let `𝕜` be a nontrivially normed field and `E` be a family of normed `𝕜`-vector spaces `Eᵢ`,
+Let `𝕜` be a normed field and `E` be a family of normed `𝕜`-vector spaces `Eᵢ`,
 indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, Eᵢ`, which we call the
 "projective seminorm". For `x` an element of `⨂[𝕜] i, Eᵢ`, its projective seminorm is the
 infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
@@ -45,9 +43,6 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
-* `PiTensorProduct.projectiveSeminorm_tprod_eq_of_dual_vectors`: the projective
-  seminorm satisfies the multiplicativity property `‖⨂ mᵢ‖ = ∏ ‖mᵢ‖` if, for
-  each `mᵢ`, there is an `fᵢ` in the dual unit ball such that `‖fᵢ mᵢ‖ = ‖mᵢ‖`.
 
 ## TODO
 
@@ -237,8 +232,7 @@ theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLi
   rfl
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
-This is the continuous version of `PiTensorProduct.mapIncl`.
--/
+This is the continuous version of `PiTensorProduct.mapIncl`. -/
 @[simp]
 noncomputable def mapLIncl (p : Π i, Submodule 𝕜 (E i)) : (⨂[𝕜] i, p i) →L[𝕜] ⨂[𝕜] i, E i :=
   mapL fun (i : ι) ↦ (p i).subtypeL
@@ -310,8 +304,7 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
 variable (𝕜 E E')
 
 /-- The tensor of a family of linear maps from `Eᵢ` to `E'ᵢ`, as a continuous multilinear map of
-the family.
--/
+the family. -/
 @[simps!]
 noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E i →L[𝕜] E' i)
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
@@ -323,37 +316,6 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
 
 end map
 
-section projectiveSeminorm_tprod
-
-theorem projectiveSeminorm_tprod_eq_of_dual_vectors {f : Π i, StrongDual 𝕜 (E i)}
-    (m : Π i, E i) (hf₁ : ∀ i, ‖f i‖ ≤ 1) (hf₂ : ∀ i, ‖f i (m i)‖ = ‖m i‖) :
-    ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ := by
-  apply eq_of_le_of_ge (projectiveSeminorm_tprod_le m) (le_ciInf (fun x ↦ ?_))
-  have hx := congr_arg (norm ∘ dualDistrib (⨂ₜ[𝕜] i, f i)) ((mem_lifts_iff _ _).mp x.prop)
-  simp only [Function.comp_apply, dualDistrib_apply, ContinuousLinearMap.coe_coe, hf₂, norm_prod,
-     map_list_sum, List.map_map] at hx
-  grw [← hx, List.le_sum_of_subadditive norm norm_zero.le norm_add_le, List.map_map]
-  apply List.sum_le_sum (fun _ _ ↦ ?_)
-  simp only [Function.comp_apply, map_smul, dualDistrib_apply, ContinuousLinearMap.coe_coe,
-    smul_eq_mul, norm_mul, norm_prod]
-  gcongr
-  grw [ContinuousLinearMap.le_opNorm, hf₁, one_mul]
-
-end projectiveSeminorm_tprod
-
 end NontriviallyNormedField
-
-section RCLike
-
-variable [RCLike 𝕜]
-variable {E : ι → Type uE} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-
-@[simp]
-theorem projectiveSeminorm_tprod (m : Π i, E i)
-    : projectiveSeminorm (⨂ₜ[𝕜] i, m i) = ∏ i, ‖m i‖ := by
-  choose g hg₁ hg₂ using fun i ↦ exists_dual_vector'' 𝕜 (m i)
-  exact projectiveSeminorm_tprod_eq_of_dual_vectors m hg₁ (by simp [hg₂])
-
-end RCLike
 
 end PiTensorProduct
