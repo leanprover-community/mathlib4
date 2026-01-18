@@ -71,7 +71,7 @@ open scoped Pointwise
 universe u v
 
 /-- `IdealFilter A` is the type of `Order.PFilter`s on the lattice of ideals of `A`. -/
-abbrev IdealFilter (A : Type u) [Ring A] := Order.PFilter (Ideal A)
+abbrev IdealFilter (A : Type*) [Ring A] := Order.PFilter (Ideal A)
 
 namespace IdealFilter
 
