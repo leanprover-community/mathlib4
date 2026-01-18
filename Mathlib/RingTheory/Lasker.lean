@@ -98,7 +98,7 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [Decidab
   exact ⟨u, hu, fun _ hi ↦ ht' (hut hi), ht''.mono hut, hu'⟩
 
 /-- A `Finset` of ideals is a maximal primary decomposition of `I` if the ideals intersect to `I`,
-are primary, have pairwise distinct radical, and removing any ideal changes the intersection. -/
+are primary, have pairwise distinct radicals, and removing any ideal changes the intersection. -/
 structure IsMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
     (I : Ideal R) (t : Finset (Ideal R)) where
   inf_eq : t.inf id = I
@@ -109,10 +109,10 @@ structure IsMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
 lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
     (h : IsLasker R) (I : Ideal R) :
     ∃ t : Finset (Ideal R), I.IsMinimalPrimaryDecomposition t := by
-  obtain ⟨s, hs1, hs2⟩ := h I
-  obtain ⟨t, h1, h2, h3, h4⟩ :=
-    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
-  exact ⟨t, h1, h2, h3, h4⟩
+  obtain ⟨s, hs₁, hs₂⟩ := h I
+  obtain ⟨t, h₁, h₂, h₃, h₄⟩ :=
+    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs₁ hs₂
+  exact ⟨t, h₁, h₂, h₃, h₄⟩
 
 @[deprecated (since := "2026-01-09")]
 alias IsLasker.minimal := IsLasker.exists_isMinimalPrimaryDecomposition
