@@ -134,6 +134,14 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
+lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+  by_cases huv : u = v
+  · simp [huv]
+  · simp only [huv, or_false]
+    have h : 0 < G.edist u v := edist_pos_of_ne huv
+    rw [LE.le.ge_iff_eq' (Order.one_le_iff_pos.mpr h)]
+    exact edist_eq_one_iff_adj
+
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
 

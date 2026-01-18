@@ -306,6 +306,20 @@ theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ 
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 
+theorem le_weightedOrder_smul {a : R} :
+    f.weightedOrder w ≤ (a • f).weightedOrder w :=
+  le_weightedOrder _ fun i hi => by simp [coeff_eq_zero_of_lt_weightedOrder _ hi]
+
+section
+
+variable {S : Type*} [Semiring S]
+
+theorem le_weightedOrder_map (φ : R →+* S) :
+    f.weightedOrder w ≤ (f.map φ).weightedOrder w :=
+  le_weightedOrder w fun i hi => by simp [coeff_eq_zero_of_lt_weightedOrder _ hi]
+
+end
+
 section Ring
 
 variable {R : Type*} [Ring R] {f g : MvPowerSeries σ R}
@@ -461,16 +475,36 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
 
-theorem order_ne_zero_iff_constCoeff_eq_zero :
-    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+theorem one_le_order_iff_constCoeff_eq_zero :
+    1 ≤ f.order ↔ f.constantCoeff = 0 := by
   constructor
   · intro h
     apply coeff_of_lt_order
-    simpa using pos_of_ne_zero h
+    simpa using Order.one_le_iff_pos.mp h
   · intro h
-    refine ENat.one_le_iff_ne_zero.mp <| MvPowerSeries.le_order fun d hd ↦ ?_
+    refine MvPowerSeries.le_order fun d hd ↦ ?_
     rw [Nat.cast_lt_one] at hd
     simp [(degree_eq_zero_iff d).mp hd, h]
+
+theorem order_ne_zero_iff_constCoeff_eq_zero :
+    f.order ≠ 0 ↔ f.constantCoeff = 0 := by
+  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+
+theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : f.constantCoeff = 0) :
+    n ≤ (f ^ n).order := by
+  refine .trans ?_ (le_order_pow n)
+  simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
+
+theorem le_order_smul {a : R} : f.order ≤ (a • f).order := le_weightedOrder_smul _
+
+section
+
+variable {S : Type*} [Semiring S]
+
+theorem le_order_map (f : R →+* S) {φ : MvPowerSeries σ R} : φ.order ≤ (φ.map f).order :=
+  le_weightedOrder_map _ _
+
+end
 
 section Ring
 
