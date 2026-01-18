@@ -62,6 +62,7 @@ jobs:
 
           formatForZulip () {
             echo "${1}" |
+            # shellcheck disable=SC2016 # backticks should not be expanded, since they are Zulip markdown syntax
             sed '
             / [0-9]* PR[s]*$/{
               s=^=```\n\n```spoiler =
