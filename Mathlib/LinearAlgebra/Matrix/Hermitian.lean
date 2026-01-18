@@ -198,6 +198,16 @@ theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermit
   IsSelfAdjoint.star_add_self A
 
 end AddCommMonoid
+section SubtractionCommMonoid
+
+variable [SubtractionCommMonoid α] [StarAddMonoid α]
+
+@[simp]
+theorem IsSkewHermitian.add {A B : Matrix n n α} (hA : A.IsSkewHermitian) (hB : B.IsSkewHermitian) :
+    (A + B).IsSkewHermitian := by
+  simp [IsSkewHermitian, ← Matrix.ext_iff, hA.eq, hB.eq, add_comm]
+
+end SubtractionCommMonoid
 
 section AddGroup
 
@@ -277,6 +287,12 @@ variable [Ring α] [StarRing α]
 @[simp]
 theorem isHermitian_intCast [DecidableEq n] (d : ℤ) : (d : Matrix n n α).IsHermitian :=
   conjTranspose_intCast _
+
+@[simp]
+theorem IsSkewHermitian.sub {A B : Matrix n n α} (hA : A.IsSkewHermitian) (hB : B.IsSkewHermitian) :
+    (A - B).IsSkewHermitian := by
+  rw [sub_eq_add_neg]
+  exact hA.add hB.neg
 
 end Ring
 
