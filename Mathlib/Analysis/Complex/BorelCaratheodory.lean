@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2025 Maksym Radziwill. All rights reserved.
+Copyright (c) 2026 Maksym Radziwill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Maksym Radziwill
 -/
 
-import Mathlib.Analysis.Complex.Schwarz
+module
+
+public import Mathlib.Analysis.Complex.Schwarz
 
 /-!
 # Borel-Carathéodory theorem
@@ -31,23 +33,18 @@ complex analysis, Borel, Carathéodory, analytic function, growth bound
 
 open Metric
 
-namespace DifferentiableOn
+namespace Complex
 
-variable {f : ℂ → ℂ} {s : Set ℂ} {M : ℝ}
+variable {f : ℂ → ℂ} {s : Set ℂ} {M R : ℝ} {z w : ℂ}
+
+section SchwarzTransform
 
 /-- If a differentiable function avoids a value `M`, then it remains differentiable
 when divided by `M - f z`. -/
 private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
     DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
-  div hf (hf.const_sub M) fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
-
-end DifferentiableOn
-
-namespace Complex
-
-variable {f : ℂ → ℂ} {M R : ℝ} {z w : ℂ}
-
-section SchwarzTransform
+  DifferentiableOn.div hf (DifferentiableOn.const_sub hf M) 
+    fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
 
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
 Schwarz transform used in the proof of the Borel-Carathéodory theorem. -/
@@ -84,17 +81,17 @@ lemma norm_div_two_mul_sub_lt_one (hM : 0 < M) (hz : z.re < M) : ‖z / (2 * M -
 /-- Application of the Schwarz lemma to the transformed function. If `f` is differentiable on
 the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz transform
 satisfies the bound from the Schwarz lemma. -/
-lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
+private lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hz : z ∈ ball 0 R) (hf₂ : f 0 = 0) :
     dist (f z / (2 * M - f z)) 0 ≤ 1 / R * dist z 0 := by
   have h0 : 0 = f 0 / (2 * M - f 0) := by simp [hf₂]
   conv_lhs => rw [h0]
   apply dist_le_div_mul_dist_of_mapsTo_ball (R₂ := 1) ?_ ?_ hz
   · norm_cast
-    exact DifferentiableOn.div_const_sub hf
+    exact Complex.div_const_sub hf
       (hf₁.mono_right fun a ha h => by simp [h] at ha; linarith [ha, hM])
-  · rw [← h0]; intro x hx; rw [mem_ball, dist_zero_right];
-    exact norm_div_two_mul_sub_lt_one hM (hf₁ hx)
+  · rw [← h0]; intro x hx; rw [mem_closedBall, dist_zero_right]
+    exact le_of_lt (norm_div_two_mul_sub_lt_one hM (hf₁ hx))
 
 end SchwarzTransform
 
@@ -104,7 +101,7 @@ section BorelCaratheodory
 
 If `f` is analytic on the open ball `‖z‖ < R`, satisfies `(f z).re < M` for all such `z`,
 and `f 0 = 0`, then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖)` for all `‖z‖ < R`. -/
-theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
+public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hR : 0 < R) (hz : z ∈ ball 0 R)
     (hf₂ : f 0 = 0) : ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) := by
   set w := f z / (2 * M - f z)
@@ -124,7 +121,7 @@ theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0
 
 If `f` is analytic on the open ball `‖z‖ < R` and satisfies `(f z).re < M` for all such `z`,
 then `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)` for all `‖z‖ < R`. -/
-theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
+public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hR : 0 < R) (hz : z ∈ ball 0 R) :
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by
   have hfz : ‖f z - f 0‖ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) := by
