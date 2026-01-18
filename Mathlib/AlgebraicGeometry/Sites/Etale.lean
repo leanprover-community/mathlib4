@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.Small
+public import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
 /-!
 
@@ -33,7 +36,7 @@ def etalePretopology : Pretopology Scheme.{u} :=
 
 /-- Big étale site: the étale topology on the category of schemes. -/
 abbrev etaleTopology : GrothendieckTopology Scheme.{u} :=
-  etalePretopology.toGrothendieck
+  grothendieckTopology @IsEtale
 
 lemma zariskiTopology_le_etaleTopology : zariskiTopology ≤ etaleTopology := by
   apply grothendieckTopology_monotone
@@ -48,5 +51,57 @@ def smallEtaleTopology (X : Scheme.{u}) : GrothendieckTopology X.Etale :=
 /-- The pretopology generating the small étale site. -/
 def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
   X.smallPretopology (Q := @IsEtale) (P := @IsEtale)
+
+instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @IsEtale)) (i : 𝒰.I₀) : IsEtale (𝒰.f i) :=
+  𝒰.map_prop i
+
+section Points
+
+@[simps]
+def _root_.CategoryTheory.Functor.Elements.initial' {C : Type*} [Category C] (A : Cᵒᵖ) :
+    (coyoneda.obj A).Elements :=
+  ⟨A.unop, 𝟙 _⟩
+
+def _root_.CategoryTheory.Functor.Elements.isInitial' {C : Type*} [Category C] (A : Cᵒᵖ) :
+    IsInitial (Functor.Elements.initial' A) :=
+  .ofUniqueHom (fun X ↦ ⟨X.2, by simp⟩) <| by rintro Y ⟨_, h⟩; ext; simpa using h
+
+instance {C : Type*} [Category C] (A : Cᵒᵖ) : HasInitial ((coyoneda.obj A).Elements) :=
+  (Functor.Elements.isInitial' A).hasInitial
+
+instance {C : Type*} [Category C] (A : C) : HasInitial ((yoneda.obj A).Elements) :=
+  (Functor.Elements.isInitial A).hasInitial
+
+instance (C : Type*) [Category C] [HasInitial C] : InitiallySmall.{u} C :=
+  have := Functor.initial_const_initial (C := PUnit.{u + 1}) (D := C)
+  .mk' ((Functor.const PUnit.{u + 1}).obj (⊥_ C))
+
+instance (C : Type*) [Category C] [HasTerminal C] : FinallySmall.{u} C :=
+  have := Functor.final_const_terminal (C := PUnit.{u + 1}) (D := C)
+  .mk' ((Functor.const PUnit.{u + 1}).obj (⊤_ C))
+
+/-- A separably closed field `Ω` defines a point on the étale topology by the fiber
+functor `X ↦ Hom(Spec Ω, X)`. -/
+def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Point where
+  fiber := coyoneda.obj ⟨Spec (.of Ω)⟩
+  jointly_surjective {S} R hR (f : Spec (.of Ω) ⟶ S) := by
+    obtain ⟨⟨x, a⟩, rfl⟩ := (Scheme.SpecToEquivOfField Ω S).symm.surjective f
+    rw [mem_grothendieckTopology_iff] at hR
+    obtain ⟨𝒰, hle⟩ := hR
+    obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
+    refine ⟨𝒰.X i, 𝒰.f i, hle _ ⟨i⟩, ?_⟩
+    let k := (𝒰.X i).residueField y
+    let m : S.residueField (𝒰.f i y) ⟶ (𝒰.X i).residueField y :=
+      (𝒰.f i).residueFieldMap y
+    algebraize [((𝒰.f i).residueFieldMap y).hom, a.hom]
+    let b : (𝒰.X i).residueField y →ₐ[S.residueField (𝒰.f i y)] Ω :=
+      IsSepClosed.lift
+    have hfac : (𝒰.f i).residueFieldMap y ≫ CommRingCat.ofHom b.toRingHom = a := by
+      ext1; exact b.comp_algebraMap
+    use Spec.map (CommRingCat.ofHom b.toRingHom) ≫ (𝒰.X i).fromSpecResidueField y
+    simp [SpecToEquivOfField, ← hfac]
+  isCofiltered := Functor.isCofiltered_elements _
+
+end Points
 
 end AlgebraicGeometry.Scheme

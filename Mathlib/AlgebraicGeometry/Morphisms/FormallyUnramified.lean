@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.RingHom.Unramified
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Formally unramified morphisms
@@ -135,6 +136,76 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
   algebraize [f.hom]
   rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_SpecMap R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
+  infer_instance
+
+lemma _root_.RingHom.FormallyUnramified.of_comp {R S T : Type*} [CommRing R] [CommRing S]
+    [CommRing T] {f : R →+* S} {g : S →+* T} (h : (g.comp f).FormallyUnramified) :
+    g.FormallyUnramified := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyUnramified.of_restrictScalars R _ _
+
+lemma _root_.RingHom.FormallyUnramified.comp {R S T : Type*} [CommRing R] [CommRing S]
+    [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyUnramified)
+    (hg : g.FormallyUnramified) :
+    (g.comp f).FormallyUnramified := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyUnramified.comp R S T
+
+lemma _root_.RingHom.FormallyUnramified.isLocalizationMap {R : Type*} [CommRing R] {M : Submonoid R}
+    {S : Type*} [CommRing S] [Algebra R S] {P : Type*} [CommRing P] [IsLocalization M S]
+    {T : Submonoid P} (Q : Type*) [CommRing Q] [Algebra P Q] [IsLocalization T Q]
+    {g : R →+* P} (hy : M ≤ Submonoid.comap g T)
+    (hg : g.FormallyUnramified) :
+    (IsLocalization.map (S := S) Q g hy).FormallyUnramified := by
+  refine RingHom.FormallyUnramified.of_comp (f := algebraMap R S) ?_
+  simp only [IsLocalization.map_comp]
+  refine .comp hg ?_
+  rw [RingHom.formallyUnramified_algebraMap]
+  exact .of_isLocalization T
+
+lemma _root_.RingHom.FormallyUnramified.localRingHom {R S : Type*} [CommRing R]
+    [CommRing S] {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
+    {f : R →+* S} (h : p = q.comap f) (hf : f.FormallyUnramified) :
+    (Localization.localRingHom p q f h).FormallyUnramified :=
+  hf.isLocalizationMap _ _
+
+lemma stalkMap [FormallyUnramified f] (x : X) : (f.stalkMap x).hom.FormallyUnramified :=
+  HasRingHomProperty.stalkMap (fun f hf p q ↦ hf.localRingHom _)  ‹_› x
+
+instance _root_.AlgebraicGeometry.HasRingHomProperty.inf {P P' : MorphismProperty Scheme.{u}}
+    {Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    [HasRingHomProperty P Q] [HasRingHomProperty P' Q'] :
+    HasRingHomProperty (P ⊓ P') (fun f ↦ Q f ∧ Q' f) where
+  isLocal_ringHomProperty :=
+    .and (HasRingHomProperty.isLocal_ringHomProperty P)
+      (HasRingHomProperty.isLocal_ringHomProperty P')
+  eq_affineLocally' := by
+    rw [HasRingHomProperty.eq_affineLocally P, HasRingHomProperty.eq_affineLocally P']
+    ext
+    change _ ∧ _ ↔ _
+    simp_rw [affineLocally_iff_affineOpens_le]
+    grind
+
+instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
+    letI : Algebra (Y.residueField (f.base x)) (X.residueField x) :=
+      (f.residueFieldMap x).hom.toAlgebra
+    Algebra.IsSeparable (Y.residueField (f.base x)) (X.residueField x) := by
+  algebraize [(f.stalkMap x).hom]
+  have : IsLocalHom (algebraMap (Y.presheaf.stalk (f x)) (X.presheaf.stalk x)) :=
+    inferInstanceAs <| IsLocalHom (f.stalkMap x).hom
+  suffices h : Algebra.IsSeparable
+      (IsLocalRing.ResidueField <| Y.presheaf.stalk (f x))
+      (IsLocalRing.ResidueField <| X.presheaf.stalk x) by
+    convert h
+    refine Algebra.algebra_ext _ _ fun x ↦ ?_
+    obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
+    rfl
+  have : Algebra.EssFiniteType (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) := by
+    rw [← RingHom.essFiniteType_algebraMap, RingHom.algebraMap_toAlgebra]
+    exact LocallyOfFiniteType.stalkMap f x
+  have : Algebra.FormallyUnramified (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) := by
+    rw [← RingHom.formallyUnramified_algebraMap, RingHom.algebraMap_toAlgebra]
+    exact stalkMap f x
   infer_instance
 
 end FormallyUnramified

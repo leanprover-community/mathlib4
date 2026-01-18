@@ -6,8 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Essentially of finite type algebras
@@ -241,24 +243,75 @@ def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
 
-/-- A choice of "essential generators" for a ring hom essentially of finite type.
-See `Algebra.EssFiniteType.ext`. -/
-noncomputable
-def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
-  letI := f.toAlgebra
-  haveI : Algebra.EssFiniteType R S := hf
-  Algebra.EssFiniteType.finset R S
+lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
+  rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
 lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
   algebraize [f]
   change Algebra.EssFiniteType R S
   infer_instance
 
-lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
+namespace EssFiniteType
+
+/-- A choice of "essential generators" for a ring hom essentially of finite type.
+See `Algebra.EssFiniteType.ext`. -/
+noncomputable
+def finset (hf : f.EssFiniteType) : Finset S :=
+  letI := f.toAlgebra
+  haveI : Algebra.EssFiniteType R S := hf
+  Algebra.EssFiniteType.finset R S
+
+lemma ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
     (h₁ : g₁.comp f = g₂.comp f) (h₂ : ∀ x ∈ hf.finset, g₁ x = g₂ x) : g₁ = g₂ := by
   algebraize [f, g₁.comp f]
   ext x
   exact DFunLike.congr_fun (Algebra.EssFiniteType.algHom_ext T
     ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
 
-end RingHom
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+
+lemma comp {f : R →+* S} {g : S →+* T} (hf : f.EssFiniteType) (hg : g.EssFiniteType) :
+    (g.comp f).EssFiniteType := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.EssFiniteType.comp R S T
+
+lemma comp_iff {f : R →+* S} {g : S →+* T} (hf : f.EssFiniteType) :
+    (g.comp f).EssFiniteType ↔ g.EssFiniteType := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.EssFiniteType.comp_iff R S T
+
+lemma of_comp (f : R →+* S) {g : S →+* T} (h : (g.comp f).EssFiniteType) :
+    g.EssFiniteType := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.EssFiniteType.of_comp R S T
+
+lemma stableUnderComposition : StableUnderComposition EssFiniteType :=
+  fun _ _ _ _ _ _ _ _ hf hg ↦ hf.comp hg
+
+lemma respectsIso : RespectsIso EssFiniteType :=
+  stableUnderComposition.respectsIso fun e ↦ (FiniteType.of_surjective _ e.surjective).essFiniteType
+
+lemma isLocalizationMap {M : Submonoid R} [Algebra R S] [IsLocalization M S]
+    {P : Type*} [CommRing P] {T : Submonoid P} (Q : Type*) [CommRing Q] [Algebra P Q]
+    [IsLocalization T Q] {g : R →+* P} (hy : M ≤ Submonoid.comap g T) (hg : g.EssFiniteType) :
+    (IsLocalization.map (S := S) Q g hy).EssFiniteType := by
+  refine .of_comp (algebraMap R S) ?_
+  rw [IsLocalization.map_comp]
+  refine hg.comp ?_
+  rw [RingHom.essFiniteType_algebraMap]
+  exact .of_isLocalization _ T
+
+lemma localRingHom {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
+    {f : R →+* S} (h : p = q.comap f) (hf : f.EssFiniteType) :
+    (Localization.localRingHom p q f h).EssFiniteType :=
+  hf.isLocalizationMap _ _
+
+lemma residueFieldMap {f : R →+* S} [IsLocalRing R] [IsLocalRing S] [IsLocalHom f]
+    (hf : f.EssFiniteType) :
+    (IsLocalRing.ResidueField.map f).EssFiniteType := by
+  refine .of_comp (IsLocalRing.residue R) ?_
+  rw [IsLocalRing.ResidueField.map_comp_residue]
+  exact .comp hf (FiniteType.of_surjective _ <| IsLocalRing.residue_surjective).essFiniteType
+
+end RingHom.EssFiniteType
