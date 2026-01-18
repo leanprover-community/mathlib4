@@ -381,22 +381,38 @@ theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y
   rw [eq_comm, pair_eq_singleton_iff]
   simp_rw [eq_comm]
 
+instance : NatCast ZFSet := ⟨(mk <| PSet.ofNat ·)⟩
+
+@[simp]
+theorem natCast_zero : ((0 : ℕ) : ZFSet) = ∅ := rfl
+
+@[simp]
+theorem natCast_succ {n : ℕ} : ((n + 1 : ℕ) : ZFSet) = insert (n : ZFSet) (n : ZFSet) := rfl
+
 /-- `omega` is the first infinite von Neumann ordinal -/
 def omega : ZFSet :=
   mk PSet.omega
+
+theorem mem_omega : x ∈ omega ↔ ∃ (n : ℕ), x = n := by
+  induction x using Quotient.inductionOn
+  simp [omega, PSet.mem_omega, Nat.cast, NatCast.natCast, eq]
 
 @[simp]
 theorem omega_zero : ∅ ∈ omega :=
   ⟨⟨0⟩, Equiv.rfl⟩
 
 @[simp]
-theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
-  Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
-    ⟨⟨n + 1⟩,
-      ZFSet.exact <|
-        show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
-          rw [ZFSet.sound h]
-          rfl⟩
+theorem omega_succ {x} : x ∈ omega.{u} → insert x x ∈ omega.{u} := by
+  simp only [mem_omega, forall_exists_index]
+  rintro n rfl
+  exact ⟨n + 1, by simp⟩
+
+/-- `omega` is the smallest inductive set. -/
+theorem subset_omega {x} : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
+  intro h₁ h₂ _ h
+  rw [mem_omega] at h
+  rcases h with ⟨n, rfl⟩
+  induction n with simp [*]
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=

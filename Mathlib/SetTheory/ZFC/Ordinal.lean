@@ -358,16 +358,14 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
-theorem toZFSet_natCast {n : ℕ} : toZFSet n = mk (PSet.ofNat n) := by
-  induction n <;> simp only [Nat.cast_zero, toZFSet_zero, Nat.cast_add, Nat.cast_one,
-    add_one_eq_succ, toZFSet_succ, PSet.ofNat, *] <;> rfl
+@[simp]
+theorem toZFSet_natCast {n : ℕ} : toZFSet n = n := by
+  induction n with simp [*]
 
 @[simp]
 theorem toZFSet_omega0 : toZFSet ω = ZFSet.omega := by
   ext x
-  induction x using Quotient.inductionOn
-  simpa [omega, PSet.omega, PSet.mem_def, mem_toZFSet_iff, lt_omega0, toZFSet_natCast, eq] using
-    exists_congr fun _ => PSet.Equiv.comm
+  simpa [mem_omega, mem_toZFSet_iff, lt_omega0] using exists_congr fun _ => Eq.comm
 
 end Ordinal
 

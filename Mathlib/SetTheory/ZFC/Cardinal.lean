@@ -97,7 +97,7 @@ theorem _root_.Ordinal.card_toZFSet (o : Ordinal) : o.toZFSet.card = o.card := b
     mk_image_eq (s := Set.Iio o) toZFSet_injective
 
 @[simp]
-theorem card_mk_ofNat {n : ℕ} : card (mk (PSet.ofNat n)) = n := by
+theorem card_natCast {n : ℕ} : card n = n := by
   rw [← toZFSet_natCast, card_toZFSet, card_nat]
 
 @[simp]
