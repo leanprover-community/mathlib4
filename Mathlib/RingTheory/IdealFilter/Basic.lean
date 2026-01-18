@@ -128,7 +128,7 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ L.colon {k} :=
   Iff.rfl
 
-/-- For any filter `F` and ideal `J`, the quotient `J/J` is `F`-torsion in the sense of
+/-- For any filter `F` and ideal `I`, the quotient `I/I` is `F`-torsion in the sense of
 `IsTorsionQuot`. -/
 lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
