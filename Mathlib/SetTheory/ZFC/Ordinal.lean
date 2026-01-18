@@ -364,7 +364,7 @@ theorem toZFSet_natCast {n : ℕ} : toZFSet n = n := by
 
 @[simp]
 theorem toZFSet_omega0 : toZFSet ω = ZFSet.omega := by
-  ext x
+  ext
   simpa [mem_omega, mem_toZFSet_iff, lt_omega0] using exists_congr fun _ => Eq.comm
 
 end Ordinal
