@@ -1,3 +1,5 @@
+module
+
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.Whitespace
 
