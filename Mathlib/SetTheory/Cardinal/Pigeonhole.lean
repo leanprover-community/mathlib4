@@ -66,19 +66,34 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
 
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has a fiber with cardinality strictly great than the codomain. -/
-theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (w : #α < #β) (w' : ℵ₀ ≤ #α) :
+theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < #β) (hβ : ℵ₀ ≤ #β) :
     ∃ a : α, #α < #(f ⁻¹' {a}) := by
   simp_rw [← succ_le_iff]
-  exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt w) (w'.trans (lt_succ _).le)
-    ((lt_succ _).trans_le (isRegular_succ w').2.ge)
+  rcases lt_or_ge #α ℵ₀ with hα | hα
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card f ℵ₀ hβ le_rfl (by rwa [isRegular_aleph0.cof_eq])
+    exact ⟨a, ha.trans' (succ_le_of_lt hα)⟩
+  · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
+      ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
 
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has an infinite fiber. -/
-theorem exists_infinite_fiber {β α : Type u} (f : β → α) (w : #α < #β) (w' : Infinite α) :
+theorem exists_infinite_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Infinite β) :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
-  simp_rw [Cardinal.infinite_iff] at w' ⊢
-  obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f w w'
-  exact ⟨a, w'.trans ha.le⟩
+  simp_rw [Cardinal.infinite_iff] at hβ ⊢
+  rcases lt_or_ge #α ℵ₀ with hα | hα
+  · exact infinite_pigeonhole_card f ℵ₀ hβ le_rfl (by rwa [isRegular_aleph0.cof_eq])
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h hβ
+    exact ⟨a, hα.trans ha.le⟩
+
+theorem exists_uncountable_fiber {β α : Type u} (f : β → α) (h : #α < #β) (hβ : Uncountable β) :
+    ∃ a : α, Uncountable (f ⁻¹' {a}) := by
+  simp_rw [← Cardinal.aleph0_lt_mk_iff, ← Order.succ_le_iff, succ_aleph0] at hβ ⊢
+  rcases lt_or_ge #α ℵ₀ with hα | hα
+  · exact infinite_pigeonhole_card f ℵ₁ hβ aleph0_lt_aleph_one.le
+      (by rw [isRegular_aleph_one.cof_eq]; exact hα.trans aleph0_lt_aleph_one)
+  · obtain ⟨a, ha⟩ := infinite_pigeonhole_card_lt f h (hβ.trans' aleph0_lt_aleph_one.le)
+    rw [← Order.succ_le_succ_iff, succ_aleph0] at hα
+    exact ⟨a, hα.trans (succ_le_of_lt ha)⟩
 
 /-- If an infinite type `β` can be expressed as a union of finite sets,
 then the cardinality of the collection of those finite sets
