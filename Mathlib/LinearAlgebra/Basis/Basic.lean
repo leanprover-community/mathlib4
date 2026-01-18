@@ -277,8 +277,8 @@ end NoZeroSMulDivisors
 
 section Singleton
 
-theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (ι : Type*) [Unique ι] :
+theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] (ι : Type*) [Unique ι] :
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
