@@ -113,13 +113,6 @@ lemma ι_flip : sq.flip.ι = sq.ι := by
   · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
   · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
 
-@[simp]
-lemma ofHasPushout_ι
-    [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
-    (ofHasPushout F f₁ f₂).ι =
-    (IsPushout.of_hasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)).desc
-      ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (((F.map f₁).naturality f₂).symm) := rfl
-
 noncomputable section Arrow
 
 variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
@@ -149,7 +142,7 @@ lemma mapArrowLeft_id :
     all_goals simp
   · simp
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁''.hom f₂.hom)
     (sq : f₁ ⟶ f₁') (sq' : f₁' ⟶ f₁'') :
     (mapArrowLeft sq₁₂ sq₁₂' sq) ≫ (mapArrowLeft sq₁₂' sq₁₂'' sq') =
@@ -196,7 +189,7 @@ lemma mapArrowRight_id :
     all_goals simp
   · simp
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f₁.hom f₂''.hom)
     (sq : f₂ ⟶ f₂') (sq' : f₂' ⟶ f₂'') :
     (mapArrowRight sq₁₂ sq₁₂' sq) ≫ (mapArrowRight sq₁₂' sq₁₂'' sq') =
