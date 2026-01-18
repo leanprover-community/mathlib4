@@ -105,8 +105,7 @@ def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
 theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
 
 theorem IsSkewHermitian.ext {A : Matrix n n α} (h : ∀ i j, star (A j i) = -A i j) :
-    A.IsSkewHermitian := by
-  ext i j; exact h i j
+    A.IsSkewHermitian := Matrix.ext h
 
 theorem IsSkewHermitian.apply {A : Matrix n n α} (h : A.IsSkewHermitian) (i j : n) :
     star (A j i) = -A i j :=
