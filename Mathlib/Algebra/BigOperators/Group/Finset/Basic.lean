@@ -89,7 +89,11 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
     (∏ x ∈ ({a, b} : Finset ι), f x) = f a * f b := by
   rw [prod_insert (notMem_singleton.2 h), prod_singleton]
 
-@[to_additive (attr := simp)]
+/-- If a function is injective on a finset, products over the original finset or its image coincide.
+See also `prod_image_of_pairwise_eq_one` for a version with weaker assumptions. -/
+@[to_additive (attr := simp) /-- If a function is injective on a finset, sums over the original
+finset or its image coincide.
+See also `sum_image_of_pairwise_eq_zero` for a version with weaker assumptions. -/]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
     Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
@@ -210,7 +214,12 @@ lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι 
 theorem prod_sumElim (s : Finset ι) (t : Finset κ) (f : ι → M) (g : κ → M) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
 
-@[to_additive]
+/-- Given a finite family of pairwise disjoint finsets, the product over their union is the product
+of the products over the sets.
+See also `prod_biUnion_of_pairwise_eq_one` for a version with weaker assumptions. -/
+@[to_additive /-- Given a finite family of pairwise disjoint finsets, the sum over their union is
+the sum of the sums over the sets.
+See also `sum_biUnion_of_pairwise_eq_zero` for a version with weaker assumptions. -/]
 theorem prod_biUnion [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
@@ -382,30 +391,6 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
   conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by simp_all)]
   conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by simp_all), inter_comm]
   exact prod_congr rfl (by simpa)
-
-/-- If a function `g` is injective on `s`, except for some points where `f (g i) = 1`, then
-the product of `f (g x)` over `s` equals the product of `f i` over the image of `s`. -/
-@[to_additive /-- If a function `g` is injective on `s`, except for some points
-where `f (g i) = 0`, then the sum of `f (g x)` over `s` equals the sum of `f i` over the
-image of `s`. -/]
-theorem prod_image_of_apply_eq_one_of_eq [DecidableEq ι] {s : Finset κ} {g : κ → ι}
-    (hg : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → g i = g j → f (g i) = 1) :
-    ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) := by
-  classical
-  let s' : Finset κ := s.filter (fun i ↦ f (g i) ≠ 1)
-  have : ∏ x ∈ s, f (g x) = ∏ x ∈ s', f (g x) := by
-    apply Finset.prod_congr_of_eq_on_inter <;> simp +contextual [s']
-  rw [this, ← prod_image (s := s')]; swap
-  · intro i hi j hj hij
-    simp only [ne_eq, coe_filter, Set.mem_setOf_eq, s'] at hi hj
-    contrapose! hg
-    exact ⟨i, hi.1, j, hj.1, hg, hij, hi.2⟩
-  apply Finset.prod_congr_of_eq_on_inter
-  · simp +contextual [s']
-    grind
-  · simp +contextual [s']
-    grind
-  · simp
 
 @[to_additive]
 theorem prod_eq_mul_of_mem {s : Finset ι} {f : ι → M} (a b : ι) (ha : a ∈ s) (hb : b ∈ s)
@@ -807,6 +792,26 @@ lemma prod_mul_eq_prod_mul_of_exists {s : Finset ι} {f : ι → M} {b₁ b₂ :
   rw [← insert_erase ha]
   simp only [mem_erase, ne_eq, not_true_eq_false, false_and, not_false_eq_true, prod_insert]
   rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
+
+@[to_additive]
+theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
+    (hs : (s : Set κ).Pairwise fun i j ↦ ∀ k ∈ t i ∩ t j, f k = 1) :
+    ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
+  classical
+  let t' k := (t k).filter (fun i ↦ f i ≠ 1)
+  have : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s.biUnion t', f x := by
+    apply prod_congr_of_eq_on_inter
+    · simp +contextual; grind
+    · simp +contextual; grind
+    · simp
+  rw [this, prod_biUnion]; swap
+  · intro i hi j hj hij a hai haj k hk
+    have hki : k ∈ t' i := hai hk
+    have hkj : k ∈ t' j := haj hk
+    simp only [ne_eq, mem_filter, t'] at hki hkj
+    exact (hki.2 (hs hi hj hij k (by grind) )).elim
+  apply Finset.prod_congr rfl (fun i hi ↦ ?_)
+  exact prod_filter_ne_one (t i)
 
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι → M} {n : κ} {I : Finset κ}
