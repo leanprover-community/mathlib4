@@ -65,8 +65,6 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
   ext x
   simp [mem_colon, mem_annihilator]
 
-@[deprecated (since := "2026-01-11")] alias colon_bot := bot_colon
-
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
   fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| (mem_colon).mp hrns s₁ <| hs hs₁
 
@@ -100,7 +98,7 @@ lemma iInf_colon {ι : Sort*} (f : ι → Submodule R M) : (⨅ i, f i).colon S 
   aesop (add simp mem_colon)
 
 @[simp]
-lemma colon_finset_inf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
+lemma colon_finsetInf {ι : Type*} (s : Finset ι) (f : ι → Submodule R M) :
     (s.inf f).colon S = s.inf (fun i ↦ (f i).colon S) := by
   aesop (add simp mem_colon)
 
@@ -120,6 +118,9 @@ lemma colon_iUnion {ι : Sort*} (f : ι → Set M) : N.colon (⋃ i, f i) = ⨅ 
 lemma colon_empty : N.colon (∅ : Set M) = ⊤ := by
   aesop (add simp mem_colon)
 
+lemma colon_bot : N.colon ((⊥ : Submodule R M) : Set M) = ⊤ := by
+  simp
+
 end Semiring
 
 section CommSemiring
@@ -131,7 +132,6 @@ variable {N N' : Submodule R M} {S : Set M}
 theorem mem_colon' {r} : r ∈ N.colon S ↔ S ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) N :=
   mem_colon
 
-open Pointwise in
 theorem mem_colon_iff_le {r} : r ∈ N.colon N' ↔ r • N' ≤ N := by
   aesop (add simp SetLike.coe_subset_coe)
 
