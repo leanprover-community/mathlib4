@@ -122,7 +122,7 @@ theorem IsSkewHermitian.transpose {A : Matrix n n α} (h : A.IsSkewHermitian) :
 @[simp]
 theorem isSkewHermitian_transpose_iff (A : Matrix n n α) :
     Aᵀ.IsSkewHermitian ↔ A.IsSkewHermitian :=
-  ⟨fun h ↦ by rw [← transpose_transpose A]; exact h.transpose, IsSkewHermitian.transpose⟩
+  ⟨IsSkewHermitian.transpose, IsSkewHermitian.transpose⟩
 
 end SkewHermitian
 
