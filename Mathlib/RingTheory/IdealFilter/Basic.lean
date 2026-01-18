@@ -136,11 +136,10 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
   obtain ⟨J, h_J⟩ := F.nonempty
   exact ⟨J, h_J, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
 
-
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot_mono_left (F : IdealFilter A)
-    {I J K : Ideal A} (I_leq_J : I ≤ J) : IsTorsionQuot F I K → IsTorsionQuot F J K := by
-  intro I_tors x h_x
+    {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K := by
+  intro x h_x
   obtain ⟨L, ⟨L_in_F, h_L⟩⟩ := I_tors x h_x
   refine ⟨L, L_in_F, ?_⟩
   intro y h_y
