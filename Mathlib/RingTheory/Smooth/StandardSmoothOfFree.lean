@@ -146,9 +146,7 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
   use g, hg
   refine .of_basis_kaehlerDifferential (.ofRepr (LinearEquiv.ofBijective eₜ' h).symm) ?_
   rintro - ⟨i, rfl⟩
-  use algebraMap S (Localization.Away g) (a i)
-  have : Finsupp.single i 1 = l₁ₜ (Finsupp.basisSingleOne i) := by simp [l₁ₜ]
-  simp [eₜ', this, l₂ₜ, e]
+  exact ⟨algebraMap S _ (a i), by simp +zetaDelta [IsLocalizedModule.map_linearCombination]⟩
 
 variable (R S) in
 /-- If `S` is `R`-smooth, there exists a cover by basic opens `D(sᵢ)` such that
