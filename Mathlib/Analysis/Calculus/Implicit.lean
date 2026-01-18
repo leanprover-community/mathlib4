@@ -31,8 +31,8 @@ For the version where the implicit equation is defined by a $C^n$ function `f : 
 invertible derivative `∂f/∂y`, see `IsContDiffImplicitAt.implicitFunction`.
 
 Fourth, we consider the common case of bivariate `f`, the second of whose partial derivatives is
-invertible. Then we may apply the general theorem to obtain `ψ` such that for `(y₁, y₂)` in a
-neighbourhood of `(x₁, x₂)` we have `f (y₁, y₂) = f (x₁, x₂) ↔ ψ y₁ = y₂`.
+invertible. Then we may apply the general theorem to obtain `ψ` such that for `(v₁, v₂)` in a
+neighbourhood of `(u₁, u₂)` we have `f (v₁, v₂) = f (u₁, u₂) ↔ ψ v₁ = v₂`.
 
 ## TODO
 
@@ -262,7 +262,7 @@ theorem rightDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G
     φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x := by
   exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
 
-theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
+theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
@@ -446,7 +446,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction_hasStrictFDerivAt
+  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
     f'.ker.subtypeL _ _
   swap
   · ext
@@ -589,85 +589,92 @@ section ProdDomain
 /-!
 ### Case of a product space domain
 
-Given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
-`ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` where the first function is `f`, and the second function is
-`Prod.fst : E₁ × E₂ → E₁`. We may then extract `ψ : E₁ → E₂` with the desired
-properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
-for the first derivative of `ψ` is immediately derived.
+Given strictly differentiable `f : E₁ × E₂ → F`, the second of whose partial derivatives is known to
+be invertible, we may construct an `ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` with `f` as its `leftFun`
+and `Prod.fst : E₁ × E₂ → E₁` as its `rightFun`. We may then extract `ψ : E₁ → E₂` with the desired
+properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunctionOfProdDomain`. A
+formula for the first derivative of `ψ` is immediately derived.
 -/
 
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁] [NormedAddCommGroup E₂]
   [NormedSpace 𝕜 E₂] [CompleteSpace E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
-/-- Given linear maps `f₁ : E₁ →L[𝕜] F` and `f₂ : E₂ ≃L[𝕜] F` (the second invertible) and that
-`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E₁ × E₂ → F` and
-`Prod.fst : E₁ × E₂ → E₁` in
-the original formulation are complementary and construct an object of type `ImplicitFunctionData`
-thereby permitting use of the general machinery provided above. -/
-def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
-    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
-  leftFun := f
-  rightFun := Prod.fst
-  pt := x
-  leftDeriv := f₁.coprod f₂
-  hasStrictFDerivAt_leftFun := dfx
-  rightDeriv := ContinuousLinearMap.fst 𝕜 E₁ E₂
-  hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
-  range_leftDeriv := by
-    rw [ContinuousLinearMap.range_coprod]
-    convert sup_top_eq _
-    exact LinearEquivClass.range f₂
-  range_rightDeriv := Submodule.range_fst
-  isCompl_ker := by
-    constructor
-    · rw [Submodule.disjoint_def]
-      aesop
-    · rw [Submodule.codisjoint_iff_exists_add_eq]
-      intro (h₁, h₂)
-      use (h₁, f₂.symm (f₁ (-h₁))), (0, h₂ - f₂.symm (f₁ (-h₁)))
-      simp
+/-- Given `HasStrictFDerivAt f f' u` with `f' : E₁ × E₂ →L[𝕜] F` decomposing into `f₁ : E₁ →L[𝕜] F`
+and `f₂ : E₂ →L[𝕜] F`, the latter invertible, we prove that the kernels of `f'` and
+`ContinuousLinearMap.fst 𝕜 E₁ E₂` are complementary and construct an object of type
+`ImplicitFunctionData` thereby permitting use of the general machinery provided above. -/
+def implicitFunctionDataOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ :=
+  let f₁ := f' ∘L .inl 𝕜 E₁ E₂
+  let f₂ := f' ∘L .inr 𝕜 E₁ E₂
+  { leftFun := f
+    rightFun := Prod.fst
+    pt := u
+    leftDeriv := f₁.coprod f₂
+    hasStrictFDerivAt_leftFun := by
+      simp [f₁, f₂, ← ContinuousLinearMap.comp_coprod, dfu]
+    rightDeriv := .fst 𝕜 E₁ E₂
+    hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
+    range_leftDeriv := by
+      rw [ContinuousLinearMap.range_coprod]
+      convert sup_top_eq _
+      exact f₂.range_eq_top.2 if₂.surjective
+    range_rightDeriv := Submodule.range_fst
+    isCompl_ker := by
+      change f₂.IsInvertible at if₂
+      constructor
+      · rw [LinearMap.disjoint_ker]
+        intro (_, y) h rfl
+        suffices y ∈ (⊥ : Submodule 𝕜 E₂) by simpa using this
+        simpa [← f₂.ker_eq_bot.2 if₂.injective] using h
+      · rw [Submodule.codisjoint_iff_exists_add_eq]
+        intro (v₁, v₂)
+        use (v₁, -f₂.inverse (f₁ v₁)), (0, v₂ + f₂.inverse (f₁ v₁))
+        simp [if₂] }
 
 /-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
-`f : E₁ × E₂ → F` at `x`. -/
-def implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
+`f : E₁ × E₂ → F` at `u`. -/
+def implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
-  fun u => (dfx.implicitFunDataOfProdDomain.implicitFunction (f x) u).2
+  fun x => ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2
 
-theorem hasStrictFDerivAt_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
-    HasStrictFDerivAt dfx.implicitFunOfProdDomain (-f₂.symm ∘L f₁) x₁ := by
-  set ψ' : E₁ →L[𝕜] E₂ := -f₂.symm ∘L f₁
-  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod ψ')
-  apply dfx.implicitFunDataOfProdDomain.implicitFunction_hasStrictFDerivAt
+theorem hasStrictFDerivAt_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    HasStrictFDerivAt (dfu.implicitFunctionOfProdDomain if₂)
+      (-(f' ∘L .inr 𝕜 E₁ E₂).inverse ∘L (f' ∘L .inl 𝕜 E₁ E₂)) u.1 := by
+  set f₁ := f' ∘L .inl 𝕜 E₁ E₂
+  set f₂ := f' ∘L .inr 𝕜 E₁ E₂
+  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod (-f₂.inverse ∘L f₁))
+  apply (dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction
   · apply ContinuousLinearMap.fst_comp_prod
-  · change f₁ + f₂ ∘L ψ' = 0
-    simp [ψ', ← ContinuousLinearMap.comp_assoc]
+  · change f₁ + f₂ ∘L (-f₂.inverse ∘L f₁) = 0
+    simp [← ContinuousLinearMap.comp_assoc, if₂]
 
-theorem image_eq_iff_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) x) :
-    ∀ᶠ y in 𝓝 x, f y = f x ↔ dfx.implicitFunOfProdDomain y.1 = y.2 := by
-  let φ := dfx.implicitFunDataOfProdDomain
+theorem image_eq_iff_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ∀ᶠ v in 𝓝 u, f v = f u ↔ dfu.implicitFunctionOfProdDomain if₂ v.1 = v.2 := by
+  let φ := dfu.implicitFunctionDataOfProdDomain if₂
   filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction] with y h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
-theorem tendsto_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
-    Tendsto dfx.implicitFunOfProdDomain (𝓝 x₁) (𝓝 x₂) := by
-  have := dfx.hasStrictFDerivAt_implicitFunOfProdDomain.continuousAt.tendsto
-  rwa [dfx.image_eq_iff_implicitFunOfProdDomain.self_of_nhds.mp rfl] at this
+theorem tendsto_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    Tendsto (dfu.implicitFunctionOfProdDomain if₂) (𝓝 u.1) (𝓝 u.2) := by
+  have := (dfu.hasStrictFDerivAt_implicitFunctionOfProdDomain if₂).continuousAt.tendsto
+  rwa [(dfu.image_eq_iff_implicitFunctionOfProdDomain if₂).self_of_nhds.mp rfl] at this
 
-theorem image_implicitFunOfProdDomain {f : E₁ × E₂ → F} {x₁ : E₁} {x₂ : E₂}
-    {f₁ : E₁ →L[𝕜] F} {f₂ : E₂ ≃L[𝕜] F} (dfx : HasStrictFDerivAt f (f₁.coprod f₂) (x₁, x₂)) :
-    ∀ᶠ u in 𝓝 x₁, f (u, dfx.implicitFunOfProdDomain u) = f (x₁, x₂) := by
-  have hψ := dfx.tendsto_implicitFunOfProdDomain
-  set ψ := dfx.implicitFunOfProdDomain
-  suffices ∀ᶠ u in 𝓝 x₁, f (u, ψ u) = f (x₁, x₂) ↔ ψ u = ψ u by simpa
-  apply Eventually.image_of_prod (r := fun u v => f (u, v) = f (x₁, x₂) ↔ ψ u = v) hψ
+theorem image_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    ∀ᶠ x in 𝓝 u.1, f (x, dfu.implicitFunctionOfProdDomain if₂ x) = f u := by
+  have hψ := dfu.tendsto_implicitFunctionOfProdDomain if₂
+  set ψ := dfu.implicitFunctionOfProdDomain if₂
+  suffices ∀ᶠ x in 𝓝 u.1, f (x, ψ x) = f u ↔ ψ x = ψ x by simpa
+  apply Eventually.image_of_prod (r := fun x y => f (x, y) = f u ↔ ψ x = y) hψ
   rw [← nhds_prod_eq]
-  exact dfx.image_eq_iff_implicitFunOfProdDomain
+  exact dfu.image_eq_iff_implicitFunctionOfProdDomain if₂
 
 end ProdDomain
 
