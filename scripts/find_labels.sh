@@ -32,11 +32,6 @@ commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty
 # Retrieve merged PRs from the given range
 prs=$(gh pr list --repo "$repository" --state closed --base master --search "closed:${startDate}..${endDate}" --json number,labels,title,author --limit "$((commits_in_range * 2))")
 
-## Print PR numbers, their labels and their title
-#echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
-
-commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty=oneline | wc -l)"
-
 printf $'\n\nBetween %s and %s there were\n' "${startDate}" "${endDate/%T*}"
 
 printf $'* %s commits to `master` and\n' "${commits_in_range}"
