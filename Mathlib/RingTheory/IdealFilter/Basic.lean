@@ -138,14 +138,8 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot_mono_left (F : IdealFilter A)
-    {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K := by
-  intro x h_x
-  obtain ⟨L, ⟨L_in_F, h_L⟩⟩ := I_tors x h_x
-  refine ⟨L, L_in_F, ?_⟩
-  intro y h_y
-  refine Submodule.mem_colon.mpr ?_
-  intro a h_a
-  exact I_leq_J (Submodule.mem_colon.mp (h_L h_y) a h_a)
+    {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
+  fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono I_leq_J .rfl))
 
 /-- `isPFilter_gabrielComposition` shows that the set defining `gabrielComposition` is a
 `PFilter`. -/
