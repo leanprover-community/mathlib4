@@ -12,9 +12,9 @@ public import Mathlib.Topology.MetricSpace.Cover
 
 A **Delone set** `D ⊆ X` in a metric space is a set which is both:
 
-* **uniformly discrete**: there exists `packingRadius > 0` such that distinct points of `D`
+* **Uniformly Discrete**: there exists `packingRadius > 0` such that distinct points of `D`
   are separated by a distance strictly greater than `packingRadius`;
-* **relatively dense**: there exists `coveringRadius > 0` such that every point of `X`
+* **Relatively Dense**: there exists `coveringRadius > 0` such that every point of `X`
   lies within distance `coveringRadius` of some point of `D`.
 
 The `DeloneSet` structure stores the set together with explicit radii witnessing
@@ -42,9 +42,14 @@ Delone sets appear in discrete geometry, crystallography, aperiodic order, and t
 
 ## Implementation notes
 
-Delone sets are bundled as a structure rather than defined via a predicate (e.g. `IsDelone`).
-This treats them as first-class objects for dynamical systems constructions (like hulls and patches)
-and eliminates the need to manually pass proofs that these operations preserve the Delone property.
+* **Bundled Structure**: `DeloneSet` is bundled as a structure rather than a predicate
+  (e.g., `IsDelone`). This facilitates dynamical systems constructions like hulls and patches by
+  ensuring operations automatically preserve the required properties, eliminating the need to
+  manually pass around proofs that the set remains Delone.
+* **Explicit Data**: Since radii are stored as explicit data, the map from `DeloneSet X` to `Set X`
+  is not injective. We provide a `Membership` instance and `mem_carrier` to allow the convenience
+  of `∈` notation while ensuring radii remain bundled, computationally accessible, and tracked by
+  extensionality.
 -/
 
 @[expose] public section
@@ -123,17 +128,17 @@ noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 
 /-- The image of a Delone set under an isometry. This is a specialization of
 `DeloneSet.mapBiLipschitz` where the packing and covering radii are preserved because the
 Lipschitz constants are both 1. -/
-noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
+noncomputable abbrev mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
   D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
     f.isometry.antilipschitz f.isometry.lipschitz
 
 @[simp] lemma packingRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
     (D.mapIsometry f).packingRadius = D.packingRadius := by
-  simp only [mapIsometry, mapBilipschitz, div_one]
+  simp only [mapBilipschitz, div_one]
 
 @[simp] lemma coveringRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
     (D.mapIsometry f).coveringRadius = D.coveringRadius := by
-  simp only [mapIsometry, mapBilipschitz, IsometryEquiv.coe_toEquiv, div_one, one_mul]
+  simp only [mapBilipschitz, IsometryEquiv.coe_toEquiv, div_one, one_mul]
 
 /-- Extensionality for Delone sets. -/
 @[ext] lemma ext {D E : DeloneSet X}
@@ -142,19 +147,36 @@ noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :
     (h_covering : D.coveringRadius = E.coveringRadius) : D = E := by
   cases D; cases E; congr
 
-@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
-  ext <;> simp only [mapIsometry, mapBilipschitz, IsometryEquiv.coe_toEquiv, div_one,
-    one_mul, Set.mem_image]
-  exact exists_eq_right
+@[simp] lemma mapBilipschitz_refl (D : DeloneSet X) (hK1 hK2 hA hL) :
+  D.mapBilipschitz (.refl X) 1 1 hK1 hK2 hA hL = D := by
+  ext <;> simp only [mapBilipschitz, Equiv.refl_apply, Set.image_id',
+    div_one, one_mul]
+
+lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
+    (f : X ≃ Y) (g : Y ≃ Z) (K₁f K₂f K₁g K₂g : ℝ≥0)
+    (hf₁_pos : 0 < K₁f) (hf₂_pos : 0 < K₂f)
+    (hg₁_pos : 0 < K₁g) (hg₂_pos : 0 < K₂g)
+    (hf_anti : AntilipschitzWith K₁f f) (hf_lip : LipschitzWith K₂f f)
+    (hg_anti : AntilipschitzWith K₁g g) (hg_lip : LipschitzWith K₂g g) :
+    (D.mapBilipschitz f K₁f K₂f hf₁_pos hf₂_pos hf_anti hf_lip).mapBilipschitz
+      g K₁g K₂g hg₁_pos hg₂_pos hg_anti hg_lip =
+    D.mapBilipschitz (f.trans g) (K₁f * K₁g) (K₂g * K₂f)
+      (mul_pos hf₁_pos hg₁_pos) (mul_pos hg₂_pos hf₂_pos)
+      (hg_anti.comp hf_anti) (hg_lip.comp hf_lip) := by
+  ext
+  · simp only [mapBilipschitz_carrier, Equiv.trans_apply, Set.mem_image]
+    exact exists_exists_and_eq_and
+  · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
+  · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
+
+@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D :=
+  mapBilipschitz_refl D ..
 
 lemma mapIsometry_trans {Z : Type*} [MetricSpace Z]
     (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
     D.mapIsometry (f.trans g) = (D.mapIsometry f).mapIsometry g := by
-  ext <;> simp [mapIsometry, mapBilipschitz]
-
-lemma mapIsometry_symm (D : DeloneSet X) (f : X ≃ᵢ Y) :
-    (D.mapIsometry f).mapIsometry f.symm = D := by
-  ext <;> simp [mapIsometry, mapBilipschitz]
+  simp only [mapBilipschitz_trans, mul_one]
+  rfl
 
 end DeloneSet
 
