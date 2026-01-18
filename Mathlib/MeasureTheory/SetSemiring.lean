@@ -438,6 +438,58 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
 
 end disjointOfUnion
 
+/-- Finite disjoint unions of elements of a set of sets. -/
+def _root_.Set.finiteUnions (C : Set (Set α)) : Set (Set α) :=
+  {s | ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J}
+
+lemma _root_.Set.self_subset_finiteUnions (C : Set (Set α)) : C ⊆ C.finiteUnions :=
+  fun s hs ↦ ⟨{s}, by simp [hs], by simp, by simp⟩
+
+/-- Given a semi-ring of sets, finite unions of these also form a semi-ring of sets. -/
+lemma finiteUnions (hC : IsSetSemiring C) :
+    IsSetSemiring C.finiteUnions where
+  empty_mem := ⟨∅, by simp⟩
+  inter_mem := by
+    classical
+    rintro s ⟨I, IC, Idisj, rfl⟩ t ⟨J, JC, Jdisj, rfl⟩
+    refine ⟨(I ×ˢ J).image (fun p ↦ p.1 ∩ p.2), ?_, ?_, ?_⟩
+    · simp only [coe_image, coe_product, image_prod, image2_subset_iff, SetLike.mem_coe]
+      intro i hi j hj
+      apply hC.inter_mem _ (IC hi) _ (JC hj)
+    · intro p hp q hq hpq
+      simp only [coe_image, coe_product, image_prod, mem_image2, SetLike.mem_coe] at hp hq
+      rcases hp with ⟨ip, hip, jp, hjp, rfl⟩
+      rcases hq with ⟨iq, hiq, jq, hjq, rfl⟩
+      rcases eq_or_ne ip iq with rfl | hipq
+      · exact (Jdisj hjp hjq (by grind)).mono inter_subset_right inter_subset_right
+      · exact (Idisj hip hiq hipq).mono inter_subset_left inter_subset_left
+    · ext; simp; grind
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨I, IC, Idisj, rfl⟩ t ⟨J, JC, Jdisj, rfl⟩
+    have A (i) (hi : i ∈ I) : ∃ J' : Finset (Set α), ↑J' ⊆ C ∧
+        PairwiseDisjoint (J' : Set (Set α)) id ∧ i \ ⋃₀ J = ⋃₀ J' :=
+      hC.exists_disjoint_finset_diff_eq (IC hi) JC
+    choose! J' hJ'C hJ'disj hiJ' using A
+    have H {a i} (hi : i ∈ I) (ha : a ∈ J' i) : a ⊆ i \ ⋃₀ ↑J := by
+      rw [hiJ' i hi]
+      simp only [sUnion_eq_biUnion, SetLike.mem_coe]
+      exact Set.subset_biUnion_of_mem (u := id) ha
+    refine ⟨I.biUnion J', ?_, ?_, ?_⟩
+    · exact Subset.trans (by simp; grind) C.self_subset_finiteUnions
+    · intro s hs t ht hst
+      simp only [coe_biUnion, SetLike.mem_coe, mem_iUnion, exists_prop] at hs ht
+      rcases hs with ⟨i, iI, hi⟩
+      rcases ht with ⟨j, jI, hj⟩
+      rcases eq_or_ne i j with rfl | hij
+      · exact hJ'disj i iI hi hj hst
+      · exact (Idisj iI jI hij).mono ((H iI hi).trans diff_subset)
+          ((H jI hj).trans diff_subset)
+    · simp only [sUnion_eq_biUnion, SetLike.mem_coe, iUnion_diff, coe_biUnion, mem_iUnion,
+        exists_prop, iUnion_exists, biUnion_and']
+      apply iUnion_congr (fun i ↦ iUnion_congr (fun hi ↦ ?_))
+      simpa [sUnion_eq_biUnion] using hiJ' i hi
+
 end IsSetSemiring
 
 /-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
