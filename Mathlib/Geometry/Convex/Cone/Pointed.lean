@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.Algebra.Group.Submonoid.Support
 
 /-!
 # Pointed cones
@@ -241,11 +242,11 @@ variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
 def lineal (C : PointedCone R E) : Submodule R E where
-  __ := C ⊓ -C
+  __ := C.toAddSubmonoid.support
   smul_mem' r _ hx := by
-    obtain hr | hr := le_total 0 r
+    by_cases hr : 0 ≤ r
     · simpa using And.intro (C.smul_mem hr hx.1) (C.smul_mem hr hx.2)
-    · rw [← neg_nonneg] at hr
+    · have hr := le_of_lt <| neg_pos_of_neg <| lt_of_not_ge hr
       simpa using And.intro (C.smul_mem hr hx.2) (C.smul_mem hr hx.1)
 
 @[simp]
@@ -253,6 +254,10 @@ lemma coe_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
   rfl
 
 lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
+  rfl
+
+@[simp]
+theorem support_eq {C : PointedCone R E} : C.support = C.lineal.toAddSubgroup :=
   rfl
 
 lemma lineal_le (C : PointedCone R E) : C.lineal ≤ C := by simp
