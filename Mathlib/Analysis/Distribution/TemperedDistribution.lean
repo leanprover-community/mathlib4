@@ -40,7 +40,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
@@ -257,6 +257,34 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
     smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
   ext1 f
   simp [hg₁, hg₂]
+
+theorem smulLeftCLM_smul {g : E → ℂ} (hg : g.HasTemperateGrowth) (c : ℂ) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  ext f u
+  simp [UniformConvergenceCLM.smul_apply, SchwartzMap.smulLeftCLM_smul hg]
+
+theorem smulLeftCLM_add {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ + g₂) = smulLeftCLM F g₁ + smulLeftCLM F g₂ := by
+  ext f u
+  simp [UniformConvergenceCLM.add_apply, SchwartzMap.smulLeftCLM_add hg₁ hg₂]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ - g₂) = smulLeftCLM F g₁ - smulLeftCLM F g₂ := by
+  ext f u
+  simp [UniformConvergenceCLM.sub_apply, SchwartzMap.smulLeftCLM_sub hg₁ hg₂]
+
+theorem smulLeftCLM_neg {g : E → ℂ} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (-g) = -smulLeftCLM F g := by
+  ext f u
+  simp [UniformConvergenceCLM.neg_apply, SchwartzMap.smulLeftCLM_neg hg]
+
+theorem smulLeftCLM_sum {g : ι → E → ℂ} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f u
+  simp [UniformConvergenceCLM.sum_apply, SchwartzMap.smulLeftCLM_sum hg]
+
 
 open ENNReal MeasureTheory
 
