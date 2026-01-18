@@ -73,7 +73,8 @@ def Pseudoperfect (n : ℕ) : Prop :=
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
 theorem not_pseudoperfect_iff_forall :
-    ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by grind [Pseudoperfect]
+    ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n :=
+  by grind [Pseudoperfect]
 
 theorem deficient_one : Deficient 1 := zero_lt_one
 theorem deficient_two : Deficient 2 := one_lt_two
@@ -115,7 +116,8 @@ theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
 theorem Prime.not_abundant (h : Prime n) : ¬ Abundant n :=
   fun h1 ↦ (h.one_lt.trans h1).ne' (sum_properDivisors_eq_one_iff_prime.mpr h)
 
-theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by grind [Weird, h.not_abundant]
+theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
+  grind [Weird, h.not_abundant]
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
@@ -161,7 +163,8 @@ theorem _root_.IsPrimePow.deficient (h : IsPrimePow n) : Deficient n := by
   obtain ⟨p, k, hp, -, rfl⟩ := h
   exact hp.nat_prime.deficient_pow
 
-theorem Prime.deficient (h : Prime n) : Deficient n := (pow_one n) ▸ h.deficient_pow
+theorem Prime.deficient (h : Prime n) : Deficient n :=
+  (pow_one n) ▸ h.deficient_pow
 
 /-- There exists infinitely many deficient numbers -/
 theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
