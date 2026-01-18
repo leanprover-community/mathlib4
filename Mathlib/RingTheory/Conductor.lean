@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # The conductor ideal
 This file defines the conductor ideal of an element `x` of `R`-algebra `S`. This is the ideal of
@@ -20,7 +22,7 @@ This file defines the conductor ideal of an element `x` of `R`-algebra `S`. This
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
+open Ideal Polynomial DoubleQuot Module UniqueFactorizationMonoid Algebra RingHom
 
 local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 
@@ -60,7 +62,7 @@ theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
-    [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
+    [IsScalarTower R S L] [IsDomain S] [IsTorsionFree S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
       y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
   cases subsingleton_or_nontrivial L
