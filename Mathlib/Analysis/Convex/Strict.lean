@@ -278,7 +278,8 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
       split_ifs
       · exact strictConvex_univ
       · exact strictConvex_empty
-    refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_ (smul_right_injective E hc)
+    refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_
+      (NoZeroSMulDivisors.smul_right_injective E hc)
     unfold LinearMap.lsmul LinearMap.mk₂ LinearMap.mk₂' LinearMap.mk₂'ₛₗ
     exact continuous_const_smul _
 

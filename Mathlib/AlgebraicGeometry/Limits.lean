@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+
 
 /-!
 # (Co)Limits of Schemes
@@ -120,6 +123,10 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
 noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
+lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpty X :=
+  ⟨fun ⟨h⟩ ↦ (h.uniqueUpToIso specPunitIsInitial).hom.homeomorph.isEmpty,
+    fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
+
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
   .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec <| .of PUnit))
 
@@ -169,8 +176,8 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
-lemma sigmaι_eq_iff (i j : ι) (x y) :
-    Sigma.ι f i x = Sigma.ι f j y ↔ (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
+lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
+    Sigma.ι g i x = Sigma.ι g j y ↔ (Sigma.mk i x : Σ i, g i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
   · rintro ⟨k, ⟨⟨⟨⟩⟩⟩, ⟨⟨⟨⟩⟩⟩, x, rfl, rfl⟩; simp
   · simp only [Discrete.functor_obj_eq_as, Sigma.mk.injEq]
@@ -179,13 +186,40 @@ lemma sigmaι_eq_iff (i j : ι) (x y) :
     exact ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
 /-- The images of each component in the coproduct is disjoint. -/
-lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
-    Disjoint (Sigma.ι f i).opensRange (Sigma.ι f j).opensRange := by
+lemma disjoint_opensRange_sigmaι [Small.{u} σ] (i j : σ) (h : i ≠ j) :
+    Disjoint (Sigma.ι g i).opensRange (Sigma.ι g j).opensRange := by
   intro U hU hU' x hx
   obtain ⟨x, rfl⟩ := hU hx
   obtain ⟨y, hy⟩ := hU' hx
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
+
+variable {g} in
+lemma isEmpty_of_commSq_sigmaι_of_ne [Small.{u} σ] {i j : σ} {Z : Scheme.{u}} {a : Z ⟶ g i}
+    {b : Z ⟶ g j} (h : CommSq a b (Sigma.ι g i) (Sigma.ι g j)) (hij : i ≠ j) :
+    IsEmpty Z := by
+  refine ⟨fun z ↦ ?_⟩
+  fapply eq_bot_iff.mp <| disjoint_iff.mp <| disjoint_opensRange_sigmaι g i j hij
+  · exact (a ≫ Sigma.ι g i).base z
+  · exact ⟨⟨a.base z, rfl⟩, ⟨b.base z, by rw [← Scheme.Hom.comp_apply, h.w]⟩⟩
+
+lemma isEmpty_pullback_sigmaι_of_ne [Small.{u} σ] {i j : σ} (hij : i ≠ j) :
+    IsEmpty ↑(pullback (Sigma.ι g i) (Sigma.ι g j)) :=
+  isEmpty_of_commSq_sigmaι_of_ne ⟨pullback.condition⟩ hij
+
+noncomputable instance [Small.{u} σ] : CoproductsOfShapeDisjoint Scheme.{u} σ where
+  coproductDisjoint g := by
+    refine .of_hasCoproduct (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _) ?_
+    intro i j hij
+    apply Nonempty.some
+    rw [isInitial_iff_isEmpty]
+    exact isEmpty_pullback_sigmaι_of_ne _ hij
+
+instance : HasFiniteCoproducts Scheme.{u} where
+  out := inferInstance
+
+instance : MonoCoprod Scheme.{u} :=
+  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]

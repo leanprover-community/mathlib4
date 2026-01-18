@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
 /-!
 # Towers of algebras
 
@@ -390,7 +392,7 @@ variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
-  smul_right_injective M hx
+  NoZeroSMulDivisors.smul_right_injective M hx
 
 end Algebra
 

@@ -712,7 +712,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G K]
 
 This is available as an instance in the `Pointwise` locale. -/
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
-  smul g S :=-- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
+  smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
       mem_or_inv_mem' := fun x =>
         (mem_or_inv_mem S (g⁻¹ • x)).imp Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr fun h =>

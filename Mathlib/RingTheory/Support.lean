@@ -141,7 +141,7 @@ lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
 
-lemma Module.support_of_noZeroSMulDivisors [NoZeroSMulDivisors R M] [Nontrivial M] :
+lemma Module.support_of_noZeroSMulDivisors [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
     Module.support R M = Set.univ := by
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
@@ -238,7 +238,7 @@ theorem Module.support_quotient (I : Ideal R) :
     · rw [support_eq_zeroLocus]
       apply PrimeSpectrum.zeroLocus_anti_mono_ideal
       rw [Submodule.annihilator_quotient]
-      exact fun x hx ↦ Submodule.mem_colon.mpr fun p ↦ Submodule.smul_mem_smul hx
+      exact fun x hx ↦ Submodule.mem_colon.mpr fun p hp ↦ Submodule.smul_mem_smul hx hp
   · rintro p ⟨hp₁, hp₂⟩
     rw [Module.mem_support_iff] at hp₁ ⊢
     let Rₚ := Localization.AtPrime p.asIdeal

@@ -459,8 +459,6 @@ theorem y_support {D : ℝ} (Dpos : 0 < D) (D_lt_one : D < 1) :
     ⟨fun _ hx => (y_pos_of_mem_ball Dpos D_lt_one hx).ne', fun _ hx =>
       y_eq_zero_of_notMem_ball Dpos hx⟩
 
-variable {E}
-
 end HelperDefinitions
 
 instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

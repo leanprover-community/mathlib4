@@ -11,8 +11,8 @@ public import Mathlib.Probability.Martingale.Basic
 
 /-! # Optional stopping theorem (fair game theorem)
 
-The optional stopping theorem states that an adapted integrable process `f` is a submartingale if
-and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
+The optional stopping theorem states that a strongly adapted integrable process `f` is a
+submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`.
 
 This file also contains Doob's maximal inequality: given a non-negative submartingale `f`, for all
@@ -65,10 +65,10 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
   · exact hf.integrable_stoppedValue hπ hbdd
   · exact hf.integrable_stoppedValue hτ fun ω => le_trans (hle ω) (hbdd ω)
 
-/-- The converse direction of the optional stopping theorem, i.e. an adapted integrable process `f`
-is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
+/-- The converse direction of the optional stopping theorem, i.e. a strongly adapted integrable
+process `f` is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
-theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp : Adapted 𝒢 f)
+theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ ω, π ω ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π]) :
     Submartingale f 𝒢 μ := by
@@ -86,11 +86,11 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
       integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
       integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
 
-/-- **The optional stopping theorem** (fair game theorem): an adapted integrable process `f`
+/-- **The optional stopping theorem** (fair game theorem): a strongly adapted integrable process `f`
 is a submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
-theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp : Adapted 𝒢 f)
-    (hint : ∀ i, Integrable (f i) μ) :
+theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ]
+    (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ) :
     Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →
       τ ≤ π → (∃ N : ℕ, ∀ x, π x ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
   ⟨fun hf _ _ hτ hπ hle ⟨_, hN⟩ => hf.expected_stoppedValue_mono hτ hπ hle hN,
@@ -108,7 +108,7 @@ protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submart
     simp only [ne_eq, hσ_top, not_false_eq_true, ↓reduceIte, hπ_top, ge_iff_le]
     exact h.expected_stoppedValue_mono (hσ.min hτ) (hπ.min hτ)
       (fun ω => min_le_min (hσ_le_π ω) le_rfl) fun ω => (min_le_left _ _).trans (hπ_le_n ω)
-  · exact Adapted.stoppedProcess_of_discrete h.adapted hτ
+  · exact StronglyAdapted.stoppedProcess_of_discrete h.stronglyAdapted hτ
   · exact fun i =>
       h.integrable_stoppedValue ((isStoppingTime_const _ i).min hτ) fun ω => min_le_left _ _
 
@@ -134,7 +134,8 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   have h := setIntegral_ge_of_const_le_real (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
-        (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici) (mod_cast hittingBtwn_le)))
+        (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
+        (mod_cast hittingBtwn_le)))
   rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
@@ -196,7 +197,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
         refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le ω)
-        exact hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici
+        exact hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici
       · exact nullMeasurableSet_lt (Finset.measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
       rw [Set.mem_setOf_eq] at hω
@@ -225,17 +226,17 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact measurableSet_lt (Finset.measurable_range_sup'' fun n _ =>
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
-          (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
+          (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
           (fun ω ↦ mod_cast hittingBtwn_le ω))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
-          (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
+          (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
           (fun ω ↦ mod_cast hittingBtwn_le ω))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
       rw [← stoppedValue_const f n]
       refine hsub.expected_stoppedValue_mono
-        (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
+        (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ => mod_cast le_rfl)
       simp [hittingBtwn_le]
 

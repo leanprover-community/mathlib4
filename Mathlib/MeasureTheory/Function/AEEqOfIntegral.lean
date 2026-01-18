@@ -115,8 +115,6 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
 
-variable {𝕜}
-
 end AeEqOfForall
 
 variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}

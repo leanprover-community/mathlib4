@@ -142,9 +142,9 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
-section NoZeroDivisors
+section IsDomain
 
-variable [NoZeroDivisors R]
+variable [IsDomain R]
 
 /-- Polynomials in a polynomial sequence are linearly independent. -/
 lemma linearIndependent :
@@ -180,7 +180,7 @@ lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun
 /-- Basis elements have strictly monotone natural degree. -/
 lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
-end NoZeroDivisors
+end IsDomain
 
 end Ring
 

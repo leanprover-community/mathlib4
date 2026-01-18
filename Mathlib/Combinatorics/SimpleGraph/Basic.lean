@@ -238,7 +238,7 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance hasCompl : HasCompl (SimpleGraph V) where
+instance : Compl (SimpleGraph V) where
   compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
@@ -348,11 +348,27 @@ theorem completeGraph_eq_top (V : Type u) : completeGraph V = ⊤ :=
 theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
   rfl
 
+variable {G}
+
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
+  simp [← le_bot_iff, le_iff_adj]
+
+theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
+  simp [eq_bot_iff_forall_not_adj]
+
+theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
+  simp [← top_le_iff, le_iff_adj]
+
+theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
+  simp [eq_top_iff_forall_ne_adj]
+
+variable (G)
+
 @[simps]
 instance (V : Type u) : Inhabited (SimpleGraph V) :=
   ⟨⊥⟩
 
-instance [Subsingleton V] : Unique (SimpleGraph V) where
+instance uniqueOfSubsingleton [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
@@ -397,6 +413,28 @@ theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
 
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
+
+/-- All vertices are in the support of the complete graph if there is more than one vertex. -/
+@[simp]
+theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
+  Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
+
+/-- The support of the empty graph is empty. -/
+@[simp]
+theorem support_bot : (⊥ : SimpleGraph V).support = ∅ :=
+  SetRel.dom_eq_empty_iff.mpr <| Set.empty_def.symm
+
+/-- Only the empty graph has empty support. -/
+@[simp]
+theorem support_eq_bot_iff : G.support = ∅ ↔ G = ⊥ :=
+  ⟨fun h ↦ eq_bot_iff_forall_not_adj.mpr fun v w nadj ↦
+    Set.ext_iff.mp (SetRel.dom_eq_empty_iff.mp h) (v, w) |>.mp nadj |>.elim,
+   (· ▸ support_bot)⟩
+
+/-- The support of a graph is empty if there at most one vertex. -/
+@[simp]
+theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
+  uniqueOfSubsingleton.uniq G ▸ support_bot
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
@@ -520,18 +558,6 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
-
-theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
-  simp [← le_bot_iff, le_iff_adj]
-
-theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
-  simp [eq_bot_iff_forall_not_adj]
-
-theorem eq_top_iff_forall_ne_adj : G = ⊤ ↔ ∀ a b : V, a ≠ b → G.Adj a b := by
-  simp [← top_le_iff, le_iff_adj]
-
-theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  simp [eq_top_iff_forall_ne_adj]
 
 variable (G G₁ G₂)
 

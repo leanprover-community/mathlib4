@@ -505,12 +505,6 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
 
-section
-
-open Quotient
-
-end
-
 end
 
 section MulOneClass

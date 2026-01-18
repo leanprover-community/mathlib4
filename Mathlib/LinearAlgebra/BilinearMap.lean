@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -40,7 +40,7 @@ bilinear
 
 @[expose] public section
 
-open Function
+open Function Module
 
 namespace LinearMap
 
@@ -502,17 +502,17 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R]
+variable {R M : Type*} [CommRing R] [IsDomain R]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [Module R M]
 
-theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
+theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
   smul_right_injective _ hx
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+theorem ker_lsmul [IsTorsionFree R M] {a : R} (ha : a ≠ 0) :
     LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 

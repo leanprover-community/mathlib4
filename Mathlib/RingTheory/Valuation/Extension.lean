@@ -144,11 +144,8 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
 
-instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
-    NoZeroSMulDivisors vR.integer vA.integer := by
-  refine ⟨fun {x y} e ↦ ?_⟩
-  have : (x : R) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
-  simpa only [Subtype.ext_iff, smul_eq_zero] using this
+instance instIsTorsionFreeInteger [IsDomain R] [IsTorsionFree R A] :
+    IsTorsionFree vR.integer vA.integer := .of_smul_eq_zero <| by simp
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
     Function.Injective (algebraMap vK.integer vA.integer) :=

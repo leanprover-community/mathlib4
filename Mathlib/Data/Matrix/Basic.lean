@@ -157,12 +157,6 @@ end Diag
 
 open Matrix
 
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
@@ -933,8 +927,6 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     toFun := fun M => MulOpposite.op Mᵀ
     commutes' := fun r => by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
-
-variable {R m α}
 
 end Transpose
 
