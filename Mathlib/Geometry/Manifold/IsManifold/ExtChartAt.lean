@@ -84,6 +84,9 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
 theorem extend_target' : (f.extend I).target = I '' f.target := by
   rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
 
+theorem extend_target_eq_image_source : (f.extend I).target = (f.extend I) '' f.source := by
+  rw [f.extend_target', ← f.image_source_eq_target, ← image_comp, f.extend_coe]
+
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
   exact I.continuous_symm.isOpen_preimage _ f.open_target
@@ -314,6 +317,40 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
 
 lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
     (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
+
+open Topology
+
+lemma isEmbedding_extend_restrict (φ : OpenPartialHomeomorph M H) :
+    IsEmbedding <| φ.source.restrict (φ.extend I) :=
+  I.isClosedEmbedding.isEmbedding.comp φ.isOpenEmbedding_restrict.isEmbedding
+
+-- move to the right location!
+lemma IsEmbedding.subtype_map_of_subset {X : Type*} [TopologicalSpace X]
+    {s t : Set X} (hst : s ⊆ t) : IsEmbedding (Subtype.map id hst) := by
+  have := IsEmbedding.subtypeVal (p := t)
+  rw [← IsEmbedding.of_comp_iff (IsEmbedding.subtypeVal (p := t))]
+  exact IsEmbedding.subtypeVal (p := s)
+
+-- TODO: move to the right location!
+lemma _root_.Topology.IsEmbedding.comp_restrict {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Y} {g : Y → Z} {s : Set X} {t : Set Y}
+    (hf : IsEmbedding (s.restrict f)) (hg : IsEmbedding (t.restrict g)) :
+    IsEmbedding ((s ∩ f ⁻¹' t).restrict (g ∘ f)) := by
+  have hm : MapsTo f (s ∩ f⁻¹' t) t := by intro x ⟨_hxs, hxt⟩; simp_all
+  have : s ∩ f⁻¹' t ⊆ s := inter_subset_left
+  have hf' : IsEmbedding (hm.restrict f) :=
+    (hf.comp (IsEmbedding.subtype_map_of_subset this)).codRestrict t _
+  exact hg.comp hf'
+
+lemma isEmbedding_extend_symm_restrict (φ : OpenPartialHomeomorph M H) :
+    IsEmbedding <| (φ.extend I).target.restrict ((φ.extend I).symm) := by
+  -- (φ.extend I).symm is the composition of φ.symm (which is an embedding on its target)
+  -- and I.symm (which is an embedding on its range).
+  -- Composing both and restricting appropriately, we obtain our claim.
+  have : IsEmbedding ((I.target ∩ ↑I.symm ⁻¹' φ.target).restrict (↑φ.symm ∘ ↑I.symm)) := by
+    rw [← I.range_eq_target]
+    exact I.isEmbedding_symm_restrict.comp_restrict φ.symm.isOpenEmbedding_restrict.isEmbedding
+  simpa
 
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
