@@ -401,11 +401,12 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
 
+theorem isOrdinal_natCast {n : ℕ} : IsOrdinal n := by
+  rw [← toZFSet_natCast]
+  exact isOrdinal_toZFSet n
+
 theorem isOrdinal_omega : IsOrdinal omega := by
   rw [← toZFSet_omega0]
   exact isOrdinal_toZFSet ω
-
-theorem mem_omega_iff {x : ZFSet} : x ∈ omega ↔ ∃ (n : ℕ), Ordinal.toZFSet n = x := by
-  simp [← toZFSet_omega0, Ordinal.mem_toZFSet_iff, Ordinal.lt_omega0]
 
 end ZFSet
