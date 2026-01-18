@@ -3,6 +3,8 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.Normed.Operator.NNNorm
 
+public section
+
 open Filter
 open scoped Topology
 
@@ -18,12 +20,12 @@ theorem HasFDerivWithinAt.of_comp_left_of_leftInverse {f'symm : F →L[𝕜] E}
     (hh : HasFDerivWithinAt h h' t a) (hcomp : f ∘ g =ᶠ[𝓝[t] a] h)
     (hf'symm : Function.LeftInverse f'symm f') (ha : a ∈ t) :
     HasFDerivWithinAt g (f'symm ∘L h') t a := by
-  refine .of_isLittleOTVS ?_
+  refine .of_isLittleO ?_
   calc (fun x' ↦ g x' - g a - (f'symm ∘L h') (x' - a))
-    _ =O[𝕜; 𝓝[t] a] fun x' ↦ f' (g x' - g a) - h' (x' - a) :=
-      f'symm.isBigOTVS_comp |>.congr_left <| by simp [hf'symm _]
-    _ =o[𝕜; 𝓝[t] a] (· - a) := ?_
-  refine hf.isLittleOTVS.comp_tendsto hst |>.symm |>.trans_isBigOTVS ?_ |>.triangle ?_
+    _ =O[𝓝[t] a] fun x' ↦ f' (g x' - g a) - h' (x' - a) :=
+      f'symm.isBigO_comp _ _ |>.congr_left <| by simp [hf'symm _]
+    _ =o[𝓝[t] a] (· - a) := ?_
+  refine hf.isLittleO.comp_tendsto hst |>.symm |>.trans_isBigO ?_ |>.triangle ?_
   · have hlip : AntilipschitzWith ‖f'symm‖₊ f' := fun x y ↦ by
       simpa [hf'symm _] using f'symm.lipschitz (f' x) (f' y)
     refine hf.isBigO_sub_rev hlip |>.comp_tendsto hst |>.trans ?_
@@ -49,7 +51,7 @@ theorem HasFDerivWithinAt.of_local_left_inverse {g : F → E} {f' : E ≃L[𝕜]
     (hg : Tendsto g (𝓝[t] a) (𝓝[s] (g a))) (hf : HasFDerivWithinAt f (f' : E →L[𝕜] F) s (g a))
     (ha : a ∈ t) (hfg : ∀ᶠ y in 𝓝[t] a, f (g y) = y) :
     HasFDerivWithinAt g (f'.symm : F →L[𝕜] E) t a := by
-  simpa using hf.of_comp_left hg (hasFDerivWithinAt_id ..) (by simp) hfg ha
+  simpa using hf.of_comp_left hg (hasFDerivWithinAt_id ..) hfg (by simp) ha
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a` in the strict sense, then `g` has the derivative `f'⁻¹` at `a`
@@ -83,7 +85,7 @@ theorem HasFDerivAt.of_comp_left {g : G → E} {h : G → F} {h' : G →L[𝕜] 
     (hf' : f'.IsInvertible) (hcomp : f ∘ g =ᶠ[𝓝 a] h) :
     HasFDerivAt g (f'.inverse.comp h') a := by
   simp only [← hasFDerivWithinAt_univ, ← nhdsWithin_univ] at *
-  refine hf.of_comp_left ?_ hh hf' hcomp trivial
+  refine hf.of_comp_left ?_ hh hcomp hf' trivial
   simpa
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
@@ -95,7 +97,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
     (hg : ContinuousAt g a) (hf : HasFDerivAt f (f' : E →L[𝕜] F) (g a))
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasFDerivAt g (f'.symm : F →L[𝕜] E) a := by
   simp only [← hasFDerivWithinAt_univ, ← nhdsWithin_univ] at hf hfg ⊢
-  exact hf.of_local_left_inverse (.inf hg (by simp)) (mem_univ _) hfg
+  exact hf.of_local_left_inverse (.inf hg (by simp)) (Set.mem_univ _) hfg
 
 /-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
 invertible derivative `f'` in the sense of strict differentiability at `f.symm a`, then `f.symm` has

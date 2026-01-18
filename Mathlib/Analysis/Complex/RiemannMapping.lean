@@ -96,124 +96,6 @@ theorem IsCompact.cofinite_inf_le_codiscreteWithin {X : Type*} [TopologicalSpace
   intro s hs
   simpa [mem_inf_principal, compl_setOf] using hK.finite_diff_of_mem_codiscreteWithin hs
 
-theorem UniformContinuous.comp_tendstoLocallyUniformlyOn {ι X Y Z : Type*} [TopologicalSpace X]
-    [UniformSpace Y] [UniformSpace Z] {f : Y → Z} {G : ι → X → Y} {g : X → Y} {l : Filter ι}
-    {s : Set X} (hf : UniformContinuous f) (hg : TendstoLocallyUniformlyOn G g l s) :
-    TendstoLocallyUniformlyOn (f ∘ G ·) (f ∘ g) l s := by
-  intro U hU x hx
-  exact hg (Prod.map f f ⁻¹' U) (hf hU) x hx
-
-theorem TendstoLocallyUniformlyOn.prodMk {ι X Y Z : Type*} [TopologicalSpace X]
-    [UniformSpace Y] [UniformSpace Z] {F : ι → X → Y} {G : ι → X → Z} {f : X → Y} {g : X → Z}
-    {l : Filter ι} {s : Set X} (hf : TendstoLocallyUniformlyOn F f l s)
-    (hg : TendstoLocallyUniformlyOn G g l s) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x, G i x)) (fun x ↦ (f x, g x)) l s := by
-  intro U hU x hx
-  rcases entourageProd_subset hU with ⟨V, hV, W, hW, hVW⟩
-  rcases hf V hV x hx with ⟨t, htx, ht⟩
-  rcases hg W hW x hx with ⟨t', htx', ht'⟩
-  use t ∩ t', inter_mem htx htx'
-  filter_upwards [ht, ht'] with i hi hi' y hy
-  exact hVW ⟨hi y hy.1, hi' y hy.2⟩
-
-@[to_additive]
-theorem TendstoLocallyUniformlyOn.fun_mul {X ι G : Type*} [TopologicalSpace X] [Group G]
-    [UniformSpace G] [IsUniformGroup G] {F₁ F₂ : ι → X → G} {f₁ f₂ : X → G} {l : Filter ι}
-    {s : Set X} (h₁ : TendstoLocallyUniformlyOn F₁ f₁ l s)
-    (h₂ : TendstoLocallyUniformlyOn F₂ f₂ l s) :
-    TendstoLocallyUniformlyOn (fun i x ↦ F₁ i x * F₂ i x) (fun x ↦ f₁ x * f₂ x) l s :=
-  uniformContinuous_mul.comp_tendstoLocallyUniformlyOn (h₁.prodMk h₂)
-
-@[to_additive]
-theorem TendstoLocallyUniformlyOn.fun_div {X ι G : Type*} [TopologicalSpace X] [Group G]
-    [UniformSpace G] [IsUniformGroup G] {F₁ F₂ : ι → X → G} {f₁ f₂ : X → G} {l : Filter ι}
-    {s : Set X} (h₁ : TendstoLocallyUniformlyOn F₁ f₁ l s)
-    (h₂ : TendstoLocallyUniformlyOn F₂ f₂ l s) :
-    TendstoLocallyUniformlyOn (fun i x ↦ F₁ i x / F₂ i x) (fun x ↦ f₁ x / f₂ x) l s :=
-  uniformContinuous_div.comp_tendstoLocallyUniformlyOn (h₁.prodMk h₂)
-
-@[to_additive]
-theorem TendstoLocallyUniformlyOn.fun_inv {X ι G : Type*} [TopologicalSpace X] [Group G]
-    [UniformSpace G] [IsUniformGroup G] {F : ι → X → G} {f : X → G} {l : Filter ι}
-    {s : Set X} (h : TendstoLocallyUniformlyOn F f l s) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l s :=
-  uniformContinuous_inv.comp_tendstoLocallyUniformlyOn h
-
-theorem TendstoLocallyUniformlyOn.fun_smul₀_of_isBoundedUnder {X ι R M : Type*} [TopologicalSpace X]
-    [PseudoMetricSpace R] [SMul R M] [PseudoMetricSpace M] [Zero R] [Zero M] [IsBoundedSMul R M]
-    {s : Set X} {F : ι → X → R} {G : ι → X → M} {f : X → R} {g : X → M} {l : Filter ι}
-    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
-    (hf : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (f y) 0))
-    (hg : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (g y) 0)) :
-    TendstoLocallyUniformlyOn (fun i x ↦ F i x • G i x) (fun x ↦ f x • g x) l s := by
-  rw [Metric.tendstoLocallyUniformlyOn_iff] at *
-  intro ε hε x hx
-  rcases hf x hx with ⟨Cf, hCf⟩
-  rcases hg x hx with ⟨Cg, hCg⟩
-  obtain ⟨δ, hδ₀, hδ⟩ : ∃ δ > (0 : ℝ), Cf * δ + δ * (δ + Cg) < ε :=
-    Continuous.tendsto (by fun_prop) _ |>.eventually_lt_const (by simpa) |>.exists_gt
-  rcases hF δ hδ₀ x hx with ⟨tf, htfx, htf⟩
-  rcases hG δ hδ₀ x hx with ⟨tg, htgx, htg⟩
-  rw [eventually_map] at hCf hCg
-  refine ⟨_, inter_mem htfx <| inter_mem htgx <| hCf.and hCg, ?_⟩
-  filter_upwards [htf, htg] with i hfi hgi y ⟨hyf, hyg, hfy, hgy⟩
-  grw [dist_triangle _ (f y • G i y), dist_smul_pair, dist_pair_smul, hgi y hyg, hfy, hfi y hyf,
-    dist_triangle _ (g y), dist_comm, hgi y hyg, hgy]
-  exact hδ
-
-theorem TendstoLocallyUniformlyOn.fun_smul₀_of_continuousOn {X ι R M : Type*} [TopologicalSpace X]
-    [PseudoMetricSpace R] [SMul R M] [PseudoMetricSpace M] [Zero R] [Zero M] [IsBoundedSMul R M]
-    {s : Set X} {F : ι → X → R} {G : ι → X → M} {f : X → R} {g : X → M} {l : Filter ι}
-    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
-    (hfc : ContinuousOn f s) (hgc : ContinuousOn g s) :
-    TendstoLocallyUniformlyOn (fun i x ↦ F i x • G i x) (fun x ↦ f x • g x) l s :=
-  hF.fun_smul₀_of_isBoundedUnder hG
-    (fun x hx ↦ ((hfc x hx).dist tendsto_const_nhds).isBoundedUnder_le)
-    (fun x hx ↦ ((hgc x hx).dist tendsto_const_nhds).isBoundedUnder_le)
-
-theorem TendstoLocallyUniformlyOn.fun_inv₀_of_disjoint {X ι 𝕜 : Type*} [TopologicalSpace X]
-    [NormedField 𝕜] {s : Set X} {F : ι → X → 𝕜} {f : X → 𝕜} {l : Filter ι}
-    (hF : TendstoLocallyUniformlyOn F f l s) (hf : ∀ x ∈ s, Disjoint (map f (𝓝[s] x)) (𝓝 0)) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l s := by
-  rw [Metric.tendstoLocallyUniformlyOn_iff] at *
-  intro ε hε x hx
-  specialize hf x hx
-  rw [(basis_sets _).map _ |>.disjoint_iff nhds_basis_ball] at hf
-  rcases hf with ⟨t, htx, C, hC₀, hC⟩
-  simp only [← Set.subset_compl_iff_disjoint_right, ← mapsTo_iff_image_subset, id, MapsTo,
-    mem_compl_iff, mem_ball_zero_iff, not_lt] at hC
-  obtain ⟨δ, hδ₀, hδC, hδC'⟩ : ∃ δ > (0 : ℝ), 0 < C - δ ∧ δ / (C * (C - δ)) < ε := by
-    refine (Eventually.and ?_ ?_).exists_gt
-    · simp [eventually_lt_nhds hC₀]
-    · refine ContinuousAt.tendsto ?_ |>.eventually_lt_const (by simpa)
-      fun_prop (disch := simp [hC₀.ne'])
-  rcases hF δ hδ₀ x hx with ⟨t', ht'x, ht'⟩
-  use t ∩ t', inter_mem htx ht'x
-  refine ht'.mono fun i hi y hy ↦ ?_
-  have hFiy : C - δ ≤ ‖F i y‖ := by
-    grw [hC hy.1, sub_le_iff_le_add, ← norm_le_norm_add_const_of_dist_le (hi y hy.2).le]
-  have : 0 < ‖F i y‖ := hδC.trans_le hFiy
-  rw [dist_eq_norm_sub, inv_sub_inv, norm_div, ← dist_eq_norm_sub', norm_mul]
-  · grw [← hC hy.1, hi y hy.2, ← hFiy]
-    exact hδC'
-  · grw [← norm_pos_iff, ← hC hy.1]
-    exact hC₀
-  · rwa [← norm_pos_iff]
-
-theorem TendstoLocallyUniformlyOn.fun_inv₀_of_continuousOn {X ι 𝕜 : Type*} [TopologicalSpace X]
-    [NormedField 𝕜] {s : Set X} {F : ι → X → 𝕜} {f : X → 𝕜} {l : Filter ι}
-    (hF : TendstoLocallyUniformlyOn F f l s) (hfc : ContinuousOn f s) (hf₀ : ∀ x ∈ s, f x ≠ 0) :
-    TendstoLocallyUniformlyOn (fun i x ↦ (F i x)⁻¹) (fun x ↦ (f x)⁻¹) l s :=
-  hF.fun_inv₀_of_disjoint fun x hx ↦ disjoint_nhds_nhds.2 (hf₀ x hx) |>.mono_left (hfc x hx)
-
-theorem TendstoLocallyUniformlyOn.fun_div₀_of_continuousOn {X ι 𝕜 : Type*} [TopologicalSpace X]
-    [NormedField 𝕜] {s : Set X} {F G : ι → X → 𝕜} {f g : X → 𝕜} {l : Filter ι}
-    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
-    (hfc : ContinuousOn f s) (hgc : ContinuousOn g s) (hg₀ : ∀ x ∈ s, g x ≠ 0) :
-    TendstoLocallyUniformlyOn (fun i x ↦ F i x / G i x) (fun x ↦ f x / g x) l s := by
-  simp only [div_eq_mul_inv, ← smul_eq_mul]
-  exact hF.fun_smul₀_of_continuousOn (hG.fun_inv₀_of_continuousOn hgc hg₀) hfc (hgc.inv₀ hg₀)
-
 namespace Complex
 
 theorem _root_.AnalyticOnNhd.exists_finset_eq_prod_smul_nonzero
@@ -391,7 +273,7 @@ theorem eqOn_zero_or_forall_ne_zero_of_tendstoLocallyUniformlyOn {ι : Type*} {U
       have := (hf.deriv hFd hUo).mono hRU'
       rw [← tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact
         (isCompact_sphere c R)]
-      refine this.fun_div₀_of_continuousOn (hf.mono hRU') ?_ ?_ ?_
+      refine this.fun_div₀ (hf.mono hRU') ?_ ?_ ?_
       · exact hfd.analyticOnNhd hUo |>.deriv |>.continuousOn |>.mono hRU'
       · exact hfd.continuousOn.mono hRU'
       · exact hfR

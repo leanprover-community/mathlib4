@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed fields
@@ -182,6 +183,24 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 
 @[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
   NormedDivisionRing.to_continuousInv₀
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) (hg₀ : ∀ x ∈ s, g x ≠ 0) :
+    TendstoLocallyUniformlyOn (F / G) (f / g) l s := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
+
+@[to_fun]
+theorem TendstoLocallyUniformly.div₀ {X ι : Type*} [TopologicalSpace X]
+    {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : Continuous f) (hg : Continuous g) (hg₀ : ∀ x, g x ≠ 0) :
+    TendstoLocallyUniformly (F / G) (f / g) l := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/

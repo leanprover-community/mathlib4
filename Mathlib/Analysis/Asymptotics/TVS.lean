@@ -427,7 +427,7 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f)
 lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_comp
 
-lemma _root_.LinearMap.isBigOTVS_comp_of_comap_le (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
+lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
     f =O[𝕜; l] (g ∘ f) := by
   constructor
   intro U hU
@@ -441,7 +441,7 @@ lemma _root_.LinearMap.isBigOTVS_comp_of_comap_le (g : E →ₗ[𝕜] F) (hg : c
 
 lemma _root_.ContinuousLinearMap.isThetaTVS_comp (g : E →L[𝕜] F) (hg : Topology.IsInducing g) :
     (g ∘ f) =Θ[𝕜; l] f :=
-  ⟨g.isBigOTVS_comp, g.isBigOTVS_comp_of_comap_le <| by simp [hg.nhds_eq_comap]⟩
+  ⟨g.isBigOTVS_comp, g.isBigOTVS_rev_comp <| by simp [hg.nhds_eq_comap]⟩
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
