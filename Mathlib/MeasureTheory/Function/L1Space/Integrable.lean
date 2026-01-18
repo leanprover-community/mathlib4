@@ -966,7 +966,7 @@ theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : In
   exact MemLp.smul hf hφ
 
 theorem Integrable.bdd_smul {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
-    (C : ℝ) (hφ1 : AEStronglyMeasurable φ μ) (hφ2 : ∀ᵐ a ∂μ, ‖φ a‖ ≤ C) :
+    {C : ℝ} (hφ1 : AEStronglyMeasurable φ μ) (hφ2 : ∀ᵐ a ∂μ, ‖φ a‖ ≤ C) :
     Integrable (φ • f) μ :=
   hf.smul_of_top_right (memLp_top_of_bound hφ1 C hφ2)
 
@@ -976,7 +976,7 @@ theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : In
   exact MemLp.smul hf hφ
 
 theorem Integrable.smul_bdd {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
-    (C : ℝ) (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) :
+    {C : ℝ} (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) :
     Integrable (φ • f) μ :=
   hφ.smul_of_top_left (memLp_top_of_bound hf1 C hf2)
 
@@ -1036,14 +1036,14 @@ theorem integrable_mul_const_iff {c : 𝕜} (hc : IsUnit c) (f : α → 𝕜) :
 theorem Integrable.bdd_mul {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     Integrable (fun x => f x * g x) μ :=
-  hg.bdd_smul c hf hf_bound
+  hg.bdd_smul hf hf_bound
 
 @[deprecated (since := "2025-11-26")] alias Integrable.bdd_mul' := Integrable.bdd_mul
 
 theorem Integrable.mul_bdd {f g : α → 𝕜} {c : ℝ} (hf : Integrable f μ)
     (hg : AEStronglyMeasurable g μ) (hg_bound : ∀ᵐ x ∂μ, ‖g x‖ ≤ c) :
     Integrable (fun x => f x * g x) μ :=
-  hf.smul_bdd c hg hg_bound
+  hf.smul_bdd hg hg_bound
 
 theorem Integrable.mul_of_top_right {f : α → 𝕜} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : MemLp φ ∞ μ) : Integrable (φ * f) μ :=
@@ -1123,16 +1123,16 @@ variable {E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
   {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem integrable_of_forall_fin_meas_le' {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)
+    {C : ℝ≥0∞} (hC : C < ∞) {f : α → ε} (hf_meas : AEStronglyMeasurable f μ)
     (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, ‖f x‖ₑ ∂μ ≤ C) : Integrable f μ :=
   ⟨hf_meas, (lintegral_le_of_forall_fin_meas_trim_le hm C hf).trans_lt hC⟩
 
-theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] (C : ℝ≥0∞) (hC : C < ∞) {f : α → ε}
+theorem integrable_of_forall_fin_meas_le [SigmaFinite μ] {C : ℝ≥0∞} (hC : C < ∞) {f : α → ε}
     (hf_meas : AEStronglyMeasurable[m] f μ)
     (hf : ∀ s : Set α, MeasurableSet[m] s → μ s ≠ ∞ → ∫⁻ x in s, ‖f x‖ₑ ∂μ ≤ C) :
     Integrable f μ :=
   have : SigmaFinite (μ.trim le_rfl) := by rwa [@trim_eq_self _ m]
-  integrable_of_forall_fin_meas_le' le_rfl C hC hf_meas hf
+  integrable_of_forall_fin_meas_le' le_rfl hC hf_meas hf
 
 end SigmaFinite
 
