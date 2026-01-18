@@ -3228,6 +3228,7 @@ public import Mathlib.CategoryTheory.Sites.Types
 public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.CategoryTheory.SmallObject.Basic
+public import Mathlib.CategoryTheory.SmallObject.Beke
 public import Mathlib.CategoryTheory.SmallObject.Construction
 public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
