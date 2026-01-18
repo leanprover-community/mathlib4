@@ -64,11 +64,11 @@ jobs:
             sed '
               / [0-9]* PR[s]*$/{
                 s=^=```\n\n```spoiler =
-                #s=$=\n```\n=
               }' |
             sed -z '
               s=\n```\n=\n=
               s=\n\n```\n=\n```\n=g
+              s=\n$=\n```\n=
             ' | tee "${tmp_file}"
           echo "---"
           echo "---"
