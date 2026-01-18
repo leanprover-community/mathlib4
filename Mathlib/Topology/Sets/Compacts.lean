@@ -134,6 +134,7 @@ theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
 theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
+@[simp]
 theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
   nonempty_iff_ne_empty.trans coe_eq_empty.not
 
@@ -339,6 +340,7 @@ theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
 
+@[simp]
 theorem range_toCompacts : range (toCompacts (α := α)) = {⊥}ᶜ := by
   ext K
   rw [mem_compl_singleton_iff, ← Compacts.coe_nonempty]
