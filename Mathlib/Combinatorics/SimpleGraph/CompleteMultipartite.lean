@@ -116,6 +116,14 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     change ¬¬ G.Adj _ _ ↔ _
     rw [not_not]
 
+theorem IsCompleteMultipartiteWith.isCompleteMultipartite
+    {f : α → ι} (h : G.IsCompleteMultipartiteWith f) :
+    G.IsCompleteMultipartite := fun _ ↦ by grind [= IsCompleteMultipartiteWith]
+
+theorem isCompleteMultipartiteWith_of_isCompleteMultipartite (h : G.IsCompleteMultipartite) :
+    G.IsCompleteMultipartiteWith (Quotient.mk h.setoid) := fun _ _ ↦ by
+  grind only [Quotient.eq, IsCompleteMultipartite.setoid.eq_def, Setoid.bot_def]
+
 lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u) (V : ι → Type u)
     (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g completeMultipartiteGraph V) := by
   constructor <;> intro h
