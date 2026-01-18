@@ -20,8 +20,6 @@ if [ "$#" -ne 3 ]; then
     exit 1
 fi
 
-rm -rf found_by_gh.txt found_by_git.txt
-
 repository="${1}"
 
 # Get the start and end dates
@@ -36,13 +34,6 @@ prs=$(gh pr list --repo "$repository" --state closed --base master --search "clo
 
 ## Print PR numbers, their labels and their title
 #echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "PR #\(.number) - Labels: \((.labels | map(.name) | join(", ")) // "No labels") - Title: \(.title)"'
-
-# Store to file `found_by_gh.txt` the PR numbers, as found by `gh`
-echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort >> found_by_gh.txt
-
-# Store to file `found_by_git.txt` the PR numbers, as found by looking at the commits to `master`
-git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
-  sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort >> found_by_git.txt
 
 commits_in_range="$(git log --since="${startDate}" --until="${endDate}" --pretty=oneline | wc -l)"
 
@@ -104,8 +95,26 @@ formatForZulip () {
 
 formatForZulip "${formattedPRs}"
 
-only_gh="$( comm -23 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^=  =' | tr -d '()')"
-only_git="$(comm -13 <(sort found_by_gh.txt) <(sort found_by_git.txt) | sed 's=^=  =' | tr -d '()')"
+# Store to variable `found_by_gh` the PR numbers, as found by `gh`
+found_by_gh="$(
+  echo "$prs" | jq -r '.[] | select(.title | startswith("[Merged by Bors]")) | "(#\(.number))"' | sort -u
+)"
+
+# Store to variable `found_by_git` the PR numbers, as found by looking at the commits to `master`
+found_by_git="$(
+  git log --pretty=oneline --since="${startDate}" --until="${endDate}" |
+    sed -n 's=.*\((#[0-9]*)\)$=\1=p' | sort -u
+)"
+
+only_gh="$(
+  comm -23 <(printf $'%s\n' "${found_by_gh}") <(printf $'%s\n' "${found_by_git}") |
+    sed 's=^=  =' | tr -d '()'
+)"
+
+only_git="$(
+  comm -13 <(printf $'%s\n' "${found_by_gh}") <(printf $'%s\n' "${found_by_git}") |
+    sed 's=^=  =' | tr -d '()'
+)"
 
 printf $'\n```spoiler Reports\n\n'
 
@@ -124,5 +133,3 @@ else
 fi
 
 printf -- $'```\n'
-
-rm -rf found_by_gh.txt found_by_git.txt
