@@ -834,7 +834,7 @@ theorem num_le (I : FractionalIdeal S P) :
 theorem isPrincipal_of_num_isPrincipal [IsDomain R]
     (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
     (I : Submodule R (FractionRing R)).IsPrincipal :=
-    Module.isPrincipal_submodule_iff.mp
+  Module.isPrincipal_submodule_iff.mp
     <| (FractionalIdeal.equivNumOfIsLocalization I).isPrincipal_iff.mpr
     <| Module.isPrincipal_submodule_iff.mpr hI
 
