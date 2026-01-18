@@ -84,7 +84,7 @@ lemma isPrimary_finset_inf {ι : Type*} {s : Finset ι} {f : ι → Submodule R 
     have H ⦃x⦄ (hx : x ∈ s) : ((f x).colon Set.univ).radical = ((f y).colon Set.univ).radical := by
       rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
     refine IsPrimary.inf (hs (by simp)) (IH hy (fun x hx ↦ hs (by simp [hx])) H) ?_
-    rw [colon_finset_inf, Ideal.radical_finset_inf hy H,
+    rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
       hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 end CommSemiring
