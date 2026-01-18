@@ -141,9 +141,8 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
 
 theorem finrank_ker_of_surjective [FiniteDimensional K V] {f : V →ₗ[K] V₂}
     (hf : Function.Surjective f) : finrank K (LinearMap.ker f) = finrank K V - finrank K V₂ := by
-  have := f.finrank_range_add_finrank_ker
-  rw [f.range_eq_top.mpr hf, finrank_top] at this
-  omega
+  rw [← f.finrank_range_add_finrank_ker, f.range_eq_top_of_surjective hf]
+  simp
 
 lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
     (h : finrank K V₂ < finrank K V) :
