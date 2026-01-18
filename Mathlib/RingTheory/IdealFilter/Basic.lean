@@ -108,7 +108,7 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
   ∀ k ∈ K, ∃ I ∈ F, I ≤ L.colon {k}
 
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
-lemma isTorsionQuot_inter_left_iff (F : IdealFilter A) (L K : Ideal A) :
+lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
   unfold IsTorsionQuot
   constructor <;>
