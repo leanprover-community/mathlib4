@@ -309,6 +309,7 @@ def some (n : ℕ) (c : Chain α) : Chain (Option α) where
 @[simp]
 lemma some_coe (n) (c : Chain α) (i) : some n c i = if i < n then none else c (i - n) := by rfl
 
+/-- Lowers a chain of `Option α`s into a chain of `α`s. -/
 noncomputable def dropOption (c : Chain (Option α)) (h : ∃ n, (c n).isSome) : Chain α where
   toFun n :=
     have : (c (n + Nat.find h)).isSome := by
@@ -342,6 +343,7 @@ lemma dropOption_some (n) : dropOption (some n c) ⟨n, by simp⟩ = c := by
     simp only [Nat.find_eq_iff, le_refl, not_le, imp_self, implies_true, and_self]
   simp only [this, Nat.add_sub_cancel]
 
+/-- Converts a `Chain` of `Option`s into an `Option`al `Chain`. -/
 noncomputable def unlift (c : Chain (Option α)) : Option (Chain α) :=
   open Classical in
   if h : ∃n, (c n).isSome
