@@ -42,7 +42,7 @@ jobs:
 
           printf $'Repository: %s\nBranch: %s\n' "${{ github.repository }}" "${BRANCH_NAME}"
           git checkout origin/adomani/yd_find_label scripts/find_labels.sh
-          message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}")")"
+          message="$(printf '%s\n\n%s\n' "${title}" "$(./scripts/find_labels.sh "${{ github.repository }}" "${yrMth}-01" "$(date -d "$(date +%Y%m01) +1 month -1 day" +%Y-%m-%d)")")"
           echo "${message}"
           echo "${message}" |
             sed '
