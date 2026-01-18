@@ -1,7 +1,7 @@
 #!/bin/bash
  : << 'BASH_MODULE_DOCS'
 
-Usage: ./scripts/find_labels.sh owner/repo YYYY-MM
+Usage: ./scripts/find_labels.sh owner/repo start_date end_date
 
 The script summarizes PRs by label and author in the given year-month range in the input GitHub repository.
 
@@ -13,9 +13,10 @@ It assumes that
 BASH_MODULE_DOCS
 
 # Check if required arguments are provided
-if [ "$#" -ne 2 ]; then
-    printf $'Usage: %s <repo_owner/repo_name> <YYYY-MM>\n\n' "${0}"
-    printf $'For instance `%s leanprover-community/mathlib4 %s`\n\n' "${0}" "$(date +%Y-%m)"
+if [ "$#" -ne 3 ]; then
+    printf $'Usage: %s <repo_owner/repo_name> <start_date[YYYY-MM-DD]> <end_date[YYYY-MM-DD]>\n\n' "${0}"
+    printf $'For instance `%s leanprover-community/mathlib4 %s %s`\n\n' "${0}" "$(date -d "today - 2 weeks" +%Y-%m-%d)" "$(date -d "today" +%Y-%m-%d)"
+    printf $'The dates can also include time signatures, as in %s\n' "$(date -d '+1 hour' '+%FT%T')"
     exit 1
 fi
 
