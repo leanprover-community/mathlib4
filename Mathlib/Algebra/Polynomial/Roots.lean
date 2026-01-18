@@ -307,6 +307,8 @@ theorem roots_eq_of_degree_eq_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
 
+@[deprecated (since := "2025-12-16")] alias roots_eq_of_degree_le_card := roots_eq_of_degree_eq_card
+
 theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp

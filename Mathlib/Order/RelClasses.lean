@@ -29,6 +29,8 @@ open Function
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   ⟨refl_of r⟩
 
+@[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
+
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   ⟨irrefl_of r⟩
 
@@ -40,6 +42,8 @@ theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisy
 
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
+
+@[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
 
 theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
   ⟨fun a b => (total_of r a b).symm⟩
@@ -373,6 +377,9 @@ instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [Well
     obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
     · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
     · exact ihb x.2 hb x.1 (ha'.trans ha)
+
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedLT' := Prod.wellFoundedLT
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedGT' := Prod.wellFoundedGT
 
 namespace Set
 
