@@ -67,7 +67,6 @@ Differences (discrete ↔ MeasureTheory):
 - `zero_convolution`, `convolution_zero`: zero laws
 - `convolution_indicator_one_left`, `convolution_indicator_one_right`: identity element
   (the identity is `Set.indicator {1} (fun _ => e)` where `L e` is the identity map)
-- `ringConvolution_indicator_one_left`, `ringConvolution_indicator_one_right`: ring identity
 - `distrib_add`, `add_distrib`: distributivity over addition
 - `smul_convolution`, `convolution_smul`: scalar multiplication
 - `convolution_comm`, `ringConvolution_comm`: commutativity for symmetric bilinear maps
@@ -231,10 +230,6 @@ scoped notation:67 f:68 " ⋆[" L "] " g:67 => convolution L f g
 /-- Notation for additive convolution. -/
 scoped notation:67 f:68 " ⋆₊[" L "] " g:67 => addConvolution L f g
 
-@[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_apply]
-lemma convolution_apply (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) :
-    (f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2) := rfl
-
 end Definition
 
 section BasicProperties
@@ -247,35 +242,35 @@ variable [TopologicalSpace F]
 @[to_additive (dont_translate := S E E' F) (attr := simp) zero_addConvolution]
 lemma zero_convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E') :
     (0 : M → E) ⋆[L] f = 0 := by
-  ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, LinearMap.zero_apply, tsum_zero]
+  ext x; simp only [convolution, Pi.zero_apply, map_zero, LinearMap.zero_apply, tsum_zero]
 
 /-- Right zero: `f ⋆[L] 0 = 0`. -/
 @[to_additive (dont_translate := S E E' F) (attr := simp) addConvolution_zero]
 lemma convolution_zero (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) :
     f ⋆[L] (0 : M → E') = 0 := by
-  ext x; simp only [convolution_apply, Pi.zero_apply, map_zero, tsum_zero]
+  ext x; simp only [convolution, Pi.zero_apply, map_zero, tsum_zero]
 
 /-- Left identity: `Set.indicator {1} (fun _ => e) ⋆[L] f = f` when `L e` is the identity. -/
-@[to_additive (dont_translate := S E F) addConvolution_indicator_zero_left
+@[to_additive (dont_translate := S E F) (attr := simp) addConvolution_indicator_zero_left
   /-- Left identity for additive convolution. -/]
 lemma convolution_indicator_one_left (L : E →ₗ[S] F →ₗ[S] F) (e : E) (f : M → F)
     (hL : ∀ y, L e y = y) :
     Set.indicator {1} (fun _ => e) ⋆[L] f = f := by
   classical
-  ext x; simp only [convolution_apply, Set.indicator_apply, Set.mem_singleton_iff]
+  ext x; simp only [convolution, Set.indicator_apply, Set.mem_singleton_iff]
   rw [tsum_eq_single (⟨(1, x), by simp [mem_mulFiber]⟩ : mulFiber x)] <;> [simp [hL]; skip]
   intro ab hne; split_ifs with ha <;> [skip; simp [map_zero]]
   have hab := ab.2; simp only [mem_mulFiber, ha, one_mul] at hab
   exact (hne <| Subtype.ext <| Prod.ext ha hab).elim
 
 /-- Right identity: `f ⋆[L] Set.indicator {1} (fun _ => e) = f` when `L · e` is the identity. -/
-@[to_additive (dont_translate := S E F) addConvolution_indicator_zero_right
+@[to_additive (dont_translate := S E F) (attr := simp) addConvolution_indicator_zero_right
   /-- Right identity for additive convolution. -/]
 lemma convolution_indicator_one_right (L : F →ₗ[S] E →ₗ[S] F) (f : M → F) (e : E)
     (hL : ∀ y, L y e = y) :
     f ⋆[L] Set.indicator {1} (fun _ => e) = f := by
   classical
-  ext x; simp only [convolution_apply, Set.indicator_apply, Set.mem_singleton_iff]
+  ext x; simp only [convolution, Set.indicator_apply, Set.mem_singleton_iff]
   rw [tsum_eq_single (⟨(x, 1), by simp [mem_mulFiber]⟩ : mulFiber x)] <;> [simp [hL]; skip]
   intro ab hne; split_ifs with hb <;> [skip; simp [map_zero]]
   have hab := ab.2; simp only [mem_mulFiber, hb, mul_one] at hab
@@ -324,7 +319,7 @@ lemma ConvolutionExistsAt.distrib_add {f : M → E} {g g' : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
     (hfg' : ConvolutionExistsAt L f g' x) :
     (f ⋆[L] (g + g')) x = (f ⋆[L] g) x + (f ⋆[L] g') x := by
-  simp only [convolution_apply, Pi.add_apply, map_add]
+  simp only [convolution, Pi.add_apply, map_add]
   exact hfg.tsum_add hfg'
 
 /-- Right distributivity: `f ⋆[L] (g + g') = f ⋆[L] g + f ⋆[L] g'`. -/
@@ -340,7 +335,7 @@ lemma ConvolutionExistsAt.add_distrib {f f' : M → E} {g : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x)
     (hfg' : ConvolutionExistsAt L f' g x) :
     ((f + f') ⋆[L] g) x = (f ⋆[L] g) x + (f' ⋆[L] g) x := by
-  simp only [convolution_apply, Pi.add_apply, LinearMap.map_add₂]
+  simp only [convolution, Pi.add_apply, LinearMap.map_add₂]
   exact hfg.tsum_add hfg'
 
 /-- Left distributivity: `(f + f') ⋆[L] g = f ⋆[L] g + f' ⋆[L] g`. -/
@@ -358,7 +353,7 @@ variable [AddCommMonoid F] [Module S F] [TopologicalSpace F] [ContinuousConstSMu
 lemma ConvolutionExistsAt.smul_convolution {c : S} {f : M → E} {g : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x) :
     ((c • f) ⋆[L] g) x = c • ((f ⋆[L] g) x) := by
-  simp only [convolution_apply, Pi.smul_apply, map_smul, LinearMap.smul_apply]
+  simp only [convolution, Pi.smul_apply, map_smul, LinearMap.smul_apply]
   exact Summable.tsum_const_smul (L := .unconditional _) c hfg
 
 /-- Left scalar multiplication: `(c • f) ⋆[L] g = c • (f ⋆[L] g)`. -/
@@ -373,7 +368,7 @@ lemma ConvolutionExists.smul_convolution {c : S} {f : M → E} {g : M → E'} (L
 lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} {x : M}
     (L : E →ₗ[S] E' →ₗ[S] F) (hfg : ConvolutionExistsAt L f g x) :
     (f ⋆[L] (c • g)) x = c • ((f ⋆[L] g) x) := by
-  simp only [convolution_apply, Pi.smul_apply, LinearMap.map_smul]
+  simp only [convolution, Pi.smul_apply, LinearMap.map_smul]
   exact Summable.tsum_const_smul (L := .unconditional _) c hfg
 
 /-- Right scalar multiplication: `f ⋆[L] (c • g) = c • (f ⋆[L] g)`. -/
@@ -404,62 +399,6 @@ scoped notation:67 f:68 " ⋆ᵣ " g:67 => ringConvolution f g
 Users who want the simplest `⋆` notation can define their own scoped notation. -/
 scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
 
-@[to_additive (dont_translate := R) addRingConvolution_apply]
-lemma ringConvolution_apply (f g : M → R) (x : M) :
-    (f ⋆ᵣ g) x = ∑' ab : mulFiber x, f ab.1.1 * g ab.1.2 := rfl
-
-@[to_additive (dont_translate := R) (attr := simp) zero_addRingConvolution]
-lemma zero_ringConvolution (f : M → R) : (0 : M → R) ⋆ᵣ f = 0 := by
-  ext x; simp only [ringConvolution_apply, Pi.zero_apply, zero_mul, tsum_zero]
-
-@[to_additive (dont_translate := R) (attr := simp) addRingConvolution_zero]
-lemma ringConvolution_zero (f : M → R) : f ⋆ᵣ (0 : M → R) = 0 := by
-  ext x; simp only [ringConvolution_apply, Pi.zero_apply, mul_zero, tsum_zero]
-
-/-- Left identity for ring convolution: `Set.indicator {1} (fun _ => 1) ⋆ᵣ f = f`. -/
-@[to_additive (dont_translate := R) addRingConvolution_indicator_zero_left
-  /-- Left identity for additive ring convolution. -/]
-lemma ringConvolution_indicator_one_left (f : M → R) :
-    Set.indicator {1} (fun _ => (1 : R)) ⋆ᵣ f = f :=
-  convolution_indicator_one_left (LinearMap.mul ℕ R) 1 f one_mul
-
-/-- Right identity for ring convolution: `f ⋆ᵣ Set.indicator {1} (fun _ => 1) = f`. -/
-@[to_additive (dont_translate := R) addRingConvolution_indicator_zero_right
-  /-- Right identity for additive ring convolution. -/]
-lemma ringConvolution_indicator_one_right (f : M → R) :
-    f ⋆ᵣ Set.indicator {1} (fun _ => (1 : R)) = f :=
-  convolution_indicator_one_right (LinearMap.mul ℕ R) f 1 mul_one
-
-variable [T2Space R] [ContinuousAdd R]
-
-/-- Left scalar multiplication for ring convolution at a point. -/
-@[to_additive (dont_translate := R)]
-lemma RingConvolutionExistsAt.smul_ringConvolution {c : ℕ} {f g : M → R} {x : M}
-    (hfg : RingConvolutionExistsAt f g x) :
-    ((c • f) ⋆ᵣ g) x = c • ((f ⋆ᵣ g) x) :=
-  hfg.smul_convolution (LinearMap.mul ℕ R)
-
-/-- Left scalar multiplication for ring convolution. -/
-@[to_additive (dont_translate := R)]
-lemma RingConvolutionExists.smul_ringConvolution {c : ℕ} {f g : M → R}
-    (hfg : RingConvolutionExists f g) :
-    (c • f) ⋆ᵣ g = c • (f ⋆ᵣ g) :=
-  hfg.smul_convolution (LinearMap.mul ℕ R)
-
-/-- Right scalar multiplication for ring convolution at a point. -/
-@[to_additive (dont_translate := R)]
-lemma RingConvolutionExistsAt.ringConvolution_smul {c : ℕ} {f g : M → R} {x : M}
-    (hfg : RingConvolutionExistsAt f g x) :
-    (f ⋆ᵣ (c • g)) x = c • ((f ⋆ᵣ g) x) :=
-  hfg.convolution_smul (LinearMap.mul ℕ R)
-
-/-- Right scalar multiplication for ring convolution. -/
-@[to_additive (dont_translate := R)]
-lemma RingConvolutionExists.ringConvolution_smul {c : ℕ} {f g : M → R}
-    (hfg : RingConvolutionExists f g) :
-    f ⋆ᵣ (c • g) = c • (f ⋆ᵣ g) :=
-  hfg.convolution_smul (LinearMap.mul ℕ R)
-
 end RingMul
 
 /-! ### Commutativity -/
@@ -480,7 +419,7 @@ private def mulFiber_swapEquiv (x : M) : mulFiber x ≃ mulFiber x where
 @[to_additive (dont_translate := S E) addConvolution_comm]
 theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : ∀ x y, L x y = L y x) :
     f ⋆[L] g = g ⋆[L] f := by
-  ext x; simp only [convolution_apply]
+  unfold convolution; ext x
   rw [← (mulFiber_swapEquiv x).tsum_eq]
   congr 1; funext ⟨⟨a, b⟩, _⟩
   exact hL (f b) (g a)
@@ -560,7 +499,7 @@ theorem convolution_assoc_at
         L₃ (f ae.1.1) (∑' bd : mulFiber ae.1.2, L₄ (g bd.1.1) (h bd.1.2)) =
         ∑' bd : mulFiber ae.1.2, L₃ (f ae.1.1) (L₄ (g bd.1.1) (h bd.1.2))) :
     ((f ⋆[L] g) ⋆[L₂] h) x = (f ⋆[L₃] (g ⋆[L₄] h)) x := by
-  simp only [convolution_apply]
+  simp only [convolution]
   -- Derive left-sigma summability from TripleConvolutionExistsAt via leftAssocEquiv
   have hSumL : Summable fun p : Σ cd : mulFiber x, mulFiber cd.1.1 =>
       L₂ (L (f p.2.1.1) (g p.2.1.2)) (h p.1.1.2) := by
@@ -756,20 +695,10 @@ variable [TopologicalSpace F]
   over the antidiagonal. -/]
 lemma convolution_eq_sum_mulAntidiagonal (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E')
     (x : M) : (f ⋆[L] g) x = ∑ ab ∈ Finset.mulAntidiagonal x, L (f ab.1) (g ab.2) := by
-  simp only [convolution_apply]
+  simp only [convolution]
   rw [← (Finset.mulAntidiagonal x).tsum_subtype fun ab => L (f ab.1) (g ab.2)]
   exact (Equiv.setCongr (mulFiber_eq_mulAntidiagonal x)).tsum_eq
     (fun ab => (L (f ab.1.1)) (g ab.1.2))
-
-variable [Semiring R] [TopologicalSpace R]
-
-/-- For `HasMulAntidiagonal` types, ring convolution equals a finite sum over the
-mulAntidiagonal. -/
-@[to_additive (dont_translate := R) addRingConvolution_eq_sum_antidiagonal
-  /-- For `HasAntidiagonal` types, ring convolution equals a finite sum over the antidiagonal. -/]
-lemma ringConvolution_eq_sum_mulAntidiagonal (f g : M → R) (x : M) :
-    (f ⋆ᵣ g) x = ∑ ab ∈ Finset.mulAntidiagonal x, f ab.1 * g ab.2 :=
-  convolution_eq_sum_mulAntidiagonal (LinearMap.mul ℕ R) f g x
 
 section PiSingleOneEqIndicator
 
@@ -787,8 +716,24 @@ end PiSingleOneEqIndicator
 
 section RingConvolutionPiSingleOne
 
-variable {M : Type*} [Monoid M] [DecidableEq M]
+variable {M : Type*} [Monoid M]
 variable {R : Type*} [Semiring R] [TopologicalSpace R]
+
+/-- Left identity for ring convolution: `Set.indicator {1} (fun _ => 1) ⋆ᵣ f = f`. -/
+@[to_additive (dont_translate := R) addRingConvolution_indicator_zero_left
+  /-- Left identity for additive ring convolution. -/]
+private lemma ringConvolution_indicator_one_left (f : M → R) :
+    Set.indicator {1} (fun _ => (1 : R)) ⋆ᵣ f = f :=
+  convolution_indicator_one_left (LinearMap.mul ℕ R) 1 f one_mul
+
+/-- Right identity for ring convolution: `f ⋆ᵣ Set.indicator {1} (fun _ => 1) = f`. -/
+@[to_additive (dont_translate := R) addRingConvolution_indicator_zero_right
+  /-- Right identity for additive ring convolution. -/]
+private lemma ringConvolution_indicator_one_right (f : M → R) :
+    f ⋆ᵣ Set.indicator {1} (fun _ => (1 : R)) = f :=
+  convolution_indicator_one_right (LinearMap.mul ℕ R) f 1 mul_one
+
+variable [DecidableEq M]
 
 /-- Left identity: `Pi.single 1 1 ⋆ᵣ f = f` for `HasMulAntidiagonal` types. -/
 @[to_additive (dont_translate := R) (attr := simp) addRingConvolution_single_zero_left
