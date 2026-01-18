@@ -50,7 +50,8 @@ theorem addRingConvolution_eq_measureTheory_convolution [Countable M]
 
 Parallel API:
 - `ConvolutionExistsAt`, `ConvolutionExists`, `convolution`,
-  `convolution_zero`, `zero_convolution`, `convolution_assoc`.
+  `convolution_zero`, `zero_convolution`, `convolution_assoc`,
+  `distrib_add`, `add_distrib`, `smul_convolution`, `convolution_smul`.
 - Convolution associativity has the same bilinearity hypothesis:
   `hL : ∀ x y z, L₂ (L x y) z = L₃ x (L₄ y z)`.
 
