@@ -118,8 +118,7 @@ theorem IsSkewHermitian.ext_iff {A : Matrix n n α} :
 
 theorem IsSkewHermitian.transpose {A : Matrix n n α} (h : A.IsSkewHermitian) :
     Aᵀ.IsSkewHermitian := by
-  rw [IsSkewHermitian, conjTranspose, transpose_map, ← transpose_neg, ← transpose_map]
-  exact congr_arg Matrix.transpose h.eq
+  simp [IsSkewHermitian, show Aᵀᴴ = Aᴴᵀ by rfl, h.eq]
 
 @[simp]
 theorem isSkewHermitian_transpose_iff (A : Matrix n n α) :
