@@ -198,9 +198,6 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
   · rintro ⟨h₁, h₂⟩
     refine ⟨h₁, ?_⟩
     rintro I ⟨J, h_J, h_colon⟩
-    rw [← h₂]
-    refine ⟨J, h_J, ?_⟩
-    intro x h_x
-    refine ⟨I.colon {x}, h_colon x h_x, by simp⟩
+    exact h₂.le ⟨J, h_J, fun x h_x ↦ ⟨I.colon {x}, h_colon x h_x, by simp⟩⟩
 
 end IdealFilter
