@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -144,6 +145,34 @@ theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : E →ₗ[S] S
     star (f.smulRight x) = (star f).smulRight (star x) := by ext; simp
 
 end starAddMonoidSemiring
+
+section convRing
+variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarRing A] [StarModule R A]
+  [AddCommMonoid C] [Module R C] [StarAddMonoid C] [StarModule R C]
+
+open scoped IntrinsicStar ConvolutionProduct
+open Coalgebra TensorProduct
+
+theorem intrinsicStar_convMul [CoalgebraStruct R C]
+    (h : star comul = (TensorProduct.comm R C C).toLinearMap ∘ₗ comul)
+    (f g : C →ₗ[R] A) : star (f * g) = star g * star f := by
+  simp [convMul_def, intrinsicStar_comp, intrinsicStar_mul', intrinsicStar_map,
+    h, comp_assoc, ← comp_assoc _ _ (map _ _), map_comp_comm_eq,
+    ← comp_assoc _ (TensorProduct.comm R A A).toLinearMap]
+
+/-- The convolutive intrinsic star ring on linear maps from coalgebras
+to ⋆-algebras, given that `star comul = comm ∘ₗ comul`.
+
+In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
+coalgebra, we get this hypothesis. -/
+def convIntrinsicStarRing [Coalgebra R C]
+    (h : star comul = (TensorProduct.comm R C C).toLinearMap ∘ₗ comul) :
+    StarRing (C →ₗ[R] A) where
+  __ := intrinsicStarAddMonoid
+  star_mul := intrinsicStar_convMul h
+
+end convRing
 
 end LinearMap
 
