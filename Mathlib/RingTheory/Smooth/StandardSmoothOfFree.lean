@@ -119,11 +119,8 @@ theorem IsSmoothAt.exists_notMem_isStandardSmooth [FinitePresentation R S] (p : 
     exact Ideal.mem_map_of_mem (algebraMap S (Localization.Away g)) hmem
   -- `Ω[Sₚ⁄R]` is projective, so free over the local ring `Sₚ` and
   -- a basis extends to a neighbourhood `D(g)`.
-  let v (s : S) : Ω[Localization.AtPrime p⁄R] :=
-    map R R S (Localization.AtPrime p) (D R S s)
-  have hv : Submodule.span (Localization.AtPrime p) (Set.range v) = ⊤ :=
-    span_range_map_derivation_of_isLocalization R _ (Localization.AtPrime p) p.primeCompl
-  obtain ⟨κ, a, b, hb⟩ := Module.exists_basis_of_span_of_flat v hv
+  obtain ⟨κ, a, b, hb⟩ := Module.exists_basis_of_span_of_flat _
+    (span_range_map_derivation_of_isLocalization R _ (Localization.AtPrime p) p.primeCompl)
   let e : (κ →₀ S) →ₗ[S] Ω[S⁄R] :=
     Finsupp.linearCombination S fun i : κ ↦ D R S (a i)
   let l₁ : (κ →₀ S) →ₗ[S] (κ →₀ Localization.AtPrime p) :=
