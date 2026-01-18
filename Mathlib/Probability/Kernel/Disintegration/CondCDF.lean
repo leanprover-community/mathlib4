@@ -195,7 +195,7 @@ lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure 
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
-  refine integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
+  refine integrable_of_forall_fin_meas_le (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
   · exact measurable_preCDF.ennreal_toReal.aestronglyMeasurable
   · simp_rw [← ofReal_norm_eq_enorm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
     rw [← lintegral_one]
