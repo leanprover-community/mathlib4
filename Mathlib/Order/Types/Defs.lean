@@ -226,8 +226,6 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
     rw [← type_toType o]
     exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
 
-
-
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 -- TODO: define `OrderType.lift` and redefine this using it.
 @[expose]
