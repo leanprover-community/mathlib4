@@ -49,11 +49,12 @@ protected noncomputable def map : GroupSeminorm F where
     · rfl
   mul_le' x y := by
     split_ifs with hf
-    · rw [le_isGLB_iff ((map_aux1 hf x).add (map_aux1 hf y)), mem_lowerBounds,
-        ← image2_add, image2_image_left, image2_image_right, forall_mem_image2]
-      intro a (ha : f a = x) b (hb : f b = y)
-      exact (map_aux1 hf (x * y)).1 (mem_image_of_mem p (by simp [ha, hb]))
-        |>.trans (map_mul_le_add p a b)
+    · refine le_of_forall_le fun c ↦ ?_
+      simp_rw [le_isGLB_iff ((map_aux1 hf x).add (map_aux1 hf y)),
+          le_isGLB_iff (map_aux1 hf (x * y)), mem_lowerBounds, ← image2_add, image2_image_left,
+          image2_image_right, forall_mem_image, forall_mem_image2]
+      intro hc a (ha : f a = x) b (hb : f b = y)
+      exact @hc (a * b) (by simp [ha, hb]) |>.trans (map_mul_le_add p a b)
     · simp
   inv' x := by
     split_ifs with hf
@@ -79,6 +80,11 @@ lemma isGLB_map (hf : Surjective f) (x : F) :
   rw [map_def_of_surjective hf]
   exact map_aux1 hf x
 
+--@[to_additive]
+--lemma map_eq_iInf_of_surjective (hf : Surjective f) {x : F} :
+--    p.map f x = ⨅ y : f ⁻¹' {x}, p y := by
+--  rw [isGLB_map hf x |>.ciInf_set_eq (singleton_nonempty x |>.preimage hf)]
+
 @[to_additive]
 lemma le_map_iff (hf : Surjective f) {x : F} {c : ℝ} :
     c ≤ p.map f x ↔ ∀ y ∈ f ⁻¹' {x}, c ≤ p y := by
@@ -97,7 +103,14 @@ lemma map_eq_iff_le_iff (hf : Surjective f) {x : F} {c : ℝ} :
     fun H ↦ eq_of_forall_le_iff fun d ↦ by rw [H d, le_map_iff hf]⟩
 
 @[to_additive]
-lemma isGLB_map_dist_ker (hf : Surjective f) (y : E) :
+lemma isGLB_map_mul_ker (hf : Surjective f) (y : E) :
+    IsGLB ((fun k ↦ p (y * k)) '' (f.ker : Set E)) (p.map f (f y)) := by
+  simp_rw [isGLB_iff_le_iff, mem_lowerBounds, forall_mem_image, le_map_iff hf]
+  refine fun c ↦ ⟨fun H k hk ↦ H (y * k) (by simpa), fun H y' (hy' : f y' = f y) ↦ ?_⟩
+  simpa using @H (y⁻¹ * y') (by simp [hy'])
+
+@[to_additive]
+lemma isGLB_map_div_ker (hf : Surjective f) (y : E) :
     IsGLB ((fun k ↦ p (y / k)) '' (f.ker : Set E)) (p.map f (f y)) := by
   simp_rw [isGLB_iff_le_iff, mem_lowerBounds, forall_mem_image, le_map_iff hf]
   refine fun c ↦ ⟨fun H k hk ↦ H (y / k) (by simpa), fun H y' (hy' : f y' = f y) ↦ ?_⟩
@@ -189,9 +202,15 @@ lemma quotient_eq_iff_le_iff {x : E ⧸ S} {c : ℝ} :
 
 variable (S) in
 @[to_additive]
-lemma isGLB_quotient_dist (y : E) :
+lemma isGLB_quotient_mul (y : E) :
+    IsGLB ((fun k ↦ p (y * k)) '' S) (p.quotient S y) := by
+  simpa using isGLB_map_mul_ker (QuotientGroup.mk'_surjective S) y
+
+variable (S) in
+@[to_additive]
+lemma isGLB_quotient_div (y : E) :
     IsGLB ((fun k ↦ p (y / k)) '' S) (p.quotient S y) := by
-  simpa using isGLB_map_dist_ker (QuotientGroup.mk'_surjective S) y
+  simpa using isGLB_map_div_ker (QuotientGroup.mk'_surjective S) y
 
 variable (S) in
 @[to_additive]
