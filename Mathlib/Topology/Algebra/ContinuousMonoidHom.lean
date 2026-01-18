@@ -142,6 +142,10 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
+@[to_additive]
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
+  ext <| by convert DFunLike.ext_iff.1 h
+
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
 def comp (g : B →ₜ* C) (f : A →ₜ* B) : A →ₜ* C :=
