@@ -6,6 +6,8 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Option.Order
 public import Mathlib.Data.Sigma.Order
 public import Mathlib.Data.Sum.Order
 public import Mathlib.Dynamics.FixedPoints.Basic
@@ -290,6 +292,112 @@ lemma sigma_cases
   ext : 1
   · exact this.choose.symm
   · simp only [Chain, OrderHom.coe_mk, heq_eqRec_iff_heq, heq_eq_eq]
+
+/-- Lifts a chain into a chain of options with the specified number of preceeding `none`s. -/
+def some (n : ℕ) (c : Chain α) : Chain (Option α) where
+  toFun i := if i < n then none else c (i - n)
+  monotone' := by
+    apply Monotone.ite
+    · apply monotone_const
+    · apply Monotone.comp Option.some_mono
+      apply Monotone.comp c.monotone
+      intro i₁ i₂ hi
+      grind
+    · grind
+    · simp only [Option.none_le, implies_true]
+
+@[simp]
+lemma some_coe (n) (c : Chain α) (i) : some n c i = if i < n then none else c (i - n) := by rfl
+
+noncomputable def dropOption (c : Chain (Option α)) (h : ∃ n, (c n).isSome) : Chain α where
+  toFun n :=
+    have : (c (n + Nat.find h)).isSome := by
+      have := Nat.find_spec h
+      have : c (Nat.find h) ≤ c (n + Nat.find h) := c.monotone (by grind)
+      have := Option.isSome_mono this
+      grind [Bool.eq_true_of_true_le]
+    (c (n + Nat.find h)).get this
+  monotone' i₁ i₂ hi := by
+    apply Option.get_mono
+    apply c.monotone
+    grind
+
+@[simp]
+lemma dropOption_coe (c : Chain (Option α)) (h : ∃ n, (c n).isSome) (n)
+    : dropOption c h n
+    = have : (c (n + Nat.find h)).isSome := by
+        have := Nat.find_spec h
+        have : c (Nat.find h) ≤ c (n + Nat.find h) := c.monotone (by grind)
+        have := Option.isSome_mono this
+        grind [Bool.eq_true_of_true_le]
+      (c (n + Nat.find h)).get this := by
+  rfl
+
+@[simp]
+lemma dropOption_some (n) : dropOption (some n c) ⟨n, by simp⟩ = c := by
+  ext i
+  simp only [dropOption_coe, some_coe, Option.isSome_ite', not_lt, Option.get_ite']
+  have h : ∃ m, n ≤ m := by use n
+  have : Nat.find h = n := by
+    simp only [Nat.find_eq_iff, le_refl, not_le, imp_self, implies_true, and_self]
+  simp only [this, Nat.add_sub_cancel]
+
+noncomputable def unlift (c : Chain (Option α)) : Option (Chain α) :=
+  open Classical in
+  if h : ∃n, (c n).isSome
+  then .some (dropOption c h)
+  else .none
+
+@[simp]
+lemma unlift_none : unlift (const none) = (.none : Option (Chain α)) := by
+  simp only [unlift, const_coe, Option.isSome_none, Bool.false_eq_true, exists_const, ↓reduceDIte]
+
+@[simp]
+lemma unlift_some (n) : unlift (some n c) = (.some c : Option (Chain α)) := by
+  simp only [
+    unlift, some_coe, Option.isSome_ite', not_lt, dropOption_some, dite_eq_ite,
+    ite_eq_left_iff, not_exists, not_le, reduceCtorEq, imp_false, not_forall]
+  use n
+
+@[elab_as_elim]
+lemma unlift_cases
+    {p : Chain (Option α) → Prop}
+    (none : p (const .none))
+    (some : ∀ n c, p (.some n c))
+    (c : Chain (Option α)) : p c := by
+  classical
+  let ℓ := if h : ∃n, (c n).isSome then Nat.find h else 0
+  suffices this : c.unlift.elim (const .none) (.some ℓ) = c by
+    rw [← this]
+    cases c.unlift with
+    | none => simp only [Option.elim_none, none]
+    | some _ => simp only [Option.elim_some, some]
+  by_cases h : ∃n, (c n).isSome
+  · simp only [unlift, h, ↓reduceDIte, Option.elim_some]
+    ext n
+    simp only [
+      h, ↓reduceDIte, some_coe, Nat.lt_find_iff, Bool.not_eq_true,
+      Option.isSome_eq_false_iff, Option.isNone_iff_eq_none, dropOption_coe,
+      Option.some_get, Option.ite_none_left_eq_some, not_forall, ℓ]
+    cases le_or_gt (Nat.find h) n with
+    | inl h' => grind
+    | inr h' =>
+      have hn₁ : n ≤ Nat.find h := by grind
+      have hn₂ : c n = .none := by
+        simpa only [Bool.not_eq_true, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none]
+          using Nat.find_min h h'
+      simp only [
+        exists_prop, hn₁, Nat.sub_eq_zero_of_le, Nat.zero_add, hn₂,
+        reduceCtorEq, iff_false, not_and, forall_exists_index, and_imp]
+      intro m hm hm'
+      have := c.monotone hm
+      simp only [hn₂, Option.le_none] at this
+      contradiction
+  · ext n
+    have : ∀ (x : ℕ), c x = .none := by simpa using h
+    simp only [
+      unlift, this, Option.isSome_none, Bool.false_eq_true, exists_const,
+      ↓reduceDIte, Option.elim_none, const_coe, reduceCtorEq]
 
 end Chain
 
@@ -757,6 +865,120 @@ lemma ωScottContinuous_elim
     rfl
 
 end Sigma
+
+namespace Option
+
+variable [OmegaCompletePartialOrder α]
+
+noncomputable instance : OmegaCompletePartialOrder (Option α) where
+  ωSup c := c.unlift.map ωSup
+  le_ωSup c i := by
+    cases c using Chain.unlift_cases with
+    | none => simp only [const_coe, unlift_none, map_none, le_refl]
+    | some j =>
+      simp only [some_coe, unlift_some, map_some]
+      by_cases h : i < j
+      · simp only [h, ↓reduceIte, none_le]
+      · simp only [h, ↓reduceIte, some_le_some]
+        apply le_ωSup
+  ωSup_le := by
+    rintro c x h
+    cases c using Chain.unlift_cases with
+    | none => simp only [unlift_none, map_none, none_le]
+    | some n c =>
+      cases x with
+      | none =>
+        specialize h n
+        simp only [some_coe] at h
+        grind
+      | some x =>
+        replace h i := h (i + n)
+        simp only [unlift_some, map_some, some_le_some, ωSup_le_iff]
+        simp only [some_coe, Nat.add_sub_cancel] at h
+        grind
+
+@[simp]
+lemma ωSup_some (n) (c : Chain α) : ωSup (.some n c) = ωSup c := by
+  simp only [ωSup, unlift_some, map_some]
+
+@[fun_prop]
+lemma ωScottContinuous_some : ωScottContinuous (.some : α → Option α) := by
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
+  · apply Option.some_mono
+  · have : c.map ⟨some, Option.some_mono⟩ = Chain.some 0 c := by
+      ext n
+      simp only [
+        Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, some.injEq,
+        some_coe, Nat.not_lt_zero, ↓reduceIte, Nat.sub_zero]
+    simp only [this, ωSup_some]
+
+@[fun_prop]
+lemma ωScottContinuous_bind
+    [OmegaCompletePartialOrder β]
+    [OmegaCompletePartialOrder γ]
+    {f : α → Option β} (hf : ωScottContinuous f)
+    {g : α → β → Option γ} (hg : ωScottContinuous fun x : _ × _ ↦ g x.1 x.2)
+    : ωScottContinuous (fun x ↦ Option.bind (f x) (g x)) := by
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
+  · apply Option.bind_mono hf.monotone hg.monotone
+  · rw [hf.map_ωSup]
+    cases hc : c.map ⟨f, hf.monotone⟩ using Chain.unlift_cases with
+    | none =>
+      simp only [ωSup_const, bind_none]
+      apply le_antisymm
+      · simp only [none_le]
+      · simp only [
+          Chain.ext_iff, Chain.map_coe, OrderHom.coe_mk,
+          const_coe, funext_iff, Function.comp_apply] at hc
+        simp only [
+          ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk,
+          Function.comp_apply, hc, bind_none, le_refl, implies_true]
+    | some n c' =>
+      simp only [ωSup_some, bind_some]
+      have := hg.map_ωSup (c.zip c')
+      change g (ωSup c) (ωSup c') = _ at this
+      rw [this]
+      simp only [
+        Chain.ext_iff, Chain.map_coe, OrderHom.coe_mk,
+        funext_iff, Function.comp_apply, some_coe] at hc
+      apply le_antisymm
+      · simp only [ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe]
+        intro i
+        apply le_ωSup_of_le (i + n)
+        have : ¬ (i + n < n) := by grind
+        simp only [
+          Chain.map_coe, OrderHom.coe_mk, Function.comp_apply, hc, this,
+          ↓reduceIte, Nat.add_sub_cancel, bind_some, ge_iff_le]
+        apply hg.monotone (?_ : (_, _) ≤ (_, _))
+        simp only [ge_iff_le, Prod.mk_le_mk, le_refl, and_true]
+        apply c.monotone
+        simp only [Nat.le_add_right]
+      · simp only [ωSup_le_iff, Chain.map_coe, OrderHom.coe_mk, Function.comp_apply]
+        intro i
+        apply le_ωSup_of_le i
+        by_cases h : i < n
+        · simp only [
+            hc, h, ↓reduceIte, bind_none, Chain.map_coe, OrderHom.coe_mk,
+            Function.comp_apply, zip_coe, none_le]
+        · simp only [
+            hc, h, ↓reduceIte, bind_some, Chain.map_coe,
+            OrderHom.coe_mk, Function.comp_apply, zip_coe]
+          apply hg.monotone (?_ : (_, _) ≤ (_, _))
+          simp only [ge_iff_le, Prod.mk_le_mk, le_refl, true_and]
+          apply c'.monotone
+          simp only [Nat.sub_le]
+
+@[fun_prop]
+lemma ωScottContinuous_map
+    [OmegaCompletePartialOrder β]
+    [OmegaCompletePartialOrder γ]
+    {f : α → β → γ} (hg : ωScottContinuous fun x : _ × _ ↦ f x.1 x.2)
+    {g : α → Option β} (hf : ωScottContinuous g)
+    : ωScottContinuous (fun x ↦ Option.map (f x) (g x)) := by
+  simp only [map_eq_bind, Function.comp_apply]
+  fun_prop
+
+end Option
 
 namespace CompleteLattice
 
