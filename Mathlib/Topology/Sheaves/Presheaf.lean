@@ -42,7 +42,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
-def Presheaf (X : TopCat.{w}) : Type max u v w :=
+abbrev Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
 instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
