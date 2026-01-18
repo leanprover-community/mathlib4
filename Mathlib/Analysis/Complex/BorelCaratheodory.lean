@@ -37,7 +37,7 @@ variable {f : ℂ → ℂ} {s : Set ℂ} {M : ℝ}
 
 /-- If a differentiable function avoids a value `M`, then it remains differentiable
 when divided by `M - f z`. -/
-lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
+private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
     DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
   div hf (hf.const_sub M) fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
 
