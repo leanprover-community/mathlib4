@@ -137,11 +137,8 @@ private theorem isEmpty_toType_iff {o : OrderType} : IsEmpty o.ToType ↔ o = 0 
 private theorem nonempty_toType_iff {o : OrderType} : Nonempty o.ToType ↔ o ≠ 0 := by
   rw [← @type_ne_zero_iff o.ToType, type_toType]
 
-protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
-  type_ne_zero
-
 instance : Nontrivial OrderType.{u} :=
-  ⟨⟨1, 0, OrderType.one_ne_zero⟩⟩
+  ⟨⟨1, 0, type_ne_zero⟩⟩
 
 /-- `Quotient.inductionOn` specialized to `OrderType`. -/
 @[elab_as_elim]
@@ -193,7 +190,7 @@ instance : Preorder OrderType where
   le_trans o₁ o₂ o₃ := inductionOn₃ o₁ o₂ o₃ fun _ _ _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
 
 instance : NeZero (1 : OrderType) :=
-  ⟨OrderType.one_ne_zero⟩
+  ⟨type_ne_zero⟩
 
 theorem type_le_type_iff {α β} [LinearOrder α]
     [LinearOrder β] : type α ≤ type β ↔ Nonempty (α ↪o β) :=
