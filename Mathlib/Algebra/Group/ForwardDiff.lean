@@ -153,7 +153,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
-    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
+    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
 lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
@@ -222,7 +222,7 @@ We prove formulae about the forward difference operator applied to polynomials:
   The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-    sums over `range n`.
+    sums over `range n`).
 -/
 
 variable {R : Type*} [CommRing R]
@@ -240,7 +240,7 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
     rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
     exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; cutsat), nsmul_zero]
+      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; lia), nsmul_zero]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
@@ -257,7 +257,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; cutsat), mul_zero]
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; lia), mul_zero]
 
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
     Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
@@ -281,7 +281,7 @@ theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
 
 /--
 The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-sums over `range n`.
+sums over `range n`).
 -/
 theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     Δ_[1]^[n] (fun r : R ↦ ∑ k ∈ range n, P k * r ^ k) = 0 := by

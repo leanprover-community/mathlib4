@@ -154,7 +154,7 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
   simp [sub_eq_add_neg, cosh_add, sinh_neg, cosh_neg]
 
 theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
-  rw [sinh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_sub, sinh, map_div₀, map_ofNat]
+  rw [sinh, ← map_neg, exp_conj, exp_conj, ← map_sub, sinh, map_div₀, map_ofNat]
 
 @[simp]
 theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
@@ -171,7 +171,7 @@ theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
   rfl
 
 theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
-  rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀, map_ofNat]
+  rw [cosh, ← map_neg, exp_conj, exp_conj, ← map_add, cosh, map_div₀, map_ofNat]
 
 theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
   conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
@@ -369,7 +369,7 @@ theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) 
   ring
 
 theorem sin_conj : sin (conj x) = conj (sin x) := by
-  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, ← conj_neg_I, ← RingHom.map_mul, ← RingHom.map_mul,
+  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, ← conj_neg_I, ← map_mul, ← map_mul,
     sinh_conj, mul_neg, sinh_neg, sinh_mul_I, mul_neg]
 
 @[simp]
@@ -387,7 +387,7 @@ theorem sin_ofReal_re (x : ℝ) : (sin x).re = Real.sin x :=
   rfl
 
 theorem cos_conj : cos (conj x) = conj (cos x) := by
-  rw [← cosh_mul_I, ← conj_neg_I, ← RingHom.map_mul, ← cosh_mul_I, cosh_conj, mul_neg, cosh_neg]
+  rw [← cosh_mul_I, ← conj_neg_I, ← map_mul, ← cosh_mul_I, cosh_conj, mul_neg, cosh_neg]
 
 @[simp]
 theorem ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
@@ -414,6 +414,14 @@ theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
 
 theorem tan_mul_cos {x : ℂ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
+
+@[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  inv_div ..
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  inv_div ..
 
 @[simp]
 theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
@@ -603,6 +611,14 @@ theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
 
 @[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  ofReal_injective <| by simp
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  ofReal_injective <| by simp
+
+@[simp]
 theorem tan_zero : tan 0 = 0 := by simp [tan]
 
 @[simp]
@@ -732,6 +748,10 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
 nonrec theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
   ofReal_inj.1 <| by simp [tanh_eq_sinh_div_cosh]
 
+/-- The definition of `tanh` in terms of `exp`. -/
+theorem tanh_eq (x : ℝ) : tanh x = (exp x - exp (-x)) / (exp x + exp (-x)) := by
+  rw [tanh_eq_sinh_div_cosh, sinh_eq, cosh_eq, div_div_div_cancel_right₀ two_ne_zero]
+
 @[simp]
 theorem tanh_zero : tanh 0 = 0 := by simp [tanh]
 
@@ -790,6 +810,22 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
   lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+
+theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem abs_tanh_lt_one (x : ℝ) : |tanh x| < 1 :=
+  abs_lt.mpr ⟨neg_one_lt_tanh x, tanh_lt_one x⟩
+
+theorem tanh_sq_lt_one (x : ℝ) : (tanh x) ^ 2 < 1 :=
+  (sq_lt_one_iff_abs_lt_one (tanh x)).mpr (abs_tanh_lt_one x)
 
 end Real
 

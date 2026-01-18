@@ -80,7 +80,7 @@ theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
   rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
     mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
   refine sum_congr rfl fun y _hy => ?_
-  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
+  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.add_one_mul_choose_eq, Nat.cast_mul,
     Nat.add_sub_cancel]
 
 end Eval
@@ -129,7 +129,7 @@ variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
+  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
     (by ext; simp)
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=

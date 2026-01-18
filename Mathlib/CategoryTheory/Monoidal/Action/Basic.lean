@@ -44,7 +44,7 @@ namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
 
-variable [Category C] [Category D]
+variable [Category* C] [Category* D]
 /-- A class that carries the non-Prop data required to define a left action of a
 monoidal category `C` on a category `D`, to set up notations. -/
 class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
@@ -179,8 +179,6 @@ instance selfLeftAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]
-
-@[deprecated (since := "2025-06-13")] alias selfAction := selfLeftAction
 
 namespace MonoidalLeftAction
 
@@ -413,7 +411,7 @@ scoped notation "αᵣ " => MonoidalRightActionStruct.actionAssocIso
 scoped notation "ρᵣ " => MonoidalRightActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ⊙ᵣ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ρᵣ[" J "]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 
@@ -486,7 +484,7 @@ instance selRightfAction [MonoidalCategory C] : MonoidalRightAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ₘ g
   actionUnitIso x := ρ_ x
-  actionAssocIso x y z := α_ x y z|>.symm
+  actionAssocIso x y z := α_ x y z |>.symm
   actionHomLeft f x := f ▷ x
   actionHomRight x _ _ f := x ◁ f
   actionHom_def := by simp [tensorHom_def]

@@ -185,7 +185,7 @@ theorem algebra_epi_of_epi {X Y : Algebra T} (f : X ⟶ Y) [h : Epi f.f] : Epi f
 theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget T).mono_of_mono_map h
 
-instance : T.forget.IsRightAdjoint  :=
+instance : T.forget.IsRightAdjoint :=
   ⟨T.free, ⟨T.adj⟩⟩
 
 /--
@@ -397,7 +397,7 @@ theorem algebra_epi_of_epi {X Y : Coalgebra G} (f : X ⟶ Y) [h : Epi f.f] : Epi
 theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget G).mono_of_mono_map h
 
-instance : G.forget.IsLeftAdjoint  :=
+instance : G.forget.IsLeftAdjoint :=
   ⟨_, ⟨G.adj⟩⟩
 
 end Comonad

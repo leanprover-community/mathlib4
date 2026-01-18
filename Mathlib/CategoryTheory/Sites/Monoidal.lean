@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.SheafHom
@@ -70,7 +70,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
       congr 1
       let α : Over.mk j'.hom.unop ⟶ Over.mk j.hom.unop := Over.homMk φ.right.unop
         (Quiver.Hom.op_inj (by simp))
-      simpa using (g.naturality α.op).symm )
+      simpa using (g.naturality α.op).symm)
   left_inv f := by
     dsimp
     ext j

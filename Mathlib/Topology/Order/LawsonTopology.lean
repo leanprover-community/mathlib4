@@ -230,8 +230,6 @@ instance (priority := 90) toT1Space : T1Space α where
     rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
     exact lawsonClosed_of_scottClosed _ isClosed_Iic
 
-@[deprecated (since := "2025-07-02")] protected alias singleton_isClosed := isClosed_singleton
-
 end IsLawson
 
 end Topology

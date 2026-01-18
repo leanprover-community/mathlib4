@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Piecewise
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ M β γ : Type*} {s : Finset ι}
 
@@ -79,7 +79,7 @@ lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬
 lemma prod_dite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
     (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, f i.1 (h _ i.2) := by
-  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
+  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> grind
 
 @[to_additive]
 lemma prod_ite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) (f g : ι → M) :
@@ -222,11 +222,6 @@ theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i �
     rintro rfl
     exact h hj
   simp [this]
-
-@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_update_of_not_mem := prod_update_of_notMem
 
 @[to_additive]
 theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s) (f : ι → M) (b : M) :

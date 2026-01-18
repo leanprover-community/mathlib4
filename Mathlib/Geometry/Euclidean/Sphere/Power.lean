@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Manuel Candales, Benjamin Davidson
+Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
@@ -222,6 +222,29 @@ theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
   rw [mul_dist_eq_power_of_radius_le_dist_center hr hp ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
+
+/-- The power of a point with respect to a sphere equals the square of its tangent length. -/
+theorem IsTangentAt.power_eq_dist_sq {s : Sphere P} {t p : P}
+    (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
+    s.power p = dist p t ^ 2 := by
+  rw [Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
+  ring_nf
+
+/-- A line through a point on a sphere is tangent if and only if the squared distance
+from the external point to the tangent point equals the power of the point. -/
+theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s) :
+    s.IsTangentAt t (line[ℝ, p, t]) ↔ dist p t ^ 2 = s.power p :=
+  ⟨fun h ↦ h.power_eq_dist_sq.symm, fun h_dist_eq ↦ by
+    have h_orth : ⟪p -ᵥ t, t -ᵥ s.center⟫ = 0 := by
+      simp only [Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub V, sq,
+                 ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
+      exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
+    refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
+    rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
+    rw [← hr, inner_smul_left, h_orth, mul_zero]⟩
+
+alias ⟨_, isTangentAt_of_dist_sq_eq_power⟩ := isTangentAt_iff_dist_sq_eq_power
 
 end Sphere
 

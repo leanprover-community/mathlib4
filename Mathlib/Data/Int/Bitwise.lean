@@ -93,9 +93,9 @@ protected def xor : ℤ → ℤ → ℤ
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
-  | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
-  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
-  | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
+  | (m : ℕ), -[n+1] => m >>> (Nat.succ n)
+  | -[m+1], (n : ℕ) => -[Nat.shiftLeft' true m n+1]
+  | -[m+1], -[n+1] => -[m >>> (Nat.succ n)+1]
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
@@ -366,14 +366,28 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
 
 /-! ### bitwise ops -/
 
+/-- Connection of `HShiftLeft Int Int Int` and `HShiftLeft Int Nat Int`. -/
+lemma shiftLeft_natCast_right (m : ℤ) (n : ℕ) :
+    m <<< (n : ℤ) = m <<< n := by
+  rw [Int.shiftLeft_eq']
+  unfold_projs; cases m <;> simp only [Nat.shiftLeft'_false, natCast_shiftLeft, ofNat_eq_natCast,
+    Nat.pow_eq, Int.natCast_pow, Nat.cast_ofNat, mul_def]
+  · grind [Int.shiftLeft_eq']
+  · simp only [negSucc_eq, ← natCast_add_one, Nat.shiftLeft'_tt_eq_mul_pow]
+    grind
+
+/-- Connection of `HShiftRight Int Int Int` and `HShiftRight Int Nat Int`. -/
+lemma shiftRight_natCast_right (m : ℤ) (n : ℕ) :
+    m >>> (n : ℤ) = m >>> n := by
+  cases m <;> simp
+
 theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
-      (fun (i n : ℕ) =>
-        by simp [← Nat.shiftLeft_sub _, Nat.add_sub_cancel_left])
+      (fun (i n : ℕ) => by simp [← Nat.shiftLeft_sub _])
       fun i n => by
         dsimp only [← Int.natCast_shiftRight]
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,

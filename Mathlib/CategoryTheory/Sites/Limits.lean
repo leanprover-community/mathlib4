@@ -83,7 +83,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         intro ii
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).val.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
-        dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
         cat_disch }
 
@@ -111,8 +110,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      rw [Presheaf.IsSheaf.amalgamate_map]
-      rfl)
+      rw [Presheaf.IsSheaf.amalgamate_map])
     (by
       intro S m hm
       apply (isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).hom_ext
@@ -174,9 +172,12 @@ instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
 instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
-variable {D : Type w} [Category.{max v u} D]
+instance [HasFiniteLimits D] :
+    PreservesFiniteLimits (sheafToPresheaf J D) where
+  preservesFiniteLimits _ _ _ := inferInstance
 
-example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
+example {D : Type w} [Category.{max v u} D] [HasLimits D] :
+    HasLimits (Sheaf J D) := inferInstance
 
 end
 
@@ -194,6 +195,19 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
   (Cocones.precompose
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
+
+@[reassoc]
+lemma sheafifyCocone_ι_app_val
+    {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) (k : K) :
+    ((Sheaf.sheafifyCocone E).ι.app k).val =
+      E.ι.app k ≫ CategoryTheory.toSheafify J E.pt := by
+  rw [← cancel_epi ((sheafToPresheaf _ _).map
+    ((sheafificationAdjunction J D).counit.app (F.obj k)))]
+  dsimp [sheafifyCocone]
+  rw [← comp_val_assoc, ← NatTrans.comp_app, IsIso.hom_inv_id, NatTrans.id_app]
+  dsimp
+  rw [Category.id_comp, toSheafify_naturality, sheafificationAdjunction_counit_app_val,
+    sheafifyLift_id_toSheafify_assoc]
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/
