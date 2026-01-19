@@ -10,12 +10,15 @@ public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
-/-! # Type classes for derivatives
+/-! # Type classes for derivatives and Laplacian
 
 In this file we define notation type classes for line derivatives, also known as partial
-derivatives.
+derivatives, and for the Laplacian.
 
 Moreover, we provide type-classes that encode the linear structure.
+We also define the iterated line derivative and prove elementary properties.
+We define a Laplacian based on the sum of second derivatives formula and prove that the Laplacian
+thus defined is independent of the choice of basis.
 
 Currently, this type class is only used by Schwartz functions. Future uses include derivatives on
 test functions, distributions, tempered distributions, and Sobolev spaces (and other generalized
@@ -28,6 +31,7 @@ universe u' u v w
 
 variable {ι ι' 𝕜 R V E F F₁ F₂ F₃ V₁ V₂ V₃ : Type*}
 
+/-! ## Line derivative -/
 
 open Fin
 
@@ -208,6 +212,8 @@ theorem iteratedLineDerivOpCLM_apply {n : ℕ} (m : Fin n → V) (x : E) :
 end iteratedLineDerivOp
 
 end LineDeriv
+
+/-! ## Laplacian -/
 
 /--
 The notation typeclass for the Laplace operator.
