@@ -90,7 +90,10 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
 lemma LocallyOfFiniteType.stalkMap [LocallyOfFiniteType f] (x : X) :
     (f.stalkMap x).hom.EssFiniteType :=
   HasRingHomProperty.stalkMap_of_respectsIso RingHom.EssFiniteType.respectsIso
-    (fun f hf _ _ ↦ (RingHom.FiniteType.essFiniteType hf).localRingHom _) ‹_› x
+    (fun f hf _ _ ↦ RingHom.EssFiniteType.holdsForLocalization.localRingHom
+      RingHom.EssFiniteType.stableUnderComposition
+      RingHom.EssFiniteType.isStableUnderBaseChange.localizationPreserves _
+      (RingHom.FiniteType.essFiniteType hf)) ‹_› x
 
 instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))

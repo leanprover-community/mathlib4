@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.RingHomProperties
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Meta properties of essentially of finite type ring homomorphisms
@@ -46,20 +46,10 @@ lemma isStableUnderBaseChange : IsStableUnderBaseChange EssFiniteType :=
     rw [essFiniteType_algebraMap] at h ⊢
     infer_instance
 
-lemma isLocalizationMap {M : Submonoid R} [Algebra R S] [IsLocalization M S]
-    {P : Type*} [CommRing P] {T : Submonoid P} (Q : Type*) [CommRing Q] [Algebra P Q]
-    [IsLocalization T Q] {g : R →+* P} (hy : M ≤ Submonoid.comap g T) (hg : g.EssFiniteType) :
-    (IsLocalization.map (S := S) Q g hy).EssFiniteType := by
-  refine .of_comp (algebraMap R S) ?_
-  rw [IsLocalization.map_comp]
-  refine hg.comp ?_
-  rw [RingHom.essFiniteType_algebraMap]
-  exact .of_isLocalization _ T
-
-lemma localRingHom {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
-    {f : R →+* S} (h : p = q.comap f) (hf : f.EssFiniteType) :
-    (Localization.localRingHom p q f h).EssFiniteType :=
-  hf.isLocalizationMap _ _
+lemma holdsForLocalization : HoldsForLocalization EssFiniteType := by
+  introv R _
+  rw [essFiniteType_algebraMap]
+  exact .of_isLocalization _ M
 
 lemma residueFieldMap {f : R →+* S} [IsLocalRing R] [IsLocalRing S] [IsLocalHom f]
     (hf : f.EssFiniteType) :
