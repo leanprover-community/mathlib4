@@ -286,7 +286,7 @@ elab_rules : tactic
     let g ← elabChoose b.isSome h args (.failure []) (← getMainGoal)
     replaceMainGoal [g]
 
-@[inherit_doc choose]
+@[tactic_alt choose]
 syntax "choose!" (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
 
 macro_rules

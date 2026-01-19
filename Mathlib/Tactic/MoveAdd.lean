@@ -455,12 +455,12 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))

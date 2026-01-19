@@ -464,7 +464,7 @@ syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
-@[inherit_doc computeDegree]
+@[tactic_alt computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
@@ -517,7 +517,7 @@ The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on t
 macro (name := monicityMacro) "monicity" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
 
-@[inherit_doc monicityMacro]
+@[tactic_alt monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 

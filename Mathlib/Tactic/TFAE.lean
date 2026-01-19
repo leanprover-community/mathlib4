@@ -342,7 +342,7 @@ namespace Mathlib.Tactic.TFAE
 
 open Lean Parser Meta Elab Tactic
 
-@[inherit_doc tfaeHave]
+@[tactic_alt tfaeHave]
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
 extend_docs tfaeHave'
