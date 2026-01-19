@@ -213,12 +213,10 @@ theorem killCompl_X (i : σ) : killCompl (R := R) f (X (f i)) = X i := by
 
 theorem killCompl_X_eq_zero_of_notMem_range {t} (h : t ∉ Set.range f) :
     killCompl (R := R) f (X t) = 0 := by
-  classical
-  ext y
-  rw [killCompl_apply, coeff_killComplFun, coeff_X, coeff_zero, ite_eq_right_iff,
-    Finsupp.ext_iff]
-  intro h'; specialize h' t
-  simp [embDomain_notin_range _ _ _ h] at h'
+  replace h : single t 1 ∉ Set.range (embDomain f) := by
+    rwa [mem_range_embDomain_iff, support_single_ne_zero _ (by simp), coe_singleton,
+      Set.singleton_subset_iff]
+  simpa using killComplFun_monomial_eq_zero_of_notMem_range_embDomain f (1 : R) h
 
 theorem killCompl_comp_rename : (killCompl f).comp (rename f) = AlgHom.id R _ := by
   ext; simp [rename_apply, killCompl_apply, coeff_killComplFun]
