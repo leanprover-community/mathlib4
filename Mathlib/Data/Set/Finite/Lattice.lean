@@ -389,8 +389,8 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
-theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α]
-    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α] {s : Set ι}
+    (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
   classical
   induction s, hs using Set.Finite.induction_on with
@@ -405,8 +405,8 @@ theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [O
         exact ha ha'
     · exact le_iSup_of_le (g a) (le_iSup_of_le g le_rfl)
 
-theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α]
-    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α] {s : Set ι}
+    (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
   classical
   induction s, hs using Set.Finite.induction_on with
