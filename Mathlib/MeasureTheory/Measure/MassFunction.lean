@@ -3,10 +3,11 @@ Copyright (c) 2026 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Pfaffelhuber
 -/
+module
 
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Measure.Dirac
-import Mathlib.Order.BourbakiWitt
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Mass functions
@@ -25,6 +26,8 @@ For this measure, every set is measurable.
 mass function, weight function, discrete measure
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Function
 
