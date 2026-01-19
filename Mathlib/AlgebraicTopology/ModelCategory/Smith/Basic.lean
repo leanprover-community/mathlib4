@@ -133,7 +133,7 @@ noncomputable abbrev πSuccObj : succObj g hJ₁ ⟶ Y :=
   haveI := hasCoproductsOfShape_index I W g
   pushout.desc g.hom (Sigma.desc (fun i ↦ (i.factorization hJ₁).β.right))
 
-noncomputable def attachCells : AttachCells J.homFamily (ιSuccObj g hJ₁) := by
+noncomputable def attachCells' : AttachCells J.homFamily (ιSuccObj g hJ₁) := by
   have := hasCoproductsOfShape_index I W g
   exact {
       ι := Index I W g
@@ -147,13 +147,13 @@ noncomputable def attachCells : AttachCells J.homFamily (ιSuccObj g hJ₁) := b
       g₂ := inr g hJ₁
       isPushout := IsPushout.of_hasPushout (sigmaDesc g hJ₁) (sigmaMap g hJ₁) }
 
-noncomputable def attachCells' : AttachCells.{w} J.homFamily (ιSuccObj g hJ₁) :=
-  haveI : Small.{w} (attachCells g hJ₁).ι := small_index I W g
-  (attachCells g hJ₁).reindex (equivShrink.{w} _).symm
+noncomputable def attachCells : AttachCells.{w} J.homFamily (ιSuccObj g hJ₁) :=
+  haveI : Small.{w} (attachCells' g hJ₁).ι := small_index I W g
+  (attachCells' g hJ₁).reindex (equivShrink.{w} _).symm
 
 lemma pushouts_coproducts_ιSuccObj :
     (MorphismProperty.coproducts.{w} J).pushouts (ιSuccObj g hJ₁) := by
-  simpa using (attachCells' g hJ₁).pushouts_coproducts
+  simpa using (attachCells g hJ₁).pushouts_coproducts
 
 variable (hJ₂ : J ≤ I.rlp.llp ⊓ W)
   [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
@@ -181,18 +181,17 @@ lemma prop_succ_hom (hg : W g.hom) :
     W (succ g hJ₁).hom :=
   W.of_precomp _ _ ((ιSuccObj_mem g hJ₁ hJ₂).2) (by simpa)
 
+@[simps]
 noncomputable def succStruct : SuccStruct (Over Y) where
   X₀ := Over.mk f
   succ g := succ g hJ₁
   toSucc g := toSucc g hJ₁
 
-variable (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
-
-variable [HasIterationOfShape κ.ord.ToType C]
-
---#check (succStruct f hJ₁).iteration κ.ord.ToType
-
-variable [MorphismProperty.IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
+noncomputable def attachCellsOfProp {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁)
+    (hφ : (succStruct f hJ₁).prop φ) :
+    AttachCells.{w} J.homFamily φ.left :=
+  (attachCells Z₀ hJ₁).ofArrowIso
+    ((Over.forget Y).mapArrow.mapIso hφ.arrowIso.symm)
 
 end lemma_1_8
 
@@ -202,17 +201,44 @@ open lemma_1_8
 
 variable
   [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+  [MorphismProperty.IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
+  [(I.rlp.llp ⊓ W).IsMultiplicative]
   [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
   (hJ₁ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
     ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
   (hJ₂ : J ≤ I.rlp.llp ⊓ W)
   (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
+  [HasIterationOfShape κ.ord.ToType C]
   [I.IsCardinalForSmallObjectArgument κ]
 
-/-lemma lemma_1_8 {X Y : C} (w : X ⟶ Y) (hw : W w) :
+/-include hJ₁ hJ₂ in
+lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
     ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
-      (ha : RelativeCellComplex (basicCell := fun (x : κ.ord.ToType) ↦ J.homFamily) a)
-      (hb : I.rlp b), a ≫ b = w := by
+      (ha : RelativeCellComplex.{w} (basicCell := fun (x : κ.ord.ToType) ↦ J.homFamily) a)
+      (hb : I.rlp b), a ≫ b = f := by
+  have := MorphismProperty.IsCardinalForSmallObjectArgument.isSmall (I := I) κ
+  have := MorphismProperty.IsCardinalForSmallObjectArgument.locallySmall (I := I) κ
+  have := MorphismProperty.IsCardinalForSmallObjectArgument.hasCoproducts (I := I) κ
+  have := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts (I := I) κ
+  let σ := lemma_1_8.succStruct f hJ₁
+  refine ⟨(σ.iteration κ.ord.ToType).left, (σ.ιIteration κ.ord.ToType).left,
+    (σ.iteration κ.ord.ToType).hom,
+      { toTransfiniteCompositionOfShape :=
+          (σ.transfiniteCompositionOfShapeιIteration
+            κ.ord.ToType).toTransfiniteCompositionOfShape.map (Over.forget Y)
+        attachCells j hj :=
+          attachCellsOfProp f hJ₁ _ ((σ.transfiniteCompositionOfShapeιIteration
+            κ.ord.ToType).map_mem j hj) }, ?_, by simp [σ]⟩
+  have hι (j : κ.ord.ToType) :
+      (I.rlp.llp ⊓ W) ((σ.ιIterationFunctor κ.ord.ToType).app j).left := by
+    induction j using SuccOrder.limitRecOn with
+    | isMin _ hj =>
+      obtain rfl := hj.eq_bot
+      simp only [SuccStruct.ιIterationFunctor_app_bot]
+      apply MorphismProperty.of_isIso
+    | succ =>
+      sorry
+    | isSuccLimit => sorry
   sorry-/
 
 end

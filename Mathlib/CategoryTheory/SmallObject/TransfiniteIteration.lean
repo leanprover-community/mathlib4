@@ -104,6 +104,11 @@ noncomputable def ιIterationFunctor :
     rw [id_comp, assoc, ← Functor.map_comp]
     rfl
 
+@[simp]
+lemma ιIterationFunctor_app_bot :
+    (Φ.ιIterationFunctor J).app ⊥ = (Φ.iterationFunctorObjBotIso J).inv := by
+  simp [ιIterationFunctor]
+
 /-- The canonical map `Φ.X₀ ⟶ Φ.iteration J` which is the `J`th-transfinite composition
 of maps `Φ.toSucc`. -/
 noncomputable def ιIteration : Φ.X₀ ⟶ Φ.iteration J :=

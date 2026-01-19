@@ -80,6 +80,12 @@ instance [HasIterationOfShape J C] :
     have := hasColimitsOfShape_of_isSuccLimit C j hj
     infer_instance
 
+instance [HasIterationOfShape J C] (Y : C) :
+    PreservesWellOrderContinuousOfShape J (Over.forget Y) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
 end Limits
 
 end CategoryTheory
