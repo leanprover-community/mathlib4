@@ -125,6 +125,7 @@ theorem isSkewHermitian_transpose_iff (A : Matrix n n α) :
   ⟨IsSkewHermitian.transpose, IsSkewHermitian.transpose⟩
 
 end SkewHermitian
+
 section SubtractionMonoid
 
 variable [SubtractionMonoid α] [StarAddMonoid α]
