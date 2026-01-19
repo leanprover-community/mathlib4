@@ -5,7 +5,7 @@ Authors: Paul Lezeau
 -/
 
 module
-public import Mathlib.Analysis.Calculus.PDE.LinearFirstOrder.Defs
+public import Mathlib.Analysis.PDE.Quasilinear.Defs
 public import Mathlib.Analysis.Calculus.TangentCone
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Topology.ContinuousOn
