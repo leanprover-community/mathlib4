@@ -92,7 +92,8 @@ example {a : ℝ≥0∞} (ha : a = 0) : a + 3 < ∞ := by finiteness_nonterminal
 
 example (a : ℝ) : (ENNReal.ofReal (1 + a ^ 2))⁻¹ < ∞ := by finiteness
 
--- `finiteness_nonterminal` is allowed to close goals. (Though that is a code smell.)
+-- `finiteness_nonterminal` is allowed to close goals.
+-- (In practice, this is a code smell; `finiteness` should be used directly.)
 example (a : ℝ) : (ENNReal.ofReal (1 + a ^ 2))⁻¹ < ∞ := by finiteness_nonterminal
 
 example {α : Type*} (f : α → ℕ) : ∀ i, (f i : ℝ≥0∞) ≠ ∞ := by finiteness
