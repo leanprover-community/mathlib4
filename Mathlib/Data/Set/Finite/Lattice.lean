@@ -421,8 +421,8 @@ theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [C
         rintro rfl
         exact ha ha'
 
-theorem iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α] [Finite ι]
-    {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
+theorem _root_.iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α]
+    [Finite ι] {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
   · simpa using Finite.iInf_iSup_eq Set.finite_univ
   · simp only [not_forall, not_nonempty_iff] at h
@@ -432,8 +432,8 @@ theorem iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDi
     apply iInf_le_of_le a
     rw [iSup_of_empty]
 
-theorem iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α] [Finite ι]
-    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
+theorem _root_.iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α]
+    [Finite ι] {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
   · simpa using Finite.iSup_iInf_eq Set.finite_univ
   · simp only [not_forall, not_nonempty_iff] at h
