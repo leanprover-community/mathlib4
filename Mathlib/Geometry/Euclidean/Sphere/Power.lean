@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Geometry.Euclidean.Angle.Sphere
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.Geometry.Euclidean.Similarity
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+
+import Mathlib.Geometry.Euclidean.Similarity
 
 /-!
 # Power of a point (intersecting chords and secants)
