@@ -303,36 +303,16 @@ lemma image_subtype_val_Ici_Iic {a : α} (b : Ici a) : Subtype.val '' Iic b = Ic
   (Subtype.image_preimage_val (Ici a) (Iic b.1)).trans Ici_inter_Iic
 
 @[simp]
-lemma image_subtype_val_Ici_Ici {a : α} (b : Ici a) : Subtype.val '' Ici b = Ici b.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ici b.1)).trans <| inter_eq_right.2 <| Ici_subset_Ici.2 b.2
-
-@[simp]
-lemma image_subtype_val_Ici_Icc {a : α} (b c : Ici a) : Subtype.val '' Icc b c = Icc b.1 c.1 :=
-  (Subtype.image_preimage_val (Ici a) (Icc b.1 c.1)).trans <| inter_eq_right.2 <|
-    Icc_subset_Ici_self.trans <| Ici_subset_Ici.2 b.2
-
-@[simp]
 lemma image_subtype_val_Ici_Iio {a : α} (b : Ici a) : Subtype.val '' Iio b = Ico a b :=
   (Subtype.image_preimage_val (Ici a) (Iio b.1)).trans Ici_inter_Iio
 
 @[simp]
+lemma image_subtype_val_Ici_Ici {a : α} (b : Ici a) : Subtype.val '' Ici b = Ici b.1 :=
+  (Subtype.image_preimage_val (Ici a) (Ici b.1)).trans <| inter_eq_right.2 <| Ici_subset_Ici.2 b.2
+
+@[simp]
 lemma image_subtype_val_Ici_Ioi {a : α} (b : Ici a) : Subtype.val '' Ioi b = Ioi b.1 :=
   (Subtype.image_preimage_val (Ici a) (Ioi b.1)).trans <| inter_eq_right.2 <| Ioi_subset_Ici b.2
-
-@[simp]
-lemma image_subtype_val_Ici_Ico {a : α} (b c : Ici a) : Subtype.val '' Ico b c = Ico b.1 c.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ico b.1 c.1)).trans <| inter_eq_right.2 <|
-    Ico_subset_Ici_self.trans <| Ici_subset_Ici.2 b.2
-
-@[simp]
-lemma image_subtype_val_Ici_Ioc {a : α} (b c : Ici a) : Subtype.val '' Ioc b c = Ioc b.1 c.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ioc b.1 c.1)).trans <| inter_eq_right.2 <|
-    Ioc_subset_Ioi_self.trans <| Ioi_subset_Ici b.2
-
-@[simp]
-lemma image_subtype_val_Ici_Ioo {a : α} (b c : Ici a) : Subtype.val '' Ioo b c = Ioo b.1 c.1 :=
-  (Subtype.image_preimage_val (Ici a) (Ioo b.1 c.1)).trans <| inter_eq_right.2 <|
-    Ioo_subset_Ioi_self.trans <| Ioi_subset_Ici b.2
 
 @[simp]
 lemma image_subtype_val_Iic_Ici {a : α} (b : Iic a) : Subtype.val '' Ici b = Icc b.1 a :=
