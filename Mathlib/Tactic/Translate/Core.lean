@@ -478,7 +478,7 @@ where
         visitLambda (fvars.push x) b (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
-      withLCtx tmpLCtx {} do mkLambdaFVars fvars e
+      return tmpLCtx.mkLambda fvars e
   visitForall (fvars : Array Expr) (e : Expr) (tmpLCtx : LocalContext := {}) := do
     if let .forallE n d b c := e then
       withLocalDecl n c (d.instantiateRev fvars) fun x => do
@@ -487,7 +487,7 @@ where
         visitForall (fvars.push x) b (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
-      withLCtx tmpLCtx {} do mkForallFVars fvars e
+      return tmpLCtx.mkForall fvars e
   visitLet (fvars : Array Expr) (e : Expr) (tmpLCtx : LocalContext := {}) := do
     if let .letE n t v b nondep := e then
       withLetDecl n (t.instantiateRev fvars) (v.instantiateRev fvars) (nondep := nondep)
@@ -497,7 +497,8 @@ where
         visitLet (fvars.push x) b (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
-      withLCtx tmpLCtx {} do mkLetFVars (usedLetOnly := false) (generalizeNondepLet := false) fvars e
+      -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
+      return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
