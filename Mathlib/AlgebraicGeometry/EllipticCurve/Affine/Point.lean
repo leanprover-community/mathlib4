@@ -372,11 +372,11 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_simp
     ring1
 
-set_option backward.proofsInPublic true in
 /-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
-  Units.mkOfMulEqOne _ _ <| by
+  Units.mkOfMulEqOne (XYIdeal W x (C y)) (XYIdeal W x (C <| W.negY x y) *
+      (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) <| by
     rw [← mul_assoc, ← coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h, XIdeal,
       FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero x]
 

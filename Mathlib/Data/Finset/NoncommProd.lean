@@ -253,7 +253,6 @@ lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
   obtain (⟨a, ha : a ∈ s, rfl : f a = b⟩) := by simpa using hb
   exact base a ha
 
-set_option backward.proofsInPublic true in
 @[to_additive (attr := congr)]
 theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁ = s₂)
     (h₂ : ∀ x ∈ s₂, f x = g x) (comm) :
