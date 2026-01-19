@@ -294,13 +294,6 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
--- lemma Multiset.prod_le_pow_card' {α : Type u_2} [CommMonoidWithZero α] [PartialOrder α]
---     [ZeroLEOneClass α] [PosMulMono α] (s : Multiset α) (n : α) (h0 : ∀ (x : α), x ∈ s → 0 ≤ x)
---     (h1 : ∀ (x : α), x ∈ s → x ≤ n) :
---     s.prod ≤ n ^ s.card := by
---   convert Multiset.prod_map_le_pow_card (f := MonoidHom.id α) h0 h1 using 1
---   simp
-
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
