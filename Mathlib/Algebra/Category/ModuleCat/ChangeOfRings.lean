@@ -261,7 +261,7 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
     (X₁ := (restrictScalars e.toRingHom).obj ((restrictScalars e.symm.toRingHom).obj M))
     (X₂ := M)
     { __ := AddEquiv.refl M
-      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
+      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r) }) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
 
 instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
@@ -672,10 +672,10 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
   refine ofHom
-    {toFun := fun z => TensorProduct.lift (σ₁₂ := .id _) ?_ z, map_add' := ?_, map_smul' := ?_}
+    { toFun z := TensorProduct.lift (σ₁₂ := .id _) ?_ z, map_add' := ?_, map_smul' := ?_ }
   · refine
-    {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
-      map_smul' := fun (r : R) (s : S) => ?_}
+    { toFun s := HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) ↦ ?_,
+      map_smul' := fun (r : R) (s : S) ↦ ?_ }
     · ext
       dsimp only [m2, evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
