@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
@@ -293,6 +294,13 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
+-- lemma Multiset.prod_le_pow_card' {α : Type u_2} [CommMonoidWithZero α] [PartialOrder α]
+--     [ZeroLEOneClass α] [PosMulMono α] (s : Multiset α) (n : α) (h0 : ∀ (x : α), x ∈ s → 0 ≤ x)
+--     (h1 : ∀ (x : α), x ∈ s → x ≤ n) :
+--     s.prod ≤ n ^ s.card := by
+--   convert Multiset.prod_map_le_pow_card (f := MonoidHom.id α) h0 h1 using 1
+--   simp
+
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
@@ -345,27 +353,19 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
         toFinset_nonempty.mp (Finset.card_pos.mp hpos)
       obtain ⟨y, hyx, hy_max⟩ : ∃ y : L, y ∈ s ∧ ∀ z : L, z ∈ s → f z ≤ f y :=
         exists_max_image f hs_ne
-      have : (map f t).prod ≤ f y ^ (p.natDegree - m) := by
-        set g : L → NNReal := fun x ↦ ⟨f x, apply_nonneg f x⟩
-        have h_card : p.natDegree - m = card (t.map g) := by rw [card_map, ht_card, ← hps]
-        have hx_le : ∀ x : NNReal, x ∈ map g t → x ≤ g y := by
-          intro r hr
-          obtain ⟨_, hzt, hzr⟩ := mem_map.mp hr
-          exact hzr ▸ hy_max _ (hts _ hzt)
-        have : (map g t).prod ≤ g y ^ (p.natDegree - m) := h_card ▸ prod_le_pow_card _ _ hx_le
-        simpa [g, ← NNReal.coe_le_coe, NNReal.coe_pow, NNReal.coe_mk, NNReal.coe_multiset_prod,
-          map_map, Function.comp_apply, NNReal.coe_mk] using this
-      have h_bdd : BddAbove (Set.range fun x : L ↦ ite (x ∈ s) (f x) 0) := by
-        use f y
-        intro r hr
-        obtain ⟨z, hz⟩ := Set.mem_range.mpr hr
-        simp only at hz
-        rw [← hz]
-        split_ifs with h
-        · exact hy_max _ h
-        · exact apply_nonneg _ _
-      exact le_trans this (pow_le_pow_left₀ (apply_nonneg _ _)
-        (le_trans (by rw [if_pos hyx]) (le_ciSup h_bdd y)) _)
+      rw [← hps, ← ht_card]
+      apply prod_map_le_pow_card₀
+      · intro x hx
+        exact apply_nonneg f x
+      · intro x hx
+        have hbdd : BddAbove (Set.range fun x ↦ if x ∈ s then f x else 0) := by
+          use f y
+          rintro _ ⟨a, rfl⟩
+          simp only
+          split_ifs with ha
+          · exact hy_max a ha
+          · exact apply_nonneg f y
+        exact le_ciSup_of_le hbdd x (if_pos (hts x hx) ▸ le_refl _)
     · simp only [spectralValueTerms, if_neg hm, h_le]
 
 end BddBySpectralValue
