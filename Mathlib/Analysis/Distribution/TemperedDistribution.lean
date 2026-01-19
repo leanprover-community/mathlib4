@@ -114,7 +114,7 @@ variable (E F) in
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
-  map_add' _ _ := by ext; simp
+  map_add' _ _ := by ext; simp [-UniformConvergenceCLM.add_apply]
   map_smul' _ _ := by ext; simp
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
