@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Hangyu Lv
 -/
 module
 
@@ -29,6 +29,8 @@ This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
   edge being a bridge edge.
 * `SimpleGraph.isTree_iff_existsUnique_path` characterizes trees in terms of existence and
   uniqueness of paths between pairs of vertices from a nonempty vertex type.
+* `SimpleGraph.isTree_iff_uniqueShortest_path` characterizes trees in terms of existence and
+  uniqueness of shortest paths between pairs of distinct vertices from a nonempty vertex type.
 
 ## References
 
@@ -261,6 +263,35 @@ theorem isTree_iff_existsUnique_path :
 
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
+
+lemma IsTree.isPath_length_eq_dist (hT : G.IsTree) (v w : V) (p : G.Walk v w)
+    (hp : p.IsPath) : p.length = G.dist v w := by
+  obtain ⟨q, hq_len⟩ := hT.isConnected.exists_walk_length_eq_dist v w
+  have hq_path : q.IsPath := q.isPath_of_length_eq_dist hq_len
+  obtain ⟨r, _, hr_unique⟩ := hT.existsUnique_path v w
+  have hp_eq_r : p = r := hr_unique p hp
+  have hq_eq_r : q = r := hr_unique q hq_path
+  rw [hp_eq_r, ← hq_eq_r, hq_len]
+
+theorem isTree_iff_uniqueShortest_path :
+    G.IsTree ↔ Nonempty V ∧ ∀ v w : V, v ≠ w →
+      (∃! p : G.Walk v w, p.IsPath) ∧ (∀ p : G.Walk v w, p.IsPath → p.length = G.dist v w) := by
+  constructor
+  · intro hT
+    refine ⟨hT.isConnected.nonempty, fun v w _ => ?_⟩
+    constructor
+    · exact hT.existsUnique_path v w
+    · exact fun p hp => IsTree.isPath_length_eq_dist hT v w p hp
+  · intro ⟨hne, h⟩
+    rw [isTree_iff_existsUnique_path]
+    refine ⟨hne, fun v w => ?_⟩
+    by_cases hvw : v = w
+    · subst hvw
+      use Walk.nil
+      simp only [Walk.isPath_iff_eq_nil, true_and]
+      intro q hq
+      exact hq
+    · exact (h v w hvw).1
 
 theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
      p.IsPath ↔ List.IsChain (· ≠ ·) p.edges := by
