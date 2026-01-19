@@ -68,11 +68,6 @@ private lemma uniquely_decodable_concatFn_injective {S : Finset (List α)}
   funext i
   exact Subtype.ext (by simpa using congrArg (fun f => f i) this)
 
-private lemma disjoint_filter_eq_of_ne {β γ : Type*} [DecidableEq γ] {S : Finset β}
-    (f : β → γ) {a b : γ} (hab : a ≠ b) :
-    Disjoint (S.filter (f · = a)) (S.filter (f · = b)) :=
-  Finset.disjoint_left.mpr (by grind)
-
 private lemma sum_pow_len_filter_le_one_of_card_le [Fintype α] [Nonempty α]
     {T : Finset (List α)} {s : ℕ}
     (h_card : (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s) :
@@ -221,16 +216,6 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
 
 open Filter
 
-private lemma tendsto_nat_div_pow_atTop_nhds_0 {K : ℝ} (hK : 1 < K) :
-    Tendsto (fun r : ℕ => r / K ^ r) atTop (nhds 0) := by
-  have hAbs : |1 / K| < 1 := by
-    grw [abs_of_pos (by positivity), div_lt_one] <;> grind
-  simpa using tendsto_self_mul_const_pow_of_abs_lt_one hAbs
-
-private lemma tendsto_mul_const_nat_div_pow_atTop_nhds_0 {K c : ℝ} (hK : 1 < K) :
-    Tendsto (fun r : ℕ => (c * r) / K ^ r) atTop (nhds 0) := by
-  simpa [mul_div_assoc] using (tendsto_nat_div_pow_atTop_nhds_0 hK).const_mul c
-
 /-- **Kraft-McMillan Inequality**: If `S` is a finite uniquely decodable code,
 then `Σ D^{-|w|} ≤ 1`. -/
 public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [Nonempty α]
@@ -241,10 +226,12 @@ public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [No
   contrapose! h_kraft
   let K := ∑ w ∈ S, (1 / D) ^ w.length
   let maxLen : ℕ := S.sup List.length
+  have hAbs : |1 / K| < 1 := by
+    grw [abs_of_pos (by positivity), div_lt_one] <;> grind
   have : Tendsto (fun r : ℕ => r * maxLen / K ^ r) atTop (nhds 0) := by
-    have := @tendsto_mul_const_nat_div_pow_atTop_nhds_0 K maxLen (by simpa [K] using h_kraft)
-    simpa [div_eq_mul_inv, mul_assoc, mul_left_comm] using this
-  obtain ⟨r, hr⟩ := eventually_atTop.mp (this.eventually (gt_mem_nhds zero_lt_one))
+    simpa [mul_comm, mul_left_comm, mul_assoc, mul_div_assoc] using
+      ((tendsto_self_mul_const_pow_of_abs_lt_one hAbs).const_mul (maxLen : ℝ))
+  obtain ⟨r, hr⟩ := eventually_atTop.mp <| this.eventually <| gt_mem_nhds zero_lt_one
   refine ⟨r + 1, by linarith, ?_⟩
   have := hr (r + 1) (by linarith)
   rw [div_lt_iff₀ (by positivity)] at this
