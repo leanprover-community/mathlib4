@@ -241,15 +241,15 @@ theorem abundancyIndex_le_ofDvd (hm : n ≠ 0) (hd : m ∣ n) :
         rw [← hj, divisors_mul, smul_eq_mul]
         exact mul_mem_mul (mem_divisors_self _ (by grind)) hd
 
-theorem abundancyIndex_le_ofMul (hm : m ≠ 0) : n.abundancyIndex ≤ (m * n).abundancyIndex := by
-  by_cases hn : n = 0
-  · grind
-  · exact abundancyIndex_le_ofDvd (by simpa [hn]) (by simp)
+theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
+  have hm : m ≠ 0 := by grind [not_abundant_zero]
+  have hmn : m * n ≠ 0 := by simpa [hm]
+  grind [abundant_iff_two_lt_abundancyIndex, abundancyIndex_le_ofDvd hn hd]
 
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   have hn : n ≠ 0 := by grind [not_abundant_zero]
   have hmn : m * n ≠ 0 := by simpa [hm]
-  grind [abundant_iff_two_lt_abundancyIndex, abundancyIndex_le_ofMul]
+  exact Abundant.ofDvd h (by simp) (by grind)
 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
