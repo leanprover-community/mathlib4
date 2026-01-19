@@ -16,9 +16,9 @@ This file develops some basic theory of first order quasilinear PDEs.
   equations in a variable `u : V → 𝕜` of the form `E : (∂u) a = c` where `∂u` denotes the
   _Frechet derivative_ of `u`, `a : V × 𝕜 → V` is the _vector of coefficients_ of `E` and
   `c : V × 𝕜 → 𝕜` is the _constant term_ of `E`. When `V` is equipped with a set of standard
-  coordinates `x₁, ..., xₙ`, this simplifies to the more familiar form `E : a₁ ∂₁u + ... + aₙ ∂ₙu = c`
-  where `a(x, U) = (a₁(x, U),...,aₙ(x, U))` and `∂ᵢ` is the partial derivative with respect to
-  the `i`-th standard coordinate.
+  coordinates `x₁, ..., xₙ`, this simplifies to the more familiar form
+  `E : a₁ ∂₁u + ... + aₙ ∂ₙu = c` where `a(x, U) = (a₁(x, U),...,aₙ(x, U))` and `∂ᵢ` is the partial
+  derivative with respect to the `i`-th standard coordinate.
 
 - `E.regularBy P`: the predicate that the coefficients and constant term of the equation
   `E` satisfy some regularity condition `P`. Typically, `P` will be `ContDiff 𝕜 n`
@@ -48,8 +48,8 @@ open scoped Topology
 variable (𝕜 V) in
 /-- `FirstOrderQuasiLinearPDE 𝕜 V` is the type of quasilinear PDEs on a `𝕜` vector space `V`.
 
-Note: we need to consider functions defined on `V × ℝ` since in general the coefficients of a quasilinear
-PDE `a₁ ∂₁u + ... + aₙ ∂ₙu = c` might depend on the function `u : V → ℝ`.
+Note: we need to consider functions defined on `V × ℝ` since in general the coefficients of a
+quasilinear PDE `a₁ ∂₁u + ... + aₙ ∂ₙu = c` might depend on the function `u : V → ℝ`.
 -/
 @[ext]
 structure FirstOrderQuasiLinearPDE where
@@ -72,9 +72,10 @@ structure FirstOrderQuasiLinearPDE where
   -/
   const : V × 𝕜 → 𝕜
 
-/-- `E.RegularBy` is the predicate that the coefficients of `E` satisfy the regularity condition `P`.
-Typically, we would take `P = ContDiff` or so on. -/
-class FirstOrderQuasiLinearPDE.RegularBy (E : FirstOrderQuasiLinearPDE 𝕜 V) (P : (V × 𝕜 → V × 𝕜) → Prop) where
+/-- `E.RegularBy` is the predicate that the coefficients of `E` satisfy the regularity condition
+`P`. Typically, we would take `P = ContDiff` or so on. -/
+class FirstOrderQuasiLinearPDE.RegularBy (E : FirstOrderQuasiLinearPDE 𝕜 V)
+    (P : (V × 𝕜 → V × 𝕜) → Prop) where
   reg : P (fun x => (E.coeff x, E.const x)) := by fun_prop
 
 end
@@ -98,9 +99,7 @@ variable [AddCommGroup V] [TopologicalSpace V]
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 V]
 
 
-/-- `E.hasSolutionAt u x` is the predicate that the function `u` is a solution to the PDE at point `E`.
-
-Note that we don't place any differentiability requirements. -/
+/-- `E.hasSolutionAt u x` is the predicate that the function `u` is a solution to the PDE at `x`. -/
 def HasSolutionAt (u : V → 𝕜) (x : V) : Prop :=
   --In the future, I think we should include some weaker versions of this,
   --e.g. `IsSolutionWithinAt` and so on. The main theorem about characteristics
@@ -141,3 +140,7 @@ lemma fderiv_apply_of_hasSolutionAt {u : V → 𝕜} {x : V}
   rwa [HasFDerivAt.fderiv hu']
 
 end
+
+end Characteristics
+
+end FirstOrderQuasiLinearPDE
