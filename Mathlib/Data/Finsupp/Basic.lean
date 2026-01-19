@@ -910,8 +910,9 @@ end Uncurry
 
 section Curry
 
-variable [DecidableEq α] [Zero M]
+variable [Zero M]
 
+open scoped Classical in
 /-- Given a finitely supported function `f` from a product type `α × β` to `γ`,
 `curry f` is the "curried" finitely supported function from `α` to the type of
 finitely supported functions from `β` to `γ`. -/
@@ -927,8 +928,8 @@ protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
 theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f (x, y) := rfl
 
 @[simp]
-theorem support_curry (f : α × β →₀ M) : f.curry.support = f.support.image Prod.fst :=
-  rfl
+lemma support_curry [DecidableEq α] (f : α × β →₀ M) :
+    f.curry.support = f.support.image Prod.fst := by unfold Finsupp.curry; congr!
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
@@ -957,7 +958,7 @@ def curryEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-@[deprecated (since := "2026-01-03")] alias finsuppProdEquiv := curryEquiv
+@[deprecated (since := "2026-01-03")] noncomputable alias finsuppProdEquiv := curryEquiv
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
@@ -967,7 +968,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
 end Curry
 
 section
-variable [DecidableEq α] [AddZeroClass M]
+variable [AddZeroClass M]
 
 /-- The additive monoid isomorphism between `α × β →₀ M` and `α →₀ β →₀ M` given by
 currying/uncurrying. -/
