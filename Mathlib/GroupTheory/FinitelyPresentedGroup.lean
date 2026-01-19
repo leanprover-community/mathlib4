@@ -284,7 +284,13 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
 theorem iff_hom_surj_fintype {G : Type*} [Group G] :
 IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Fintype α) (f : (FreeGroup α) →* G),
   Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
-  sorry
+  rw [iff_hom_surj_finite]
+  constructor
+  · intro ⟨α, _, f, hfsurj, hfker⟩
+    let x : Fintype α := Fintype.ofFinite α
+    use α, x, f
+  · intro ⟨α, _, f, hfsurj, hfker⟩
+    use α, inferInstance, f
 
 theorem iff_hom_surj_fin_n {G : Type*} [Group G] :
 IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
@@ -331,7 +337,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       Function.Surjective (FreeGroup.lift (fun s : S => (s : G))) ∧
       IsNormalClosureFG (FreeGroup.lift (fun s : S => (s : G))).ker := by
   constructor
-  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+  · /- intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
     let _ : Fintype α := Fintype.ofFinite α
     let g : FreeGroup α →* G :=
       iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
@@ -341,22 +347,23 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
     let S : Set G := Set.range (fun a : α ↦ g (FreeGroup.of a))
     have hS : S.Finite := by
-      sorry
+      simpa [S] using (Set.finite_range (fun a : α ↦ g (FreeGroup.of a)))
+    use S, hS
+    set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
     let h : α → S := fun a => ⟨g (FreeGroup.of a), ⟨a, rfl⟩⟩
-    use S
-    set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
     have hfg : f.comp (FreeGroup.map h) = g := by
   -- ext on generators
       ext a
       simp [f, h, g]
-    have hsurj : Function.Surjective f := by
+    have hfsurj : Function.Surjective f := by
       intro y
       obtain ⟨x, rfl⟩ := hgsurj y
       refine ⟨FreeGroup.map h x, ?_⟩
       simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfg
-    have hker : IsNormalClosureFG f.ker := by
+    have hfker : IsNormalClosureFG f.ker := by
       sorry
-    exact ⟨hS, hsurj, hker⟩
+    exact ⟨hS, hfsurj, hfker⟩ -/
+    sorry
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
     let α := S
