@@ -69,7 +69,7 @@ theorem unop_op (x : α) : unop (op x) = x :=
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
 
-@[simp]
+@[simp, grind =]
 theorem unop_inj_iff (x y : αᵒᵖ) : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 

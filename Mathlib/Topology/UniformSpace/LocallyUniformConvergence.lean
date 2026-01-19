@@ -275,14 +275,7 @@ lemma tendstoLocallyUniformly_iff_forall_isCompact [LocallyCompactSpace α] :
 
 theorem tendstoLocallyUniformlyOn_iff_filter :
     TendstoLocallyUniformlyOn F f p s ↔ ∀ x ∈ s, TendstoUniformlyOnFilter F f p (𝓝[s] x) := by
-  simp only [TendstoUniformlyOnFilter, eventually_prod_iff]
-  constructor
-  · rintro h x hx u hu
-    obtain ⟨s, hs1, hs2⟩ := h u hu x hx
-    exact ⟨_, hs2, _, eventually_of_mem hs1 fun x => id, fun hi y hy => hi y hy⟩
-  · rintro h u hu x hx
-    obtain ⟨pa, hpa, pb, hpb, h⟩ := h x hx u hu
-    exact ⟨pb, hpb, eventually_of_mem hpa fun i hi y hy => h hi hy⟩
+  grind [tendstoLocallyUniformlyOn_iff_forall_tendsto, tendstoUniformlyOnFilter_iff_tendsto]
 
 theorem tendstoLocallyUniformly_iff_filter :
     TendstoLocallyUniformly F f p ↔ ∀ x, TendstoUniformlyOnFilter F f p (𝓝 x) := by

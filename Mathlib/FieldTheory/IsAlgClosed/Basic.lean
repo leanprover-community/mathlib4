@@ -564,13 +564,4 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   have hdg : f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
-  refine forall_imp fun a => ?_
-  by_cases haf : f.eval a = 0
-  · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
-    rw [derivative_rootMultiplicity_of_root haf]
-    intro h
-    calc rootMultiplicity a f
-        = rootMultiplicity a f - 1 + 1 := (Nat.sub_add_cancel (Nat.succ_le_iff.1 h0)).symm
-      _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
-        ((rootMultiplicity_pos hg0).2 (h haf)))
-  · simp [haf, rootMultiplicity_eq_zero haf]
+  grind [derivative_rootMultiplicity_of_root]
