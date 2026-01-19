@@ -5035,7 +5035,6 @@ public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.Integral.TorusIntegral
-public import Mathlib.MeasureTheory.MassFunction
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Card
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
@@ -5095,6 +5094,7 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 public import Mathlib.MeasureTheory.Measure.Map
+public import Mathlib.MeasureTheory.Measure.MassFunctions
 public import Mathlib.MeasureTheory.Measure.MeasureSpace
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
