@@ -271,8 +271,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 
 section LinearMap
 
-variable [CommRing R]
-  [Module R E] [Module ℝ V₂] [Module ℝ V₃]
+variable [Module ℝ V₂] [Module ℝ V₃]
   [LineDerivAdd E V₁ V₂] [LineDerivAdd E V₂ V₃]
   [LineDerivSMul ℝ E V₂ V₃] [LineDerivLeftSMul ℝ E V₁ V₂] [LineDerivLeftSMul ℝ E V₂ V₃]
 
