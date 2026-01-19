@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.NatDivisors
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.FinCases
@@ -72,6 +73,8 @@ def Pseudoperfect (n : ℕ) : Prop :=
 /-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
+def abundancyIndex (n : ℕ) : ℚ := (∑ i ∈ n.divisors, i) / (n : ℚ)
+
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   grind [Pseudoperfect]
@@ -79,6 +82,9 @@ theorem not_pseudoperfect_iff_forall :
 theorem deficient_one : Deficient 1 := zero_lt_one
 theorem deficient_two : Deficient 2 := one_lt_two
 theorem deficient_three : Deficient 3 := by norm_num [Deficient]
+
+theorem not_abundant_zero : ¬ Abundant 0 := by
+  simp [Abundant]
 
 theorem abundant_twelve : Abundant 12 := by
   simp [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
@@ -198,30 +204,42 @@ theorem abundant_945 : Abundant 945 := by
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by
   grind [Abundant, sum_divisors_eq_sum_properDivisors_add_self]
 
+theorem abundant_iff_two_lt_abundancyIndex (h : n ≠ 0) : Abundant n ↔ 2 < n.abundancyIndex := by
+  rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
+  norm_cast
+
+theorem abundancyIndex_le_ofMul (hm : m ≠ 0) : n.abundancyIndex ≤ (m * n).abundancyIndex := by
+  by_cases hn : n = 0
+  · grind
+  · unfold abundancyIndex
+    suffices hs : m * ∑ i ∈ n.divisors, i ≤ ∑ i ∈ (m * n).divisors, i by
+      rw [(div_le_div_iff₀ (by positivity) (by positivity))]
+      norm_cast
+      rwa [← mul_assoc, Nat.mul_le_mul_right_iff (by grind), mul_comm]
+    letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
+    calc
+      _ = ∑ i ∈ (m • n.divisors), i := by
+        let f := Function.Embedding.mk (fun x : ℕ => m • x) (by
+          intro y z ho
+          simp only [smul_eq_mul, mul_eq_mul_left_iff] at ho
+          grind)
+        have ht : ∑ i ∈ n.divisors.map f, i = ∑ i ∈ n.divisors, m • i := sum_map n.divisors f id
+        rw [← smul_eq_mul, ← sum_nsmul, ← ht]
+        congr
+        ext z
+        simp [f, mem_smul_finset]
+      _ ≤ _ := by
+        apply sum_le_sum_of_subset
+        intro i h2
+        rw [mem_smul_finset] at h2
+        obtain ⟨ j, ⟨ hd , hj ⟩ ⟩ := h2
+        rw [← hj, divisors_mul, smul_eq_mul]
+        exact mul_mem_mul (mem_divisors_self _ (by grind)) hd
+
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
-  letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
-  rw [abundant_iff_sum_divisors] at *
-  have h1 : 0 < m := Nat.ne_zero_iff_zero_lt.mp hm
-  calc
-    _ = m * (2 * n) := by grind
-    _ < m • ∑ i ∈ n.divisors, i := (Nat.mul_lt_mul_left h1).mpr h
-    _ = ∑ i ∈ (m • n.divisors), i := by
-      let f := Function.Embedding.mk (fun x : ℕ => m • x) (by
-        intro y z ho
-        simp only [smul_eq_mul, mul_eq_mul_left_iff] at ho
-        grind)
-      have ht : ∑ i ∈ n.divisors.map f, i = ∑ i ∈ n.divisors, m • i := sum_map n.divisors f id
-      rw [← sum_nsmul, ← ht]
-      congr
-      ext z
-      simp [f, mem_smul_finset]
-    _ ≤ _ := by
-      apply sum_le_sum_of_subset
-      intro i h2
-      rw [mem_smul_finset] at h2
-      obtain ⟨ j, ⟨ hd , hj ⟩ ⟩ := h2
-      rw [← hj, divisors_mul, smul_eq_mul]
-      exact mul_mem_mul (mem_divisors_self _ (by grind)) hd
+  have hn : n ≠ 0 := by grind [not_abundant_zero]
+  have hmn : m * n ≠ 0 := by simpa [hm]
+  grind [abundant_iff_two_lt_abundancyIndex, abundancyIndex_le_ofMul]
 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
