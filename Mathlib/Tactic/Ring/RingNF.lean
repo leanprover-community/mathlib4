@@ -77,7 +77,7 @@ attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 declare_config_elab elabConfig Config
 
 local instance {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} :
-    Algebra.RingCompute (Algebra.Ring.baseType sα) sα := Algebra.Ring.ringCompute sα
+    Algebra.RingCompute (Algebra.Ring.baseType sα) sα := Ring.ringCompute sα
 
 /--
 Evaluates an expression `e` into a normalized representation as a polynomial.
