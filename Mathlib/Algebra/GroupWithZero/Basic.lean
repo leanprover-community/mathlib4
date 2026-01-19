@@ -292,14 +292,6 @@ instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisor
   ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
     ab0.trans (mul_zero _).symm⟩
 
-@[simp]
-theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
-  by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
-
-@[simp]
-theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
-  by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
-
 theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
