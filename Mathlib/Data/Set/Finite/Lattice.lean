@@ -307,6 +307,17 @@ lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [
   rw [← iInf_univ (f := g), ← iInf_univ (f := fun i ↦ f (g i))]
   exact map_finite_biInf finite_univ f g
 
+theorem iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
+  by_cases h : ∀ a, Nonempty (κ a)
+  · simpa using Finite.iSup_iInf_eq Set.finite_univ
+  · simp only [not_forall, not_nonempty_iff] at h
+    haveI : IsEmpty (∀ a, κ a) := by simpa
+    rcases h with ⟨a, h⟩
+    rw [iInf_of_empty, eq_top_iff]
+    apply le_iSup_of_le a
+    rw [iInf_of_empty]
+
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
@@ -388,6 +399,49 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     {α : ι → Type*} {s : ∀ i, ι' → Set (α i)} (hs : ∀ i, Monotone (s i)) :
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
+
+theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [CompleteDistribLattice α]
+    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+    ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
+  classical
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iSup_const]
+  | @insert a s ha _ ih =>
+    simp_rw [iInf_insert, ih, iSup_inf_eq, inf_iSup_eq]
+    refine le_antisymm (iSup_le fun b => iSup_le fun g => ?_) (iSup_le fun g => ?_)
+    · refine le_iSup_of_le (Function.update g a b) (inf_le_inf ?_ (iInf₂_mono fun a' ha' => ?_))
+      · simp
+      · rw [update_of_ne]
+        rintro rfl
+        exact ha ha'
+    · exact le_iSup_of_le (g a) (le_iSup_of_le g le_rfl)
+
+theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [CompleteDistribLattice α]
+    {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
+    ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
+  classical
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iInf_const]
+  | @insert a s ha _ ih =>
+    simp_rw [iSup_insert, ih, iInf_sup_eq, sup_iInf_eq]
+    refine le_antisymm (le_iInf fun g => ?_) (le_iInf fun b => le_iInf fun g => ?_)
+    · exact iInf_le_of_le (g a) (iInf_le_of_le g le_rfl)
+    · refine iInf_le_of_le (Function.update g a b) (sup_le_sup ?_ (iSup₂_mono fun a' ha' => ?_))
+      · simp
+      · rw [update_of_ne]
+        rintro rfl
+        exact ha ha'
+
+theorem iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
+  by_cases h : ∀ a, Nonempty (κ a)
+  · simpa using Finite.iInf_iSup_eq Set.finite_univ
+  · simp only [not_forall, not_nonempty_iff] at h
+    haveI : IsEmpty (∀ a, κ a) := by simpa
+    rcases h with ⟨a, h⟩
+    rw [iSup_of_empty, eq_bot_iff]
+    apply iInf_le_of_le a
+    rw [iSup_of_empty]
 
 section
 
