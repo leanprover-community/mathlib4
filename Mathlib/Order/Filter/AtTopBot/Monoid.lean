@@ -171,11 +171,4 @@ theorem Tendsto.atBot_of_mul_const_le (hg : ∃ C, ∀ x, C ≤ g x)
 
 end OrderedCancelCommMonoid
 
-section OrderedCancelAddCommMonoid
-
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
-  {l : Filter α} {f g : α → M}
-
-end OrderedCancelAddCommMonoid
-
 end Filter

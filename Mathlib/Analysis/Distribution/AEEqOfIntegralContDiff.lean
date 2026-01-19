@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
-public import Mathlib.Geometry.Manifold.Metrizable
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
