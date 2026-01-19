@@ -428,9 +428,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     have : ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ
         = ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) (K n)ᶜ := by
       apply (Finset.sum_subset _ _).symm
-      · intro i hi
-        simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
-        grind
+      · grind
       · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
           not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
         intro i hi h'i
