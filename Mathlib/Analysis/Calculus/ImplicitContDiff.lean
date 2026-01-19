@@ -82,8 +82,21 @@ theorem contDiffAt_implicitFunction {f : E₁ × E₂ → F} {u : E₁ × E₂} 
 
 end ContDiffAt
 
-/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → G` that will
-lead to a $C^n$ implicit function `φ : E → F`. -/
+end
+
+@[expose] public section
+
+variable
+  {𝕜 : Type*} [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
+
+open Filter
+
+open scoped Topology
+
+@[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-19")]
 structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
     Prop where
   hasFDerivAt : HasFDerivAt f f' a
@@ -164,7 +177,7 @@ lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
-/-- Implicit function `φ` defined by `f (x, φ x) = f a`. -/
+@[deprecated ContDiffAt.implicitFunction (since := "2026-01-19")]
 noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F :=
   fun x ↦ (h.implicitFunctionAux x (f a)).2
 
@@ -176,7 +189,7 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
 lemma implicitFunction_apply (h : IsContDiffImplicitAt n f f' a) (x : E) :
     h.implicitFunction x = (h.implicitFunctionData.implicitFunction x (f a)).2 := rfl
 
-/-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
+@[deprecated ContDiffAt.image_implicitFunction (since := "2026-01-19")]
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
   have := h.comp_implicitFunctionAux_eq_snd
@@ -192,13 +205,13 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   · rw [h1]
   · rfl
 
+@[deprecated ContDiffAt.eventually_implicitFunction_apply_eq (since := "2026-01-19")]
 theorem eventually_implicitFunction_apply_eq (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ xy in 𝓝 a, f xy = f a → h.implicitFunction xy.1 = xy.2 := by
   refine h.implicitFunctionData.implicitFunction_apply_image.mono fun xy h₁ h₂ ↦ ?_
   simp_all
 
-/-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
-also $C^n$ at `x`. -/
+@[deprecated ContDiffAt.contDiffAt_implicitFunction (since := "2026-01-19")]
 theorem contDiffAt_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ContDiffAt 𝕜 n h.implicitFunction a.1 := by
   have := h.implicitFunctionData.contDiff_implicitFunction contDiffAt_fst h.contDiffAt h.ne_zero
@@ -206,3 +219,5 @@ theorem contDiffAt_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   fun_prop
 
 end IsContDiffImplicitAt
+
+end
