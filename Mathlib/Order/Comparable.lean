@@ -3,7 +3,9 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Comparability and incomparability relations
@@ -32,6 +34,8 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {α : Type*} {a b c d : α}
@@ -59,19 +63,19 @@ theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ C
   or_comm
 
 @[simp, refl]
-theorem CompRel.refl (r : α → α → Prop) [IsRefl α r] (a : α) : CompRel r a a :=
+theorem CompRel.refl (r : α → α → Prop) [Std.Refl r] (a : α) : CompRel r a a :=
   .of_rel (_root_.refl _)
 
-theorem CompRel.rfl [IsRefl α r] : CompRel r a a := .refl ..
+theorem CompRel.rfl [Std.Refl r] : CompRel r a a := .refl ..
 
-instance [IsRefl α r] : IsRefl α (CompRel r) where
+instance [Std.Refl r] : Std.Refl (CompRel r) where
   refl := .refl r
 
 @[symm]
 theorem CompRel.symm : CompRel r a b → CompRel r b a :=
   Or.symm
 
-instance : IsSymm α (CompRel r) where
+instance : Std.Symm (CompRel r) where
   symm _ _ := CompRel.symm
 
 theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
@@ -176,7 +180,7 @@ theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b :=
 
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
-  simp [← antisymmRel_compl, AntisymmRel, compl]
+  simp [← antisymmRel_compl, compl]
 
 @[simp]
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by
@@ -189,22 +193,21 @@ theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
   antisymmRel_swap_apply rᶜ
 
 @[simp, refl]
-theorem IncompRel.refl [IsIrrefl α r] (a : α) : IncompRel r a a :=
+theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=
   AntisymmRel.refl rᶜ a
 
-variable {r} in
-theorem IncompRel.rfl [IsIrrefl α r] {a : α} : IncompRel r a a := .refl ..
-
-instance [IsIrrefl α r] : IsRefl α (IncompRel r) where
-  refl := .refl r
-
 variable {r}
+
+theorem IncompRel.rfl [Std.Irrefl r] {a : α} : IncompRel r a a := .refl ..
+
+instance [Std.Irrefl r] : Std.Refl (IncompRel r) where
+  refl := .refl r
 
 @[symm]
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
   And.symm
 
-instance : IsSymm α (IncompRel r) where
+instance : Std.Symm (IncompRel r) where
   symm _ _ := IncompRel.symm
 
 theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=
@@ -230,6 +233,10 @@ theorem IsTotal.not_incompRel [IsTotal α r] (a b : α) : ¬ IncompRel r a b := 
   rw [not_incompRel_iff]
   exact IsTotal.compRel a b
 
+theorem IncompRel.ne [Std.Refl r] {a b : α} (h : IncompRel r a b) : a ≠ b := by
+  rintro rfl
+  exact h.1 <| refl_of r a
+
 end Relation
 
 section LE
@@ -251,13 +258,13 @@ theorem IncompRel.not_gt (h : IncompRel (· ≤ ·) a b) : ¬ b < a := mt le_of_
 theorem LT.lt.not_incompRel (h : a < b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_lt h
 
 theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ IncompRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, IncompRel]
+  rw [lt_iff_le_not_ge, IncompRel]
   tauto
 
 /-- Exactly one of the following is true. -/
 theorem lt_or_antisymmRel_or_gt_or_incompRel (a b : α) :
     a < b ∨ AntisymmRel (· ≤ ·) a b ∨ b < a ∨ IncompRel (· ≤ ·) a b := by
-  simp_rw [lt_iff_le_not_le]
+  simp_rw [lt_iff_le_not_ge]
   tauto
 
 @[trans]

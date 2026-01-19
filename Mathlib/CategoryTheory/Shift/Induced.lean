@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Shift induced from a category to another
@@ -23,9 +25,13 @@ used for both quotient and localized shifts.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D]
+open Functor
+
+variable {C D : Type _} [Category* C] [Category* D]
   (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
   [((whiskeringLeft C D D).obj F).Full] [((whiskeringLeft C D D).obj F).Faithful]
@@ -94,7 +100,7 @@ noncomputable def induced : HasShift D A :=
       add := Induced.add F s i
       zero_add_hom_app := fun n => by
         suffices (Induced.add F s i 0 n).hom =
-          eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i ).inv (s n) by
+          eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i).inv (s n) by
           intro X
           simpa using NatTrans.congr_app this X
         apply ((whiskeringLeft C D D).obj F).map_injective
@@ -132,7 +138,7 @@ noncomputable def induced : HasShift D A :=
         ext X
         dsimp
         have eq := F.congr_map (shiftFunctorAdd'_assoc_hom_app
-          m₁ m₂ m₃ _ _ (m₁+m₂+m₃) rfl rfl rfl X)
+          m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at eq
         simp only [Functor.comp_obj, Functor.map_comp, shiftFunctorAdd',
           Iso.trans_hom, eqToIso.hom, NatTrans.comp_app, eqToHom_app,
@@ -156,7 +162,7 @@ end HasShift
 
 lemma shiftFunctor_of_induced (a : A) :
     letI := HasShift.induced F A s i
-    shiftFunctor D a = s a := by
+    shiftFunctor D a = s a :=
   rfl
 
 variable (A)
@@ -166,7 +172,6 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
 @[simp]
@@ -174,7 +179,6 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_inv_app_obj]
 
 variable {A}
@@ -187,7 +191,6 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫
         (i b).inv.app ((shiftFunctor C a).obj X) ≫
         (s b).map ((i a).inv.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
 @[simp]
@@ -198,7 +201,6 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
       (i b).hom.app ((shiftFunctor C a).obj X) ≫
       F.map ((shiftFunctorAdd C a b).inv.app X) ≫
       (i (a + b)).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_inv_app_obj]
 
 variable (A)
@@ -211,20 +213,21 @@ noncomputable def Functor.CommShift.ofInduced :
     F.CommShift A := by
   letI := HasShift.induced F A s i
   exact
-    { iso := fun a => (i a).symm
-      zero := by
+    { commShiftIso := fun a => (i a).symm
+      commShiftIso_zero := by
         ext X
         dsimp
         simp only [isoZero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
           ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, Category.id_comp]
-      add := fun a b => by
+      commShiftIso_add := fun a b => by
         ext X
         dsimp
         simp only [isoAdd_hom_app, Iso.symm_hom, shiftFunctorAdd_inv_app_obj_of_induced,
           shiftFunctor_of_induced]
-        erw [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
-          Category.id_comp, Iso.inv_hom_id_app_assoc, ← F.map_comp_assoc, Iso.hom_inv_id_app,
-          F.map_id, Category.id_comp] }
+        rw [← Functor.map_comp_assoc, Iso.inv_hom_id_app]
+        dsimp
+        rw [Functor.map_id, Category.id_comp, Iso.inv_hom_id_app_assoc,
+          ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, Category.id_comp] }
 
 lemma Functor.commShiftIso_eq_ofInduced (a : A) :
     letI := HasShift.induced F A s i

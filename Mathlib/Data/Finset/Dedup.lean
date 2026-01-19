@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.Multiset.Basic
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.Multiset.Basic
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -18,9 +20,11 @@ finite sets, finset
 
 -/
 
+@[expose] public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -57,7 +61,7 @@ theorem Nodup.toFinset_inj {l l' : Multiset α} (hl : Nodup l) (hl' : Nodup l')
     (h : l.toFinset = l'.toFinset) : l = l' := by
   simpa [← toFinset_eq hl, ← toFinset_eq hl'] using h
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {a : α} {s : Multiset α} : a ∈ s.toFinset ↔ a ∈ s :=
   mem_dedup
 
@@ -184,6 +188,13 @@ theorem _root_.List.toFinset_toList [DecidableEq α] {s : List α} (hs : s.Nodup
 theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
     ∃ l : List α, l.Nodup ∧ l.toFinset = s :=
   ⟨s.toList, s.nodup_toList, s.toList_toFinset⟩
+
+@[simp]
+protected theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList.Perm f₂.toList ↔ f₁ = f₂ where
+  mp h := Finset.ext fun x => by simp [← Finset.mem_toList, h.mem_iff]
+  mpr h := .of_eq <| congrArg Finset.toList h
+
+@[deprecated (since := "2025-08-05")] alias _root_.perm_toList := Finset.perm_toList
 
 end ToList
 

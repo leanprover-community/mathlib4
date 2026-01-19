@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Ring.Subring.Units
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -25,6 +27,8 @@ consisting of all invertible `n` by `n` `R`-matrices.
 matrix group, group, matrix inverse
 -/
 
+@[expose] public section
+
 
 namespace Matrix
 
@@ -34,12 +38,9 @@ open Matrix
 
 open LinearMap
 
--- disable this instance so we do not accidentally use it in lemmas.
-attribute [-instance] SpecialLinearGroup.instCoeFun
-
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices -/
-abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
+abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [Semiring R] :
     Type _ :=
   (Matrix n n R)ˣ
 
@@ -47,14 +48,16 @@ abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] 
 
 namespace GeneralLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
 section CoeFnInstance
 
-instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
+instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
 end CoeFnInstance
+
+variable [CommRing R]
 
 /-- The determinant of a unit matrix is itself a unit. -/
 @[simps]
@@ -75,15 +78,30 @@ lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
+/-- The isomorphism from `GL n R` to the general linear group of a module
+associated with a basis. -/
+noncomputable def toLin'
+    {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
+    GL n R ≃* LinearMap.GeneralLinearGroup R V :=
+  toLin.trans <| LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm
+
+lemma toLin'_apply {V : Type*} [AddCommGroup V] [Module R V]
+    (b : Module.Basis n R V) (M : GL n R) (v : V) :
+    (toLin' b M).toLinearEquiv v = Fintype.linearCombination R ⇑b (↑M *ᵥ (b.repr v)) := by
+  simp [toLin', toLin, Fintype.linearCombination_apply, MulEquiv.trans_apply]
+
 /-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
+@[simps! val]
 def mk' (A : Matrix n n R) (_ : Invertible (Matrix.det A)) : GL n R :=
   unitOfDetInvertible A
 
 /-- Given a matrix with unit determinant, we get an element of `GL n R`. -/
+@[simps! val]
 noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :=
   nonsingInvUnit A h
 
 /-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`. -/
+@[simps! val]
 def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 
@@ -109,8 +127,6 @@ theorem coe_one : ↑(1 : GL n R) = (1 : Matrix n n R) :=
 theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
-
-@[deprecated (since := "2024-11-26")] alias toLinear := toLin
 
 @[simp]
 theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
@@ -150,21 +166,18 @@ variable (f : R →+* S)
 
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
-  ext
-  simp only [map_one, Units.val_one]
+  simp only [map_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
-  ext
-  simp only [map_mul, Units.val_mul]
+  simp only [map_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
-  ext
-  simp only [map_inv, coe_units_inv]
+  simp only [map_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
-  simp only [map, RingHom.mapMatrix_apply, Units.inv_eq_val_inv, Matrix.coe_units_inv,
+  simp only [map,
     Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
   exact Eq.symm (RingHom.map_det f g.1)
 
@@ -184,6 +197,24 @@ lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := b
   rw [← Matrix.map_mul]
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
+section kronecker
+variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
+
+open scoped Kronecker
+
+/-- The invertible kronecker matrix of invertible matrices. -/
+protected def kronecker (x : GL n R) (y : GL m R) : GL (n × m) R where
+  val := x ⊗ₖ y
+  inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
+  val_inv := by simp only [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
+  inv_val := by simp only [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
+
+theorem _root_.Matrix.IsUnit.kronecker {x : Matrix n n R} {y : Matrix m m R}
+    (hx : IsUnit x) (hy : IsUnit y) : IsUnit (x ⊗ₖ y) :=
+  GeneralLinearGroup.kronecker hx.unit hy.unit |>.isUnit
+
+end kronecker
+
 end GeneralLinearGroup
 
 namespace SpecialLinearGroup
@@ -196,8 +227,6 @@ def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R wher
   toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
-
-@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨toGL⟩
@@ -228,11 +257,9 @@ def mapGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n S :=
 @[simp]
 lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
     mapGL S g = mapGL S g' ↔ g = g' := by
-  refine ⟨fun h ↦ ?_, by tauto⟩
-  apply SpecialLinearGroup.ext
-  simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
+  simp [mapGL, ext_iff]
 
-lemma mapGL_injective [FaithfulSMul R S]  :
+lemma mapGL_injective [FaithfulSMul R S] :
     Function.Injective (mapGL (R := R) (n := n) S) :=
   fun a b ↦ by simp
 
@@ -240,6 +267,17 @@ lemma mapGL_injective [FaithfulSMul R S]  :
 lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
+
+@[simp]
+lemma map_mapGL {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (g : SpecialLinearGroup n R) :
+    (mapGL S g).map (algebraMap S T) = mapGL T g := by
+  ext
+  simp [IsScalarTower.algebraMap_apply R S T]
+
+@[simp]
+lemma det_mapGL (g : SpecialLinearGroup n R) : (mapGL S g).det = 1 := by
+  simp [mapGL]
 
 end SpecialLinearGroup
 

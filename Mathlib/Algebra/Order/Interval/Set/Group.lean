@@ -3,13 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Logic.Pairwise
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
+
+public section
 
 
 variable {α : Type*}
@@ -132,11 +137,11 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
     Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy)) := by
-  rcases lt_or_le x y with h' | h'
+  rcases lt_or_ge x y with h' | h'
   · use x
     simp [*, not_le.2 h']
   · use max x (x + dy)
-    simp [*, le_refl]
+    simp [*]
 
 end LinearOrderedAddCommGroup
 

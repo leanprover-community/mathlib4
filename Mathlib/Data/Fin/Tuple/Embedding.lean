@@ -3,8 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Order.Fin.Basic
 
 /-! # Constructions of embeddings of `Fin n` into a type
 
@@ -23,6 +25,8 @@ import Mathlib.Order.Fin.Basic
   into an embedding `Fin (m + n) ↪ α` if they have disjoint ranges
 
 -/
+
+@[expose] public section
 
 open Function.Embedding Fin Set Nat
 
@@ -63,11 +67,10 @@ theorem coe_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
 
 theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
     init (snoc x ha) = x := by
-  apply coe_injective
-  simp [snoc, init, init_snoc]
+  simp [snoc, init]
 
 theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} {i : Fin n} :
-    snoc x ha i.castSucc  = x i := by
+    snoc x ha i.castSucc = x i := by
   rw [coe_snoc, Fin.snoc_castSucc]
 
 theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} :
@@ -91,7 +94,7 @@ namespace Function.Embedding
 variable {α : Type*}
 
 /-- The natural equivalence of `Fin 2 ↪ α` with pairs `(a, b)` of distinct elements of `α`. -/
-def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
+def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ {(a, b) : α × α | a ≠ b} where
   toFun e := ⟨(e 0, e 1), by
     simp only [ne_eq, Fin.isValue, mem_setOf_eq, EmbeddingLike.apply_eq_iff_eq, zero_eq_one_iff,
       succ_ne_self, not_false_eq_true]⟩
@@ -101,7 +104,7 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
       by_cases hi : i = 0
       · by_cases hj : j = 0
         · simp [hi, hj]
-        · simp only [if_pos hi, if_neg hj, eq_one_of_ne_zero j hj,
+        · simp only [if_pos hi, eq_one_of_ne_zero j hj,
           if_neg (Ne.symm Fin.zero_ne_one)] at hij
           apply (h hij).elim
       · rw [eq_one_of_ne_zero i hi] at hij ⊢
@@ -109,11 +112,10 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
         · simp [hj] at hij; exact False.elim (h hij.symm)
         · rw [eq_one_of_ne_zero j hj] }
   left_inv e := by
-    ext i; simp
+    ext i
     by_cases hi : i = 0
-    · rw [if_pos hi, hi]
-    · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
-  right_inv := fun ⟨⟨a, b⟩, h⟩ ↦ by simp
+    · simp [hi]
+    · simp [Fin.eq_one_of_ne_zero i hi]
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
 def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=

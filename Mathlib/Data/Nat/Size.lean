@@ -3,11 +3,16 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Bits
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Basic
 
 /-! Lemmas about `size`. -/
+
+public section
 
 namespace Nat
 
@@ -18,7 +23,7 @@ section
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
-  | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
+  | 0 => by simp [shiftLeft', pow_zero]
   | k + 1 => by
     rw [shiftLeft', bit_val, Bool.toNat_true, add_assoc, ← Nat.mul_add_one,
       shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2, pow_succ]
@@ -26,11 +31,11 @@ theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) 
 end
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
-  induction n <;> simp [bit_ne_zero, shiftLeft', *]
+  induction n <;> simp [shiftLeft', *]
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => by dsimp [shiftLeft', bit]; omega
+  | succ _, _ => by dsimp [shiftLeft', bit]; lia
 
 /-! ### `size` -/
 
@@ -92,8 +97,8 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
   ⟨fun h => lt_of_lt_of_le (lt_size_self _) (Nat.pow_le_pow_right (by decide) h), by
     rw [← one_shiftLeft]
     induction m using binaryRec generalizing n with
-    | z => simp
-    | f b m IH =>
+    | zero => simp
+    | bit b m IH =>
       intro h
       by_cases e : bit b m = 0
       · simp [e]
@@ -105,7 +110,7 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [shiftLeft_succ] at *
         refine lt_of_le_of_lt ?_ h
-        cases b <;> dsimp [bit] <;> omega⟩
+        cases b <;> dsimp [bit] <;> lia⟩
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by
   rw [← not_lt, Decidable.iff_not_comm, not_lt, size_le]
@@ -124,8 +129,8 @@ theorem size_le_size {m n : ℕ} (h : m ≤ n) : size m ≤ size n :=
 
 theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h ih =>
+  | zero => simp
+  | bit _ _ h ih =>
     rw [size_bit, bits_append_bit _ _ h]
     · simp [ih]
     · simpa [bit_eq_zero_iff]

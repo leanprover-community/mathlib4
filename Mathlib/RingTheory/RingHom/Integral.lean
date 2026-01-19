@@ -3,14 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 
 # The meta properties of integral ring homomorphisms.
 
 -/
+
+public section
 
 
 namespace RingHom
@@ -30,11 +34,9 @@ theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
 
 theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
   refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
-  introv h x
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · apply isIntegral_zero
-  · intro x y; exact IsIntegral.tmul x (h y)
-  · intro x y hx hy; exact IsIntegral.add hx hy
+  introv int
+  rw [algebraMap_isIntegral_iff] at int ⊢
+  infer_instance
 
 open Polynomial in
 /-- `S` is an integral `R`-algebra if there exists a set `{ r }` that
@@ -43,7 +45,7 @@ theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r
   letI := f.toAlgebra
-  show r ∈ (integralClosure R S).toSubmodule
+  change r ∈ (integralClosure R S).toSubmodule
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ s hs
   rintro ⟨t, ht⟩
   letI := (Localization.awayMap f t).toAlgebra
@@ -57,7 +59,7 @@ theorem isIntegral_ofLocalizationSpan :
     IsLocalization.map_eq_zero_iff (.powers (f t))] at hp'
   obtain ⟨⟨x, m, (rfl : algebraMap R S t ^ m = x)⟩, e⟩ := hp'
   by_cases hp' : 1 ≤ p.natDegree; swap
-  · obtain rfl : p = 1 := eq_one_of_monic_natDegree_zero hp (by omega)
+  · obtain rfl : p = 1 := eq_one_of_monic_natDegree_zero hp (by lia)
     exact ⟨m, by simp [Algebra.smul_def, show algebraMap R S t ^ m = 0 by simpa using e]⟩
   refine ⟨m + n, p.scaleRoots (t ^ m), (monic_scaleRoots_iff _).mpr hp, ?_⟩
   have := p.scaleRoots_eval₂_mul (algebraMap R S) (t ^ n • r) (t ^ m)

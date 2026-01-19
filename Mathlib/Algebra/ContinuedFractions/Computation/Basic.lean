@@ -3,8 +3,10 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Basic
-import Mathlib.Algebra.Order.Floor.Defs
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.Order.Floor.Defs
 
 /-!
 # Computable Continued Fractions
@@ -57,6 +59,8 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 
 numerics, number theory, approximations, fractions
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -126,7 +130,7 @@ fraction representation of `v` in `GenContFract.of`. More precisely, given a val
 recursively computes a stream of option `ℤ × K` pairs as follows:
 - `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
 - `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
-    if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
+  if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
 - `stream v (n + 1) = none`, otherwise
 
 For example, let `(v : ℚ) := 3.4`. The process goes as follows:

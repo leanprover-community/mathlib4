@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Submodules in localizations of commutative rings
@@ -18,6 +21,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -82,6 +87,11 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
+lemma _root_.Algebra.EssFiniteType.isNoetherianRing
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
+  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 
 variable {R : Type*} [CommRing R] {M : Submonoid R}
@@ -103,7 +113,7 @@ variable (S)
 
 theorem coeSubmodule_injective (h : M ≤ nonZeroDivisors R) :
     Function.Injective (coeSubmodule S : Ideal R → Submodule R S) :=
-  injective_of_le_imp_le _ fun hl => (coeSubmodule_le_coeSubmodule h).mp hl
+  .of_eq_imp_le fun hl => (coeSubmodule_le_coeSubmodule h).mp hl.le
 
 theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
@@ -138,7 +148,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
     · rintro a _ _ ⟨y, hy, z, rfl⟩
-      obtain ⟨y', z', rfl⟩ := mk'_surjective M a
+      obtain ⟨y', z', rfl⟩ := exists_mk'_eq M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]
@@ -181,7 +191,7 @@ theorem coeSubmodule_strictMono : StrictMono (coeSubmodule K : Ideal R → Submo
 variable (R K)
 
 theorem coeSubmodule_injective : Function.Injective (coeSubmodule K : Ideal R → Submodule R K) :=
-  injective_of_le_imp_le _ fun hl => coeSubmodule_le_coeSubmodule.mp hl
+  .of_eq_imp_le fun hl => coeSubmodule_le_coeSubmodule.mp hl.le
 
 @[simp]
 theorem coeSubmodule_isPrincipal {I : Ideal R} : (coeSubmodule K I).IsPrincipal ↔ I.IsPrincipal :=

@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Interactions between the Lebesgue integral and norms
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -21,23 +25,14 @@ theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
   rw [Real.norm_eq_abs]
   exact le_abs_self (f x)
 
-@[deprecated (since := "2025-01-17")]
-alias lintegral_ofReal_le_lintegral_nnnorm := lintegral_ofReal_le_lintegral_enorm
-
 theorem lintegral_enorm_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[μ] f) :
     ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ := by
   apply lintegral_congr_ae
   filter_upwards [h_nonneg] with x hx
   rw [Real.enorm_eq_ofReal hx]
 
-@[deprecated (since := "2025-01-17")]
-alias lintegral_nnnorm_eq_of_ae_nonneg := lintegral_enorm_of_ae_nonneg
-
 theorem lintegral_enorm_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
     ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ :=
   lintegral_enorm_of_ae_nonneg <| .of_forall h_nonneg
-
-@[deprecated (since := "2025-01-17")]
-alias lintegral_nnnorm_eq_of_nonneg := lintegral_enorm_of_nonneg
 
 end MeasureTheory

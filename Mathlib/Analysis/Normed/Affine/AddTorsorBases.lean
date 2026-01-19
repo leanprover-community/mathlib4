@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
@@ -19,6 +21,8 @@ This file contains results about bases in normed affine spaces.
 * `IsOpen.exists_subset_affineIndependent_span_eq_top`
 * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
+
+public section
 
 assert_not_exists HasFDerivAt
 
@@ -97,7 +101,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
     simp only [w, hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
-      Units.val_one, Subtype.coe_mk] <;>
+      Units.val_one] <;>
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range
   · rw [affineSpan_eq_affineSpan_lineMap_units (ht₁ hq) w, ht₃]

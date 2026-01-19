@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.CompleteLattice.Finset
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Finite sets in a sigma type
@@ -26,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+@[expose] public section
+
 
 open Function Multiset
 
@@ -43,7 +47,7 @@ protected def sigma : Finset (Σ i, α i) :=
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[simp]
+@[simp, grind =]
 theorem mem_sigma {a : Σ i, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 
@@ -60,7 +64,7 @@ alias ⟨_, Aesop.sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
 
 @[simp]
 theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
-  simp only [← not_nonempty_iff_eq_empty, sigma_nonempty, not_exists, not_and]
+  contrapose!; exact sigma_nonempty
 
 @[mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
@@ -156,7 +160,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       exact ⟨rfl, rfl, hx⟩
     · rintro ⟨⟨⟩, ⟨⟩, hx⟩
       rw [sigmaLift, dif_pos rfl, mem_map]
-      exact ⟨_, hx, by simp [Sigma.ext_iff]⟩
+      exact ⟨_, hx, by simp⟩
   · rw [sigmaLift, dif_neg h]
     refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
@@ -174,16 +178,10 @@ theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
-
 theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 
@@ -195,8 +193,8 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  · simp [h, forall_prop_of_true h]
-  · simp [h, forall_prop_of_false h]
+  · simp [h]
+  · simp [h]
 
 theorem sigmaLift_mono
     (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σ i, α i) (b : Σ i, β i) :
@@ -211,7 +209,7 @@ variable (f a b)
 theorem card_sigmaLift :
     (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
   simp_rw [sigmaLift]
-  split_ifs with h <;> simp [h]
+  split_ifs with h <;> simp
 
 end SigmaLift
 

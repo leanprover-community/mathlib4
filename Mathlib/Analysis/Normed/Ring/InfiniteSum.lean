@@ -3,20 +3,24 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-! # Multiplying two infinite sums in a normed ring
 
 In this file, we prove various results about `(∑' x : ι, f x) * (∑' y : ι', g y)` in a normed
-ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum.lean` (e.g
+ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum/Ring.lean` (e.g.
 `tsum_mul_tsum`), but in a normed ring we get summability results which aren't true in general.
 
 We first establish results about arbitrary index types, `ι` and `ι'`, and then we specialize to
 `ι = ι' = ℕ` to prove the Cauchy product formula
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
+
+public section
 
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
@@ -56,11 +60,11 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   rw [← nhds_prod_eq] at this
   convert ((continuous_mul (M := R)).continuousAt
       (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p
-  simp [s, sum_product, ← mul_sum, ← sum_mul]
+  simp [sum_product, ← mul_sum, ← sum_mul]
 
 /-- Product of two infinite sums indexed by arbitrary types.
-    See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable, and
-    `tsum_mul_tsum_of_summable_norm'` when the space is not complete. -/
+See also `tsum_mul_tsum` if `f` and `g` are *not* absolutely summable, and
+`tsum_mul_tsum_of_summable_norm'` when the space is not complete. -/
 theorem tsum_mul_tsum_of_summable_norm [CompleteSpace R] {f : ι → R} {g : ι' → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × ι', f z.1 * g z.2 :=
@@ -105,10 +109,10 @@ theorem summable_sum_mul_antidiagonal_of_summable_norm' {f g : ℕ → R}
   summable_sum_mul_antidiagonal_of_summable_mul (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
-    expressed by summing on `Finset.antidiagonal`.
-    See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
-    *not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm'`
-    when the space is not complete. -/
+expressed by summing on `Finset.antidiagonal`.
+See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
+*not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm'`
+when the space is not complete. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
@@ -118,7 +122,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm' {f g : ℕ → 
     (hf : Summable fun x => ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x => ‖g x‖) (h'g : Summable g) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
-  h'f.tsum_mul_tsum_eq_tsum_sum_antidiagonal  h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
+  h'f.tsum_mul_tsum_eq_tsum_sum_antidiagonal h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x => ‖f x‖)
     (hg : Summable fun x => ‖g x‖) : Summable fun n => ‖∑ k ∈ range (n + 1), f k * g (n - k)‖ := by
@@ -133,10 +137,10 @@ theorem summable_sum_mul_range_of_summable_norm' {f g : ℕ → R}
   exact summable_sum_mul_antidiagonal_of_summable_norm' hf h'f hg h'g
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
-    expressed by summing on `Finset.range`.
-    See also `tsum_mul_tsum_eq_tsum_sum_range` if `f` and `g` are
-    *not* absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
-    space is not complete. -/
+expressed by summing on `Finset.range`.
+See also `tsum_mul_tsum_eq_tsum_sum_range` if `f` and `g` are
+not absolutely summable, and `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm'` when the
+space is not complete. -/
 theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
     (hf : Summable fun x => ‖f x‖) (hg : Summable fun x => ‖g x‖) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ k ∈ range (n + 1), f k * g (n - k) := by

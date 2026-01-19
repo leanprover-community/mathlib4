@@ -3,11 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.Finite.Trace
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Data.ZMod.Units
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -36,6 +38,8 @@ is nontrivial (and the target is a domain); see `AddChar.sum_eq_zero_of_isNontri
 additive character
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -56,7 +60,7 @@ lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
 elements are nontrivial. -/
 def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulShift ψ a ≠ 1
 
-/-- The composition of a primitive additive character with an injective mooid homomorphism
+/-- The composition of a primitive additive character with an injective monoid homomorphism
 is also primitive. -/
 lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
@@ -69,7 +73,7 @@ theorem to_mulShift_inj_of_isPrimitive {ψ : AddChar R R'} (hψ : IsPrimitive ψ
     Function.Injective ψ.mulShift := by
   intro a b h
   apply_fun fun x => x * mulShift ψ (-b) at h
-  simp only [mulShift_mul, mulShift_zero, add_neg_cancel, mulShift_apply] at h
+  simp only [mulShift_mul, mulShift_zero, add_neg_cancel] at h
   simpa [← sub_eq_add_neg, sub_eq_zero] using (hψ · h)
 
 -- `AddCommGroup.equiv_direct_sum_zmod_of_fintype`
@@ -85,7 +89,8 @@ theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : 
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
     (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
   simp only [IsPrimitive, not_forall]
-  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite,
+    mem_nonZeroDivisors_iff_right, not_forall] at hr
   rcases hr with ⟨x, h, h'⟩
   exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff]⟩
 
@@ -295,15 +300,15 @@ private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
 
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  letI ch := primitiveChar F ℂ <| ringChar_ne F
-  refine  MonoidHom.compAddChar ?_ ch.char
-  exact (IsCyclotomicExtension.algEquiv ch.n ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
+  letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
+  refine MonoidHom.compAddChar ?_ ch.char
+  exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
 
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
   refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
   let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
+  exact (IsCyclotomicExtension.algEquiv {(nn : ℕ)} ℂ (CyclotomicField nn ℂ) ℂ).injective
 
 end Field
 

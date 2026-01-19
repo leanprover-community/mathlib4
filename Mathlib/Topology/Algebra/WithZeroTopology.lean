@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -30,6 +32,8 @@ This topology is defined as a scoped instance since it may not be the desired to
 a linearly ordered commutative group with zero. You can locally activate this topology using
 `open WithZeroTopology`.
 -/
+
+public section
 
 open Topology Filter TopologicalSpace Filter Set Function
 
@@ -160,7 +164,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
-    · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+    · have := (this y x (le_of_not_ge hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
@@ -178,7 +182,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       exact pure_le_nhds (x * y)
 
 @[nolint defLemma]
-scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
+scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩

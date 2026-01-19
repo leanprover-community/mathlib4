@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.Multiset.Replicate
-import Mathlib.Data.Set.List
+module
+
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Multiset.Replicate
+public import Mathlib.Data.Set.List
 
 /-!
 # Mapping and folding multisets
@@ -22,6 +24,8 @@ Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lea
 should we switch the import direction?
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -51,7 +55,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
   exact congr_arg _ (List.map_congr_left h)
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
-    (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (map f m) (map f' m) := by
+    (hf : ∀ a ∈ m, f a ≍ f' a) : map f m ≍ map f' m := by
   subst h; simp at hf
   simp [map_congr rfl hf]
 
@@ -171,7 +175,7 @@ theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s �
 
 @[simp, gcongr]
 theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t.map f := by
-  refine (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le ?_
+  refine (map_le_map h.le).lt_of_not_ge fun H => h.ne <| eq_of_le_of_card_le h.le ?_
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 
@@ -340,7 +344,7 @@ theorem attach_cons (a : α) (m : Multiset α) :
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.ext rfl
 
 section
 
@@ -364,7 +368,7 @@ variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
 lemma sub_eq_fold_erase (s t : Multiset α) : s - t = foldl erase s t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by
-    show ofList (l₁.diff l₂) = foldl erase l₁ l₂
+    change ofList (l₁.diff l₂) = foldl erase l₁ l₂
     rw [diff_eq_foldl l₁ l₂]
     symm
     exact foldl_hom _ fun x y => rfl

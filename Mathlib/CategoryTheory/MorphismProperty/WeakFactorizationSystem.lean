@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 
 /-!
 # Weak factorization systems
@@ -18,6 +20,8 @@ and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 * https://ncatlab.org/nlab/show/weak+factorization+system
 
 -/
+
+@[expose] public section
 
 universe v u
 

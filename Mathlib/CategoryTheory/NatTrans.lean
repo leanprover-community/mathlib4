@@ -3,7 +3,9 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
@@ -29,9 +31,13 @@ Introduces notations
 
 -/
 
+@[expose] public section
+
+set_option mathlib.tactic.category.grind true
+
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -42,19 +48,27 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext]
+@[ext, to_dual self (reorder := F G)]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
-  app : ∀ X : C, F.obj X ⟶ G.obj X
+  app (X : C) : F.obj X ⟶ G.obj X
   /-- The naturality square for a given morphism. -/
-  naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by aesop_cat
+  naturality ⦃X Y : C⦄ (f : X ⟶ Y) : F.map f ≫ app Y = app X ≫ G.map f := by cat_disch
+
+set_option linter.translateOverwrite false in
+@[to_dual existing naturality]
+lemma NatTrans.naturality' {F G : C ⥤ D} (self : NatTrans G F) ⦃X Y : C⦄ (f : Y ⟶ X) :
+    self.app Y ≫ F.map f = G.map f ≫ self.app X := (self.naturality f).symm
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
 
+attribute [grind _=_] NatTrans.naturality
+
+@[to_dual self]
 theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) : α.app X = β.app X := by
-  aesop_cat
+  cat_disch
 
 namespace NatTrans
 
@@ -75,29 +89,35 @@ section
 variable {F G H : C ⥤ D}
 
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
+@[to_dual self (reorder := F H, α β)]
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
 
 -- functor_category will rewrite (vcomp α β) to (α ≫ β), so this is not a
 -- suitable simp lemma.  We will declare the variant vcomp_app' there.
+@[to_dual self]
 theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
     (vcomp α β).app X = α.app X ≫ β.app X := rfl
+
+attribute [grind =] vcomp_app
 
 end
 
 /-- The diagram
+```
     F(f)      F(g)      F(h)
-F X ----> F Y ----> F U ----> F U
+F X ----> F Y ----> F U ----> F V
  |         |         |         |
  | α(X)    | α(Y)    | α(U)    | α(V)
  v         v         v         v
 G X ----> G Y ----> G U ----> G V
     G(f)      G(g)      G(h)
+```
 commutes.
 -/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :
     α.app X ≫ G.map f ≫ G.map g ≫ G.map h = F.map f ≫ F.map g ≫ F.map h ≫ α.app V := by
-  simp
+  grind
 
 end NatTrans
 

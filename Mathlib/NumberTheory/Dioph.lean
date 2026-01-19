@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.PFun
-import Mathlib.Data.Vector3
-import Mathlib.NumberTheory.PellMatiyasevic
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector3
+public import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -48,6 +50,8 @@ Matiyasevic's theorem, Hilbert's tenth problem
 * Finish the solution of Hilbert's tenth problem.
 * Connect `Poly` to `MvPolynomial`
 -/
+
+@[expose] public section
 
 
 open Fin2 Function Nat Sum
@@ -165,10 +169,6 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) where
-  add := ((· + ·) : Poly α → Poly α → Poly α)
-  neg := (Neg.neg : Poly α → Poly α)
-  sub := Sub.sub
-  zero := 0
   nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
   add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
@@ -177,16 +177,13 @@ instance : AddCommGroup (Poly α) where
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
   neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
-instance : AddGroupWithOne (Poly α) :=
-  { (inferInstance : AddCommGroup (Poly α)) with
-      one := 1
-      natCast := fun n => Poly.const n
-      intCast := Poly.const }
+instance : AddGroupWithOne (Poly α) where
+  natCast := fun n => Poly.const n
+  intCast := Poly.const
 
 instance : CommRing (Poly α) where
   __ := (inferInstance : AddCommGroup (Poly α))
   __ := (inferInstance : AddGroupWithOne (Poly α))
-  mul := (· * ·)
   npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
   mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
   zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
@@ -195,7 +192,7 @@ instance : CommRing (Poly α) where
   mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
   mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
   left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
-  right_distrib _ _ _ :=  by ext; simp only [add_apply, mul_apply]; apply add_mul
+  right_distrib _ _ _ := by ext; simp only [add_apply, mul_apply]; apply add_mul
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
@@ -214,7 +211,7 @@ def sumsq : List (Poly α) → Poly α
   | [] => 0
   | p::ps => p * p + sumsq ps
 
-theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
+@[simp] theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
   | [] => le_refl 0
   | p::ps => by
     rw [sumsq]
@@ -222,20 +219,7 @@ theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
 
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
-  | p::ps => by
-    rw [List.forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
-    exact
-      ⟨fun h : p x * p x + sumsq ps x = 0 =>
-        have : p x = 0 :=
-          eq_zero_of_mul_self_eq_zero <|
-            le_antisymm
-              (by
-                rw [← h]
-                have t := add_le_add_left (sumsq_nonneg x ps) (p x * p x)
-                rwa [add_zero] at t)
-              (mul_self_nonneg _)
-        ⟨this, by simpa [this] using h⟩,
-      fun ⟨h1, h2⟩ => by rw [add_apply, mul_apply, h1, h2]; rfl⟩
+  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg, mul_self_nonneg, sumsq_eq_zero]
 
 end
 
@@ -303,9 +287,8 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction l with | nil => exact ⟨ULift Empty, [], fun _ => by simp⟩ | cons S l IH =>
-  simp? at d says simp only [List.forall_cons] at d
+  obtain ⟨⟨β, p, pe⟩, dl⟩ := (List.forall_cons _ _ _).mp d
   exact
-    let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
@@ -437,19 +420,20 @@ open scoped Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
-  Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
+  Dioph.ext (diophFn_comp1 (reindex_dioph _ (none :: some) d) df) (fun v => by
     dsimp
-    -- Porting note: `congr` used to be enough here
-    suffices ((f v ::ₒ v) ∘ none :: some) = f v :: v by rw [this]; rfl
+    -- TODO: `apply iff_of_eq` is required here, even though `congr!` works on iff below.
+    apply iff_of_eq
+    congr 1
     ext x; cases x <;> rfl)
 
 /-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
-  ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
+  ext (ex1_dioph <| reindex_dioph _ (none :: some) d) fun v =>
     exists_congr fun x => by
       dsimp
-      rw [show Option.elim' x v ∘ cons none some = x::v from
+      rw [show Option.elim' x v ∘ cons none some = x :: v from
           funext fun s => by rcases s with a | b <;> rfl]
 
 theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v ∘ fs) = v fz} :=
@@ -464,29 +448,28 @@ theorem diophFn_compn :
   | 0, S, d, f => fun _ =>
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
-      -- Porting note: `congr` used to be enough here
-      suffices v ∘ (id ⊗ elim0) = v ⊗ fun i ↦ f i v by rw [this]
+      -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
+      congr! 1
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
         simp only [vectorAllP_cons, and_imp]
         exact fun df dfl =>
           have : Dioph {v | (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr) ∈ S} :=
-            ext (diophFn_comp1 (reindex_dioph _ (some ∘ inl ⊗ none::some ∘ inr) d) <|
+            ext (diophFn_comp1 (reindex_dioph _ (some ∘ inl ⊗ none :: some ∘ inr) d) <|
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
-                -- Porting note: `congr` used to be enough here
-                suffices (f (v ∘ inl) ::ₒ v) ∘ (some ∘ inl ⊗ none :: some ∘ inr) =
-                    v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr by rw [this]
+                -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x`
+                -- but that does not work.
+                congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
-            @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
+            @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
-            -- Porting note: `congr` used to be enough here
-            suffices (v ⊗ f v :: fun i ↦ fl i v) = v ⊗ fun i ↦ (f :: fl) i v by rw [this]
-            ext x; obtain _ | _ | _ := x <;> rfl
+            congr! 3 with x
+            obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=
@@ -494,7 +477,7 @@ theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α →
 
 theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 ((α → ℕ) → ℕ) n)
     (dg : VectorAllP DiophFn g) : DiophFn fun v => f fun i => g i v :=
-  dioph_comp ((diophFn_vec _).1 df) ((fun v => v none)::fun i v => g i (v ∘ some)) <| by
+  dioph_comp ((diophFn_vec _).1 df) ((fun v ↦ v none) :: fun i v ↦ g i (v ∘ some)) <| by
     simp only [vectorAllP_cons]
     exact ⟨proj_dioph none, (vectorAllP_iff_forall _ _).2 fun i =>
           reindex_diophFn _ <| (vectorAllP_iff_forall _ _).1 dg _⟩
@@ -588,10 +571,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              rintro rfl
-              rcases le_total y z with yz | zy
-              · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
-              · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
+              lia⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph
@@ -629,7 +609,7 @@ theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v =>
   df D% dh D= dg D% dh
 
 @[inherit_doc]
-scoped notation " D≡ " => Dioph.modEq_dioph
+scoped notation "D≡ " => Dioph.modEq_dioph
 
 /-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=

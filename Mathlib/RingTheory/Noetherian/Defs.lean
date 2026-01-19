@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Noetherian rings and modules
@@ -17,7 +19,7 @@ A module satisfying these equivalent conditions is said to be a *Noetherian* R-m
 A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
-so perhaps this should be called "left Noetherian".
+so perhaps this should be called "left-Noetherian".
 To avoid cumbersome names once we specialize to the commutative case,
 we don't make this explicit in the declaration names.)
 
@@ -47,6 +49,8 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
+@[expose] public section
+
 assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
 open Set Pointwise
@@ -54,7 +58,7 @@ open Set Pointwise
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
--- Porting note: should this be renamed to `Noetherian`?
+-- TODO: should this be renamed to `Noetherian`?
 class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 
@@ -78,11 +82,8 @@ theorem isNoetherian_submodule {N : Submodule R M} :
     have : s ≤ LinearMap.range N.subtype := N.range_subtype.symm ▸ hs
     Submodule.map_comap_eq_self this ▸ (hn _).map _,
     fun h => ⟨fun s => ?_⟩⟩
-  have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
-  have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
-  have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp
-  have h₃ := ((Submodule.fg_top _).2 h₁).map (↑f : _ →ₗ[R] s)
-  exact (Submodule.fg_top _).1 (h₂ ▸ h₃)
+  specialize h (s.map N.subtype) (Submodule.map_subtype_le N s)
+  exact Submodule.fg_of_fg_map_injective N.subtype Subtype.val_injective h
 
 theorem isNoetherian_submodule_left {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, (N ⊓ s).FG :=
@@ -111,9 +112,7 @@ variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M
   [Module R N] [AddCommMonoid P] [Module R P]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  have := (CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3
-  -- Porting note: inlining this makes rw complain about it being a metavariable
-  rw [this]
+  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
@@ -149,7 +148,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     rw [eq_of_le_of_not_lt (le_sup_right : N₀ ≤ _) (h₂
       ⟨_, Submodule.FG.sup ⟨{x}, by rw [Finset.coe_singleton]⟩ h₁⟩ <|
       sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) e)]
-    exact (le_sup_left : (R ∙ x) ≤ _) (Submodule.mem_span_singleton_self _)
+    exact (le_sup_left : R ∙ x ≤ _) (Submodule.mem_span_singleton_self _)
 
 /-- A module is Noetherian iff every nonempty set of submodules has a maximal submodule among them.
 -/
@@ -185,7 +184,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  rcases le_or_lt m l with h | h
+  rcases le_or_gt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 
@@ -203,3 +202,9 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
+
+lemma Ideal.fg_of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG :=
+  IsNoetherian.noetherian _
+
+alias Ideal.FG.of_isNoetherianRing := Ideal.fg_of_isNoetherianRing

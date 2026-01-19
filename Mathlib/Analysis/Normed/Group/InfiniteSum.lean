@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -31,12 +33,14 @@ In a complete (semi)normed group,
 infinite series, absolute convergence, normed group
 -/
 
+public section
+
 open Topology ENNReal NNReal
 
 open Finset Filter Metric
 
 variable {ι α E F ε : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
-  [TopologicalSpace ε] [ENormedAddCommMonoid ε]
+  [TopologicalSpace ε] [ESeminormedAddCommMonoid ε]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔

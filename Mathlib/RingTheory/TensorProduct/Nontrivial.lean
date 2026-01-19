@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Localization.FractionRing
 This file contains some more results on nontriviality of tensor product of algebras.
 
 -/
+
+public section
 
 open TensorProduct
 
@@ -34,6 +38,7 @@ theorem nontrivial_of_algebraMap_injective_of_isDomain
   let fb : FR →ₐ[R] FB := IsFractionRing.liftAlgHom (g := Algebra.ofId R FB)
     ((IsFractionRing.injective B FB).comp hb)
   algebraize_only [fa.toRingHom, fb.toRingHom]
+  letI : CompatibleSMul FR R FA FB := CompatibleSMul.isScalarTower
   exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
     (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
     |>.toRingHom.domain_nontrivial

@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Convex.Gauge
+module
+
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex open sets
@@ -25,8 +27,11 @@ convex open neighborhoods of zero.
 
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
+* `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
 
 -/
+
+@[expose] public section
 
 open NormedField Set
 
@@ -37,8 +42,8 @@ variable {𝕜 E : Type*}
 section AbsolutelyConvexSets
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
-variable [SMul 𝕜 E] [SMul ℝ E]
-variable (𝕜 E)
+variable [SMul 𝕜 E]
+variable (𝕜 E) [PartialOrder 𝕜]
 
 /-- The type of absolutely convex open sets. -/
 def AbsConvexOpenSets :=
@@ -63,7 +68,7 @@ theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :
 theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
   s.2.2.2.1
 
-theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
+theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex 𝕜 (s : Set E) :=
   s.2.2.2.2
 
 end AbsConvexOpenSets
@@ -82,9 +87,11 @@ variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]
 variable (𝕜 E)
 
+open scoped ComplexOrder
+
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
 noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
-  gaugeSeminorm s.coe_balanced s.coe_convex (absorbent_nhds_zero s.coe_nhds)
+  gaugeSeminorm s.coe_balanced (s.coe_convex.lift ℝ) (absorbent_nhds_zero s.coe_nhds)
 
 variable {𝕜 E}
 
@@ -93,10 +100,10 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
+  exact gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
+variable [LocallyConvexSpace 𝕜 E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
@@ -111,12 +118,17 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine
-    ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
+    ⟨mem_iInter₂.mpr fun _ _ => by simp [hr],
       isOpen_biInter_finset fun S _ => ?_,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
-      convex_iInter₂ fun _ _ => Seminorm.convex_ball ..⟩
+      convex_iInter₂ fun _ _ => (convex_of_nonneg_surjective_algebraMap _
+        (fun _ => RCLike.nonneg_iff_exists_ofReal.mp) (Seminorm.convex_ball _ _ _) ..)⟩
   -- The only nontrivial part is to show that the ball is open
   have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
   exact S.coe_isOpen.smul₀ hr''
+
+/-- Any locally convex real or complex vector space is polynormable. -/
+instance LocallyConvexSpace.toPolynormableSpace : PolynormableSpace 𝕜 E :=
+  with_gaugeSeminormFamily.toPolynormableSpace

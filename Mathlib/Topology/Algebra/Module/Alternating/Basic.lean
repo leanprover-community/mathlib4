@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Continuous alternating multilinear maps
@@ -23,6 +25,8 @@ are indexed by `i : ι`.
 
 multilinear map, alternating map, continuous
 -/
+
+@[expose] public section
 
 open Function Matrix
 
@@ -110,14 +114,10 @@ theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
   f.map_update_add' m i x y
 
-@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_update_smul' m i c x
-
-@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 theorem map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -194,7 +194,7 @@ instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' (M [⋀^�
 instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' (M [⋀^ι]→L[A] N) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (M [⋀^ι]→L[A] N) :=
+instance : MulAction R' (M [⋀^ι]→L[A] N) := fast_instance%
   toContinuousMultilinearMap_injective.mulAction toContinuousMultilinearMap fun _ _ => rfl
 
 end SMul
@@ -223,7 +223,7 @@ theorem toAlternatingMap_add (f g : M [⋀^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) :=
+instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := fast_instance%
   toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
@@ -249,7 +249,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
 def toContinuousLinearMap [DecidableEq ι] (m : ι → M) (i : ι) : M →L[R] N :=
   f.1.toContinuousLinearMap m i
 
-/-- The cartesian product of two continuous alternating maps, as a continuous alternating map. -/
+/-- The Cartesian product of two continuous alternating maps, as a continuous alternating map. -/
 @[simps!]
 def prod (f : M [⋀^ι]→L[R] N) (g : M [⋀^ι]→L[R] N') : M [⋀^ι]→L[R] (N × N') :=
   ⟨f.1.prod g.1, (f.toAlternatingMap.prod g.toAlternatingMap).map_eq_zero_of_eq⟩
@@ -285,7 +285,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
     { AlternatingMap.ofSubsingleton R M N i f with
       toContinuousMultilinearMap := ContinuousMultilinearMap.ofSubsingleton R M N i f }
   invFun f := (ContinuousMultilinearMap.ofSubsingleton R M N i).symm f.1
-  left_inv _ := rfl
   right_inv _ := toContinuousMultilinearMap_injective <|
     (ContinuousMultilinearMap.ofSubsingleton R M N i).apply_symm_apply _
 
@@ -347,10 +346,6 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M �
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
-
 /-- A continuous linear equivalence of codomains
 defines an equivalence between continuous alternating maps. -/
 @[simps -fullyApplied apply]
@@ -361,14 +356,10 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N 
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
-
-set_option linter.deprecated false in
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
-    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
+    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) :
+    ⇑(e.continuousAlternatingMapCongrRightEquiv f) = e ∘ f :=
   rfl
 
 /-- Continuous linear equivalences between domains and codomains
@@ -383,8 +374,6 @@ def piEquiv {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ 
     [∀ i, Module R (N i)] : (∀ i, M [⋀^ι]→L[R] N i) ≃ M [⋀^ι]→L[R] ∀ i, N i where
   toFun := pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] N i).compContinuousAlternatingMap f
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 /-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
@@ -477,7 +466,11 @@ theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
 
-@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
+@[simp]
+theorem map_vecCons_sub {n} (f : M [⋀^Fin (n + 1)]→L[R] N) (x y : M) (v : Fin n → M) :
+    f (Matrix.vecCons (x - y) v) = f (Matrix.vecCons x v) - f (Matrix.vecCons y v) := by
+  rw [vecCons, ← Fin.update_cons_zero 0, map_update_sub]
+  simp [vecCons]
 
 section IsTopologicalAddGroup
 
@@ -501,7 +494,7 @@ instance : Sub (M [⋀^ι]→L[R] N) :=
 
 theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
-instance : AddCommGroup (M [⋀^ι]→L[R] N) :=
+instance : AddCommGroup (M [⋀^ι]→L[R] N) := fast_instance%
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -546,7 +539,7 @@ variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddCommMonoid M] [AddComm
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
-instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) :=
+instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) := fast_instance%
   Function.Injective.distribMulAction toMultilinearAddHom
     toContinuousMultilinearMap_injective fun _ _ => rfl
 
@@ -560,7 +553,7 @@ variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCo
 
 /-- The space of continuous alternating maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R (M [⋀^ι]→L[A] N) :=
+instance : Module R (M [⋀^ι]→L[A] N) := fast_instance%
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 

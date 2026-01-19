@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Baire.LocallyCompactRegular
-import Mathlib.Topology.Instances.Irrational
+module
+
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Baire.LocallyCompactRegular
+public import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Density of Liouville numbers
@@ -14,6 +16,8 @@ import Mathlib.Topology.Instances.Irrational
 In this file we prove that the set of Liouville numbers form a dense `Gδ` set. We also prove a
 similar statement about irrational numbers.
 -/
+
+public section
 
 
 open scoped Filter
@@ -58,14 +62,14 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
-    · have := r.pos; omega
+    · have := r.pos; lia
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast
         -- Workaround for https://github.com/leanprover/lean4/pull/6438; this eliminates an
         -- `Expr.mdata` that would cause `norm_cast` to skip a numeral.
         rw [Eq.refl (2 : ℝ)]
         norm_cast
-        simp [Rat.divInt_mul_right (two_ne_zero), Rat.mkRat_self]
+        simp [Rat.divInt_mul_right (two_ne_zero)]
       · refine one_div_pos.2 (pow_pos (Int.cast_pos.2 ?_) _)
         exact mul_pos (Int.natCast_pos.2 r.pos) zero_lt_two
 

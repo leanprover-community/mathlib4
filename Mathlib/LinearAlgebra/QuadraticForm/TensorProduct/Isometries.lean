@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Linear equivalences of tensor products as isometries
@@ -20,7 +22,7 @@ These results are separate from the definition of `QuadraticForm.tmul` as that f
 * `QuadraticForm.tensorLId`: `TensorProduct.lid` as a `QuadraticForm.IsometryEquiv`
 -/
 
-suppress_compilation
+@[expose] public section
 
 universe uR uM₁ uM₂ uM₃ uM₄
 variable {R : Type uR} {M₁ : Type uM₁} {M₂ : Type uM₂} {M₃ : Type uM₃} {M₄ : Type uM₄}
@@ -57,7 +59,7 @@ theorem tmul_tensorMap_apply
 
 namespace Isometry
 
-/-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
+/-- `TensorProduct.map` for `QuadraticForm.Isometry`s -/
 def _root_.QuadraticMap.Isometry.tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
@@ -187,11 +189,8 @@ section tensorLId
 
 theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
     Q₂.comp (TensorProduct.lid R M₂) = QuadraticForm.tmul (sq (R := R)) Q₂ := by
-  refine (QuadraticMap.associated_rightInverse R).injective ?_
-  ext m₂ m₂'
-  dsimp [-associated_apply]
-  simp only [associated_tmul, QuadraticMap.associated_comp]
-  simp [-associated_apply, mul_one]
+  ext
+  simp
 
 @[simp]
 theorem tmul_tensorLId_apply

@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Definitions about topological groups
@@ -24,6 +26,8 @@ where subtraction is not given by `a - b = a + (-b)`.
 
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -60,8 +64,8 @@ converges to the inverse of this value.
 For the version in topological groups with zero (including topological fields)
 assuming additionally that the limit is nonzero, use `Filter.Tendsto.inv₀`. -/
 @[to_additive
-  "If a function converges to a value in an additive topological group, then its
-  negation converges to the negation of this value."]
+  /-- If a function converges to a value in an additive topological group, then its
+  negation converges to the negation of this value. -/]
 theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l (𝓝 y)) :
     Tendsto (fun x => (f x)⁻¹) l (𝓝 y⁻¹) :=
   (continuous_inv.tendsto y).comp h
@@ -92,25 +96,19 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
-`IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
+`IsTopologicalAddGroup.rightUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
-
-@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
-  IsTopologicalAddGroup
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `isUniformGroup_of_commGroup`. -/
+`IsTopologicalGroup.rightUniformSpace` and `isUniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
-
-@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
-  IsTopologicalGroup
 
 /-- A typeclass saying that `p : G × G ↦ p.1 - p.2` is a continuous function. This property
 automatically holds for topological additive groups but it also holds, e.g., for `ℝ≥0`. -/

@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
 
@@ -14,16 +16,18 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open GrothendieckTopology Limits Opposite
+open GrothendieckTopology Limits Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type*} [Category E]
+variable {E : Type*} [Category* E]
 variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
@@ -47,7 +51,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
 @[simp]
 lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
-      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
   simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
     Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
@@ -63,7 +67,7 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
   simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    comp_val, id_val, sheafificationAdjunction_counit_app_val,
+    comp_val, sheafificationAdjunction_counit_app_val,
     sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
 
 
@@ -97,14 +101,6 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 section ForgetToType
 
 variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
-
-@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
-
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
-@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
-    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafify J G ⊣ sheafForget J :=
-  adjunction _ adj
 
 example [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance

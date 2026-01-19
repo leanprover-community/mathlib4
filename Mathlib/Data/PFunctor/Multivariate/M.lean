@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.PFunctor.Univariate.M
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -44,9 +46,11 @@ that `A` is a possibly infinite tree.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
+@[expose] public section
 
 
-universe u
+
+universe u v
 
 open MvFunctor
 
@@ -80,7 +84,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a]; rfl)
       _ default⟩
 
 /-- Polynomial functor of the M-type of `P`. `A` is a data-less
@@ -103,7 +107,7 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 
 /-- construct through corecursion the shape of an M-type
 without its contents -/
-def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
+def M.corecShape {β : Type v} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
     β → P.last.M :=
   PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
 
@@ -115,7 +119,7 @@ def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b =>
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-    {β : Type u}
+    {β : Type v}
     (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
@@ -141,7 +145,7 @@ def M.corecContents {α : TypeVec.{u} n}
     M.corecContents g₀ g₁ g₂ (f j) (g₂ b (P.castLastB h₀ j)) h₁ i c
 
 /-- Corecursor for M-type of `P` -/
-def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
+def M.corec' {α : TypeVec n} {β : Type v} (g₀ : β → P.A) (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β) : β → P.M α := fun b =>
   ⟨M.corecShape P g₀ g₂ b, M.corecContents P g₀ g₁ g₂ _ _ rfl⟩
 
@@ -182,7 +186,7 @@ theorem M.dest_eq_dest' {α : TypeVec n} {x : P.last.M} {a : P.A}
     M.dest P ⟨x, f'⟩ = M.dest' P h f' :=
   M.dest'_eq_dest' _ _ _ _
 
-theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
+theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type v} (g₀ : β → P.A)
     (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) (x : β) :
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
@@ -199,7 +203,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
     {f' : (P.B a').drop ⟹ α} {f₁' : (P.B a').last → M P α}
     (e₁ : M.dest P ⟨a₁, f₁⟩ = ⟨a', splitFun f' f₁'⟩) :
-    ∃ (g₁' : _)(e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
+    ∃ (g₁' : _) (e₁' : PFunctor.M.dest a₁ = ⟨a', g₁'⟩),
       f' = M.pathDestLeft P e₁' f₁ ∧
         f₁' = fun x : (last P).B a' => ⟨g₁' x, M.pathDestRight P e₁' f₁ x⟩ := by
   generalize ef : @splitFun n _ (append1 α (M P α)) f' f₁' = ff at e₁
@@ -257,7 +261,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
-  simp? at h₁ says simp only [heq_eq_eq] at h₁
+  simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
     replace h₁ := congr_arg dropFun h₁
     simpa using h₁

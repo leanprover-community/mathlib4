@@ -3,8 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 # Closure results for permutation groups
@@ -19,6 +20,8 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
     a prime cycle and a transposition
 
 -/
+
+public section
 
 open Equiv Function Finset
 
@@ -56,7 +59,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     intro n
     induction n with
     | zero =>
-      simp only [pow_zero, coe_one, id_eq, swap_self, Set.mem_singleton_iff]
+      simp only [pow_zero, coe_one, id_eq, swap_self]
       convert H.one_mem
     | succ n ih =>
       by_cases h5 : x = (σ ^ n) x

@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Complex trigonometric functions
 
 Basic facts and derivatives for the complex trigonometric functions.
 -/
+
+public section
 
 
 noncomputable section
@@ -43,10 +47,6 @@ theorem tendsto_norm_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
 theorem tendsto_norm_tan_atTop (k : ℤ) :
     Tendsto (fun x => ‖tan x‖) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
   tendsto_norm_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
-
-@[deprecated (since := "2025-02-17")] alias tendsto_abs_tan_of_cos_eq_zero :=
-  tendsto_norm_tan_of_cos_eq_zero
-@[deprecated (since := "2025-02-17")] alias tendsto_abs_tan_atTop := tendsto_norm_tan_atTop
 
 @[simp]
 theorem continuousAt_tan {x : ℂ} : ContinuousAt tan x ↔ cos x ≠ 0 := by

@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.FiniteLength
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 
@@ -16,10 +18,12 @@ import Mathlib.RingTheory.FiniteLength
 ## Main results
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
-- `Module.length_ne_top`: The length of an artinian and noetherian module is finite.
+- `Module.length_ne_top`: The length of an Artinian and Noetherian module is finite.
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
+
+@[expose] public section
 
 variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
@@ -68,8 +72,7 @@ lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h
   have := (isFiniteLength_iff_isNoetherian_isArtinian.mp H).2
   rw [← WithBot.coe_inj, Module.coe_length]
   apply le_antisymm
-  · let s' := s.map (β := Submodule R M) (s := (· < ·)) ⟨id, fun h ↦ h.1⟩
-    exact (Order.LTSeries.length_le_krullDim s')
+  · exact (Order.LTSeries.length_le_krullDim <| s.map ⟨id, fun h ↦ h.1⟩)
   · rw [Order.krullDim, iSup_le_iff]
     intro t
     refine WithBot.coe_le_coe.mpr ?_
@@ -92,7 +95,10 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-    exact ⟨Rel.wellFounded_swap_of_finiteDimensional _, Rel.wellFounded_of_finiteDimensional _⟩
+    let R : SetRel (Submodule R M) (Submodule R M) :=
+      {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
+    change R.inv.IsWellFounded ∧ R.IsWellFounded
+    exact ⟨.of_finiteDimensional R.inv, .of_finiteDimensional R⟩
   · obtain ⟨s, hs₁, hs₂⟩ := isFiniteLength_iff_exists_compositionSeries.mp H
     rw [← length_compositionSeries s hs₁ hs₂]
     simp
@@ -257,7 +263,7 @@ lemma Module.length_of_free_of_finite
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
-    Order.krullDim_eq_one_iff_of_boundedOrder]
+    Order.krullDim_eq_one_iff_of_boundedOrder, isSimpleModule_iff]
 
 variable (R M) in
 @[simp]

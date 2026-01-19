@@ -3,13 +3,17 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.Finset.Density
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Finset.Density
 
 /-!
 # Results about big operators with values in a field
 -/
+
+public section
 
 open Fintype
 
@@ -33,18 +37,17 @@ lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
 
 variable {s : Finset α} {t : α → Finset β}
 
-lemma dens_biUnion [DecidableEq β] (h : s.toSet.PairwiseDisjoint t) :
+lemma dens_biUnion [DecidableEq β] (h : (s : Set α).PairwiseDisjoint t) :
     (s.biUnion t).dens = ∑ u ∈ s, (t u).dens := by
   simp [dens, card_biUnion h, sum_div]
 
 lemma dens_biUnion_le [DecidableEq β] : (s.biUnion t).dens ≤ ∑ a ∈ s, (t a).dens := by
   simp only [dens, ← sum_div]
   gcongr
-  · positivity
-  · exact mod_cast card_biUnion_le
+  exact mod_cast card_biUnion_le
 
 lemma dens_eq_sum_dens_fiberwise [DecidableEq α] {f : β → α} {t : Finset β}
-    (h : t.toSet.MapsTo f s) : t.dens = ∑ a ∈ s, {b ∈ t | f b = a}.dens := by
+    (h : (t : Set β).MapsTo f s) : t.dens = ∑ a ∈ s, {b ∈ t | f b = a}.dens := by
   simp [dens, ← sum_div, card_eq_sum_card_fiberwise h]
 
 lemma dens_eq_sum_dens_image [DecidableEq α] (f : β → α) (t : Finset β) :

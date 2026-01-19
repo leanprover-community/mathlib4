@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Bilinear
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Bilinear
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Finiteness of the tensor product of (sub)modules
@@ -16,6 +18,8 @@ In this file we show that the supremum of two subalgebras that are finitely gene
 is again finitely generated.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -74,13 +78,6 @@ section ModuleAndAlgebra
 
 variable (R A B M N : Type*)
 
-/-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-noncomputable local instance
-    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
-    Module A (TensorProduct R A M) :=
-  haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
-  TensorProduct.leftModule
-
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
@@ -90,12 +87,9 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     induction x with
     | zero => exact zero_mem _
     | tmul x y =>
-      -- Porting note: new TC reminder
-      haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
-        Submodule.map_top, LinearMap.range_coe]
-      change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
-      rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
+        Submodule.map_top, LinearMap.coe_range, ← mul_one x, ← smul_eq_mul,
+        ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
     | add x y hx hy => exact Submodule.add_mem _ hx hy
 
@@ -110,15 +104,15 @@ section NontrivialTensorProduct
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
 
-lemma Module.exists_isPrincipal_quotient_of_finite  :
+lemma Module.exists_isPrincipal_quotient_of_finite :
     ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
   obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
   let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
-    refine fun x hx ↦ lt_iff_not_le.mpr fun e ↦ ?_
+    refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
     have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
     simp [s, this, hf] at hx
-  have hs₁ : s.Nonempty := ⟨0, by simp [s, show Set.Iio 0 = ∅ by ext; simp]⟩
+  have hs₁ : s.Nonempty := ⟨0, by simp [s]⟩
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
   have hs := Nat.sSup_mem hs₁ hs₂
   refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
@@ -139,8 +133,7 @@ lemma Module.exists_surjective_quotient_of_finite :
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
   obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
-  rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,
-    not_not] at hN
+  have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 
 open TensorProduct
@@ -148,8 +141,7 @@ instance : Nontrivial (M ⊗[R] M) := by
   obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
   let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
     (LinearMap.mul' R (R ⧸ I)).comp (TensorProduct.map ϕ ϕ)
-  have : Nontrivial (R ⧸ I) := by
-    rwa [← not_subsingleton_iff_nontrivial, Submodule.subsingleton_quotient_iff_eq_top]
+  have : Nontrivial (R ⧸ I) := by rwa [Submodule.Quotient.nontrivial_iff]
   have : Function.Surjective ψ := by
     intro x; obtain ⟨x, rfl⟩ := hϕ x; obtain ⟨y, hy⟩ := hϕ 1; exact ⟨x ⊗ₜ y, by simp [ψ, hy]⟩
   exact this.nontrivial
@@ -162,26 +154,32 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
 
-open TensorProduct in
-lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
-    [CommRing R] [Ring S] [Algebra R S] [Module.Finite R S]
-    (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
-  let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
-  rcases subsingleton_or_nontrivial (S ⧸ R') with h | _
-  · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
-  have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
-    refine subsingleton_of_forall_eq 0 fun y ↦ ?_
-    induction y with
-    | zero => rfl
-    | add a b e₁ e₂ => rwa [e₁, zero_add]
-    | tmul x y =>
-      obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
-      obtain ⟨y, rfl⟩ := R'.mkQ_surjective y
-      obtain ⟨s, hs⟩ : ∃ s, 1 ⊗ₜ[R] s = x ⊗ₜ[R] y := by
-        use x * y
-        trans x ⊗ₜ 1 * 1 ⊗ₜ y
-        · simp [h₁]
-        · simp
-      have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
-      rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
-  cases false_of_nontrivial_of_subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R'))
+-- Subsumed by `RingHom.Finite.tensorProductMap`.
+private lemma RingHom.Finite.tensorProductMap_id
+    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
+    [Algebra R S] [Algebra R T] [Algebra R S']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) :
+    (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
+  letI := f.toRingHom.toAlgebra
+  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
+  have : Module.Finite S S' := finite_algebraMap.mp Hf
+  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
+  convert_to (((Algebra.TensorProduct.comm _ _ _).trans
+      (Algebra.TensorProduct.cancelBaseChange R S S S' T)).toAlgHom.comp
+    Algebra.TensorProduct.includeLeft).Finite
+  · ext; simp
+  exact (RingEquiv.finite _).comp (finite_algebraMap.mpr inferInstance)
+
+lemma RingHom.Finite.tensorProductMap
+    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
+    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
+    (Algebra.TensorProduct.map f g).toRingHom.Finite := by
+  convert RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
+    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
+  congr
+  ext <;> simp

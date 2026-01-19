@@ -3,10 +3,14 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Finsupp.Order
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division
@@ -47,6 +51,8 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 * Prove `⌈a / b⌉ = a ⌈/⌉ b` when `a, b : ℕ`
 -/
 
+@[expose] public section
+
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
@@ -77,8 +83,8 @@ class CeilDiv where
   /-- Do not use this. Use `zero_ceilDiv` instead. -/
   protected zero_ceilDiv (a) : ceilDiv 0 a = 0
 
-@[inherit_doc] infixl:70 " ⌊/⌋ "   => FloorDiv.floorDiv
-@[inherit_doc] infixl:70 " ⌈/⌉ "   => CeilDiv.ceilDiv
+@[inherit_doc] infixl:70 " ⌊/⌋ " => FloorDiv.floorDiv
+@[inherit_doc] infixl:70 " ⌈/⌉ " => CeilDiv.ceilDiv
 
 variable {α β}
 
@@ -122,7 +128,7 @@ variable [AddCommMonoid α] [LinearOrder α] [AddCommMonoid β] [PartialOrder β
   [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
-  obtain ha | ha := le_or_lt a 0
+  obtain ha | ha := le_or_gt a 0
   · simp [ha]
   · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans <| le_smul_ceilDiv ha) ha
 
@@ -206,6 +212,7 @@ instance instFloorDiv : FloorDiv α (∀ i, π i) where
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext i; exact zero_floorDiv a
 
+@[push ←]
 lemma floorDiv_def (f : ∀ i, π i) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ∀ i, π i) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 

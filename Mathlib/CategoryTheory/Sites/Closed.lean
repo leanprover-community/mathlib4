@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.Order.Closure
+module
+
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.Order.Closure
 
 /-!
 # Closed sieves
@@ -43,6 +45,8 @@ closed sieve, closure, Grothendieck topology
 
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -261,7 +265,7 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
     rw [Set.mem_setOf_eq] at hS
     rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
-    intros Y f hf
+    intro Y f hf
     rw [Sieve.mem_iff_pullback_eq_top, ← hc]
     apply hR hf
 

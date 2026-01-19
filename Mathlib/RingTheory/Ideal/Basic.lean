@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Ideal.Maximal
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Ideal.Maximal
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -27,6 +29,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
+@[expose] public section
+
 
 variable {ι α β F : Type*}
 
@@ -38,22 +42,37 @@ section Semiring
 
 namespace Ideal
 
-variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
+variable {R : ι → Type*} [Π i, Semiring (R i)] (I J : Π i, Ideal (R i))
 
 section Pi
 
 /-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
-def pi : Ideal (Π i, α i) where
-  carrier := { x | ∀ i, x i ∈ I i }
+def pi : Ideal (Π i, R i) where
+  carrier := { r | ∀ i, r i ∈ I i }
   zero_mem' i := (I i).zero_mem
   add_mem' ha hb i := (I i).add_mem (ha i) (hb i)
   smul_mem' a _b hb i := (I i).mul_mem_left (a i) (hb i)
 
-theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
+theorem mem_pi (r : Π i, R i) : r ∈ pi I ↔ ∀ i, r i ∈ I i :=
   Iff.rfl
+
+@[simp] theorem pi_span {r : Π i, R i} : pi (span {r ·}) = span {r} := by
+  ext; simp_rw [mem_pi, mem_span_singleton', funext_iff, Classical.skolem, Pi.mul_def]
 
 instance (priority := low) [∀ i, (I i).IsTwoSided] : (pi I).IsTwoSided :=
   ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
+variable {I J}
+
+theorem single_mem_pi [DecidableEq ι] {i : ι} {r : R i} (hr : r ∈ I i) : Pi.single i r ∈ pi I := by
+  intro j
+  obtain rfl | ne := eq_or_ne i j
+  · simpa
+  · simp [ne]
+
+@[simp] theorem pi_le_pi_iff : pi I ≤ pi J ↔ I ≤ J where
+  mp le i r hr := by classical simpa using le (single_mem_pi hr) i
+  mpr le r hr i := le i (hr i)
 
 end Pi
 
@@ -73,7 +92,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    omega
+    lia
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -109,14 +128,15 @@ theorem add_pow_add_pred_mem_of_pow_mem {m n : ℕ}
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s hs => ?_
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
     Multiset.card_cons, add_pow]
   refine Submodule.sum_mem _ ?_
   intro c _hc
   rw [mem_span_insert]
-  by_cases h : n + 1 ≤ c
+  by_cases! h : n + 1 ≤ c
   · refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
       ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, ?_⟩
     rw [mul_comm _ (a ^ (n + 1))]
@@ -125,7 +145,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   · use 0
     simp_rw [zero_mul, zero_add]
     refine ⟨_, ?_, rfl⟩
-    replace h : c ≤ n := Nat.lt_succ_iff.mp (not_le.mp h)
+    replace h : c ≤ n := Nat.lt_succ_iff.mp h
     have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c) := by
       rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]
     rw [this, pow_add]
@@ -148,7 +168,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, id_eq, smul_eq_mul] at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this
@@ -178,6 +199,17 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
   classical
   rw [Finset.prod_eq_prod_diff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
+
+lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
+    [∀ i, Semiring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
+  rw [_root_.eq_top_iff]
+  rintro x -
+  induction x using Pi.single_induction with
+  | zero => simp
+  | add f g hf hg => exact Ideal.add_mem _ hf hg
+  | single i r =>
+      rw [show Pi.single i r = Pi.single i r * Pi.single i 1 by simp [← Pi.single_mul_left]]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
 
 end Ideal
 
@@ -223,28 +255,35 @@ theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
   obtain ⟨x, hx, not_unit⟩ := this
   exact ⟨x, hx, not_unit⟩
 
+open Ideal in
+theorem isField_iff_maximal_bot [Nontrivial R] : IsField R ↔ (⊥ : Ideal R).IsMaximal := by
+  refine ⟨fun h ↦ let := h.toSemifield; bot_isMaximal, fun hmax ↦ ?_⟩
+  by_contra hf
+  obtain ⟨x, hx0, hxu⟩ := exists_not_isUnit_of_not_isField hf
+  exact hx0 <| span_singleton_eq_bot.mp (hmax.eq_of_le (span_singleton_ne_top hxu) bot_le).symm
+
+theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
+    ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsMaximal := by
+  contrapose! h
+  simp only [← bot_lt_iff_ne_bot] at h
+  refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩
+
+theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
+    ¬ IsField R := by
+  contrapose! h_bot
+  exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
+
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     ¬IsField R ↔ ∃ I : Ideal R, ⊥ < I ∧ I < ⊤ := by
-  constructor
-  · intro h
-    obtain ⟨x, nz, nu⟩ := exists_not_isUnit_of_not_isField h
-    use Ideal.span {x}
-    rw [bot_lt_iff_ne_bot, lt_top_iff_ne_top]
-    exact ⟨mt Ideal.span_singleton_eq_bot.mp nz, mt Ideal.span_singleton_eq_top.mp nu⟩
-  · rintro ⟨I, bot_lt, lt_top⟩ hf
-    obtain ⟨x, mem, ne_zero⟩ := SetLike.exists_of_lt bot_lt
-    rw [Submodule.mem_bot] at ne_zero
-    obtain ⟨y, hy⟩ := hf.mul_inv_cancel ne_zero
-    rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, ← hy] at lt_top
-    exact lt_top (I.mul_mem_right _ mem)
+  refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot.ne' h_top.ne⟩
+  obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h
+  exact ⟨I, bot_lt_iff_ne_bot.mpr hI, lt_top_iff_ne_top.mpr hIm.ne_top⟩
 
 theorem not_isField_iff_exists_prime [Nontrivial R] :
-    ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime :=
-  not_isField_iff_exists_ideal_bot_lt_and_lt_top.trans
-    ⟨fun ⟨I, bot_lt, lt_top⟩ =>
-      let ⟨p, hp, le_p⟩ := I.exists_le_maximal (lt_top_iff_ne_top.mp lt_top)
-      ⟨p, bot_lt_iff_ne_bot.mp (lt_of_lt_of_le bot_lt le_p), hp.isPrime⟩,
-      fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
+    ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime := by
+  refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot h_top.ne_top⟩
+  obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h
+  exact ⟨I, hI, hIm.isPrime⟩
 
 /-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
@@ -255,19 +294,17 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
-  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
-  push_neg
-  simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
+  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+  contrapose! +distrib
+  simp_rw [not_lt_top_iff, not_bot_lt_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)
     (not_field : ¬IsField R) : M ≠ ⊥ := by
-  rintro h
-  rw [h] at max
-  rcases max with ⟨⟨_h1, h2⟩⟩
+  rintro rfl
   obtain ⟨I, hIbot, hItop⟩ := not_isField_iff_exists_ideal_bot_lt_and_lt_top.mp not_field
-  exact ne_of_lt hItop (h2 I hIbot)
+  exact hIbot.ne (max.eq_of_le hItop.ne bot_le)
 
 end Ring
 
@@ -275,13 +312,7 @@ namespace Ideal
 
 variable {R : Type*} [CommSemiring R] [Nontrivial R]
 
-theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
-  rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
-  constructor; · simp
-  intro mle
-  apply lt_irrefl (⊤ : Ideal R)
-  have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [← this] at Ibot
-  rwa [hm.1.2 I Ibot] at Itop
+theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M :=
+  (Ring.ne_bot_of_isMaximal_of_not_isField hm non_field).bot_lt
 
 end Ideal

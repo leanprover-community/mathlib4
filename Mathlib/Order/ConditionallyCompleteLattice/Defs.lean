@@ -3,9 +3,11 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
 
 /-!
 # Definitions of conditionally complete lattices
@@ -25,6 +27,8 @@ For instance, `sInf_le` is a statement in complete lattices ensuring `sInf s ≤
 while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -94,9 +98,9 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
 open scoped Classical in
-/-- A well founded linear order is conditionally complete, with a bottom element. -/
+/-- A well-founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
-  [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
+    [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
     sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
