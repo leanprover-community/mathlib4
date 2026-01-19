@@ -50,13 +50,21 @@ def tangentConeAt (s : Set E) (x : E) : Set E :=
 
 variable {R}
 
-theorem mem_tangentConeAt_of_seq {α : Type*} {l : Filter α} [l.NeBot] {c : α → R} {d : α → E}
+theorem mem_tangentConeAt_of_frequently {α : Type*} (l : Filter α) (c : α → R) (d : α → E)
+    (hd₀ : Tendsto d l (𝓝 0)) (hds : ∃ᶠ n in l, x + d n ∈ s)
+    (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x := by
+  suffices Tendsto (fun n ↦ c n • d n) (l ⊓ 𝓟 {y | x + d y ∈ s}) (⊤ • 𝓝[(x + ·) ⁻¹' s] 0) by
+    rw [frequently_iff_neBot] at hds
+    exact ClusterPt.mono (hcd.mono_left inf_le_left).mapClusterPt this
+  rw [← map₂_smul, ← map_prod_eq_map₂]
+  refine tendsto_map.comp (tendsto_top.prodMk (tendsto_nhdsWithin_iff.mpr ⟨?_, ?_⟩))
+  · exact hd₀.mono_left inf_le_left
+  · simp [eventually_inf_principal]
+
+theorem mem_tangentConeAt_of_seq {α : Type*} (l : Filter α) [l.NeBot] (c : α → R) (d : α → E)
     (hd₀ : Tendsto d l (𝓝 0)) (hds : ∀ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x :=
-  have : Tendsto (fun n ↦ c n • d n) l ((⊤ : Filter R) • 𝓝[(x + ·) ⁻¹' s] 0) := by
-    rw [← map₂_smul, ← map_prod_eq_map₂]
-    exact tendsto_map.comp (tendsto_top.prodMk (tendsto_nhdsWithin_iff.mpr ⟨hd₀, hds⟩))
-  ClusterPt.mono hcd.mapClusterPt this
+  mem_tangentConeAt_of_frequently l c d hd₀ hds.frequently hcd
 
 theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
     ∃ (α : Type (max u v)) (l : Filter α) (_hl : l.NeBot) (c : α → R) (d : α → E),
@@ -94,3 +102,8 @@ unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq
 `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. -/
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt R s x
+
+variable {R} in
+theorem UniqueDiffOn.uniqueDiffWithinAt {s : Set E} {x} (hs : UniqueDiffOn R s) (h : x ∈ s) :
+    UniqueDiffWithinAt R s x :=
+  hs x h
