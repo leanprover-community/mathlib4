@@ -68,14 +68,12 @@ ring theory, ideal, filter, uniform filter, Gabriel filter, torsion theory
 
 open scoped Pointwise
 
-universe u v
-
 /-- `IdealFilter A` is the type of `Order.PFilter`s on the lattice of ideals of `A`. -/
 abbrev IdealFilter (A : Type*) [Ring A] := Order.PFilter (Ideal A)
 
 namespace IdealFilter
 
-variable {A : Type u} [Ring A]
+variable {A : Type*} [Ring A]
 
 /-- A filter of ideals is *uniform* if it is closed under colon by principal ideals. -/
 structure IsUniform (F : IdealFilter A) : Prop where
@@ -87,13 +85,13 @@ structure IsUniform (F : IdealFilter A) : Prop where
 the filter `F`.  That is, there exists `L ∈ F` such that every `a ∈ L` satisfies
 `a • m = 0`. -/
 def IsTorsionElem (F : IdealFilter A)
-    {M : Type v} [AddCommMonoid M] [Module A M] (m : M) : Prop :=
+    {M : Type*} [AddCommMonoid M] [Module A M] (m : M) : Prop :=
   ∃ L ∈ F, ∀ a ∈ L, a • m = 0
 
 /-- We say that an `A`-module `M` is `F`-torsion if every element of `M` is `F`-torsion in the
 sense of `IsTorsionElem`. -/
 def IsTorsion (F : IdealFilter A)
-    (M : Type v) [AddCommMonoid M] [Module A M] : Prop :=
+    (M : Type*) [AddCommMonoid M] [Module A M] : Prop :=
   ∀ m : M, IsTorsionElem F m
 
 /-- We say that the quotient `K/L` is `F`-torsion if every element `k ∈ K` is annihilated
@@ -114,7 +112,7 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     exact ⟨I, hI, (by simpa [hcol] using hI_le)⟩
 
 /-- Unfolding lemma for `IsTorsion`. -/
-@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
+@[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type*) [AddCommMonoid M] [Module A M] :
     IsTorsion F M ↔ ∀ m : M, IsTorsionElem F m :=
   Iff.rfl
 
