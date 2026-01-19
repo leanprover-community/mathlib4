@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -39,6 +40,8 @@ open Pointwise
 
 namespace Submodule
 
+open Ideal
+
 section CommSemiring
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -52,6 +55,19 @@ protected def IsPrimary (S : Submodule R M) : Prop :=
 variable {S : Submodule R M}
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
+
+theorem IsPrimary.isPrime_radical_colon (hI : S.IsPrimary) : (S.colon .univ).radical.IsPrime := by
+  refine isPrime_iff.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
+  simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
+  refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
+  simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
+  exact fun p ↦ (h (hn p)).resolve_right (mt mem_radical_of_pow_mem hx)
+
+theorem IsPrimary.radical_colon_singleton_of_notMem (hI : S.IsPrimary) {m : M} (hm : m ∉ S) :
+    (S.colon {m}).radical = (S.colon Set.univ).radical :=
+  le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦
+    (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
+    (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
 
 end CommSemiring
 
