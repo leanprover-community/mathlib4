@@ -125,7 +125,7 @@ theorem isDiameter_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} {s : Sphere P}
       hd.left_mem hd.right_mem (angle_eq_pi_div_two_iff_mem_sphere_ofDiameter.mp hangle)
     exact this.elim hne₁₂.symm hne₂₃
   exact h_eq ▸ hd
-  
+
 /-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
 equals `π / 2`. -/
 theorem IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
