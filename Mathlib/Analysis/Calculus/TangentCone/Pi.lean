@@ -55,7 +55,7 @@ theorem UniqueDiffWithinAt.univ_pi {s : ∀ i, Set (E i)} {x : ∀ i, E i}
   gcongr
   exact mapsTo_tangentConeAt_pi (fun j _ ↦ (h j).2) |>.image_subset
 
-/-- The finite product of a family of sets of unique differentiability is a set of unique
+/-- The product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
 theorem UniqueDiffOn.univ_pi {s : ∀ i, Set (E i)} (h : ∀ i, UniqueDiffOn 𝕜 (s i)) :
     UniqueDiffOn 𝕜 (Set.pi univ s) :=
@@ -70,7 +70,7 @@ theorem UniqueDiffWithinAt.pi (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x
   refine UniqueDiffWithinAt.univ_pi fun i => ?_
   by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
 
-/-- The finite product of a family of sets of unique differentiability is a set of unique
+/-- The product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
 theorem UniqueDiffOn.pi (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
   fun x hx => UniqueDiffWithinAt.pi fun i hi => h i hi (x i) (hx i hi)
