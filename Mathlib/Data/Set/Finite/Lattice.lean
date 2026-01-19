@@ -393,7 +393,7 @@ theorem Finite.biInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [
     (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
   classical
-  induction s, hs using Set.Finite.induction_on with
+  induction s, hs using Finite.induction_on with
   | empty => simp [iSup_const]
   | @insert a s ha _ ih =>
     simp_rw [iInf_insert, ih, iSup_inf_eq, inf_iSup_eq]
@@ -409,7 +409,7 @@ theorem Finite.biSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [
     (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
   classical
-  induction s, hs using Set.Finite.induction_on with
+  induction s, hs using Finite.induction_on with
   | empty => simp [iInf_const]
   | @insert a s ha _ ih =>
     simp_rw [iSup_insert, ih, iInf_sup_eq, sup_iInf_eq]
@@ -424,12 +424,9 @@ theorem Finite.biSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [
 theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · have := Finite.biInf_iSup_eq (f := (f <| PLift.down ·)) Set.finite_univ
-    simp only [mem_univ, iInf_pos] at this
-    simp_rw [← Equiv.plift.symm.iInf_comp,
+  · simpa [← Equiv.plift.symm.iInf_comp,
       ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iSup_comp]
-      at this
-    simpa using this
+      using Finite.biInf_iSup_eq (f := (f <| PLift.down ·)) finite_univ
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
@@ -438,12 +435,9 @@ theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame �
 theorem _root_.iSup_iInf_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · have := Finite.biSup_iInf_eq (f := (f <| PLift.down ·)) Set.finite_univ
-    simp only [mem_univ, iSup_pos] at this
-    simp_rw [← Equiv.plift.symm.iSup_comp,
+  · simpa [← Equiv.plift.symm.iSup_comp,
       ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iInf_comp]
-      at this
-    simpa using this
+      using Finite.biSup_iInf_eq (f := (f <| PLift.down ·)) finite_univ
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
