@@ -610,7 +610,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
 /-- Elaborate `DepRewrite.Config`. -/
 declare_config_elab elabDepRewriteConfig Config
 
-@[tactic depRewriteSeq, inherit_doc depRewriteSeq]
+@[tactic depRewriteSeq, tactic_alt depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
@@ -620,7 +620,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
       (depRewriteTarget term symm cfg)
       (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic depRwSeq, inherit_doc depRwSeq]
+@[tactic depRwSeq, tactic_alt depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
@@ -658,7 +658,7 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
       (withMainContext <| cleanupCasts (← getMainTarget)))
     replaceMainGoal ((← getMainGoal) :: r.mvarIds)
 
-@[tactic depRewrite, inherit_doc depRewriteSeq]
+@[tactic depRewrite, tactic_alt depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
@@ -668,7 +668,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
       (depRewriteTarget term symm cfg)
       (throwTacticEx `depRewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic depRw, inherit_doc depRwSeq]
+@[tactic depRw, tactic_alt depRwSeq]
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
