@@ -193,7 +193,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
-  { toAddEquiv M s, toLinearMap R M s with }
+  { toAddEquiv M s, DistribSMul.toLinearMap R M s with }
 
 /-- Each element of the group defines a module automorphism.
 

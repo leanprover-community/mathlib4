@@ -77,7 +77,7 @@ variable (A)
 This is a stronger version of `MulAction.toPerm`. -/
 @[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
-  __ := toAddMonoidHom A x
+  __ := DistribSMul.toAddMonoidHom A x
   __ := MulAction.toPermHom G A x
 
 variable (G)

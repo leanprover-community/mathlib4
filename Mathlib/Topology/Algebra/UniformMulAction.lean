@@ -58,14 +58,14 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
 
-/-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
+/-- A `DistribSMul` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
-    [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
+theorem uniformContinuousConstSMul_of_continuousConstSMul [AddGroup M]
+    [DistribSMul R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
-    uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom M r)
+    uniformContinuous_of_continuousAt_zero (DistribSMul.toAddMonoidHom M r)
       (Continuous.continuousAt (continuous_const_smul r))⟩
 
 /-- The action of `Semiring.toModule` is uniformly continuous. -/

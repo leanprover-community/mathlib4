@@ -1199,14 +1199,14 @@ theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTens
 
 @[simp]
 theorem lTensor_smul_action (r : R) :
-    (DistribMulAction.toLinearMap R N r).lTensor M =
-      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
+    (DistribSMul.toLinearMap R N r).lTensor M =
+      DistribSMul.toLinearMap R (M ⊗[R] N) r :=
   (lTensor_smul M r LinearMap.id).trans (congrArg _ (lTensor_id M N))
 
 @[simp]
 theorem rTensor_smul_action (r : R) :
-    (DistribMulAction.toLinearMap R N r).rTensor M =
-      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+    (DistribSMul.toLinearMap R N r).rTensor M =
+      DistribSMul.toLinearMap R (N ⊗[R] M) r :=
   (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
 
 variable {N}

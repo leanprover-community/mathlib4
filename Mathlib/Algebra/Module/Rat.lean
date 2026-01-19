@@ -90,19 +90,19 @@ lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
 section
 variable {α : Type u} {M : Type v}
 
-instance SMulCommClass.nnrat [Monoid α] [AddCommMonoid M] [DistribMulAction α M] [Module ℚ≥0 M] :
+instance SMulCommClass.nnrat [AddCommMonoid M] [DistribSMul α M] [Module ℚ≥0 M] :
     SMulCommClass ℚ≥0 α M where
-  smul_comm r x y := (map_nnrat_smul (DistribMulAction.toAddMonoidHom M x) r y).symm
+  smul_comm r x y := (map_nnrat_smul (DistribSMul.toAddMonoidHom M x) r y).symm
 
-instance SMulCommClass.rat [Monoid α] [AddCommGroup M] [DistribMulAction α M] [Module ℚ M] :
+instance SMulCommClass.rat [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
     SMulCommClass ℚ α M where
-  smul_comm r x y := (map_rat_smul (DistribMulAction.toAddMonoidHom M x) r y).symm
+  smul_comm r x y := (map_rat_smul (DistribSMul.toAddMonoidHom M x) r y).symm
 
-instance SMulCommClass.nnrat' [Monoid α] [AddCommMonoid M] [DistribMulAction α M] [Module ℚ≥0 M] :
+instance SMulCommClass.nnrat' [AddCommMonoid M] [DistribSMul α M] [Module ℚ≥0 M] :
     SMulCommClass α ℚ≥0 M :=
   SMulCommClass.symm _ _ _
 
-instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M] [Module ℚ M] :
+instance SMulCommClass.rat' [AddCommGroup M] [DistribSMul α M] [Module ℚ M] :
     SMulCommClass α ℚ M :=
   SMulCommClass.symm _ _ _
 
