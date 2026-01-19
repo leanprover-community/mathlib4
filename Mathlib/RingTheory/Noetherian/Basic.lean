@@ -363,15 +363,12 @@ namespace Submodule
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 /-- A submodule contained in an noetherian submodule is FG. -/
-theorem FG.of_le_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
+theorem FG.of_le_of_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
   isNoetherian_submodule.mp inferInstance _ hST
-
-/-- A submodule contained in a finite dimensional submodule is FG. -/
-alias FG.of_le_finite := FG.of_le_isNoetherian
 
 /-- A submodule contained in an FG submodule is FG. -/
 lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
   rw [← Module.Finite.iff_fg] at hT
-  exact FG.of_le_isNoetherian hST
+  exact FG.of_le_of_isNoetherian hST
 
 end Submodule
