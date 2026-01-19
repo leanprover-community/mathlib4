@@ -198,15 +198,6 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
-theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRing R] {f : R[X]}
-    {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hi : Function.Injective i)
-    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
-  choose j hj using hi
-  rw [splits_iff_exists_multiset]
-  refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
-  conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
-  simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
-
 theorem _root_.Polynomial.ncard_rootSet_le {R : Type*}
     (S : Type*) [CommRing R] [CommRing S] [IsDomain S]
     [Algebra R S] (f : R[X]) : (f.rootSet S).ncard ≤ f.natDegree := by
@@ -280,7 +271,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
   have h1 : (f₀.map (algebraMap ℤ R)).Splits := by
     have h : (f.map (algebraMap ℚ K)).Splits := SplittingField.splits f
     rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ R K, ← map_map] at h
-    refine h.of_splits_map_of_injective (algebraMap R K) RingOfIntegers.coe_injective ?_
+    refine h.of_splits_map_of_injective RingOfIntegers.coe_injective ?_
     intro x hx
     rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ ℚ K, ← map_map] at hx
     obtain ⟨y, hy⟩ := hφ2.2 ⟨x, (by
