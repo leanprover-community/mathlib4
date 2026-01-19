@@ -78,9 +78,6 @@ variable {A'' L'' : Type*} [CommRing A''] [Algebra R A'']
 
 variable (σ : A →ₐ[R] A')
 variable (σ' : A' →ₐ[R] A'')
-
-
-
 /-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map
 `σ : A → A'` and an `A`-linear map `F : L → L'` which is also a Lie algebra homomorphism and is
 compatible with the anchors.
