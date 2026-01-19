@@ -120,10 +120,28 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
 
-@[deprecated (since := "2026-01-09")]
-alias IsLasker.minimal := IsLasker.exists_isMinimalPrimaryDecomposition
-
 end Submodule
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.isPrimary_decomposition_pairwise_ne_radical :=
+  Submodule.isPrimary_decomposition_pairwise_ne_radical
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition :=
+  Submodule.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsMinimalPrimaryDecomposition := Submodule.IsMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.exists_isMinimalPrimaryDecomposition :=
+  Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.minimal := Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
 
 end IsLasker
 
@@ -171,3 +189,6 @@ lemma isLasker : IsLasker R M := fun I ↦
 end Noetherian
 
 end Submodule
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.isLasker := Submodule.isLasker
