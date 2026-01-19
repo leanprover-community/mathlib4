@@ -1529,7 +1529,7 @@ def isAtomOrDerivable
   match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  -- | ``HSMul.hSMul, _, _
+  | ``HSMul.hSMul, _, _
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _
   | ``Neg.neg, some _, _
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
@@ -1571,17 +1571,20 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} (sα :
       have : $α =Q $α' := ⟨⟩
       have a : Q($α) := a'
       have : $a =Q $a' := ⟨⟩
-      let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
-      -- TODO: special case Nat and Int for the cache?
-      let cR ← mkCache sR
-      /- TODO: The tactic may reject the base ring (e.g. `ring` only supports ℕ and ℤ).
-        In this case we don't need to do these evals at all.
-        Maybe make them thunks for lazy evaluation? -/
-      let ⟨_, vs, ps⟩ ← eval (bt := Ring.baseType sR) sR cR r
-      let ⟨_, vb, pb⟩ ← eval (bt := bt) sα c a
-      let ⟨_, vt, pt⟩ ← RingCompute.evalCast (baseType := bt) sα _ _ q($sR) q(inferInstance) _ vs
-      let ⟨_, vc, pc⟩ ← evalMul sα vt vb
-      return ⟨_, vc, q(hsmul_congr $ps $pb $pt $pc)⟩
+      try
+        let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
+        -- TODO: special case Nat and Int for the cache?
+        let cR ← mkCache sR
+        /- TODO: The tactic may reject the base ring (e.g. `ring` only supports ℕ and ℤ).
+          In this case we don't need to do these evals at all.
+          Maybe make them thunks for lazy evaluation? -/
+        let ⟨_, vs, ps⟩ ← eval (bt := Ring.baseType sR) sR cR r
+        let ⟨_, vb, pb⟩ ← eval (bt := bt) sα c a
+        let ⟨_, vt, pt⟩ ← RingCompute.evalCast (baseType := bt) sα _ _ q($sR) q(inferInstance) _ vs
+        let ⟨_, vc, pc⟩ ← evalMul sα vt vb
+        return ⟨_, vc, q(hsmul_congr $ps $pb $pt $pc)⟩
+      catch _ => els
+    | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
