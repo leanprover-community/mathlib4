@@ -928,8 +928,6 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     commutes' := fun r => by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
 
-variable {R m α}
-
 end Transpose
 
 section NonUnitalNonAssocSemiring

@@ -286,17 +286,6 @@ end MonoidWithZero
 section CancelMonoidWithZero
 
 variable {a b c : M₀}
-
-@[simp]
-theorem mul_eq_mul_right_iff [MulZeroClass M₀] [IsRightCancelMulZero M₀] :
-    a * c = b * c ↔ a = b ∨ c = 0 := by
-  by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
-
-@[simp]
-theorem mul_eq_mul_left_iff [MulZeroClass M₀] [IsLeftCancelMulZero M₀] :
-    a * b = a * c ↔ b = c ∨ a = 0 := by
-  by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
-
 variable [MulZeroOneClass M₀]
 
 theorem mul_right_eq_self₀ [IsLeftCancelMulZero M₀] : a * b = a ↔ b = 1 ∨ a = 0 :=
