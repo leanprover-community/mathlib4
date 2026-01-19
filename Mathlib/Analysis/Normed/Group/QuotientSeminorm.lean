@@ -128,7 +128,7 @@ lemma le_map_iff_comp_le (hf : Surjective f) : q ≤ p.map f ↔ q.comp f ≤ p 
   gc_comp_map hf |>.le_iff_le.symm
 
 variable (f) in
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma map_mono (h : p ≤ p') : p.map f ≤ p'.map f := by
   by_cases hf : Surjective f
   · exact gc_comp_map hf |>.monotone_u h
@@ -152,6 +152,17 @@ noncomputable def gci_comp_map (hf : Surjective f) :
 @[to_additive]
 lemma map_comp_eq (hf : Surjective f) : (q.comp f).map f = q :=
   gci_comp_map hf |>.u_l_eq q
+
+@[to_additive]
+lemma comp_map_eq (hf : Surjective f) (hp : ∀ x ∈ f.ker, p x = 0) :
+    (p.map f).comp f = p := by
+  refine le_antisymm ((gc_comp_map hf).l_u_le _) ?_
+  refine fun x ↦ (le_map_iff hf).mpr fun x' (hx' : _ = _) ↦ ?_
+  calc  p x
+    _ = p (x' * (x'⁻¹ * x)) := by simp
+    _ ≤ p x' + p (x'⁻¹ * x) := map_mul_le_add _ _ _
+    _ = p x' + 0 := by congr; apply hp; simp [hx']
+    _ = p x' := add_zero _
 
 @[to_additive]
 theorem map_map (hf : Surjective f) : (p.map f).map g = p.map (g.comp f) := by
@@ -247,16 +258,98 @@ noncomputable def gci_comp_quotient :
 lemma quotient_comp_eq : (q.comp (QuotientGroup.mk' S)).quotient S = q :=
   map_comp_eq (QuotientGroup.mk'_surjective S)
 
+@[to_additive]
+lemma comp_quotient_eq (hp : ∀ x ∈ S, p x = 0) :
+    (p.quotient S).comp (QuotientGroup.mk' S) = p :=
+  comp_map_eq (QuotientGroup.mk'_surjective S) (by simpa using hp)
+
 end Quotient
 
 section extend
 
-variable {E F G : Type*} [CommGroup E] [CommGroup F] [CommGroup G]
-variable {p : GroupSeminorm E} {f : E →* F} {q : GroupSeminorm F}
+section prelim
 
-variable (p f q) in
+variable {A B C : Type*} [CommMonoid A] [CommMonoid B] [CommMonoid C]
+variable (f : A →* C) (g : B →* C)
+
+@[to_additive]
+lemma _root_.MonoidHom.surjective_coprod_of_left (hf : Surjective f) :
+    Surjective (f.coprod g) := by
+  intro c
+  obtain ⟨a, rfl⟩ := hf c
+  use ⟨a, 1⟩
+  simp
+
+@[to_additive]
+lemma _root_.MonoidHom.surjective_coprod_of_right (hg : Surjective g) :
+    Surjective (f.coprod g) := by
+  intro c
+  obtain ⟨b, rfl⟩ := hg c
+  use ⟨1, b⟩
+  simp
+
+end prelim
+
+variable {E F G : Type*} [CommGroup E] [CommGroup F] [CommGroup G]
+variable {p p' : GroupSeminorm E} {q q' : GroupSeminorm F} {f : E →* F}
+
+variable (p q f) in
+@[to_additive]
 protected noncomputable def extend : GroupSeminorm F :=
-  .map ((p.comp <| .fst E F) + (q.comp <| .snd E F)) (.coprod f (.id F))
+  ((p.comp <| .fst E F) + (q.comp <| .snd E F)).map (f.coprod (.id F))
+
+@[to_additive]
+theorem le_extend_iff {c : ℝ} {x : F} :
+    c ≤ p.extend q f x ↔ ∀ a : E, ∀ b : F, f a * b = x → c ≤ p a + q b := by
+  simp [GroupSeminorm.extend,
+    GroupSeminorm.le_map_iff (f.surjective_coprod_of_right (.id F) surjective_id)]
+
+@[to_additive]
+theorem extend_le_right : p.extend q f ≤ q := by
+  intro x
+  calc  p.extend q f x
+    _ = p.extend q f ((f.coprod (.id F)) ⟨1, x⟩) := by congr; simp
+    _ ≤ ((p.comp <| .fst E F) + (q.comp <| .snd E F)) ⟨1, x⟩ := map_apply_le _
+    _ = q x := by simp
+
+@[to_additive]
+theorem extend_le_left : (p.extend q f).comp f ≤ p := by
+  intro y
+  calc  p.extend q f (f y)
+    _ = p.extend q f ((f.coprod (.id F)) ⟨y, 1⟩) := by congr; simp
+    _ ≤ ((p.comp <| .fst E F) + (q.comp <| .snd E F)) ⟨y, 1⟩ := map_apply_le _
+    _ = p y := by simp
+
+@[to_additive]
+theorem extend_extends (H : p ≤ q.comp f) : (p.extend q f).comp f = p := by
+  refine le_antisymm extend_le_left fun x ↦ ?_
+  simp_rw [comp_apply, le_extend_iff]
+  rintro a b (hef : (f a) * b = f x)
+  obtain ⟨rfl⟩ : b = f (a⁻¹ * x) := by simp [← hef]
+  calc  p x
+    _ = p (a * (a⁻¹ * x)) := by simp
+    _ ≤ p a + p (a⁻¹ * x) := map_mul_le_add _ _ _
+    _ ≤ p a + q (f (a⁻¹ * x)) := by gcongr; exact H _
+
+@[to_additive (attr := gcongr)]
+theorem extend_mono (hp : p ≤ p') (hq : q ≤ q') : p.extend q f ≤ p'.extend q' f :=
+  map_mono _ (fun _ ↦ add_le_add (hp _) (hq _))
+
+open QuotientGroup in
+@[to_additive]
+theorem extend_zero_left {x : F} :
+    (0 : GroupSeminorm E).extend q f x = q.quotient f.range x := by
+  refine eq_of_forall_le_iff fun c ↦ ?_
+  simp_rw [le_extend_iff, zero_apply, zero_add, le_quotient_iff,
+    ← QuotientGroup.mk'_apply, QuotientGroup.mk'_eq_mk' f.range, exists_imp,
+    ← SetLike.mem_coe, MonoidHom.coe_range, and_imp, forall_mem_range]
+  exact ⟨fun H b a ↦ mul_comm _ b ▸ H a b, fun H a b ↦ mul_comm _ b ▸ H b a⟩
+
+@[to_additive]
+theorem quotient_range_le_extend {x : F} :
+    q.quotient f.range x ≤ p.extend q f x := by
+  rw [← extend_zero_left]
+  exact extend_mono (fun _ ↦ apply_nonneg _ _) le_rfl x
 
 end extend
 
