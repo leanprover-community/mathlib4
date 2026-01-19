@@ -1,8 +1,15 @@
-import Mathlib.Analysis.Calculus.PDE.LinearFirstOrder.Defs
-import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.ODE.Gronwall
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2025 Paul Lezeau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Paul Lezeau
+-/
+
+module
+public import Mathlib.Analysis.Calculus.PDE.LinearFirstOrder.Defs
+public import Mathlib.Analysis.Calculus.TangentCone
+public import Mathlib.Analysis.ODE.Gronwall
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-! # The Methods of Characteristics for first order quasilinear PDEs
 
@@ -46,6 +53,8 @@ TODO(Paul-Lez):
 - Harmonise usage of `fderiv` vs `HasFDeriv` and so on.
 - Split/tidy proofs
 -/
+
+@[expose] public section
 
 variable {𝕜 V : Type*}
 
