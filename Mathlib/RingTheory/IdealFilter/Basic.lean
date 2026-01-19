@@ -83,10 +83,6 @@ structure IsUniform (F : IdealFilter A) : Prop where
   also belongs to `F`. -/
   colon_mem {I : Ideal A} (hI : I ∈ F) (a : A) : I.colon {a} ∈ F
 
-namespace IsUniform
-
-end IsUniform
-
 /-- We say that an element `m : M` is `F`-torsion if it is annihilated by some ideal belonging to
 the filter `F`.  That is, there exists `L ∈ F` such that every `a ∈ L` satisfies
 `a • m = 0`. -/
