@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Batteries.Logic
-public import Batteries.Tactic.Init
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Lemma
@@ -318,9 +317,6 @@ lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) 
 
 lemma toNat_lt_of_ne_zero {n : ℕ} (hn : n ≠ 0) : m.toNat < n ↔ m < n := by lia
 
-@[deprecated (since := "2025-05-24")]
-alias toNat_lt'' := toNat_lt_of_ne_zero
-
 /-- The modulus of an integer by another as a natural. Uses the E-rounding convention. -/
 def natMod (m n : ℤ) : ℕ := (m % n).toNat
 
@@ -334,5 +330,8 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 @[simp] lemma gcd_negSucc_ofNat (m n : ℕ) : gcd (negSucc m) n = (m + 1).gcd n := by simp [gcd]
 @[simp] lemma gcd_negSucc_negSucc (m n : ℕ) :
     (negSucc m).gcd (negSucc n) = (m + 1).gcd (n + 1) := by simp [gcd]
+
+theorem gcd_left_comm (a b c : ℤ) : gcd a (gcd b c) = gcd b (gcd a c) := by
+  rw [← gcd_assoc, ← gcd_assoc, gcd_comm a b]
 
 end Int

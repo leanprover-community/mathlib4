@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # A binary product of finite simplicial sets is finite
@@ -51,7 +51,7 @@ variable (X₁ X₂) in
 lemma hasDimensionLT_prod
     (d₁ d₂ : ℕ) [X₁.HasDimensionLT d₁] [X₂.HasDimensionLT d₂]
     (n : ℕ) (hn : d₁ + d₂ ≤ n + 1 := by lia) :
-    (X₁ ⊗ X₂).HasDimensionLT  n := by
+    (X₁ ⊗ X₂).HasDimensionLT n := by
   rw [← hasDimensionLT_subcomplex_top_iff, ← iSup_subcomplexOfSimplex_prod_eq_top]
   simp only [Subcomplex.ofSimplexProd_eq_range, hasDimensionLT_iSup_iff]
   intro x₁ x₂

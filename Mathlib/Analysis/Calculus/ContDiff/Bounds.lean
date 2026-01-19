@@ -18,7 +18,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
   derivative of `f` is bounded by `D ^ i`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -15,7 +15,7 @@ of a family sets with unique differentiability property
 has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 open scoped Topology

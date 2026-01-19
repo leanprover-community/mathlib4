@@ -157,7 +157,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       refine ⟨J₀, hIJ₀, hJ, hbj.injOn, hJ₀X, fun K hK hKinj hKX hJ₀K ↦ ?_⟩
       rw [← hKinj.image_eq_image_iff hJ₀K Subset.rfl, hJmax hK (image_subset_range _ _)
         (image_mono hKX) (image_mono hJ₀K)]
-    subset_ground := fun _ hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
+    subset_ground := fun _ hI e heI ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
 
 @[simp] lemma comap_indep_iff : (N.comap f).Indep I ↔ N.Indep (f '' I) ∧ InjOn f I := Iff.rfl
 
@@ -405,7 +405,7 @@ lemma map_image_isBase_iff {hf} {B : Set α} (hB : B ⊆ M.E) :
 lemma IsBasis.map {X : Set α} (hIX : M.IsBasis I X) {f : α → β} (hf) :
     (M.map f hf).IsBasis (f '' I) (f '' X) := by
   refine (hIX.indep.map f hf).isBasis_of_forall_insert (image_mono hIX.subset) ?_
-  rintro _ ⟨⟨e,he,rfl⟩, he'⟩
+  rintro _ ⟨⟨e, he, rfl⟩, he'⟩
   have hss := insert_subset (hIX.subset_ground he) hIX.indep.subset_ground
   rw [← not_indep_iff (by simpa [← image_insert_eq] using image_mono hss)]
   simp only [map_indep_iff, not_exists, not_and]

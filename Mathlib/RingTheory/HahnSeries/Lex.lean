@@ -6,17 +6,18 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.PiLex
-public import Mathlib.RingTheory.HahnSeries.Addition
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 
 # Lexicographical order on Hahn series
 
-In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this
-is a `LinearOrder` when `Γ` and `R` themselves are linearly ordered. Additionally,
-it is an ordered group when `R` is.
+In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this is a `LinearOrder` when
+`Γ` and `R` themselves are linearly ordered. Additionally, it is an ordered group or ring whenever
+`R` is.
 
 ## Main definitions
 
@@ -93,23 +94,22 @@ theorem leadingCoeff_pos_iff {x : Lex R⟦Γ⟧} : 0 < (ofLex x).leadingCoeff �
     rw [leadingCoeff_of_ne_zero hne, horder']
     simpa using hi
 
-theorem leadingCoeff_nonneg_iff {x : Lex R⟦Γ⟧} :
-    0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
-  constructor
-  · intro h
-    obtain heq | hlt := h.eq_or_lt
+@[simp]
+theorem leadingCoeff_nonneg_iff {x : Lex R⟦Γ⟧} : 0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
+  constructor <;> intro h
+  · obtain heq | hlt := h.eq_or_lt
     · exact le_of_eq (leadingCoeff_eq_zero.mp heq.symm).symm
     · exact (leadingCoeff_pos_iff.mp hlt).le
-  · intro h
-    obtain rfl | hlt := h.eq_or_lt
+  · obtain rfl | hlt := h.eq_or_lt
     · simp
     · exact (leadingCoeff_pos_iff.mpr hlt).le
 
+@[simp]
 theorem leadingCoeff_neg_iff {x : Lex R⟦Γ⟧} : (ofLex x).leadingCoeff < 0 ↔ x < 0 := by
-  simpa using (leadingCoeff_nonneg_iff (x := x)).not
+  simp [← not_le]
 
-theorem leadingCoeff_nonpos_iff {x : Lex R⟦Γ⟧} :
-    (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
+@[simp]
+theorem leadingCoeff_nonpos_iff {x : Lex R⟦Γ⟧} : (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
   simp [← not_lt]
 
 end LinearOrder
@@ -117,7 +117,6 @@ end LinearOrder
 section OrderedMonoid
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
-set_option linter.flexible false in -- simp followed by gcongr
 instance : IsOrderedAddMonoid (Lex R⟦Γ⟧) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
@@ -125,8 +124,8 @@ instance : IsOrderedAddMonoid (Lex R⟦Γ⟧) where
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, fun j hji ↦ ?_, by simp; gcongr⟩
-      simpa using congr($(hj j hji) + (ofLex c).coeff j)
+      refine ⟨i, fun j hji ↦ ?_, add_left_strictMono hi⟩
+      simp [hj j hji]
 
 end OrderedMonoid
 
@@ -355,6 +354,29 @@ theorem archimedeanClassOrderIsoWithTop_apply (x : Lex R⟦Γ⟧) :
 end Archimedean
 
 end OrderedGroup
+
+section OrderedRing
+variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
+  [IsOrderedCancelAddMonoid Γ]
+
+instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where
+  zero_le_one := by simp [← leadingCoeff_nonneg_iff]
+  mul_le_mul_of_nonneg_left a ha b c hbc := by
+    rw [← sub_nonneg] at hbc ⊢
+    rw [← mul_sub, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
+    apply mul_nonneg
+    · simpa
+    · rwa [leadingCoeff_nonneg_iff]
+  mul_le_mul_of_nonneg_right a ha b c hbc := by
+    rw [← sub_nonneg] at hbc ⊢
+    rw [← sub_mul, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
+    apply mul_nonneg
+    · rwa [leadingCoeff_nonneg_iff]
+    · simpa
+
+instance [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
+
+end OrderedRing
 
 section EmbDomain
 variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')

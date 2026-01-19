@@ -18,7 +18,7 @@ In this file we prove theorems about iterated derivatives of `x ^ m`, `m : ℤ` 
 iterated, derivative, power, open set
 -/
 
-@[expose] public section
+public section
 
 open scoped Nat
 

@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
+public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
@@ -177,6 +178,15 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
   rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
 
+/-- Scalar multiplication on the left, as a linear map. -/
+@[simps] def smulLeft (α : R) (hα : α ∈ Set.center R) : End R M where
+  toFun x := α • x
+  map_add' := smul_add _
+  map_smul' β _ := by simp [smul_smul, ((Set.mem_center_iff.mp hα).comm β).eq]
+
+@[simp] lemma smulLeft_eq {R : Type*} [CommSemiring R] [Module R M] (α : R)
+    (hα : α ∈ Set.center R := by simp) : smulLeft α hα = α • .id (M := M) := rfl
+
 end
 
 /-! ## Action by a module endomorphism. -/
@@ -216,19 +226,18 @@ instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R 
 
 end Module.End
 
+section
+
 /-! ## Actions as module endomorphisms -/
 
-
-namespace DistribMulAction
-
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-variable [Monoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable [Monoid S]
 
 /-- Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 @[simps]
-def toLinearMap (s : S) : M →ₗ[R] M where
+def DistribSMul.toLinearMap [DistribSMul S M] [SMulCommClass S R M] (s : S) : M →ₗ[R] M where
   toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
@@ -237,12 +246,15 @@ def toLinearMap (s : S) : M →ₗ[R] M where
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
 @[simps]
-def toModuleEnd : S →* Module.End R M where
-  toFun := toLinearMap R M
+def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
+    S →* Module.End R M where
+  toFun := DistribSMul.toLinearMap R M
   map_one' := LinearMap.ext <| one_smul _
   map_mul' _ _ := LinearMap.ext <| mul_smul _ _
 
-end DistribMulAction
+@[deprecated (since := "2026-01-07")] alias DistribMulAction.toLinearMap := DistribSMul.toLinearMap
+
+end
 
 section Module
 
@@ -255,7 +267,7 @@ This is a stronger version of `DistribMulAction.toModuleEnd`. -/
 @[simps]
 def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
-    toFun := DistribMulAction.toLinearMap R M
+    toFun := DistribSMul.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
     map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
 
@@ -264,7 +276,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
-    toFun := DistribMulAction.toLinearMap R R
+    toFun := DistribSMul.toLinearMap R R
     invFun := fun f ↦ MulOpposite.op (f 1)
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
@@ -274,7 +286,7 @@ multiplication. -/
 @[simps]
 def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
-    toFun := DistribMulAction.toLinearMap _ _
+    toFun := DistribSMul.toLinearMap _ _
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
@@ -385,7 +397,10 @@ def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
--/
+
+This is also known as a rank-one operator.
+See `ContinuousLinearMap.smulRightL` for the continuous version of this, and see
+`InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f

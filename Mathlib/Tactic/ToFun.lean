@@ -22,25 +22,28 @@ open Lean Meta Elab Tactic
 namespace Mathlib.Tactic
 
 /--
-Adding `@[to_fun]` to a lemma
+Generate an eta-expanded version of a lemma. Adding `@[to_fun]` to a lemma written in "point-free"
+form, e.g.
 ```
-theorem Continuous.mul (hf : Continuous f) (hg : Continuous g) : Continuous (f * g)
+theorem Differentiable.mul (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
+    Differentiable 𝕜 (f * g)
 ```
-will generate a new lemma `Continuous.fun_mul` with conclusion `Continuous fun x => f x * g x`.
+will generate a new lemma `Differentiable.fun_mul` with conclusion
+`Differentiable 𝕜 fun x => f x * g x`.
 
 Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarations.
 -/
-syntax (name := to_fun) "to_fun" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_fun) "to_fun" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `to_fun
   descr := "generate a copy of a lemma where point-free functions are expanded to their `fun` form"
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| to_fun $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| to_fun $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_fun` can only be used as a global attribute"
-    addRelatedDecl src "fun_" "" ref stx? (docstringPrefix? := s!"Eta-expanded form of `{src}`")
+    addRelatedDecl src "fun_" "" ref optAttr (docstringPrefix? := s!"Eta-expanded form of `{src}`")
       (hoverInfo := true) fun value levels => do
       let type ← inferType value
       let r ← Push.pullCore .lambda type none

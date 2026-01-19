@@ -200,7 +200,7 @@ lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
     (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
     [HasExactLimitsOfShape J D] [HasFiniteColimits C] [PreservesFiniteColimits G] :
     HasExactLimitsOfShape J C where
-  preservesFiniteColimits:= ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
+  preservesFiniteColimits := ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
     have : PreservesLimitsOfSize.{v', u'} G := adj.rightAdjoint_preservesLimits
     have : PreservesColimitsOfSize.{0, 0} F := adj.leftAdjoint_preservesColimits
     let e : (whiskeringRight J _ _).obj F ⋙ lim ⋙ G ≅ lim :=

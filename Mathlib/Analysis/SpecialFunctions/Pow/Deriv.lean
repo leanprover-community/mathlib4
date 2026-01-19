@@ -19,7 +19,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 We also prove differentiability and provide derivatives for the power functions `x ^ y`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -208,7 +208,7 @@ theorem HasStrictDerivAt.cpow_const (hf : HasStrictDerivAt f f' x)
 theorem HasDerivAt.cpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x)
     (h0 : f x ∈ slitPlane) : HasDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
-  simpa only [aux] using (hf.hasFDerivAt.cpow hg h0).hasDerivAt
+  simpa [aux] using (hf.hasFDerivAt.cpow hg h0).hasDerivAt
 
 theorem HasDerivAt.const_cpow (hf : HasDerivAt f f' x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasDerivAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') x :=
@@ -221,7 +221,7 @@ theorem HasDerivAt.cpow_const (hf : HasDerivAt f f' x) (h0 : f x ∈ slitPlane) 
 theorem HasDerivWithinAt.cpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x)
     (h0 : f x ∈ slitPlane) : HasDerivWithinAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') s x := by
-  simpa only [aux] using (hf.hasFDerivWithinAt.cpow hg h0).hasDerivWithinAt
+  simpa [aux] using (hf.hasFDerivWithinAt.cpow hg h0).hasDerivWithinAt
 
 theorem HasDerivWithinAt.const_cpow (hf : HasDerivWithinAt f f' s x) (h0 : c ≠ 0 ∨ f x ≠ 0) :
     HasDerivWithinAt (fun x => c ^ f x) (c ^ f x * Complex.log c * f') s x :=
@@ -693,7 +693,7 @@ lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
       Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
 
 lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
-    deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
+    deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p - 1) := by
   rcases eq_or_ne p 0 with rfl | hp
   case inl =>
     simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]

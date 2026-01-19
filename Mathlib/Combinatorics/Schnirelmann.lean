@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Schnirelmann density
@@ -104,15 +105,9 @@ lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_le_of_not_mem := schnirelmannDensity_le_of_notMem
-
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
 lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
   ((schnirelmannDensity_le_of_notMem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
-
-@[deprecated (since := "2025-05-23")]
-alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_of_one_notMem
 
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
@@ -266,9 +261,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rcases eq_or_ne m 1 with rfl | hm
   · simp [Nat.modEq_one]
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
-  apply schnirelmannDensity_congr
-  ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
+  simp [Nat.ModEq, Nat.one_mod_eq_one.mpr hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff

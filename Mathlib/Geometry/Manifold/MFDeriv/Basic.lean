@@ -23,7 +23,7 @@ mimicking the API for Fréchet derivatives.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

@@ -351,10 +351,6 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
-@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
-protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
-  ⟨Real.zero_lt_one⟩
-
 instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
 
@@ -590,7 +586,7 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
-  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  have hf1 : (f 1) ^ 2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 
