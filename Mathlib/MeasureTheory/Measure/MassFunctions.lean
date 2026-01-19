@@ -10,7 +10,7 @@ import Mathlib.Order.BourbakiWitt
 
 /-!
 # Mass functions
-This file is about discrete measures as given by a (mass/weight) function `α → ℝ≥0∞`.
+This is about discrete measures as given by a (mass/weight) function `α → ℝ≥0∞`.
 We define `MassFunction α := α → ℝ≥0∞`.
 
 Given `μ : MassFunction α`, `MassFunction.toMeasure` constructs a `Measure α ⊤`,
@@ -22,7 +22,7 @@ For this measure, every set is measurable.
 
 ## Tags
 
-weight function, discrete measure
+mass function, weight function, discrete measure
 
 -/
 
@@ -141,7 +141,6 @@ lemma toMeasure_additive (μ : MassFunction α) (s : δ → Set α) (hs : Pairwi
 @[simp]
 theorem toMeasure_apply_finset {μ : MassFunction α} (s : Finset α) : μ.toMeasure s = ∑ x ∈ s, μ x
     := by
-
   rw [toMeasure_apply₁, tsum_eq_sum (s := s)]
   · exact Finset.sum_indicator_subset μ fun ⦃a⦄ a_1 => a_1
   · exact fun b a => Set.indicator_of_notMem a μ
