@@ -58,7 +58,6 @@ namespace OreLocalization
 
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
-set_option backward.proofsInPublic true in
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
