@@ -81,7 +81,7 @@ variable {A : Type u} [Ring A]
 structure IsUniform (F : IdealFilter A) : Prop where
   /-- If `I ∈ F`, then for every `a : A` the colon ideal `I.colon {a}`
   also belongs to `F`. -/
-  colon_mem {I : Ideal A} (h_I : I ∈ F) (a : A) : I.colon {a} ∈ F
+  colon_mem {I : Ideal A} (hI : I ∈ F) (a : A) : I.colon {a} ∈ F
 
 namespace IsUniform
 
@@ -111,11 +111,11 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
 lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
   constructor <;>
-  · intro h k h_k
-    rcases h k h_k with ⟨I, h_I, h_I_le⟩
+  · intro h k hk
+    rcases h k hk with ⟨I, hI, hI_le⟩
     have hcol : (L ⊓ K).colon {k} = Submodule.colon L {k} :=
-      Submodule.colon_inf_eq_left_of_subset (Set.singleton_subset_iff.mpr h_k)
-    exact ⟨I, h_I, (by simpa [hcol] using h_I_le)⟩
+      Submodule.colon_inf_eq_left_of_subset (Set.singleton_subset_iff.mpr hk)
+    exact ⟨I, hI, (by simpa [hcol] using hI_le)⟩
 
 /-- Unfolding lemma for `IsTorsion`. -/
 @[simp] lemma isTorsion_def (F : IdealFilter A) (M : Type v) [AddCommMonoid M] [Module A M] :
@@ -132,8 +132,8 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
 lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
     IsTorsionQuot F I I := by
   intro x hx
-  obtain ⟨J, h_J⟩ := F.nonempty
-  exact ⟨J, h_J, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
+  obtain ⟨J, hJ⟩ := F.nonempty
+  exact ⟨J, hJ, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot.mono_left {F : IdealFilter A}
@@ -157,14 +157,14 @@ lemma IsTorsionQuot.inf {F : IdealFilter A}
 lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     Order.IsPFilter {L : Ideal A | ∃ K ∈ G, F.IsTorsionQuot L K} := by
   refine Order.IsPFilter.of_def ?nonempty ?directed ?mem_of_le
-  · obtain ⟨J, h_J⟩ := G.nonempty
-    exact ⟨J, J, h_J, isTorsionQuot_self F J⟩
-  · rintro I ⟨K, h_K, h_IK⟩ J ⟨L, h_L, h_JL⟩
+  · obtain ⟨J, hJ⟩ := G.nonempty
+    exact ⟨J, J, hJ, isTorsionQuot_self F J⟩
+  · rintro I ⟨K, hK, hIK⟩ J ⟨L, hL, hJL⟩
     refine ⟨I ⊓ J, ?_, inf_le_left, inf_le_right⟩
-    exact ⟨K ⊓ L, G.inf_mem h_K h_L,
-      (h_IK.mono_right inf_le_left).inf (h_JL.mono_right inf_le_right)⟩
-  · intro I J h_IJ ⟨K, h_K, h_IK⟩
-    exact ⟨K, h_K, isTorsionQuot.mono_left h_IJ h_IK⟩
+    exact ⟨K ⊓ L, G.inf_mem hK hL,
+      (hIK.mono_right inf_le_left).inf (hJL.mono_right inf_le_right)⟩
+  · intro I J hIJ ⟨K, hK, hIK⟩
+    exact ⟨K, hK, isTorsionQuot.mono_left hIJ hIK⟩
 
 /-- `gabrielComposition F G` is the Gabriel composition of ideal filters `F` and `G`. -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
@@ -186,14 +186,14 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
   · rintro ⟨h₁, h₂⟩
     refine ⟨h₁, ?_⟩
     ext I
-    constructor <;> intro h_I
-    · rcases h_I with ⟨J, h_J, h_tors⟩
-      unfold IsTorsionQuot at h_tors
-      refine h₂ I ⟨J, h_J, fun x h_x ↦ ?_⟩
-      rcases h_tors x h_x with ⟨K, h_K, h_incl⟩
-      exact Order.PFilter.mem_of_le h_incl h_K
-    · exact ⟨I, h_I, isTorsionQuot_self F I⟩
-  · refine fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun I ⟨J, h_J, h_colon⟩ ↦ ?_⟩
-    exact h₂.le ⟨J, h_J, fun x h_x ↦ ⟨I.colon {x}, h_colon x h_x, by simp⟩⟩
+    constructor <;> intro hI
+    · rcases hI with ⟨J, hJ, htors⟩
+      unfold IsTorsionQuot at htors
+      refine h₂ I ⟨J, hJ, fun x hx ↦ ?_⟩
+      rcases htors x hx with ⟨K, hK, hincl⟩
+      exact Order.PFilter.mem_of_le hincl hK
+    · exact ⟨I, hI, isTorsionQuot_self F I⟩
+  · refine fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun I ⟨J, hJ, hcolon⟩ ↦ ?_⟩
+    exact h₂.le ⟨J, hJ, fun x hx ↦ ⟨I.colon {x}, hcolon x hx, by simp⟩⟩
 
 end IdealFilter
