@@ -34,7 +34,7 @@ des intervalles semi-ouverts. Alors 3. est satisfait.
 open Filter
 open scoped symmDiff Topology NNReal
 
-variable {α : Type*} [MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
+variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
 [CompleteSpace E]
 
 namespace MeasureTheory
@@ -42,12 +42,12 @@ namespace MeasureTheory
 open scoped ENNReal symmDiff
 open MeasurableSpace
 
-lemma glou {α : Type*}
+lemma exists_measure_symmDiff_lt_of_generateFrom {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
-    (hC : IsSetRing C)
+    (hC : IsSetSemiring C)
     (h'C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ μ (⋃ n, f n)ᶜ = 0) (h : mα = generateFrom C)
-    (s : Set α) (hs : MeasurableSet s) (ε : ℝ≥0∞) :
-    ∃ t ∈ C, μ (s ∆ t) < ε := sorry
+    {s : Set α} {ε : ℝ≥0∞} (hs : MeasurableSet s) :
+    ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := sorry
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
@@ -162,11 +162,10 @@ def VectorMeasure.of_additive_of_le_measure
 /-- Consider a finitely additive vector measure on a dense class of measurable sets which is a ring
 of sets. Assume that it is dominated by a finite positive measure. Then it extends to a countably
 additive vector measure. -/
-lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure [IsFiniteMeasure μ]
-    (C : Set (Set α)) (m : AddContent E C) (hCs : IsSetRing C)
-    (hC : ∀ s ∈ C, MeasurableSet s)
-    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C, μ (s ∆ t) < ε)
-    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) :
+lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
+    {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetRing C)
+    (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
+    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   /- We will extend by continuity the function `m` from the class `C` to all measurable sets,
   thanks to the fact that `C` is dense. To implement this properly, we work in the space
@@ -329,59 +328,47 @@ lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure [IsFiniteMeasure
       exact hBound ⟨s, hs⟩
     · simp [m', hs]
 
-lemma VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure [IsFiniteMeasure μ]
-    (C : Set (Set α)) (m : AddContent E C) (hCs : IsSetSemiring C)
-    (hC : ∀ s ∈ C, MeasurableSet s)
-    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C.finiteUnions, μ (s ∆ t) < ε)
-    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) :
+lemma VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense [IsFiniteMeasure μ]
+    {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
+    (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
+    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C.finiteUnions, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
-  let m₀ : Set α → E :=
+  set m₀ : AddContent E C.finiteUnions := m.extendUnion hCs with hm₀
+  have A (s) (hs : s ∈ C.finiteUnions) : ‖m₀ s‖ₑ ≤ μ s := by
+    rcases hs with ⟨J, JC, Jdisj, rfl⟩
+    rw [hm₀, AddContent.extendUnion_eq hCs _ JC Jdisj rfl]
+    simp only [Set.sUnion_eq_biUnion, SetLike.mem_coe]
+    rw [measure_biUnion_finset (by exact Jdisj) (fun b hb ↦ hC _ (JC hb))]
+    apply (enorm_sum_le _ _).trans
+    gcongr with s hs
+    exact hm _ (JC hs)
+  have B : ∀ s ∈ C.finiteUnions, MeasurableSet s := by
+    rintro s ⟨J, JC, Jdisj, rfl⟩
+    apply MeasurableSet.sUnion J.countable_toSet (fun t ht ↦ hC _ (JC ht))
+  rcases VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense
+    hCs.isSetRing_finiteUnions B A h'C with ⟨m', hm', m'bound⟩
+  refine ⟨m', fun s hs ↦ ?_, m'bound⟩
+  rw [hm' _ (Set.self_subset_finiteUnions _ hs)]
+  exact AddContent.extendUnion_eq_of_mem _ _ hs
 
+/-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
+measure `μ`. Assume that `C` generates the sigma-algebra and covers the space. Then `m` extends
+to a countably additive vector measure, which is dominated by `μ`. -/
+theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
+    [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
+    (h'C : hα = generateFrom C) (h''C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ μ (⋃ n, f n)ᶜ = 0) :
+    ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  apply VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense hCs ?_ hm ?_
+  · intro s hs
+    rw [h'C]
+    exact measurableSet_generateFrom hs
+  · intro t ε ht εpos
+    exact exists_measure_symmDiff_lt_of_generateFrom hCs h''C h'C ht
 
-#exit
-
-
-#check Set.PairwiseDisjoint
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCountableTopology α]
+  {f : α → E}
 
 open Set
 
-/-- Assume that a function is finitely additive on the elements of a set semiring `C`
-(i.e. `m (⋃ i, s i) = ∑ i, m (s i)` whenever the `s i` are disjoint elements in `C`
-with union in `C`). Then its extension to finite unions of elements of `C` is well defined, i.e.,
-it does not depend on the decomposition of a set as such a finite union. -/
-lemma glouk (C : Set (Set α)) (hC : IsSetSemiring C) {ι ι' : Type*} (a : Finset ι) (a' : Finset ι')
-    (f : ι → Set α) (hfC : ∀ i ∈ a, f i ∈ C) (hfdisj : PairwiseDisjoint a f)
-    (f' : ι' → Set α) (hf'C : ∀ i ∈ a', f' i ∈ C) (hf'disj : PairwiseDisjoint a' f')
-    (h : ⋃ i ∈ a, f i = ⋃ i ∈ a', f' i)
-    (m : Set α → E)
-    (hm : ∀ (b : Finset (Set α)), (∀ s ∈ b, s ∈ C) → PairwiseDisjoint (b : Set (Set α)) id →
-      (⋃ s ∈ b, s) ∈ C → m (⋃ s ∈ b, s) = ∑ s ∈ b, m s) :
-    ∑ i ∈ a, m (f i) = ∑ i ∈ a', m (f' i) := by
-  let g : ι × ι' → Set α := fun p ↦ f p.1 ∩ f' p.2
-  have : ∀ p ∈ a ×ˢ a', g p ∈ C := by
-    intro p hp
-    simp only [Finset.mem_product] at hp
-    apply hC.inter_mem _ (hfC _ hp.1) _ (hf'C _ hp.2)
-  calc ∑ i ∈ a, m (f i)
-  _ = ∑ i ∈ a, (∑ j ∈ a', m (f i ∩ f' j)) := by
-    apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-    have : f i = ⋃ j ∈ a', f i ∩ f' j := by
-      apply Subset.antisymm _ (by simp)
-      intro x hx
-      have A : x ∈ ⋃ j ∈ a', f' j := by
-        rw [← h]
-        simp only [mem_iUnion, exists_prop]
-        exact ⟨i, hi, hx⟩
-      simpa [mem_iUnion, mem_inter_iff, exists_and_left, exists_prop, hx] using A
-    nth_rewrite 1 [this]
-
-
-
-
-
-
-
-
-
-
-#exit
+def foo (hf : BoundedVariationOn f univ) : Measure α :=
