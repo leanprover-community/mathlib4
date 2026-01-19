@@ -170,12 +170,11 @@ lemma ιSuccObj_mem :
     (IsPushout.of_hasPushout _ _) (MorphismProperty.colimMap _
       (fun ⟨i⟩ ↦ hJ₂ _ ((i.factorization hJ₁).hm))))
 
-variable [W.HasTwoOutOfThreeProperty]
-
 noncomputable abbrev succ : Over Y := Over.mk (πSuccObj g hJ₁)
 
 noncomputable def toSucc : g ⟶ succ g hJ₁ := Over.homMk (ιSuccObj g hJ₁)
 
+variable [W.HasTwoOutOfThreeProperty] in
 include hJ₂ in
 lemma prop_succ_hom (hg : W g.hom) :
     W (succ g hJ₁).hom :=
@@ -193,6 +192,18 @@ noncomputable def attachCellsOfProp {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁)
   (attachCells Z₀ hJ₁).ofArrowIso
     ((Over.forget Y).mapArrow.mapIso hφ.arrowIso.symm)
 
+include hJ₂ in
+lemma succStruct_prop_le_inverseImage_rlp_llp_inter :
+    (succStruct f hJ₁).prop ≤ (I.rlp.llp ⊓ W).inverseImage
+      (Over.forget Y) := by
+  intro Z₀ Z₁ φ hφ
+  simp only [MorphismProperty.inverseImage_iff, Over.forget_obj, Over.forget_map]
+  have : (MorphismProperty.coproducts.{w} (I.rlp.llp ⊓ W)).pushouts φ.left :=
+    MorphismProperty.pushouts_monotone
+      (MorphismProperty.coproducts_monotone (by simpa using hJ₂)) _
+      ((attachCellsOfProp f hJ₁ φ hφ).pushouts_coproducts)
+  exact MorphismProperty.pushouts_le _ (by simpa)
+
 end lemma_1_8
 
 section
@@ -202,13 +213,12 @@ open lemma_1_8
 variable
   [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
   [MorphismProperty.IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
-  [(I.rlp.llp ⊓ W).IsMultiplicative]
   [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
   (hJ₁ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
     ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
   (hJ₂ : J ≤ I.rlp.llp ⊓ W)
   (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
-  [HasIterationOfShape κ.ord.ToType C]
+  [HasColimitsOfSize.{w, w} C]
   [I.IsCardinalForSmallObjectArgument κ]
 
 /-include hJ₁ hJ₂ in
@@ -221,6 +231,12 @@ lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
   have := MorphismProperty.IsCardinalForSmallObjectArgument.hasCoproducts (I := I) κ
   have := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts (I := I) κ
   let σ := lemma_1_8.succStruct f hJ₁
+  have : MorphismProperty.IsStableUnderTransfiniteComposition.{w}
+      ((I.rlp.llp ⊓ W).inverseImage (Over.forget Y)) :=
+    ⟨fun J _ _ _ _ ↦ ⟨by
+      rintro Z₀ Z₁ f ⟨hf⟩
+      simp only [MorphismProperty.inverseImage_iff, Over.forget_obj, Over.forget_map]
+      exact MorphismProperty.transfiniteCompositionsOfShape_le _ _ _ hf.map.mem⟩⟩
   refine ⟨(σ.iteration κ.ord.ToType).left, (σ.ιIteration κ.ord.ToType).left,
     (σ.iteration κ.ord.ToType).hom,
       { toTransfiniteCompositionOfShape :=
@@ -231,14 +247,13 @@ lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
             κ.ord.ToType).map_mem j hj) }, ?_, by simp [σ]⟩
   have hι (j : κ.ord.ToType) :
       (I.rlp.llp ⊓ W) ((σ.ιIterationFunctor κ.ord.ToType).app j).left := by
-    induction j using SuccOrder.limitRecOn with
-    | isMin _ hj =>
-      obtain rfl := hj.eq_bot
-      simp only [SuccStruct.ιIterationFunctor_app_bot]
-      apply MorphismProperty.of_isIso
-    | succ =>
-      sorry
-    | isSuccLimit => sorry
+    have := (((σ.transfiniteCompositionOfShapeιIteration κ.ord.ToType).iic
+      j).ofLE (succStruct_prop_le_inverseImage_rlp_llp_inter f hJ₁ hJ₂)).mem_map
+      (j := ⟨j, by simp⟩) (homOfLE bot_le)
+    refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2 this
+    exact Arrow.isoMk ((Over.forget _).mapIso
+      (σ.transfiniteCompositionOfShapeιIteration κ.ord.ToType).isoBot.symm)
+      (Iso.refl _) (by cat_disch)
   sorry-/
 
 end
