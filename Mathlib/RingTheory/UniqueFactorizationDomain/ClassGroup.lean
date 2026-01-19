@@ -31,7 +31,7 @@ open FractionalIdeal Ideal
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid
 
-lemma ideal_isPrincipal_of_exists_mul_ne_zero_isPrincipal
+lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     {J : Ideal R} (hJ : ∃ K : Ideal R, J * K ≠ 0 ∧ (J * K).IsPrincipal) :
     J.IsPrincipal := by
   letI : NormalizedGCDMonoid R :=
@@ -104,7 +104,7 @@ theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
   · simpa [hIK] using (inferInstance : (Ideal.span {a}).IsPrincipal)
 
 /-- In a normalized GCD domain, every invertible fractional ideal is principal. -/
-theorem fractionalIdeal_isPrincipal_of_isUnit
+theorem isPrincipal_fractionalIdeal_of_isUnit
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
