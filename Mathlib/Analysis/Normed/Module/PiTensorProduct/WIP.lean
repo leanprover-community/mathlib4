@@ -303,34 +303,14 @@ theorem algebraMap_def (r : R') : algebraMap R' (⨂[R] i, A i) r = r • (⨂�
 
 end RingTheory
 
-section mulL
-
-/-- TBD. -/
-def mulL : 𝕜 → StrongDual 𝕜 𝕜 := fun a ↦
-  LinearMap.mkContinuous (LinearMap.mul 𝕜 𝕜 a) ‖a‖ (by simp)
-
-@[simp]
-theorem mulL_apply {a b : 𝕜} : (mulL a) b = a * b := by rfl
-
-@[simp]
-theorem opNorm_mulL_eq {a : 𝕜} : ‖mulL a‖ = ‖a‖ := by
-  apply le_antisymm (ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg a) (by simp))
-  simpa using (mulL a).ratio_le_opNorm 1
-
-end mulL
-
--- TBD: Simplify
-open NormedSpace in
-theorem projectiveSeminorm_tprod_eq_of_dual_vectors {f : Π i, StrongDual 𝕜 (E i)}
-    (m : Π i, E i) (hf₁ : ∀ i, ‖f i‖ ≤ 1) (hf₂ : ∀ i, ‖f i (m i)‖ = ‖m i‖) :
-   ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ := projectiveSeminorm_tprod_eq_of_bidual_iso m (fun i ↦ by
-      apply le_antisymm (double_dual_bound 𝕜 _ (m i))
-      have h1 := ContinuousLinearMap.le_opNorm ((inclusionInDoubleDual 𝕜 _) (m i)) (f i)
-      grw [dual_def, hf₂ i, mul_le_of_le_one_right (norm_nonneg _) (hf₁ i)] at h1
-      assumption)
---
 theorem projectiveSeminorm_tprod_field (m : ι → 𝕜) : ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ :=
-  projectiveSeminorm_tprod_eq_of_dual_vectors m (f := fun _ ↦ mulL (1 : 𝕜)) (by simp) (by simp)
+  projectiveSeminorm_tprod_eq_of_bidual_iso m
+    fun i ↦ (by
+      apply le_antisymm
+      · apply ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
+        rw [NormedSpace.dual_def, mul_comm]
+        apply ContinuousLinearMap.le_opNorm
+      · simpa using ((NormedSpace.inclusionInDoubleDual 𝕜 𝕜) (m i)).ratio_le_opNorm 1)
 
 variable (ι 𝕜) in
 /-- Isometric version of `PiTensorProduct.constantBaseRingEquiv`. -/
