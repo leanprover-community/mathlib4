@@ -383,7 +383,7 @@ private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍ�
   rw [iteratedDerivWithin_fun_add hz isOpen_upperHalfPlaneSet.uniqueDiffOn]
   · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
       isOpen_upperHalfPlaneSet hz
-  · exact ContDiffWithinAt.smul (by fun_prop) (cot_pi_mul_contDiffWithinAt k
+  · exact ContDiffWithinAt.mul (by fun_prop) (cot_pi_mul_contDiffWithinAt k
       (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))
   · simp only [one_div]
     apply ContDiffWithinAt.neg
