@@ -378,23 +378,25 @@ noncomputable def _root_.BoundedVariationOn.measure
     exact variationOnFromTo.monotoneOn hf.locallyBoundedVariationOn (mem_univ _)
   exact this.stieltjesFunction.measure
 
-instance (hf : BoundedVariationOn f univ) (x₀ : α) : IsFiniteMeasure (hf.measure x₀) := sorry
-
-noncomputable def BoundedVariationOn.addContent :
-    AddContent E {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
-  AddContent.onIoc f.rightLim
+instance (hf : BoundedVariationOn f univ) (x₀ : α) : IsFiniteMeasure (hf.measure x₀) := by
+  suffices hf.measure x₀ univ ≤ eVariationOn f univ from ⟨this.trans_lt hf.lt_top⟩
+  sorry
 
 lemma foo (hf : BoundedVariationOn f univ) (x₀ : α) : ∃ m : VectorMeasure α E,
     (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧ ∀ s,
     ‖m s‖ₑ ≤ hf.measure x₀ s := by
   have : Nonempty α := ⟨x₀⟩
   let m := AddContent.onIoc f.rightLim
-  have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ (hf.measure x₀) s := sorry
+  have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ (hf.measure x₀) s := by
+    rintro s ⟨u, v, huv, rfl⟩
+    rw [AddContent.onIoc_apply huv]
+    simp [BoundedVariationOn.measure, Monotone.stieltjesFunction]
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := sorry
   have C : (∃ f : ℕ → Set α, (∀ (n : ℕ), f n ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v})
     ∧ (hf.measure x₀) (⋃ n, f n)ᶜ = 0) := sorry
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     (m := m) (μ := hf.measure x₀) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
-  rw [hm']; swap
+  rw [hm']
+  · exact AddContent.onIoc_apply huv
   · exact ⟨u, v, huv, rfl⟩

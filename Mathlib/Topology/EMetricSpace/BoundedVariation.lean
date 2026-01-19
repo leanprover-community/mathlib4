@@ -462,6 +462,29 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
 
+open scoped Topology
+
+/-- If a function has bounded variation, then the variation on small open
+intervals tends to `0`. -/
+theorem BoundedVariationOn.tendsto_right [CompleteSpace E] [TopologicalSpace α]
+    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ioo x y)) (𝓝[s ∩ Ioi x] x) (𝓝 0) := by
+  /- The variation is monotone, therefore it converges. If the limit were positive, say `ε`,
+  then one would get variation `ε` between two points `x₁` and `x₀`. But also between two points
+  `x₂` and `x₁`, and so on. Adding up these variations would be arbitrarily large, contradicting
+  the finite variation of the function. -/
+  apply tendsto_order.2 ⟨by simp, fun ε εpos ↦ ?_⟩
+  by_contra! H
+  have A (y) (hy : y ∈ s ∩ Ioi x) : ∃ y' ∈ s ∩ Ioo x y, ε ≤ eVariationOn f (s ∩ Icc y' y) := sorry
+
+
+/-- A bounded variation function has a limit on its right. -/
+theorem BoundedVariationOn.tendsto_right [CompleteSpace E] [TopologicalSpace α]
+    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+    ∃ l, Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l) := by
+  sorry
+
+
 section Monotone
 
 variable {β : Type*} [LinearOrder β]
