@@ -252,11 +252,6 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 def IsInaccessible (c : Cardinal) : Prop :=
   ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
-@[deprecated "use the default constructor for `IsInaccessible`" (since := "2025-07-01")]
-theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
-    IsInaccessible c :=
-  ⟨h₁, h₂, h₃⟩
-
 theorem IsInaccessible.aleph0_lt {c : Cardinal} (h : IsInaccessible c) : ℵ₀ < c :=
   h.1
 
@@ -285,9 +280,6 @@ theorem isInaccessible_def {c : Cardinal} :
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
-
-@[deprecated IsInaccessible.univ (since := "2025-07-01")]
-alias univ_inaccessible := IsInaccessible.univ
 
 -- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
 -- `IsInaccessible (ℶ_ o)`

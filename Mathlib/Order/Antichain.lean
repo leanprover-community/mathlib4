@@ -324,7 +324,7 @@ theorem eq (hs : IsStrongAntichain r s) {a b c : α} (ha : a ∈ s) (hb : b ∈ 
   (Set.Pairwise.eq hs ha hb) fun h =>
     False.elim <| (h c).elim (not_not_intro hac) (not_not_intro hbc)
 
-protected theorem isAntichain [IsRefl α r] (h : IsStrongAntichain r s) : IsAntichain r s :=
+protected theorem isAntichain [Std.Refl r] (h : IsStrongAntichain r s) : IsAntichain r s :=
   h.imp fun _ b hab => (hab b).resolve_right (not_not_intro <| refl _)
 
 protected theorem subsingleton [IsDirected α r] (h : IsStrongAntichain r s) : s.Subsingleton :=

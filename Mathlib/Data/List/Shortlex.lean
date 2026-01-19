@@ -6,8 +6,8 @@ Authors: Hannah Fechtner
 module
 
 public import Mathlib.Data.List.Lex
-public import Mathlib.Tactic.Linarith
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.
