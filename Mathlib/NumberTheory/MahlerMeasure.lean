@@ -194,7 +194,7 @@ to `ℚ`.
       (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top }
 -- `y` is `z` as an element of `K`
   let y : K := ⟨z, mem_adjoin_simple_self ℚ z⟩
-  suffices ∃ (n : ℕ) (_ : 0 < n), y ^ n = 1 by
+  suffices ∃ n > 0, y ^ n = 1 by
     obtain ⟨n, hn₀, hn₁⟩ := this
     exact ⟨n, hn₀, congrArg (algebraMap K ℂ) hn₁⟩
   refine NumberField.Embeddings.pow_eq_one_of_norm_le_one (x := y) K ℂ (Subtype.coe_ne_coe.mp hz₀)

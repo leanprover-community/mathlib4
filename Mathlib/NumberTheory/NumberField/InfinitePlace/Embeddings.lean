@@ -123,7 +123,7 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
 /-- **Kronecker's Theorem:** A non-zero algebraic integer whose conjugates are all inside the closed
 unit disk is a root of unity. -/
 theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral ℤ x)
-    (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
+    (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ n > 0, x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
     Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
       (fun a _ => mem_setOf.mpr <|
@@ -138,7 +138,7 @@ theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral �
 -- TODO exists_prop
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
 theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ : K →+* A, ‖φ x‖ = 1) :
-    ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
+    ∃ n > 0, x ^ n = 1 := by
   apply pow_eq_one_of_norm_le_one K A _ hxi fun φ ↦ le_of_eq <| hx φ
   intro rfl
   simp_rw [map_zero, norm_zero, zero_ne_one] at hx
