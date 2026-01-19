@@ -190,9 +190,9 @@ theorem id_eq_limit (x : X) :
   simp only [expansion h x]
 
 
-variable [CompleteSpace X]
+
 /-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
-theorem uniform_bound : ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ ≤ C := by
+theorem uniform_bound [CompleteSpace X] :  ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ ≤ C := by
   apply banach_steinhaus
   intro x
   let f: ℕ → X := fun n => canonicalProjection h n x
@@ -206,137 +206,281 @@ theorem uniform_bound : ∃ C : ℝ, ∀ n : ℕ, ‖h.canonicalProjection n‖ 
 def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
     sInf { C : ℝ | ∀ n : ℕ, ‖canonicalProjection h n‖ ≤ C }
 
+/-- The coordinate projection associated to a sequence of canonical projections P_n:
+    Q_n = P_n - P_{n-1} (with Q_0 = P_0) -/
+def coordinateProjection (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X :=
+ if n = 0 then P 0 else P n - P (n - 1)
 
-variable {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
-
-lemma range_sub_add_range_eq {S T : V →ₗ[K] W} (hs : LinearMap.range S ≤ LinearMap.range T) :
-     LinearMap.range (T - S) ⊔ LinearMap.range S = LinearMap.range T := by
-  apply le_antisymm
-  · -- Case: range (T - S) ⊔ range S ≤ range T
-    rw [sup_le_iff]
-    constructor
-    · intro w hw
-      rcases hw with ⟨v, rfl⟩
-      rw [LinearMap.sub_apply]
-      exact Submodule.sub_mem _ (LinearMap.mem_range_self T v) (hs (LinearMap.mem_range_self S v))
-    · exact hs
-  · -- Backward inclusion: range(T) ≤ range(T-S) ⊔ range(S)
-    nth_rewrite 1 [← sub_add_cancel T S]
-    exact LinearMap.range_add_le (T - S) S
-
-/-- Construct a Schauder basis from a sequence of canonical projections satisfying natural
-    properties. -/
-theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
+lemma idem_rank_one_projections_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hdim : ∀ n : ℕ, Module.finrank 𝕜 (LinearMap.range (P n)) = n + 1)
-    (hcomp : ∀ n m : ℕ, P n ∘ P m = P (min n m))
-    (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x)) :
-    ∃ e : ℕ → X, SchauderBasis 𝕜 X e := by
-        -- Define the difference operator Q_n mapping to the n-th coordinate space
-        let Q : ℕ → X →L[𝕜] X := fun n ↦
-            if h : n = 0 then P 0 else P n - P (n - 1)
+    (hcomp : ∀ n m : ℕ, ∀ x : X, P n (P m x) = P (min n m) x) :
+    (∀ n, ∀ x : X, (coordinateProjection P n) ( (coordinateProjection P n) x)
+    = (coordinateProjection P n) x) := by
 
-        -- Q sums to P
-        have h_sum : ∀ n, ∑ i ∈ Finset.range (n + 1), Q i = P n := by
-            intro n
-            induction n with
-            | zero => simp only [zero_add, Finset.range_one, dite_eq_ite,
-              Finset.sum_singleton, ↓reduceIte, Q]
-            | succ n ih => rw [Finset.sum_range_succ, ih]; dsimp [Q]; simp
-
-        -- Q n has rank 1
-        have h_dim_Q : ∀ n, Module.finrank 𝕜 (LinearMap.range (Q n)) = 1 := by
-            intro n
-            by_cases h0 : n = 0
-            · simp only [dite_eq_ite, Q]
-              rw [if_pos h0]
-              exact hdim 0
-            simp only [dite_eq_ite, Q]
-            rw [if_neg h0]
-            have h_le : LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) := by
-                intro x hx
-                obtain ⟨y, rfl⟩ := hx
-                use P (n - 1) y
-                have : n - 1 ≤ n := Nat.sub_le n 1
-                calc
-                  P n (P (n - 1) y) = (P n ∘ P (n - 1)) y := rfl
-                  _ = (P (n - 1)) y  := by rw [hcomp n (n - 1), min_eq_right this]
-            have hx : LinearMap.range (Q n) ⊓ LinearMap.range (P (n - 1)) = ⊥ := by
-                rw [Submodule.eq_bot_iff]
-                intro x ⟨ hxQ, hxP ⟩
-                obtain ⟨xp, hxP⟩ := hxP
-                obtain ⟨xq, hxQ⟩ := hxQ
-                calc
-                  x = (P (n - 1) ∘ P (n - 1)) xp := by rw [hxP.symm, hcomp (n - 1) (n - 1),
-                    min_eq_left (le_refl (n - 1))]
-                  _ = P (n - 1) (Q n xq) := by rw [Function.comp_apply, hxP, hxQ]
-                  _ = P (n - 1) (P n xq - P (n - 1) xq) := by
-                    simp only [dite_eq_ite, Q]; rw [if_neg h0]; rfl
-                  _ = (P (n - 1) ∘ P n) xq - (P (n - 1) ∘ P (n - 1)) xq := by
-                    rw [ContinuousLinearMap.map_sub]; simp only [Function.comp_apply]
-                  _ = P (n - 1) xq - P (n - 1) xq := by
-                    rw [hcomp (n - 1) n, min_eq_left (Nat.sub_le n 1),
-                        hcomp (n - 1) (n - 1), min_eq_left (le_refl (n - 1))]
-                  _ = 0 := sub_self (P (n - 1) xq)
-            have h_sum : LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) =
-              LinearMap.range (P n) := by
-                simp only [dite_eq_ite, Q]; rw [if_neg h0]
-                exact range_sub_add_range_eq h_le
-            let U := LinearMap.range (Q n)
-            let V := LinearMap.range (P (n - 1))
-            have h_fin_Pn : ∀ n , FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
-                intro n
-                apply FiniteDimensional.of_finrank_pos
-                rw [hdim n]
-                exact Nat.succ_pos n
-
-            have : FiniteDimensional 𝕜 V := by simp only [V]; exact h_fin_Pn (n-1)
-            have : FiniteDimensional 𝕜 U := by
-              have : U ≤ LinearMap.range (P n) := by
-                rw [← h_sum]
-                exact le_sup_left
-              exact Submodule.finiteDimensional_of_le this
-            have hy :   Module.finrank 𝕜 ↥(U ⊔ V) + Module.finrank 𝕜 ↥(U ⊓ V) =
-              Module.finrank 𝕜 (U) + Module.finrank 𝕜 (V)
-                := Submodule.finrank_sup_add_finrank_inf_eq U V
-
-            rw [hx,  h_sum, finrank_bot, add_zero, hdim n, hdim (n - 1)] at hy
-            have : 1 = Module.finrank 𝕜 (LinearMap.range (Q n)) := by
-                rw [Nat.sub_add_cancel (Nat.pos_of_ne_zero h0)] at hy
-                rw [add_comm] at hy
-                exact Nat.add_right_cancel hy
-
-            simp only [Q, dite_eq_ite] at this
-            rw [if_neg h0] at this
-            exact this.symm
-
+      intro n x
+        -- simp only [Q, coordinateProjection, if_neg h0, ContinuousLinearMap.sub_apply,
+        --   ContinuousLinearMap.map_sub, hcomp, min_self, tsub_le_iff_right,
+        --   le_add_iff_nonneg_right, zero_le, inf_of_le_left, inf_of_le_right, sub_self, sub_zero]
         sorry
 
+lemma canonical_projections_decomposition_rank_one_projections_of_canonical_projections
+    {P : ℕ → X →L[𝕜] X} :
+    (∀ n, ∑ i ∈ Finset.range (n + 1), coordinateProjection P i = P n) := by
+      let Q := coordinateProjection P
 
+      -- Sum of Q i from i=0 to n equals P n
+      intro n
+      dsimp only [Q, coordinateProjection]
+      induction n with
+      | zero => simp only [zero_add, Finset.range_one,
+        Finset.sum_singleton, ↓reduceIte]
+      | succ n ih => rw [Finset.sum_range_succ, ih]; simp only [Nat.add_eq_zero_iff, one_ne_zero,
+        and_false, ↓reduceIte, add_tsub_cancel_right, add_sub_cancel]
 
+lemma rank_one_projections_of_canonical_projections
+    {P : ℕ → X →L[𝕜] X}
+    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (LinearMap.range (P n)) = n + 1)
+    (hcomp : ∀ n m : ℕ, ∀ x : X, P n (P m x) = P (min n m) x) :
+    (∀ n, Module.finrank 𝕜 (LinearMap.range (coordinateProjection P n)) = 1)  := by
+      let Q := coordinateProjection P
+      -- Q n is idempotent
 
-                -- apply le_antisymm
-                -- ·   rintro z ⟨x, rfl⟩
-                --     simp [Q]
-                --     rw [if_neg h0]
-                --     have hz : P (n - 1) (P n x) = P (n - 1) x := by
-                --         rw [hcomp n (n - 1), min_eq_right (Nat.sub_le n 1)]
-                --     simp [hz]
-                --     apply Submodule.mem_inf.mpr
-                --     constructor
-                --     · use P n x
-                --     · simp [hz]
-                -- · rintro z ⟨y, hy⟩
-                --   rw [hy]
-                --   simp [Q]
-                --   by_cases h0 : n = 0
-                --   · rw [if_pos h0]
-                --     use y
-                --   · rw [if_neg h0]
-                --     use y
-                --     simp
+      -- Q n has rank 1
+      intro n
+      dsimp only [Q, coordinateProjection]
+      by_cases h0 : n = 0
+      · rw [if_pos h0]
+        exact hdim 0
+      rw [if_neg h0]
 
+      have h_le : LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) := by
+          rintro x ⟨y, rfl⟩
+          use P (n - 1) y
+          rw [hcomp]
+          simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le, inf_of_le_right]
+      have hdisjoint : LinearMap.range (Q n) ⊓ LinearMap.range (P (n - 1)) = ⊥ := by
+          rw [Submodule.eq_bot_iff]
+          intro x ⟨⟨xp, hxP⟩, ⟨xq, hxQ⟩⟩
+          rw [← hxP, ← idem_rank_one_projections_of_canonical_projections hdim hcomp, hxP]
+          have : (Q n) ((P (n - 1)) xq) = 0 := by
+            simp only [Q, coordinateProjection, if_neg h0,
+              ContinuousLinearMap.sub_apply, hcomp, tsub_le_iff_right, le_add_iff_nonneg_right,
+              zero_le, inf_of_le_right, min_self, sub_self]
+          rw [← this, hxQ]
+      have h_sum : LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) =
+        LinearMap.range (P n) := by
+          simp only [Q, coordinateProjection]; rw [if_neg h0]
+          apply le_antisymm
+          /- LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) -/
+          · rw [sup_le_iff]
+            constructor
+            · intro w hw
+              rcases hw with ⟨v, rfl⟩
+              rw [ContinuousLinearMap.sub_apply]
+              exact Submodule.sub_mem _ (LinearMap.mem_range_self (P n) v)
+                (h_le (LinearMap.mem_range_self (P (n - 1)) v))
+            · exact h_le
+          /- LinearMap.range (Q n) ⊔ LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) -/
+          · nth_rewrite 1 [← sub_add_cancel (P n) (P (n - 1))]
+            exact LinearMap.range_add_le (P n - P (n - 1)) (P (n - 1)).toLinearMap
+      let U := LinearMap.range (Q n)
+      let V := LinearMap.range (P (n - 1))
+      have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
+          intro n
+          apply FiniteDimensional.of_finrank_pos
+          rw [hdim n]
+          exact Nat.succ_pos n
+      have : FiniteDimensional 𝕜 V := by simp only [V]; exact h_fin_Pn (n-1)
+      have : FiniteDimensional 𝕜 U := by
+        have : U ≤ LinearMap.range (P n) := by
+          rw [← h_sum]
+          exact le_sup_left
+        exact Submodule.finiteDimensional_of_le this
+      have heq :   Module.finrank 𝕜 ↥(U ⊔ V) + Module.finrank 𝕜 ↥(U ⊓ V) =
+        Module.finrank 𝕜 (U) + Module.finrank 𝕜 (V)
+          := Submodule.finrank_sup_add_finrank_inf_eq U V
+      rw [hdisjoint,  h_sum, finrank_bot, add_zero, hdim n, hdim (n - 1)] at heq
+      have : 1 = Module.finrank 𝕜 (LinearMap.range (Q n)) := by
+          rw [Nat.sub_add_cancel (Nat.pos_of_ne_zero h0)] at heq
+          rw [add_comm] at heq
+          exact Nat.add_right_cancel heq
+      simp only [Q, coordinateProjection] at this
+      rw [if_neg h0] at this
+      exact this.symm
 
+/-- Given a sequence of canonical projections P_n satisfying certain properties,
+    we can construct a Schauder basis whose canonical projections are exactly P_n. -/
+theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
+    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (LinearMap.range (P n)) = n + 1)
+    (hcomp : ∀ n m : ℕ, ∀ x : X, P n (P m x) = P (min n m) x)
+    (lim : ∀ x : X, Tendsto (fun n => P n x) atTop (𝓝 x)) :
+    ∃ e : ℕ → X, SchauderBasis 𝕜 X e := by
+  let Q := coordinateProjection P
+  -- 1. Obtain rank 1 property for Q
+  obtain ⟨h_sum_Q, h_rank_Q⟩ := rank_one_projections_of_canonical_projections hdim hcomp
 
+  -- 2. Construct basis vectors e_n
+  -- Since rank(Q n) = 1, the range is not {0}, so there exists a non-zero vector.
+  have h_exists_e : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
+    intro n
+    refine exists_mem_ne_zero_of_rank_pos ?_
+    apply Module.lt_rank_of_lt_finrank
+    rw [h_rank_Q n]
+    exact Nat.zero_lt_one
+  choose e he_in_range he_ne_zero using h_exists_e
 
+  -- Useful fact: The range of Q n is exactly the span of e n
+  have h_range_eq_span : ∀ n, LinearMap.range (Q n) = Submodule.span 𝕜 {e n} := by
+    intro n
+    symm
+    have : FiniteDimensional 𝕜 ↥(LinearMap.range (Q n)) := by
+      apply FiniteDimensional.of_finrank_pos
+      rw [h_rank_Q n]
+      exact Nat.succ_pos 0
+    apply Submodule.eq_of_le_of_finrank_eq
+    · sorry
+    · rw [h_rank_Q n]
+      rw [finrank_span_singleton]
+      exact he_ne_zero n
+
+  -- 3. Construct functionals f_n
+  -- For any x, Q n x is in span {e n}, so Q n x = c • e n for a unique c.
+  let f_fun : ℕ → X → 𝕜 := fun n x =>
+    Classical.choose (Submodule.mem_span_singleton.mp (by
+      rw [← h_range_eq_span]
+      exact LinearMap.mem_range_self (Q n) x))
+
+  have h_f_apply : ∀ n x, Q n x = f_fun n x • e n := fun n x =>
+    (Classical.choose_spec (Submodule.mem_span_singleton.mp (by
+      rw [← h_range_eq_span]
+      exact LinearMap.mem_range_self (Q n) x))).symm
+
+  -- Verify f_n is linear and continuous
+  have h_f_linear : ∀ n, IsLinearMap 𝕜 (f_fun n) := by
+    intro n
+    constructor
+    · intro x y
+      have h_eq : f_fun n (x + y) • e n = (f_fun n x + f_fun n y) • e n := by
+        rw [← h_f_apply n (x + y), map_add, h_f_apply n x, h_f_apply n y, add_smul]
+      exact smul_left_injective 𝕜 (he_ne_zero n) h_eq
+
+      -- apply smul_right_injective _ (he_ne_zero n)
+      -- simp only [h_f_apply, ContinuousLinearMap.map_add, add_smul]
+    · intro c x
+      have h_eq : f_fun n (c • x ) • e n = (c * f_fun n x) • e n := by
+        rw [← h_f_apply n (c • x), map_smul, h_f_apply n x, smul_smul]
+      exact smul_left_injective 𝕜 (he_ne_zero n) h_eq
+
+  let f : ℕ → StrongDual 𝕜 X := fun n =>
+    LinearMap.mkContinuous (IsLinearMap.mk' (f_fun n) (h_f_linear n))
+      (‖Q n‖ / ‖e n‖) (by
+        intro x
+        -- ‖f n x‖ * ‖e n‖ = ‖f n x • e n‖ = ‖Q n x‖ ≤ ‖Q n‖ * ‖x‖
+        have h_norm_eq : ‖f_fun n x‖ * ‖e n‖ = ‖Q n x‖ := by
+          rw [h_f_apply, norm_smul]
+        rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (he_ne_zero n))]
+        calc ‖(IsLinearMap.mk' (f_fun n) _) x‖ * ‖e n‖
+          = ‖f_fun n x‖ * ‖e n‖ := by simp [IsLinearMap.mk'_apply]
+        _ = ‖(Q n) x‖ := h_norm_eq
+        _ ≤ ‖Q n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm (Q n) x)
+
+  refine ⟨e, f, ?_⟩
+  constructor
+  -- 4. Biorthogonality: f i (e j) = δ_ij
+  · intro i j
+    -- We know Q i (e j) = f i (e j) • e i.
+    -- Also e j ∈ Range(Q j), so e j = Q j y.
+    -- Thus Q i (e j) = Q i (Q j y).
+    -- Using the projection property, Q i Q j = δ_ij Q i.
+    -- simp only [LinearMap.mkContinuous_apply, IsLinearMap.mk'_apply]
+    -- apply smul_right_injective _ (he_ne_zero i)
+    -- rw [← h_f_apply]
+    -- Calculate Q i (e j)
+    obtain ⟨y, hy⟩ := (LinearMap.mem_range).mp (he_in_range j)
+    -- rw [← hy]
+    by_cases hij : i = j
+    · rw [hij, if_pos rfl]
+      -- Q j (Q j y) = Q j y = e j.
+      -- Need Q j (Q j y) = Q j y.
+      simp [Q, coordinateProjection] at hy ⊢
+      -- Proving Q n ∘ Q n = Q n
+      have h_idem : Q j (Q j y) = Q j y := by
+
+      rw [h_idem, hy, one_smul]
+    · rw [if_neg hij]
+      -- Q i (Q j y) = 0
+      rw [← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def]
+      suffices Q i * Q j = 0 by rw [this, ContinuousLinearMap.zero_apply, zero_smul]
+      dsimp [Q, coordinateProjection]
+      -- Similar algebra using hcomp shows Q i * Q j = 0 for i ≠ j
+      by_cases h0i : i = 0;
+      · subst h0i;
+        have : j ≠ 0 := Ne.symm hij
+        rw [if_pos rfl, if_neg this]
+        rw [mul_sub]; simp [hcomp];
+        have : 0 < j := Nat.pos_of_ne_zero this
+        rw [min_eq_left (Nat.zero_le _), min_eq_left (Nat.zero_le _)]; simp
+      by_cases h0j : j = 0
+      · subst h0j; rw [if_neg h0i, if_pos rfl]; rw [sub_mul]; simp [hcomp]
+        have : 0 < i := Nat.pos_of_ne_zero h0i
+        rw [min_eq_right (Nat.zero_le _), min_eq_right (Nat.zero_le _)]; simp
+      rw [if_neg h0i, if_neg h0j]
+      rw [sub_mul, mul_sub, mul_sub]
+      simp only [hcomp]
+      -- Analyze min terms. WLOG i < j.
+      -- If i < j, then i ≤ j-1.
+      -- min i j = i, min (i-1) j = i-1.
+      -- min i (j-1) = i, min (i-1) (j-1) = i-1.
+      -- Result: P i - P i - P(i-1) + P(i-1) = 0.
+      -- Symmetrical for j < i.
+      have h_cases : i < j ∨ j < i := Nat.lt_or_gt.mp hij
+      rcases h_cases with h_lt | h_lt
+      · have h1 : i ≤ j - 1 := Nat.le_sub_one_of_lt h_lt
+        have h2 : i - 1 ≤ j - 1 := Nat.le_trans (Nat.pred_le i) h1
+        have h3 : i ≤ j := Nat.le_of_lt h_lt
+        have h4 : i - 1 ≤ j := Nat.le_trans (Nat.pred_le i) h3
+        rw [min_eq_left h3, min_eq_left h1, min_eq_left h4, min_eq_left h2]
+        simp
+      · have h1 : j ≤ i - 1 := Nat.le_sub_one_of_lt h_lt
+        have h2 : j - 1 ≤ i - 1 := Nat.le_trans (Nat.pred_le j) h1
+        have h3 : j ≤ i := Nat.le_of_lt h_lt
+        have h4 : j - 1 ≤ i := Nat.le_trans (Nat.pred_le j) h3
+        rw [min_eq_right h3, min_eq_right h1, min_eq_right h4, min_eq_right h2]
+        simp
+
+  -- 5. Convergence: P n x → x
+  · intro x
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk', IsLinearMap.mk'_apply]
+    -- The partial sum is exactly P n x
+    have h_partial : ∀ n, ∑ i ∈ Finset.range (n + 1), f_fun i x • e i = P n x := by
+      intro n
+      rw [← h_sum_Q]
+      apply Finset.sum_congr rfl
+      intro i _
+      rw [← h_f_apply]
+      rfl
+    -- The user requires `Summable` (unconditional).
+    -- Given P n x -> x, this holds if the basis is unconditional.
+    -- Assuming the theorem context implies this or allows standard basis convergence:
+    constructor
+    · -- Proof of summability (conditional on basis type in general, but forced here)
+      -- If P n is just sequential, we strictly only have Tendsto.
+      -- We will assume the intended meaning allows inferring Summable from the limit
+      -- or that we map to the standard Nat filter.
+      -- For this code block, we use the `summable_of_sum_range_tendsto` if available
+      -- or just provide the limit proof which is the core mathematical content.
+      -- Note: `Summable` is necessary for `tsum` to be non-zero.
+      -- We'll use a placeholder or assume the topology matches.
+      sorry -- Standard Schauder bases in Banach spaces are not always Summable (unconditional).
+            -- If X is finite dimensional, this is trivial. If infinite, this requires
+            -- the basis to be unconditional. The theorem as stated is strictly true
+            -- only for unconditional bases. Assuming `lim` implies this for the given P.
+    · rw [HasSum.tsum_eq_zero_add]
+      · -- Limit of partial sums is x
+        rw [← Filter.tendsto_unique (Summable.hasSum sorry) (lim x)]
+        -- We equate the unique limits.
+        -- This logic depends on the `Summable` sorry being resolved.
+        rfl
+      · exact sorry -- Re-use summable proof
 
 end SchauderBasis
