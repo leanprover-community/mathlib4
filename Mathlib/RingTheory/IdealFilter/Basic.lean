@@ -131,8 +131,8 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
 
 /-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
 lemma isTorsionQuot.mono_left {F : IdealFilter A}
-    {I J K : Ideal A} (I_leq_J : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
-  fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono I_leq_J .rfl))
+    {I J K : Ideal A} (hIJ : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
+  fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono hIJ .rfl))
 
 lemma IsTorsionQuot.mono_right {F : IdealFilter A}
     {I J K : Ideal A} (hJK : J ≤ K) (hI : IsTorsionQuot F I K) : IsTorsionQuot F I J :=
