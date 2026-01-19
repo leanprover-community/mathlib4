@@ -308,8 +308,173 @@ lemma integralNCMLM_eq {n : ℕ} (f : E → E) {tmin tmax : ℝ} (t₀ : Icc tmi
 
 
 
+/-
+Draft from main file
+===================================
+
+-/
 
 
+/-
+`I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`
+to prepare for the induction proof
+-/
+
+omit [CompleteSpace E] in
+lemma _root_.ContDiffOn.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv
+    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
+    ContinuousOn
+      (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u := by
+  simp_rw [← Function.comp_apply (g := fderiv ℝ g)]
+  rw [LinearIsometryEquiv.comp_continuousOn_iff]
+  exact hg.continuousOn_fderiv_of_isOpen hu le_rfl
+
+section test
+
+variable {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
+
+#check fderiv ℝ (integralCMLM g u t₀) α
+-- C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E)
+#check (continuousMultilinearCurryLeftEquiv ℝ
+  (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm (fderiv ℝ (integralCMLM g u t₀) α)
+-- C(Icc tmin tmax, E) [×n + 1]→L[ℝ] C(Icc tmin tmax, E)
+
+
+#check fderiv ℝ g
+-- E → E →L[ℝ] E [×n]→L[ℝ] E
+#check fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)
+-- E → E [×n + 1]→L[ℝ] E
+#check integralCMLM
+  (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀ α
+-- C(Icc tmin tmax, E) [×n + 1]→L[ℝ] C(Icc tmin tmax, E)
+
+end test
+
+
+
+
+lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : MapsTo α univ u) :
+    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
+        (fderiv ℝ (integralCMLM g u t₀) α) =
+      integralCMLM
+        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
+        α := by
+  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
+      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply, integralCMLM,
+      dif_pos (hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu)]
+  apply HasFDerivAt.fderiv
+
+
+
+  -- need to prove an explicit formula for the `fderiv` of `integralCMLM`
+  -- need to go back to the little-o definition of `HasFDerivAt`
+  sorry
+
+
+
+
+
+
+
+
+section
+
+universe u v v' wE wE₁ wE' wEi wG wG'
+
+variable
+  {𝕜 : Type u} {ι : Type v} {n : ℕ} {E : ι → Type wE}
+  {G : Type wG} {G' : Type wG'} [Fintype ι] [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+
+-- TODO: also make a version for `MultilinearMap`
+-- think whether to use `h` in the hypothesis and `n` in the target type or just `k + l`
+def _root_.ContinuousMultilinearMap.curryFinSum {k l n : ℕ} (h : k + l = n) :
+    (G [×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G [×k]→L[𝕜] G [×l]→L[𝕜] G' :=
+  h ▸ (domDomCongrₗᵢ 𝕜 G G' finSumFinEquiv.symm).trans (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
+
+end
+
+/-
+First figure out how to express `integralCMLM` of the `n`-th derivative of a `C^n` function `f`.
+-/
+
+omit [CompleteSpace E] in
+lemma _root_.ContDiffOn.continuousOn_iteratedFDeriv_of_isOpen
+    {F : Type*} [TopologicalSpace F] [NormedAddCommGroup F] [NormedSpace ℝ F] {n : ℕ}
+    {f : E → F} {u : Set E} (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) :
+    ContinuousOn (iteratedFDeriv ℝ n f) u := by
+  have hu' := hu.uniqueDiffOn (𝕜 := ℝ)
+  apply (hf.continuousOn_iteratedFDerivWithin le_rfl hu').congr
+  intro x hx
+  rw [iteratedFDerivWithin_eq_iteratedFDeriv hu' (hf.contDiffAt (hu.mem_nhds hx)) hx]
+
+section test
+
+variable {n k l : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ l f u) (hu : IsOpen u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) (h : k + l = n)
+
+#check iteratedFDeriv ℝ n f
+-- E → E [×l]→L[ℝ] E
+#check integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀ α
+-- C(Icc tmin tmax, E) [×l]→L[ℝ] C(Icc tmin tmax, E)
+#check iteratedFDeriv ℝ k (integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀)
+-- C(Icc tmin tmax, E) → C(Icc tmin tmax, E) [×k]→L[ℝ] C(Icc tmin tmax, E) [×l]→L[ℝ] C(Icc tmin tmax, E)
+#check (curryFinSum (𝕜 := ℝ) (G := C(Icc tmin tmax, E)) (G' := C(Icc tmin tmax, E)) h).symm
+  (iteratedFDeriv ℝ k (integralCMLM (hf.continuousOn_iteratedFDeriv_of_isOpen hu) t₀) α)
+-- C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E)
+-- investigate why we need to explicitly provide `𝕜` and `G`, otherwise we have to add `.toFun`
+-- also have to provide `G'`, otherwise it's extremely slow
+
+end test
+
+-- long term proofs in the definition, not ideal. change definition of `integralCMLM`?
+-- consider generalising `f` to `g`
+def iteratedFDerivIntegralCMLM {k l m n : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) (hm : m ≤ n)
+    (h : k + l = m) :
+    C(Icc tmin tmax, E) [×m]→L[ℝ] C(Icc tmin tmax, E) :=
+  have hle := Nat.cast_le.mpr <| (h ▸ Nat.le_add_left l k).trans hm
+  (curryFinSum (𝕜 := ℝ) (G := C(Icc tmin tmax, E)) (G' := C(Icc tmin tmax, E)) h).symm
+    (iteratedFDeriv ℝ k
+      (integralCMLM ((hf.of_le hle).continuousOn_iteratedFDeriv_of_isOpen hu) t₀) α)
+
+/--
+If `I^(k) f^(l)` represents the `k`-th derivative of the integral of the `l`-th deriative of `f`
+(properly composed with curves `α` and `dα`), then this lemma states that
+`I^(k) g^(l+1) = I^(k+1) g^(l)`.
+-/
+-- generalise `f` to `g`?
+lemma iteratedFDerivIntegralCMLM_succ {k l n : ℕ} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
+    (hle : k + l + 1 ≤ n) :
+    have h₁ : k + (l + 1) = k + l + 1 := by group
+    have h₂ : k + 1 + l = k + l + 1 := by group
+    iteratedFDerivIntegralCMLM hf hu t₀ α hle h₁ =
+      iteratedFDerivIntegralCMLM hf hu t₀ α hle h₂ := by
+  simp only [iteratedFDerivIntegralCMLM]
+  ext dα t
+
+
+  sorry
+
+/--
+`I^(n) f = I f^(n)`, stated in less ideal types
+-/
+lemma iteratedFDerivIntegralCMLM_eq_integralCMLM {n : ℕ} {f : E → E} {u : Set E}
+    (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) :
+    iteratedFDerivIntegralCMLM hf hu t₀ α le_rfl (add_zero _) =
+      iteratedFDerivIntegralCMLM hf hu t₀ α le_rfl (zero_add _) := sorry
+
+-- need to define a special case for `integralCMLM f`, where `n = 0`
+-- prove lemmas specialising `iteratedFDerivIntegralCMLM` to `k = 0` or `l = 0`
+lemma iteratedFDeriv_integralCMLM_eq_integralCMLM {n : ℕ} {f : E → E} {u : Set E}
+    (hf : ContDiffOn ℝ n f u) (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) :
+    iteratedFDeriv ℝ n (integralCMLM )
 
 
 
