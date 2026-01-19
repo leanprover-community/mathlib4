@@ -144,9 +144,15 @@ def IsPath.pathGraphIsoToSubgraph (hw : w.IsPath) :
       pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
 
 variable {w} in
-/-- A walk induces a homomorphism from a path graph to the graph -/
-def pathGraphCopy (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
+/-- A path induces a homomorphism from a path graph to the graph -/
+def IsPath.pathGraphCopy (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
   w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
+
+variable {w} in
+omit [DecidableEq V] in
+theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph w.support.length ⊑ G := by
+  classical
+  exact ⟨hw.pathGraphCopy⟩
 
 end Walk
 
