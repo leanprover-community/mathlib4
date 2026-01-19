@@ -846,10 +846,11 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingRight [Nontrivial R]
   rw [isOrtho_flip]
   exact h.not_isOrtho_basis_self_of_separatingLeft (flip_separatingLeft.mpr hB) i
 
+variable [IsDomain R] [IsTorsionFree R M₁]
+
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is left-separating if
 the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
     (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingLeft := by
   intro m hB
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
@@ -870,8 +871,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
 if the basis has no elements which are self-orthogonal. -/
-lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
     (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.SeparatingRight := by
   rw [isOrthoᵢ_flip] at hO
   rw [← flip_separatingLeft]
@@ -881,8 +881,7 @@ lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self [NoZeroSMulDivisors 
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
-theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self [NoZeroSMulDivisors R M₁]
-    {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
     (hO : B.IsOrthoᵢ v) (h : ∀ i, ¬B.IsOrtho (v i) (v i)) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
     IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
