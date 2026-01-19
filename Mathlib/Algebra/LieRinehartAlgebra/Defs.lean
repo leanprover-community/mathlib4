@@ -94,7 +94,7 @@ structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [Lie
   anchor_comp: ∀ (a : A) (l : L), σ (⁅l, a⁆) = ⁅(toLinearMap l), (σ a)⁆
 
 @[inherit_doc]
-notation:25 L " →ₗ⁅" σ:25 "⁆ " L':0 => LieRinehartAlgebra.Hom σ L L'
+scoped notation:25 L " →ₗ⁅" σ:25 "⁆ " L':0 => LieRinehartAlgebra.Hom σ L L'
 
 instance : CoeFun (L →ₗ⁅σ⁆ L') (fun _ => L → L') := ⟨fun f => f.toLinearMap⟩
 
