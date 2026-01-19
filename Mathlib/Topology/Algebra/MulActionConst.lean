@@ -12,10 +12,10 @@ public import Mathlib.Topology.Algebra.Group.Basic
 /-!
 # Monoid actions continuous in the first variable
 
-In this file we define the class `ContinuousSMulConst`. We say `ContinuousSMulConst Γ T` if
-`Γ` acts on `T` and for each `x`, the map `γ ↦ γ • x` is continuous. (This is analogous to
-`ContinuousConstSMul` and differs from `ContinuousSMul`, which requires simultaneous continuity in
-both variables.)
+In this file we define the class `ContinuousSMulConst` and its additive version
+`ContinuousVAddConst`. We say `ContinuousSMulConst Γ T` if `Γ` acts on `T` and for each `x`, the map
+`γ ↦ γ • x` is continuous. (This is analogous to `ContinuousConstSMul` and differs from
+`ContinuousSMul`, which requires simultaneous continuity in both variables.)
 
 As an example, consider an infinite dimensional normed real vector space `T` and let `Γ` denote the
 type `T →L[ℝ] T` of continuous linear maps `T → T`. Function composition defines a `Monoid Γ` with
@@ -82,22 +82,32 @@ end MulAction
 end ball
 
 section ContinuousSMulConst
-/-! The `ContinuousSMulConst` class. -/
+/-! The `ContinuousSMulConst` class and its additive version `ContinuousVAddConst`. -/
 
 /-- Class `ContinuousSMulConst Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the first argument. We use the same class for all kinds of multiplicative
 actions, including (semi)modules and algebras. -/
-@[mk_iff] class ContinuousSMulConst (Γ : Type*) (T : Type*)
+class ContinuousSMulConst (Γ : Type*) (T : Type*)
     [TopologicalSpace Γ] [TopologicalSpace T] [SMul Γ T] : Prop where
   /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the first argument. -/
   continuous_smul_const : ∀ x : T, Continuous fun γ : Γ => γ • x
 
-instance (priority := 100) ContinuousMul.toContinuousSMulConst (M : Type*) [TopologicalSpace M]
+export ContinuousSMulConst (continuous_smul_const)
+
+class ContinuousVAddConst (Γ : Type*) (T : Type*)
+    [TopologicalSpace Γ] [TopologicalSpace T] [VAdd Γ T] : Prop where
+  /-- The scalar multiplication `(+ᵥ) : Γ → T → T` is continuous in the first argument. -/
+  continuous_vadd_const : ∀ x : T, Continuous fun γ : Γ => γ +ᵥ x
+
+export ContinuousVAddConst (continuous_vadd_const)
+
+attribute [to_additive] ContinuousSMulConst
+
+attribute [continuity, fun_prop] continuous_smul_const continuous_vadd_const
+
+@[to_additive]
+instance ContinuousMul.toContinuousSMulConst (M : Type*) [TopologicalSpace M]
     [Mul M] [ContinuousMul M] : ContinuousSMulConst M M where
   continuous_smul_const := continuous_mul_right
-
-lemma continuous_smul_const (Γ : Type*) {T : Type*} [TopologicalSpace Γ] [TopologicalSpace T]
-    [SMul Γ T] [ContinuousSMulConst Γ T] (x : T) : Continuous fun γ : Γ => γ • x :=
-  ContinuousSMulConst.continuous_smul_const x
 
 end ContinuousSMulConst
