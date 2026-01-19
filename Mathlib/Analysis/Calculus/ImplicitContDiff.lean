@@ -96,6 +96,8 @@ open Filter
 
 open scoped Topology
 
+/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → G` that will
+lead to a $C^n$ implicit function `φ : E → F`. -/
 @[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-19")]
 structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
     Prop where
@@ -177,6 +179,7 @@ lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
+/-- Implicit function `φ` defined by `f (x, φ x) = f a`. -/
 @[deprecated ContDiffAt.implicitFunction (since := "2026-01-19")]
 noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F :=
   fun x ↦ (h.implicitFunctionAux x (f a)).2
