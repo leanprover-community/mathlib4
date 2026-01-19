@@ -116,7 +116,7 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
 
 namespace Walk
 
-variable {V : Type*} [BEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
+variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
 
 /-- The subgraph of a walk contains the path graph with the same number of vertices -/
 def pathGraphHomToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
@@ -131,7 +131,7 @@ def pathGraphHom : pathGraph w.support.length →g G :=
 
 variable {w} in
 /-- The subgraph of a path is isomorphic to the path graph with the same number of vertices -/
-def IsPath.pathGraphIsoToSubgraph [LawfulBEq V] (hw : w.IsPath) :
+def IsPath.pathGraphIsoToSubgraph (hw : w.IsPath) :
     pathGraph w.support.length ≃g w.toSubgraph.coe where
   toFun := w.pathGraphHomToSubgraph
   invFun v :=
@@ -145,7 +145,7 @@ def IsPath.pathGraphIsoToSubgraph [LawfulBEq V] (hw : w.IsPath) :
 
 variable {w} in
 /-- A walk induces a homomorphism from a path graph to the graph -/
-def pathGraphCopy [LawfulBEq V] (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
+def pathGraphCopy (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
   w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
 
 end Walk
