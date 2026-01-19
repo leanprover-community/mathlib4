@@ -421,7 +421,7 @@ theorem Finite.biSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [
         rintro rfl
         exact ha ha'
 
-theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame α] [Finite ι]
+theorem _root_.iInf_iSup_eq_of_finite {κ : ι → Sort*} [Order.Frame α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
   · simpa [← Equiv.plift.symm.iInf_comp, ← (Equiv.plift.piCongrLeft' _).symm.iSup_comp]
@@ -431,7 +431,7 @@ theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame �
     rcases h with ⟨a, h⟩
     grw [iSup_of_empty, eq_bot_iff, iInf_le _ a, iSup_of_empty]
 
-theorem _root_.iSup_iInf_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
+theorem _root_.iSup_iInf_eq_of_finite {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
   · simpa [← Equiv.plift.symm.iSup_comp, ← (Equiv.plift.piCongrLeft' _).symm.iInf_comp]
