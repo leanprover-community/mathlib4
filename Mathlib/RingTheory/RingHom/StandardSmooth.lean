@@ -46,6 +46,10 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth _ _ _ _ f.toAlgebra
 
+lemma isStandardSmooth_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmooth ↔ Algebra.IsStandardSmooth R S := by
+  rw [RingHom.IsStandardSmooth, toAlgebra_algebraMap]
+
 /-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
     @Algebra.IsStandardSmooth R S _ _ f.toAlgebra := hf
@@ -55,6 +59,11 @@ lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
 @[algebraize RingHom.IsStandardSmoothOfRelativeDimension.toAlgebra]
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmoothOfRelativeDimension n _ _ _ _ f.toAlgebra
+
+lemma isStandardSmoothOfRelativeDimension_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmoothOfRelativeDimension n ↔
+      Algebra.IsStandardSmoothOfRelativeDimension n R S := by
+  rw [RingHom.IsStandardSmoothOfRelativeDimension, toAlgebra_algebraMap]
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}
