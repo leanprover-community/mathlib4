@@ -271,6 +271,10 @@ theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
 theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
   simp [diag]
 
+theorem diag_eq_filter [DecidableEq α] :
+    s.diag = (s ×ˢ s).filter fun a : α × α => a.fst = a.snd := by
+  ext; simp +contextual
+
 variable (s)
 
 @[simp]
