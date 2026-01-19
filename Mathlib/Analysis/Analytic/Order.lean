@@ -182,6 +182,9 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt fun hg ↦ hf <| hg.congr hfg.symm]
 
+@[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
+  analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
+
 @[simp] lemma analyticOrderAt_neg : analyticOrderAt (-f) z₀ = analyticOrderAt f z₀ := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
@@ -318,6 +321,19 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
       rw [EventuallyEq.deriv_eq hfF, deriv_add_const, deriv_fun_smul (by fun_prop) (by fun_prop),
         deriv_fun_pow (by fun_prop), sub_self, zero_pow (by omega), zero_pow (by omega),
         mul_zero, zero_mul, zero_smul, zero_smul, add_zero]
+
+lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [CompleteSpace E]
+    (hf : AnalyticAt 𝕜 f z₀) :
+    n ≤ analyticOrderAt f z₀ ↔ ∀ i < n, iteratedDeriv i f z₀ = 0 := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n IH =>
+    by_cases hfz : f z₀ = 0; swap
+    · simpa [analyticOrderAt_eq_zero.mpr (.inr hfz)] using ⟨0, by simp, by simpa⟩
+    have : analyticOrderAt (deriv f) z₀ + 1 = analyticOrderAt f z₀ := by
+      simpa [hfz] using hf.analyticOrderAt_deriv_add_one
+    simp [← this, IH hf.deriv, iteratedDeriv_succ',
+      -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
 
 end NormedSpace
 
