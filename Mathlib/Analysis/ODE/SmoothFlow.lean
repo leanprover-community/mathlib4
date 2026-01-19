@@ -353,6 +353,61 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       rw [div_lt_one (by positivity)]
       exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
 
+/-
+`g : E → E [×n]→L[ℝ] E`
+Show the `α`-derivative of
+`dα ↦ t ↦ ∫ τ in t₀..t, g (α τ) (dα τ)`
+is `(dα₀ :: dα) ↦ t ↦ ∫ τ in t₀..t, fderiv ℝ g (α τ) (dα₀ τ) (dα τ)`
+The latter has to be expressed as a `
+-/
+
+omit [CompleteSpace E] in
+lemma _root_.ContDiffOn.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv
+    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
+    ContinuousOn
+      (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u := by
+  simp_rw [← Function.comp_apply (g := fderiv ℝ g)]
+  rw [LinearIsometryEquiv.comp_continuousOn_iff]
+  exact hg.continuousOn_fderiv_of_isOpen hu le_rfl
+
+lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : MapsTo α univ u) :
+    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
+        (fderiv ℝ (integralCMLM g u t₀) α) =
+      integralCMLM
+        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
+        α := by
+  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
+      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
+  apply HasFDerivAt.fderiv
+  rw [hasFDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
+  intro ε hε
+  let V : Set C(Icc tmin tmax, E) := sorry
+  have hV : V ∈ 𝓝 0 := sorry
+  apply Filter.eventually_of_mem hV
+  intro dα₀ hdα₀
+  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
+  intro dα
+  rw [ContinuousMap.norm_le _ (by positivity)]
+  intro t
+  have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
+  have hα_add : MapsTo (α + dα₀) univ u := sorry
+  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα_add dα t₀ t
+  have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
+  have hinteg₃ := intervalIntegrable_integrand
+    (hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu) t₀ hα (Fin.cons dα₀ dα) t₀ t
+  rw [sub_apply, sub_apply, continuousMultilinearCurryLeftEquiv_apply,
+    integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg.continuousOn,
+    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, ContinuousMap.sub_apply,
+    integralCM_apply_if_pos hα_add, integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
+    integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
+    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃
+    ]
+  apply intervalIntegral.norm_integral_le_integral_norm_uIoc.trans
+  sorry
+  -- simp only [sub_apply, continuousMultilinearCurryLeftEquiv_apply,
+  --   integralCMLMAux_apply, ContinuousMap.sub_apply]
 
 end
 
