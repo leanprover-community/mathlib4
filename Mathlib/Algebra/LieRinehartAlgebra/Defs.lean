@@ -108,7 +108,7 @@ def Hom.toLieHom (f : L →ₗ⁅σ⁆ L') : L →ₗ⁅R⁆ L' := {
   toFun := f.toFun
   map_add' := f.map_add'
   map_smul' := fun _ _ ↦ by simp [←IsScalarTower.algebraMap_smul A]
-  map_lie' := by apply f.map_lie'
+  map_lie' := f.map_lie' _ _
 }
 
 
