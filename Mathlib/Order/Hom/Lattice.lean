@@ -67,9 +67,6 @@ structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α
   Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
--- TODO: remove this configuration and use the default configuration.
-initialize_simps_projections LatticeHom (+toSupHom, -toFun)
-
 section
 
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
@@ -780,7 +777,7 @@ namespace LatticeHom
 variable [Lattice α] [Lattice β] [Lattice γ]
 
 /-- Reinterpret a lattice homomorphism as a lattice homomorphism between the dual lattices. -/
-@[simps]
+@[simps!]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩

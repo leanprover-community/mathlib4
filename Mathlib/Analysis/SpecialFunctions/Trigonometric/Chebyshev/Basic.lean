@@ -98,6 +98,7 @@ evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
 theorem S_two_mul_complex_cos (n : ℤ) : (S ℂ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
   simp [S_eq_U_comp_half_mul_X]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
 value `cosh (n * θ)`. -/
 @[simp]
@@ -108,6 +109,7 @@ theorem T_complex_cosh (n : ℤ) : (T ℂ n).eval (cosh θ) = cosh (n * θ) := c
   _ = cos (n * θ * I)                   := by rw [mul_assoc]
   _ = cosh (n * θ)                      := cos_mul_I (n * θ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
 value `sinh ((n + 1) * θ) / sinh θ`. -/
 @[simp]

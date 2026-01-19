@@ -54,9 +54,6 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
-* Compute zeroes and extrema of Chebyshev polynomials.
-* Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
-* Prove minimax properties of Chebyshev polynomials.
 -/
 
 @[expose] public section
@@ -982,10 +979,7 @@ theorem derivative_T_eval_one (n : ℤ) :
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
   have h := iterate_derivative_U_eval_one (R := R) n 1
-  simp only [Finset.range_one, Finset.prod_singleton, mul_zero, zero_add, Nat.cast_ofNat,
-    Function.iterate_one, CharP.cast_eq_zero, one_pow, Int.cast_sub, Int.cast_pow, Int.cast_add,
-    Int.cast_one] at h
-  rw [h]
+  simp only [Finset.range_one, Finset.prod_singleton, Function.iterate_one] at h
   grind
 
 variable (R)
