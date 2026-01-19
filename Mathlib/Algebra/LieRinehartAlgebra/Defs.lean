@@ -153,7 +153,8 @@ the module of derivations of `A`.
 def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
     [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L] :
     L →ₗ⁅AlgHom.id R A⁆ (Derivation R A A) :=
-  { toFun := derivOf R
+  { toFun x := Derivation.mk' ((LieModule.toEnd R L A) x) fun a b ↦ by
+      simpa [← smul_eq_mul, LieRinehartAlgebra.leibnizA R] using CommMonoid.mul_comm ⁅x, a⁆ b
     map_add' := fun _ _ ↦ by ext a; simp
     map_smul' := fun _ _ ↦ by ext a; simp [LieRinehartAlgebra.left_linearity R]
     map_lie' := fun _ _ ↦ by ext a; simp [Derivation.commutator_apply]
