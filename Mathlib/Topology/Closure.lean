@@ -427,7 +427,7 @@ theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
 theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 
-@[mono]
+@[mono, gcongr]
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 
