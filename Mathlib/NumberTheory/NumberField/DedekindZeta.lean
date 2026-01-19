@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.LSeries.SumCoeff
-import Mathlib.NumberTheory.NumberField.Ideal
-import Mathlib.Algebra.BigOperators.Ring.Nat
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!
 # The Dedekind zeta function of a number field
@@ -21,10 +23,12 @@ In this file, we define and prove results about the Dedekind zeta function of a 
   computation of the residue of the Dedekind zeta function at `s = 1`, see Chap. 7 of
   [D. Marcus, *Number Fields*][marcus1977number]
 
-# TODO
+## TODO
 
 Generalize the construction of the Dedekind zeta function.
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -49,12 +53,12 @@ The value of the residue at `s = 1` of the Dedekind zeta function, see
 -/
 def dedekindZeta_residue : ℝ :=
   (2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-    (torsionOrder K *  Real.sqrt |discr K|)
+    (torsionOrder K * Real.sqrt |discr K|)
 
 theorem dedekindZeta_residue_def :
     dedekindZeta_residue K =
       (2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-      (torsionOrder K *  Real.sqrt |discr K|) := rfl
+      (torsionOrder K * Real.sqrt |discr K|) := rfl
 
 theorem dedekindZeta_residue_pos : 0 < dedekindZeta_residue K := by
   refine div_pos ?_ ?_
@@ -69,7 +73,7 @@ theorem dedekindZeta_residue_ne_zero : dedekindZeta_residue K ≠ 0 :=
 **Dirichlet class number formula**
 -/
 theorem tendsto_sub_one_mul_dedekindZeta_nhdsGT :
-    Tendsto (fun s  : ℝ ↦ (s - 1) * dedekindZeta K s) (𝓝[>] 1) (𝓝 (dedekindZeta_residue K)) := by
+    Tendsto (fun s : ℝ ↦ (s - 1) * dedekindZeta K s) (𝓝[>] 1) (𝓝 (dedekindZeta_residue K)) := by
   refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg _ ?_
     (fun _ ↦ Nat.cast_nonneg _)
   refine ((Ideal.tendsto_norm_le_div_atTop₀ K).comp tendsto_natCast_atTop_atTop).congr fun n ↦ ?_

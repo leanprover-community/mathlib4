@@ -3,14 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.Interval.Set.InitialSeg
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Transfinite iterations of a successor structure
 
@@ -48,7 +51,7 @@ file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
-objects `X` and `Y` may have non isomorphic successors. This is
+objects `X` and `Y` may have non-isomorphic successors. This is
 the reason why we make an extensive use of equalities in
 `C` and in `Arrow C` in the definitions.
 
@@ -62,6 +65,8 @@ Reid Barton in 2018 towards the model category structure on
 topological spaces.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -132,7 +137,7 @@ induces a successor structure on `C ⥤ C`. -/
 @[simps]
 def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
   succ G := G ⋙ F
-  toSucc G := whiskerLeft G ε
+  toSucc G := Functor.whiskerLeft G ε
   X₀ := 𝟭 C
 
 variable (Φ : SuccStruct C)

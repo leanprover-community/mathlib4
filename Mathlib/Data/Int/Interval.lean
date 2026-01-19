@@ -3,10 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of integers
@@ -14,6 +17,8 @@ import Mathlib.Order.Interval.Finset.Basic
 This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -30,49 +35,37 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
   finsetIoo a b :=
     (Finset.range (b - a - 1).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)
   finset_mem_Icc a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [lt_sub_iff_add_lt, Int.lt_add_one_iff, add_comm] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · lia
+    · intro
       use (x - a).toNat
-      rw [← lt_add_one_iff] at hb
-      rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ico a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      exact ⟨Int.le.intro a rfl, lt_sub_iff_add_lt'.mp h⟩
-    · rintro ⟨ha, hb⟩
+    · lia
+    · intro
       use (x - a).toNat
-      rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ioc a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [← add_one_le_iff, le_sub_iff_add_le', add_comm _ (1 : ℤ), ← add_assoc] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · lia
+    · intro
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel_right]
-      exact ⟨sub_le_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ioo a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [sub_sub, lt_sub_iff_add_lt'] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · lia
+    · intro
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, sub_sub]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      lia
 
 variable (a b : ℤ)
 
@@ -136,26 +129,6 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  simp
-
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
 
@@ -166,32 +139,62 @@ theorem card_fintype_Ioc_of_le (h : a ≤ b) : (Fintype.card (Set.Ioc a b) : ℤ
   simp [h]
 
 theorem card_fintype_Ioo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) = b - a - 1 := by
-  simp [h, h.le]
+  simp [h]
 
 theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
   obtain rfl | ha := eq_or_lt_of_le h
   · simp
   ext i
-  simp only [mem_image, mem_range, mem_Ico]
+  simp only [mem_image, mem_Ico]
   constructor
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
-  intro hia
-  have hn := Int.emod_add_ediv n a
-  obtain hi | hi := lt_or_le i (n % a)
+  rintro ⟨hi₀, hia⟩
+  have hn := Int.emod_add_mul_ediv n a
+  obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
-    · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine hn.symm.le.trans (add_le_add_right ?_ _)
-      simpa only [zero_add] using add_le_add hia.left (Int.emod_lt_of_pos n ha).le
-    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
-      rw [mul_add, mul_one, ← add_assoc, hn]
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · calc
+        n = 0 + n % a + a * (n / a) := by simp [hn]
+        _ ≤ i + a + a * (n / a) := by gcongr; exact (Int.emod_lt_of_pos n ha).le
+        _ = i + a * (n / a + 1) := by grind
+    · calc
+        i + a * (n / a + 1) < n % a + a * (n / a + 1) := by gcongr
+        _ = n + a := by rw [mul_add, mul_one, ← add_assoc, hn]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · exact hn.symm.le.trans (add_le_add_right hi _)
+    · exact hn.symm.le.trans (add_le_add_left hi _)
     · rw [add_comm n a]
-      refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
-      simp only [Nat.zero_le, le_add_iff_nonneg_left]
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
+      simp only [le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
 
 end Int
+
+section Nat
+
+lemma Finset.Icc_succ_succ (m n : ℕ) :
+    Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ico_succ_succ (m n : ℕ) :
+    Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioc_succ_succ (m n : ℕ) :
+    Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
+  lia
+
+lemma Finset.Ioo_succ_succ (m n : ℕ) :
+    Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
+  lia
+
+end Nat

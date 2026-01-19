@@ -3,13 +3,17 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Limits.Opposites
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # The opposite of an abelian category is abelian.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -18,14 +22,11 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
-instance : Abelian Cᵒᵖ := by
-  -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
-  -- been set to 90 in `Abelian.Basic` in order to prevent a timeout here
-  exact {
-    normalMonoOfMono := fun f => ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
-    normalEpiOfEpi := fun f => ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
+instance : Abelian Cᵒᵖ :=
+  { normalMonoOfMono f := ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
+    normalEpiOfEpi f := ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
 
 section
 

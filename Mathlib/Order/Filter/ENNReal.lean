@@ -3,14 +3,18 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Metrizable.Real
+module
+
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Limsup and liminf of reals
 
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
+
+public section
 
 
 open Filter ENNReal
@@ -127,12 +131,12 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
-  · simp [limsup, limsSup, Real.sInf_of_not_bddBelow]
+  · simp [limsup, limsSup]
   by_cases hf : f.IsBoundedUnder (· ≤ ·) u; swap
   · simp [*]
   have : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault
@@ -141,7 +145,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 end NNReal
 
@@ -159,25 +163,17 @@ theorem limsup_eq_zero_iff [CountableInterFilter f] {u : α → ℝ≥0∞} :
 
 theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
     (f.limsup fun x : α => a * u x) = a * f.limsup u := by
-  by_cases ha_zero : a = 0
-  · simp_rw [ha_zero, zero_mul, ← ENNReal.bot_eq_zero]
+  by_cases ha₀ : a = 0
+  · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
     exact limsup_const_bot
-  let g := fun x : ℝ≥0∞ => a * x
-  have hg_bij : Function.Bijective g :=
-    Function.bijective_iff_has_inverse.mpr
-      ⟨fun x => a⁻¹ * x,
-        ⟨fun x => by simp [g, ← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
-          simp [g, ← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
-  have hg_mono : StrictMono g :=
-    Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
-  let g_iso := StrictMono.orderIsoOfSurjective g hg_mono hg_bij.2
-  exact (OrderIso.limsup_apply g_iso).symm
+  let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
+    ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
+  exact g_iso.limsup_apply.symm
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
-  by_cases ha_top : a ≠ ⊤
+  by_cases! ha_top : a ≠ ⊤
   · exact limsup_const_mul_of_ne_top ha_top
-  push_neg at ha_top
   by_cases hu : u =ᶠ[f] 0
   · have hau : (a * u ·) =ᶠ[f] 0 := hu.mono fun x hx => by simp [hx]
     simp only [limsup_congr hu, limsup_congr hau, Pi.zero_def, ← ENNReal.bot_eq_zero,

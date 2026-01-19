@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -34,6 +36,8 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 `Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a **construction** of
 disintegrating kernels.
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter MeasurableSpace ProbabilityTheory
 open scoped ENNReal MeasureTheory Topology
@@ -71,7 +75,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
   nth_rewrite 2 [← ρ.disintegrate ρCond]
   rw [Measure.compProd_apply (measurableSet_prod.mpr (Or.inl ⟨measurableSet_singleton x, hs⟩))]
   classical
-  have (a) : ρCond a (Prod.mk a ⁻¹' {x} ×ˢ s) = ({x} : Set α).indicator (ρCond · s) a := by
+  have (a : _) : ρCond a (Prod.mk a ⁻¹' {x} ×ˢ s) = ({x} : Set α).indicator (ρCond · s) a := by
     obtain rfl | hax := eq_or_ne a x
     · simp only [singleton_prod, mem_singleton_iff, indicator_of_mem]
       congr with y
@@ -92,7 +96,7 @@ lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] {x : α}
     congr 2 with s hs
     simp [IsCondKernel.apply_of_ne_zero_of_measurableSet _ _ hx hs,
       (measurableEmbedding_prodMk_left x).comap_apply, Set.singleton_prod]
-  simp [this, (measurableEmbedding_prodMk_left x).comap_apply, hx, Set.singleton_prod]
+  simp [this, (measurableEmbedding_prodMk_left x).comap_apply, Set.singleton_prod]
 
 lemma IsCondKernel.isProbabilityMeasure [MeasurableSingletonClass α] {a : α} (ha : ρ.fst {a} ≠ 0) :
     IsProbabilityMeasure (ρCond a) := by
@@ -162,7 +166,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_lhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
   · rw [ae_const_le_iff_forall_lt_measure_zero]
     intro r hr
     let s := {b | κCond (a, b) Set.univ ≤ r}
@@ -177,7 +182,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_rhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
 
 
 /-! #### Existence of a disintegrating kernel in a countable space -/
@@ -193,10 +199,8 @@ noncomputable def condKernelCountable (h_atom : ∀ x y, x ∈ measurableAtom y 
     Kernel (α × β) Ω where
   toFun p := κCond p.1 p.2
   measurable' := by
-    change Measurable ((fun q : β × α ↦ (κCond q.2) q.1) ∘ Prod.swap)
-    refine (measurable_from_prod_countable' (fun a ↦ (κCond a).measurable) ?_).comp measurable_swap
-    · intro x y hx hy
-      simpa using DFunLike.congr (h_atom _ _ hy) rfl
+    refine measurable_from_prod_countable_right' (fun a ↦ (κCond a).measurable) fun x y hx hy ↦ ?_
+    simpa using DFunLike.congr (h_atom _ _ hy) rfl
 
 lemma condKernelCountable_apply (h_atom : ∀ x y, x ∈ measurableAtom y → κCond x = κCond y)
     (p : α × β) : condKernelCountable κCond h_atom p = κCond p.1 p.2 := rfl

@@ -3,11 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle
-import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Character module of a module
@@ -28,6 +29,8 @@ an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l`
 
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 universe uR uA uB
@@ -46,7 +49,7 @@ namespace CharacterModule
 
 instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
-  coe_injective' _ _ _ := by aesop
+  coe_injective' _ _ _ := by simp_all
 
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
@@ -184,7 +187,7 @@ For an abelian group `A` and an element `a ∈ A`, there is a character `c : ℤ
 does not exist, `c` is defined by `m • a ↦ m / 2`.
 -/
 noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
-  let l :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let l : ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
     Submodule.liftQSpanSingleton _
       (CharacterModule.int.divByNat <|
         if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
@@ -197,7 +200,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
      intSpanEquivQuotAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_apply_one,
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
@@ -205,9 +208,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
-  · split_ifs with h
-    · norm_num
-    · exact Nat.pos_of_ne_zero h
+  · grind
 
 lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
     ∃ (c : CharacterModule A), c a ≠ 0 :=

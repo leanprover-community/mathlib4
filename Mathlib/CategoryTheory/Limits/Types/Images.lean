@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # Images in the category of types
@@ -13,6 +15,8 @@ In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -82,7 +86,7 @@ variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
 private noncomputable def limitOfSurjectionsSurjective.preimage
     (a : F.obj ⟨0⟩) : (n : ℕ) → F.obj ⟨n⟩
     | 0 => a
-    | n+1 => (hF n (preimage a n)).choose
+    | n + 1 => (hF n (preimage a n)).choose
 
 include hF in
 open limitOfSurjectionsSurjective in

@@ -181,14 +181,14 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   have v := Classical.arbitrary V
   trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
-    simp only [sum_insert, mul_one, if_true, Nat.cast_id, eq_self_iff_true, mem_erase, not_true,
+    simp only [sum_insert, mul_one, if_true, Nat.cast_id, mem_erase, not_true,
       Ne, not_false_iff, add_right_inj, false_and, of_apply]
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
   · rw [sq, ← mulVec_mulVec]
     simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
       card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
-      mul_one, sum_const, Set.toFinset_card, Algebra.id.smul_eq_mul, Nat.cast_id]
+      mul_one, sum_const, Set.toFinset_card, smul_eq_mul, Nat.cast_id]
 
 open scoped Classical in
 include hG in
@@ -227,10 +227,11 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
-    induction' k with k hind
-    · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
-    rw [pow_succ', hind (Nat.le_add_left 2 k)]
-    exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
+    induction k with
+    | zero => exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    | succ k hind =>
+      rw [pow_succ', hind (Nat.le_add_left 2 k)]
+      exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 
 variable [Nonempty V]
 
@@ -244,10 +245,10 @@ include hG in
 theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : False := by
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
-  have p_dvd_d_pred := (ZMod.natCast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
-  have dpos : 1 ≤ d := by omega
+  have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
+  have dpos : 1 ≤ d := by lia
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
-  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by omega)⟩
+  haveI : Fact p.Prime := ⟨Nat.minFac_prime (by lia)⟩
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
@@ -262,11 +263,11 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   -- but the trace is 1 mod p when computed the other way
   rw [adjMatrix_pow_mod_p_of_regular hG dmod hd hp2]
   dsimp only [Fintype.card] at Vmod
-  simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, LinearMap.coe_mk, sum_const,
+  simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, sum_const,
     of_apply, Ne]
-  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_zmod_eq_zero_iff_dvd,
+  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_eq_zero_iff,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
-  omega
+  lia
 
 open scoped Classical in
 include hG in
@@ -280,7 +281,7 @@ theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d 
   have : Fintype.card V ≤ 1 := by
     cases hn : Fintype.card V with
     | zero => exact zero_le _
-    | succ n => omega
+    | succ n => lia
   use Classical.arbitrary V
   intro w h; exfalso
   apply h
@@ -300,7 +301,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd
-      omega
+      lia
     · exact Finset.card_erase_of_mem (Finset.mem_univ _)
   · dsimp only [IsRegularOfDegree, degree] at hd
     rw [hd]
@@ -334,7 +335,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  rcases lt_or_le d 3 with dle2 | dge3
+  rcases lt_or_ge d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 

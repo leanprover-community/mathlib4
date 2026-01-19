@@ -89,11 +89,11 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
           (fun x => P.eval x)^[n + 1] t - (fun x => P.eval x)^[n] t :=
       fun m n => Cycle.chain_iff_pairwise.1 HC' _ HC _ HC
     -- The sign of P^n(t) - t is the same as P(t) - t for positive n. Proven by induction on n.
-    have IH : ∀ n : ℕ, ((fun x => P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := by
-      intro n
-      induction' n with n IH
-      · rfl
-      · apply Eq.trans _ (Int.sign_add_eq_of_sign_eq IH)
+    have IH (n : ℕ) : ((fun x => P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := by
+      induction n with
+      | zero => rfl
+      | succ n IH =>
+        apply Eq.trans _ (Int.sign_add_eq_of_sign_eq IH)
         have H := Heq n.succ 0
         dsimp at H ⊢
         rw [← H, sub_add_sub_cancel']
@@ -135,7 +135,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     intro h
     rw [h, natDegree_zero] at hPX
     rw [← hPX] at hP
-    exact (zero_le_one.not_lt hP).elim
+    exact (zero_le_one.not_gt hP).elim
   -- If every root of P(P(t)) - t is also a root of P(t) - t, then we're done.
   by_cases H : (P.comp P - X).roots.toFinset ⊆ (P - X).roots.toFinset
   · exact (Finset.card_le_card H).trans
@@ -160,7 +160,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
       intro h
       rw [h, natDegree_zero] at hPab
       rw [← hPab] at hP
-      exact (zero_le_one.not_lt hP).elim
+      exact (zero_le_one.not_gt hP).elim
     -- We claim that every root of P(P(t)) - t is a root of P(t) + t - a - b. This allows us to
     -- conclude the problem.
     suffices H' : (P.comp P - X).roots.toFinset ⊆ (P + (X : ℤ[X]) - a - b).roots.toFinset from
@@ -171,7 +171,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)
     rw [IsRoot.def, eval_sub, eval_comp, eval_X, sub_eq_zero] at ht
     simp only [mem_roots hPab', sub_eq_iff_eq_add, Multiset.mem_toFinset, IsRoot.def,
-      eval_sub, eval_add, eval_X, eval_C, eval_intCast, Int.cast_id, zero_add]
+      eval_sub, eval_add, eval_X, eval_intCast, Int.cast_id, zero_add]
     -- An auxiliary lemma proved earlier implies we only need to show |t - a| = |u - b| and
     -- |t - b| = |u - a|. We prove this by establishing that each side of either equation divides
     -- the other.

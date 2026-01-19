@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
@@ -13,6 +15,8 @@ In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower 
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -40,7 +44,7 @@ namespace AlternatingMap
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
 
 @[ext]
-lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x ) :
+lemma ext {φ φ' : M.AlternatingMap N n} (h : ∀ (x : Fin n → M), φ x = φ' x) :
     φ = φ' :=
   _root_.AlternatingMap.ext h
 
@@ -115,7 +119,7 @@ lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
   ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
 
-/-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
+/-- The isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
   (exteriorPower.oneEquiv R M).toModuleIso
 

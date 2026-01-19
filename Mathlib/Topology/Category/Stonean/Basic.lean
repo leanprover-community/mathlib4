@@ -3,9 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.Topology.Category.CompHaus.Projective
-import Mathlib.Topology.Category.Profinite.Basic
+module
+
+public import Mathlib.Topology.ExtremallyDisconnected
+public import Mathlib.Topology.Category.CompHaus.Projective
+public import Mathlib.Topology.Category.Profinite.Basic
 /-!
 # Extremally disconnected sets
 
@@ -37,6 +39,8 @@ The category `Stonean` is defined using the structure `CompHausLike`. See the fi
 `CompHausLike.Basic` for more information.
 
 -/
+
+@[expose] public section
 universe u
 
 open CategoryTheory
@@ -59,7 +63,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
     rw [CompHaus.epi_iff_surjective]
     assumption
   obtain ⟨h, hh⟩ := Projective.factors f' g'
-  refine ⟨h, h.hom.2, ?_⟩
+  refine ⟨h, h.hom.hom.2, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -80,7 +84,7 @@ abbrev toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   compHausLikeToCompHaus _
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
-abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful :=
   CompHausLike.fullyFaithfulToCompHausLike _
 
 open CompHausLike
@@ -122,15 +126,15 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   intro h y
   by_contra! hy
   let C := Set.range f
-  have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
+  have hC : IsClosed C := (isCompact_range f.hom.hom.continuous).isClosed
   let U := Cᶜ
   have hUy : U ∈ 𝓝 y := by
     simp only [U, C, Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
   obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
-  let g : Y ⟶ mkFinite (ULift (Fin 2)) := TopCat.ofHom
+  let g : Y ⟶ mkFinite (ULift (Fin 2)) := ConcreteCategory.ofHom
     ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-  let h : Y ⟶ mkFinite (ULift (Fin 2)) := TopCat.ofHom ⟨fun _ => ⟨1⟩, continuous_const⟩
+  let h : Y ⟶ mkFinite (ULift (Fin 2)) := ConcreteCategory.ofHom ⟨fun _ => ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]
     ext x
@@ -151,7 +155,8 @@ instance instProjectiveCompHausCompHaus (X : Stonean) : Projective (toCompHaus.o
     intro B C φ f _
     haveI : ExtremallyDisconnected (toCompHaus.obj X).toTop := X.prop
     have hf : Function.Surjective f := by rwa [← CompHaus.epi_iff_surjective]
-    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.continuous f.hom.continuous
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
+      f.hom.hom.continuous
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
@@ -163,7 +168,8 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
     intro B C φ f _
     haveI : ExtremallyDisconnected (toProfinite.obj X) := X.prop
     have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
-    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.continuous f.hom.continuous
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
+      f.hom.hom.continuous
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
@@ -175,7 +181,8 @@ instance (X : Stonean) : Projective X where
     intro B C φ f _
     haveI : ExtremallyDisconnected X.toTop := X.prop
     have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
-    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.continuous f.hom.continuous
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.hom.hom.continuous
+      f.hom.hom.continuous
       hf
     use ofHom _ ⟨f', h.left⟩
     ext
@@ -191,16 +198,7 @@ namespace CompHaus
 noncomputable
 def presentation (X : CompHaus) : Stonean where
   toTop := (projectivePresentation X).p.1
-  prop := by
-    refine CompactT2.Projective.extremallyDisconnected
-      (@fun Y Z _ _ _ _ _ _ f g hfcont hgcont hgsurj => ?_)
-    let g₁ : (CompHaus.of Y) ⟶ (CompHaus.of Z) := CompHausLike.ofHom _ ⟨g, hgcont⟩
-    let f₁ : (projectivePresentation X).p ⟶ (CompHaus.of Z) := CompHausLike.ofHom _ ⟨f, hfcont⟩
-    have hg₁ : Epi g₁ := (epi_iff_surjective _).2 hgsurj
-    refine ⟨Projective.factorThru f₁ g₁, (Projective.factorThru f₁ g₁).hom.2, funext (fun _ => ?_)⟩
-    change (Projective.factorThru f₁ g₁ ≫ g₁) _ = f _
-    rw [Projective.factorThru_comp]
-    rfl
+  prop := instExtremallyDisconnectedCarrierToTopTrueOfProjective X.projectivePresentation.p
 
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable
@@ -241,11 +239,11 @@ lemma Gleason (X : CompHaus.{u}) :
     Projective X ↔ ExtremallyDisconnected X := by
   constructor
   · intro h
-    show ExtremallyDisconnected X.toStonean
+    change ExtremallyDisconnected X.toStonean
     infer_instance
   · intro h
     let X' : Stonean := ⟨X.toTop, inferInstance⟩
-    show Projective X'.compHaus
+    change Projective X'.compHaus
     apply Stonean.instProjectiveCompHausCompHaus
 
 end CompHaus
@@ -253,7 +251,7 @@ end CompHaus
 namespace Profinite
 
 /-- If `X` is profinite, `presentation X` is a Stonean space equipped with an epimorphism down to
-    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
+`X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
 noncomputable
 def presentation (X : Profinite) : Stonean where
   toTop := (profiniteToCompHaus.obj X).projectivePresentation.p.toTop
@@ -262,7 +260,7 @@ def presentation (X : Profinite) : Stonean where
 /-- The morphism from `presentation X` to `X`. -/
 noncomputable
 def presentation.π (X : Profinite) : Stonean.toProfinite.obj X.presentation ⟶ X :=
-  (profiniteToCompHaus.obj X).projectivePresentation.f
+  InducedCategory.homMk (profiniteToCompHaus.obj X).projectivePresentation.f.hom
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
@@ -295,7 +293,7 @@ lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z 
 
 lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
     Projective X := by
-  show Projective (Stonean.toProfinite.obj ⟨X.toTop, inferInstance⟩)
+  change Projective (Stonean.toProfinite.obj ⟨X.toTop, inferInstance⟩)
   exact inferInstance
 
 end Profinite

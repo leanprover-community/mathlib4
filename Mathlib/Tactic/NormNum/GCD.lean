@@ -3,9 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Int.GCD
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 
@@ -15,6 +17,8 @@ This module defines some `norm_num` extensions for functions such as
 Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `Nat.gcd` extension
 also indirectly provides a `Nat.coprime` extension.
 -/
+
+public meta section
 
 namespace Tactic
 
@@ -92,10 +96,10 @@ theorem isInt_lcm : {x y nx ny : ℤ} → {z : ℕ} →
 and an equality proof. Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   match ex.natLit!, ey.natLit! with
-  | 0, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 0 $ey = $ed) from ⟨ey, q(Nat.gcd_zero_left $ey)⟩
-  | _, 0 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 0 = $ed) from ⟨ex, q(Nat.gcd_zero_right $ex)⟩
-  | 1, _ => show (ed : Q(ℕ)) × Q(Nat.gcd 1 $ey = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_left $ey)⟩
-  | _, 1 => show (ed : Q(ℕ)) × Q(Nat.gcd $ex 1 = $ed) from ⟨mkRawNatLit 1, q(Nat.gcd_one_right $ex)⟩
+  | 0, _ => have : $ex =Q nat_lit 0 := ⟨⟩; ⟨ey, q(Nat.gcd_zero_left $ey)⟩
+  | _, 0 => have : $ey =Q nat_lit 0 := ⟨⟩; ⟨ex, q(Nat.gcd_zero_right $ex)⟩
+  | 1, _ => have : $ex =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.gcd_one_left $ey)⟩
+  | _, 1 => have : $ey =Q nat_lit 1 := ⟨⟩; ⟨q(nat_lit 1), q(Nat.gcd_one_right $ex)⟩
   | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
@@ -110,10 +114,10 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
       if d = 1 then
         if a ≥ 0 then
           have pt : Q($ex * $ea' = $ey * $eb' + 1) := (q(Eq.refl ($ex * $ea')) : Expr)
-          ⟨mkRawNatLit 1, q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
+          ⟨q(nat_lit 1), q(nat_gcd_helper_2' $ex $ey $ea' $eb' $pt)⟩
         else
           have pt : Q($ey * $eb' = $ex * $ea' + 1) := (q(Eq.refl ($ey * $eb')) : Expr)
-          ⟨mkRawNatLit 1, q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
+          ⟨q(nat_lit 1), q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
       else
         have ed : Q(ℕ) := mkRawNatLit d
         have pu : Q(Nat.mod $ex $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
@@ -131,7 +135,7 @@ def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.gcd $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatGCD ex ey
@@ -142,9 +146,9 @@ and an equality proof. Panics if `ex` or `ey` aren't natural number literals. -/
 def proveNatLCM (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.lcm $ex $ey = $ed) :=
   match ex.natLit!, ey.natLit! with
   | 0, _ =>
-    show (ed : Q(ℕ)) × Q(Nat.lcm 0 $ey = $ed) from ⟨mkRawNatLit 0, q(Nat.lcm_zero_left $ey)⟩
+    show (ed : Q(ℕ)) × Q(Nat.lcm 0 $ey = $ed) from ⟨q(nat_lit 0), q(Nat.lcm_zero_left $ey)⟩
   | _, 0 =>
-    show (ed : Q(ℕ)) × Q(Nat.lcm $ex 0 = $ed) from ⟨mkRawNatLit 0, q(Nat.lcm_zero_right $ex)⟩
+    show (ed : Q(ℕ)) × Q(Nat.lcm $ex 0 = $ed) from ⟨q(nat_lit 0), q(Nat.lcm_zero_right $ex)⟩
   | 1, _ => show (ed : Q(ℕ)) × Q(Nat.lcm 1 $ey = $ed) from ⟨ey, q(Nat.lcm_one_left $ey)⟩
   | _, 1 => show (ed : Q(ℕ)) × Q(Nat.lcm $ex 1 = $ed) from ⟨ex, q(Nat.lcm_one_right $ex)⟩
   | x, y =>
@@ -160,7 +164,7 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.lcm $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatLCM ex ey
@@ -209,18 +213,18 @@ theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
-    simp_rw [Rat.mul_num, Rat.intCast_den, invOf_eq_inv,
+    simp_rw [Rat.mul_num, Rat.den_intCast, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
+      Rat.num_intCast, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
 
 theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
     IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsNat q.den d
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
-    simp_rw [Rat.mul_den, Rat.intCast_den, invOf_eq_inv,
+    simp_rw [Rat.mul_den, Rat.den_intCast, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
+      Rat.num_intCast, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
 
 /-- Evaluates the `Rat.num` function. -/
 @[nolint unusedHavesSuffices, norm_num Rat.num _]

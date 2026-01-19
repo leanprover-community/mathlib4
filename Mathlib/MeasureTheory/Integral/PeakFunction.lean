@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals against peak functions
@@ -32,6 +34,8 @@ functions are also called approximations of unity, or approximations of identity
 Note that there are related results about convolution with respect to peak functions in the file
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
+
+public section
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -427,7 +431,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         apply hM
         rw [div_lt_iff₀ δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg cpos.le, not_le, gt_iff_lt]
+          abs_of_nonneg cpos.le, not_le]
         exact hc.trans_le (by gcongr)
   · have : Tendsto (fun c ↦ ∫ (x : F) in closedBall 0 c, φ x ∂μ) atTop (𝓝 1) := by
       rw [← h'φ]
@@ -463,4 +467,4 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
-  simp [smul_sub, sub_eq_add_neg]
+  simp [sub_eq_add_neg]

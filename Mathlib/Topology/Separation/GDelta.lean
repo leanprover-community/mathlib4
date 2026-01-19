@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Compactness.SigmaCompact
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Separation properties of topological spaces.
@@ -17,12 +18,14 @@ import Mathlib.Topology.GDelta.Basic
 
 * `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
   closed sets are Gδ.
-* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
+* `T6Space`: A T₆ space is a perfectly normal T₀ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -110,13 +113,23 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
 theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
   PerfectlyNormalSpace.closed_gdelta hs
 
-/-- A T₆ space is a perfectly normal T₁ space. -/
-class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, PerfectlyNormalSpace X
+instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
+  specializes_symmetric x y hxy := by
+    rw [specializes_iff_forall_closed]
+    intro K hK hyK
+    apply IsClosed.isGδ at hK
+    obtain ⟨Ts, hoTs, -, rfl⟩ := hK
+    rw [mem_sInter] at hyK ⊢
+    intros
+    solve_by_elim [hxy.mem_open]
+
+/-- A T₆ space is a perfectly normal T₀ space. -/
+class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  -- follows from type-class inference
+
 end PerfectlyNormal
 
 end Separation

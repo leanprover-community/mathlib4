@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -21,6 +23,8 @@ coalgebras over `G`.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -62,7 +66,7 @@ structure Hom (A₀ A₁ : Algebra F) where
   /-- underlying morphism between the carriers -/
   f : A₀.1 ⟶ A₁.1
   /-- compatibility condition -/
-  h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat
+  h : F.map f ≫ A₁.str = A₀.str ≫ f := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.h
 
@@ -85,7 +89,7 @@ instance (F : C ⥤ C) : CategoryStruct (Algebra F) where
   comp := @Hom.comp _ _ _
 
 @[ext]
-lemma ext {A B : Algebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+lemma ext {A B : Algebra F} {f g : A ⟶ B} (w : f.f = g.f := by cat_disch) : f = g :=
   Hom.ext w
 
 @[simp]
@@ -113,7 +117,7 @@ instance (F : C ⥤ C) : Category (Algebra F) := { }
 commutes with the structure morphisms.
 -/
 @[simps!]
-def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h.hom := by aesop_cat) :
+def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h.hom := by cat_disch) :
     A₀ ≅ A₁ where
   hom := { f := h.hom }
   inv :=
@@ -131,9 +135,7 @@ def forget (F : C ⥤ C) : Algebra F ⥤ C where
 /-- An algebra morphism with an underlying isomorphism hom in `C` is an algebra isomorphism. -/
 theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
-      h := by
-        rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
-        simp }, by aesop_cat, by aesop_cat⟩⟩
+      h := by simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 
@@ -252,7 +254,7 @@ structure Hom (V₀ V₁ : Coalgebra F) where
   /-- underlying morphism between two carriers -/
   f : V₀.1 ⟶ V₁.1
   /-- compatibility condition -/
-  h : V₀.str ≫ F.map f = f ≫ V₁.str := by aesop_cat
+  h : V₀.str ≫ F.map f = f ≫ V₁.str := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.h
 
@@ -275,7 +277,7 @@ instance (F : C ⥤ C) : CategoryStruct (Coalgebra F) where
   comp := @Hom.comp _ _ _
 
 @[ext]
-lemma ext {A B : Coalgebra F} {f g : A ⟶ B} (w : f.f = g.f := by aesop_cat) : f = g :=
+lemma ext {A B : Coalgebra F} {f g : A ⟶ B} (w : f.f = g.f := by cat_disch) : f = g :=
   Hom.ext w
 
 @[simp]
@@ -303,7 +305,7 @@ instance (F : C ⥤ C) : Category (Coalgebra F) := { }
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁.str := by aesop_cat) :
+def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁.str := by cat_disch) :
     V₀ ≅ V₁ where
   hom := { f := h.hom }
   inv :=
@@ -323,7 +325,7 @@ theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
       h := by
         rw [IsIso.eq_inv_comp f.1, ← Category.assoc, ← f.h, Category.assoc]
-        simp }, by aesop_cat, by aesop_cat⟩⟩
+        simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 
@@ -386,7 +388,7 @@ namespace Terminal
 
 variable {A : Coalgebra F} (h : Limits.IsTerminal A)
 
-/-- The inverse of the structure map of an terminal coalgebra -/
+/-- The inverse of the structure map of a terminal coalgebra -/
 @[simp]
 def strInv : F.obj A.1 ⟶ A.1 :=
   (h.from ⟨F.obj A.V, F.map A.str⟩).f
@@ -473,8 +475,7 @@ def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   counitIso := AlgCoalgEquiv.counitIso adj
   functor_unitIso_comp A := by
     ext
-    -- Porting note: why doesn't `simp` work here?
-    exact Category.comp_id _
+    simp
 
 end Adjunction
 

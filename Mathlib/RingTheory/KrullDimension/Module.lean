@@ -3,18 +3,22 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-import Mathlib.RingTheory.Spectrum.Prime.Module
+module
+
+public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+public import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
 
 # Krull Dimension of Module
 
-In this file we define `Module.supportDim R M` for a `R`-module `M` as
+In this file we define `Module.supportDim R M` for an `R`-module `M` as
 the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
 `M` is finitely generated.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 
@@ -28,11 +32,13 @@ open Order
 noncomputable def supportDim : WithBot ℕ∞ :=
   krullDim (Module.support R M)
 
+@[nontriviality]
 lemma supportDim_eq_bot_of_subsingleton [Subsingleton M] : supportDim R M = ⊥ := by
   simpa [supportDim, support_eq_empty_iff]
 
 lemma supportDim_ne_bot_of_nontrivial [Nontrivial M] : supportDim R M ≠ ⊥ := by
-  simpa [supportDim, support_eq_empty_iff, not_subsingleton_iff_nontrivial]
+  have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
+  simp [supportDim]
 
 lemma supportDim_eq_bot_iff_subsingleton : supportDim R M = ⊥ ↔ Subsingleton M := by
   simp [supportDim, krullDim_eq_bot_iff, support_eq_empty_iff]
@@ -87,7 +93,7 @@ lemma support_of_supportDim_eq_zero [IsLocalRing R]
   apply le_antisymm
   · intro p hp
     by_contra nmem
-    simp at nmem
+    simp only [Set.mem_singleton_iff] at nmem
     have : p < ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ :=
       lt_of_le_of_ne (IsLocalRing.le_maximalIdeal IsPrime.ne_top') nmem
     have : Module.supportDim R N > 0 := by

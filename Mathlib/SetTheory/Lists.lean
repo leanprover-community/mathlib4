@@ -3,8 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Sigma.Basic
+public import Batteries.Tactic.Lint.TypeClass
 
 /-!
 # A computable model of ZFA without infinity
@@ -13,7 +18,7 @@ In this file we define finite hereditary lists. This is useful for calculations 
 
 We distinguish two kinds of ZFA lists:
 * Atoms. Directly correspond to an element of the original type.
-* Proper ZFA lists. Can be thought of (but aren't implemented) as a list of ZFA lists (not
+* Proper ZFA lists. Can be thought of (but are not implemented) as a list of ZFA lists (not
   necessarily proper).
 
 For example, `Lists ℕ` contains stuff like `23`, `[]`, `[37]`, `[1, [[2], 3], 4]`.
@@ -24,7 +29,7 @@ As we want to be able to append both atoms and proper ZFA lists to proper ZFA li
 atoms and proper ZFA lists belong to the same type, even though atoms of `α` could be modelled as
 `α` directly. But we don't want to be able to append anything to atoms.
 
-This calls for a two-steps definition of ZFA lists:
+This calls for a two-step definition of ZFA lists:
 * First, define ZFA prelists as atoms and proper ZFA prelists. Those proper ZFA prelists are defined
   by inductive appending of (not necessarily proper) ZFA lists.
 * Second, define ZFA lists by rubbing out the distinction between atoms and proper lists.
@@ -39,13 +44,15 @@ This calls for a two-steps definition of ZFA lists:
   equivalence.
 -/
 
+@[expose] public section
+
 
 variable {α : Type*}
 
 /-- Prelists, helper type to define `Lists`. `Lists' α false` are the "atoms", a copy of `α`.
 `Lists' α true` are the "proper" ZFA prelists, inductively defined from the empty ZFA prelist and
 from appending a ZFA prelist to a proper ZFA prelist. It is made so that you can't append anything
-to an atom while having only one appending function for appending both atoms and proper ZFC prelists
+to an atom while having only one appending function for appending both atoms and proper ZFA prelists
 to a proper ZFA prelist. -/
 inductive Lists'.{u} (α : Type u) : Bool → Type u
   | atom : α → Lists' α false
@@ -58,7 +65,7 @@ compile_inductive% Lists'
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
 list and from appending a ZFA list to a proper ZFA list. -/
 def Lists (α : Type*) :=
-  Σb, Lists' α b
+  Σ b, Lists' α b
 
 namespace Lists'
 
@@ -91,9 +98,8 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 
 @[simp]
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
-  suffices
-    ∀ (b) (h : true = b) (l : Lists' α b),
-      let l' : Lists' α true := by rw [h]; exact l
+  suffices ∀ (b) (h : true = b) (l : Lists' α b),
+      let l' : Lists' α true := h ▸ l
       ofList (toList l') = l'
     from this _ rfl
   fun b h l => by
@@ -101,6 +107,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     | atom => cases h
     | nil => simp
     | cons' b a _ IH => simpa [cons] using IH rfl
+
+/-- Recursion/induction principle for `Lists'.ofList`. -/
+@[elab_as_elim]
+def recOfList {motive : Lists' α true → Sort*} (ofList : ∀ l, motive (ofList l)) : ∀ l, motive l :=
+  fun l ↦ cast (by simp) <| ofList (l.toList)
 
 end Lists'
 
@@ -168,17 +179,18 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
     obtain - | ⟨e, m, s⟩ := s
-    simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
+    simp only [toList, Sigma.eta, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
     · exact mem_of_subset' s h
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
   ⟨fun H _ => mem_of_subset' H, fun H => by
-    rw [← of_toList l₁]
-    revert H; induction' toList l₁ with h t t_ih <;> intro H
-    · exact Subset.nil
-    · simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
+    induction l₁ using recOfList with | _ l₁
+    induction l₁ with
+    | nil => exact Subset.nil
+    | cons h t t_ih =>
+      simp only [to_ofList, ofList, toList_cons, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 
 end Lists'
@@ -228,14 +240,13 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
-  suffices
-    ∀ {b} (l : Lists' α b),
+  suffices ∀ {b} (l : Lists' α b),
       PProd (C ⟨_, l⟩)
         (match b, l with
         | true, l => D l
         | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
-  intros b l
+  intro b l
   induction l with
   | atom => exact ⟨C0 _, ⟨⟩⟩
   | nil => exact ⟨C1 _ D0, D0⟩
@@ -366,6 +377,10 @@ mutual
   termination_by x y => sizeOf x + sizeOf y
 end
 
+/-- Copy over the decidability to the `Setoid` instance. -/
+instance : DecidableRel ((· ≈ ·) : Lists α → Lists α → Prop) :=
+  Lists.Equiv.decidable
+
 -- This is an autogenerated declaration, so there's nothing we can do about it.
 attribute [nolint nonClassInstance] Lists.Equiv.decidable._mutual
 
@@ -399,9 +414,7 @@ instance : EmptyCollection (Finsets α) :=
 instance : Inhabited (Finsets α) :=
   ⟨∅⟩
 
-instance [DecidableEq α] : DecidableEq (Finsets α) := by
-  unfold Finsets
-  -- Porting note: infer_instance does not work for some reason
-  exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
+instance [DecidableEq α] : DecidableEq (Finsets α) :=
+  inferInstanceAs <| DecidableEq (Quotient Lists.instSetoidLists)
 
 end Finsets

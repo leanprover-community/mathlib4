@@ -82,9 +82,7 @@ example : Countable T2 := inferInstance
 /-!
 Not supported: nested inductive types
 -/
-/--
-error: default handlers have not been implemented yet, class: 'Countable' types: [Test.Nested]
--/
+/-- error: None of the deriving handlers for class `Countable` applied to `Nested` -/
 #guard_msgs in
 inductive Nested where
   | mk (xs : List Nested)
@@ -93,9 +91,7 @@ inductive Nested where
 /-!
 Not supported: reflexive inductive types
 -/
-/--
-error: default handlers have not been implemented yet, class: 'Countable' types: [Test.Reflex]
--/
+/-- error: None of the deriving handlers for class `Countable` applied to `Reflex` -/
 #guard_msgs in
 inductive Reflex where
   | mk (f : Bool → Reflex)

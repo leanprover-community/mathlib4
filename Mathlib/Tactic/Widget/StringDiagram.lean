@@ -3,12 +3,17 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Component.Panel.Basic
-import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.HtmlDisplay
-import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+module
+
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Component.Panel.Basic
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public import ProofWidgets.Component.HtmlDisplay
+public import ProofWidgets.Component.Panel.Basic
+public import ProofWidgets.Component.PenroseDiagram
+public import ProofWidgets.Presentation.Expr
 
 /-!
 # String Diagram Widget
@@ -49,14 +54,15 @@ and unitors from lean expressions. This operation is performed using the `Tactic
 function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
-file can also be used to display the string diagram for general bicategories (see the wip
-PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
-categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
-Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
-it directly.
+file can also be used to display the string diagram for general bicategories. With this in mind we
+will sometimes refer to objects and morphisms in monoidal categories as 1-morphisms and 2-morphisms
+respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
+categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
+although the string diagram widget does not use it directly.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -276,8 +282,8 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
   for (l₁, l₂) in pairs nodes do
-    if let .some x₁ := l₁.head? then
-      if let .some x₂ := l₂.head? then
+    if let some x₁ := l₁.head? then
+      if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add 1-morphisms as strings. -/
   for l in strands do
@@ -313,12 +319,12 @@ def mkKind (e : Expr) : MetaM Kind := do
     | none => return e)
   let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
   match ctx? with
-  | .some _ => return .bicategory
-  | .none =>
+  | some _ => return .bicategory
+  | none =>
     let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
     match ctx? with
-    | .some _ => return .monoidal
-    | .none => return .none
+    | some _ => return .monoidal
+    | none => return .none
 
 open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
@@ -327,19 +333,19 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
     | .monoidal => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
+        return some (← e'.nodes, ← e'.strands)
     | .bicategory => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
-    | .none => return .none)
+        return some (← e'.nodes, ← e'.strands)
+    | .none => return none)
   match x with
-  | .none => return none
-  | .some (nodes, strands) => do
+  | none => return none
+  | some (nodes, strands) => do
     DiagramBuilderM.run do
       mkStringDiagram nodes strands
       trace[string_diagram] "Penrose substance: \n{(← get).sub}"
@@ -366,7 +372,7 @@ def mkEqHtml (lhs rhs : Html) : Html :=
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
 def stringEqM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
+  let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
   let some rhs ← stringM? rhs | return none
@@ -375,7 +381,7 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
 def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  forallTelescopeReducing (← inferType e) fun xs a => do
+  forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
     else if let some html ← stringEqM? a then
@@ -443,8 +449,8 @@ def elabStringDiagramCmd : CommandElab := fun
       let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
         catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
       match ← StringDiagram.stringMorOrEqM? e with
-      | .some html => return html
-      | .none => throwError "could not find a morphism or equality: {e}"
+      | some html => return html
+      | none => throwError "could not find a morphism or equality: {e}"
     liftCoreM <| Widget.savePanelWidgetInfo
       (hash HtmlDisplay.javascript)
       (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })

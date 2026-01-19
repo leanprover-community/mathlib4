@@ -3,10 +3,12 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -14,6 +16,8 @@ import Mathlib.Topology.Maps.OpenQuotient
 In this file we construct a section of the quotient map `E → SeparationQuotient E` as a continuous
 linear map `SeparationQuotient E →L[K] E`.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -63,9 +67,6 @@ theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
 theorem isEmbedding_outCLM : IsEmbedding (outCLM K E) :=
   Function.LeftInverse.isEmbedding (mk_outCLM K) continuous_mk (map_continuous _)
-
-@[deprecated (since := "2024-10-26")]
-alias outCLM_embedding := isEmbedding_outCLM
 
 theorem outCLM_injective : Function.Injective (outCLM K E) :=
   (isEmbedding_outCLM K E).injective

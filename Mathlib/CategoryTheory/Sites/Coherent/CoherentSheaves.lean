@@ -3,9 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+module
+
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the coherent topology
@@ -19,9 +21,11 @@ This file characterises sheaves for the coherent topology
   effective epimorphic family.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C]
+variable {C : Type*} [Category* C] [Precoherent C]
 
 universe w in
 lemma isSheaf_coherent (P : Cᵒᵖ ⥤ Type w) :

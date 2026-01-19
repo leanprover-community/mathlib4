@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
@@ -17,6 +19,8 @@ real spectrum is nonnegative. Consequently, when `H` is a Hilbert space, then `H
 equipped with all the usual instances of the continuous functional calculus.
 
 -/
+
+@[expose] public section
 
 namespace ContinuousLinearMap
 
@@ -42,7 +46,7 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
         re_ofReal_mul, inner_self_eq_norm_sq, mul_comm]
     _ ≤ re ⟪(f + (algebraMap ℝ (H →L[𝕜] H)) c) x, x⟫_𝕜 := by
       simpa only [add_apply, inner_add_left, map_add, le_add_iff_nonneg_left]
-        using hf.inner_nonneg_left x
+        using hf.re_inner_nonneg_left x
     _ ≤ ‖⟪(f + (algebraMap ℝ (H →L[𝕜] H)) c) x, x⟫_𝕜‖ := RCLike.re_le_norm _
 
 instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
@@ -58,8 +62,8 @@ lemma instStarOrderedRingRCLike
     constructor
     · intro h
       rw [le_def] at h
-      obtain ⟨p, hp₁, -, hp₃⟩ :=
-        CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts h.1 h.spectrumRestricts
+      obtain ⟨p, hp₁, -, hp₃⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts
+        h.isSelfAdjoint h.spectrumRestricts
       refine ⟨p ^ 2, ?_, by symm; rwa [add_comm, ← eq_sub_iff_add_eq]⟩
       exact AddSubmonoid.subset_closure ⟨p, by simp only [hp₁.star_eq, sq]⟩
     · rintro ⟨p, hp, rfl⟩
@@ -68,8 +72,8 @@ lemma instStarOrderedRingRCLike
       | mem _ hf =>
         obtain ⟨f, rfl⟩ := hf
         simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
-      | one => exact isPositive_zero
-      | mul f g _ _ hf hg => exact hf.add hg
+      | zero => exact isPositive_zero
+      | add f g _ _ hf hg => exact hf.add hg
 
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=

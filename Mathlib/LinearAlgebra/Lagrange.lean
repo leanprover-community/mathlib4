@@ -3,18 +3,20 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lagrange interpolation
 
 ## Main definitions
-* In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
-  indexing of the field over some type. We call the image of v on s the interpolation nodes,
-  though strictly unique nodes are only defined when v is injective on s.
+* In everything that follows, `s : Finset ι` is a finite set of indices, with `v : ι → F` an
+  indexing of the field over some type. We call the image of `v` on `s` the interpolation nodes,
+  though strictly unique nodes are only defined when `v` is injective on `s`.
 * `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
   the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
   are distinct.
@@ -22,8 +24,10 @@ import Mathlib.RingTheory.Polynomial.Basic
   and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
   Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
-  associated with the _nodes_`x i`.
+  associated with the _nodes_ `x i`.
 -/
+
+@[expose] public section
 
 
 open Polynomial
@@ -272,6 +276,13 @@ theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     sum_insert (notMem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 
+theorem leadingCoeff_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
+    (Lagrange.basis s v i).leadingCoeff = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
+  have : (∏ j ∈ s.erase i, (X - C (v j))).coeff (#s - 1) = 1 := by
+    simpa [hi] using (monic_prod_X_sub_C v (s.erase i)).coeff_natDegree
+  simp_rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
+  simp [basisDivisor, Finset.prod_mul_distrib, ← map_prod, this]
+
 end Basis
 
 section Interpolate
@@ -379,14 +390,14 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
       mem_degreeLT.2 <| degree_interpolate_lt _ hvs⟩
   left_inv := by
     rintro ⟨f, hf⟩
-    simp only [Subtype.mk_eq_mk, Subtype.coe_mk, dite_eq_ite]
+    simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
     exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
-    simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
+    simp only [eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
@@ -405,7 +416,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (#s - 1))]
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
-    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
+    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
   · simp_rw [eval_finset_sum, eval_mul]
     by_cases hi' : i ∈ s
     · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
@@ -437,6 +448,32 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
     sdiff_insert_insert_of_mem_of_notMem hj (notMem_singleton.mpr hij.symm),
     sdiff_singleton_eq_erase]
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
+
+open scoped Classical in
+theorem interpolate_poly_eq_self
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
+    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
+
+theorem leadingCoeff_eq_sum
+    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
+    P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
+  have P_degree : P.degree = ↑(s.card - 1) := by
+    cases h : P.degree
+    case bot => simp_all
+    case coe d =>
+      rw [Nat.cast_withBot] at hP ⊢
+      suffices #s = d + 1 by grind
+      rw [h] at hP
+      simp [← WithBot.coe_inj, hP]
+  have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
+  rw [leadingCoeff, P_natDegree]
+  rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
+  rw [interpolate_apply, finset_sum_coeff]
+  congr! with i hi
+  rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
+  field_simp
 
 end Interpolate
 
@@ -523,17 +560,17 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
-  (G : Subgroup Rˣ) [Fintype G] :
-  nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
+    (G : Subgroup Rˣ) [Fintype G] :
+    nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
-  · exact Set.injOn_of_injective Units.ext
+  · exact Units.val_injective.injOn
   · simp
   · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
       nsmul_eq_mul, mul_one, Nat.cast_inj]
     exact rfl
   · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
-  · intros i hi
+  · intro i hi
     rw [eval_nodal_at_node hi]
     replace hi : i ∈ G := by simpa using hi
     obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩
@@ -561,9 +598,12 @@ theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
   rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 
-theorem nodalWeight_eq_eval_nodal_derative (hi : i ∈ s) :
+theorem nodalWeight_eq_eval_derivative_nodal (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
+
+@[deprecated (since := "2025-07-08")]
+alias nodalWeight_eq_eval_nodal_derative := nodalWeight_eq_eval_derivative_nodal
 
 theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s v i ≠ 0 := by
   rw [nodalWeight, prod_ne_zero_iff]

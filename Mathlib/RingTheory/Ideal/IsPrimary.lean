@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yakov Pechersky
 -/
-import Mathlib.RingTheory.IsPrimary
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.RingTheory.IsPrimary
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals
@@ -21,6 +23,8 @@ Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing
 
 -/
 
+@[expose] public section
+
 namespace Ideal
 
 variable {R : Type*} [CommSemiring R]
@@ -33,7 +37,7 @@ abbrev IsPrimary (I : Ideal R) : Prop :=
 lemma isPrimary_iff {I : Ideal R} :
     I.IsPrimary ↔ I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I := by
   rw [IsPrimary, Submodule.IsPrimary, forall_comm]
-  simp only [mul_comm, mem_radical_iff, and_congr_right_iff,
+  simp only [mul_comm, mem_radical_iff,
     ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
@@ -69,7 +73,7 @@ lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (h
   induction s using Finset.induction_on generalizing i with
   | empty => simp at hi
   | insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl|⟨y, hy⟩
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
     · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]

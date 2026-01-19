@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Ideal
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -27,6 +29,8 @@ is a statement and proof of the universal property of these quotients.
 
 lie algebra, quotient
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -64,8 +68,8 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 

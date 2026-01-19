@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.Topology.Algebra.UniformMulAction
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition
@@ -39,6 +41,8 @@ is useful for the Lebesgue decomposition theorem.
 
 Jordan decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -195,7 +199,7 @@ theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := s.exists_compl_positive_negative.choose
-  let hi := s.exists_compl_positive_negative.choose_spec
+  have hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
     negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
@@ -229,7 +233,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
   ext k hk
   rw [toSignedMeasure_sub_apply hk, toMeasureOfZeroLE_real_apply _ hi₂ hi₁ hk,
     toMeasureOfLEZero_real_apply _ hi₃ hi₁.compl hk]
-  simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
+  simp only [sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
     Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _
@@ -275,7 +279,10 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
-  all_goals first | linarith | assumption
+  · linarith
+  · linarith
+  · assumption
+  · assumption
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
 between the two sets. -/
@@ -427,17 +434,17 @@ private theorem toJordanDecomposition_smul_real_nonneg (s : SignedMeasure α) (r
 
 theorem toJordanDecomposition_smul_real (s : SignedMeasure α) (r : ℝ) :
     (r • s).toJordanDecomposition = r • s.toJordanDecomposition := by
-  by_cases hr : 0 ≤ r
+  by_cases! hr : 0 ≤ r
   · exact toJordanDecomposition_smul_real_nonneg s r hr
   · ext1
-    · rw [real_smul_posPart_neg _ _ (not_le.1 hr),
+    · rw [real_smul_posPart_neg _ _ hr,
         show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_posPart,
         toJordanDecomposition_smul_real_nonneg, ← smul_negPart, real_smul_nonneg]
-      all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
-    · rw [real_smul_negPart_neg _ _ (not_le.1 hr),
+      all_goals exact Left.nonneg_neg_iff.2 hr.le
+    · rw [real_smul_negPart_neg _ _ hr,
         show r • s = -(-r • s) by rw [neg_smul, neg_neg], toJordanDecomposition_neg, neg_negPart,
         toJordanDecomposition_smul_real_nonneg, ← smul_posPart, real_smul_nonneg]
-      all_goals exact Left.nonneg_neg_iff.2 (le_of_lt (not_le.1 hr))
+      all_goals exact Left.nonneg_neg_iff.2 hr.le
 
 theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition α}
     (h : s = j.toSignedMeasure) : s.toJordanDecomposition = j := by
@@ -459,7 +466,7 @@ theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
   rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
     Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
-  · rw [if_pos hi, if_pos hi]; simp [hs.1, hs.2, measureReal_def]
+  · simp [hs.1, hs.2, measureReal_def]
   · simp [if_neg hi]
 
 theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure α ℝ≥0∞) :

@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Irreducible.Lemmas
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Irreducible.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -26,7 +28,9 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset
+public section
+
+assert_not_exists IsOrderedMonoid Multiset
 
 variable {M N : Type*}
 
@@ -106,14 +110,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
 theorem prime_pow_succ_dvd_mul {M : Type*} [CancelCommMonoidWithZero M] {p x y : M} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
-  intro hy
-  induction i generalizing x with
-  | zero => rw [pow_one] at hxy ⊢; exact (h.dvd_or_dvd hxy).resolve_right hy
-  | succ i ih =>
-    rw [pow_succ'] at hxy ⊢
-    obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
-    rw [mul_assoc] at hxy
-    exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
+  exact fun a ↦ Prime.pow_dvd_of_dvd_mul_right h (i + 1) a hxy
 
 section CancelCommMonoidWithZero
 
@@ -132,9 +129,6 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
 
 theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_isSquare
-
-@[deprecated (since := "2025-04-17")]
-alias Prime.not_square := Prime.not_isSquare
 
 theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSquare ha
 
@@ -165,13 +159,11 @@ section CancelCommMonoidWithZero
 theorem DvdNotUnit.ne [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) : p ≠ q := by
   by_contra hcontra
   obtain ⟨hp, x, hx', hx''⟩ := h
-  conv_lhs at hx'' => rw [← hcontra, ← mul_one p]
-  rw [(mul_left_cancel₀ hp hx'').symm] at hx'
-  exact hx' isUnit_one
+  simp_all
 
 theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) : Function.Injective fun n : ℕ => q ^ n := by
-  refine injective_of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
+  refine .of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
 
@@ -180,3 +172,9 @@ theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUni
   (pow_injective_of_not_isUnit hq hq').eq_iff
 
 end CancelCommMonoidWithZero
+
+lemma IsRelPrime.of_map
+    {M N F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MulHomClass F M N]
+    (f : F) [IsLocalHom f] {a b : M}
+    (hab : IsRelPrime (f a) (f b)) : IsRelPrime a b :=
+  fun _ h₁ h₂ ↦ .of_map _ _ (hab (map_dvd f h₁) (map_dvd f h₂))

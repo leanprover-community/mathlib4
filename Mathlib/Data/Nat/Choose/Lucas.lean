@@ -3,9 +3,11 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lucas's theorem
@@ -21,6 +23,8 @@ respectively.
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
+public section
+
 open Finset hiding choose
 
 open Nat Polynomial
@@ -35,7 +39,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
     simpa using add_pow_eq_mul_pow_add_pow_div_char (X : (ZMod p)[X]) 1 p _
-  simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
+  simp only [← ZMod.intCast_eq_intCast_iff,
     ← coeff_X_add_one_pow _ n k, ← eq_intCast (Int.castRingHom (ZMod p)), ← coeff_map,
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
   simp only [add_pow, one_pow, mul_one, ← pow_mul, sum_mul_sum]
@@ -56,7 +60,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
   split_ifs with h
   · simp
-  · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
+  · rw [mem_product, mem_range, mem_range, not_and_or, Nat.lt_succ_iff, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`

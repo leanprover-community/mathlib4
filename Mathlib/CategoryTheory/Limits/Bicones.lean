@@ -3,8 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Cones
-import Mathlib.CategoryTheory.FinCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Cones
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Bicones
@@ -19,6 +22,8 @@ Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram
 
 This is used in `CategoryTheory.Functor.Flat`.
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -77,7 +82,7 @@ instance biconeCategoryStruct : CategoryStruct (Bicone J) where
       apply BiconeHom.left
     · cases g
       apply BiconeHom.right
-    · rcases g with (_|_|_|_|g)
+    · rcases g with (_ | _ | _ | _ | g)
       exact BiconeHom.diagram (f ≫ g)
 
 instance biconeCategory : Category (Bicone J) where
@@ -97,7 +102,7 @@ variable (J : Type v₁) [SmallCategory J]
 def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone F) : Bicone J ⥤ C where
   obj X := Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j
   map f := by
-    rcases f with (_|_|_|_|f)
+    rcases f with (_ | _ | _ | _ | f)
     · exact 𝟙 _
     · exact 𝟙 _
     · exact c₁.π.app _
@@ -105,7 +110,7 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
     · exact F.map f
   map_id X := by cases X <;> simp
   map_comp f g := by
-    rcases f with (_|_|_|_|_)
+    rcases f with (_ | _ | _ | _ | _)
     · exact (Category.id_comp _).symm
     · exact (Category.id_comp _).symm
     · cases g
@@ -145,7 +150,7 @@ instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   · exact
     { elems := Finset.image BiconeHom.diagram Fintype.elems
       complete := fun f => by
-        rcases f with (_|_|_|_|f)
+        rcases f with (_ | _ | _ | _ | f)
         simp only [Finset.mem_image]
         use f
         simpa using Fintype.complete _ }

@@ -3,8 +3,15 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
+public import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Hilbert C⋆-modules
@@ -54,6 +61,8 @@ then an `InnerProductSpace` over `ℂ`.
 + Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
   December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder RightActions
 
@@ -181,7 +190,7 @@ protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inne
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
   ⟨fun h => by simpa [norm_eq_sqrt_norm_inner_self (A := A), inner_self] using h,
-    fun h => by simp [norm, h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
+    fun h => by simp [h, norm_eq_sqrt_norm_inner_self (A := A)]⟩
 
 end
 
@@ -190,7 +199,7 @@ variable [StarOrderedRing A]
 open scoped InnerProductSpace in
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
-  rcases eq_or_ne x 0 with h|h
+  rcases eq_or_ne x 0 with h | h
   · simp [h, CStarModule.norm_zero A (E := E)]
   · have h₁ : ∀ (a : A),
         (0 : A) ≤ ‖x‖ ^ 2 • (a * star a) - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
@@ -206,7 +215,8 @@ lemma inner_mul_inner_swap_le {x y : E} : ⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 
             _ ≤ ‖x‖ ^ 2 • (a * star a) - ‖x‖ ^ 2 • (a * ⟪y, x⟫)
                   - ‖x‖ ^ 2 • (⟪x, y⟫ * star a) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
-                      calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) := CStarAlgebra.conjugate_le_norm_smul'
+                      calc _ ≤ ‖⟪x, x⟫_A‖ • (a * star a) :=
+                          CStarAlgebra.star_right_conjugate_le_norm_smul
                         _ = (√‖⟪x, x⟫_A‖) ^ 2 • (a * star a) := by
                           rw [Real.sq_sqrt]
                           positivity
@@ -221,7 +231,7 @@ variable (E) in
 lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪x, y⟫ * ⟪y, x⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_self_mul_star, pow_two]
-    _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
+    _ ≤ ‖‖x‖ ^ 2 • ⟪y, y⟫‖ := by
                 refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
                 rw [← star_inner x]
                 exact mul_star_self_nonneg ⟪x, y⟫_A
@@ -229,7 +239,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
                 simp only [norm_eq_sqrt_norm_inner_self (A := A), norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
-  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
+  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by simp)).mp this
   exact mul_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in
@@ -245,7 +255,7 @@ protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := b
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self (A := A)]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
-  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by norm_num)).mp h
+  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by simp)).mp h
   exact add_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in

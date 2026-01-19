@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # The Karoubi envelope of a category
@@ -21,13 +23,15 @@ complete category. It is also preadditive when `C` is preadditive.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 namespace Idempotents
 
@@ -43,7 +47,7 @@ structure Karoubi where
   /-- an endomorphism of the object -/
   p : X ⟶ X
   /-- the condition that the given endomorphism is an idempotent -/
-  idem : p ≫ p = p := by aesop_cat
+  idem : p ≫ p = p := by cat_disch
 
 namespace Karoubi
 
@@ -69,7 +73,7 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : P.p ≫ f ≫ Q.p = f := by aesop_cat
+  comm : P.p ≫ f ≫ Q.p = f := by cat_disch
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
@@ -218,8 +222,8 @@ instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
     use Y
     exact
       Nonempty.intro
-        { hom := ⟨i, by erw [id_comp, ← h₂, ← assoc, h₁, id_comp]⟩
-          inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
+        { hom := ⟨i, by simp [← Category.assoc, h₁, ← h₂]⟩
+          inv := ⟨e, by simp [Category.assoc, h₁, ← h₂]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
 instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where
@@ -257,10 +261,10 @@ theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ deco
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
 
-theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
-theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
 theorem decompId_i_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
@@ -275,7 +279,25 @@ theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=
   map_zsmul (inclusionHom P Q) n f
 
+/-- If `X : Karoubi C`, then `X` is a retract of `((toKaroubi C).obj X.X)`. -/
+@[simps]
+def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
+  i := ⟨X.p, by simp⟩
+  r := ⟨X.p, by simp⟩
+
 end Karoubi
+
+instance : (toKaroubi C).PreservesEpimorphisms where
+  preserves f _ := ⟨fun g h eq ↦ by
+    ext
+    rw [← cancel_epi f]
+    simpa using eq⟩
+
+instance : (toKaroubi C).PreservesMonomorphisms where
+  preserves f _ := ⟨fun g h eq ↦ by
+    ext
+    rw [← cancel_mono f]
+    simpa using eq⟩
 
 end Idempotents
 

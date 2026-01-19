@@ -3,9 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Continuity of inner product
@@ -17,6 +18,8 @@ We show that the inner product is continuous, `continuous_inner`.
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

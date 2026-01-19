@@ -3,12 +3,15 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Elab.Tactic.Config
-import Lean.Elab.Tactic.RCases
-import Lean.Meta.Tactic.Assumption
-import Lean.Meta.Tactic.Rfl
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
+module
+
+public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.Tactic.RCases
+public meta import Lean.Meta.Tactic.Assumption
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
 
 /-!
 # The `congr!` tactic
@@ -21,6 +24,8 @@ The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 See the syntax docstring for more details.
 -/
 
+public meta section
+
 universe u v
 
 open Lean Meta Elab Tactic
@@ -31,7 +36,7 @@ initialize registerTraceClass `congr!.synthesize
 /-- The configuration for the `congr!` tactic. -/
 structure Congr!.Config where
   /-- If `closePre := true`, then try to close goals before applying congruence lemmas
-  using tactics such as `rfl` and `assumption.  These tactics are applied with the
+  using tactics such as `rfl` and `assumption`. These tactics are applied with the
   transparency level specified by `preTransparency`, which is `.reducible` by default. -/
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
@@ -414,7 +419,7 @@ This is a non-dependent version of `pi_congr` that allows the domains to be diff
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
-  show (∀ (x : α), (fun _ => β) x) = _
+  change (∀ (x : α), (fun _ => β) x) = _
   rw [funext h']
 
 /-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`
@@ -494,8 +499,8 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : HEq x y → Prop}
-    (h : (he : x = y) → p (heq_of_eq he)) (he : HEq x y) : p he := by
+private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : x ≍ y → Prop}
+    (h : (he : x = y) → p (heq_of_eq he)) (he : x ≍ y) : p he := by
   cases he
   exact h rfl
 
@@ -510,9 +515,9 @@ that is trivial. If there are any patterns in the current `CongrMetaM` state the
 of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
-- deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
+- deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
 - deleting Prop hypotheses that are already in the local context.
-- converting `HEq x y` to `x = y` if possible.
+- converting `x ≍ y` to `x = y` if possible.
 - converting `x = y` to `x ↔ y` if possible.
 -/
 partial
@@ -712,7 +717,7 @@ while `congr! 2` produces the intended `⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
 ```lean
-congr! (config := {transparency := .default}) 2
+congr! (transparency := .default) 2
 ```
 This overrides the default, which is to apply congruence lemmas at reducible transparency.
 

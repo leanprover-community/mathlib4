@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Operations
-import Mathlib.Data.Nat.WithBot
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Data.Nat.WithBot
 
 /-!
 # Results on polynomials of specific small degrees
 -/
+
+public section
 
 open Finsupp Finset
 
@@ -28,11 +32,8 @@ theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X
   ext fun n =>
     Nat.casesOn n (by simp) fun n =>
       Nat.casesOn n (by simp [coeff_C]) fun m => by
-        -- Porting note: `by decide` → `Iff.mpr ..`
-        have : degree p < m.succ.succ := lt_of_le_of_lt h
-          (Iff.mpr WithBot.coe_lt_coe <| Nat.succ_lt_succ <| Nat.zero_lt_succ m)
-        simp [coeff_eq_zero_of_degree_lt this, coeff_C, Nat.succ_ne_zero, coeff_X, Nat.succ_inj,
-          @eq_comm ℕ 0]
+        have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
+        simp [coeff_eq_zero_of_degree_lt this]
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :
     p = C p.leadingCoeff * X + C (p.coeff 0) :=

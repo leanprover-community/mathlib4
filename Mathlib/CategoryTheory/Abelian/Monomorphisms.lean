@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Monomorphisms are stable under cobase change
@@ -14,6 +16,8 @@ In an abelian category `C`, the class of morphism
 `epimorphisms C` is stable under base change.
 
 -/
+
+@[expose] public section
 
 universe v u
 

@@ -3,10 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Algebra.GroupWithZero.Nat
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # ℕ and ℤ are normalized GCD monoids.
@@ -23,7 +25,9 @@ import Mathlib.Algebra.GroupWithZero.Nat
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 /-- `ℕ` is a gcd_monoid. -/
 instance : GCDMonoid ℕ where
@@ -56,8 +60,8 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
-    rcases hna.lt_or_lt with ha | ha <;> rcases hnb.lt_or_lt with hb | hb <;>
-      simp [Int.mul_nonneg_iff, ha.le, ha.not_le, hb.le, hb.not_le]
+    rcases hna.lt_or_gt with ha | ha <;> rcases hnb.lt_or_gt with hb | hb <;>
+      simp [Int.mul_nonneg_iff, ha.le, ha.not_ge, hb.le, hb.not_ge]
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
       eq.symm ▸ if_neg (not_le_of_gt <| show (-1 : ℤ) < 0 by decide)
@@ -81,10 +85,10 @@ theorem abs_eq_normalize (z : ℤ) : |z| = normalize z := by
   simp [abs_of_nonneg, abs_of_nonpos, normalize_of_nonneg, normalize_of_nonpos, *]
 
 theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z := by
-  by_cases h : 0 ≤ z
+  by_cases! h : 0 ≤ z
   · exact h
-  · rw [normalize_of_nonpos (le_of_not_le h)] at hz
-    omega
+  · rw [normalize_of_nonpos h.le] at hz
+    lia
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩
@@ -146,7 +150,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
   refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
   · refine Associates.forall_associated.2 fun a ↦ ?_
     refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
-    simp [Int.abs_eq_normalize, normalize_apply]
+    simp [Int.natCast_natAbs, Int.abs_eq_normalize, normalize_apply]
   · dsimp only [Associates.out_mk]
     rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_natCast]
 

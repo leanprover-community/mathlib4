@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Data.Option.Basic
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -40,6 +42,7 @@ of some code.
 
 -/
 
+@[expose] public section
 
 open Encodable Denumerable
 
@@ -140,10 +143,11 @@ def ofNatCode : ℕ → Code
     have _m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
     match n.bodd, n.div2.bodd with
     | false, false => pair (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
-    | false, true  => comp (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
-    | true , false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
-    | true , true  => rfind' (ofNatCode m)
+    | false, true => comp (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
+    | true, false => prec (ofNatCode m.unpair.1) (ofNatCode m.unpair.2)
+    | true, true => rfind' (ofNatCode m)
 
+set_option backward.privateInPublic true in
 /-- Proof that `Nat.Partrec.Code.ofNatCode` is the inverse of `Nat.Partrec.Code.encodeCode` -/
 private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | 0 => by simp [ofNatCode, encodeCode]
@@ -162,11 +166,13 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     have IH := encode_ofNatCode m
     have IH1 := encode_ofNatCode m.unpair.1
     have IH2 := encode_ofNatCode m.unpair.2
-    conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
+    conv_rhs => rw [← Nat.bit_bodd_div2 n, ← Nat.bit_bodd_div2 n.div2]
     simp only [ofNatCode.eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
-      simp [m, encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
+      simp [m, encodeCode, IH, IH1, IH2, Nat.bit_val]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instDenumerable : Denumerable Code :=
   mk'
     ⟨encodeCode, ofNatCode, fun c => by
@@ -199,7 +205,7 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  omega
+  lia
 
 end Nat.Partrec.Code
 
@@ -217,8 +223,6 @@ theorem primrec₂_pair : Primrec₂ pair :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias pair_prim := primrec₂_pair
-
 theorem primrec₂_comp : Primrec₂ comp :=
   Primrec₂.ofNat_iff.2 <|
     Primrec₂.encode_iff.1 <|
@@ -228,8 +232,6 @@ theorem primrec₂_comp : Primrec₂ comp :=
             Primrec₂.natPair.comp (encode_iff.2 <| (Primrec.ofNat Code).comp fst)
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
-
-@[deprecated (since := "2025-05-12")] alias comp_prim := primrec₂_comp
 
 theorem primrec₂_prec : Primrec₂ prec :=
   Primrec₂.ofNat_iff.2 <|
@@ -241,8 +243,6 @@ theorem primrec₂_prec : Primrec₂ prec :=
               (encode_iff.2 <| (Primrec.ofNat Code).comp snd))
         (Primrec₂.const 4)
 
-@[deprecated (since := "2025-05-12")] alias prec_prim := primrec₂_prec
-
 theorem primrec_rfind' : Primrec rfind' :=
   ofNat_iff.2 <|
     encode_iff.1 <|
@@ -251,8 +251,7 @@ theorem primrec_rfind' : Primrec rfind' :=
           encode_iff.2 <| Primrec.ofNat Code)
         (const 4)
 
-@[deprecated (since := "2025-05-12")] alias rfind_prim := primrec_rfind'
-
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem primrec_recOn' {α σ}
     [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Primrec c) {z : α → σ}
     (hz : Primrec z) {s : α → σ} (hs : Primrec s) {l : α → σ} (hl : Primrec l) {r : α → σ}
@@ -266,7 +265,7 @@ theorem primrec_recOn' {α σ}
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
     Primrec (fun a => F a (c a) : α → σ) := by
-  intros _ _ _ _ F
+  intro _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     letI a := p.1.1; letI IH := p.1.2; letI n := p.2.1; letI m := p.2.2
     IH[m]?.bind fun s =>
@@ -320,7 +319,7 @@ theorem primrec_recOn' {α σ}
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
-  show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
+  change G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
     = some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
     simp only [m, div2_val]
@@ -329,12 +328,10 @@ theorem primrec_recOn' {α σ}
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
-
-@[deprecated (since := "2025-05-12")] alias rec_prim' := primrec_recOn'
 
 /-- Recursion on `Nat.Partrec.Code` is primitive recursive. -/
 theorem primrec_recOn {α σ}
@@ -356,8 +353,6 @@ theorem primrec_recOn {α σ}
     (pc := fun a b => pc a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hpc)
     (rf := fun a b => rf a b.1 b.2) (.mk hrf)
 
-@[deprecated (since := "2025-05-12")] alias rec_prim := primrec_recOn
-
 end Nat.Partrec.Code
 end
 
@@ -366,6 +361,7 @@ section
 
 open Computable
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 /-- Recursion on `Nat.Partrec.Code` is computable. -/
 theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc : Computable c)
     {z : α → σ} (hz : Computable z) {s : α → σ} (hs : Computable s) {l : α → σ} (hl : Computable l)
@@ -380,7 +376,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
     Computable fun a => F a (c a) := by
   -- TODO(Mario): less copy-paste from previous proof
-  intros _ _ _ _ F
+  intro _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     letI a := p.1.1; letI IH := p.1.2; letI n := p.2.1; letI m := p.2.2
     IH[m]?.bind fun s =>
@@ -435,7 +431,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
   iterate 4 rcases n with - | n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
-  show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
+  change G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
     = some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
     simp only [m, div2_val]
@@ -444,12 +440,10 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁, m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
+  simp [G₁, m, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
-
-@[deprecated (since := "2025-05-12")] alias rec_computable := computable_recOn
 
 end
 
@@ -517,13 +511,9 @@ theorem primrec_const : Primrec Code.const :=
     fun n => by simp; induction n <;>
       simp [*, Code.const, Function.iterate_succ', -Function.iterate_succ]
 
-@[deprecated (since := "2025-05-12")] alias const_prim := primrec_const
-
 theorem primrec₂_curry : Primrec₂ curry :=
   primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
     (_root_.Primrec.const Code.id)
-
-@[deprecated (since := "2025-05-12")] alias curry_prim := primrec₂_curry
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
@@ -619,6 +609,7 @@ theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
       cases c <;> rw [evaln] at h <;> exact this h
     simpa [Option.bind_eq_some_iff] using Nat.lt_succ_of_le
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c n → x ∈ evaln k₂ c n
   | 0, k₂, c, n, x, _, h => by simp [evaln] at h
   | k + 1, k₂ + 1, c, n, x, hl, h => by
@@ -657,6 +648,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
@@ -695,6 +687,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
   refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
@@ -925,6 +918,7 @@ private theorem evaln_map (k c n) :
       exact kn.elim (evaln_bound e)
     simpa using kn
 
+set_option linter.flexible false in -- TODO: revisit this after #13791 is merged
 /-- The `Nat.Partrec.Code.evaln` function is primitive recursive. -/
 theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a.2 :=
   have :
@@ -944,8 +938,8 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
       rcases k with - | k'
       · simp [evaln]
       let k := k' + 1
-      simp only [show k'.succ = k from rfl]
-      simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, Nat.lt_succ_iff] at nk
+      simp only
+      simp only [List.mem_range, Nat.lt_succ_iff] at nk
       have hg :
         ∀ {k' c' n},
           Nat.pair k' (encode c') < Nat.pair k (encode c) →
@@ -970,7 +964,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
         · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq]
+        simp only
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
         cases evaln k' _ _
         · rfl
@@ -979,15 +973,13 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         rcases evaln k cf n with - | x
         · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.bind_some]
-        cases x <;> simp [Nat.succ_ne_zero]
+        simp only [Option.bind_some]
+        cases x <;> simp
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
   (Primrec.option_bind
     (Primrec.list_getElem?.comp (this.comp (_root_.Primrec.const ())
       (Primrec.encode_iff.2 Primrec.fst)) Primrec.snd) Primrec.snd.to₂).of_eq
     fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map, Option.bind_map]
-
-@[deprecated (since := "2025-05-12")] alias evaln_prim := primrec_evaln
 
 end
 

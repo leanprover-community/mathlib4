@@ -3,11 +3,12 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finsupp.Single
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.GetD
 
 /-!
 
@@ -33,6 +34,8 @@ bounds of a list. For concretely defined lists that are made up of elements of d
 this holds. More work will be needed to support lists over non-dec-eq types like `ℝ`, where the
 elements are beyond the dec-eq terms of casted values from `ℕ, ℤ, ℚ`.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -81,7 +84,7 @@ theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
 
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
-  ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
+  ext ⟨_ | i⟩ <;> simp
 
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
@@ -90,15 +93,15 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
       toFinsupp l₁ + (toFinsupp l₂).embDomain (addLeftEmbedding l₁.length) := by
   ext n
   simp only [toFinsupp_apply, Finsupp.add_apply]
-  cases lt_or_le n l₁.length with
+  cases lt_or_ge n l₁.length with
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
-    omega
+    lia
   | inr h =>
     rcases Nat.exists_eq_add_of_le h with ⟨k, rfl⟩
     rw [getD_append_right _ _ _ _ h, Nat.add_sub_cancel_left, getD_eq_default _ _ h, zero_add]
-    exact Eq.symm (Finsupp.embDomain_apply _ _ _)
+    exact Eq.symm (Finsupp.embDomain_apply_self _ _ _)
 
 theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
@@ -120,15 +123,12 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
 theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
     toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by
-  /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
+  /- Porting note: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
-
-@[deprecated (since := "2025-01-28")]
-alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]
 
 end List

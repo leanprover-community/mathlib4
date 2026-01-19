@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Vector bundles
@@ -51,6 +53,8 @@ notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 ## Tags
 Vector bundle
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -131,8 +135,6 @@ theorem linearMapAt_def_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R]
 theorem linearMapAt_def_of_notMem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
-
-@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
 
 theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
@@ -227,8 +229,6 @@ theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R]
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
-
 theorem symmₗ_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y :=
   e.toPretrivialization.symmₗ_linearMapAt hb y
@@ -279,7 +279,7 @@ theorem coe_coordChangeL' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.
 theorem symm_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e'.baseSet ∩ e.baseSet) : (e.coordChangeL R e' b).symm = e'.coordChangeL R e b := by
   apply ContinuousLinearEquiv.toLinearEquiv_injective
-  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).symm_toLinearEquiv,
+  rw [coe_coordChangeL' e' e hb, (coordChangeL R e e' b).toLinearEquiv_symm,
     coe_coordChangeL' e e' hb.symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
 
 theorem coordChangeL_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
@@ -298,7 +298,7 @@ theorem mk_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.Is
 
 theorem apply_symm_apply_eq_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R]
     [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
-    e' (e.toPartialHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
+    e' (e.toOpenPartialHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
   rw [e.mk_coordChangeL e' hb, e.mk_symm hb.1]
 
 /-- A version of `Trivialization.coordChangeL_apply` that fully unfolds `coordChange`. The
@@ -306,7 +306,7 @@ right-hand side is ugly, but has good definitional properties for specifically d
 trivializations. -/
 theorem coordChangeL_apply' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
-    coordChangeL R e e' b y = (e' (e.toPartialHomeomorph.symm (b, y))).2 := by
+    coordChangeL R e e' b y = (e' (e.toOpenPartialHomeomorph.symm (b, y))).2 := by
   rw [e.coordChangeL_apply e' hb, e.mk_symm hb.1]
 
 theorem coordChangeL_symm_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R]
@@ -437,7 +437,7 @@ theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e
   · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
-  · simp only [coe_coe, continuousLinearEquivAt_apply]
+  · simp only [continuousLinearEquivAt_apply]
 
 protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x : B}
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
@@ -447,14 +447,8 @@ variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
-    e.toPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target := by
-    rw [e.target_eq]
-    exact ⟨hb, mem_univ _⟩
-  apply e.injOn (e.map_target h)
-  · simpa only [e.source_eq, mem_preimage]
-  · simp_rw [e.right_inv h, coe_coe, e.apply_eq_prod_continuousLinearEquivAt R b hb,
-      ContinuousLinearEquiv.apply_symm_apply]
+    e.toOpenPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
+  simpa using (mk_symm _ hb _).symm
 
 theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (π F E))
     [e.IsLinear R] [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :
@@ -505,7 +499,7 @@ variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
-@[simps (config := mfld_cfg)]
+@[simps (attr := mfld_simps) -fullyApplied]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b
@@ -559,7 +553,7 @@ protected def TotalSpace :=
   Bundle.TotalSpace F Z.Fiber
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
+def trivChange (i j : ι) : OpenPartialHomeomorph (B × F) (B × F) :=
   Z.toFiberBundleCore.trivChange i j
 
 @[simp, mfld_simps]
@@ -611,16 +605,18 @@ theorem mem_localTriv_target (p : B × F) :
 
 @[simp, mfld_simps]
 theorem localTriv_symm_fst (p : B × F) :
-    (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
+    (Z.localTriv i).toOpenPartialHomeomorph.symm p =
+      ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 
 @[simp, mfld_simps]
-theorem localTriv_symm_apply {b : B} (hb : b ∈ Z.baseSet i) (v : F) :
+theorem localTriv_symm_apply {b : B} (hb : b ∈ (Z.localTriv i).baseSet) (v : F) :
     (Z.localTriv i).symm b v = Z.coordChange i (Z.indexAt b) b v := by
   apply (Z.localTriv i).symm_apply hb v
 
 @[simp, mfld_simps]
-theorem localTriv_coordChange_eq {b : B} (hb : b ∈ Z.baseSet i ∩ Z.baseSet j) (v : F) :
+theorem localTriv_coordChange_eq {b : B}
+    (hb : b ∈ (Z.localTriv i).baseSet ∧ b ∈ (Z.localTriv j).baseSet) (v : F) :
     (Z.localTriv i).coordChangeL R (Z.localTriv j) b v = Z.coordChange i j b v := by
   rw [Trivialization.coordChangeL_apply', localTriv_symm_fst, localTriv_apply, coordChange_comp]
   exacts [⟨⟨hb.1, Z.mem_baseSet_at b⟩, hb.2⟩, hb]
@@ -654,6 +650,8 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
 instance fiberBundle : FiberBundle F Z.Fiber :=
   Z.toFiberBundleCore.fiberBundle
 
+protected lemma trivializationAt : trivializationAt F Z.Fiber b = Z.localTrivAt b := rfl
+
 instance vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by
     rintro _ ⟨i, rfl⟩
@@ -676,7 +674,7 @@ theorem isOpenMap_proj : IsOpenMap Z.proj :=
 variable {i j}
 
 @[simp, mfld_simps]
-theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ Z.baseSet i) :
+theorem localTriv_continuousLinearMapAt {b : B} (hb : b ∈ (Z.localTriv i).baseSet) :
     (Z.localTriv i).continuousLinearMapAt R b = Z.coordChange (Z.indexAt b) i b := by
   ext1 v
   rw [(Z.localTriv i).continuousLinearMapAt_apply R, (Z.localTriv i).coe_linearMapAt_of_mem]
@@ -690,7 +688,7 @@ theorem trivializationAt_continuousLinearMapAt {b₀ b : B}
   Z.localTriv_continuousLinearMapAt hb
 
 @[simp, mfld_simps]
-theorem localTriv_symmL {b : B} (hb : b ∈ Z.baseSet i) :
+theorem localTriv_symmL {b : B} (hb : b ∈ (Z.localTriv i).baseSet) :
     (Z.localTriv i).symmL R b = Z.coordChange i (Z.indexAt b) b := by
   ext1 v
   rw [(Z.localTriv i).symmL_apply R, (Z.localTriv i).symm_apply]
@@ -727,7 +725,7 @@ open VectorBundle
 /-- This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
-which the partial equivalences are also partial homeomorphisms and hence vector bundle
+which the partial equivalences are also open partial homeomorphisms and hence vector bundle
 trivializations. The topology on the fibers is induced from the one on the total space.
 
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
