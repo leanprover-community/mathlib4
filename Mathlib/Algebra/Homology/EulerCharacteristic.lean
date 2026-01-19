@@ -130,17 +130,8 @@ noncomputable def eulerCharTsum (X : CategoryTheory.GradedObject ι (ModuleCat R
 because the sign `c.χ i` is always nonzero (it's a unit). -/
 lemma support_eulerChar_summand (X : CategoryTheory.GradedObject ι (ModuleCat R)) :
     Function.support (fun i => (c.χ i : ℤ) * Module.finrank R (X i)) = finrankSupport X := by
-  simp only [finrankSupport]
-  rw [Function.support_mul]
-  have h_chi : Function.support (fun i => (c.χ i : ℤ)) = Set.univ := by
-    ext i
-    simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
-    exact Units.ne_zero (c.χ i)
-  have h_cast : Function.support (fun i => (Module.finrank R (X i) : ℤ)) =
-      Function.support (fun i => Module.finrank R (X i)) := by
-    ext i
-    simp only [Function.mem_support, ne_eq, Nat.cast_eq_zero]
-  rw [h_chi, Set.univ_inter, h_cast]
+  simp only [finrankSupport, Function.support_mul_of_ne_zero_left (fun i => Units.ne_zero (c.χ i))]
+  ext i; simp [Function.mem_support]
 
 /-- If a graded object has finite rank support contained in a finite set,
 the `finsum` Euler characteristic equals the finite one. -/
