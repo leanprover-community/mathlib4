@@ -52,11 +52,16 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : List ι} (f : ι → R) (g : �
     · grind [prod_nonneg]
     · apply (h0 _ _).trans (h _ _) <;> simp only [mem_cons, true_or]
 
-theorem prod_map_le_pow_length₀ {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : List L}
+theorem prod_map_le_pow_length₀ {ι : Type*} {f : ι → R} {r : R} {t : List ι}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ length t := by
-  convert prod_map_le_prod_map₀ f (Function.const L r) hf0 hf
+  convert prod_map_le_prod_map₀ f (Function.const ι r) hf0 hf
   simp [map_const, prod_replicate]
+
+theorem prod_le_pow_length₀ {r : R} {t : List R} (hf0 : ∀ x ∈ t, 0 ≤ x) (hf : ∀ x ∈ t, x ≤ r) :
+    t.prod ≤ r ^ length t := by
+  convert prod_map_le_pow_length₀ (f := @id R) hf0 hf
+  simp
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
