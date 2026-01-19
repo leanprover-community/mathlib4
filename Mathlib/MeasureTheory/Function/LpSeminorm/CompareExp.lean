@@ -271,9 +271,7 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
     MemLp (fun x ↦ b (f x) (g x)) r μ := by
   refine ⟨h, ?_⟩
   apply (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb (hpqr := hpqr)).trans_lt
-  have := hf.2
-  have := hg.2
-  finiteness
+  finiteness [hf.2, hg.2]
 
 end Bilinear
 

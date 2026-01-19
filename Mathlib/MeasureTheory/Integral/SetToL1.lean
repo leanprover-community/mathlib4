@@ -93,8 +93,7 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   · intro x _
     by_cases hx0 : x = 0
     · rw [hx0]; simp
-    · have := SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0
-      finiteness
+    · finiteness [SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0]
 
 section SetToL1S
 
