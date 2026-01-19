@@ -40,9 +40,9 @@ theorem Finset.prod_intervalGapsWithin_mul_prod_eq_div :
     (∏ i, g (F.intervalGapsWithin h a b i).2 / g (F.intervalGapsWithin h a b i).1) *
       ∏ z ∈ F, g z.2 / g z.1 = g b / g a := by
   set p := F.intervalGapsWithin h a b
-  have : ∏ z ∈ F, g z.2 / g z.1 = ∏ i ∈ range k, g (p (Nat.succ i)).1 / g (p i).2 := by
+  have : ∏ z ∈ F, g z.2 / g z.1 = ∏ i ∈ range k, g (p i.succ).1 / g (p i).2 := by
     symm
-    apply prod_bij (fun (i : ℕ) hi ↦ ((p i).2, (p (Nat.succ i)).1))
+    apply prod_bij (fun (i : ℕ) hi ↦ ((p i).2, (p i.succ).1))
     · intro i hi
       rw [mem_range] at hi
       convert F.intervalGapsWithin_mapsTo h a b (x := ⟨i, hi⟩) trivial
