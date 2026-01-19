@@ -110,12 +110,7 @@ theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
       simp_rw [f, ha, map_zero, zero_mul, zero_add]
       compute_degree!
     · suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn').ne'
-      simp_rw [f]
-      have h0 : n ≠ 0 := by linarith only [hn']
-      have h1 : n ≠ 1 := by linarith only [hn']
-      have : 1 ≤ n := le_trans one_le_two hn'
-      compute_degree!
-      simp [h0, h1, ha]
+      grind [natDegree_add_eq_left_of_natDegree_lt]
   have hsep : f.Separable := separable_C_mul_X_pow_add_C_mul_X_add_C a b c hn hb.isUnit
   obtain ⟨x, hx⟩ := exists_root f hdeg hsep
   exact ⟨x, by simpa [f] using hx⟩
