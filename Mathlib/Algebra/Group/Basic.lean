@@ -1012,8 +1012,9 @@ lemma multiplicative_of_symmetric_of_total
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
 
-@[to_additive (attr := deprecated additive_of_symmetric_of_total (since := "2026-01-09"))
-additive_of_symmetric_of_isTotal]
+@[deprecated (since := "2026-01-09")]
+alias additive_of_symmetric_of_isTotal := additive_of_symmetric_of_total
+@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
 alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_total
 
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
@@ -1032,7 +1033,9 @@ theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p 
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 
-@[to_additive (attr := deprecated additive_of_total (since := "2026-01-09")) additive_of_isTotal]
+@[deprecated (since := "2026-01-09")]
+alias additive_of_isTotal := additive_of_total
+@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
 alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
