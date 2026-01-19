@@ -117,7 +117,7 @@ theorem isUniform_iff_exists_ringFilterBasis :
       exact ⟨I, h_I, rfl⟩
   · rintro ⟨B, h_B⟩
     exact {
-      colon_closed := by
+      colon_mem := by
         intro I h_I a
         have h_IB : (I : Set A) ∈ B.sets := by
           rw [h_B]
