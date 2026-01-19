@@ -389,7 +389,7 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
-theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α] {s : Set ι}
+theorem Finite.biInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α] {s : Set ι}
     (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
   classical
@@ -405,7 +405,7 @@ theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [O
         exact ha ha'
     · exact le_iSup_of_le (g a) (le_iSup_of_le g le_rfl)
 
-theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α] {s : Set ι}
+theorem Finite.biSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α] {s : Set ι}
     (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
   classical
@@ -424,7 +424,7 @@ theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [O
 theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · have := Finite.iInf_iSup_eq (f := (f <| PLift.down ·)) Set.finite_univ
+  · have := Finite.biInf_iSup_eq (f := (f <| PLift.down ·)) Set.finite_univ
     simp only [mem_univ, iInf_pos] at this
     simp_rw [← Equiv.plift.symm.iInf_comp,
       ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iSup_comp]
@@ -438,7 +438,7 @@ theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame �
 theorem _root_.iSup_iInf_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
     {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · have := Finite.iSup_iInf_eq (f := (f <| PLift.down ·)) Set.finite_univ
+  · have := Finite.biSup_iInf_eq (f := (f <| PLift.down ·)) Set.finite_univ
     simp only [mem_univ, iSup_pos] at this
     simp_rw [← Equiv.plift.symm.iSup_comp,
       ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iInf_comp]
