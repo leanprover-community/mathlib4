@@ -304,24 +304,16 @@ lemma card_conjClasses_odd (hn : Odd n) :
 
 theorem center_eq_bot_odd_ge_three (hodd : Odd n) (h3 : 3 ≤ n) :
     Subgroup.center (DihedralGroup n) = ⊥ := by
-  haveI : NeZero n := ⟨hodd.pos.ne'⟩
-  have hunit : IsUnit (2 : ZMod n) :=
-    ZMod.isUnit_prime_of_not_dvd Nat.prime_two hodd.not_two_dvd_nat
+  have : Fact (1 < n) := ⟨by grind⟩
   ext x
   simp only [Subgroup.mem_center_iff, Subgroup.mem_bot]
-  refine ⟨fun hx => ?_, fun hx => by simp [hx]⟩
+  refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
   rcases x with i | i
   · have heq := sr.inj (hx (sr 0))
-    simp only [zero_add, zero_sub] at heq
-    have hi : (2 : ZMod n) * i = 0 := by simpa [two_mul, ←heq] using add_neg_cancel i
-    simp [hunit.mul_right_eq_zero.mp hi]
+    rw [zero_add, zero_sub, eq_neg_iff_add_eq_zero, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
+    rw [heq, r_zero]
   · have heq := sr.inj (hx (r 1))
-    have h2 : (2 : ZMod n) = 0 := by
-      calc (2 : ZMod n) = (i + 1) - (i - 1) := by ring
-        _ = (i - 1) - (i - 1) := by rw [heq]
-        _ = 0 := by simp only [sub_self]
-    have h2' : (2 : ZMod n) = ((2 : ℕ) : ZMod n) := by norm_cast
-    rw [h2', CharP.cast_eq_zero_iff (ZMod n) n] at h2
-    exact absurd (Nat.le_of_dvd (by norm_num) h2) (by omega)
+    rw [sub_eq_iff_eq_add, add_assoc, left_eq_add, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
+    exact (one_ne_zero heq).elim
 
 end DihedralGroup
