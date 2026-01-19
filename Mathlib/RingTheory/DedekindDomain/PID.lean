@@ -190,7 +190,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
 section
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
-variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
+variable [Algebra R S] [Module.IsTorsionFree R S] [Module.Finite R S]
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]

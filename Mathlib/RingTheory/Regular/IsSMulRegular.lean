@@ -68,11 +68,6 @@ lemma IsSMulRegular.rTensor : IsSMulRegular (M' ⊗[R] M) r :=
 
 end TensorProduct
 
-lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
-    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
-  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
-
 section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M]
