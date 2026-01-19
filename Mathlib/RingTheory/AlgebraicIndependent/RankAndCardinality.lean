@@ -30,7 +30,7 @@ transcendence basis, transcendence degree, transcendence
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

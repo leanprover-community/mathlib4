@@ -26,7 +26,7 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 norm, equivalent, power-multiplicative
 -/
 
-@[expose] public section
+public section
 
 open Filter Real
 open scoped Topology

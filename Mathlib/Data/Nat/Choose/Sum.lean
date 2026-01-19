@@ -20,7 +20,7 @@ coefficients. Theorems whose proofs depend on such sums may also go in this file
 reasons.
 -/
 
-@[expose] public section
+public section
 
 open Nat Finset
 

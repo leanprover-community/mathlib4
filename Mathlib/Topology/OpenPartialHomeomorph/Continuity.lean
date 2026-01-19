@@ -19,7 +19,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
   point is in the source / target).
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology
 

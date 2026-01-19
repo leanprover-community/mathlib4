@@ -25,7 +25,7 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable (S : Submonoid R) [AddCommGroup N'] [Module R N']

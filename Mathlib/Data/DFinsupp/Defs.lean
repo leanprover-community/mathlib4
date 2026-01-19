@@ -530,7 +530,6 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
-  ext i'
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
 section SingleAndZipWith

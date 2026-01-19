@@ -173,7 +173,7 @@ lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
+  have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
@@ -193,7 +193,7 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
-  have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
+  have : Std.Asymm (α := ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
   refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
     (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
@@ -422,7 +422,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ_iff, eq_comm]
+  simp [eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id

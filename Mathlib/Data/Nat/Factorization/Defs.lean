@@ -176,7 +176,6 @@ Generalises `factorization_mul`, which is the special case where `#S = 2` and `g
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
-    ext p
     refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH

@@ -474,7 +474,6 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
       take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
       nil_append, wordProd_singleton]
-    apply congr_arg
     simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
       Even.mul_right, ↓reduceIte]
   | succ k hk =>

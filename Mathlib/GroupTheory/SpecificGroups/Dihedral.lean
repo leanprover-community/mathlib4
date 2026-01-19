@@ -176,7 +176,7 @@ theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by
   simp
 
-/-- If `0 < n`, then `sr i` has order 2.
+/-- `sr i` has order 2.
 -/
 @[simp]
 theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
@@ -184,7 +184,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · rw [sq, sr_mul_self]
   · simp [← r_zero]
 
-/-- If `0 < n`, then `r 1` has order `n`.
+/-- `r 1` has order `n`.
 -/
 @[simp]
 theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
@@ -203,7 +203,7 @@ theorem orderOf_r_one : orderOf (r 1 : DihedralGroup n) = n := by
     rw [← ZMod.val_eq_zero, ZMod.val_natCast, Nat.mod_eq_of_lt h] at h2
     exact absurd h2.symm (orderOf_pos _).ne
 
-/-- If `0 < n`, then `i : ZMod n` has order `n / gcd n i`.
+/-- If `0 < n`, then `r i` has order `n / gcd n i`.
 -/
 theorem orderOf_r [NeZero n] (i : ZMod n) : orderOf (r i) = n / Nat.gcd n i.val := by
   conv_lhs => rw [← ZMod.natCast_zmod_val i]
@@ -273,10 +273,10 @@ def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
     left_inv := fun
       | ⟨⟨r _, r _⟩, _⟩ => rfl
       | ⟨⟨r i, sr j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)]
           using h.eq
       | ⟨⟨sr i, r j⟩, h⟩ => by
-        simpa [- r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
+        simpa [-r_zero, sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)]
           using h.eq
       | ⟨⟨sr i, sr j⟩, h⟩ => by
         replace h := r.inj h

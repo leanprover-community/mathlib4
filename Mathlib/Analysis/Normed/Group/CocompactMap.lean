@@ -22,7 +22,7 @@ This file gives a characterization of cocompact maps in terms of norm estimates.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric
 

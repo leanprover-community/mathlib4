@@ -7,6 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
@@ -117,6 +118,7 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 
+@[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
     [IsUniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
@@ -1261,18 +1263,14 @@ theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit 
   simpa [Commute, SemiconjBy, Module.End.mul_eq_comp, ← ContinuousLinearMap.coe_comp] using
     LinearMap.IsIdempotentElem.commute_iff_of_isUnit this hf.toLinearMap
 
-theorem IsIdempotentElem.range_eq_ker {p : M →L[R] M} (hp : IsIdempotentElem p) :
-    p.range = (1 - p).ker :=
-  LinearMap.IsIdempotentElem.range_eq_ker hp.toLinearMap
+@[deprecated (since := "2025-12-27")] alias IsIdempotentElem.range_eq_ker :=
+  LinearMap.IsIdempotentElem.range_eq_ker
+@[deprecated (since := "2025-12-27")] alias IsIdempotentElem.ker_eq_range :=
+  LinearMap.IsIdempotentElem.ker_eq_range
 
-theorem IsIdempotentElem.ker_eq_range {p : M →L[R] M} (hp : IsIdempotentElem p) :
-    p.ker = (1 - p).range :=
-  LinearMap.IsIdempotentElem.ker_eq_range hp.toLinearMap
-
-open ContinuousLinearMap in
 theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
     (hp : IsIdempotentElem p) : IsClosed (p.range : Set M) :=
-  hp.range_eq_ker ▸ isClosed_ker (1 - p)
+  LinearMap.IsIdempotentElem.range_eq_ker hp.toLinearMap ▸ isClosed_ker (.id R M - p)
 
 end ContinuousLinearMap
 

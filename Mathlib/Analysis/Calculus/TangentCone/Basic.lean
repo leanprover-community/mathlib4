@@ -16,7 +16,7 @@ In this file we prove basic lemmas about `tangentConeAt`, `UniqueDiffWithinAt`,
 and `UniqueDiffOn`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Metric NormedField
 open scoped Topology Pointwise

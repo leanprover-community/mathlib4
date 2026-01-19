@@ -464,7 +464,6 @@ theorem prime_pow_dvd_iff_le {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irre
 
 theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducible p) :
     count p m.factors ≠ 0 → p ≤ m := by
-  nontriviality α
   rw [← pos_iff_ne_zero]
   intro h
   rw [← pow_one p]
@@ -473,7 +472,6 @@ theorem le_of_count_ne_zero {m p : Associates α} (h0 : m ≠ 0) (hp : Irreducib
 
 theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     (Associates.mk p).count (Associates.mk a).factors ≠ 0 ↔ p ∣ a := by
-  nontriviality α
   rw [← Associates.mk_le_mk_iff_dvd]
   refine
     ⟨fun h =>

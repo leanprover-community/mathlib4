@@ -266,7 +266,7 @@ theorem exact_f_d {X Y : C} (f : X ⟶ Y) :
   let α : ShortComplex.mk f (cokernel.π f) (by simp) ⟶ ShortComplex.mk f (d f) (by simp) :=
     { τ₁ := 𝟙 _
       τ₂ := 𝟙 _
-      τ₃ := Injective.ι _  }
+      τ₃ := Injective.ι _ }
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_g_is_cokernel
   apply cokernelIsCokernel

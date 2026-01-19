@@ -27,7 +27,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, slope
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

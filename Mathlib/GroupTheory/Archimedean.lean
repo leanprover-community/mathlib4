@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups
@@ -33,7 +34,7 @@ The result is also used in `Topology.Instances.Real` as an ingredient in the cla
 subgroups of `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
