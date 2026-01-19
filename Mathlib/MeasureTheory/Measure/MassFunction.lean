@@ -133,7 +133,8 @@ lemma toMeasure_additive (μ : MassFunction α) (s : δ → Set α) (hs : Pairwi
   · obtain ⟨i, hi⟩ := h₀
     rw [ENNReal.tsum_eq_add_tsum_ite i]
     simp only [hi, ↓reduceIte]
-    nth_rw 1 [← add_zero (μ b)] ; congr
+    nth_rw 1 [← add_zero (μ b)]
+    congr
     apply (ENNReal.tsum_eq_zero.mpr ?_).symm
     simp only [ite_eq_left_iff, ite_eq_right_iff]
     exact fun j hj hb ↦ False.elim <| Disjoint.notMem_of_mem_left (hs (id (Ne.symm hj))) hi hb
