@@ -67,7 +67,7 @@ lemma exists_isAffineOpen_of_isCompact [QuasiCompactCover 𝒰] {U : S.Opens}
   exact ⟨n, a, V, ha, heq⟩
 
 /-- If the component maps of `𝒰` are open, `𝒰` is quasi-compact. This in particular
-applies if `K` is the is the fppf topology (i.e., flat and of finite presentation) and hence in
+applies if `K` is the fppf topology (i.e., flat and of finite presentation) and hence in
 particular for étale and Zariski covers. -/
 @[stacks 022C]
 lemma of_isOpenMap {𝒰 : S.Cover K} [Scheme.JointlySurjective K] (h : ∀ i, IsOpenMap (𝒰.f i)) :
