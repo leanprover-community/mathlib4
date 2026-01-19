@@ -979,10 +979,7 @@ theorem derivative_T_eval_one (n : ℤ) :
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
   have h := iterate_derivative_U_eval_one (R := R) n 1
-  simp only [Finset.range_one, Finset.prod_singleton, mul_zero, zero_add, Nat.cast_ofNat,
-    Function.iterate_one, CharP.cast_eq_zero, one_pow, Int.cast_sub, Int.cast_pow, Int.cast_add,
-    Int.cast_one] at h
-  rw [h]
+  simp only [Finset.range_one, Finset.prod_singleton, Function.iterate_one] at h
   grind
 
 variable (R)
