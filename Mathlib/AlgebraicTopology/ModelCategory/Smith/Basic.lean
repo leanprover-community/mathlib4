@@ -6,7 +6,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
 /-!
-# A theorem by Smith
+# A theorem by Smith (following T. Beke)
 
 -/
 
@@ -53,6 +53,22 @@ structure Factorization (J : MorphismProperty C) where
   α : Arrow.mk i.l ⟶ Arrow.mk m
   β : Arrow.mk m ⟶ Arrow.mk g.hom
   fac : α ≫ β = i.γ
+
+namespace Factorization
+
+variable {i} {Φ : i.Factorization J}
+
+attribute [reassoc (attr := simp)] fac
+
+@[reassoc (attr := simp)]
+lemma fac_left : Φ.α.left ≫ Φ.β.left = i.γ.left := by
+  simp [← Arrow.comp_left]
+
+@[reassoc (attr := simp)]
+lemma fac_right : Φ.α.right ≫ Φ.β.right = i.γ.right := by
+  simp [← Arrow.comp_right]
+
+end Factorization
 
 variable (hJ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
   ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
@@ -125,13 +141,22 @@ noncomputable abbrev succObj : C :=
 noncomputable abbrev inr : sigmaTgt g hJ₁ ⟶ succObj g hJ₁ :=
   pushout.inr _ _
 
-
 noncomputable abbrev ιSuccObj : g.left ⟶ succObj g hJ₁ :=
   pushout.inl _ _
 
 noncomputable abbrev πSuccObj : succObj g hJ₁ ⟶ Y :=
   haveI := hasCoproductsOfShape_index I W g
   pushout.desc g.hom (Sigma.desc (fun i ↦ (i.factorization hJ₁).β.right))
+
+@[reassoc (attr := simp)]
+lemma factorizationM_ι_inr (i : Index I W g) :
+    haveI := hasCoproductsOfShape_index I W g
+    (i.factorization hJ₁).m ≫
+      Sigma.ι (fun i ↦ (i.factorization hJ₁).B') i ≫ inr g hJ₁ =
+        (i.factorization hJ₁).β.left ≫ ιSuccObj g hJ₁ := by
+  haveI := hasCoproductsOfShape_index I W g
+  simpa using (Sigma.ι (fun i ↦ (i.factorization hJ₁).A') i ≫=
+    pushout.condition (f := sigmaDesc g hJ₁) (g := sigmaMap g hJ₁)).symm
 
 noncomputable def attachCells' : AttachCells J.homFamily (ιSuccObj g hJ₁) := by
   have := hasCoproductsOfShape_index I W g
@@ -156,9 +181,9 @@ lemma pushouts_coproducts_ιSuccObj :
   simpa using (attachCells g hJ₁).pushouts_coproducts
 
 variable (hJ₂ : J ≤ I.rlp.llp ⊓ W)
-  [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
-  [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
 
+variable [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+  [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)] in
 include hJ₂ in
 lemma ιSuccObj_mem :
     (I.rlp.llp ⊓ W) (ιSuccObj g hJ₁) :=
@@ -174,7 +199,9 @@ noncomputable abbrev succ : Over Y := Over.mk (πSuccObj g hJ₁)
 
 noncomputable def toSucc : g ⟶ succ g hJ₁ := Over.homMk (ιSuccObj g hJ₁)
 
-variable [W.HasTwoOutOfThreeProperty] in
+variable [W.HasTwoOutOfThreeProperty]
+  [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+  [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)] in
 include hJ₂ in
 lemma prop_succ_hom (hg : W g.hom) :
     W (succ g hJ₁).hom :=
@@ -193,6 +220,8 @@ noncomputable def attachCellsOfProp {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁)
     ((Over.forget Y).mapArrow.mapIso hφ.arrowIso.symm)
 
 include hJ₂ in
+variable [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+  [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)] in
 lemma succStruct_prop_le_inverseImage_rlp_llp_inter :
     (succStruct f hJ₁).prop ≤ (I.rlp.llp ⊓ W).inverseImage
       (Over.forget Y) := by
@@ -204,6 +233,29 @@ lemma succStruct_prop_le_inverseImage_rlp_llp_inter :
       ((attachCellsOfProp f hJ₁ φ hφ).pushouts_coproducts)
   exact MorphismProperty.pushouts_le _ (by simpa)
 
+lemma exists_lift {Z₀ Z₁ : Over Y} (φ : Z₀ ⟶ Z₁) (hφ : (succStruct f hJ₁).prop φ)
+    (h₀ : W Z₀.hom)
+    {A B : C} (i : A ⟶ B) (hi : I i) (t : A ⟶ Z₀.left) (b : B ⟶ Y)
+    (fac : t ≫ Z₀.hom = i ≫ b) :
+    ∃ (l : B ⟶ Z₁.left), i ≫ l = t ≫ φ.left ∧ l ≫ Z₁.hom = b := by
+  obtain rfl := hφ.succ_eq
+  obtain rfl : φ = (succStruct f hJ₁).toSucc Z₀ := by simpa using hφ.fac
+  have := small_index.{w} I W Z₀
+  have := hasCoproductsOfShape_index I W Z₀
+  let y : Index I W Z₀ :=
+    { A := _
+      B := _
+      l := i
+      hl := hi
+      γ := Arrow.homMk t b
+      prop := h₀ }
+  refine ⟨(by exact (y.factorization hJ₁).α.right) ≫ Sigma.ι _ y ≫ inr Z₀ hJ₁,
+    ?_, by cat_disch⟩
+  have h₁ : _ = i ≫ _:= Arrow.w (y.factorization hJ₁).α
+  dsimp at h₁ ⊢
+  rw [← reassoc_of% h₁]
+  cat_disch
+
 end lemma_1_8
 
 section
@@ -212,24 +264,25 @@ open lemma_1_8
 
 variable
   [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+  [W.HasTwoOutOfThreeProperty]
   [MorphismProperty.IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
   [MorphismProperty.IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
   (hJ₁ : ∀ {i w : Arrow C} (sq : i ⟶ w) (_ : I i.hom) (_ : W w.hom),
     ∃ (j : Arrow C) (_ : J j.hom) (a : i ⟶ j) (b : j ⟶ w), a ≫ b = sq)
   (hJ₂ : J ≤ I.rlp.llp ⊓ W)
-  (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
   [HasColimitsOfSize.{w, w} C]
-  [I.IsCardinalForSmallObjectArgument κ]
+  [MorphismProperty.IsSmall.{w} I]
+  [LocallySmall.{w} C]
+  (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
+  (hκ : ∀ {A B : C} (i : A ⟶ B), I i → IsCardinalPresentable A κ)
 
-/-include hJ₁ hJ₂ in
+include hJ₁ hJ₂ hκ in
 lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
     ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
-      (ha : RelativeCellComplex.{w} (basicCell := fun (x : κ.ord.ToType) ↦ J.homFamily) a)
-      (hb : I.rlp b), a ≫ b = f := by
-  have := MorphismProperty.IsCardinalForSmallObjectArgument.isSmall (I := I) κ
-  have := MorphismProperty.IsCardinalForSmallObjectArgument.locallySmall (I := I) κ
-  have := MorphismProperty.IsCardinalForSmallObjectArgument.hasCoproducts (I := I) κ
-  have := MorphismProperty.IsCardinalForSmallObjectArgument.hasPushouts (I := I) κ
+      (_ : RelativeCellComplex.{w} (basicCell := fun (_ : κ.ord.ToType) ↦ J.homFamily) a)
+      (_ : I.rlp b), a ≫ b = f := by
+  have : NoMaxOrder κ.ord.ToType :=
+    Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
   let σ := lemma_1_8.succStruct f hJ₁
   have : MorphismProperty.IsStableUnderTransfiniteComposition.{w}
       ((I.rlp.llp ⊓ W).inverseImage (Over.forget Y)) :=
@@ -254,7 +307,27 @@ lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
     exact Arrow.isoMk ((Over.forget _).mapIso
       (σ.transfiniteCompositionOfShapeιIteration κ.ord.ToType).isoBot.symm)
       (Iso.refl _) (by cat_disch)
-  sorry-/
+  intro A B i hi
+  have := hκ i hi
+  constructor
+  intro t b sq
+  obtain ⟨x, t, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+    (isColimitOfPreserves (Over.forget _)
+      (σ.isColimitIterationCocone κ.ord.ToType)) t
+  have := (σ.transfiniteCompositionOfShapeιIteration κ.ord.ToType).map_mem
+    x (not_isMax x)
+  obtain ⟨l, fac₁, fac₂⟩ := exists_lift f hJ₁ _
+    ((σ.transfiniteCompositionOfShapeιIteration κ.ord.ToType).map_mem x (not_isMax x))
+      (W.of_precomp _ _ (hι x).2 (by simpa)) i hi t b (by simpa using sq.w)
+  exact ⟨⟨{
+    l := l ≫ ((σ.iterationCocone κ.ord.ToType).ι.app (Order.succ x)).left
+    fac_left := by
+      have := t ≫= (Over.forget _).congr_map ((σ.iterationCocone κ.ord.ToType).w
+        (homOfLE (Order.le_succ x)))
+      dsimp at this
+      simpa [reassoc_of% fac₁] using this
+    fac_right := by cat_disch
+  }⟩⟩
 
 end
 
