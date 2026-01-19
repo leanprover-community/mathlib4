@@ -3,7 +3,8 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-! # First Order Quasilinear PDEs
 
@@ -31,6 +32,8 @@ This file develops some basic theory of first order quasilinear PDEs.
   `E`, and `c` is the constant term.
 
 -/
+
+@[expose] public section
 
 open Set
 
