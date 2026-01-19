@@ -161,8 +161,7 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
     x ∈ ofFixingSubgroup M (insert a ((fun x ↦ x.val) '' s)) ↔
       ∃ (hx : x ∈ ofStabilizer M a),
         (⟨x, hx⟩ : ofStabilizer M a) ∈ ofFixingSubgroup (stabilizer M a) s := by
-  simp_rw [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
-  aesop
+  grind [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
 
 /-- The natural group isomorphism between fixing subgroups. -/
 @[to_additive /-- The natural additive group isomorphism between fixing additive subgroups. -/]

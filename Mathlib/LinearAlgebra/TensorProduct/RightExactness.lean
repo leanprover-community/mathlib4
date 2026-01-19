@@ -257,6 +257,7 @@ lemma lTensor.inverse_comp_lTensor :
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_lTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
   (computably, given a right inverse) -/
@@ -362,6 +363,7 @@ lemma rTensor.inverse_comp_rTensor :
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [rTensor.inverse, rTensor.inverse_of_rightInverse_comp_rTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
   (computably, given a right inverse) -/

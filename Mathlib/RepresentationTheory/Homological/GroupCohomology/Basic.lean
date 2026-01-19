@@ -76,15 +76,9 @@ variable {k G : Type u} [CommRing k] {n : ℕ}
 
 open CategoryTheory
 
-namespace groupCohomology
-
-variable [Monoid G]
-
-end groupCohomology
-
 namespace inhomogeneousCochains
 
-open Rep groupCohomology
+open Rep
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/

@@ -397,6 +397,21 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
+lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
+  constructor
+  · intro h
+    rw [← vsub_vadd p p₁, vadd_left_mem_affineSpan_pair] at h
+    obtain ⟨r, hr⟩ := h
+    refine ⟨r, ?_⟩
+    rw [← vsub_vadd p p₁, ← hr, AffineMap.lineMap_apply]
+  · rintro ⟨r, rfl⟩
+    exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
+
+lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
+  rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
+
 end AffineSpace'
 
 namespace AffineSubspace

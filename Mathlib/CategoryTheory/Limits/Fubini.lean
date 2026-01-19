@@ -449,7 +449,7 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
           Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
           G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
         dsimp
-        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this]} }
+        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
