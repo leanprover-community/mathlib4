@@ -83,6 +83,11 @@ theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
 
 end TangentConeAt
 
+/-- "Positive" tangent cone to `s` at `x`. -/
+abbrev posTangentConeAt [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] (s : Set E) (x : E) :
+    Set E :=
+  tangentConeAt NNReal s x
+
 variable [Semiring R] [AddCommMonoid E] [Module R E] [TopologicalSpace E]
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.

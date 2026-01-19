@@ -23,30 +23,27 @@ public section
 open Filter Set
 open scoped Topology NNReal
 
-section RealNormed
+section RealTVS
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set E} {x y : E}
 
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the positive tangent cone at its endpoints. -/
-theorem mem_tangentConeAt_nnreal_of_openSegment_subset (h : openSegment ℝ x y ⊆ s) :
+theorem sub_mem_posTangentConeAt_of_openSegment_subset (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ≥0 s x := by
-  refine mem_tangentConeAt_of_seq (𝓝[>] (0 : ℝ≥0)) Inv.inv (fun a ↦ a • (y - x)) ?_ ?_ ?_
-  · exact Continuous.tendsto' (by fun_prop) _ _ (by simp) |>.mono_left inf_le_left
-  · filter_upwards [Ioo_mem_nhdsGT one_pos] with a ha
-    apply h
-    rw [openSegment_eq_image_lineMap]
-    use a, mod_cast ha
-    simp [AffineMap.lineMap_apply_module', add_comm, NNReal.smul_def]
-  · refine tendsto_nhds_of_eventually_eq <| eventually_mem_nhdsWithin.mono fun c hc ↦ ?_
-    simp [(mem_Ioi.mp hc).ne']
+  refine mem_tangentConeAt_of_add_smul_mem (tendsto_id'.mpr <| nhdsGT_le_nhdsNE 0) ?_
+  filter_upwards [Ioo_mem_nhdsGT one_pos] with a ha
+  apply h
+  rw [openSegment_eq_image_lineMap]
+  use a, mod_cast ha
+  simp [AffineMap.lineMap_apply_module', add_comm, NNReal.smul_def]
 
 /-- If a subset of a real vector space contains an open segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentConeAt_of_openSegment_subset (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
-  tangentConeAt_mono_field (mem_tangentConeAt_nnreal_of_openSegment_subset h)
+  tangentConeAt_mono_field (sub_mem_posTangentConeAt_of_openSegment_subset h)
 
 /-- If a subset of a real vector space contains a segment, then the direction of this
 segment belongs to the tangent cone at its endpoints. -/
@@ -82,7 +79,7 @@ theorem uniqueDiffOn_convex (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 
-end RealNormed
+end RealTVS
 
 section Real
 

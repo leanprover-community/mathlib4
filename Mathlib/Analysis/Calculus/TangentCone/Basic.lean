@@ -6,9 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Basic properties of tangent cones and sets with unique differentiability property
@@ -179,6 +177,17 @@ theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithi
 
 end Module
 
+theorem mem_tangentConeAt_of_add_smul_mem {α : Type*}
+    [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace 𝕜] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+    {l : Filter α} [l.NeBot] {c : α → 𝕜} {s : Set E} {x y : E} (hc₀ : Tendsto c l (𝓝[≠] 0))
+    (hmem : ∀ᶠ n in l, x + c n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
+  rw [tendsto_nhdsWithin_iff] at hc₀
+  refine mem_tangentConeAt_of_seq l c⁻¹ (c · • y) ?_ hmem ?_
+  · simpa using hc₀.1.smul (tendsto_const_nhds (x := y))
+  · refine tendsto_nhds_of_eventually_eq <| hc₀.2.mono fun n hn ↦ ?_
+    simp_all
+
 section TVSMonoid
 
 variable [DivisionSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace 𝕜]
@@ -191,28 +200,7 @@ theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ := by
 theorem tangentConeAt_of_mem_nhds [ContinuousAdd E] (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
   rw [← s.univ_inter, tangentConeAt_inter_nhds h, tangentConeAt_univ]
 
-/-
-TODO: restore, deprecate
-/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
-the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) := by
-  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n :=
-    (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn ↦ inv_smul_smul₀ hn (d n)
-  rw [tendsto_norm_atTop_iff_cobounded] at hc
-  simpa using Tendsto.congr' this <| (tendsto_inv₀_cobounded.comp hc).smul hd
--/
-
 end TVSMonoid
-
-theorem mem_tangentConeAt_of_pow_smul [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x y : E} {r : 𝕜}
-    (hr₀ : r ≠ 0) (hr : ‖r‖ < 1) (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) :
-    y ∈ tangentConeAt 𝕜 s x := by
-  refine mem_tangentConeAt_of_seq atTop (fun n ↦ (r ^ n)⁻¹) (fun n ↦ r ^ n • y) ?_ hs ?_
-  · simpa using (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).smul_const y
-  · simp [hr₀, tendsto_const_nhds]
 
 section UniqueDiff
 

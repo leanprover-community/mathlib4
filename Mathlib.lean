@@ -1657,6 +1657,7 @@ public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Calculus.TangentCone
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.Deprecated
 public import Mathlib.Analysis.Calculus.TangentCone.DimOne
 public import Mathlib.Analysis.Calculus.TangentCone.Pi
 public import Mathlib.Analysis.Calculus.TangentCone.Prod

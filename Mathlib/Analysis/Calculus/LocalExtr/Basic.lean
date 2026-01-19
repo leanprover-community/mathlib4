@@ -73,43 +73,27 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 ### Positive tangent cone
 -/
 
-/-- "Positive" tangent cone to `s` at `x`. -/
-abbrev posTangentConeAt (s : Set E) (x : E) : Set E :=
-  tangentConeAt ℝ≥0 s x
-
 theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   intro s t hst
   exact tangentConeAt_mono hst
 
 theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
     y ∈ posTangentConeAt s x := by
-  apply mem_tangentConeAt_of_frequently (𝓝[>] (0 : ℝ≥0)) Inv.inv (· • y)
-  · exact Continuous.tendsto' (by fun_prop) _ _ (by simp) |>.mono_left inf_le_left
-  · rwa [← NNReal.coe_zero, ← NNReal.map_coe_nhdsGT, frequently_map] at h
-  · refine tendsto_nhds_of_eventually_eq <| eventually_mem_nhdsWithin.mono fun z hz ↦ ?_
-    simp [(mem_Ioi.mp hz).ne']
-
-/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangent cone of `s`.
-
-Before 2024-07-13, this lemma used to be called `mem_posTangentConeAt_of_segment_subset`.
-See also `sub_mem_posTangentConeAt_of_segment_subset`
-for the lemma that used to be called `mem_posTangentConeAt_of_segment_subset`. -/
-theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
-    y ∈ posTangentConeAt s x := by
-  refine mem_posTangentConeAt_of_frequently_mem (Eventually.frequently ?_)
-  rw [eventually_nhdsWithin_iff]
-  filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
-  apply h
-  rw [segment_eq_image', add_sub_cancel_left]
-  exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
+  rw [← NNReal.coe_zero, ← NNReal.map_coe_nhdsGT, frequently_map, frequently_iff_neBot] at h
+  apply mem_tangentConeAt_of_add_smul_mem (l := 𝓝[>] (0 : ℝ≥0) ⊓ 𝓟 {t | x + (t : ℝ) • y ∈ s})
+  · exact tendsto_id'.mpr <| inf_le_left.trans <| nhdsGT_le_nhdsNE _
+  · simp [eventually_inf_principal, NNReal.smul_def]
 
 theorem sub_mem_posTangentConeAt_of_segment_subset (h : segment ℝ x y ⊆ s) :
     y - x ∈ posTangentConeAt s x :=
-  mem_posTangentConeAt_of_segment_subset <| by rwa [add_sub_cancel]
+  sub_mem_posTangentConeAt_of_openSegment_subset <| (openSegment_subset_segment ..).trans h
 
-@[simp]
-theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
-  eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset (subset_univ _)
+/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangent cone of `s`. -/
+theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
+    y ∈ posTangentConeAt s x := by
+  simpa using sub_mem_posTangentConeAt_of_segment_subset h
+
+theorem posTangentConeAt_univ : posTangentConeAt univ a = univ := tangentConeAt_univ
 
 /-!
 ### Fermat's Theorem (vector space)
