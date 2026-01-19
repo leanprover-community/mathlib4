@@ -9,7 +9,6 @@ module
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.PartialSups
-public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # Accumulate and Dissipate
@@ -202,19 +201,6 @@ lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
     obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
     exact Set.Nonempty.mono hm (h m)
   · exact subset_eq_empty (dissipate_subset (Nat.le_refl n)) hn
-
-/-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
-`dissipate s n` belongs to `p`. -/
-lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
-    (hp : IsPiSystem p) (h : ∀ n, s n ∈ p) (n : ℕ) (h' : (dissipate s n).Nonempty) :
-      (dissipate s n) ∈ p := by
-  induction n with
-  | zero =>
-    simp only [dissipate_def, Nat.le_zero_eq, iInter_iInter_eq_left]
-    exact h 0
-  | succ n hn =>
-    rw [dissipate_succ] at *
-    apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
 
 end dissipate
 
