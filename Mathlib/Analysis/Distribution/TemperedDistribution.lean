@@ -288,7 +288,6 @@ theorem smulLeftCLM_sum {g : ι → E → ℂ} {s : Finset ι} (hg : ∀ i ∈ s
   ext f u
   simp [SchwartzMap.smulLeftCLM_sum hg]
 
-
 open ENNReal MeasureTheory
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
