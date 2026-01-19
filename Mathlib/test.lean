@@ -40,17 +40,14 @@ variable {α : Type*} [MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
 namespace MeasureTheory
 
 open scoped ENNReal symmDiff
+open MeasurableSpace
 
 lemma glou {α : Type*}
-    [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] (hC : IsSetRing C)
-    (h'C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ univ = ⋃ n, f n) (h : mα = generateFrom C)
+    [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
+    (hC : IsSetRing C)
+    (h'C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ μ (⋃ n, f n)ᶜ = 0) (h : mα = generateFrom C)
     (s : Set α) (hs : MeasurableSet s) (ε : ℝ≥0∞) :
-    ∃ t ∈ t, μ (s ∆ t) < ε := by
-
-
-
-#exit
-
+    ∃ t ∈ C, μ (s ∆ t) < ε := sorry
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
@@ -162,16 +159,14 @@ def VectorMeasure.of_additive_of_le_measure
     exact tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
       (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
 
-/-- Consider a finitely additive vector measure on a dense class of measurable sets which is stable
-under binary intersection, union and complement. Assume that it is dominated by a finite positive
-measure. Then it extends to a countably additive vector measure. -/
-lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure μ]
-    (C : Set (Set α)) (m : Set α → E)
-    (hC : ∀ s ∈ C, MeasurableSet s) (hC_diff : ∀ s ∈ C, ∀ t ∈ C, s \ t ∈ C)
-    (hC_inter : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C)
-    (hC_union : ∀ s ∈ C, ∀ t ∈ C, s ∪ t ∈ C)
+/-- Consider a finitely additive vector measure on a dense class of measurable sets which is a ring
+of sets. Assume that it is dominated by a finite positive measure. Then it extends to a countably
+additive vector measure. -/
+lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure [IsFiniteMeasure μ]
+    (C : Set (Set α)) (m : AddContent E C) (hCs : IsSetRing C)
+    (hC : ∀ s ∈ C, MeasurableSet s)
     (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C, μ (s ∆ t) < ε)
-    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) (h'm : ∀ s ∈ C, ∀ t ∈ C, Disjoint s t → m (s ∪ t) = m s + m t) :
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   /- We will extend by continuity the function `m` from the class `C` to all measurable sets,
   thanks to the fact that `C` is dense. To implement this properly, we work in the space
@@ -208,15 +203,15 @@ lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure 
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_diff _ _
     nth_rewrite 1 [← Is]
     nth_rewrite 3 [← It]
-    rw [h'm _ (hC_inter _ (C'C _ t.2) _ (C'C _ s.2)) _ (hC_diff _ (C'C _ t.2) _ (C'C _ s.2))
-        Set.disjoint_sdiff_inter.symm,
-      h'm _ (hC_inter _ (C'C _ s.2) _ (C'C _ t.2)) _ (hC_diff _ (C'C _ s.2) _ (C'C _ t.2))
-        Set.disjoint_sdiff_inter.symm, Set.inter_comm]
+    rw [addContent_union hCs (hCs.inter_mem (C'C _ t.2) (C'C _ s.2))
+        (hCs.diff_mem (C'C _ t.2) (C'C _ s.2)) Set.disjoint_sdiff_inter.symm,
+      addContent_union hCs (hCs.inter_mem (C'C _ s.2) (C'C _ t.2))
+        (hCs.diff_mem (C'C _ s.2) (C'C _ t.2)) Set.disjoint_sdiff_inter.symm, Set.inter_comm]
     simp only [add_sub_add_left_eq_sub, ge_iff_le]
     apply enorm_sub_le.trans
     gcongr
-    · exact hm _ (hC_diff _ (C'C _ s.2) _ (C'C _ t.2))
-    · exact hm _ (hC_diff _ (C'C _ t.2) _ (C'C _ s.2))
+    · exact hm _ (hCs.diff_mem (C'C _ s.2) (C'C _ t.2))
+    · exact hm _ (hCs.diff_mem (C'C _ t.2) (C'C _ s.2))
   -- Let `m₁` be the extension of `m₀` to all elements of `MeasuredSets μ` by continuity
   let m₁ : MeasuredSets μ → E := C'_dense.extend m₀
   -- It is again Lipschitz continuous and bounded by `μ`
@@ -267,7 +262,7 @@ lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure 
     -- Therefore, the set `s'' := s' \ t'` still approximates well the original set `s`, it belongs
     -- to `C`, and moreover `s''` and `t'` are disjoint.
     let s'' := s' \ t'
-    have s''C : s'' ∈ C := hC_diff _ s'C _ t'C
+    have s''C : s'' ∈ C := hCs.diff_mem s'C t'C
     have hs'' : μ (s'' ∆ s) < 3 * δ := calc
       μ (s'' ∆ s)
       _ ≤ μ (s'' ∆ s') + μ (s' ∆ s) := measure_symmDiff_le _ _ _
@@ -282,7 +277,7 @@ lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure 
       exact hs''
     -- `s'' ∪ t'` also approximates well `s ∪ t`.
     have Ist : ‖m (s'' ∪ t') - m₁ ⟨s ∪ t, s.2.union t.2⟩‖ₑ < 4 * δ := by
-      have s''t'C : s'' ∪ t' ∈ C := hC_union _ s''C _ t'C
+      have s''t'C : s'' ∪ t' ∈ C := hCs.union_mem s''C t'C
       have : m₁ ⟨s'' ∪ t', hC _ s''t'C⟩ = m (s'' ∪ t') :=
         C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hC _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
       rw [← this, ← edist_eq_enorm_sub]
@@ -303,7 +298,7 @@ lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure 
     _ ≤ ‖m (s'' ∪ t') - m s'' - m t'‖ₑ + ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ
           + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := enorm_add₄_le
     _ = ‖m₁ ⟨s ∪ t, s.2.union t.2⟩ - m (s'' ∪ t')‖ₑ + ‖m s'' - m₁ s‖ₑ + ‖m t' - m₁ t‖ₑ := by
-      rw [h'm _ s''C _ t'C Set.disjoint_sdiff_left]
+      rw [addContent_union hCs s''C t'C Set.disjoint_sdiff_left]
       simp
     _ < 4 * δ + 3 * δ + δ := by
       gcongr
@@ -333,6 +328,17 @@ lemma VectorMeasure.exists_extension_of_additive_of_le_measure [IsFiniteMeasure 
     · simp only [hs, ↓reduceDIte, m']
       exact hBound ⟨s, hs⟩
     · simp [m', hs]
+
+lemma VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure [IsFiniteMeasure μ]
+    (C : Set (Set α)) (m : AddContent E C) (hCs : IsSetSemiring C)
+    (hC : ∀ s ∈ C, MeasurableSet s)
+    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C.finiteUnions, μ (s ∆ t) < ε)
+    (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s) :
+    ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
+  let m₀ : Set α → E :=
+
+
+#exit
 
 
 #check Set.PairwiseDisjoint
