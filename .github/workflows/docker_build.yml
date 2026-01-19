@@ -113,6 +113,17 @@ jobs:
           mkdir -p .cache/mathlib/
           mkdir -p _work
 
+      # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
+      # We install manually, to avoid running lean outside landrun.
+      - name: install elan
+        shell: bash
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
       - name: select lean4-debug toolchain
         shell: bash
         run: |
