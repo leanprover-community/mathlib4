@@ -94,6 +94,9 @@ class ContinuousSMulConst (Γ : Type*) (T : Type*)
 
 export ContinuousSMulConst (continuous_smul_const)
 
+/-- Class `ContinuousVAddConst Γ T` says that the scalar multiplication `(+ᵥ) : Γ → T → T`
+is continuous in the first argument. We use the same class for all kinds of additive
+actions, including (semi)modules and algebras. -/
 class ContinuousVAddConst (Γ : Type*) (T : Type*)
     [TopologicalSpace Γ] [TopologicalSpace T] [VAdd Γ T] : Prop where
   /-- The scalar multiplication `(+ᵥ) : Γ → T → T` is continuous in the first argument. -/
