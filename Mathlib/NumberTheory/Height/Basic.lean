@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!

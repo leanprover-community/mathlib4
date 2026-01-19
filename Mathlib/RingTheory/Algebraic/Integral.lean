@@ -227,6 +227,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
+  have := Algebra.nontrivial_of_isAlgebraic R S
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
@@ -648,7 +649,7 @@ open scoped nonZeroDivisors
 
 attribute [local instance] FractionRing.liftAlgebra
 
-instance [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [Module.Finite R S] :
+instance [IsDomain R] [IsDomain S] [IsTorsionFree R S] [Module.Finite R S] :
     FiniteDimensional (FractionRing R) (FractionRing S) := by
   obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := S)
   exact Module.finite_def.mpr <|

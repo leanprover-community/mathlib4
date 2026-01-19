@@ -120,7 +120,7 @@ protected def Subset (x y : PSet) : Prop :=
 instance : HasSubset PSet :=
   ⟨PSet.Subset⟩
 
-instance : IsRefl PSet (· ⊆ ·) :=
+instance : @Std.Refl PSet (· ⊆ ·) :=
   ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
 
 instance : IsTrans PSet (· ⊆ ·) :=

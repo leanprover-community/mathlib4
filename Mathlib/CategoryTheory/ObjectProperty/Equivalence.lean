@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Equivalence of full subcategories
