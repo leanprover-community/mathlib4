@@ -479,7 +479,6 @@ section Tree
 
 open Tree
 
-set_option backward.privateInPublic true in
 /-- Convert a Dyck word to a binary rooted tree.
 
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
@@ -487,25 +486,22 @@ which has index `p.firstReturn`, then let `x` be everything strictly between sai
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
 Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree/Basic.lean`) joins two
 subtrees to a new root node. -/
-private def equivTreeToFun (p : DyckWord) : Tree Unit :=
+def equivTreeToFun (p : DyckWord) : Tree Unit :=
   if h : p = 0 then nil else
     have := semilength_insidePart_lt h
     have := semilength_outsidePart_lt h
     equivTreeToFun p.insidePart △ equivTreeToFun p.outsidePart
 termination_by p.semilength
 
-set_option backward.privateInPublic true in
 /-- Convert a binary rooted tree to a Dyck word.
 
 `g(nil) = 0`. A nonempty tree with left subtree `l` and right subtree `r`
 is sent to `g(l).nest + g(r)`. -/
-private def equivTreeInvFun : Tree Unit → DyckWord
+def equivTreeInvFun : Tree Unit → DyckWord
   | Tree.nil => 0
   | Tree.node _ l r => (equivTreeInvFun l).nest + equivTreeInvFun r
 
-set_option backward.privateInPublic true in
-@[nolint unusedHavesSuffices]
-private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p := by
+lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p := by
   by_cases h : p = 0
   · simp [h, equivTreeToFun, equivTreeInvFun]
   · rw [equivTreeToFun]
@@ -516,14 +512,10 @@ private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p :=
     exact nest_insidePart_add_outsidePart h
 termination_by p.semilength
 
-set_option backward.privateInPublic true in
-@[nolint unusedHavesSuffices]
-private lemma equivTree_right_inv : ∀ t, equivTreeToFun (equivTreeInvFun t) = t
+lemma equivTree_right_inv : ∀ t, equivTreeToFun (equivTreeInvFun t) = t
   | Tree.nil => by simp [equivTreeInvFun, equivTreeToFun]
   | Tree.node _ _ _ => by simp [equivTreeInvFun, equivTreeToFun, equivTree_right_inv]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Equivalence between Dyck words and rooted binary trees. -/
 def equivTree : DyckWord ≃ Tree Unit where
   toFun := equivTreeToFun
@@ -531,9 +523,6 @@ def equivTree : DyckWord ≃ Tree Unit where
   left_inv := equivTree_left_inv
   right_inv := equivTree_right_inv
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[nolint unusedHavesSuffices]
 lemma semilength_eq_numNodes_equivTree (p) : p.semilength = (equivTree p).numNodes := by
   by_cases h : p = 0
   · simp [h, equivTree, equivTreeToFun]
