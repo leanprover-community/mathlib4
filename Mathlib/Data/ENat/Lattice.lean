@@ -57,13 +57,7 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
   iInf_coe_eq_top.mpr ‹_›
 
-lemma iInf_coe_eq_nat_iff {n : ℕ} : ⨅ i, (f i : ℕ∞) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
-  by_cases! hι : IsEmpty ι
-  · simp
-  norm_cast
-  apply iInf_eq_iff
-
-lemma iInf_eq_nat_iff {f : ι → ℕ∞} {n : ℕ} :
+lemma iInf_eq_coe_iff {f : ι → ℕ∞} {n : ℕ} :
     ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
   by_cases! hι : IsEmpty ι
   · simp [iInf_of_isEmpty]
