@@ -195,9 +195,7 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
       rcases h_tors x h_x with ⟨K, h_K, h_incl⟩
       exact Order.PFilter.mem_of_le h_incl h_K
     · exact ⟨I, h_I, isTorsionQuot_self F I⟩
-  · rintro ⟨h₁, h₂⟩
-    refine ⟨h₁, ?_⟩
-    rintro I ⟨J, h_J, h_colon⟩
+  · refine fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun I ⟨J, h_J, h_colon⟩ ↦ ?_⟩
     exact h₂.le ⟨J, h_J, fun x h_x ↦ ⟨I.colon {x}, h_colon x h_x, by simp⟩⟩
 
 end IdealFilter
