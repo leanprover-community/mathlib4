@@ -17,6 +17,12 @@ In this file we define the class `ContinuousSMulConst`. We say `ContinuousSMulCo
 `ContinuousConstSMul` and differs from `ContinuousSMul`, which requires simultaneous continuity in
 both variables.)
 
+As an example, consider an infinite dimensional normed real vector space `T` and let `Γ` denote the
+type `T →L[ℝ] T` of continuous linear maps `T → T`. Function composition defines a `Monoid Γ` with
+`f * g = f ∘ g` and function evaluation defines a `MulAction Γ T` with `f • x = f x`. By definition
+of `Γ`, we obtain `ContinuousConstSMul`, where `x ↦ f • x` is continuous. When we equip `Γ` with the
+topology of pointwise convergence, we obtain `ContinuousSMulConst` because `f ↦ f • x` is
+continuous. However, the **Hahn-Banach theorem** shows that `(f, x) ↦ f • x` is discontinuous.
 -/
 
 @[expose] public section
