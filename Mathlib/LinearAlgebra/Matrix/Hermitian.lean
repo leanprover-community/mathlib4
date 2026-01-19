@@ -125,6 +125,21 @@ theorem isSkewHermitian_transpose_iff (A : Matrix n n α) :
   ⟨IsSkewHermitian.transpose, IsSkewHermitian.transpose⟩
 
 end SkewHermitian
+section SubtractionMonoid
+
+variable [SubtractionMonoid α] [StarAddMonoid α]
+
+@[simp]
+theorem isSkewHermitian_diagonal_iff [DecidableEq n] (d : n → α) :
+    (diagonal d).IsSkewHermitian ↔ star d = -d := by
+  simp [IsSkewHermitian, funext_iff]
+
+theorem IsSkewHermitian.star_diag {A : Matrix n n α} (hA : A.IsSkewHermitian) :
+    star (diag A) = -(diag A) := by
+  classical
+  simp_all [← isSkewHermitian_diagonal_iff, IsSkewHermitian, ← conjTranspose_apply]
+
+end SubtractionMonoid
 
 section InvolutiveStar
 
