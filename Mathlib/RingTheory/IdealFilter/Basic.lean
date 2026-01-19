@@ -110,7 +110,6 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
 lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
-  unfold IsTorsionQuot
   constructor <;>
   · intro h k h_k
     rcases h k h_k with ⟨I, h_I, h_I_le⟩
@@ -188,7 +187,7 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
     refine ⟨h₁, ?_⟩
     ext I
     constructor <;> intro h_I
-    · rcases h_I with ⟨J,h_J, h_tors⟩
+    · rcases h_I with ⟨J, h_J, h_tors⟩
       unfold IsTorsionQuot at h_tors
       refine h₂ I ⟨J, h_J, fun x h_x ↦ ?_⟩
       rcases h_tors x h_x with ⟨K, h_K, h_incl⟩
