@@ -33,7 +33,7 @@ open CategoryTheory Comonad ModuleCat Limits MonoidalCategory
 
 variable {A B : Type u} [CommRing A] [CommRing B] {f : A →+* B}
 
-lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_flat (hf : f.Flat) :
+lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_ringHomFlat (hf : f.Flat) :
     PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) := by
   algebraize [f]
   change PreservesFiniteLimits <| tensorLeft (ModuleCat.of A B)
@@ -42,7 +42,7 @@ lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_flat (hf : f.Flat) :
 lemma ModuleCat.preservesFiniteLimits_extendScalars_of_flat (hf : f.Flat) :
     PreservesFiniteLimits (extendScalars.{_, _, u} f) := by
   have : PreservesFiniteLimits (extendScalars.{_, _, u} f ⋙ restrictScalars.{_, _, u} f) :=
-    ModuleCat.preservesFiniteLimits_tensorLeft_of_flat hf
+    ModuleCat.preservesFiniteLimits_tensorLeft_of_ringHomFlat hf
   exact preservesFiniteLimits_of_reflects_of_preserves (extendScalars f) (restrictScalars f)
 
 /-- Extension of scalars along faithfully flat ring maps reflects isomorphisms. -/
