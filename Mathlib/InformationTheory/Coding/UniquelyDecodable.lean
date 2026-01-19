@@ -49,9 +49,9 @@ lemma UniquelyDecodable.epsilon_not_mem
   simpa using @h [[]] [[], []]
 
 lemma UniquelyDecodable.flatten_injective (h : UniquelyDecodable S) :
-    Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.1.flatten) := by
-  intro L1 L2 hflat
+    Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.val.flatten) := by
+  intro L₁ L₂ hflat
   apply Subtype.ext
-  exact h L1.1 L2.1 L1.2 L2.2 hflat
+  exact h L₁.val L₂.val L₁.prop L₂.prop hflat
 
 end InformationTheory
