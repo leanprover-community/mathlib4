@@ -71,7 +71,7 @@ variable {G : SimpleGraph α} {f : α → ι} {C : G.IsCompleteMultipartiteWith 
 include C
 
 /-- For a complete multipartite graph labelled via `f`, `u` and `v` are adjacent iff `f u ≠ f v`. -/
-def adj_iff_ne ⦃u v : α⦄ : G.Adj u v ↔ f u ≠ f v := C u v
+lemma adj_iff_ne ⦃u v : α⦄ : G.Adj u v ↔ f u ≠ f v := C u v
 
 /-- The neighbors of `v` are vertices which do not match on `f`. -/
 lemma neighborSet_eq (v : α) : G.neighborSet v = {u | f v ≠ f u} := Set.ext <| C v
@@ -141,6 +141,8 @@ lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsComplete
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
     hc.comap h.iso.symm.toEmbedding).of_hom h.iso
 
+/-- `G.IsCompleteBipartiteWith left` iff `G` is complete bipartite
+    with respect to the partition `left`, `leftᶜ`. -/
 def IsCompleteBipartiteWith (left : Set α) : Prop := G.IsCompleteMultipartiteWith (· ∈ left)
 
 namespace IsCompleteBipartiteWith
