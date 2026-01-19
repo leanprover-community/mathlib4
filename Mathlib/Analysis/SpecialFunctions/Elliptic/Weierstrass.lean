@@ -1010,7 +1010,7 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
   by_cases hi₂ : Odd i
   · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using
-      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0:)
+      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0 :)
   by_cases hi₃ : i = 0
   · simp [hi₃]
   by_cases hi₄ : i = 6

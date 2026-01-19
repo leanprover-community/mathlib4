@@ -82,7 +82,7 @@ theorem characteristic_nonneg {r : ℝ} {a : WithTop E} (hr : 1 ≤ r) :
 The characteristic function is asymptotically non-negative.
 -/
 theorem characteristic_eventually_nonneg {f : ℂ → ℂ} {a : WithTop ℂ} :
-    0 ≤ᶠ[Filter.atTop] characteristic f a  := by
+    0 ≤ᶠ[Filter.atTop] characteristic f a := by
   filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 
 /-!
