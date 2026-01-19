@@ -305,7 +305,7 @@ open List.Vector Partrec Computable
 
 open Nat.Partrec'
 
-theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
+theorem to_part {n f} (pf : @Partrec' n f) : Partrec f := by
   induction pf with
   | prim hf => exact hf.to_prim.to_comp
   | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
@@ -390,7 +390,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
 
 open Nat.Partrec.Code
 
-theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
+theorem of_part : ∀ {n f}, Partrec f → @Partrec' n f :=
   @(suffices ∀ f, Nat.Partrec f → @Partrec' 1 fun v => f v.head from fun {n f} hf => by
       let g := fun n₁ =>
         (Part.ofOption (decode (α := List.Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
@@ -407,10 +407,10 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
               (Primrec.vector_head.pair (_root_.Primrec.const c)).pair <|
                 Primrec.vector_head.comp Primrec.vector_tail)
 
-theorem part_iff {n f} : @Partrec' n f ↔ _root_.Partrec f :=
+theorem part_iff {n f} : @Partrec' n f ↔ Partrec f :=
   ⟨to_part, of_part⟩
 
-theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _root_.Partrec f :=
+theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ Partrec f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
