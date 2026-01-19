@@ -6,7 +6,6 @@ Authors: Julian Berman, Aaron Hill
 module
 
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 public import Mathlib.Combinatorics.SimpleGraph.EdgeLabeling
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
@@ -37,11 +36,11 @@ theorem card_le_card_add_one_of_forall_IsCompleteBipartite
   classical
   rcases subsingleton_or_nontrivial V
   · grind [card_le_one_iff_subsingleton]
-  · by_contra! h
-    let M : Matrix (Fin 1 ⊕ α) V ℝ := Matrix.fromRows
+  · let M : Matrix (Fin 1 ⊕ α) V ℝ := Matrix.fromRows
       (Matrix.replicateCol V ![1])
       (Matrix.of fun m n ↦ (completeBipartiteOf m).choose.indicator 1 n)
-    obtain ⟨c, hc, hc_nezero⟩ : ∃ x ∈ ker M.toLin', x ≠ 0 := (ker _).ne_bot_iff.mp <| by
+    by_contra! h
+    obtain ⟨c, hc, _⟩ : ∃ x ∈ ker M.toLin', x ≠ 0 := (ker _).exists_mem_ne_zero_of_ne_bot <| by
       apply ker_ne_bot_of_finrank_lt
       simp only [Module.finrank_fintype_fun_eq_card, card_sum, card_unique]
       grind
