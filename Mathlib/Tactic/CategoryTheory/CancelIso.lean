@@ -103,10 +103,9 @@ def cancelIsoSimproc : Simp.Simproc := fun e => do
     let P ← mkAppOptM ``hom_inv_id_of_eq #[C, none, x, y, f, none, g, p₀]
     return .done {expr := ← mkAppOptM ``CategoryStruct.id #[C, instCat, x], proof? := P}
 
-end Mathlib.Tactic.CategoryTheory.CancelIso
-
-simproc cancelIso (CategoryStruct.comp (self := _) _ _) :=
-  Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc
+simproc _root_.cancelIso (CategoryStruct.comp (self := _) _ _) := cancelIsoSimproc
 
 -- We can’t @[inherit_doc] directly on the simproc command.
-attribute [inherit_doc Mathlib.Tactic.CategoryTheory.CancelIso.cancelIsoSimproc] cancelIso
+attribute [inherit_doc cancelIsoSimproc] cancelIso
+
+end Mathlib.Tactic.CategoryTheory.CancelIso
