@@ -10,7 +10,7 @@ public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
-/-! # Type classes for derivatives and Laplacian
+/-! # Type classes for derivatives and the Laplacian
 
 In this file we define notation type classes for line derivatives, also known as partial
 derivatives, and for the Laplacian.
