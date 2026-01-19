@@ -84,8 +84,8 @@ theorem abundant_twelve : Abundant 12 := by
   simp [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
 
 theorem weird_seventy : Weird 70 := by
-  rw [Weird, Abundant, not_pseudoperfect_iff_forall, show properDivisors 70 =
-      {1, 2, 5, 7, 10, 14, 35} by rfl]
+  rw [Weird, Abundant, not_pseudoperfect_iff_forall,
+    show properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} by rfl]
   constructor
   · simp
   · right
