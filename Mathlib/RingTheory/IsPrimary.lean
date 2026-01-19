@@ -69,7 +69,7 @@ protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
   exact ⟨hS hS', hT hT'⟩
 
 open Finset in
-lemma isPrimary_finset_inf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
+lemma isPrimary_finsetInf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon Set.univ).radical = ((f i).colon Set.univ).radical) :
     (s.inf f).IsPrimary := by
