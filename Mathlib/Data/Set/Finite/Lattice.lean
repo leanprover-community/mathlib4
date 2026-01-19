@@ -389,7 +389,7 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
     ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
-theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [Order.Frame α]
+theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Frame α]
     {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨅ a ∈ s, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a ∈ s, f a (g a) := by
   classical
@@ -405,7 +405,7 @@ theorem Finite.iInf_iSup_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [O
         exact ha ha'
     · exact le_iSup_of_le (g a) (le_iSup_of_le g le_rfl)
 
-theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [Order.Coframe α]
+theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [Nonempty (∀ a, κ a)] [Order.Coframe α]
     {s : Set ι} (hs : s.Finite) {f : ∀ a, κ a → α} :
     ⨆ a ∈ s, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a ∈ s, f a (g a) := by
   classical
@@ -421,19 +421,29 @@ theorem Finite.iSup_iInf_eq {ι} {κ : ι → Sort*} [∀ a, Nonempty (κ a)] [O
         rintro rfl
         exact ha ha'
 
-theorem _root_.iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [Order.Frame α]
-    [Finite ι] {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
+theorem _root_.iInf_iSup_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Frame α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨅ a, ⨆ b, f a b = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · simpa using Finite.iInf_iSup_eq Set.finite_univ
+  · have := Finite.iInf_iSup_eq (f := (f <| PLift.down ·)) Set.finite_univ
+    simp only [mem_univ, iInf_pos] at this
+    simp_rw [← Equiv.plift.symm.iInf_comp,
+      ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iSup_comp]
+      at this
+    simpa using this
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
     grw [iSup_of_empty, eq_bot_iff, iInf_le _ a, iSup_of_empty]
 
-theorem _root_.iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [Order.Coframe α]
-    [Finite ι] {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
+theorem _root_.iSup_iInf_eq_of_finite {α ι} {κ : ι → Sort*} [Order.Coframe α] [Finite ι]
+    {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
   by_cases h : ∀ a, Nonempty (κ a)
-  · simpa using Finite.iSup_iInf_eq Set.finite_univ
+  · have := Finite.iSup_iInf_eq (f := (f <| PLift.down ·)) Set.finite_univ
+    simp only [mem_univ, iSup_pos] at this
+    simp_rw [← Equiv.plift.symm.iSup_comp,
+      ← (Equiv.plift.piCongr (W := (κ <| PLift.down ·)) fun _ => Equiv.refl _).symm.iInf_comp]
+      at this
+    simpa using this
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
