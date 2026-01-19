@@ -5,13 +5,12 @@ Authors: Anne Baanen
 -/
 module
 
-public meta import Mathlib.Data.ZMod.Basic
-public meta import Mathlib.RingTheory.Polynomial.Basic
-public meta import Mathlib.Tactic.NormNum.DivMod
-public meta import Mathlib.Tactic.NormNum.PowMod
-public meta import Mathlib.Tactic.ReduceModChar.Ext
 public meta import Mathlib.Util.AtLocation
+public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
 import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
+public import Mathlib.Tactic.NormNum.PowMod
+public import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
 # `reduce_mod_char` tactic
@@ -289,7 +288,7 @@ The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the c
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
-@[inherit_doc reduce_mod_char]
+@[tactic_alt reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
 open Mathlib.Tactic in
