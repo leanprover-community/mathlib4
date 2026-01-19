@@ -69,12 +69,13 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]
-meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e := do
   match e with
   | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
-    let rbody ← core zα pα body
+    let rbody ← core zα pα? body
+    let some pα := pα? | pure .none -- TODO: the case without PartialOrder
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none

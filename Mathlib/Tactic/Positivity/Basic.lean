@@ -297,7 +297,7 @@ private theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
 @[positivity _ ^ (0 : ℕ)]
-meta def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalPowZeroNat : PositivityExt where eval {u α} _zα pα? e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semiring $α)
   assumeInstancesCommute
@@ -310,7 +310,7 @@ meta def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℕ)]
-meta def evalPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
   let some pα := pα? | do
     let _a ← synthInstanceQ q(MonoidWithZero $α)
@@ -374,7 +374,7 @@ private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |_|]
-meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
+meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) := do
   let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
   let some pα := pα? | pure .none
   try
@@ -420,7 +420,7 @@ meta def evalNatAbs : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
 and positive when its input is. -/
 @[positivity Nat.cast _]
-meta def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNatCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let (_i1 : Q(AddMonoidWithOne $α)) ← synthInstanceQ q(AddMonoidWithOne $α)
@@ -445,7 +445,7 @@ meta def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
 if its input is. -/
 @[positivity Int.cast _]
-meta def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
   let ~q(@Int.cast _ (_) ($a : ℤ)) := e | throwError "not Int.cast"
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
@@ -626,9 +626,6 @@ meta def evalNNRatDen : PositivityExt where eval {u α} _ _ e := do
 
 variable {q : ℚ≥0}
 
-set_option trace.Tactic.positivity true
-set_option trace.Tactic.positivity.failure true
-
 example (hq : 0 < q) : 0 < q.num := by positivity
 example (hq : q ≠ 0) : q.num ≠ 0 := by positivity
 example : 0 < q.den := by positivity
@@ -701,7 +698,7 @@ meta def evalNegPart : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]
-meta def evalMap : PositivityExt where eval {_ β} _ _ e := do
+meta def evalMap : PositivityExt where eval {_ β} _ pβ? e := do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
   let some pβ := pβ? | throwError "not PartialOrder"

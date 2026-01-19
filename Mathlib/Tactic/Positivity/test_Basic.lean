@@ -1,4 +1,5 @@
-import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity
+import Mathlib.Algebra.Order.Field.Basic
 
 /-! # Tests for the `positivity` tactic
 
@@ -7,18 +8,24 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 set_option autoImplicit true
 set_option trace.Tactic.positivity true
 set_option trace.Tactic.positivity.failure true
+set_option trace.Tactic.norm_num true
 
 open Function Nat
 
 variable {ι α β E : Type*}
 
 /- ## Numeric goals -/
+#norm_num 3
 
 example : 0 ≤ 0 := by positivity
 
 example : 0 ≤ 3 := by positivity
 
-example : 0 < 3 := by positivity
+example : 0 < 3 := by norm_num
+
+example : 0 < (3 : ℤ) := by positivity
+
+example : 0 < nat_lit 3 := by positivity
 -- example : (0 : EReal) < 2 := by positivity
 -- example : 0 < (2 : EReal) := by positivity
 -- example : (0 : EReal) < 2 := by positivity
@@ -99,6 +106,9 @@ section
 
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
+example : (1/4 : ℚ) > 0 := by norm_num
+example : (4 : ℚ) > 0 := by positivity
+example : (1/4 : ℚ) > 0 := by positivity
 example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
 example : (1/4 - 2/3 : α) ≠ 0 := by positivity
 

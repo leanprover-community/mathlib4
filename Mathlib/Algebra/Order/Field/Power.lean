@@ -123,8 +123,16 @@ open Lean Meta Qq
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
+  let some pα := pα? |
+    match ← core zα pα? a with
+    | .nonzero pa =>
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      pure (.nonzero q(zpow_ne_zero $b $pa))
+    | _ => pure .none
   let result ← catchNone do
     let _a ← synthInstanceQ q(Field $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
@@ -148,7 +156,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
       pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
-    let ra ← core zα pα a
+    let ra ← core zα pα? a
     let ofNonneg (pa : Q(0 ≤ $a))
         (_oα : Q(Semifield $α)) (_oα : Q(LinearOrder $α)) (_oα : Q(IsStrictOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
@@ -174,6 +182,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let sα ← synthInstanceQ q(Semifield $α)
         let oα ← synthInstanceQ q(LinearOrder $α)
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
+        assumeInstancesCommute
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
           (ofNonzero q(ne_of_gt $pa) q(inferInstance))
     | .nonnegative pa =>
