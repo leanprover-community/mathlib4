@@ -155,6 +155,7 @@ instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Lifting to over `Y` and pulling back along `X ⟶ Y` is the same as lifting to over `X`. -/
+@[simps!]
 noncomputable def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     star Y ⋙ pullback f ≅ star X :=
   NatIso.ofComponents
