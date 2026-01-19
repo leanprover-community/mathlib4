@@ -563,6 +563,15 @@ theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :
 theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
 
+lemma sInf_eq_iff (hs : s.Nonempty) (n : α) :
+     sInf s = n ↔ n ∈ s ∧ ∀a ∈ s, n ≤ a := by
+  have : OrderBot α := WellFoundedLT.toOrderBot
+  constructor
+  · intro rfl
+    exact ⟨csInf_mem hs, fun _ ↦ csInf_le (OrderBot.bddBelow s)⟩
+  · intro ⟨hn, hle⟩
+    apply le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
+
 theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   (hf.map_isLeast (isLeast_csInf hs)).csInf_eq.symm
