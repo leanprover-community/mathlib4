@@ -117,7 +117,7 @@ lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
   Iff.rfl
 
 /-- Unfolding lemma for `IsTorsionQuot`. -/
-@[simp] lemma isTorsionQuot_def (F : IdealFilter A) (L K : Ideal A) :
+@[simp] lemma isTorsionQuot_def {F : IdealFilter A} {L K : Ideal A} :
     IsTorsionQuot F L K ↔ ∀ k ∈ (K : Set A), ∃ I ∈ F, I ≤ L.colon {k} :=
   Iff.rfl
 
