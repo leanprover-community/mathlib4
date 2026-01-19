@@ -402,9 +402,9 @@ where
   visit (e : Expr) : MonadCacheT ExprStructEq Expr MetaM Expr :=
     checkCache { val := e : ExprStructEq } fun _ => do
     match e with
-    | .forallE .. => visitForall #[] e
-    | .lam ..     => visitLambda #[] e
-    | .letE ..    => visitLet #[] e
+    | .forallE .. => visitForall e
+    | .lam ..     => visitLambda e
+    | .letE ..    => visitLet e
     | .mdata _ b  => return e.updateMData! (← visit b)
     | .proj ..    => visitApp e
     | .app ..     => visitApp e
@@ -470,31 +470,31 @@ where
   /- In `visitLambda`, `visitForall` and `visitLet`,
   we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
   This is because the local context in the `MetaM` monad stores their original types. -/
-  visitLambda (fvars : Array Expr) (e : Expr) (tmpLCtx : LocalContext := {}) := do
+  visitLambda (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
     if let .lam n d b c := e then
       withLocalDecl n c (d.instantiateRev fvars) fun x => do
         let decl ← getFVarLocalDecl x
         let decl := decl.setType (← visit decl.type)
-        visitLambda (fvars.push x) b (tmpLCtx.addDecl decl)
+        visitLambda b (fvars.push x) (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkLambda fvars e
-  visitForall (fvars : Array Expr) (e : Expr) (tmpLCtx : LocalContext := {}) := do
+  visitForall (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
     if let .forallE n d b c := e then
       withLocalDecl n c (d.instantiateRev fvars) fun x => do
         let decl ← getFVarLocalDecl x
         let decl := decl.setType (← visit decl.type)
-        visitForall (fvars.push x) b (tmpLCtx.addDecl decl)
+        visitForall b (fvars.push x) (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
       return tmpLCtx.mkForall fvars e
-  visitLet (fvars : Array Expr) (e : Expr) (tmpLCtx : LocalContext := {}) := do
+  visitLet (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
     if let .letE n t v b nondep := e then
       withLetDecl n (t.instantiateRev fvars) (v.instantiateRev fvars) (nondep := nondep)
         fun x => do
         let decl ← getFVarLocalDecl x
         let decl := decl.setType (← visit decl.type) |>.setValue (← visit (decl.value true))
-        visitLet (fvars.push x) b (tmpLCtx.addDecl decl)
+        visitLet b (fvars.push x) (tmpLCtx.addDecl decl)
     else
       let e ← visit (e.instantiateRev fvars)
       -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
