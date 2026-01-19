@@ -576,8 +576,7 @@ theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
 
 @[simp]
 theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = f.erase i := by
-  ext
-  grind
+  ext; grind
 
 @[simp]
 theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
