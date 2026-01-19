@@ -278,9 +278,17 @@ namespace BilinForm
 -- deprecation mechanism for this since the two declarations involved have the same name
 -- (but are in different namespaces).
 
-/-- A nondegenerate bilinear form is a bilinear form that is both left-separating and
+/--
+A nondegenerate bilinear form is a bilinear form that is both left-separating and
 right-separating, i.e. if `B x y = 0` for all `y` then `x = 0`, and if `B x y = 0` for all `x` then
-`y = 0`. -/
+`y = 0`.
+
+(Note that these conditions are independent of each other in general, but in the common case of
+finite-dimensional vector spaces (or, more generally, finite free modules over an integral
+domain), either of these conditions implies the other; see
+`LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft` and
+`LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot`, proved in a later file.)
+-/
 abbrev Nondegenerate (B : BilinForm R M) : Prop :=
   LinearMap.Nondegenerate B
 
@@ -312,9 +320,6 @@ theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     convert h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
-@[deprecated (since := "2026-01-17")] alias nondegenerate_iff_ker_eq_bot :=
-  LinearMap.separatingLeft_iff_ker_eq_bot
-
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
     LinearMap.ker B = ⊥ := LinearMap.separatingLeft_iff_ker_eq_bot.mp h.1
 
@@ -330,11 +335,11 @@ theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.N
     ψ₁ = ψ₂ :=
   B.compLeft_injective b <| ext fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
 
-lemma Nondegenerate.flip {B : BilinForm K V} (hB : B.Nondegenerate) :
+lemma Nondegenerate.flip {B : BilinForm R M} (hB : B.Nondegenerate) :
     B.flip.Nondegenerate :=
   ⟨hB.2, hB.1⟩
 
-lemma nondegenerate_flip_iff {B : BilinForm K V} :
+lemma nondegenerate_flip_iff {B : BilinForm R M} :
     B.flip.Nondegenerate ↔ B.Nondegenerate := ⟨Nondegenerate.flip, Nondegenerate.flip⟩
 
 section FiniteDimensional
@@ -356,20 +361,6 @@ lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
     B ((B.toDual hB).symm f) v = f v := by
   change B.toDual hB ((B.toDual hB).symm f) v = f v
   simp only [LinearEquiv.apply_symm_apply]
-
-lemma Nondegenerate.ofSeparatingLeft {B : BilinForm K V} (hB : B.SeparatingLeft) :
-    B.Nondegenerate := by
-  refine ⟨hB, fun x hx ↦ ?_⟩
-  apply (Module.evalEquiv K V).injective
-  ext f
-  let A : V ≃ₗ[K] Module.Dual K V := B.linearEquivOfInjective
-    (LinearMap.ker_eq_bot.mp <| separatingLeft_iff_ker_eq_bot.mp hB) Subspace.dual_finrank_eq.symm
-  obtain ⟨y, rfl⟩ := A.surjective f
-  simpa using hx y
-
-lemma Nondegenerate.ofSeparatingRight {B : BilinForm K V} (hB : B.SeparatingRight) :
-    B.Nondegenerate :=
-  nondegenerate_flip_iff.mp <| .ofSeparatingLeft hB
 
 @[deprecated (since := "2026-01-17")] alias nonDegenerateFlip_iff := nondegenerate_flip_iff
 
@@ -407,29 +398,29 @@ theorem apply_dualBasis_right (hB : B.Nondegenerate) (sym : B.IsSymm)
   rw [sym.eq, apply_dualBasis_left]
 
 @[simp]
-lemma dualBasis_dualBasis_flip [FiniteDimensional K V] (hB : B.Nondegenerate) (b : Basis ι K V) :
+lemma dualBasis_dualBasis_flip (hB : B.Nondegenerate) (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
   simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
-lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) [FiniteDimensional K V] (b : Basis ι K V) :
+lemma dualBasis_flip_dualBasis (hB : B.Nondegenerate) (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
   dualBasis_dualBasis_flip hB.flip b
 
 @[simp]
-lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V]
+lemma dualBasis_dualBasis (hB : B.Nondegenerate) (hB' : B.IsSymm)
     (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
   convert dualBasis_dualBasis_flip hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
 
-lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V] :
+lemma dualBasis_involutive (hB : B.Nondegenerate) (hB' : B.IsSymm) :
     Function.Involutive (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
   fun b ↦ dualBasis_dualBasis hB hB' b
 
-lemma dualBasis_injective (hB : B.Nondegenerate) (hB' : B.IsSymm) [FiniteDimensional K V] :
+lemma dualBasis_injective (hB : B.Nondegenerate) (hB' : B.IsSymm) :
     Function.Injective (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
   (B.dualBasis_involutive hB hB').injective
 

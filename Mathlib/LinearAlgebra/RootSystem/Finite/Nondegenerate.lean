@@ -259,10 +259,8 @@ lemma disjoint_corootSpan_ker_corootForm :
 
 lemma rootForm_nondegenerate [P.IsRootSystem] :
     P.RootForm.Nondegenerate := by
-  rw [LinearMap.BilinForm.Nondegenerate,
-    (rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
-    LinearMap.separatingLeft_iff_ker_eq_bot]
-  simpa using P.disjoint_rootSpan_ker_rootForm
+  simpa [(rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
+    LinearMap.separatingLeft_iff_ker_eq_bot] using P.disjoint_rootSpan_ker_rootForm
 
 @[deprecated (since := "2025-12-14")]
 alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
