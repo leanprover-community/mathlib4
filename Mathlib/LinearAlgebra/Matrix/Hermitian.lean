@@ -198,6 +198,7 @@ theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermit
   IsSelfAdjoint.star_add_self A
 
 end AddCommMonoid
+
 section SubtractionCommMonoid
 
 variable [SubtractionCommMonoid α] [StarAddMonoid α]
