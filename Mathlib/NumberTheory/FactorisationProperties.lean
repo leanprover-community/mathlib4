@@ -198,7 +198,7 @@ theorem abundant_945 : Abundant 945 := by
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by
   grind [Abundant, sum_divisors_eq_sum_properDivisors_add_self]
 
-theorem abundant_mul [NeZero m] (h : Abundant n) : Abundant (m * n) := by
+theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
   rw [abundant_iff_sum_divisors] at *
   have h1 : 0 < m := pos_of_neZero m
