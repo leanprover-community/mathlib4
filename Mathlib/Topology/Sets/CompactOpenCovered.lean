@@ -108,8 +108,8 @@ lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompac
   · exact Set.toFinite _
   · grind
 
-lemma of_isCompact_of_forall_exists [TopologicalSpace S] {U : Set S} (hU : IsCompact U)
-    (H : ∀ x ∈ U, ∃ t ⊆ U, x ∈ t ∧ IsOpen t ∧ IsCompactOpenCovered f t) :
+lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U : Set S}
+    (hU : IsCompact U) (H : ∀ x ∈ U, ∃ t ⊆ U, x ∈ t ∧ IsOpen t ∧ IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
   choose Us hU' hUx hUo hU'' using H
   refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
@@ -191,7 +191,7 @@ lemma of_comp [∀ i, PrespectralSpace (X i)] [TopologicalSpace S]
   have hp : Continuous p := Continuous.sigma_map ht
   have hf : Continuous (fun p : Σ i, X i ↦ f p.1 p.2) := by simp [hf]
   obtain ⟨V, hV, heq⟩ := hU
-  obtain ⟨K, hK, ho, hKU, hVK⟩ := PrespectralSpace.exists_isCompact_and_isOpen_between
+  obtain ⟨K, hK, ho, hVK, hKU⟩ := PrespectralSpace.exists_isCompact_and_isOpen_between
       (hV.image hp) (ho.preimage hf) <| by
     simp [← heq, ← Set.preimage_comp, hcomp, Set.subset_preimage_image]
   refine ⟨⟨K, ho⟩, hK, subset_antisymm (by simpa) ?_⟩
