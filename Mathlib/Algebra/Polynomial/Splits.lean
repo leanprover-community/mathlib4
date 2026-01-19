@@ -328,13 +328,19 @@ theorem Splits.eval_root_derivative [DecidableEq R] (hf : f.Splits) (hm : f.Moni
   rw [← eval_multiset_prod_X_sub_C_derivative hx, ← hf.eq_prod_roots_of_monic hm]
 
 omit [IsDomain R] in
-theorem Splits.of_splits_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R] (i : R →+* S)
-    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
+theorem Splits.of_splits_map_of_injective {S : Type*} [CommRing S] [IsDomain S] {i : R →+* S}
+    (hi : Function.Injective i) (hf : Splits (f.map i))
+    (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
   choose j hj using hi
   rw [splits_iff_exists_multiset]
-  refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i i.injective ?_⟩
-  conv_lhs => rw [hf.eq_prod_roots]
+  refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
+  conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
+
+omit [IsDomain R] in
+theorem Splits.of_splits_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R] (i : R →+* S)
+    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f :=
+  hf.of_splits_map_of_injective i.injective hi
 
 theorem Splits.mem_lift_of_roots_mem_range (hf : f.Splits) (hm : f.Monic)
     {S : Type*} [Ring S] (i : S →+* R) (hr : ∀ a ∈ f.roots, a ∈ i.range) :
