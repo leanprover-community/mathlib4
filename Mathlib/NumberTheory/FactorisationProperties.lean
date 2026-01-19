@@ -201,7 +201,7 @@ theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors,
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
   rw [abundant_iff_sum_divisors] at *
-  have h1 : 0 < m := pos_of_neZero m
+  have h1 : 0 < m := Nat.ne_zero_iff_zero_lt.mp hm
   calc
     _ = m * (2 * n) := by grind
     _ < m • ∑ i ∈ n.divisors, i := (Nat.mul_lt_mul_left h1).mpr h
@@ -227,12 +227,12 @@ theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := b
   rw [Set.infinite_iff_exists_gt]
   intro a
   use (2 * (a + 1)) * 945
-  grind [abundant_mul (m := (2 * (a + 1))) abundant_945]
+  grind [Abundant.mul abundant_945 (show 2 * (a + 1) ≠ 0 by grind)]
 
 theorem infinite_odd_abundant : {n : ℕ | Odd n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
   use (2 * a + 1) * 945
-  grind [abundant_mul (m := (2 * a + 1)) abundant_945]
+  grind [Abundant.mul abundant_945 (show 2 * a + 1 ≠ 0 by grind)]
 
 end Nat
