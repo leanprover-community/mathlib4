@@ -141,6 +141,11 @@ lemma mulSupport_fun_one : mulSupport (fun _ ↦ 1 : ι → M) = ∅ := mulSuppo
 lemma mulSupport_const {c : M} (hc : c ≠ 1) : (mulSupport fun _ : ι ↦ c) = Set.univ := by
   ext x; simp [hc]
 
+/-- The multiplicative support of a function that is everywhere non-one is the whole space. -/
+@[to_additive /-- The support of a function that is everywhere nonzero is the whole space. -/]
+lemma mulSupport_eq_univ (hf : ∀ x, f x ≠ 1) : mulSupport f = Set.univ :=
+  Set.eq_univ_of_forall hf
+
 @[to_additive]
 lemma mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : ι → M) (g : ι → N) :
     mulSupport (fun x ↦ op (f x) (g x)) ⊆ mulSupport f ∪ mulSupport g := fun x hx ↦
