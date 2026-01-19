@@ -235,8 +235,8 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
 The integral as a continuous multilinear map on the space of continuous curves, which will allow us
 to relate it to `iteratedFDeriv`
 -/
-def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
-    (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
+def integralCMLMAux {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) where
   toFun := integralCM hg t₀ α
   -- `ContinuousMultilinearMap` asks for a proof for arbitrary `[DecidableEq ι]`, which is why we
@@ -245,11 +245,34 @@ def integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : Cont
   map_update_smul' dα i c α₁ := by convert integralCM_update_smul hg t₀ α dα i c α₁
   cont := continuous_integralCM ..
 
--- missing general lemma about applying `ContinuousMultilinearMap` equals applying `toFun`?
-lemma integralCMLM_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
+@[simp]
+lemma integralCMLMAux_apply {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
     {dα : Fin n → C(Icc tmin tmax, E)} :
-    integralCMLM hg t₀ α dα = integralCM hg t₀ α dα := rfl
+    integralCMLMAux hg t₀ α dα = integralCM hg t₀ α dα := rfl
+
+open Classical in
+/--
+The integral as a continuous multilinear map on the space of continuous curves, as a global function
+of `g` (later taken to be the `n`-th derivative of the vector field `E → E`), using the junk value
+pattern
+-/
+def integralCMLM {n : ℕ} (g : E → E [×n]→L[ℝ] E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (α : C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E) :=
+  if hg : ContinuousOn g u then integralCMLMAux hg t₀ α else 0
+
+lemma integralCMLM_apply_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {tmin tmax : ℝ}
+    {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} {dα : Fin n → C(Icc tmin tmax, E)}
+    (hg : ContinuousOn g u) :
+    integralCMLM g u t₀ α dα = integralCM hg t₀ α dα := by
+  rw [integralCMLM, dif_pos hg, integralCMLMAux_apply]
+
+lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {tmin tmax : ℝ}
+    {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} {dα : Fin n → C(Icc tmin tmax, E)}
+    (hg : ¬ ContinuousOn g u) :
+    integralCMLM g u t₀ α dα = 0 := by
+  rw [integralCMLM, dif_neg hg, zero_apply]
 
 def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g : E → F} {u : Set E}
     (hg : ContinuousOn g u) (α : {α : C(I, E) | MapsTo α univ u}) : C(I, F) :=
@@ -272,7 +295,7 @@ lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E
 
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
-    ContinuousOn (integralCMLM hg t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
+    ContinuousOn (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
   -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
   rw [continuousOn_iff_continuous_restrict, isEmbedding_toUniformOnFun.continuous_iff,
     UniformOnFun.continuous_rng_iff]
@@ -297,7 +320,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   intro α hα dα hdα
   rw [mem_preimage, mem_ball, ContinuousMap.dist_lt_iff hδ] at hα
   apply hεU
-  rw [integralCMLM_apply, integralCMLM_apply, ContinuousMap.dist_lt_iff hε]
+  rw [integralCMLM_apply_if_pos hg, integralCMLM_apply_if_pos hg, ContinuousMap.dist_lt_iff hε]
   intro t
   rw [integralCM_apply_if_pos α₀.2, integralCM_apply_if_pos α.2, dist_eq_norm, integralFun,
     integralFun, ← integral_sub (intervalIntegrable_integrand hg _ α₀.2 ..)
@@ -334,6 +357,49 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
 `I^(k) g^(l+1) = I^(k+1) g^(l)` for all `k`, `l`
 to prepare for the induction proof
 -/
+
+omit [CompleteSpace E]
+lemma _root_.ContDiffOn.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv
+    {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
+    ContinuousOn
+      (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u := by
+  simp_rw [← Function.comp_apply (g := fderiv ℝ g)]
+  rw [LinearIsometryEquiv.comp_continuousOn_iff]
+  exact hg.continuousOn_fderiv_of_isOpen hu le_rfl
+
+section test
+
+variable {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u) (hu : IsOpen u)
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) (hg' : ContDiffOn ℝ 1 g u)
+
+#check fderiv ℝ (integralCMLM hg t₀) α
+-- C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) [×n]→L[ℝ] C(Icc tmin tmax, E)
+#check (continuousMultilinearCurryLeftEquiv ℝ
+  (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm (fderiv ℝ (integralCMLM hg t₀) α)
+-- C(Icc tmin tmax, E) [×n + 1]→L[ℝ] C(Icc tmin tmax, E)
+
+
+#check fderiv ℝ g
+-- E → E →L[ℝ] E [×n]→L[ℝ] E
+#check fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)
+-- E → E [×n + 1]→L[ℝ] E
+#check integralCMLM
+  (g := fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x))
+  (hg'.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu) t₀ α
+-- C(Icc tmin tmax, E) [×n + 1]→L[ℝ] C(Icc tmin tmax, E)
+
+end test
+
+lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
+    (continuousMultilinearCurryLeftEquiv ℝ
+  (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm (fderiv ℝ (integralCMLM hg t₀) α)
+
+
+
+
+
+
 
 section
 
@@ -408,7 +474,12 @@ lemma iteratedFDerivIntegralCMLM_succ {k l n : ℕ} {f : E → E} {u : Set E} (h
     have h₁ : k + (l + 1) = k + l + 1 := by group
     have h₂ : k + 1 + l = k + l + 1 := by group
     iteratedFDerivIntegralCMLM hf hu t₀ α hle h₁ =
-      iteratedFDerivIntegralCMLM hf hu t₀ α hle h₂ := sorry
+      iteratedFDerivIntegralCMLM hf hu t₀ α hle h₂ := by
+  simp only [iteratedFDerivIntegralCMLM]
+  ext dα t
+
+
+  sorry
 
 /--
 `I^(n) f = I f^(n)`, stated in less ideal types
