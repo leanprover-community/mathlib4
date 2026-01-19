@@ -196,13 +196,12 @@ theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
 theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=
   AntisymmRel.refl rᶜ a
 
-variable {r} in
+variable {r}
+
 theorem IncompRel.rfl [Std.Irrefl r] {a : α} : IncompRel r a a := .refl ..
 
 instance [Std.Irrefl r] : Std.Refl (IncompRel r) where
   refl := .refl r
-
-variable {r}
 
 @[symm]
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
@@ -233,6 +232,10 @@ theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b := by
 theorem IsTotal.not_incompRel [IsTotal α r] (a b : α) : ¬ IncompRel r a b := by
   rw [not_incompRel_iff]
   exact IsTotal.compRel a b
+
+theorem IncompRel.ne [Std.Refl r] {a b : α} (h : IncompRel r a b) : a ≠ b := by
+  rintro rfl
+  exact h.1 <| refl_of r a
 
 end Relation
 

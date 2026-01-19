@@ -196,6 +196,11 @@ noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] where
     simp [mul_def]
     simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite]
 
+@[to_additive]
+lemma coe_mapRangeRingHom (f : R →+* S) :
+    ⇑(mapRangeRingHom M f) = mapRange f (map_zero _) := by
+  simp [mapRangeRingHom]
+
 @[to_additive (attr := simp)]
 lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
     mapRangeRingHom M f x m = f (x m) := by simp [mapRangeRingHom]
