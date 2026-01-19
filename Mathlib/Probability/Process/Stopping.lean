@@ -869,9 +869,6 @@ theorem ProgMeasurable.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias ProgMeasurable.adapted_stoppedProcess := ProgMeasurable.stronglyAdapted_stoppedProcess
-
 theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : ProgMeasurable f u) (hτ : IsStoppingTime f τ) (i : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ i) :=
@@ -1125,34 +1122,21 @@ theorem StronglyAdapted.stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapte
     StronglyAdapted f (stoppedProcess u τ) :=
   ((hu.progMeasurable_of_continuous hu_cont).stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stoppedProcess := StronglyAdapted.stoppedProcess
-
 /-- If the indexing order has the discrete topology, then the stopped process of a strongly adapted
 process is strongly adapted. -/
 theorem StronglyAdapted.stoppedProcess_of_discrete [DiscreteTopology ι] (hu : StronglyAdapted f u)
     (hτ : IsStoppingTime f τ) : StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (hu.progMeasurable_of_discrete.stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stoppedProcess_of_discrete := StronglyAdapted.stoppedProcess_of_discrete
-
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess [MetrizableSpace ι]
     (hu : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ)
     (n : ι) : StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   (hu.progMeasurable_of_continuous hu_cont).stronglyMeasurable_stoppedProcess hτ n
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stronglyMeasurable_stoppedProcess := StronglyAdapted.stronglyMeasurable_stoppedProcess
-
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete [DiscreteTopology ι]
     (hu : StronglyAdapted f u) (hτ : IsStoppingTime f τ) (n : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   hu.progMeasurable_of_discrete.stronglyMeasurable_stoppedProcess hτ n
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stronglyMeasurable_stoppedProcess_of_discrete :=
-  StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete
 
 end StronglyAdaptedStoppedProcess
 
