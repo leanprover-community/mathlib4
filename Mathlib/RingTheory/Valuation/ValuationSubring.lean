@@ -98,6 +98,16 @@ theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 of itself. (That is, `⊤ : ValuationSubring K`.) -/
 instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
 
+@[simp, norm_cast]
+theorem top_coe_div (x y : (⊤ : ValuationSubring K)) :
+    ((x / y : (⊤ : ValuationSubring K)) : K) = (x : K) / (y : K) :=
+  rfl
+
+@[simp, norm_cast]
+theorem top_coe_inv (x : (⊤ : ValuationSubring K)) :
+    ((x⁻¹ : (⊤ : ValuationSubring K)) : K) = (x : K)⁻¹ :=
+  rfl
+
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
 
