@@ -415,7 +415,7 @@ noncomputable def AddContent.onIocAux (f : α → G) (s : Set α) : G :=
   if h : ∃ (p : α × α), p.1 ≤ p.2 ∧ s = Set.Ioc p.1 p.2
     then f h.choose.2 - f h.choose.1 else 0
 
-lemma AddContent.onIocAux_eq {f : α → G} {u v : α} (h : u ≤ v) :
+lemma AddContent.onIocAux_apply {f : α → G} {u v : α} (h : u ≤ v) :
     AddContent.onIocAux f (Ioc u v) = f v - f u := by
   have h' : ∃ (p : α × α), p.1 ≤ p.2 ∧ Ioc u v = Ioc p.1 p.2 := ⟨(u, v), h, rfl⟩
   simp only [onIocAux, h', ↓reduceDIte]
@@ -439,7 +439,7 @@ lemma AddContent.onIocAux_empty (f : α → G) :
   · simp [onIocAux]
   inhabit α
   have : Ioc (default : α) default = ∅ := by simp
-  rw [← this, AddContent.onIocAux_eq le_rfl]
+  rw [← this, AddContent.onIocAux_apply le_rfl]
   simp
 
 /-- The additive content on the set of open-closed intervals, associating to an interval `Ioc u v`
@@ -495,7 +495,7 @@ noncomputable def AddContent.onIoc (f : α → G) :
           simp only [← h'uv, mem_sUnion, SetLike.mem_coe]
           exact ⟨_, tI, hu'u, huv.le⟩
         simp at this
-      rw [h'uv, onIocAux_eq huv.le]
+      rw [h'uv, onIocAux_apply huv.le]
       -- let us remove the right-most interval `(u', v]` from the union, and let `I'` be the
       -- remaining set of intervals.
       let I' := I.erase (Set.Ioc u' v)
@@ -521,9 +521,13 @@ noncomputable def AddContent.onIoc (f : α → G) :
         · have := card_erase_add_one tI
           grind
       -- the conclusion follows.
-      rw [I_eq_insert, sum_insert, ← IH, UI', onIocAux_eq hu'v', onIocAux_eq uu']
+      rw [I_eq_insert, sum_insert, ← IH, UI', onIocAux_apply hu'v', onIocAux_apply uu']
       · simp
       · simp [I']
+
+lemma AddContent.onIoc_apply {f : α → G} {u v : α} (h : u ≤ v) :
+    AddContent.onIoc f (Ioc u v) = f v - f u :=
+  AddContent.onIocAux_apply h
 
 end OnIoc
 

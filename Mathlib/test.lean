@@ -367,8 +367,34 @@ theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generat
     exact exists_measure_symmDiff_lt_of_generateFrom hCs h''C h'C ht
 
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCountableTopology α]
-  {f : α → E}
+  [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E}
 
 open Set
 
-def foo (hf : BoundedVariationOn f univ) : Measure α :=
+noncomputable def _root_.BoundedVariationOn.measure
+    (hf : BoundedVariationOn f univ) (x₀ : α) : Measure α := by
+  have : Monotone (fun x ↦ variationOnFromTo f univ x₀ x) := by
+    rw [← monotoneOn_univ]
+    exact variationOnFromTo.monotoneOn hf.locallyBoundedVariationOn (mem_univ _)
+  exact this.stieltjesFunction.measure
+
+instance (hf : BoundedVariationOn f univ) (x₀ : α) : IsFiniteMeasure (hf.measure x₀) := sorry
+
+noncomputable def BoundedVariationOn.addContent :
+    AddContent E {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
+  AddContent.onIoc f.rightLim
+
+lemma foo (hf : BoundedVariationOn f univ) (x₀ : α) : ∃ m : VectorMeasure α E,
+    (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧ ∀ s,
+    ‖m s‖ₑ ≤ hf.measure x₀ s := by
+  have : Nonempty α := ⟨x₀⟩
+  let m := AddContent.onIoc f.rightLim
+  have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ (hf.measure x₀) s := sorry
+  have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := sorry
+  have C : (∃ f : ℕ → Set α, (∀ (n : ℕ), f n ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v})
+    ∧ (hf.measure x₀) (⋃ n, f n)ᶜ = 0) := sorry
+  rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
+    (m := m) (μ := hf.measure x₀) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
+  refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
+  rw [hm']; swap
+  · exact ⟨u, v, huv, rfl⟩
