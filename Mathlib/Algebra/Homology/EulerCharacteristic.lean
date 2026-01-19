@@ -118,12 +118,10 @@ lemma finrankSupport_subset_iff (X : CategoryTheory.GradedObject ι (ModuleCat R
     finrankSupport X ⊆ s ↔ ∀ i ∉ s, Module.finrank R (X i) = 0 :=
   Function.support_subset_iff'
 
-variable [Fintype ι]
-
-/-- The Euler characteristic as an infinite sum over all indices.
-This requires the index type to be finite. -/
+/-- The Euler characteristic as a sum over all indices. Defaults to 0 if the support of the ranks of the objects of `X` is
+infinite. -/
 noncomputable def eulerCharTsum (X : CategoryTheory.GradedObject ι (ModuleCat R)) : ℤ :=
-  ∑ i : ι, (c.χ i : ℤ) * Module.finrank R (X i)
+  ∑ᶠ i : ι, (c.χ i : ℤ) * Module.finrank R (X i)
 
 /-- If a graded object has finite rank support contained in a finite set,
 the infinite Euler characteristic equals the finite one. -/
