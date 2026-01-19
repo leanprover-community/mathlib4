@@ -190,7 +190,8 @@ theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtyp
 theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtype_val_Ici_Iic ..
 
 @[simp]
-theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y := image_subtype_val_Ici_Icc ..
+theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=
+  image_subtype_val_Icc (s := Ici 0) ..
 
 @[simp]
 theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtype_val_Ici_Ioi ..
@@ -199,12 +200,15 @@ theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtyp
 theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtype_val_Ici_Iio ..
 
 @[simp]
-theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y := image_subtype_val_Ici_Ioc ..
+theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y :=
+  image_subtype_val_Ioc (s := Ici 0) ..
 
 @[simp]
-theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y := image_subtype_val_Ici_Ico ..
+theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y :=
+  image_subtype_val_Ico (s := Ici 0) ..
 
 @[simp]
-theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y := image_subtype_val_Ici_Ioo ..
+theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y :=
+  image_subtype_val_Ioo (s := Ici 0) ..
 
 end NNReal
