@@ -221,10 +221,9 @@ then `Σ D^{-|w|} ≤ 1`. -/
 public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [Nonempty α]
     (h : UniquelyDecodable (S : Set (List α))) :
     ∑ w ∈ S, (1 / Fintype.card α : ℝ) ^ w.length ≤ 1 := by
-  let D : ℝ := Fintype.card α
   have h_kraft := kraft_mcmillan_inequality_aux h
   contrapose! h_kraft
-  let K := ∑ w ∈ S, (1 / D) ^ w.length
+  let K := ∑ w ∈ S, (1 / (Fintype.card α : ℝ)) ^ w.length
   let maxLen : ℕ := S.sup List.length
   have hAbs : |1 / K| < 1 := by
     grw [abs_of_pos (by positivity), div_lt_one] <;> grind
