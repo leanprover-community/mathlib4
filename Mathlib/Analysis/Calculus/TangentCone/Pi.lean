@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Indexed product of sets with unique differentiability property
@@ -29,8 +30,7 @@ variable {𝕜 : Type*} [Semiring 𝕜]
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentConeAt_pi [DecidableEq ι] {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
-    MapsTo (LinearMap.single 𝕜 E i) (tangentConeAt 𝕜 (s i) (x i))
-      (tangentConeAt 𝕜 (Set.pi univ s) x) := by
+    MapsTo (Pi.single i) (tangentConeAt 𝕜 (s i) (x i)) (tangentConeAt 𝕜 (Set.pi univ s) x) := by
   rw [← tangentConeAt_closure (s := .pi _ _)]
   intro y hy
   rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
