@@ -126,7 +126,7 @@ def Hom.comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ�
   toLinearMap := by
     haveI h: RingHomCompTriple σ.toRingHom σ'.toRingHom (σ'.comp σ).toRingHom := ⟨rfl⟩
     exact g.toLinearMap.comp f.toLinearMap
-  map_lie' := fun _ _ ↦ by
+  map_lie' _ _ := by
     dsimp
     repeat rw [linearMap_eq_lieHom]
     simp
