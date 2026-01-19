@@ -302,7 +302,7 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [← Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
-theorem center_eq_bot_odd_ge_three (hodd : Odd n) (h3 : 3 ≤ n) :
+theorem center_eq_bot_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
     Subgroup.center (DihedralGroup n) = ⊥ := by
   have : Fact (1 < n) := ⟨by grind⟩
   ext x
