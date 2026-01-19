@@ -163,7 +163,11 @@ Q193286:
 
 Q193878:
   title: Chinese remainder theorem
-  decl: Ideal.quotientInfRingEquivPiQuotient
+  decls:
+    - Ideal.quotientInfRingEquivPiQuotient
+    - ZMod.chineseRemainder
+  authors: Kenny Lau, Chris Hughes
+  date: 2019, 2021
 
 Q193882:
   title: Menelaus's theorem
@@ -3181,6 +3185,9 @@ Q5552370:
 
 Q5566491:
   title: Glaisher's theorem
+  decl: Nat.Partition.card_restricted_eq_card_countRestricted
+  authors: Weiyi Wang
+  date: 2025
 
 Q5567394:
   title: Gleason's theorem

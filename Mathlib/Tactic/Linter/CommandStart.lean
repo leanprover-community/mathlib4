@@ -15,7 +15,7 @@ The `commandStart` linter emits a warning if
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -35,14 +35,14 @@ as opposed to
 example (a: Nat) {R:Type}  [Add  R] : <not linted part>
 ```
 -/
-register_option linter.style.commandStart : Bool := {
+public register_option linter.style.commandStart : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
 }
 
 /-- If the `linter.style.commandStart.verbose` option is `true`, the `commandStart` linter
 reports some helpful diagnostic information. -/
-register_option linter.style.commandStart.verbose : Bool := {
+public register_option linter.style.commandStart.verbose : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
 }
@@ -289,7 +289,7 @@ to avoid cutting into "words".
 
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
-def mkWindow (orig : String) (start ctx : Nat) : String :=
+public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
   let middle := orig.takeRight (start + 1)
   let headCtx := head.takeRightWhile (!·.isWhitespace)

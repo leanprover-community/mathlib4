@@ -810,7 +810,9 @@ lemma loopless_iff_forall_not_isLoop : M.Loopless ↔ ∀ e ∈ M.E, ¬ M.IsLoop
 
 lemma loopless_iff_forall_isCircuit : M.Loopless ↔ ∀ C, M.IsCircuit C → C.Nontrivial := by
   suffices (∃ x ∈ M.E, M.IsLoop x) ↔ ∃ x, M.IsCircuit x ∧ x.Subsingleton by
-    simpa [loopless_iff_forall_not_isLoop, ← not_iff_not (a := ∀ _, _)]
+    rw [loopless_iff_forall_not_isLoop]
+    contrapose!
+    exact this
   refine ⟨fun ⟨e, _, he⟩ ↦ ⟨{e}, he.isCircuit, by simp⟩, fun ⟨C, hC, hCs⟩ ↦ ?_⟩
   obtain (rfl | ⟨e, rfl⟩) := hCs.eq_empty_or_singleton
   · simpa using hC.nonempty

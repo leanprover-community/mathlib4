@@ -43,7 +43,7 @@ variable
 
 /-- The assertion that the short complex `S : ShortComplex C` is exact. -/
 structure Exact : Prop where
-  /-- the condition that there exists an homology data whose `left.H` field is zero -/
+  /-- the condition that there exists a homology data whose `left.H` field is zero -/
   condition : ∃ (h : S.HomologyData), IsZero h.left.H
 
 variable {S}
@@ -400,6 +400,16 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
   rw [exact_iff_mono_fromOpcycles]
   refine (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by cat_disch)
+
+variable {S} in
+lemma Exact.mono_cokernelDesc [S.HasHomology] [HasCokernel S.f] (hS : S.Exact) :
+    Mono (Limits.cokernel.desc S.f S.g S.zero) :=
+  S.exact_iff_mono_cokernel_desc.1 hS
+
+variable {S} in
+lemma Exact.epi_kernelLift [S.HasHomology] [HasKernel S.g] (hS : S.Exact) :
+    Epi (Limits.kernel.lift S.g S.f S.zero) :=
+  S.exact_iff_epi_kernel_lift.1 hS
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
@@ -826,7 +836,7 @@ variable [Abelian C]
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`
 (e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ S₂.X₃`), then `φ` is a quasi-isomorphism iff
-the obvious short complex `S₁.X₂ ⟶ S₂.X₂ ⟶ S₂.X₃` is exact and `φ.τ₂` is a mono). -/
+the obvious short complex `S₁.X₂ ⟶ S₂.X₂ ⟶ S₂.X₃` is exact and `φ.τ₂` is a mono. -/
 lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
     QuasiIso φ ↔
@@ -850,7 +860,7 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.g = 0`
 (e.g when `S₁` is of the form `S₁.X₁ ⟶ S₁.X₂ ⟶ 0`) and both `S₂.f` and `S₂.g` are zero
 (e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ 0`), then `φ` is a quasi-isomorphism iff
-the obvious short complex `S₁.X₂ ⟶ S₁.X₂ ⟶ S₂.X₂` is exact and `φ.τ₂` is an epi). -/
+the obvious short complex `S₁.X₁ ⟶ S₁.X₂ ⟶ S₂.X₂` is exact and `φ.τ₂` is an epi. -/
 lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     QuasiIso φ ↔

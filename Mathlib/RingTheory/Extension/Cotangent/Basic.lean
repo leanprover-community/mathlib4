@@ -457,6 +457,8 @@ lemma toKaehler_cotangentSpaceBasis (i) :
 
 end Generators
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
@@ -524,6 +526,8 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 attribute [local instance] Module.finitePresentation_of_projective in
 instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
     Module.Finite S (H1Cotangent R S) := by

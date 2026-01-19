@@ -176,7 +176,7 @@ def directSumRight' : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R]
         LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
       simp only [smul_add, map_add, hx, hy]
     | tmul m n =>
-      simp
+      simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply]
       rw [TensorProduct.smul_tmul']
       ext i
       rw [DirectSum.smul_apply, directSumRight_tmul,

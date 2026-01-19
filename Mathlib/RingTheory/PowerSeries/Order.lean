@@ -44,8 +44,7 @@ section OrderBasic
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine not_iff_not.mp ?_
-  push_neg
+  contrapose!
   simp
 
 /-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
@@ -238,7 +237,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  cutsat
+  lia
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by

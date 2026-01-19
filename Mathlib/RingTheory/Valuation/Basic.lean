@@ -594,6 +594,10 @@ lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
+lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} :
+    0 < v₁ x ↔ 0 < v₂ x := by
+  rw [zero_lt_iff, zero_lt_iff, h.ne_zero]
+
 end IsEquiv
 
 -- end of namespace

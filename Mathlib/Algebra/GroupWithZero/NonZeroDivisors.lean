@@ -391,8 +391,8 @@ section CommMonoidWithZero
 variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
 
 theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
-  rw [mem_nonZeroDivisors_iff_right, mem_nonZeroDivisors_iff_right, ← not_iff_not]
-  push_neg
+  rw [mem_nonZeroDivisors_iff_right, mem_nonZeroDivisors_iff_right]
+  contrapose!
   constructor
   · rintro ⟨⟨x⟩, hx₁, hx₂⟩
     refine ⟨x, ?_, ?_⟩

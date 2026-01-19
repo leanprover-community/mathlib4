@@ -188,7 +188,9 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
 
 theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
-  mp h := by rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
+  mp h := by
+    have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
+    rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
   mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 
 end maximalRealSubfield
@@ -209,7 +211,7 @@ A field `K` is totally complex if all of its infinite places are complex.
 @[mk_iff] class IsTotallyComplex (K : Type*) [Field K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {F : Type*} [Field F] {K : Type*} [Field K] [Algebra F K]
+variable (F : Type*) [Field F] {K : Type*} [Field K] [Algebra F K]
 
 theorem nrRealPlaces_eq_zero_iff [NumberField K] :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
@@ -224,6 +226,10 @@ theorem IsTotallyComplex.mult_eq [IsTotallyComplex K] (w : InfinitePlace K) : mu
   mult_isComplex ⟨w, isComplex w⟩
 
 variable (K)
+
+theorem isTotallyComplex_of_algebra [IsTotallyComplex F] :
+    IsTotallyComplex K where
+  isComplex _ := IsComplex.of_comap (algebraMap F K) <| IsTotallyComplex.isComplex _
 
 @[simp]
 theorem IsTotallyComplex.nrRealPlaces_eq_zero [NumberField K] [h : IsTotallyComplex K] :

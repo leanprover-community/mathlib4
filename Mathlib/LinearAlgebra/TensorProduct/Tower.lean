@@ -633,6 +633,15 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
+open AlgebraTensorModule in
+lemma baseChange_baseChange {A B : Type*} [CommSemiring A] [Algebra R A]
+    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (f : M →ₗ[R] N) :
+    ((f.baseChange A).baseChange B) =
+    (cancelBaseChange R A B B N).symm ∘ₗ
+      (f.baseChange B) ∘ₗ (cancelBaseChange R A B B M) := by
+  ext; simp
+
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id

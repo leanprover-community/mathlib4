@@ -110,7 +110,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
 def beckSplitEqualizer : IsSplitEqualizer (T.map X.a) (T.δ.app _) X.a :=
   ⟨T.ε.app _, T.ε.app _, X.coassoc.symm, X.counit, T.left_counit _, (T.ε.naturality _)⟩
 
-/-- This is the Beck fork. It is a split equalizer, in particular a equalizer. -/
+/-- This is the Beck fork. It is a split equalizer, in particular an equalizer. -/
 @[simps! pt]
 def beckFork : Fork (T.map X.a) (T.δ.app _) :=
   (beckSplitEqualizer X).asFork
@@ -119,7 +119,7 @@ def beckFork : Fork (T.map X.a) (T.δ.app _) :=
 theorem beckFork_ι : (beckFork X).ι = X.a :=
   rfl
 
-/-- The Beck fork is a equalizer. -/
+/-- The Beck fork is an equalizer. -/
 def beckEqualizer : IsLimit (beckFork X) :=
   (beckSplitEqualizer X).isEqualizer
 

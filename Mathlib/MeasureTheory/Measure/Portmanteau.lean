@@ -262,7 +262,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (T) implies also both
+Combining with earlier proven implications, we get that (T) implies also both
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G);
@@ -382,7 +382,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (B) implies also
+Combining with earlier proven implications, we get that (B) implies also
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).

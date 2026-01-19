@@ -55,14 +55,14 @@ before and after and see if there is some change.
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
-public meta section
+meta section
 
 open Lean Elab Std Linter
 
 namespace Mathlib.Linter
 
 /-- The unused tactic linter makes sure that every tactic call actually changes *something*. -/
-register_option linter.unusedTactic : Bool := {
+public register_option linter.unusedTactic : Bool := {
   defValue := true
   descr := "enable the unused tactic linter"
 }

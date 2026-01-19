@@ -59,7 +59,7 @@ alias IsMulTorsionFree.pow_eq_one_iff' := IsMulTorsionFree.pow_eq_one_iff_right
 
 /-- See `sq_eq_one_iff` for a version that holds in rings. -/
 @[to_additive two_nsmul_eq_zero]
-lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff_left (by cutsat)
+lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff_left (by lia)
 
 end Monoid
 

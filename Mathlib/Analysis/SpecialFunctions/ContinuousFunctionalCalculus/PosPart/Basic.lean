@@ -207,6 +207,8 @@ open ContinuousMapZero
 
 variable [IsTopologicalRing A] [T2Space A]
 
+-- The definition of `f` has a non-terminal simp.
+set_option linter.flexible false in
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are

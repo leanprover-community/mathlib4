@@ -77,12 +77,8 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
   have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
-    ext X
-    dsimp [α]
-    rw [Localization.liftNatTrans_app]
-    erw [id_comp]
-    rw [Iso.hom_inv_id_app_assoc]
-    rfl
+    ext
+    simp [α, this]
   simp [this]
 
 @[simp]

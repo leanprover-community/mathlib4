@@ -628,3 +628,25 @@ theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.
 alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
 
 end Nat
+
+namespace MulOpposite
+variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
+
+@[simp] lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
+    op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
+
+@[simp] lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+    unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
+
+end MulOpposite
+
+namespace AddOpposite
+variable {ι M N : Type*} [CommMonoid M] [Zero N]
+
+@[simp] lemma op_finsuppProd (f : ι →₀ N) (g : ι → N → M) :
+    op (f.prod g) = f.prod fun i n ↦ op (g i n) := op_prod ..
+
+@[simp] lemma unop_finsuppProd (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+    unop (f.prod g) = f.prod fun i n ↦ unop (g i n) := unop_prod ..
+
+end AddOpposite

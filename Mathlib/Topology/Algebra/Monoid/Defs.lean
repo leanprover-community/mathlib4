@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Topological monoids - definitions

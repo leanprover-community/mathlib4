@@ -177,7 +177,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
   refine ⟨fun h ↦ ?_, ?_⟩
   · have h_len : p.length = (p.length - 1) + 1 := by omega
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by cutsat⟩
+    exact ⟨c, e, p', rfl, by lia⟩
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
@@ -274,8 +274,8 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>
         if h : α = β then
-          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; cutsat
-          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; cutsat
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; lia
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; lia
           if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
             isTrue <| by
               apply Subtype.ext

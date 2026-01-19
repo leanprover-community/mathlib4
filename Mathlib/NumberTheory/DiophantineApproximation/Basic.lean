@@ -277,10 +277,11 @@ end Rat
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine
-    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ H => Set.not_infinite.mpr ?_ h,
+    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ => ?_,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
+  contrapose! h
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
-  rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
+  rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
 
 /-!
@@ -372,7 +373,7 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
 private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
-  ⟨cast_pos.mpr hv, by norm_cast; cutsat⟩
+  ⟨cast_pos.mpr hv, by norm_cast; lia⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ}

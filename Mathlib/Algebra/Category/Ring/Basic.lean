@@ -668,19 +668,19 @@ namespace CategoryTheory.Iso
 
 /-- Build a `RingEquiv` from an isomorphism in the category `SemiRingCat`. -/
 def semiRingCatIsoToRingEquiv {R S : SemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
 def ringCatIsoToRingEquiv {R S : RingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommSemiRingCat`. -/
 def commSemiRingCatIsoToRingEquiv {R S : CommSemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
 def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
     (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl

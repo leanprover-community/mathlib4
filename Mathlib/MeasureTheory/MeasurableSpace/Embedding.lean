@@ -194,7 +194,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 
@@ -775,7 +775,7 @@ def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
   open Classical in
   if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
     Measurable (hf.invFun : β → α) :=
   open Classical in

@@ -1,5 +1,6 @@
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Notation
+import Mathlib.Tactic.ToAdditive
 
 -- test that we can translate between structures, reordering the arguments of the fields
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
@@ -18,6 +19,10 @@ lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a �
 @[to_dual]
 lemma SemilatticeSup.sup_le' {α : Type} [SemilatticeSup α] (a b c : α) : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
+
+structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
+
+attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not tranlatable
 /--
@@ -100,3 +105,7 @@ instead of using `@[to_dual self]` for those cases.
 -/
 @[to_dual self]
 theorem not_lt_self {α : Type} [PartialOrder α] (a : α) : ¬ a < a := lt_irrefl a
+
+-- Test that we do not translate numerals like we do in `@[to_additive]`
+@[to_dual self]
+theorem one_le_one {α : Type} [One α] [Preorder α] : (1 : α) ≤ 1 := le_rfl

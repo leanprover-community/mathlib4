@@ -50,7 +50,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -76,8 +76,8 @@ It returns the array of all `import` identifiers in `s`. -/
 --   to Mathlib.Init (where this linter is imported)
 -- - that function does not return the Syntax corresponding to each import,
 --   which we use to log more precise warnings.
-partial
-def getImportIds (s : Syntax) : Array Syntax :=
+-- This function is public as the `DeprecatedModule` linter also uses it.
+public partial def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   if let `(Lean.Parser.Module.import| import $n) := s then
     rest.push n
@@ -160,7 +160,7 @@ The linter checks that
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
+public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
@@ -269,7 +269,7 @@ It emits a warning if
 
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 -/
-register_option linter.style.header : Bool := {
+public register_option linter.style.header : Bool := {
   defValue := false
   descr := "enable the header style linter"
 }

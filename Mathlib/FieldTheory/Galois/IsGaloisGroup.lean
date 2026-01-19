@@ -118,6 +118,34 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
   ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L⟩,
     fun ⟨_, h⟩ ↦ h.of_isFractionRing G A B K L⟩
 
+attribute [local instance] FractionRing.liftAlgebra in
+/--
+Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
+on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
+-/
+noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
+    [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
+    MulSemiringAction.compHom (FractionRing B)
+      ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
+        (MulSemiringAction.toAlgAut G A B))
+
+attribute [local instance] FractionRing.liftAlgebra in
+/--
+If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is also
+a Galois group for `FractionRing A / FractionRing B` for the action defined by
+`FractionRing.mulSemiringAction_of_isGaloisGroup`.
+-/
+theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [NoZeroSMulDivisors A B] [Finite G]
+    [IsGaloisGroup G A B] :
+    letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+    IsGaloisGroup G (FractionRing A) (FractionRing B) := by
+  letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+  have : SMulDistribClass G B (FractionRing B) := ⟨fun g b x ↦ by
+    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+    congr
+    exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap (FractionRing A) _ _ _ b⟩
+  apply IsGaloisGroup.to_isFractionRing G A B _ _
+
 open NumberField
 
 instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]

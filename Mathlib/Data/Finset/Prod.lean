@@ -194,8 +194,7 @@ theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
 
 @[simp]
 theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  rw [← not_nonempty_iff_eq_empty, nonempty_product, not_and_or, not_nonempty_iff_eq_empty,
-    not_nonempty_iff_eq_empty]
+  contrapose!; exact nonempty_product
 
 @[simp]
 theorem singleton_product {a : α} :
@@ -270,8 +269,7 @@ theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
 
 @[simp, grind =]
 theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
-  have := (diag_nonempty (s := s)).not
-  rwa [not_nonempty_iff_eq_empty, not_nonempty_iff_eq_empty] at this
+  contrapose!; exact diag_nonempty
 
 variable (s)
 
@@ -295,7 +293,7 @@ theorem diag_card : (diag s).card = s.card := by
 
 @[simp]
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; cutsat
+  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; lia
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 

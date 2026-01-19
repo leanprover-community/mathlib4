@@ -87,6 +87,21 @@ lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := 
       rw [← f.arrow_tgt (Fin.last m), ← g.arrow_tgt (Fin.last m), h]
   · exact h j
 
+/-- Constructor for paths of length `2` from two paths of length `1`. -/
+@[simps!]
+def mk₂ {n : ℕ} {X : Truncated.{u} (n + 1)} (p q : X.Path 1)
+  (h : p.vertex 1 = q.vertex 0) : X.Path 2 where
+  vertex := ![p.vertex 0, p.vertex 1, q.vertex 1]
+  arrow := ![p.arrow 0, q.arrow 0]
+  arrow_src i := by
+    fin_cases i
+    · exact p.arrow_src 0
+    · exact (q.arrow_src 0).trans h.symm
+  arrow_tgt i := by
+    fin_cases i
+    · exact p.arrow_tgt 0
+    · exact q.arrow_tgt 0
+
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
 def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
@@ -174,7 +189,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
-    X.spine l (by cutsat) (X.map (tr (subinterval j l h)).op Δ) =
+    X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
@@ -316,7 +331,7 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by cutsat) j l h Δ
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by lia) j l h Δ
 
 end spine
 
