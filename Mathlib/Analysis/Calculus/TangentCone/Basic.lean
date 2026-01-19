@@ -22,30 +22,6 @@ public section
 open Filter Set Metric NormedField
 open scoped Topology Pointwise
 
-namespace Filter
-
-theorem univ_smul_nhds_zero {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
-    [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
-    {s : Set X} (hs : s ∈ 𝓝 0) :
-    (univ : Set G₀) • s = univ := by
-  refine eq_univ_of_forall fun x ↦ ?_
-  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) := by
-    rw [← zero_smul G₀ x]
-    exact tendsto_id.smul tendsto_const_nhds
-  rcases nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs) with ⟨c, hc₀, hc⟩
-  refine ⟨c⁻¹, trivial, c • x, hc, ?_⟩
-  simp_all
-
-@[simp]
-theorem top_smul_nhds_zero {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
-    [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X] :
-    (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
-  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
-  rintro ⟨_, s⟩ ⟨-, hs⟩
-  exact univ_smul_nhds_zero hs
-
-end Filter
-
 variable {𝕜 E : Type*}
 
 section SMulMonoid
