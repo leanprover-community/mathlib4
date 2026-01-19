@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.GroupWithZero.Indicator
 
 /-!
 # Euler characteristic of homological complexes
@@ -28,22 +30,23 @@ defined as abbreviations that apply the graded object versions to `C.X` and `C.h
 * `ComplexShape.EulerCharSigns`: Typeclass providing alternating signs for Euler characteristic
 * `GradedObject.eulerChar`: The Euler characteristic of a graded object over a finite set
 * `GradedObject.finrankSupport`: The support of a graded object (indices with nonzero rank)
-* `GradedObject.eulerCharTsum`: The Euler characteristic of a graded object as an infinite sum
+* `GradedObject.eulerCharTsum`: The Euler characteristic using `finsum` (defaults to 0 if
+  the support is infinite)
 * `HomologicalComplex.eulerChar`: The Euler characteristic over a finite set of indices
-* `HomologicalComplex.eulerCharTsum`: The Euler characteristic as an infinite sum
+* `HomologicalComplex.eulerCharTsum`: The Euler characteristic using `finsum`
 * `HomologicalComplex.homologyEulerChar`: The homological Euler characteristic over a
   finite set
-* `HomologicalComplex.homologyEulerCharTsum`: The homological Euler characteristic as an
-  infinite sum
+* `HomologicalComplex.homologyEulerCharTsum`: The homological Euler characteristic using
+  `finsum`
 
 ## Main results
 
-* `GradedObject.eulerCharTsum_eq_eulerChar`: The infinite sum equals the finite sum
-  when the graded object vanishes outside the finite set
-* `HomologicalComplex.eulerCharTsum_eq_eulerChar`: The infinite sum equals the finite sum
-  when the complex vanishes outside the finite set
-* `HomologicalComplex.homologyEulerCharTsum_eq_homologyEulerChar`: The infinite homological
-  Euler characteristic equals the finite one when homology vanishes outside the finite set
+* `GradedObject.eulerCharTsum_eq_eulerChar`: The `finsum` equals the finite sum when the
+  graded object has finite support contained in the given set
+* `HomologicalComplex.eulerCharTsum_eq_eulerChar`: The `finsum` equals the finite sum
+  when the complex has finite support contained in the given set
+* `HomologicalComplex.homologyEulerCharTsum_eq_homologyEulerChar`: The `finsum` homological
+  Euler characteristic equals the finite one when homology has finite support
 
 -/
 
@@ -118,22 +121,36 @@ lemma finrankSupport_subset_iff (X : CategoryTheory.GradedObject ι (ModuleCat R
     finrankSupport X ⊆ s ↔ ∀ i ∉ s, Module.finrank R (X i) = 0 :=
   Function.support_subset_iff'
 
-/-- The Euler characteristic as a sum over all indices. Defaults to 0 if the support of the ranks of the objects of `X` is
-infinite. -/
+/-- The Euler characteristic as a sum over all indices. Defaults to 0 if the support of the ranks
+of the objects of `X` is infinite. -/
 noncomputable def eulerCharTsum (X : CategoryTheory.GradedObject ι (ModuleCat R)) : ℤ :=
   ∑ᶠ i : ι, (c.χ i : ℤ) * Module.finrank R (X i)
 
+/-- The support of the Euler characteristic summand equals the finite rank support,
+because the sign `c.χ i` is always nonzero (it's a unit). -/
+lemma support_eulerChar_summand (X : CategoryTheory.GradedObject ι (ModuleCat R)) :
+    Function.support (fun i => (c.χ i : ℤ) * Module.finrank R (X i)) = finrankSupport X := by
+  simp only [finrankSupport]
+  rw [Function.support_mul]
+  have h_chi : Function.support (fun i => (c.χ i : ℤ)) = Set.univ := by
+    ext i
+    simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
+    exact Units.ne_zero (c.χ i)
+  have h_cast : Function.support (fun i => (Module.finrank R (X i) : ℤ)) =
+      Function.support (fun i => Module.finrank R (X i)) := by
+    ext i
+    simp only [Function.mem_support, ne_eq, Nat.cast_eq_zero]
+  rw [h_chi, Set.univ_inter, h_cast]
+
 /-- If a graded object has finite rank support contained in a finite set,
-the infinite Euler characteristic equals the finite one. -/
+the `finsum` Euler characteristic equals the finite one. -/
 theorem eulerCharTsum_eq_eulerChar (X : CategoryTheory.GradedObject ι (ModuleCat R))
     (indices : Finset ι)
     (h_support : finrankSupport X ⊆ indices) :
     eulerCharTsum c X = eulerChar c X indices := by
   simp only [eulerCharTsum, eulerChar]
-  symm
-  apply Finset.sum_subset (Finset.subset_univ indices)
-  intro i _ hi
-  simp [(finrankSupport_subset_iff X indices).mp h_support i hi]
+  rw [finsum_eq_sum_of_support_subset]
+  exact (support_eulerChar_summand c X).symm ▸ h_support
 
 end GradedObject
 
@@ -154,20 +171,19 @@ noncomputable abbrev homologyEulerChar (C : HomologicalComplex (ModuleCat R) c)
     [∀ i : ι, C.HasHomology i] (indices : Finset ι) : ℤ :=
   GradedObject.eulerChar c (fun i => C.homology i) indices
 
-variable [Fintype ι]
-
-/-- The Euler characteristic as an infinite sum over all indices.
-This requires the index type to be finite. -/
+/-- The Euler characteristic as a sum over all indices using `finsum`.
+Defaults to 0 if the support of the ranks is infinite. -/
 noncomputable abbrev eulerCharTsum (C : HomologicalComplex (ModuleCat R) c) : ℤ :=
   GradedObject.eulerCharTsum c C.X
 
-/-- The homological Euler characteristic as an infinite sum. -/
+/-- The homological Euler characteristic as a sum over all indices using `finsum`.
+Defaults to 0 if the support of the ranks is infinite. -/
 noncomputable abbrev homologyEulerCharTsum (C : HomologicalComplex (ModuleCat R) c)
     [∀ i : ι, C.HasHomology i] : ℤ :=
   GradedObject.eulerCharTsum c (fun i => C.homology i)
 
 /-- If a complex has finite rank support contained in a finite set,
-the infinite Euler characteristic equals the finite one. -/
+the `finsum` Euler characteristic equals the finite one. -/
 theorem eulerCharTsum_eq_eulerChar (C : HomologicalComplex (ModuleCat R) c)
     (indices : Finset ι)
     (h_support : GradedObject.finrankSupport (C.X) ⊆ indices) :
@@ -175,7 +191,7 @@ theorem eulerCharTsum_eq_eulerChar (C : HomologicalComplex (ModuleCat R) c)
   GradedObject.eulerCharTsum_eq_eulerChar c C.X indices h_support
 
 /-- If homology has finite rank support contained in a finite set,
-the infinite homological Euler characteristic equals the finite one. -/
+the `finsum` homological Euler characteristic equals the finite one. -/
 theorem homologyEulerCharTsum_eq_homologyEulerChar (C : HomologicalComplex (ModuleCat R) c)
     [∀ i : ι, C.HasHomology i] (indices : Finset ι)
     (h_support : GradedObject.finrankSupport (fun i => C.homology i) ⊆ indices) :
