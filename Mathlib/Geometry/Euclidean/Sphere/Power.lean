@@ -180,12 +180,12 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
     convert h_indep_p₁p₂p₃
-    ext i ; fin_cases i <;> rfl
+    ext i; fin_cases i <;> rfl
   have h_ncol_p₁pp₃' : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
     convert hindep
-    ext i ; fin_cases i <;> rfl
+    ext i; fin_cases i <;> rfl
   have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
     rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
