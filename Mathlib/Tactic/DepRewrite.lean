@@ -610,7 +610,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
 /-- Elaborate `DepRewrite.Config`. -/
 declare_config_elab elabDepRewriteConfig Config
 
-@[tactic depRewriteSeq, tactic_alt depRewriteSeq]
+@[tactic depRewriteSeq, inherit_doc depRewriteSeq]
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
