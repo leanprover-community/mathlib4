@@ -73,6 +73,7 @@ def Pseudoperfect (n : ℕ) : Prop :=
 /-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
+/-- `abundancyIndex n` is the sum of the divisors of `n` divided by `n`. -/
 def abundancyIndex (n : ℕ) : ℚ := (∑ i ∈ n.divisors, i) / (n : ℚ)
 
 theorem not_pseudoperfect_iff_forall :
@@ -208,22 +209,26 @@ theorem abundant_iff_two_lt_abundancyIndex (h : n ≠ 0) : Abundant n ↔ 2 < n.
   rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
   norm_cast
 
-theorem abundancyIndex_le_ofMul (hm : m ≠ 0) : n.abundancyIndex ≤ (m * n).abundancyIndex := by
-  by_cases hn : n = 0
+theorem abundancyIndex_le_ofDvd (hm : n ≠ 0) (hd : m ∣ n) :
+    m.abundancyIndex ≤ n.abundancyIndex := by
+  obtain ⟨ k , he ⟩ := hd
+  rw [he, mul_comm]
+  by_cases hn : m = 0
   · grind
-  · unfold abundancyIndex
-    suffices hs : m * ∑ i ∈ n.divisors, i ≤ ∑ i ∈ (m * n).divisors, i by
+  · have hk : k ≠ 0 := by grind
+    unfold abundancyIndex
+    suffices hs : k * ∑ i ∈ m.divisors, i ≤ ∑ i ∈ (k * m).divisors, i by
       rw [(div_le_div_iff₀ (by positivity) (by positivity))]
       norm_cast
       rwa [← mul_assoc, Nat.mul_le_mul_right_iff (by grind), mul_comm]
     letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
     calc
-      _ = ∑ i ∈ (m • n.divisors), i := by
-        let f := Function.Embedding.mk (fun x : ℕ => m • x) (by
+      _ = ∑ i ∈ (k • m.divisors), i := by
+        let f := Function.Embedding.mk (fun x : ℕ => k • x) (by
           intro y z ho
           simp only [smul_eq_mul, mul_eq_mul_left_iff] at ho
           grind)
-        have ht : ∑ i ∈ n.divisors.map f, i = ∑ i ∈ n.divisors, m • i := sum_map n.divisors f id
+        have ht : ∑ i ∈ m.divisors.map f, i = ∑ i ∈ m.divisors, k • i := sum_map m.divisors f id
         rw [← smul_eq_mul, ← sum_nsmul, ← ht]
         congr
         ext z
@@ -235,6 +240,11 @@ theorem abundancyIndex_le_ofMul (hm : m ≠ 0) : n.abundancyIndex ≤ (m * n).ab
         obtain ⟨ j, ⟨ hd , hj ⟩ ⟩ := h2
         rw [← hj, divisors_mul, smul_eq_mul]
         exact mul_mem_mul (mem_divisors_self _ (by grind)) hd
+
+theorem abundancyIndex_le_ofMul (hm : m ≠ 0) : n.abundancyIndex ≤ (m * n).abundancyIndex := by
+  by_cases hn : n = 0
+  · grind
+  · exact abundancyIndex_le_ofDvd (by simpa [hn]) (by simp)
 
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   have hn : n ≠ 0 := by grind [not_abundant_zero]
