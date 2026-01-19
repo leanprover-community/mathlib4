@@ -49,7 +49,7 @@ variable {A : Type*} [CommRing A] [Algebra R A]
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra
 -/
-instance : (LieRinehartAlgebra R A (Derivation R A A)) :=
+instance : LieRinehartAlgebra R A (Derivation R A A) :=
 { left_linearity := fun _ _ _ ↦ rfl
   leibnizA := by simp [CommMonoid.mul_comm]
   leibnizL := fun _ _ _ ↦ by
