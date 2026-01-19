@@ -428,9 +428,7 @@ theorem _root_.iInf_iSup_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [Com
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
-    rw [iSup_of_empty, eq_bot_iff]
-    apply iInf_le_of_le a
-    rw [iSup_of_empty]
+    grw [iSup_of_empty, eq_bot_iff, iInf_le _ a, iSup_of_empty]
 
 theorem _root_.iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [CompleteDistribLattice α]
     [Finite ι] {f : ∀ a, κ a → α} : ⨆ a, ⨅ b, f a b = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) := by
@@ -439,9 +437,7 @@ theorem _root_.iSup_iInf_eq_of_finite {α} {ι : Type*} {κ : ι → Sort*} [Com
   · simp only [not_forall, not_nonempty_iff] at h
     haveI : IsEmpty (∀ a, κ a) := by simpa
     rcases h with ⟨a, h⟩
-    rw [iInf_of_empty, eq_top_iff]
-    apply le_iSup_of_le a
-    rw [iInf_of_empty]
+    grw [iInf_of_empty, eq_top_iff, ← le_iSup _ a, iInf_of_empty]
 
 section
 
