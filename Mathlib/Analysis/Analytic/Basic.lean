@@ -536,7 +536,7 @@ lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
   simp [AnalyticWithinAt]
 
-lemma AnalyticOn.analyticAt (f : E → F) (z : E) (s : Set E) (hU : s ∈ nhds z) :
+lemma AnalyticOn.analyticAt {f : E → F} {z : E} {s : Set E} (hU : s ∈ nhds z) :
     AnalyticOn 𝕜 f s → AnalyticAt 𝕜 f z := by
   intros HA
   obtain ⟨p, hp⟩ := HA z (mem_of_mem_nhds hU)

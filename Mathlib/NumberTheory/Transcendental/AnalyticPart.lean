@@ -143,13 +143,10 @@ lemma le_analyticOrderAt_iff_iteratedDeriv_eq_zero (n : ℕ) z₀
     (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤) :
     (∀ k < n, (deriv^[k] f) z₀ = 0) → n ≤ analyticOrderAt f z₀ := by
   intro hkn
-  have notTop (m : ℕ∞) : m ≠ ⊤ → ∃ n : ℕ, m = n :=
-      (Option.ne_none_iff_exists'.mp ·)
-  obtain ⟨m, Hm⟩ := notTop (analyticOrderAt f z₀) ho
-  rw [Hm, ENat.coe_le_coe]
-  rw [← analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ m f hf ho] at Hm
+  obtain ⟨m, Hm⟩ := ENat.ne_top_iff_exists (n := analyticOrderAt f z₀).mp ho
+  rw [← Hm, ENat.coe_le_coe]
   by_contra! h
-  exact Hm.2 (hkn m h)
+  exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero z₀ m f hf ho).mpr (Hm.symm)).2 (hkn m h)
 
 lemma mul_mem_emetric_ball_iff {E : Type _} [SeminormedAddCommGroup E] {a b c : E} (r : ENNReal) :
     a + c ∈ EMetric.ball (b + c) r  ↔ a ∈ EMetric.ball b r:= by
