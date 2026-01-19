@@ -74,7 +74,7 @@ macro_rules
   aesop? $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
-| `(tactic| finiteness? $c:Aesop.tactic_clause* [$h,*]) =>
+| `(tactic| finiteness? $c:Aesop.tactic_clause* [$h,+]) =>
   `(tactic| · ($[have := $h];*); finiteness? $c*)
 
 
@@ -89,7 +89,7 @@ macro_rules
     (config := { introsTransparency? := some .reducible, terminal := false, enableSimp := false,
                  warnOnNonterminal := false  })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
-| `(tactic| finiteness_nonterminal $c:Aesop.tactic_clause* [$h,*]) =>
+| `(tactic| finiteness_nonterminal $c:Aesop.tactic_clause* [$h,+]) =>
   `(tactic| · ($[have := $h];*); finiteness_nonterminal $c*)
 
 /-!
