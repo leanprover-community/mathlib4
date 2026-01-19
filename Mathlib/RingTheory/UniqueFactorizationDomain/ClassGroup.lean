@@ -80,7 +80,7 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
 is principal. -/
-theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
+theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (I : FractionalIdeal R⁰ (FractionRing R))⁻¹
@@ -98,7 +98,7 @@ theorem ideal_isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
           h.symm
       dsimp only at h
       rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
-  refine ideal_isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
+  refine isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
   refine ⟨K, ?_, ?_⟩
   · simp [hIK, ha0]
   · simpa [hIK] using (inferInstance : (Ideal.span {a}).IsPrincipal)
@@ -110,8 +110,8 @@ theorem isPrincipal_fractionalIdeal_of_isUnit
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
   have hJunit : IsUnit (J : FractionalIdeal R⁰ (FractionRing R)) :=
     FractionalIdeal.isUnit_num.mpr ⟨I, rfl⟩
-  have hJprin : J.IsPrincipal := ideal_isPrincipal_of_isUnit_fractionalIdeal J hJunit
-  exact FractionalIdeal.isPrincipal_of_num_isPrincipal
+  have hJprin : J.IsPrincipal := isPrincipal_of_isUnit_fractionalIdeal J hJunit
+  exact isPrincipal_of_isPrincipal_num
     (I : FractionalIdeal R⁰ (FractionRing R)) hJprin
 
 /-- The ideal class group of a domain with normalizable gcd is trivial.
@@ -122,7 +122,7 @@ instance subsingleton_classGroup : Subsingleton (ClassGroup R) := by
   refine ClassGroup.induction (FractionRing R) ?_ x
   intro I
   exact ClassGroup.mk_eq_one_iff.mpr
-    (NormalizedGCDMonoid.fractionalIdeal_isPrincipal_of_isUnit I)
+    (isPrincipal_fractionalIdeal_of_isUnit I)
 
 
 end NormalizedGCDMonoid
