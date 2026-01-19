@@ -37,9 +37,6 @@ theorem subset_tangentConeAt_prod_left (ht : y ∈ closure t) :
     (hds.mono fun n hn ↦ by simp [ht, subset_closure hn]) ?_
   simpa using hcd.prodMk_nhds tendsto_const_nhds
 
-@[deprecated (since := "2025-04-27")]
-alias subset_tangentCone_prod_left := subset_tangentConeAt_prod_left
-
 /-- The tangent cone of a product contains the tangent cone of its right factor. -/
 theorem subset_tangentConeAt_prod_right (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
@@ -49,9 +46,6 @@ theorem subset_tangentConeAt_prod_right (hs : x ∈ closure s) :
   refine mem_tangentConeAt_of_seq l c (fun n ↦ (0, d n)) (tendsto_const_nhds.prodMk_nhds hd₀)
     (hds.mono fun n hn ↦ by simp [hs, subset_closure hn]) ?_
   simpa using tendsto_const_nhds.prodMk_nhds hcd
-
-@[deprecated (since := "2025-04-27")]
-alias subset_tangentCone_prod_right := subset_tangentConeAt_prod_right
 
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
