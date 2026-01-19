@@ -62,7 +62,7 @@ macro_rules
   aesop $c*
     (config := { introsTransparency? := some .reducible, terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `finiteness):ident, -default, -builtin]))
-| `(tactic| finiteness $c:Aesop.tactic_clause* [$h,*]) =>
+| `(tactic| finiteness $c:Aesop.tactic_clause* [$h,+]) =>
   `(tactic| · ($[have := $h];*); finiteness $c*)
 
 @[tactic_alt finiteness]
