@@ -334,36 +334,52 @@ theorem if_hom_surj_finite {G : Type*} [Group G] :
 theorem iff_hom_surj_set_G {G : Type*} [Group G] :
   IsFinitelyPresented G ↔
     ∃ (S : Set G) (hS : S.Finite),
-      Function.Surjective (FreeGroup.lift (fun s : S => (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S => (s : G))).ker := by
+      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
-  · /- intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+    simp [FinitelyPresentedGroup, PresentedGroup] at iso
     let _ : Fintype α := Fintype.ofFinite α
-    let g : FreeGroup α →* G :=
+
+    let h : FreeGroup α →* G :=
       iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
-    have hgsurj : Function.Surjective g := by
-      simpa [g] using
+    have hgsurj : Function.Surjective h := by
+      simpa [h] using
       (Function.Surjective.comp iso.symm.surjective
       (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
-    let S : Set G := Set.range (fun a : α ↦ g (FreeGroup.of a))
+
+    let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+
     have hS : S.Finite := by
-      simpa [S] using (Set.finite_range (fun a : α ↦ g (FreeGroup.of a)))
+      simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
     use S, hS
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-    let h : α → S := fun a => ⟨g (FreeGroup.of a), ⟨a, rfl⟩⟩
-    have hfg : f.comp (FreeGroup.map h) = g := by
-  -- ext on generators
+    let g : α → S := fun a ↦ Subtype.mk (h (FreeGroup.of a)) (by exact ⟨a, rfl⟩)
+
+    have hfgh : f.comp (FreeGroup.map g) = h := by
       ext a
       simp [f, h, g]
     have hfsurj : Function.Surjective f := by
       intro y
       obtain ⟨x, rfl⟩ := hgsurj y
-      refine ⟨FreeGroup.map h x, ?_⟩
-      simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfg
-    have hfker : IsNormalClosureFG f.ker := by
+      refine ⟨FreeGroup.map g x, ?_⟩
+      simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfgh
+    use hfsurj
+
+    let rels' : Set (FreeGroup S) := FreeGroup.map g '' rels
+    have hrels' : rels'.Finite := by
+      simpa [rels'] using hrels.image (FreeGroup.map g)
+
+    have hhker : h.ker = Subgroup.normalClosure rels := by
+      ext x
+      simp [h]
+
+    have hfker : f.ker = Subgroup.normalClosure rels' := by
+      simp [rels']
       sorry
-    exact ⟨hS, hfsurj, hfker⟩ -/
-    sorry
+
+    unfold IsNormalClosureFG
+    exact ⟨rels', hrels', hfker.symm⟩
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
     let α := S
