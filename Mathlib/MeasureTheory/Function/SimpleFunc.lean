@@ -626,7 +626,7 @@ instance [CommSemiring K] [Semiring β] [Algebra K β] : Algebra K (α →ₛ β
     map_one' := ext fun _ ↦ algebraMap K β |>.map_one ▸ rfl
     map_mul' _ _ := ext fun _ ↦ algebraMap K β |>.map_mul ..
     map_zero' := ext fun _ ↦ algebraMap K β |>.map_zero ▸ rfl
-    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add ..}
+    map_add' _ _ := ext fun _ ↦ algebraMap K β |>.map_add .. }
   commutes' _ _ := ext fun _ ↦ Algebra.commutes ..
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def ..
 

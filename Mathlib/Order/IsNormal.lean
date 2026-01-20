@@ -56,11 +56,6 @@ theorem isLUB_image_Iio_of_isSuccLimit {f : α → β} (hf : IsNormal f) {a : α
   rintro - ⟨b, hb, rfl⟩
   exact (hf.1 hb).le
 
-@[deprecated "use the default constructor of `IsNormal` directly" (since := "2025-07-08")]
-theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
-    (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f :=
-  ⟨hf, hl⟩
-
 theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by
   simpa [mem_upperBounds] using isLUB_le_iff (hf.isLUB_image_Iio_of_isSuccLimit ha)

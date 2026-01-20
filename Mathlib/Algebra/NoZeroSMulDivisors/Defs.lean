@@ -15,11 +15,22 @@ public import Mathlib.Tactic.Contrapose
 This file defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
 
-## TODO
+## Usage notes
 
-`NoZeroSMulDivisors` is mathematically incorrect for semimodules. Replace it with a new typeclass
-`Module.IsTorsionFree`, cf https://github.com/kbuzzard/ClassFieldTheory. Torsion-free monoids have
-seen the same change happen already.
+`NoZeroSMulDivisors R M` is mathematically wrong when `R` isn't a domain, and one should use
+`Module.IsTorsionFree R M` instead whenever they are equivalent.
+
+In fact, if `M` is non-trivial, `NoZeroSMulDivisors R M` implies `NoZeroDivisors R`
+(which in turn implies `IsDomain R` if `R` is a non-trivial ring):
+Take `m : M` is non-zero. Assume `r s : R` are such that `r * s = 0`.
+Then `r • s • m = (r * s) • m = 0`, so by `NoZeroSMulDivisors` we get `r = 0 ∨ s = 0 ∨ m = 0`.
+But `m ≠ 0`, so `r = 0 ∨ s = 0`, as wanted.
+
+Therefore one should only use `NoZeroSMulDivisors R M` when `R` isn't a ring or if the zero
+module and ring are somehow relevant.
+
+Note that we might get rid of `NoZeroSMulDivisors` entirely in the future.
+See https://github.com/leanprover-community/mathlib4/pull/33909.
 -/
 
 @[expose] public section
