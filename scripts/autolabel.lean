@@ -153,10 +153,10 @@ run_cmd
     let mut out : List String := []
     for (a, b) in labelNames.zip constants do
       if a != b then
-        out := s!"\nexpexcted {a} got {b}" :: out
+        out := s!"expexcted {a} got {b}" :: out
     logWarning m!"The available Labels is out of sync with the labels listed in \
     { .ofConstName ``mathlibLabels }.\n\
-    Please keep them sorted and in sync!\n{"".intercalate out.reverse}"
+    Please keep them sorted and in sync!\n{"\n".intercalate out.reverse}"
 
 
 /--
