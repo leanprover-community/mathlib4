@@ -11,6 +11,12 @@ public import Mathlib.Order.Defs.PartialOrder
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Monotone.Defs
 
+/-!
+# Orders on an Option type
+
+This file provides various order-related lemmas and instances for the `Option` type.
+-/
+
 public section
 
 variable {α : Type*}
