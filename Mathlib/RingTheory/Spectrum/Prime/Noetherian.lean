@@ -58,11 +58,13 @@ lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
   have h2 : IsIrreducible (zeroLocus (p : Set R)) := by
     rwa [isIrreducible_zeroLocus_iff, hp.radical]
   have key := isIrreducible_iff_sUnion_isClosed.mp h2 t ht
-  have : ((s.sup id : Closeds (PrimeSpectrum R)) : Set (PrimeSpectrum R)) = ⋃₀ t := by
-    sorry
+  have : ((s.sup id : Closeds (PrimeSpectrum R)) : Set (PrimeSpectrum R)) = ⋃₀ t := by simp [t]
   rw [← this, ← hs] at key
   obtain ⟨c, hct, hpc⟩ := key (zeroLocus_anti_mono hIp)
   refine Finset.mem_image.mpr ⟨c, hct, ?_⟩
+  suffices c = zeroLocus p by
+    rw [this, vanishingIdeal_zeroLocus_eq_radical, hp.radical]
+  refine Set.Subset.antisymm ?_ hpc
   sorry
 
 
