@@ -466,9 +466,9 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     gcongr
 
 -- TODO: make this private
-lemma exists_lcm {R} [CommRing R] [Nonempty (GCDMonoid R)] (p q : R[X]) :
+lemma exists_lcm {R} [CommRing R] [IsGCDMonoid R] (p q : R[X]) :
     ∃ c, ∀ (d : R[X]), p ∣ d ∧ q ∣ d ↔ c ∣ d := by
-  have ⟨_⟩ := nonempty_normalizedGCDMonoid_iff_gcdMonoid (α := R).mpr ‹_›
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
       q.isPrimitive_primPart with
     ⟨r, rprim, hr⟩
@@ -505,11 +505,8 @@ noncomputable instance (priority := 100) [StrongNormalizedGCDMonoid R] :
   __ := inferInstanceAs (NormalizedGCDMonoid R[X])
   __ := inferInstanceAs (StrongNormalizationMonoid R[X])
 
-noncomputable instance (priority := 100) [GCDMonoid R] : GCDMonoid R[X] :=
-  letI := Classical.decEq R
-  gcdMonoidOfExistsLCM exists_lcm
-
-instance (priority := 100) [h : Nonempty (GCDMonoid R)] : Nonempty (GCDMonoid R[X]) :=
-  h.elim fun _ ↦ inferInstance
+-- We do not add a `GCDMonoid R[X]` instance because of diamonds
+instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] := by
+  classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
 
 end Polynomial

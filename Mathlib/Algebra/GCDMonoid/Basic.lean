@@ -328,6 +328,10 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
   /-- `0` is right-absorbing. -/
   lcm_zero_right : ∀ a, lcm a 0 = 0
 
+/-- Existence of a `GCDMonoid` structure on a `CommMonoidWithZero`. -/
+class inductive IsGCDMonoid (α : Type*) [CommMonoidWithZero α] : Prop
+  | intro : GCDMonoid α → IsGCDMonoid α
+
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
 
 /-- Normalized GCD monoid: a cancellative `CommMonoidWithZero` with normalization and `gcd`
@@ -351,6 +355,10 @@ class StrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends
   /-- The LCM is normalized to itself. -/
   normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b
 
+/-- Existence of a `StrongNormalizedGCDMonoid` structure on a `CommMonoidWithZero`. -/
+class inductive IsStrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] : Prop
+  | intro : StrongNormalizedGCDMonoid α → IsStrongNormalizedGCDMonoid α
+
 export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd
   gcd_mul_lcm lcm_zero_left lcm_zero_right)
 
@@ -365,14 +373,14 @@ section GCDMonoid
 variable [CommMonoidWithZero α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
-instance [GCDMonoid α] : Nonempty (GCDMonoid α) := ⟨‹_›⟩
-instance [h : Nonempty (GCDMonoid α)] : IsCancelMulZero α := h.elim fun _ ↦ inferInstance
+instance (priority := 100) [GCDMonoid α] : IsGCDMonoid α := ⟨‹_›⟩
+instance (priority := 100) [h : IsGCDMonoid α] : IsCancelMulZero α := h.rec fun _ ↦ inferInstance
 instance [StrongNormalizationMonoid α] : Nonempty (StrongNormalizationMonoid α) := ⟨‹_›⟩
-instance [StrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizedGCDMonoid α) := ⟨‹_›⟩
-instance [h : Nonempty (StrongNormalizedGCDMonoid α)] : Nonempty (GCDMonoid α) :=
-  h.elim fun _ ↦ inferInstance
-instance [h : Nonempty (StrongNormalizedGCDMonoid α)] : Nonempty (StrongNormalizationMonoid α) :=
-  h.elim fun _ ↦ inferInstance
+instance (priority := 100) [StrongNormalizedGCDMonoid α] : IsStrongNormalizedGCDMonoid α := ⟨‹_›⟩
+instance (priority := 100) [h : IsStrongNormalizedGCDMonoid α] : IsGCDMonoid α :=
+  h.rec fun _ ↦ inferInstance
+instance [h : IsStrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizationMonoid α) :=
+  h.rec fun _ ↦ inferInstance
 instance [h : Nonempty (StrongNormalizationMonoid α)] : Nonempty (NormalizationMonoid α) :=
   h.elim fun _ ↦ inferInstance
 
@@ -574,7 +582,7 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 Note: In general, this representation is highly non-unique.
 
 See `Nat.dvdProdDvdOfDvdProd` for a constructive version on `ℕ`. -/
-instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
+instance [h : IsGCDMonoid α] : DecompositionMonoid α where
   primal k m n H := by
     cases h
     by_cases h0 : gcd k m = 0
@@ -1275,8 +1283,7 @@ abbrev gcdMonoidOfExistsGCD [DecidableEq α]
     fun {a b c} ac ab => (Classical.choose_spec (h c b) a).1 ⟨ac, ab⟩
 
 theorem nonempty_gcdMonoid_iff {α} [CommMonoidWithZero α] :
-    Nonempty (GCDMonoid α) ↔
-      IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c where
+    IsGCDMonoid α ↔ IsCancelMulZero α ∧ ∀ a b : α, ∃ c : α, ∀ d : α, d ∣ a ∧ d ∣ b ↔ d ∣ c where
   mp := fun ⟨_⟩ ↦ ⟨inferInstance, fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
   mpr := fun ⟨_, h⟩ ↦ by classical exact ⟨gcdMonoidOfExistsGCD h⟩
 
@@ -1298,15 +1305,15 @@ abbrev strongNormalizedGCDMonoidOfExistsGCD [StrongNormalizationMonoid α] [Deci
   __ := normalizedGCDMonoidOfExistsGCD h
   __ := ‹StrongNormalizationMonoid α›
 
-theorem nonempty_normalizedGCDMonoid_iff_gcdMonoid {α} [CommMonoidWithZero α] :
-    Nonempty (NormalizedGCDMonoid α) ↔ Nonempty (GCDMonoid α) where
+theorem nonempty_normalizedGCDMonoid_iff_isGCDMonoid {α} [CommMonoidWithZero α] :
+    Nonempty (NormalizedGCDMonoid α) ↔ IsGCDMonoid α where
   mp := fun ⟨_⟩ ↦ inferInstance
   mpr := fun ⟨_⟩ ↦ by
     have := Classical.arbitrary (NormalizationMonoid α)
     classical exact ⟨normalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩
 
-instance (α) [CommMonoidWithZero α] [Nonempty (GCDMonoid α)] : Nonempty (NormalizedGCDMonoid α) :=
-  nonempty_normalizedGCDMonoid_iff_gcdMonoid.mpr ‹_›
+instance (α) [CommMonoidWithZero α] [IsGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) :=
+  nonempty_normalizedGCDMonoid_iff_isGCDMonoid.mpr ‹_›
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
 abbrev gcdMonoidOfExistsLCM [DecidableEq α]

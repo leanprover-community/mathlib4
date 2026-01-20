@@ -233,7 +233,7 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
   · apply h0 con
   · apply Units.ne_zero _ con
 
-variable [Nonempty (GCDMonoid R)]
+variable [IsGCDMonoid R]
 
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
