@@ -31,7 +31,7 @@ section PolynomialSign
 
 theorem zero_lt_of_roots_lt_of_leadingCoeff_pos
     (hroots : ∀ y, P.IsRoot y → y < x) (hlc : 0 < P.leadingCoeff) : 0 < P.eval x := by
-  wlog! hdeg : 0 < P.degree
+  by_cases! hdeg : P.degree ≤ 0
   · rwa [eq_C_of_degree_le_zero hdeg, ← natDegree_eq_zero_iff_degree_le_zero.mpr hdeg, eval_C]
   contrapose! hroots
   obtain ⟨z, hz⟩ := ((P.tendsto_atTop_of_leadingCoeff_nonneg
@@ -44,12 +44,11 @@ theorem zero_lt_of_roots_lt_of_leadingCoeff_pos
 
 theorem zero_le_of_roots_le_of_leadingCoeff_nonneg
     (hroots : ∀ y, P.IsRoot y → y ≤ x) (hlc : 0 ≤ P.leadingCoeff) : 0 ≤ P.eval x := by
-  wlog! hroots' : ∀ y, P.IsRoot y → y < x
+  by_cases! hroots' : ∃ y, P.IsRoot y ∧ x ≤ y
   · obtain ⟨y, hroot, hle⟩ := hroots'
     rw [eq_of_le_of_ge hle (hroots y hroot), hroot]
-  wlog! hlc' : 0 < P.leadingCoeff
-  · have := eq_of_le_of_ge hlc' hlc
-    have : P = 0 := by exact leadingCoeff_eq_zero.mp this
+  by_cases! hlc' : P.leadingCoeff ≤ 0
+  · have : P = 0 := by exact leadingCoeff_eq_zero.mp (eq_of_le_of_ge hlc' hlc)
     rw [leadingCoeff_eq_zero.mp <| eq_of_le_of_ge hlc' hlc, eval_zero]
   exact (zero_lt_of_roots_lt_of_leadingCoeff_pos hroots' hlc').le
 
