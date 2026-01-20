@@ -10,9 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Tactic.Spread
 
 /-!
-# The natural numbers form a `CancelCommMonoidWithZero`
+# The natural numbers form a cancellative `CommMonoidWithZero`
 
-This file contains the `CancelCommMonoidWithZero` instance on the natural numbers.
+This file contains the `CommMonoidWithZero` and `IsCancelMulZero` instances on the natural numbers.
 
 See note [foundational algebra order theory].
 -/

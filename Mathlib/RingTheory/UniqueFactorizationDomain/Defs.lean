@@ -112,7 +112,7 @@ section Prio
 
 -- see Note [default priority]
 /--
-Unique factorization monoids are defined as `CancelCommMonoidWithZero`s with well-founded
+Unique factorization monoids are defined as cancellative `CommMonoidWithZero`s with well-founded
 strict divisibility relations, but this is equivalent to more familiar definitions:
 
 Each element (except zero) is uniquely represented as a multiset of irreducible factors.

@@ -62,7 +62,6 @@ noncomputable section
 
 namespace UniqueFactorizationMonoid
 
--- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M] {a b u : M}
 

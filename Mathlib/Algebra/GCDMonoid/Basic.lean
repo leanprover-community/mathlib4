@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Regular
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
 
-This file defines extra structures on `CancelCommMonoidWithZero`s, including `IsDomain`s.
+This file defines extra structures on `CommMonoidWithZero`s.
 
 ## Main Definitions
 
@@ -240,7 +240,7 @@ theorem out_zero : (0 : Associates α).out = 0 := by
 
 end Associates
 
-/-- GCD monoid: a `CancelCommMonoidWithZero` with `gcd` (greatest common divisor) and
+/-- GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
 -/
@@ -264,7 +264,7 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
 
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
 
-/-- Normalized GCD monoid: a `CancelCommMonoidWithZero` with normalization and `gcd`
+/-- Normalized GCD monoid: a cancellative `CommMonoidWithZero` with normalization and `gcd`
 (greatest common divisor) and `lcm` (least common multiple) operations. In this setting `gcd` and
 `lcm` form a bounded lattice on the associated elements where `gcd` is the infimum, `lcm` is the
 supremum, `1` is bottom, and `0` is top. The type class focuses on `gcd` and we derive the

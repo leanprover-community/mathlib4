@@ -65,7 +65,7 @@ variable [IsDomain A]
 This is equivalent to `IsDedekindDomain`.
 In particular we provide a `CommGroupWithZero` instance,
 assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integral** domain,
-`IsDedekindDomain`(`Inv`) implies only `Ideal.cancelCommMonoidWithZero`.
+`IsDedekindDomain`(`Inv`) implies only `Ideal.isCancelMulZero`.
 -/
 def IsDedekindDomainInv : Prop :=
   ∀ I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A)), I * I⁻¹ = 1

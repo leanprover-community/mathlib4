@@ -30,7 +30,7 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : IsCancelMulZero PUnit where
+instance : IsCancelMulZero PUnit where
   mul_left_cancel_of_ne_zero := by simp
   mul_right_cancel_of_ne_zero := by simp
 
