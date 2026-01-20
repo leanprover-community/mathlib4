@@ -265,7 +265,6 @@ lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
   simpa [map_coe, OrderHom.coe_mk, Set.range_comp]
     using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
 
-@[fun_prop]
 lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuousOn.id
 
 @[fun_prop]
@@ -296,7 +295,6 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
-@[fun_prop]
 lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (g.comp f) :=
   ωScottContinuous.of_monotone_map_ωSup
