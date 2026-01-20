@@ -72,8 +72,6 @@ end Submonoid.LocalizationMap
 
 variable (N) in
 theorem IsLocalization.uniqueFactorizationMonoid [CommSemiring M] [CommSemiring N] [Algebra M N]
-    (S : Submonoid M) [IsLocalization S N] [IsCancelMulZero M] [UniqueFactorizationMonoid M] :
-    letI := (toLocalizationMap S N).isCancelMulZero
+    (S : Submonoid M) [IsLocalization S N] [UniqueFactorizationMonoid M] :
     UniqueFactorizationMonoid N :=
-  letI := (toLocalizationMap S N).isCancelMulZero
   (toLocalizationMap S N).uniquFactorizationMonoid
