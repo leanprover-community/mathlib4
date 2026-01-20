@@ -194,21 +194,21 @@ end Real
 
 section Derivative
 
-variable (𝔽) [Field 𝔽]
+variable (𝔽) [Field 𝔽] [CharZero 𝔽]
 
 theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
-    (derivative^[k] (T ℝ n)).eval 1 =
+    (derivative^[k] (T 𝔽 n)).eval 1 =
       (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
-  have h := iterate_derivative_T_eval_one (R := ℝ) n k
+  have h := iterate_derivative_T_eval_one (R := 𝔽) n k
   push_cast at h ⊢
   refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
   norm_cast
 
 theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
-    (derivative^[k] (U ℝ n)).eval 1 =
+    (derivative^[k] (U 𝔽 n)).eval 1 =
       ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
       (∏ l ∈ Finset.range k, (2 * l + 3)) := by
-  have h := iterate_derivative_U_eval_one (R := ℝ) n k
+  have h := iterate_derivative_U_eval_one (R := 𝔽) n k
   push_cast at h ⊢
   refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
   norm_cast
