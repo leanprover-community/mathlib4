@@ -25,11 +25,14 @@ open Order Topology
 namespace SuccOrder
 variable [SuccOrder α]
 
-theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) (ha' : ¬ IsMax a) :
-    IsOpen {a} := by
+theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOpen {a} := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff_exists_covBy a |>.mp ha
-  convert isOpen_Ioo (a := b) (b := Order.succ a) using 1
-  simp [(covBy_succ_of_not_isMax ha').Ioo_eq_Ioc, hb.Ioc_eq]
+  by_cases ha' : IsMax a
+  · convert isOpen_Ioi (a := b) using 1
+    rw [hb.Ioi_eq]
+    grind [IsMax]
+  · convert isOpen_Ioo (a := b) (b := Order.succ a) using 1
+    simp [(covBy_succ_of_not_isMax ha').Ioo_eq_Ioc, hb.Ioc_eq]
 
 variable [NoMaxOrder α]
 
@@ -45,7 +48,7 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   · obtain (ha | ha) := not_isSuccLimit_iff.mp ha
     · convert isOpen_Iio (a := Order.succ a) using 1
       simp [ha.Iic_eq]
-    · exact isOpen_singleton_of_not_isSuccPrelimit ha (not_isMax a)
+    · exact isOpen_singleton_of_not_isSuccPrelimit ha
 
 theorem nhds_eq_pure {a : α} : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
   (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
@@ -69,10 +72,8 @@ end SuccOrder
 namespace PredOrder
 variable [PredOrder α]
 
-theorem isOpen_singleton_of_not_isPredPrelimit (ha : ¬ IsPredPrelimit a) (ha' : ¬ IsMin a) :
-    IsOpen {a} :=
-  SuccOrder.isOpen_singleton_of_not_isSuccPrelimit
-    (α := αᵒᵈ) (isSuccPrelimit_toDual_iff.not.2 ha) ha'
+theorem isOpen_singleton_of_not_isPredPrelimit (ha : ¬ IsPredPrelimit a) : IsOpen {a} :=
+  SuccOrder.isOpen_singleton_of_not_isSuccPrelimit (α := αᵒᵈ) (isSuccPrelimit_toDual_iff.not.2 ha)
 
 variable [NoMinOrder α]
 
