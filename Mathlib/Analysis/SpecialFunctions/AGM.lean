@@ -221,7 +221,7 @@ lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y
     specialize this hy hx hn.symm hl
     rwa [agm_comm, min_comm]
   rw [min_eq_left hl.le]
-  refine lt_of_lt_of_le (?_ : x < sqrt (x * y)) (@agmSequences_fst_le_agm x y 0)
+  refine (?_ : x < sqrt (x * y)).trans_le (@agmSequences_fst_le_agm x y 0)
   nth_rw 1 [← mul_self_sqrt x, sqrt_mul]
   gcongr
 
