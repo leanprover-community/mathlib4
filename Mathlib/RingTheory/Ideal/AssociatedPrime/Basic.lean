@@ -77,12 +77,10 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
     (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (⊥ : Submodule R M).colon {x} ≤ P := by
-  have : (⊥ : Submodule R M).colon {x} ≠ ⊤ := by
-    rwa [Ne, Ideal.eq_top_iff_one, mem_colon_singleton, one_smul]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
       { P | (⊥ : Submodule R M).colon {x} ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (⊥ : Submodule R M).colon {y} }
-      ⟨_, rfl.le, this, x, rfl⟩
+      ⟨_, rfl.le, by simpa, x, rfl⟩
   refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
@@ -92,9 +90,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     intro c hc
     rw [mem_colon_singleton, mem_bot] at hc ⊢
     rw [smul_comm, hc, smul_zero]
-  have H₂ : (⊥ : Submodule R M).colon {a • y} ≠ ⊤ := by
-    rwa [Ne, colon_eq_top_iff_subset, Set.singleton_subset_iff]
-  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
+  rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩),
     mem_colon_singleton, smul_comm, smul_smul]
 
 namespace associatedPrimes
