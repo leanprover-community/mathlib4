@@ -123,21 +123,30 @@ instance : (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFunctori
     exact ⟨by simp [← le_llp_iff_le_rlp], hIW₁⟩
   simpa [trivialFibrations] using HasFunctorialFactorization.of_le le_rfl le
 
-/-open lemma_1_9 in
+open lemma_1_9 in
 instance : (trivialCofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFactorization
     (fibrations (CategoryWithSmithStructure hIW₁ hIW₃)) := by
   obtain ⟨κ, _, hκ⟩ : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
-    ∀ {A B : C} (i : A ⟶ B) (hi : I i), IsCardinalPresentable A κ := sorry
+      ∀ {A B : C} (i : A ⟶ B) (hi : I i), IsCardinalPresentable A κ := by
+    choose κ' _ hκ' using fun (x : I.toSet) ↦ IsPresentable.exists_cardinal.{w} x.1.left
+    obtain ⟨κ, _, hκ⟩ :=
+      HasCardinalLT.exists_regular_cardinal_forall (fun x ↦ (κ' x).ord.ToType)
+    have : Fact κ.IsRegular := ⟨by assumption⟩
+    refine ⟨κ, inferInstance, fun {A _} i hi ↦ ?_⟩
+    have : IsCardinalPresentable A (κ' ⟨Arrow.mk i, hi⟩) := hκ' ⟨i, hi⟩
+    exact isCardinalPresentable_of_le _ (by simpa using (hκ ⟨i, hi⟩).le)
   have : OrderBot κ.ord.ToType := Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
   simp only [trivialCofibrations, cofibrations_eq, weakEquivalences_eq, fibrations_eq,
     ← llp_rlp_J hIW₁ hIW₃ κ hκ, rlp_llp_rlp]
   infer_instance
 
-instance : HasFiniteLimits (CategoryWithSmithStructure hIW₁ hIW₃) := by
-  sorry
+variable [HasFiniteLimits C] -- TODO: remove this assumption
+
+instance : HasFiniteLimits (CategoryWithSmithStructure hIW₁ hIW₃) :=
+  inferInstanceAs (HasFiniteLimits C)
 
 instance : ModelCategory (CategoryWithSmithStructure hIW₁ hIW₃) where
-  cm4b := ModelCategory.hasLiftingProperty_of_joyalTrick (by intros; infer_instance)-/
+  cm4b := ModelCategory.hasLiftingProperty_of_joyalTrick (by intros; infer_instance)
 
 end CategoryWithSmithStructure
 
