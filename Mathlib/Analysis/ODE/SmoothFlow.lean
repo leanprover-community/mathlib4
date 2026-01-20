@@ -402,10 +402,15 @@ lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (
     integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, ContinuousMap.sub_apply,
     integralCM_apply_if_pos hα_add, integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
     integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
-    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃
-    ]
-  apply intervalIntegral.norm_integral_le_integral_norm_uIoc.trans
-  sorry
+    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
+  let C : ℝ := sorry
+  apply (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) _).trans
+  · sorry
+  · intro τ hτ
+    rw [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def]
+    simp_rw [Fin.cons_succ]
+
+    sorry
   -- simp only [sub_apply, continuousMultilinearCurryLeftEquiv_apply,
   --   integralCMLMAux_apply, ContinuousMap.sub_apply]
 
