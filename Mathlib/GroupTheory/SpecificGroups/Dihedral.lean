@@ -304,16 +304,12 @@ lemma card_conjClasses_odd (hn : Odd n) :
 
 theorem center_eq_bot_of_odd_ne_one (hodd : Odd n) (hne1 : n ≠ 1) :
     Subgroup.center (DihedralGroup n) = ⊥ := by
-  have : Fact (1 < n) := ⟨by grind⟩
-  ext x
-  simp only [Subgroup.mem_center_iff, Subgroup.mem_bot]
-  refine ⟨fun hx ↦ ?_, fun hx ↦ by simp [hx]⟩
-  rcases x with i | i
-  · have heq := sr.inj (hx (sr 0))
-    rw [zero_add, zero_sub, eq_neg_iff_add_eq_zero, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
-    rw [heq, r_zero]
-  · have heq := sr.inj (hx (r 1))
-    rw [sub_eq_iff_eq_add, add_assoc, left_eq_add, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
-    exact (one_ne_zero heq).elim
+  simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
+  rintro (i | i) h
+  · have heq := sr.inj (h (sr i))
+    simp_all
+  · have heq := sr.inj (h (r 1))
+    have : Fact (1 < n) := ⟨by grind⟩
+    simp [sub_eq_iff_eq_add, add_assoc, ZMod.add_self_eq_zero_iff_eq_zero hodd] at heq
 
 end DihedralGroup
