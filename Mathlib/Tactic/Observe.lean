@@ -51,10 +51,10 @@ elab_rules : tactic |
       let (_, newGoal) ← (← getMainGoal).note name v
       replaceMainGoal [newGoal]
 
-@[inherit_doc observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
+@[tactic_alt observe] macro "observe?" h:(ppSpace ident)? " : " t:term : tactic =>
   `(tactic| observe ? $[$h]? : $t)
 
-@[inherit_doc observe]
+@[tactic_alt observe]
 macro "observe?" h:(ppSpace ident)? " : " t:term " using " terms:(colGt term),+ : tactic =>
   `(tactic| observe ? $[$h]? : $t using $[$terms],*)
 
