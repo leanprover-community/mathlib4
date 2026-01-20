@@ -143,7 +143,7 @@ noncomputable def HoCat.resolutionObj (X : C) : C :=
 instance (X : C) : IsCofibrant (HoCat.resolutionObj X) :=
   (HoCat.exists_resolution X).choose_spec.choose
 
-/-- This is the trivial fibration `resolutionObj X ⟶ X` where
+/-- This is a trivial fibration `resolutionObj X ⟶ X` where
 `resolutionObj X` is a choice of a cofibrant resolution of `X`. -/
 noncomputable def HoCat.pResolutionObj (X : C) : resolutionObj X ⟶ X :=
   (exists_resolution X).choose_spec.choose_spec.choose
@@ -161,7 +161,7 @@ lemma HoCat.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     (pResolutionObj X ≫ f) := ⟨by simp⟩
   exact ⟨sq.lift, sq.fac_right⟩
 
-/-- The lifting of a morphism `f : X ⟶ Y` on cofibrant resolutions.
+/-- A lifting of a morphism `f : X ⟶ Y` on cofibrant resolutions.
 (This is functorial only up to homotopy, see `HoCat.resolution`.) -/
 noncomputable def HoCat.resolutionMap {X Y : C} (f : X ⟶ Y) :
     resolutionObj X ⟶ resolutionObj Y :=
@@ -189,7 +189,7 @@ lemma HoCat.resolutionObj_hom_ext {X : C} [IsCofibrant X] {Y : C} {f g : X ⟶ r
   exact (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence
     (X := X) (g := pResolutionObj Y)).1 h
 
-/-- The cofibrant resolution functor from a model category to the homotopy category
+/-- A cofibrant resolution functor from a model category to the homotopy category
 of cofibrant objects. -/
 noncomputable def HoCat.resolution : C ⥤ CofibrantObject.HoCat C where
   obj X := toHoCat.obj (mk (resolutionObj X))
@@ -202,7 +202,7 @@ noncomputable def HoCat.resolution : C ⥤ CofibrantObject.HoCat C where
     exact resolutionObj_hom_ext (by simpa using .refl _)
 
 variable (C) in
-/-- The cofibration resolution functor, as a localizer morphism. -/
+/-- The cofibration resolution functor `HoCat.resolution`, as a localizer morphism. -/
 @[simps]
 noncomputable def HoCat.localizerMorphismResolution :
     LocalizerMorphism (weakEquivalences C)
