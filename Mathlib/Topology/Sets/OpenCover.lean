@@ -19,14 +19,6 @@ longer than its content; but giving it a name serves as a way of standardizing A
 
 open Set Topology
 
-theorem TopologicalSpace.Opens.exists {α : Type*} [TopologicalSpace α]
-    {p : Opens α → Prop} : (∃ U, p U) ↔ ∃ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
-  ⟨(⟨_, _, ·.choose_spec⟩), (⟨_, ·.choose_spec.choose_spec⟩)⟩
-
--- open Set.Notation in
--- theorem exists_set_set_iff {α : Type*} (s : Set α)
---     {p : Set s → Prop} : (∃ t, p t) ↔ ∃ (t : Set α) (ht : t ⊆ s), p (s ↓∩ t) := by
-
 namespace TopologicalSpace
 
 /-- An indexed family of open sets whose union is `X`. -/

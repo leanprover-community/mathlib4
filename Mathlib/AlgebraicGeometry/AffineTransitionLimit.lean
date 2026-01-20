@@ -1056,7 +1056,8 @@ end IsAffine
 section LocallyOfFinitePresentation
 
 include hc in
-nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType_of_isAffine
+/-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
+private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
     [IsCofiltered I] [LocallyOfFinitePresentation f]
     [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)]
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
@@ -1115,7 +1116,7 @@ nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType_of_isAffine
 
 open TopologicalSpace in
 include hc in
-lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType
+lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [IsCofiltered I] [LocallyOfFinitePresentation f]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, CompactSpace (D.obj i)] [∀ i, QuasiSeparatedSpace (D.obj i)]
@@ -1131,7 +1132,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType
     choose k fk hk using fun j ↦ exists_map_preimage_le_map_preimage D c hc (h𝒱𝒰 j).1.isCompact
       (V := t.app i ⁻¹ᵁ j.1.1.2.1.2.1) (by
       rw [← Hom.comp_preimage, ← NatTrans.comp_app, ha]
-      exact (h𝒱𝒰 j).2.symm.trans_le (j.1.2.2.trans (a.preimage_mono j.1.1.2.2.2)))
+      exact (h𝒱𝒰 j).2.symm.trans_le (j.1.prop.2.trans (a.preimage_mono j.1.1.2.prop.2)))
     obtain ⟨i', fi'i, fi', hfi'⟩ := IsCofiltered.wideCospan fk
     refine ⟨i', fi'i, fun j ↦ ?_⟩
     rw [← hfi', Functor.map_comp, Hom.comp_preimage]
@@ -1150,10 +1151,10 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFiniteType
         simp only [Functor.id_obj, Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
           Functor.const_obj_map, Category.comp_id, le_refl]
       naturality {k₁ k₂} f₁₂ := by simp [Hom.resLE_comp_resLE] }
-    have (j : s) : IsAffine j.1.1.2.1.1 := j.1.1.2.2.1
-    choose k ak hk hk' using fun j ↦ exists_π_app_comp_eq_of_locallyOfFiniteType_of_isAffine _
-      (t𝒱 j) (f.resLE _ _ j.1.1.2.2.2) _ (isLimitOpensCone D c hc i' (𝒱' j))
-      (a.resLE _ _ ((h𝒱'𝒰 _).trans_le j.1.2.2)) (by
+    have (j : s) : IsAffine j.1.1.2.1.1 := j.1.1.2.prop.1
+    choose k ak hk hk' using fun j ↦ exists_π_app_comp_eq_of_locallyOfFinitePresentation_of_isAffine
+      _ (t𝒱 j) (f.resLE _ _ j.1.1.2.prop.2) _ (isLimitOpensCone D c hc i' (𝒱' j))
+      (a.resLE _ _ ((h𝒱'𝒰 _).trans_le j.1.prop.2)) (by
       ext k
       simp [t𝒱, Hom.resLE_comp_resLE, show c.π.app k.left ≫ t.app k.left = a ≫ f from
         congr(($ha).app k.left)])
