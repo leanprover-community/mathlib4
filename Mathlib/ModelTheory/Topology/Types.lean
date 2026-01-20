@@ -32,7 +32,8 @@ variable {L : Language} {T : L.Theory} {α : Type*}
 
 public instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
 
-public lemma typesWith_range_basis : IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
+public lemma IsTopologicalBasis_range_typesWith :
+    IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
   exists_subset_inter := by
     intro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
     refine ⟨typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
