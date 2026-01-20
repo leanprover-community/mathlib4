@@ -188,7 +188,7 @@ theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : 
 
 @[instance]
 theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
-  nhdsWithin_Iio_self_neBot' ⟨0, NeZero.pos x⟩
+  nhdsLT_neBot_of_exists_lt ⟨0, NeZero.pos x⟩
 
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
