@@ -150,7 +150,7 @@ lemma projectiveFamilyContent_ne_top [∀ J, IsFiniteMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyContent hP s ≠ ∞ := by
   rw [projectiveFamilyContent_eq hP, projectiveFamilyFun]
-  split_ifs with hs <;> finiteness
+  finiteness
 
 lemma projectiveFamilyContent_diff (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) :
