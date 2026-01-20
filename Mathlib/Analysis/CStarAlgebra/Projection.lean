@@ -18,7 +18,7 @@ elements in non-unital C⋆-algebras.
 
 -/
 
-@[expose] public section
+public section
 
 variable {A : Type*} [TopologicalSpace A]
   [NonUnitalRing A] [StarRing A] [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]

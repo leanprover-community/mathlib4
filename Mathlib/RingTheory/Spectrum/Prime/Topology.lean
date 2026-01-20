@@ -212,12 +212,11 @@ def closedsEmbedding (R : Type*) [CommSemiring R] :
 theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField R := by
   refine ⟨?_, fun h => ?_⟩
   · intro h
-    have hbot : Ideal.IsPrime (⊥ : Ideal R) := Ideal.bot_prime
     exact
       Classical.not_not.1
         (mt
           (Ring.ne_bot_of_isMaximal_of_not_isField <|
-            (isClosed_singleton_iff_isMaximal _).1 (T1Space.t1 ⟨⊥, hbot⟩))
+            (isClosed_singleton_iff_isMaximal _).1 (T1Space.t1 ⟨⊥, inferInstance⟩))
           (by simp))
   · refine ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 ?_⟩
     by_cases hx : x.asIdeal = ⊥
@@ -275,7 +274,7 @@ lemma vanishingIdeal_isClosed_isIrreducible :
 
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.bot_prime
+  simpa using Ideal.isPrime_bot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
@@ -287,7 +286,8 @@ instance compactSpace : CompactSpace (PrimeSpectrum R) := by
   refine compactSpace_of_finite_subfamily_closed fun S S_closed S_empty ↦ ?_
   choose I hI using fun i ↦ (isClosed_iff_zeroLocus_ideal (S i)).mp (S_closed i)
   simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
-  exact Ideal.isCompactElement_top.exists_finset_of_le_iSup _ _ S_empty
+  exact CompleteLattice.IsCompactElement.exists_finset_of_le_iSup _
+    Ideal.isCompactElement_top _ S_empty
 
 /-- The prime spectrum of a commutative semiring has discrete Zariski topology iff it is finite and
 the semiring has Krull dimension zero or is trivial. -/
@@ -357,7 +357,7 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
     exact ((IsLocalization.isPrime_iff_isPrime_disjoint ..).mp p.2).2
   · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
-    exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
+    exact IsLocalization.comap_map_of_isPrime_disjoint M S x.2 h
 
 @[deprecated (since := "2025-12-10")] alias localization_specComap_range := localization_comap_range
 
@@ -722,6 +722,10 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
+
+lemma toPiLocalization_bijective {R : Type*} [CommRing R]
+    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (toPiLocalization R) :=
+  discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
 
 end DiscreteTopology
 
@@ -1186,6 +1190,10 @@ def closedPoint : PrimeSpectrum R :=
 instance : OrderTop (PrimeSpectrum R) where
   top := closedPoint R
   le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
+
+@[simp]
+theorem PrimeSpectrum.asIdeal_top : (⊤ : PrimeSpectrum R).asIdeal = IsLocalRing.maximalIdeal R :=
+  rfl
 
 variable {R}
 

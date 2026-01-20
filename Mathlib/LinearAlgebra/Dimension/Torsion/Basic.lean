@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 - `rank_quotient_eq_of_le_torsion` : `rank M/N = rank M` if `N ≤ torsion M`.
 -/
 
-@[expose] public section
+public section
 
 open Submodule
 

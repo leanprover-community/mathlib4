@@ -744,8 +744,6 @@ theorem pi_update_of_notMem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a
     rw [update_of_ne]
     exact fun h => hi (h ▸ hj)
 
-@[deprecated (since := "2025-05-23")] alias pi_update_of_not_mem := pi_update_of_notMem
-
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (s.pi fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
@@ -790,8 +788,6 @@ lemma eval_image_pi_of_notMem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
   · rintro ⟨x, hx⟩
     refine ⟨Function.update x i xᵢ, ?_⟩
     simpa +contextual [(ne_of_mem_of_not_mem · hi)]
-
-@[deprecated (since := "2025-05-23")] alias eval_image_pi_of_not_mem := eval_image_pi_of_notMem
 
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :

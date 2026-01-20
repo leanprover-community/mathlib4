@@ -24,7 +24,7 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w z
 
@@ -71,7 +71,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
@@ -114,7 +114,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     have : 2 ≤ p := Nat.Prime.two_le hp.out
-    have : p < p^2 := by nlinarith
+    have : p < p ^ 2 := by nlinarith
     cases k <;> grind
 
 end Cyclotomic
@@ -204,7 +204,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     simp
 
 theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Ring B]
-    [Algebra A B] [NoZeroSMulDivisors A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
+    [Algebra A B] [IsDomain A] [Module.IsTorsionFree A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by
   choose! f hf using hQ
@@ -234,7 +234,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R K L
+  have : Module.IsTorsionFree R L := .trans_faithfulSMul R K L
   let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.

@@ -62,8 +62,6 @@ theorem X_Y_Z_notMem_kIdeal : (X * Y * Z : MvPolynomial (Fin 3) (ZMod 2)) ∉ kI
     ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
   contradiction
 
-@[deprecated (since := "2025-05-23")] alias X_Y_Z_not_mem_kIdeal := X_Y_Z_notMem_kIdeal
-
 theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X * Y * Z * x ∈ kIdeal) : x * x ∈ kIdeal := by
   rw [mem_kIdeal_iff] at h
@@ -292,7 +290,7 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem BilinMap.not_forall_toQuadraticMap_surjective.{v} :
+theorem LinearMap.BilinMap.not_forall_toQuadraticMap_surjective.{v} :
     -- TODO: make `R` universe polymorphic
     ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
       Function.Surjective (BilinMap.toQuadraticMap : BilinForm R M → QuadraticForm R M) :=

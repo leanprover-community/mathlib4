@@ -67,8 +67,8 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
         Ideal.Quotient.eq_zero_iff_mem]
     · refine le_antisymm ?_ (sup_le h ((span_singleton_le_iff_mem _ _).mpr hx))
-      have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm).map f := by
-        simp only [map_span, Set.image_singleton, hx'']
+      have : (span A {x}).map N₁.mkQ = ((span A {1}).map e.symm.toLinearMap).map f := by
+        simp only [map_span, Set.image_singleton, hx'', LinearEquiv.coe_coe]
       rw [← N₁.ker_mkQ, sup_comm, ← comap_map_eq, ← map_le_iff_le_comap, this]
       simp [hf₂, Ideal.Quotient.span_singleton_one]
   · have hxN₂ : x ∈ N₂ := (le_sup_right.trans_eq hx'.symm) (mem_span_singleton_self x)

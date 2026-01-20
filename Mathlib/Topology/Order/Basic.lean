@@ -196,9 +196,9 @@ lemma isTopologicalBasis_biInter_Ioi_Iio_of_generateFrom (c : Set α)
   let kl := {s ∈ k | ∃ a ∈ c, s = Ioi a}
   let kr := {s ∈ k | ∃ a ∈ c, s = Iio a}
   have k_eq : k = kl ∪ kr := by
+    -- this `have` can be removed, but makes `grind` slower
     have : ∀ s ∈ k, ∃ a ∈ c, s = Ioi a ∨ s = Iio a := hk
     ext
-    simp only [mem_union, mem_setOf_eq, kl, kr]
     grind
   have : Finite kl := k_fin.subset (by simp [k_eq])
   have : Finite kr := k_fin.subset (by simp [k_eq])
@@ -747,25 +747,21 @@ theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
   countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
 
-instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
   obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
-  · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
-    have A (s : b) : s.1.Nonempty := by aesop (add simp [nonempty_iff_ne_empty])
-    choose a ha using A
-    have : atTop = generate (Ici '' range a) := by
+  · obtain ⟨s, s_count, hs⟩ := exists_countable_dense α
+    have : atTop = generate (Ici '' s) := by
       refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
       simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
-      rcases h x with ⟨y, hy⟩
-      obtain ⟨s, sb, -, hs⟩ := hb.exists_subset_of_mem_open hy isOpen_Ioi
-      exact ((hx (mem_range_self _)).trans_lt (hs (ha ⟨s, sb⟩))).false
+      obtain ⟨y, hy, hxy⟩ := hs.exists_mem_open isOpen_Ioi (h x)
+      exact (hx hy).not_gt hxy
     rw [this]
-    have := countable_coe_iff.2 b_count
-    exact ⟨_, (countable_range _).image _, rfl⟩
+    exact ⟨_, s_count.image _, rfl⟩
   · rw [atTop_eq_pure_of_isTop hx]
     exact isCountablyGenerated_pure x
 
-instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
+instance instIsCountablyGenerated_atBot [SeparableSpace α] :
     IsCountablyGenerated (atBot : Filter α) :=
   @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 

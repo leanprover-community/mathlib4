@@ -25,7 +25,7 @@ which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
 
-@[expose] public section
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}

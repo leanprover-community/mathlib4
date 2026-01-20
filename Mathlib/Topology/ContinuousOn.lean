@@ -22,7 +22,7 @@ equipped with the subspace topology.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
@@ -48,9 +48,6 @@ theorem continuousWithinAt_univ (f : α → β) (x : α) :
 theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f := by
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
-
-@[deprecated (since := "2025-07-04")]
-alias continuous_iff_continuousOn_univ := continuousOn_univ
 
 theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
@@ -88,9 +85,6 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
-
-@[deprecated (since := "2025-05-23")]
-alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
 
 /-!
 ## `ContinuousOn`
@@ -491,7 +485,7 @@ theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t
     (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
   subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs
 
-theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
+@[fun_prop] theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
     (hg : ContinuousAt g (f x)) (hf : ContinuousWithinAt f s x) : ContinuousWithinAt (g ∘ f) s x :=
   hg.continuousWithinAt.comp hf (mapsTo_univ _ _)
 
@@ -732,6 +726,7 @@ theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSp
 theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
   continuous_const.continuousOn
 
+@[fun_prop]
 theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
     ContinuousWithinAt (fun _ : α => b) s x :=
   continuous_const.continuousWithinAt

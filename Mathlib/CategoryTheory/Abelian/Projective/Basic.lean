@@ -19,7 +19,7 @@ In an abelian category, an object `P` is projective iff the functor
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

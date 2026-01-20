@@ -947,11 +947,6 @@ lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
-omit [ZeroLEOneClass G₀] in
-lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
-    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
-  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by lia)
-
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
   rw [zpow_add_one₀ (zero_lt_one.trans_le ha).ne']
@@ -1047,6 +1042,24 @@ lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
 end ZPow
 
 end ZeroLEOneClass
+
+section MulPosMono
+
+variable [MulPosMono G₀] {n : ℤ}
+
+lemma zpow_left_monoOn₀ (hn : 0 ≤ n) : MonotoneOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn; simpa using pow_left_monotoneOn
+
+lemma zpow_left_strictMonoOn₀ (hn : 0 < n) : StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by lia)
+
+lemma zpow_le_zpow_left₀ (hn : 0 ≤ n) (ha : 0 ≤ a) (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  zpow_left_monoOn₀ (G₀ := G₀) hn ha (by grind) h
+
+lemma zpow_lt_zpow_left₀ (hn : 0 < n) (ha : 0 ≤ a) (h : a < b) : a ^ n < b ^ n :=
+  zpow_left_strictMonoOn₀ (G₀ := G₀) hn ha (by grind) h
+
+end MulPosMono
 
 end PosMulReflectLT
 
@@ -1290,9 +1303,11 @@ lemma neg_of_div_neg_left (h : a / b < 0) (hb : 0 ≤ b) : a < 0 :=
 
 end PosMulMono
 
-variable [PosMulStrictMono G₀] {m n : ℤ}
+variable {m n : ℤ}
 
 section ZeroLEOne
+
+variable [PosMulStrictMono G₀]
 
 variable [ZeroLEOneClass G₀]
 
@@ -1317,7 +1332,17 @@ lemma zpow_eq_one_iff_right₀ (ha₀ : 0 ≤ a) (ha₁ : a ≠ 1) {n : ℤ} : a
 
 end ZeroLEOne
 
-variable [MulPosStrictMono G₀]
+section MulPosMono
+
+variable [PosMulReflectLT G₀] [MulPosMono G₀]
+
+lemma zpow_le_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).le_iff_le ha hb
+
+lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
+  (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).lt_iff_lt ha hb
+
+end MulPosMono
 
 end GroupWithZero.LinearOrder
 
