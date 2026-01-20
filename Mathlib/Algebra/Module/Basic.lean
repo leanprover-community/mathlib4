@@ -80,16 +80,16 @@ theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [Division
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
 theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [DivisionSemiring R]
-    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℕ) (s : α) (x : E) :
+    [Module R E] [DistribSMul α E] (n : ℕ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
-  (map_inv_natCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
+  (map_inv_natCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
 
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
-    [Monoid α] [Module R E] [DistribMulAction α E] (n : ℤ) (s : α) (x : E) :
+    [Module R E] [DistribSMul α E] (n : ℤ) (s : α) (x : E) :
     (n⁻¹ : R) • s • x = s • (n⁻¹ : R) • x :=
-  (map_inv_intCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
+  (map_inv_intCast_smul (DistribSMul.toAddMonoidHom E s) R R n x).symm
 
 namespace Function
 

@@ -421,7 +421,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
+  let e' := aux (← getEnv) (← isTracingEnabledFor `translate_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
   e'.getUsedConstants.forM fun n => do

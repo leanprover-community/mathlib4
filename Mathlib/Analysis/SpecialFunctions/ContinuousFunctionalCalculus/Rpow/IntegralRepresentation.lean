@@ -357,7 +357,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [S
 lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
     (a : A) (ha : 0 ≤ a) :
     cfcₙ (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
-  have hspec : quasispectrum ℝ a ⊆ Ici 0 := by intro; grind
+  have hspec : quasispectrum ℝ a ⊆ Ici 0 := by grind
   have h_mapsTo : MapsTo (t⁻¹ • · : ℝ → ℝ) (Ici 0) (Ici 0) := by
     intro x hx
     simp only [mem_Ici, smul_eq_mul] at hx ⊢

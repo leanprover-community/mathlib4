@@ -43,7 +43,7 @@ variable {A}
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
 on the `B`-module `M`.
 
-This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
+This is a stronger version of `DistribSMul.toLinearMap`, and could also have been
 called `Algebra.toModuleEnd`.
 
 The typeclasses correspond to the situation where the types act on each other as
@@ -67,7 +67,7 @@ example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
 respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
 -/
 def lsmul : A →ₐ[R] Module.End B M where
-  toFun := DistribMulAction.toLinearMap B M
+  toFun := DistribSMul.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _

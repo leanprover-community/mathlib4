@@ -406,7 +406,7 @@ theorem encard_eq_four {α : Type u_1} {s : Set α} :
     · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inr rfl))).2 rfl
     rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
   rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_insert_of_notMem,
-    encard_singleton] <;> aesop
+    encard_singleton] <;> grind
 
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
   convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1

@@ -48,9 +48,7 @@ theorem one_le_eval_T_real (n : ℤ) {x : ℝ} (hx : 1 ≤ x) : 1 ≤ (T ℝ n).
 
 theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
     1 < (T ℝ n).eval x := by
-  have : arcosh x ≠ 0 := by
-    by_contra! h
-    grind [cosh_arcosh, cosh_zero]
+  have : arcosh x ≠ 0 := by grind [cosh_arcosh, cosh_zero]
   rw [← cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
   exact ⟨by norm_cast, by assumption⟩
 

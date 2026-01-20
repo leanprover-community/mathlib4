@@ -170,7 +170,7 @@ lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a �
 
 lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
     s₁.biUnion t₁ = s₂.biUnion t₂ := by
-  aesop
+  grind
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :

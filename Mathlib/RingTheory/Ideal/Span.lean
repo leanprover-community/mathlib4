@@ -234,6 +234,11 @@ theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h
     h₂ <| isUnit_of_dvd_one <|
         (mul_dvd_mul_iff_left h₁).1 <| by rwa [mul_one, ← Ideal.span_singleton_le_span_singleton]
 
+variable {I} in
+lemma mem_iff_of_associated {x y : α} (h : Associated x y) : x ∈ I ↔ y ∈ I := by
+  obtain ⟨u, rfl⟩ := h.symm
+  exact I.mul_unit_mem_iff_mem u.isUnit
+
 end CommSemiring
 
 section Ring

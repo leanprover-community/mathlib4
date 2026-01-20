@@ -1308,6 +1308,13 @@ lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
   simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, SetLike.le_def,
     mem_ker_iff S, Submodule.mem_top, true_implies]
 
+lemma subsingleton_of_subsingleton (S : Submonoid R) (g : M →ₗ[R] M') [IsLocalizedModule S g]
+    [Subsingleton M] : Subsingleton M' := by
+  rw [subsingleton_iff S g]
+  intro m
+  use 1
+  simp [one_mem, Subsingleton.elim m 0]
+
 end Subsingleton
 
 end IsLocalizedModule
