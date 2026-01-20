@@ -69,7 +69,6 @@ protected lemma DirectedOn.sSup_le_sSup (hd : DirectedOn (· ≤ ·) d) (hd' : D
     (h : d ⊆ d') : sSup d ≤ sSup d' :=
   hd.sSup_le fun _ ha ↦ hd'.le_sSup <| Set.mem_of_subset_of_mem h ha
 
-
 --TODO: We could mimic more `sSup`/`iSup` lemmas
 
 /-- Scott-continuity takes on a simpler form in complete partial orders. -/
