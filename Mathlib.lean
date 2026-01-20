@@ -1457,6 +1457,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Opposite
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma18
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma19
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.SolutionSetCondition
