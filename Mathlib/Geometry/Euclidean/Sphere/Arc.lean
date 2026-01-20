@@ -39,11 +39,17 @@ public section
 
 /-- An arc on a sphere, defined by the sphere and two distinct endpoints on the sphere. -/
 structure Arc (Pt : Type*) [MetricSpace Pt] where
+  /-- The underlying sphere containing the arc. -/
   sphere : Sphere Pt
+  /-- The left endpoint of the arc. -/
   left : Pt
+  /-- The right endpoint of the arc. -/
   right : Pt
+  /-- Proof that the left endpoint lies on the sphere. -/
   left_mem : left ∈ sphere
+  /-- Proof that the right endpoint lies on the sphere. -/
   right_mem : right ∈ sphere
+  /-- Proof that the two endpoints are distinct. -/
   left_ne_right : left ≠ right
 
 namespace Arc
