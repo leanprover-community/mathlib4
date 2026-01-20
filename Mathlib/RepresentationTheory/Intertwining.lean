@@ -15,13 +15,12 @@ This file gives defines intertwining maps of representations.
 -/
 
 @[expose] public section
-
-open Pointwise
 open scoped MonoidAlgebra
 
 variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
   [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
   (f : V →ₗ[A] W)
+
 /-- An unbundled version of `IntertwiningMap`. -/
 @[mk_iff] structure IsIntertwiningMap where
   isIntertwining (g : G) (v : V) : f (ρ g v) = σ g (f v)
@@ -121,8 +120,7 @@ variable {ρ σ} in
   between th corresponding representations. -/
 def ofLinearMap (f : ρ.asModule →ₗ[A[G]] σ.asModule) : IntertwiningMap ρ σ where
   toLinearMap := { f with
-    map_smul' a v := by simp
-  }
+    map_smul' a v := by simp }
   isIntertwining g v := by
     simp only [LinearMap.coe_mk]
     have h := f.map_smul' (MonoidAlgebra.single g 1) v
