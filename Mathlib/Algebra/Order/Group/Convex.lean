@@ -253,12 +253,6 @@ def ConvexSubgroup.orderIsoUpperSet :
     (fun _G _H le _x ⟨a, ha1, haH, eq⟩ ↦ ⟨a, ha1, le haH, eq⟩)
     fun _s _t le _a hat ha1 ↦ le (hat ha1)
 
-@[to_additive] lemma mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass :
-    MulArchimedean α ↔ Subsingleton (FiniteMulArchimedeanClass α) where
-  mp _ := inferInstance
-  mpr s := MulArchimedeanClass.mulArchimedean_of_mk_eq_mk
-    fun a ha b hb ↦ congr_arg Subtype.val (s.elim (.mk a ha) (.mk b hb))
-
 namespace LinearOrderedCommGroup
 
 variable (α) in
@@ -310,12 +304,7 @@ lemma height_eq_card_finiteMulArchimedeanClass :
 @[to_additive archimedean_iff_height_le_one]
 lemma mulArchimedean_iff_height_le_one : MulArchimedean α ↔ height α ≤ 1 := by
   rw [height_eq_card_finiteMulArchimedeanClass, ENat.card_le_one_iff_subsingleton,
-    mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass]
-
-lemma archimedean_iff_exists_orderAddMonoidHom {α} [AddCommGroup α] [LinearOrder α]
-    [IsOrderedAddMonoid α] : Archimedean α ↔ ∃ f : α →+o ℝ, Function.Injective f where
-  mp _ := Archimedean.exists_orderAddMonoidHom_real_injective α
-  mpr := fun ⟨f, hf⟩ ↦ .comap f.toAddMonoidHom (f.monotone'.strictMono_of_injective hf)
+    ← FiniteMulArchimedeanClass.subsingleton_iff_mulArchimedean]
 
 lemma mulArchimedean_iff_exists_orderMonoidHom :
     MulArchimedean α ↔ ∃ f : α →*o Multiplicative ℝ, Function.Injective f where
@@ -341,3 +330,31 @@ theorem MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
   rw [le_iff_eq_or_lt, or_iff_left]
   rw [ENat.lt_one_iff_eq_zero, height_eq_zero_iff]
   exact not_subsingleton α
+
+section Archimedean
+
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+
+lemma archimedean_iff_exists_orderAddMonoidHom :
+    Archimedean α ↔ ∃ f : α →+o ℝ, Function.Injective f where
+  mp _ := Archimedean.exists_orderAddMonoidHom_real_injective α
+  mpr := fun ⟨f, hf⟩ ↦ .comap f.toAddMonoidHom (f.monotone'.strictMono_of_injective hf)
+
+theorem Archimedean.tfae : List.TFAE
+  [ Archimedean α,
+    LinearOrderedAddCommGroup.height α ≤ 1,
+    ∃ f : α →+o ℝ, Function.Injective f] := by
+  tfae_have 1 ↔ 2 := archimedean_iff_height_le_one
+  tfae_have 1 ↔ 3 := archimedean_iff_exists_orderAddMonoidHom
+  tfae_finish
+
+theorem Archimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
+  [ Archimedean α,
+    LinearOrderedAddCommGroup.height α = 1,
+    ∃ f : α →+o ℝ, Function.Injective f] := by
+  convert Archimedean.tfae (α := α) using 3
+  rw [le_iff_eq_or_lt, or_iff_left]
+  rw [ENat.lt_one_iff_eq_zero, LinearOrderedAddCommGroup.height_eq_zero_iff]
+  exact not_subsingleton α
+
+end Archimedean
