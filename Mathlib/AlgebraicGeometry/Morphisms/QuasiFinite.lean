@@ -20,6 +20,12 @@ This is equivalent to all the fibers `f⁻¹(x)` having an open cover of `κ(x)`
 Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
 We prove that this is stable under composition and base change, and is right cancellative.
+
+## TODO (@erdOne):
+- If `f` is quasi-compact,
+  then `f` is locally quasi-finite iff all the fibers `f⁻¹(x)` are `κ(x)`-finite.
+- If `f` is locally of finite type, then `f` is locally quasi-finite iff `f` has discrete fibers.
+- If `f` is of finite type, then `f` is locally quasi-finite iff `f` has finite fibers.
 -/
 
 @[expose] public section
@@ -42,28 +48,28 @@ This is equivalent to all the fibers `f⁻¹(x)` having an open cover of `κ(x)`
 Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
 TODO (@erdOne): prove the following
-If one assume quasi-compact, this is equivalent to all the fibers `f⁻¹(x)` being `κ(x)`-finite.
-If one assume locally of finite type, this is equivalent to `f` having discrete fibers.
-If one assume finite type, this is equivalent to `f` having finite fibers.
+If one assumes quasi-compact, this is equivalent to all the fibers `f⁻¹(x)` being `κ(x)`-finite.
+If one assumes locally of finite type, this is equivalent to `f` having discrete fibers.
+If one assumes finite type, this is equivalent to `f` having finite fibers.
 -/
 @[mk_iff]
 class LocallyQuasiFinite : Prop where
-  quasiFinite_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+  quasiFinite_appLE :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
       (f.appLE U V e).hom.QuasiFinite
 
 instance : HasRingHomProperty @LocallyQuasiFinite RingHom.QuasiFinite where
   isLocal_ringHomProperty := RingHom.QuasiFinite.propertyIsLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [locallyQuasiFinite_iff, affineLocally_iff_affineOpens_le]
+    simp [locallyQuasiFinite_iff, affineLocally_iff_affineOpens_le, affineOpens]
 
 instance : MorphismProperty.IsStableUnderComposition @LocallyQuasiFinite :=
   HasRingHomProperty.stableUnderComposition RingHom.QuasiFinite.stableUnderComposition
 
 instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [hf : LocallyQuasiFinite f] [hg : LocallyQuasiFinite g] : LocallyQuasiFinite (f ≫ g) :=
-  MorphismProperty.comp_mem _ f g hf hg
+    [LocallyQuasiFinite f] [LocallyQuasiFinite g] : LocallyQuasiFinite (f ≫ g) :=
+  MorphismProperty.comp_mem _ f g ‹_› ‹_›
 
 instance (priority := low) [IsFinite f] : LocallyQuasiFinite f := by
   rw [HasAffineProperty.eq_targetAffineLocally @IsFinite] at ‹IsFinite f›
