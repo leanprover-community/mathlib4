@@ -90,8 +90,8 @@ inductive Label where
   | «t-set-theory»
   | «t-topology»
   | «CI»
-  | «IMO»
   | «dependency-bump»
+  | «IMO»
   deriving BEq, Hashable, Repr
 
 /--
@@ -105,8 +105,7 @@ def mathlibLabels : Array Label := #[
   .«t-convex-geometry», .«t-data», .«t-differential-geometry», .«t-dynamics»,
   .«t-euclidean-geometry», .«t-geometric-group-theory», .«t-group-theory», .«t-linter»,
   .«t-logic», .«t-measure-probability», .«t-meta», .«t-number-theory», .«t-order»,
-  .«t-ring-theory», .«t-set-theory», .«t-topology», .«CI», .«IMO»,
-  .«dependency-bump»
+  .«t-ring-theory», .«t-set-theory», .«t-topology», .«CI», .«dependency-bump», .«IMO»
 ]
 
 def Label.toString : Label → String
@@ -140,6 +139,25 @@ def Label.toString : Label → String
 
 instance : ToString Label where
   toString := Label.toString
+
+-- test to ensure all labels are listed in `mathlibLabels`
+open Lean in
+run_cmd
+  let some (.inductInfo labels) := (← getEnv).find? ``Label | unreachable!
+  let labelNames := labels.ctors.filterMap (·.components.getLast?) |>.toArray
+  let some (.defnInfo dinfo) := (← getEnv).find? ``mathlibLabels | unreachable!
+  let allConstants := dinfo.value.getUsedConstants
+  let constants := allConstants.filterMap fun n =>
+    if n.components.dropLast.getLast? == some `Label then n.components.getLast? else none
+  if labelNames != constants then
+    let mut out : List String := []
+    for (a, b) in labelNames.zip constants do
+      if a != b then
+        out := s!"\nexpexcted {a} got {b}" :: out
+    logWarning m!"The available Labels is out of sync with the labels listed in \
+    { .ofConstName ``mathlibLabels }.\n\
+    Please keep them sorted and in sync!\n{"".intercalate out.reverse}"
+
 
 /--
 A `LabelData` consists of the
