@@ -121,6 +121,8 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
 @[simp]
 theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
 
+/-- The natural coercion from a continuous algebra isomorphism
+to a continuous linear isomorphism. -/
 @[coe]
 def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B where
   __ := e.toLinearEquiv
