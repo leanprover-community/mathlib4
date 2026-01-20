@@ -111,7 +111,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
