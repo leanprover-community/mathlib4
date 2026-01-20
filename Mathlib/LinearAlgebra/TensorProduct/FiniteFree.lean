@@ -8,6 +8,12 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+/-!
+# Tensor product with finite free modules.
+
+This file contains lemmas about tensoring with finite free modules.
+-/
+
 @[expose] public section
 
 open TensorProduct
