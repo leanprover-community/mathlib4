@@ -24,21 +24,20 @@ universe w' w v u
 
 open CategoryTheory Limits
 
-namespace AlgebraicGeometry
-open AlgebraicGeometry
+namespace AlgebraicGeometry.Scheme
 
 variable {S : Scheme.{u}}
 
 @[simp]
-lemma CategoryTheory.PreZeroHypercover.quasiCompact_shrink_iff (E : PreZeroHypercover.{w} S) :
-    E.shrink.QuasiCompact ↔ E.QuasiCompact :=
+lemma quasiCompactCover_shrink_iff (E : PreZeroHypercover.{w} S) :
+    QuasiCompactCover E.shrink ↔ QuasiCompactCover E :=
   ⟨fun _ ↦ .of_hom E.fromShrink, fun _ ↦ .of_hom E.toShrink⟩
 
 /-- The pre-`0`-hypercover family on the category of schemes underlying the fpqc precoverage. -/
 @[simps]
 def qcCoverFamily : PreZeroHypercoverFamily Scheme.{u} where
   property X := X.quasiCompactCover
-  iff_shrink {_} E := E.quasiCompact_shrink_iff.symm
+  iff_shrink {_} E := (quasiCompactCover_shrink_iff E).symm
 
 /--
 The quasi-compact precoverage on the category of schemes is the precoverage
@@ -46,20 +45,17 @@ given by quasi-compact covers. The intersection of this precoverage
 with the precoverage defined by jointly surjective families of flat morphisms is
 the fpqc-precoverage.
 -/
-def Scheme.qcPrecoverage : Precoverage Scheme.{u} :=
+def qcPrecoverage : Precoverage Scheme.{u} :=
   qcCoverFamily.precoverage
 
 @[simp]
-lemma CategoryTheory.PreZeroHypercover.presieve₀_mem_qcPrecoverage_iff
-    {E : PreZeroHypercover.{w} S} : E.presieve₀ ∈ Scheme.qcPrecoverage S ↔ E.QuasiCompact := by
+lemma presieve₀_mem_qcPrecoverage_iff {E : PreZeroHypercover.{w} S} :
+    E.presieve₀ ∈ Scheme.qcPrecoverage S ↔ QuasiCompactCover E := by
   rw [← PreZeroHypercover.presieve₀_shrink, Scheme.qcPrecoverage,
     E.shrink.presieve₀_mem_precoverage_iff]
-  exact E.quasiCompact_shrink_iff
+  simp
 
-namespace Scheme
-
-instance : qcPrecoverage.HasIsos := .of_preZeroHypercoverFamily <| by
-  intro X Y f hf
+instance : qcPrecoverage.HasIsos := .of_preZeroHypercoverFamily fun X Y f hf ↦ by
   rw [qcCoverFamily_property, Scheme.quasiCompactCover_iff]
   infer_instance
 
@@ -72,8 +68,12 @@ instance : qcPrecoverage.IsStableUnderBaseChange := by
     infer_instance
 
 instance : qcPrecoverage.IsStableUnderComposition := by
-  refine .of_preZeroHypercoverFamily ?_
-  intro X E F hE hF
+  refine .of_preZeroHypercoverFamily fun {X} E F hE hF ↦ ?_
+  simp only [qcCoverFamily_property, Scheme.quasiCompactCover_iff] at hE hF ⊢
+  infer_instance
+
+instance : qcPrecoverage.IsStableUnderSup := by
+  refine .of_preZeroHypercoverFamily fun {X} E F hE hF ↦ ?_
   simp only [qcCoverFamily_property, Scheme.quasiCompactCover_iff] at hE hF ⊢
   infer_instance
 
@@ -83,13 +83,11 @@ lemma precoverage_le_qcPrecoverage_of_isOpenMap {P : MorphismProperty Scheme.{u}
     (hP : P ≤ fun _ _ f ↦ IsOpenMap f.base) :
     precoverage P ≤ qcPrecoverage := by
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
-  simp only [CategoryTheory.PreZeroHypercover.presieve₀_mem_qcPrecoverage_iff]
-  refine .of_isOpenMap fun i ↦ hP _ (Scheme.Cover.map_prop E i)
+  rw [presieve₀_mem_qcPrecoverage_iff]
+  exact .of_isOpenMap fun i ↦ hP _ (Scheme.Cover.map_prop E i)
 
 lemma zariskiPrecoverage_le_qcPrecoverage :
     zariskiPrecoverage ≤ qcPrecoverage :=
   precoverage_le_qcPrecoverage_of_isOpenMap fun _ _ f _ ↦ f.isOpenEmbedding.isOpenMap
 
-end Scheme
-
-end AlgebraicGeometry
+end AlgebraicGeometry.Scheme
