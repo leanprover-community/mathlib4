@@ -19,7 +19,7 @@ furthermore shows that all infinite cardinals are prime; recall that `a * b = ma
 `ℵ₀ ≤ a * b`; therefore `a ∣ b * c = a ∣ max b c` and therefore clearly either `a ∣ b` or `a ∣ c`.
 Note furthermore that no infinite cardinal is irreducible
 (`Cardinal.not_irreducible_of_aleph0_le`), showing that the cardinal numbers do not form a
-`CancelCommMonoidWithZero`.
+cancellative `CommMonoidWithZero`.
 
 ## Main results
 

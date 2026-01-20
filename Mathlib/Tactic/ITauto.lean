@@ -722,7 +722,7 @@ elab_rules : tactic
     let hs ← hs.getElems.mapM (Term.elabTermAndSynthesize · none)
     liftMetaTactic (itautoCore · true cl.isSome hs *> pure [])
 
-@[inherit_doc itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
+@[tactic_alt itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
 
 macro_rules
   | `(tactic| itauto!) => `(tactic| itauto !)
