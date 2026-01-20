@@ -214,15 +214,15 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the last two commits that modified `fname`:
   -- the last one is the deletion, the previous one is the last file modification.
   let log ← runCmd s!"git log --pretty=oneline -2 -- {fname}"
-  let [deleted, lastModified] := log.trim.splitOn "\n" |
-    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
+  let [deleted, lastModified] := log.trimAscii.toString.splitOn "\n" |
+    throwError "Found {(log.trimAscii.toString.splitOn "\n").length} commits, but expected 2! \
       Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
   msgs := msgs.append #[m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
-  let deletionDate := (log'.trim.splitOn "\n")[0]!
+  let deletionDate := (log'.trimAscii.toString.splitOn "\n")[0]!
   let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
   -- Retrieve the final version of the file, before it was deleted.
@@ -233,7 +233,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
       let modName := mkModName rename
       pure s!"import {modName}"
     | none => getHeader fname file false
-  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+  let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
   return (msgs, deprecatedFile)
 
@@ -303,7 +303,7 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
     let last := log.trimAscii.toString.splitOn "\n" |>.getLast?
     let last := last.get! -- | throwError "Found no commits!"
     let commitHash := last.takeWhile (!·.isWhitespace)
-    let PRdescr := (last.drop commitHash.length).trim
+    let PRdescr := (last.drop commitHash.positions.count).trimAscii
     return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
