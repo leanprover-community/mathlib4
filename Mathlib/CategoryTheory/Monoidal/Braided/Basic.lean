@@ -95,8 +95,6 @@ theorem braiding_tensor_left_hom (X Y Z : C) :
   apply (cancel_mono (α_ Z X Y).inv).1
   simp [hexagon_reverse]
 
-@[deprecated (since := "2025-06-24")] alias braiding_tensor_left := braiding_tensor_left_hom
-
 @[simp, reassoc]
 theorem braiding_tensor_right_hom (X Y Z : C) :
     (β_ X (Y ⊗ Z)).hom =
@@ -106,8 +104,6 @@ theorem braiding_tensor_right_hom (X Y Z : C) :
   apply (cancel_mono (α_ Y Z X).hom).1
   simp [hexagon_forward]
 
-@[deprecated (since := "2025-06-24")] alias braiding_tensor_right := braiding_tensor_right_hom
-
 @[simp, reassoc]
 theorem braiding_tensor_left_inv (X Y Z : C) :
     (β_ (X ⊗ Y) Z).inv =
@@ -115,16 +111,12 @@ theorem braiding_tensor_left_inv (X Y Z : C) :
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
 
-@[deprecated (since := "2025-06-24")] alias braiding_inv_tensor_left := braiding_tensor_left_inv
-
 @[simp, reassoc]
 theorem braiding_tensor_right_inv (X Y Z : C) :
     (β_ X (Y ⊗ Z)).inv =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
         (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
-
-@[deprecated (since := "2025-06-24")] alias braiding_inv_tensor_right := braiding_tensor_right_inv
 
 @[reassoc (attr := simp)]
 theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
@@ -464,7 +456,7 @@ lemma hom_ext {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (h : α.hom.hom = 
     α = β :=
   InducedCategory.hom_ext (LaxMonoidalFunctor.hom_ext h)
 
-/-- Constructor for morphisms in the category `LaxBraiededFunctor C D`. -/
+/-- Constructor for morphisms in the category `LaxBraidedFunctor C D`. -/
 @[simps]
 def homMk {F G : LaxBraidedFunctor C D} (f : F.toFunctor ⟶ G.toFunctor) [NatTrans.IsMonoidal f] :
     F ⟶ G := ⟨f, inferInstance⟩

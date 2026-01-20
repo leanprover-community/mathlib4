@@ -29,7 +29,7 @@ the strictly positive elements of a unital C⋆-algebra.
 * Show that `x => x * log x` is operator convex
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

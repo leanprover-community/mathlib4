@@ -15,7 +15,7 @@ In this file, we put a `CartesianMonoidalCategory` instance on `A`-valued sheave
 `GrothendieckTopology` whenever `A` has a `CartesianMonoidalCategory` instance.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

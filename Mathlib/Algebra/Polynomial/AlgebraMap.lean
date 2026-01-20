@@ -315,10 +315,7 @@ theorem mapAlg_comp (p : A[X]) : (mapAlg A C) p = (mapAlg B C) (mapAlg A B p) :=
 
 theorem coeff_zero_of_isScalarTower (p : A[X]) :
     (algebraMap B C) ((algebraMap A B) (p.coeff 0)) = (mapAlg A C p).coeff 0 := by
-  have h : algebraMap A C = (algebraMap B C).comp (algebraMap A B) := by
-    ext a
-    simp [Algebra.algebraMap_eq_smul_one, RingHom.coe_comp, Function.comp_apply]
-  rw [mapAlg_eq_map, coeff_map, h, RingHom.comp_apply]
+  rw [mapAlg_eq_map, coeff_map, IsScalarTower.algebraMap_eq A B C, RingHom.comp_apply]
 
 end IsScalarTower
 
@@ -347,7 +344,7 @@ def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] �
     (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
-    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟a) (- ⅟a * b) := by
+    (algEquivCMulXAddC a b).symm = algEquivCMulXAddC (⅟a) (-⅟a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
   congr
@@ -642,7 +639,7 @@ variable [CommRing R] {p : R[X]} {t : R}
 
 @[simp]
 theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
-    aeval x (- p) = - aeval x p := map_neg ..
+    aeval x (-p) = -aeval x p := map_neg ..
 
 @[simp]
 theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
@@ -758,8 +755,6 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
-
-@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
 
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not

@@ -23,7 +23,7 @@ the usual way this is considered.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {x y : ℂ}

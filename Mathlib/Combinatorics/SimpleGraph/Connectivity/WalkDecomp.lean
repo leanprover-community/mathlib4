@@ -55,17 +55,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 
 @[simp]
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
-    (p.takeUntil w hwp).Nil ↔ u = w := by
-  refine ⟨?_, fun h => by subst h; simp⟩
-  intro hnil
-  cases p with
-  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
-  | cons h q =>
-    simp only [support_cons, List.mem_cons] at hwp
-    obtain hl | hr := hwp
-    · exact hl.symm
-    · by_contra! hc
-      simp [takeUntil_cons hr hc] at hnil
+    (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
@@ -264,10 +254,6 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
   lia
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_support_takeUntil_support_takeUntil_subset :=
-  notMem_support_takeUntil_support_takeUntil_subset
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=

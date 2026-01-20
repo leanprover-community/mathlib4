@@ -39,7 +39,7 @@ Some key definitions are not yet present.
   coordinates, with appropriate proofs of existence when `k` is a field.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

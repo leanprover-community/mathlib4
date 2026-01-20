@@ -168,7 +168,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   /-- To check this condition when the space already has a real normed space structure,
   use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below, or the constructor
-  `ModelWithCorners.of_convex_range` -/
+  `ModelWithCorners.ofConvexRange` -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜
@@ -185,7 +185,7 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
-def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
@@ -202,12 +202,15 @@ def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, htarget]
 
+@[deprecated (since := "2025-12-19")]
+alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
+
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
-  ModelWithCorners.of_target_univ 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
+  ModelWithCorners.ofTargetUniv 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
@@ -316,7 +319,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
 /-- Construct a model with corners over `ℝ` from a continuous partial equiv with convex range. -/
-def of_convex_range
+def ofConvexRange
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
@@ -330,6 +333,8 @@ def of_convex_range
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
+
+@[deprecated (since := "2025-12-19")] alias of_convex_range := ModelWithCorners.ofConvexRange
 
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜

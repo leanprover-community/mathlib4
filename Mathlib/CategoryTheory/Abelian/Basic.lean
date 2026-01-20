@@ -19,12 +19,12 @@ This file contains the definition and basic properties of abelian categories.
 
 There are many definitions of abelian category. Our definition is as follows:
 A category is called abelian if it is preadditive,
-has a finite products, kernels and cokernels,
+has finite products, kernels, and cokernels,
 and if every monomorphism and epimorphism is normal.
 
 It should be noted that if we also assume coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
-`NonPreadditiveAbelian.lean`. However, this fact is of little practical
+`Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a
 preadditive structure. In this way, by requiring preadditivity, we allow the
 user to pass in the "native" preadditive structure for the specific category they are
@@ -62,7 +62,7 @@ to avoid having to deal with comparing the two `HasZeroMorphisms` instances
 As a consequence, at the beginning of this file we trivially build
 a `NonPreadditiveAbelian` instance from an `Abelian` instance,
 and use this to restate a number of theorems,
-in each case just reusing the proof from `NonPreadditiveAbelian.lean`.
+in each case just reusing the proof from `Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`.
 
 We don't show this yet, but abelian categories are finitely complete and finitely cocomplete.
 However, the limits we can construct at this level of generality will most likely be less nice than

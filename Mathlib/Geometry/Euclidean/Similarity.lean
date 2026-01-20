@@ -17,7 +17,7 @@ for similarity based on sides and angles.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Congruent EuclideanGeometry
 

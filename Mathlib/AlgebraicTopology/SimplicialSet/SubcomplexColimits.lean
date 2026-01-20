@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
-public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 
 /-!
 # Colimits involving subcomplexes of a simplicial set

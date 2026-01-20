@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.Basic
 public meta import Batteries.Lean.Expr
 public meta import Batteries.Lean.Meta.UnusedNames
+public import Mathlib.Tactic.Basic
 
 /-!
 # lift tactic

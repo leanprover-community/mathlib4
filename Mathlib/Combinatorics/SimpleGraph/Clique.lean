@@ -67,6 +67,9 @@ theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
     simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
     exact h2.1 hne
 
+theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
+  simp [IsChain, G.symm.iff]
+
 instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.IsClique s) :=
   decidable_of_iff' _ G.isClique_iff
 
@@ -88,8 +91,6 @@ lemma isClique_insert : G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s
 lemma isClique_insert_of_notMem (ha : a ∉ s) :
     G.IsClique (insert a s) ↔ G.IsClique s ∧ ∀ b ∈ s, G.Adj a b :=
   Set.pairwise_insert_of_symmetric_of_notMem G.symm ha
-
-@[deprecated (since := "2025-05-23")] alias isClique_insert_of_not_mem := isClique_insert_of_notMem
 
 lemma IsClique.insert (hs : G.IsClique s) (h : ∀ b ∈ s, a ≠ b → G.Adj a b) :
     G.IsClique (insert a s) := hs.insert_of_symmetric G.symm h
@@ -500,7 +501,7 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
 
 lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
     (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
-  by_contra! hf
+  by_contra hf
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
   exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
 
@@ -788,7 +789,10 @@ abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
 theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
-  Iff.rfl
+  .rfl
+
+theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
+  .rfl
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by

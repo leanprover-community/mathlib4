@@ -109,24 +109,20 @@ theorem coe_prodEquivOfIsCompl (h : IsCompl p q) :
 theorem coe_prodEquivOfIsCompl' (h : IsCompl p q) (x : p × q) :
     prodEquivOfIsCompl p q h x = x.1 + x.2 := rfl
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_left (h : IsCompl p q) (x : p) :
     (prodEquivOfIsCompl p q h).symm x = (x, 0) :=
   (prodEquivOfIsCompl p q h).symm_apply_eq.2 <| by simp
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_right (h : IsCompl p q) (x : q) :
     (prodEquivOfIsCompl p q h).symm x = (0, x) :=
   (prodEquivOfIsCompl p q h).symm_apply_eq.2 <| by simp
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_fst_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).1 = 0 ↔ x ∈ q := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
   rw [coe_prodEquivOfIsCompl', Submodule.add_mem_iff_left _ (Submodule.coe_mem _),
     mem_right_iff_eq_zero_of_disjoint h.disjoint]
 
-@[simp]
 theorem prodEquivOfIsCompl_symm_apply_snd_eq_zero (h : IsCompl p q) {x : E} :
     ((prodEquivOfIsCompl p q h).symm x).2 = 0 ↔ x ∈ p := by
   conv_rhs => rw [← (prodEquivOfIsCompl p q h).apply_symm_apply x]
@@ -172,7 +168,8 @@ theorem IsCompl.projection_apply_mem (hpq : IsCompl p q) (x : E) :
 
 @[simp]
 theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
-    linearProjOfIsCompl p q h x = x := by simp [linearProjOfIsCompl]
+    linearProjOfIsCompl p q h x = x := by
+  simp [linearProjOfIsCompl, prodEquivOfIsCompl_symm_apply_left]
 
 @[simp]
 theorem IsCompl.projection_apply_left (hpq : IsCompl p q) (x : p) :
@@ -192,7 +189,8 @@ theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
 
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
-    linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by simp [linearProjOfIsCompl]
+    linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by
+  simp [linearProjOfIsCompl, prodEquivOfIsCompl_symm_apply_fst_eq_zero]
 
 @[simp]
 theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
@@ -269,6 +267,18 @@ lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
 
 @[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_iff :=
   IsCompl.projection_eq_self_iff
+
+@[simp]
+theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
+    (p.prodEquivOfIsCompl q hpq).symm x =
+      (p.linearProjOfIsCompl q hpq x, q.linearProjOfIsCompl p hpq.symm x) :=
+  Prod.ext rfl congr(($(prodComm_trans_prodEquivOfIsCompl p q hpq).symm x).1)
+
+@[simp]
+theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) :
+    (p.prodEquivOfIsCompl q hpq).symm.toLinearMap =
+      (p.linearProjOfIsCompl q hpq).prod (q.linearProjOfIsCompl p hpq.symm) :=
+  LinearMap.ext <| by simp
 
 end Submodule
 
@@ -637,22 +647,29 @@ lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
 alias ⟨_, IsIdempotentElem.ext⟩ := IsIdempotentElem.ext_iff
 
 theorem IsIdempotentElem.range_eq_ker {E : Type*} [AddCommGroup E] [Module S E]
-    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (id - p) :=
   le_antisymm
     (LinearMap.range_le_ker_iff.mpr hp.one_sub_mul_self)
     fun x hx ↦ ⟨x, by simpa [sub_eq_zero, eq_comm (a := x)] using hx⟩
 
+theorem IsIdempotentElem.range_eq_ker_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.range p = LinearMap.ker (1 - p) :=
+  range_eq_ker hp
+
 open LinearMap in
 theorem IsIdempotentElem.ker_eq_range {E : Type*} [AddCommGroup E] [Module S E]
-    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) := by
-  simpa using hp.one_sub.range_eq_ker.symm
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (id - p) := by
+  simpa using hp.one_sub.range_eq_ker_one_sub.symm
+
+theorem IsIdempotentElem.ker_eq_range_one_sub {E : Type*} [AddCommGroup E] [Module S E]
+    {p : E →ₗ[S] E} (hp : IsIdempotentElem p) : LinearMap.ker p = LinearMap.range (1 - p) :=
+  ker_eq_range hp
 
 open LinearMap in
 theorem IsIdempotentElem.comp_eq_left_iff {M : Type*} [AddCommGroup M] [Module S M] {q : M →ₗ[S] M}
     (hq : IsIdempotentElem q) {E : Type*} [AddCommGroup E] [Module S E] (p : M →ₗ[S] E) :
     p ∘ₗ q = p ↔ ker q ≤ ker p := by
-  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, Module.End.one_eq_id, sub_eq_zero,
-    eq_comm (a := p)]
+  simp [hq.ker_eq_range, range_le_ker_iff, comp_sub, sub_eq_zero, eq_comm]
 
 end LinearMap
 
@@ -712,9 +729,8 @@ lemma commute_iff (hf : IsIdempotentElem f) :
 theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by
   lift T to GeneralLinearGroup R E using hT
-  have {a : E ≃ₗ[R] E} {b : Submodule R E} : b ≤ b.map a.toLinearMap ↔ b ≤ b.map a := by rfl
   simp_rw [← GeneralLinearGroup.generalLinearEquiv_to_linearMap, le_antisymm_iff,
-    ← Module.End.mem_invtSubmodule_iff_map_le, this, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
+    ← Module.End.mem_invtSubmodule_iff_map_le, ← Module.End.mem_invtSubmodule_symm_iff_le_map,
     and_and_and_comm (c := (ker f ∈ _)), ← hf.commute_iff,
     GeneralLinearGroup.generalLinearEquiv_to_linearMap, iff_self_and]
   exact Commute.units_inv_right

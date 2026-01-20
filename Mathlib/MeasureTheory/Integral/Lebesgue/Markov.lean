@@ -19,7 +19,7 @@ the measure-theoretic form:
 This file proves a few variants of the inequality and other lemmas that depend on it.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

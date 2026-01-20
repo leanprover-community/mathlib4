@@ -57,7 +57,6 @@ theorem ShortComplex.mapToComposableArrows_app_1 {S₁ S₂ : ShortComplex C} (�
 theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
     (ShortComplex.mapToComposableArrows φ).app 2 = φ.τ₃ := rfl
 
-set_option backward.privateInPublic true in
 @[simp]
 theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
     (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by

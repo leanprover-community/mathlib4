@@ -23,7 +23,7 @@ mimicking the API for Fréchet derivatives.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -467,31 +467,30 @@ end IsManifold
 variable {n : WithTop ℕ∞}
 
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
-    (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
+    (hn : n ≠ 0) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
     rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds (f x)
   rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt (mod_cast hn)).mono
-    (by mfld_set_tac)⟩
+  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 
-theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
+theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : n ≠ 0) :
     MDifferentiableAt I I' f x :=
   mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
 
-theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : n ≠ 0) :
     MDifferentiableAt I I' f x :=
   hf.contMDiffAt.mdifferentiableAt hn
 
-theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : n ≠ 0) :
     MDifferentiableWithinAt I I' f s x :=
   (hf.contMDiffAt.mdifferentiableAt hn).mdifferentiableWithinAt
 
-theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
+theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : n ≠ 0) :
     MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
 
-theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : n ≠ 0) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=

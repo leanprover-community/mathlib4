@@ -158,7 +158,7 @@ lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' *
 instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
   Finsupp.distribSMul _ _
 
-@[to_additive (dont_translate := N) isScalarTower]
+@[to_additive (dont_translate := N) (relevant_arg := M) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
     IsScalarTower N O R[M] :=
   Finsupp.isScalarTower ..
@@ -460,7 +460,7 @@ lemma ringHom_ext' [Semiring S] {f g : R[M] →+* S}
 end MulOneClass
 
 section Monoid
-variable [Monoid M]
+variable [Monoid M] [Monoid N]
 
 @[to_additive]
 instance semiring : Semiring R[M] where
@@ -484,6 +484,39 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     refine ⟨x 1, ?_, ?_⟩
     · simpa [single_one_mul_apply, one_def] using congr($hax 1)
     · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
+
+variable (M) in
+/-- The trivial monoid algebra is the base ring. -/
+@[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
+/-- The trivial additive monoid algebra is the base ring. -/]
+def uniqueRingEquiv [Unique M] : R[M] ≃+* R where
+  toAddEquiv := .finsuppUnique
+  map_mul' x y :=
+    (mul_apply ..).trans <| by simp [Finsupp.sum_unique, Unique.eq_default, MonoidAlgebra]
+
+variable [DecidableEq M]
+
+/-- A product monoid algebra is a nested monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An additive product monoid algebra is a nested additive monoid algebra. -/]
+def curryRingEquiv : R[M × N] ≃+* R[N][M] where
+  toAddEquiv := curryAddEquiv
+  map_mul' := by
+    let f : R[M × N] →+ R[N][M] := curryAddEquiv.toAddMonoidHom
+    have {mn r} : f (single mn r) = single mn.1 (single mn.2 r) := Finsupp.curry_single _ _
+    refine f.map_mul_iff.2 ?_
+    ext ⟨m₁, n₁⟩ r₁ ⟨m₂, n₂⟩ r₂
+    simp [this]
+
+@[to_additive (attr := simp)]
+lemma curryRingEquiv_single (m : M) (n : N) (r : R) :
+    curryRingEquiv (single (m, n) r) = single m (single n r) := by
+  classical exact Finsupp.curry_single ..
+
+@[to_additive (attr := simp)]
+lemma curryRingEquiv_symm_single (m : M) (n : N) (r : R) :
+    curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
+  classical exact Finsupp.uncurry_single ..
 
 end Monoid
 
@@ -648,8 +681,6 @@ theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
   Finsupp.induction_linear x (by simpa using hsmul 0 (of R M 1) (hM 0))
     (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
-
-/-! #### Algebra structure -/
 
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 0 r`, then they are equal.

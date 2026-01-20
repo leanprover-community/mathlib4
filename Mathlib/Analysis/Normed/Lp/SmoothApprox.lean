@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
-public import Mathlib.Tactic.MoveAdd
 
 /-!
 
@@ -19,7 +18,7 @@ functions for `p < ∞`.
 This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 

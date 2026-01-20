@@ -220,14 +220,14 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
 
 lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw : w ≠ x) :
     HasFPowerSeriesOnBall (fun z ↦ 1 / (z - w) ^ 2 - 1 / w ^ 2) (.ofScalars ℂ
-      fun i ↦ (i + 1) * (w - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
+      fun i ↦ (i + 1) * (w - x) ^ (-↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
   rw [← Pi.sub_def, ← Pi.sub_def, FormalMultilinearSeries.ofScalars_sub]
   refine .sub ?_ ?_
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
   · convert hasFPowerSeriesOnBall_const.mono _ le_top
-    · ext (_|_) <;> simp [zpow_ofNat]
+    · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
 end Complex
@@ -307,12 +307,15 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
   simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (r := 1)
 
 /-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem hasFPowerSeriesOnBall_linear_zero (a b : ℝ) :
+theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℝ (a * · + b)) 0 1 := by
   convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
+
+@[deprecated (since := "2025-12-28")]
+alias hasFPowerSeriesOnBall_linear_zero := hasFPowerSeriesOnBall_ofScalars_mul_add_zero
 
 end Real

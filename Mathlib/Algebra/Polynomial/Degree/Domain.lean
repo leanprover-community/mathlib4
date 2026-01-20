@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.instDomain`: `R[X]` is a domain if `R` is
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -34,7 +34,7 @@ section Semiring
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
+lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p * q).natDegree = p.natDegree + q.natDegree := by
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 

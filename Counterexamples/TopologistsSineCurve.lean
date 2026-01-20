@@ -128,7 +128,7 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
   let s₁ := min (s₀ + δ / 2) 1
   have h_s₀_delta_pos : 0 ≤ s₀ + δ / 2 := add_nonneg t₀.2.1 (by positivity)
   have hs₁ : 0 ≤ s₁ := le_min h_s₀_delta_pos zero_le_one
-  have hs₁': s₁ ≤ 1 := min_le_right ..
+  have hs₁' : s₁ ≤ 1 := min_le_right ..
   refine ⟨⟨s₁, hs₁, hs₁'⟩, lt_min ((lt_add_iff_pos_right _).mpr (half_pos hδ)) ht₀, ?_⟩
   have h_le : s₁ ≤ s₀ + δ / 2 := min_le_left _ _
   have h_ge : s₀ ≤ s₁ := le_min (by linarith) t₀.2.2
@@ -163,7 +163,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   let t₀ : unitInterval := sSup {t | (p t).1 = 0}
   have h_pt₀_x : (p t₀).1 = 0 :=
     (isClosed_singleton.preimage xcoord_pathContinuous).sSup_mem ⟨0, by aesop⟩
-  obtain ⟨δ , hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
+  obtain ⟨δ, hδ, ht⟩ : ∃ δ, 0 < δ ∧ ∀ t, dist t t₀ < δ → dist (p t) (p t₀) < 1 :=
     Metric.eventually_nhds_iff.mp <| Metric.tendsto_nhds.mp (p.continuousAt t₀) _ one_pos
   -- **Step 2**:
   -- Choose a time t₁ in (t₀, t₀ + δ) and let `a = x(p(t₁))`. Using the fact that every

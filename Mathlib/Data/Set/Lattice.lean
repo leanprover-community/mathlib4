@@ -747,8 +747,6 @@ theorem mem_sUnion_of_mem {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∈ t
 theorem notMem_of_notMem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
     (ht : t ∈ S) : x ∉ t := fun h => hx ⟨t, ht, h⟩
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_sUnion := notMem_of_notMem_sUnion
-
 theorem sInter_subset_of_mem {S : Set (Set α)} {t : Set α} (tS : t ∈ S) : ⋂₀ S ⊆ t :=
   sInf_le tS
 

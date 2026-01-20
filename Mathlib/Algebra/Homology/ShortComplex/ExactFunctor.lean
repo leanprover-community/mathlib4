@@ -53,7 +53,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

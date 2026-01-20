@@ -265,7 +265,7 @@ theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f 
   rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
     AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
   intro d
-  simp [←map_pow]
+  simp [← map_pow]
 
 section
 

@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -84,9 +84,9 @@ used implications are:
 * When `α` is a linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
-* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a semiring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
-* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a ring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
@@ -120,7 +120,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` custom typeclasses too.
 -/
 
 @[expose] public section
@@ -540,7 +540,7 @@ lemma smul_pos_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β
 
 lemma smul_neg_iff_of_pos_left [PosSMulStrictMono α β] [PosSMulReflectLT α β] (ha : 0 < a) :
     a • b < 0 ↔ b < 0 := by
-  simpa only [smul_zero]  using smul_lt_smul_iff_of_pos_left ha (b₂ := (0 : β))
+  simpa only [smul_zero] using smul_lt_smul_iff_of_pos_left ha (b₂ := (0 : β))
 
 lemma smul_nonneg [PosSMulMono α β] (ha : 0 ≤ a) (hb : 0 ≤ b₁) : 0 ≤ a • b₁ := by
   simpa only [smul_zero] using smul_le_smul_of_nonneg_left hb ha
@@ -771,10 +771,11 @@ variable [Preorder α] [PartialOrder β]
 
 lemma PosSMulMono.toPosSMulStrictMono [PosSMulMono α β] : PosSMulStrictMono α β :=
   ⟨fun _a ha _b₁ _b₂ hb ↦ (smul_le_smul_of_nonneg_left hb.le ha.le).lt_of_ne <|
-    (smul_right_injective _ ha.ne').ne hb.ne⟩
+    (NoZeroSMulDivisors.smul_right_injective _ ha.ne').ne hb.ne⟩
 
 instance PosSMulReflectLT.toPosSMulReflectLE [PosSMulReflectLT α β] : PosSMulReflectLE α β :=
-  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
+  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim
+    (fun h ↦ (NoZeroSMulDivisors.smul_right_injective _ ha.ne' h).le) fun h' ↦
     (lt_of_smul_lt_smul_left h' ha.le).le⟩
 
 end PartialOrder
@@ -801,7 +802,7 @@ lemma IsOrderedModule.of_smul_nonneg [IsOrderedAddMonoid α] [IsOrderedAddMonoid
   smul_le_smul_of_nonneg_right _b hb a₁ a₂ := by
     simpa [sub_nonneg, sub_smul] using (h (a₂ - a₁) · _ hb)
 
-variable [NoZeroSMulDivisors α β]
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 lemma SMulPosMono.toSMulPosStrictMono [SMulPosMono α β] : SMulPosStrictMono α β :=
   ⟨fun _b hb _a₁ _a₂ ha ↦ (smul_le_smul_of_nonneg_right ha.le hb.le).lt_of_ne <|

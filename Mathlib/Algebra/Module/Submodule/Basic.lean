@@ -6,11 +6,10 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Submodules of a module
@@ -81,6 +80,9 @@ theorem sum_smul_mem {t : Finset ι} {f : ι → M} (r : ι → R) (hyp : ∀ c 
 instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M]
     [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S p :=
   p.toSubMulAction.isCentralScalar
+
+instance instIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p :=
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
   ⟨fun {c} {x : p} h =>
@@ -160,8 +162,6 @@ theorem notMem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_ortho := notMem_of_ortho
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=

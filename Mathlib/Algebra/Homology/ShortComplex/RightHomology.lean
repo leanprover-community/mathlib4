@@ -584,7 +584,7 @@ lemma opcyclesIsoRightHomology_inv_hom_id (hg : S.g = 0) :
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoRightHomology_hom_inv_id (hg : S.g = 0) :
-    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι  = 𝟙 _ :=
+    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι = 𝟙 _ :=
   (S.opcyclesIsoRightHomology hg).hom_inv_id
 
 end
@@ -907,7 +907,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _  φ => fromOpcycles_naturality φ
+  naturality := fun _ _ φ => fromOpcycles_naturality φ
 
 end
 
