@@ -28,7 +28,7 @@ public section
 
 assert_not_exists TrivialStar
 
-open Function
+open Function Set
 open scoped BigOperators
 
 namespace NNReal
@@ -179,5 +179,48 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
   le_iInf_mul fun i => le_mul_iInf <| H i
 
 end Csupr
+
+@[simp]
+theorem range_coe : range toReal = Ici 0 := Subtype.range_coe
+
+@[simp]
+theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..
+
+@[simp]
+theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtype_val_Ici_Iic ..
+
+@[simp]
+theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtype_val_Ici_Ioi ..
+
+@[simp]
+theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtype_val_Ici_Iio ..
+
+@[simp]
+theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=
+  image_subtype_val_Icc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y :=
+  image_subtype_val_Ioc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y :=
+  image_subtype_val_Ico (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y :=
+  image_subtype_val_Ioo (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIcc (x y : ℝ≥0) : toReal '' uIcc x y = uIcc ↑x ↑y :=
+  image_subtype_val_uIcc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIoc (x y : ℝ≥0) : toReal '' uIoc x y = uIoc ↑x ↑y :=
+  image_subtype_val_uIoc (s := Ici 0) ..
+
+@[simp]
+theorem image_coe_uIoo (x y : ℝ≥0) : toReal '' uIoo x y = uIoo ↑x ↑y :=
+  image_subtype_val_uIoo (s := Ici 0) ..
 
 end NNReal
