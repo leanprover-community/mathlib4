@@ -410,10 +410,10 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
 /-- The variation can be expressed using strictly monotone functions. This formulation is
 often less convenient than the one with monotone functions as it involves dependent types, but
 it is sometimes handy. -/
-noncomputable def eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
-  eVariationOn f s =
-    ⨆ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
-      ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
+theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
+    eVariationOn f s =
+      ⨆ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
+        ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
   apply le_antisymm
   · apply iSup_le
     rintro ⟨n, u, u_mono, u_mem⟩
@@ -523,7 +523,7 @@ intervals to the left of any point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioo_zero_left
     [TopologicalSpace α] [OrderTopology α]
     {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
-    Tendsto (fun y ↦ eVariationOn f (s ∩ Ioo y x)) (𝓝[s ∩ Iio x] x) (𝓝 0) := by
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ioo y x)) (𝓝[s] x) (𝓝 0) := by
   /- The variation is monotone, therefore it converges. If the limit were positive, say `ε`,
   then one would get variation `ε` between two points `x₁` and `x₀`. But also between two points
   `x₂` and `x₁`, and so on. Adding up these variations would be arbitrarily large, contradicting
@@ -531,10 +531,15 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioo_zero_left
   apply tendsto_order.2 ⟨by simp, fun ε εpos ↦ ?_⟩
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, δ ∈ Ioo 0 ε := exists_between εpos
   by_contra! H
+  have I {y} (hy : ε ≤ eVariationOn f (s ∩ Ioo y x)) : y < x := by
+    contrapose! hy
+    have : Ioo y x = ∅ := by grind
+    simpa [this] using εpos
   have A (y) (hy : y ∈ s ∩ Iio x) : ∃ y', ε ≤ eVariationOn f (s ∩ Ioo y' x) ∧ y' ∈ s ∩ Ioo y x := by
-    have : s ∩ Ioo y x ∈ 𝓝[s ∩ Iio x] x :=
-      inter_mem_nhdsWithin_inter self_mem_nhdsWithin (Ioo_mem_nhdsLT hy.2)
-    exact (H.and_eventually this).exists
+    have : s ∩ Ioi y ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hy.2)
+    obtain ⟨y', hy', h'y'⟩ : ∃ y', ε ≤ eVariationOn f (s ∩ Ioo y' x) ∧ y' ∈ s ∩ Ioi y :=
+      (H.and_eventually this).exists
+    exact ⟨y', hy', h'y'.1, h'y'.2, I hy'⟩
   have B (y) (hy : y ∈ s ∩ Iio x) : ∃ y' ∈ s ∩ Ioo y x, δ ≤ eVariationOn f (s ∩ Icc y y') := by
     rcases A y hy with ⟨y', hy', y'_mem⟩
     have : δ < eVariationOn f (s ∩ Ioo y' x) := lt_of_lt_of_le hδ hy'
@@ -542,12 +547,12 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioo_zero_left
       δ < eVariationOn f ((s ∩ Ioo y' x) ∩ Icc a b) := exists_lt_eVariationOn_inter_Icc this
     refine ⟨b, ⟨hb.1, y'_mem.2.1.trans hb.2.1, hb.2.2⟩, h.le.trans (mono _ (by grind))⟩
   choose! y y_mem le_y using B
-  obtain ⟨u, le_u, hu⟩  : ∃ u, ε ≤ eVariationOn f (s ∩ Ioo u x) ∧ u ∈ s ∩ Iio x :=
+  obtain ⟨u, le_u, hu⟩ : ∃ u, ε ≤ eVariationOn f (s ∩ Ioo u x) ∧ u ∈ s :=
     (H.and_eventually self_mem_nhdsWithin).exists
   let v (n : ℕ) := y^[n] u
   have I n : v n ∈ s ∩ Iio x := by
     induction n with
-    | zero => simpa [v] using hu
+    | zero => simpa [v] using ⟨hu, I le_u⟩
     | succ n ih =>
       simp only [Function.iterate_succ', Function.comp_apply, v]
       have : s ∩ Ioo (y^[n] u) x ⊆ s ∩ Iio x := by grind
@@ -575,7 +580,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioo_zero_left
 
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioo_zero_right [TopologicalSpace α]
     [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
-    Tendsto (fun y ↦ eVariationOn f (s ∩ Ioo x y)) (𝓝[s ∩ Ioi x] x) (𝓝 0) := by
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ioo x y)) (𝓝[s] x) (𝓝 0) := by
   have : (fun y ↦ eVariationOn f (s ∩ Ioo x y)) =
       (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Ioo (toDual y) (toDual x))) := by
     ext y
@@ -592,9 +597,10 @@ theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace E] [Topolo
     exact ⟨f x⟩
   apply CompleteSpace.complete
   apply EMetric.cauchy_iff.2 ⟨by simp [neBot_iff.mp h], fun ε εpos ↦ ?_⟩
-  obtain ⟨y, hy, y_mem⟩ : ∃ y, eVariationOn f (s ∩ Ioo x y) < ε ∧ y ∈ s ∩ Ioi x :=
-    (((tendsto_order.1 (hf.tendsto_eVariationOn_Ioo_zero_right x)).2 ε εpos).and
-      self_mem_nhdsWithin).exists
+  obtain ⟨y, hy, y_mem⟩ : ∃ y, eVariationOn f (s ∩ Ioo x y) < ε ∧ y ∈ s ∩ Ioi x := by
+    have := (hf.tendsto_eVariationOn_Ioo_zero_right x).mono_left
+      (nhdsWithin_mono (s := s ∩ Ioi x) _ inter_subset_left)
+    exact (((tendsto_order.1 this).2 ε εpos).and self_mem_nhdsWithin).exists
   refine ⟨f '' (s ∩ Ioo x y), ?_, ?_⟩
   · simp only [mem_map]
     apply mem_of_superset ?_ (subset_preimage_image _ _)
