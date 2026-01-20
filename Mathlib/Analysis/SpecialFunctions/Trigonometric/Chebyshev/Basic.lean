@@ -192,42 +192,4 @@ theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ =
 
 end Real
 
-section Derivative
-
-variable (𝔽) [Field 𝔽] [CharZero 𝔽]
-
-theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
-    (derivative^[k] (T 𝔽 n)).eval 1 =
-      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
-  rw [eq_div_iff (Nat.cast_ne_zero.mpr (by positivity)), mul_comm, iterate_derivative_T_eval_one]
-
-theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
-    (derivative^[k] (U 𝔽 n)).eval 1 =
-      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
-      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
-  rw [eq_div_iff (Nat.cast_ne_zero.mpr (by positivity)), mul_comm, iterate_derivative_U_eval_one]
-
-theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
-    (∏ l ∈ Finset.range k, (2 * l + 1) : ℤ) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
-  apply dvd_of_mul_right_eq
-  convert iterate_derivative_T_eval_one n k
-  simp
-
-theorem iterate_derivative_U_real_eval_one_dvd (n : ℤ) (k : ℕ) :
-    (∏ l ∈ Finset.range k, (2 * l + 3) : ℤ) ∣
-      (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1) := by
-  apply dvd_of_mul_right_eq
-  convert iterate_derivative_U_eval_one n k
-  simp
-
-theorem derivative_U_real_eval_one (n : ℤ) :
-    (derivative (U ℝ n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
-  eq_div_of_mul_eq ((NeZero.ne' 3).symm) ((mul_comm ..).trans (derivative_U_eval_one (R := ℝ) n))
-
-theorem derivative_U_real_eval_one_dvd (n : ℤ) :
-    3 ∣ (n + 2) * (n + 1) * n :=
-  dvd_of_mul_right_eq _ (derivative_U_eval_one (R := ℤ) n)
-
-end Derivative
-
 end Polynomial.Chebyshev
