@@ -6,6 +6,7 @@ Authors: Salvatore Mercuri
 module
 
 public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Isomorphisms of topological algebras
@@ -119,6 +120,17 @@ theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
 
 @[simp]
 theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
+
+@[coe]
+def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B where
+  __ := e.toLinearEquiv
+  continuous_toFun := e.continuous_toFun
+  continuous_invFun := e.continuous_invFun
+
+instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
+  e.toContinuousLinearEquiv a = e a := rfl
 
 theorem isOpenMap (e : A ≃A[R] B) : IsOpenMap e :=
   e.toHomeomorph.isOpenMap
