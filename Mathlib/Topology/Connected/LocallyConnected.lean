@@ -125,17 +125,17 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 
-theorem isTopologicalBasis_open_connected [LocallyConnectedSpace α] :
+theorem TopologicalSpace.IsTopologicalBasis.isOpen_isPreconnected [LocallyConnectedSpace α] :
     TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} :=
   .of_hasBasis_nhds fun x =>
     (LocallyConnectedSpace.open_connected_basis x).congr
       (by grind [IsConnected, Set.Nonempty])
       (fun _ _ => rfl)
 
-theorem locallyConnectedSpace_iff_isTopologicalBasis_open_connected :
+theorem locallyConnectedSpace_iff_isTopologicalBasis_isOpen_isPreconnected :
     LocallyConnectedSpace α ↔
       TopologicalSpace.IsTopologicalBasis {s : Set α | IsOpen s ∧ IsPreconnected s} where
-  mp _ := isTopologicalBasis_open_connected
+  mp _ := .isOpen_isPreconnected
   mpr h := ⟨fun _ => h.nhds_hasBasis.congr (by grind [IsConnected, Set.Nonempty]) (fun _ _ => rfl)⟩
 
 lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
