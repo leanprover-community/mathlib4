@@ -786,8 +786,11 @@ theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
   of_left_adjoint h.toAdjunction
 
-lemma wideCospan {I : Type*} [Finite I] {i : C} {j : I → C} (f : ∀ x, j x ⟶ i) :
+omit [IsCofiltered C] in
+lemma wideCospan [IsCofilteredOrEmpty C]
+    {I : Type*} [Finite I] {i : C} {j : I → C} (f : ∀ x, j x ⟶ i) :
     ∃ k fki, ∃ g : ∀ x, k ⟶ j x, ∀ x, g x ≫ f x = fki := by
+  have : IsCofiltered C := { nonempty := ⟨i⟩ }
   classical
   cases nonempty_fintype I
   obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists (insert i (Finset.univ.image j))
