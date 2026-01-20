@@ -44,7 +44,7 @@ variable [CommMonoid M]
 if it's not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`.
 It is the same as `Prime` except that a Prime₀ element can be zero. -/
 @[to_additive /-- An element `p` of a commutative additive monoid is called prime if it is
-not an additive unit, and `p ∣ₐ a * b → p ∣ₐ a ∨ p ∣ₐ b` for all `a`, `b`. -/]
+not an additive unit, and `p ∣ₐ a + b → p ∣ₐ a ∨ p ∣ₐ b` for all `a`, `b`. -/]
 abbrev Prime₀ (p : M) : Prop :=
   ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
 
