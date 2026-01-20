@@ -190,12 +190,18 @@ evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
 theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
   mod_cast S_two_mul_complex_cosh θ n
 
+end Real
+
+section Derivative
+
+variable (𝔽) [Field 𝔽]
+
 theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
     (derivative^[k] (T ℝ n)).eval 1 =
       (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
   have h := iterate_derivative_T_eval_one (R := ℝ) n k
   push_cast at h ⊢
-  refine CancelDenoms.cancel_factors_eq_div h (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_))
+  refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
   norm_cast
 
 theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
@@ -204,7 +210,7 @@ theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
       (∏ l ∈ Finset.range k, (2 * l + 3)) := by
   have h := iterate_derivative_U_eval_one (R := ℝ) n k
   push_cast at h ⊢
-  refine CancelDenoms.cancel_factors_eq_div h (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_))
+  refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
   norm_cast
 
 theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
@@ -222,12 +228,12 @@ theorem iterate_derivative_U_real_eval_one_dvd (n : ℤ) (k : ℕ) :
 
 theorem derivative_U_real_eval_one (n : ℤ) :
     (derivative (U ℝ n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
-  CancelDenoms.cancel_factors_eq_div (derivative_U_eval_one (R := ℝ) n) ((NeZero.ne' 3).symm)
+  eq_div_of_mul_eq ((NeZero.ne' 3).symm) ((mul_comm ..).trans (derivative_U_eval_one (R := ℝ) n))
 
 theorem derivative_U_real_eval_one_dvd (n : ℤ) :
     3 ∣ (n + 2) * (n + 1) * n :=
   dvd_of_mul_right_eq _ (derivative_U_eval_one (R := ℤ) n)
 
-end Real
+end Derivative
 
 end Polynomial.Chebyshev
