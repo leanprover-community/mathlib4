@@ -1019,9 +1019,10 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
 variable [NoZeroDivisors R] {x y : R⟦Γ⟧}
 
 instance : NoZeroDivisors R⟦Γ⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero xy :=
-    have : NoZeroSMulDivisors R⟦Γ⟧ R⟦Γ⟧ := HahnModule.instNoZeroSMulDivisors
-    eq_zero_or_eq_zero_of_smul_eq_zero xy
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} hxy := by
+    contrapose! hxy
+    simp only [ne_eq, HahnSeries.ext_iff, funext_iff, not_forall]
+    exact ⟨x.order + y.order, by simpa [coeff_mul_order_add_order]⟩
 
 @[simp]
 lemma order_mul (hx : x ≠ 0) (hy : y ≠ 0) : (x * y).order = x.order + y.order := by

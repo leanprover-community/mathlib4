@@ -1367,7 +1367,7 @@ lemma isTorsionFree_of_forall_isRegular (S : Submonoid R) (hS : ∀ s ∈ S, s �
       exists_const] at hxy ⊢
     simpa [smul_comm _ a, hc.isSMulRegular.eq_iff] using hxy
 
-theorem isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
+lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
     [IsLocalization S A] [IsLocalizedModule S f] : Module.IsTorsionFree A N :=
   isTorsionFree_of_forall_isRegular f S <| by simp [isRegular_iff_ne_zero]
 
