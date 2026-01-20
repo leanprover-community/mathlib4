@@ -329,6 +329,21 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
     OrdConnected s ↔ ∀ ⦃y⦄, y ∈ s → [[y, x]] ⊆ s := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 
+@[simp]
+theorem image_subtype_val_uIcc [OrdConnected s] (a b : s) :
+    Subtype.val '' [[a, b]] = [[a.1, b.1]] := by
+  simp [uIcc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+
+@[simp]
+theorem image_subtype_val_uIoc [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoc a b = uIoc a.1 b.1 := by
+  simp [uIoc, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+
+@[simp]
+theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
+    Subtype.val '' uIoo a b = uIoo a.1 b.1 := by
+  simp [uIoo, (Subtype.mono_coe s).map_inf, (Subtype.mono_coe s).map_sup]
+
 end LinearOrder
 
 end Set

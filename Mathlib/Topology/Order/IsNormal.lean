@@ -16,7 +16,7 @@ topology in order theory files. This file shows that the predicate is equivalent
 in the literature, being that of a strictly monotonic function, continuous in the order topology.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

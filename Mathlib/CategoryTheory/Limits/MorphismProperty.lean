@@ -5,12 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
@@ -23,11 +19,11 @@ namespace CategoryTheory
 
 open Limits MorphismProperty.Comma
 
-variable {T : Type*} [Category T] (P : MorphismProperty T)
+variable {T : Type*} [Category* T] (P : MorphismProperty T)
 
 namespace MorphismProperty.Comma
 
-variable {A B J : Type*} [Category A] [Category B] [Category J] {L : A ⥤ T} {R : B ⥤ T}
+variable {A B J : Type*} [Category* A] [Category* B] [Category* J] {L : A ⥤ T} {R : B ⥤ T}
 variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
@@ -94,7 +90,7 @@ end MorphismProperty.Comma
 
 section
 
-variable {A : Type*} [Category A] {L : A ⥤ T}
+variable {A : Type*} [Category* A] {L : A ⥤ T}
 
 instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.Full] {Y : A}
     [P.ContainsIdentities] [P.RespectsIso] :
@@ -108,7 +104,7 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
       P.costructuredArrow_iso_iff e]
     simpa using P.id_mem (L.obj Y)
 
-lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category J]
+lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
     (hc : ∀ (D : J ⥤ T) [HasColimit D], IsColimit (c D))
@@ -203,6 +199,24 @@ instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposi
     hasLimitsOfShape_of_closedUnderLimitsOfShape
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (Over X))
   · apply Over.closedUnderLimitsOfShape_pullback
+
+variable [HasPullbacks T] [P.IsStableUnderComposition] [P.ContainsIdentities]
+  [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
+
+noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
+  createsFiniteLimitsOfCreatesTerminalAndPullbacks _
+
+instance : PreservesFiniteLimits (Over.forget P ⊤ X) :=
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks (Over.forget P ⊤ X)
+
+instance {X Y : T} (f : X ⟶ Y) : PreservesFiniteLimits (pullback P ⊤ f) where
+  preservesFiniteLimits J _ _ := by
+    have : PreservesLimitsOfShape J
+        (MorphismProperty.Over.pullback P ⊤ f ⋙ MorphismProperty.Over.forget _ _ _) :=
+      inferInstanceAs <| PreservesLimitsOfShape J <|
+        Over.forget _ _ _ ⋙ CategoryTheory.Over.pullback f
+    exact preservesLimitsOfShape_of_reflects_of_preserves
+      (MorphismProperty.Over.pullback P ⊤ f) (MorphismProperty.Over.forget _ _ _)
 
 end MorphismProperty.Over
 

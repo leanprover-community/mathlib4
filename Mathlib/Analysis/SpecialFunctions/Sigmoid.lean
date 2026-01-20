@@ -29,8 +29,8 @@ that the composition of this embedding with the measurable embedding from a stan
 * `Real.sigmoid` : the sigmoid function from `ℝ` to `ℝ`.
 * `Real.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `Real.continuous_sigmoid` : the sigmoid function is continuous.
-* `Real.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `Real.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `Real.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `Real.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 * `Real.hasDerivAt_sigmoid` : the derivative of the sigmoid function.
 * `Real.analyticAt_sigmoid` : the sigmoid function is analytic at every point.
 
@@ -38,16 +38,16 @@ that the composition of this embedding with the measurable embedding from a stan
 * `unitInterval.sigmoid` : the sigmoid function from `ℝ` to `I`.
 * `unitInterval.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `unitInterval.continuous_sigmoid` : the sigmoid function is continuous.
-* `unitInterval.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `unitInterval.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `unitInterval.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `unitInterval.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
-* `OrderEmbedding.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
+* `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
+* `measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
   measurable embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
+* `measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 

@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Basic
 # Order structures and monotonicity lemmas for `Set`
 -/
 
-@[expose] public section
+public section
 
 open Function
 

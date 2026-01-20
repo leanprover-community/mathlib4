@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-! # Module version of Chinese remainder theorem
 -/
 
-@[expose] public section
+public section
 
 open Function
 

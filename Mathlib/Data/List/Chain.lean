@@ -14,8 +14,8 @@ public import Mathlib.Logic.Relation
 /-!
 # Relation chain
 
-This file provides basic results about `List.IsChain` from betteries.
-A list `[a₁, a₂, ..., aₙ]` satifies `IsChain` with respect to the relation `r` if `r a₁ a₂`
+This file provides basic results about `List.IsChain` from Batteries.
+A list `[a₁, a₂, ..., aₙ]` satisfies `IsChain` with respect to the relation `r` if `r a₁ a₂`
 and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `IsChain r [a₁, a₂, ..., aₙ]`.
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.

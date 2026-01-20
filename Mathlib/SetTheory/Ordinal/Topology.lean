@@ -142,9 +142,6 @@ theorem isClosed_iff_bsup :
 theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a :=
   SuccOrder.isSuccLimit_of_mem_frontier ha
 
-@[deprecated (since := "2025-07-08")]
-alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
-
 @[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f :=
@@ -155,12 +152,12 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   have Hs := enumOrd_strictMono hs
   refine
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
-      (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
+      isNormal_iff.2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [IsNormal.map_iSup h g]
+    rw [h.map_iSup (bddAbove_of_small _)]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x
@@ -224,9 +221,6 @@ theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSu
   refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
-
-@[deprecated IsAcc.isSuccLimit (since := "2025-07-08")]
-alias IsAcc.isLimit := IsAcc.isSuccLimit
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by

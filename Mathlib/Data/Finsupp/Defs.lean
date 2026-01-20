@@ -113,9 +113,19 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
+initialize_simps_projections Finsupp (toFun → apply)
+
 @[ext, grind ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
+
+variable (α) in
+theorem nontrivial_of_nontrivial [Nontrivial (α →₀ M)] :
+    Nontrivial M := by
+  obtain ⟨x, y, h⟩ := exists_pair_ne (α →₀ M)
+  rw [ne_eq, Finsupp.ext_iff, not_forall] at h
+  obtain ⟨a, h⟩ := h
+  exact nontrivial_of_ne _ _ h
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
@@ -139,6 +149,8 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
 instance instInhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
 
+@[simp] lemma default_eq_zero : (default : α →₀ M) = 0 := rfl
+
 @[simp, grind =]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
   @(f.mem_support_toFun)
@@ -149,8 +161,6 @@ theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
 
 theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[simp, norm_cast]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
@@ -168,8 +178,9 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
 theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
   mod_cast @Function.support_eq_empty_iff _ _ _ f
 
+@[simp]
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
-  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
+  contrapose!; exact support_eq_empty
 
 theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
@@ -181,7 +192,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a => not_imp_comm]
+  grind
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
@@ -217,7 +228,8 @@ section OnFinset
 
 variable [Zero M]
 
-private irreducible_def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
+/-- The (not exposed) support of `Finsupp.onFinset`. -/
+@[no_expose] def onFinset_support (s : Finset α) (f : α → M) : Finset α :=
   haveI := Classical.decEq M
   {a ∈ s | f a ≠ 0}
 
@@ -227,7 +239,7 @@ otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support := onFinset_support s f
   toFun := f
-  mem_support_toFun := by classical simpa [onFinset_support_def]
+  mem_support_toFun := by simpa [onFinset_support]
 
 @[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
@@ -310,6 +322,11 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
   ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
+
+@[simp]
+theorem mapRange_eq_zero {a : α →₀ M} {f : M → N} (hf : f.Injective) (h) :
+    mapRange f h a = 0 ↔ a = 0 := by
+  simp [Finsupp.ext_iff, ← h, hf.eq_iff]
 
 @[simp]
 theorem mapRange_id (g : α →₀ M) : mapRange id rfl g = g :=
@@ -417,8 +434,16 @@ theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).su
 theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
   rfl
 
+open Classical in
+@[grind =]
+theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
+    embDomain f v b = if h : ∃ a, f a = b then v h.choose else 0 := by
+  simp only [embDomain, mem_map, mem_support_iff, coe_mk]
+  -- TODO: investigate why `grind` needs `split_ifs` first; this should never happen.
+  split_ifs <;> grind
+
 @[simp, grind =]
-theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
+theorem embDomain_apply_self (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
   classical
     simp_rw [embDomain, coe_mk, mem_map']
     split_ifs with h
@@ -431,7 +456,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
     embDomain f v a = 0 := by grind [embDomain]
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply_self] using DFunLike.ext_iff.1 h (f a)
 
 @[simp]
 theorem embDomain_inj {f : α ↪ β} {l₁ l₂ : α →₀ M} : embDomain f l₁ = embDomain f l₂ ↔ l₁ = l₂ :=
@@ -442,9 +467,7 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
   (embDomain_injective f).eq_iff' <| embDomain_zero f
 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
-    embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by
-  ext a
-  by_cases h : a ∈ Set.range f <;> grind
+    embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
 
 end EmbDomain
 

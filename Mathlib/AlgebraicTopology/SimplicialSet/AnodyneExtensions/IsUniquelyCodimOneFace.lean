@@ -61,6 +61,7 @@ section
 
 variable {d : ℕ} (hd : x.dim = d)
 
+set_option backward.proofsInPublic true in
 lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (by rw [hxy.dim_eq, hd])) := by
   simpa only [cast_eq_self]
 

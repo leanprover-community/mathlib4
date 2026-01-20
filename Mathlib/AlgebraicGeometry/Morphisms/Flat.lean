@@ -147,4 +147,10 @@ lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine 
 
 end Flat
 
+lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    Flat (Spec.map f) ∧ Surjective (Spec.map f) ↔ f.hom.FaithfullyFlat := by
+  rw [HasRingHomProperty.Spec_iff (P := @Flat),
+    RingHom.FaithfullyFlat.iff_flat_and_comap_surjective, surjective_iff]
+  rfl
+
 end AlgebraicGeometry

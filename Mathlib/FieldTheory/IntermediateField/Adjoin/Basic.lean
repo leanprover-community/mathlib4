@@ -152,11 +152,8 @@ theorem isSplittingField_iSup {p : ι → K[X]}
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
   simp only [isSplittingField_iff, Polynomial.map_prod] at h ⊢
-  refine
-    ⟨Splits.prod fun i hi ↦
-        splits_comp_of_splits (algebraMap K (t i)) (inclusion (hF i hi)).toRingHom
-          (h i hi).1,
-      ?_⟩
+  refine ⟨Splits.prod fun i hi ↦ by
+    simpa [Polynomial.map_map] using (h i hi).1.map (inclusion (hF i hi)).toRingHom, ?_⟩
   simp only [rootSet_prod p s h0, ← Set.iSup_eq_iUnion, (@gc K _ L _ _).l_iSup₂]
   exact iSup_congr fun i ↦ iSup_congr fun hi ↦ (h i hi).2
 
@@ -489,7 +486,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     apply minpoly.dvd
     rw [aeval_def, eval₂_eq_eval_map]
     erw [g.map_toSubring K'.toSubring]
-    rw [eval_map, ← aeval_def]
+    rw [eval_map_algebraMap]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
     intro K

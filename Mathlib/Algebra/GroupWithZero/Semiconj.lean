@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Ring
 

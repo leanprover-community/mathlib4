@@ -260,7 +260,7 @@ attribute [to_additive] TwoUniqueProds
 lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2)
     (hA : A.Nonempty) (hB : B.Nonempty) : ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
-  set_option push_neg.use_distrib true in by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
+  by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
   · exact UniqueMul.of_card_le_one hA hB hc.1 hc.2
   rw [← Finset.card_pos] at hA hB
   obtain ⟨p, hp, _, _, _, hu, _⟩ := h (Nat.one_lt_mul_iff.mpr ⟨hA, hB, hc⟩)
@@ -435,7 +435,7 @@ open UniqueMul in
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
-    set_option push_neg.use_distrib true in by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
+    by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
