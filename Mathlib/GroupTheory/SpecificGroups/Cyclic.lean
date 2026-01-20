@@ -795,9 +795,9 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
-    ∃ p : ℕ, (Nat.Prime p) ∧ Nonempty (Additive G ≃+ ZMod p) := by
+    ∃ p : ℕ, Nat.Prime p ∧ Nonempty (Additive G ≃+ ZMod p) := by
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic G)
-  use orderOf g; rw [← (orderOf_eq_card_of_zpowers_eq_top hg).symm]
+  use orderOf g; rw [orderOf_eq_card_of_zpowers_eq_top hg]
   constructor
   · exact IsSimpleGroup.prime_card
   · exact ⟨(zmodAddCyclicAddEquiv (G := Additive G) inferInstance).symm⟩

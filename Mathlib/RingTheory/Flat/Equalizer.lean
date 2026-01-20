@@ -239,7 +239,7 @@ def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
 @[simp]
 lemma LinearMap.tensorKerEquivOfSurjective_symm_tmul [Module.Flat R P]
     (f : N →ₗ[R] P) (hf : Function.Surjective f) (A : Type*) [AddCommGroup A] [Module R A] (a y) :
-  ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
+    ((f.kerLTensorEquivOfSurjective hf A).symm (a ⊗ₜ y)).1 = a ⊗ₜ y.1 := rfl
 
 end Module
 

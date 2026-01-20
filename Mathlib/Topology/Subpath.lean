@@ -81,8 +81,7 @@ lemma range_subpathAux (t₀ t₁ : I) : range (subpathAux t₀ t₁) = uIcc t�
 @[simp]
 theorem range_subpath (γ : Path a b) (t₀ t₁ : I) :
     range (γ.subpath t₀ t₁) = γ '' (uIcc t₀ t₁) := by
-  rw [← range_subpathAux, ← range_comp]
-  rfl
+  rw [← range_subpathAux, ← range_comp, subpath, coe_mk', ContinuousMap.coe_mk]
 
 lemma range_subpath_of_le (γ : Path a b) (t₀ t₁ : I) (h : t₀ ≤ t₁) :
     range (γ.subpath t₀ t₁) = γ '' (Icc t₀ t₁) := by
@@ -124,16 +123,9 @@ def subpathTransSubpathRefl (γ : Path a b) (t₀ t₁ t₂ : I) : Homotopy
     refine Path.trans_continuous_family γ₁ ?_ γ₂ ?_ <;>
     refine γ.subpath_continuous_family.comp (.prodMk ?_ <| .prodMk ?_ ?_) <;>
     fun_prop
-  map_zero_left := by
-    intro _
-    rw [subpathAux_zero]
-    rfl
-  map_one_left := by
-    intro _
-    rw [subpathAux_one, subpath_self]
-    rfl
-  prop' := by
-    intro _ _ hx
+  map_zero_left _ := by rw [subpathAux_zero, coe_toContinuousMap]
+  map_one_left _ := by rw [subpathAux_one, subpath_self, coe_toContinuousMap]
+  prop' _ _ hx := by
     rcases hx with rfl | rfl <;>
     simp
 

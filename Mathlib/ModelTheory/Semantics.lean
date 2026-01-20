@@ -128,13 +128,12 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
   | func _ _ ih => simp [ih]
 
 theorem realize_substFunc [L'.Structure M] {c : {n : ℕ} → L.Functions n → L'.Term (Fin n)}
-  (hc : ∀ {n : ℕ} (g) (y : Fin n → M), g.term.realize y = (c g).realize y)
-  (v : β → M) (x : L.Term β) :
+    (hc : ∀ {n : ℕ} (g) (y : Fin n → M), g.term.realize y = (c g).realize y)
+    (v : β → M) (x : L.Term β) :
     (x.substFunc c).realize v = x.realize v := by
   induction x with
   | var => simp
   | func f ts ih => simp [← ih, ← hc]
-
 
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :

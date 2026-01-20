@@ -115,17 +115,15 @@ The proximity function is even.
 -/
 theorem proximity_even : (proximity f a).Even := by
   intro r
-  by_cases h : a = ⊤
-  all_goals simp [proximity, h]
+  by_cases h : a = ⊤ <;> simp [proximity, h]
 
 /--
 The proximity function is non-negative.
 -/
 theorem proximity_nonneg {a : WithTop E} :
     0 ≤ proximity f a := by
-  by_cases h : a = ⊤
-  all_goals
-    intro r
+  by_cases h : a = ⊤ <;>
+  · intro r
     simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
 
 /-!

@@ -365,8 +365,8 @@ theorem sSup_compact_le_eq (b) :
 
 @[simp]
 theorem sSup_compact_eq_top : sSup { a : α | IsCompactElement a } = ⊤ := by
-  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_compact_le_eq ⊤)
-  exact (and_iff_left le_top).symm
+  rw [← sSup_compact_le_eq ⊤]
+  simp_rw [le_top, and_true]
 
 theorem le_iff_compact_le_imp {a b : α} :
     a ≤ b ↔ ∀ c : α, IsCompactElement c → c ≤ a → c ≤ b :=
@@ -384,8 +384,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
         rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le] at hc
         rw [le_inf_iff] at hcinf
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
-        refine (le_inf hcinf.1 cd).trans (le_trans ?_ (le_iSup₂ d ds))
-        rfl
+        exact (le_inf hcinf.1 cd).trans (le_biSup _ ds)
       · rw [Set.not_nonempty_iff_eq_empty] at hs
         simp [hs])
     iSup_inf_le_inf_sSup
@@ -429,8 +428,8 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
       rw [CompleteLattice.isCompactElement_iff_exists_le_sSup_of_le_sSup] at hc
       rw [le_inf_iff] at hcinf
       rcases hc s hcinf.2 with ⟨t, ht1, ht2⟩
-      refine (le_inf hcinf.1 ht2).trans (le_trans ?_ (le_iSup₂ t ht1))
-      rfl)
+      refine (le_inf hcinf.1 ht2).trans ?_
+      exact le_iSup₂ (f := fun (t' : Finset α) (ht' : ↑t' ⊆ s) => a ⊓ t'.sup id) t ht1)
     (iSup_le fun t =>
       iSup_le fun h => inf_le_inf_left _ ((Finset.sup_id_eq_sSup t).symm ▸ sSup_le_sSup h))
 
