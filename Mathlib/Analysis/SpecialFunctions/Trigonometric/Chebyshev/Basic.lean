@@ -208,13 +208,13 @@ theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
   rw [eq_div_iff (Nat.cast_ne_zero.mpr (by positivity)), mul_comm, iterate_derivative_U_eval_one]
 
 theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
-    ∏ l ∈ Finset.range k, (2 * l + 1 : ℤ) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
+    (∏ l ∈ Finset.range k, (2 * l + 1) : ℤ) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
   apply dvd_of_mul_right_eq
   convert iterate_derivative_T_eval_one n k
   simp
 
 theorem iterate_derivative_U_real_eval_one_dvd (n : ℤ) (k : ℕ) :
-    ∏ l ∈ Finset.range k, (2 * l + 3 : ℤ) ∣
+    (∏ l ∈ Finset.range k, (2 * l + 3) : ℤ) ∣
       (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1) := by
   apply dvd_of_mul_right_eq
   convert iterate_derivative_U_eval_one n k
