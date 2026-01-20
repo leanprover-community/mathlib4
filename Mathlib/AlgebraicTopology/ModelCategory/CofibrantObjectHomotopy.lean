@@ -183,7 +183,7 @@ lemma HoCat.resolutionObj_hom_ext {X : C} [IsCofibrant X] {Y : C} {f g : X ⟶ r
   apply LeftHomotopyRel.rightHomotopyRel
   rw [← LeftHomotopyClass.mk_eq_mk_iff] at h ⊢
   exact (LeftHomotopyClass.postcomp_bijective_of_fibration_of_weakEquivalence
-    (X := X) (g := pResolutionObj Y)).1 h
+    (X := X) (g := pResolutionObj Y)).injective h
 
 /-- A cofibrant resolution functor from a model category to the homotopy category
 of cofibrant objects. -/
