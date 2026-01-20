@@ -271,7 +271,7 @@ end Equiv
 
 section Prod
 
-variable {α β R M : Type*} [DecidableEq α] [Semiring R] [AddCommMonoid M] [Module R M]
+variable {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (R) in
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
