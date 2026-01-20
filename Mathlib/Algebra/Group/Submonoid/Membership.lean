@@ -42,12 +42,6 @@ assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
 
-section Assoc
-
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-
-end Assoc
-
 section NonAssoc
 
 variable [MulOneClass M]

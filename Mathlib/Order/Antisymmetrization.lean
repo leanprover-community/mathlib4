@@ -420,14 +420,4 @@ def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
 
 end Antisymmetrization
 
-attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
-
-instance Prod.wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
-  wellFoundedLT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
-
-instance Prod.wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
-  wellFoundedGT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
-
 end Prod

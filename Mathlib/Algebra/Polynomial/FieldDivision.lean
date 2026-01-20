@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
@@ -633,10 +634,6 @@ theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
-
-@[deprecated (since := "2025-07-08")]
-alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
-divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
 
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by

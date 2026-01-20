@@ -82,7 +82,7 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
     rw [curry_natural_right, Category.assoc, ← Functor.map_comp, w, toOver_obj_hom,
-    ← curry_natural_right, toUnit_comp_curryRightUnitorHom]
+      ← curry_natural_right, toUnit_comp_curryRightUnitorHom]
     congr
     simp [braiding_hom_snd])
 
