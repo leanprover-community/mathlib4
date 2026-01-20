@@ -82,10 +82,11 @@ variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
     (hx : x ≠ 0) :
     ∃ P : Ideal R, IsAssociatedPrime P M ∧ ((⊥ : Submodule R M).colon {x}).radical ≤ P := by
-  have : ((⊥ : Submodule R M).colon {x}).radical ≠ ⊤ := by simpa [Ideal.radical_eq_top]
+  have : ((⊥ : Submodule R M).colon {x}).radical ≠ ⊤ := by
+    rwa [Ne, Ideal.radical_eq_top, Ideal.eq_top_iff_one, mem_colon_singleton, one_smul]
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
-      { P | ((⊥ : Submodule R M).colon {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = ((⊥ : Submodule R M).colon {y}).radical }
+      { P | (colon ⊥ {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (colon ⊥ {y}).radical }
       ⟨_, rfl.le, this, x, rfl⟩
   refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
@@ -93,18 +94,15 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   intro ha
   simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hab
   obtain ⟨k, hk⟩ := hab
-  have H₁ : ((⊥ : Submodule R M).colon {y}).radical ≤
-      ((⊥ : Submodule R M).colon {a ^ k • y}).radical := by
+  replace ha := forall_not_of_not_exists ha k
+  have H₁ : (colon ⊥ {y} : Ideal R).radical ≤ (colon ⊥ {a ^ k • y}).radical := by
     intro c hc
     simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at hc ⊢
     obtain ⟨n, hc⟩ := hc
     use n
     rw [smul_comm, hc, smul_zero]
   have H₂ : ((⊥ : Submodule R M).colon {a ^ k • y}).radical ≠ ⊤ := by
-    simp [Ideal.radical_eq_top]
-    contrapose! ha
-    use k
-  -- have key := H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩)
+    simpa [Ideal.radical_eq_top]
   rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩)]
   use k
   simpa [smul_smul, ← mul_pow, mul_comm]

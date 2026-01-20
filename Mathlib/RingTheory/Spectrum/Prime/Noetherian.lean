@@ -25,7 +25,7 @@ open TopologicalSpace
 
 section IsNoetherianRing
 
-variable (R : Type u) [CommRing R] [IsNoetherianRing R]
+variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
@@ -44,9 +44,27 @@ lemma finite_setOf_isMin :
 
 lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
     I.minimalPrimes.Finite := by
-  rw [I.minimalPrimes_eq_comap]
-  apply Set.Finite.image
-  apply minimalPrimes.finite_of_isNoetherianRing
+  classical
+  obtain ⟨s, hs1, hs⟩ := NoetherianSpace.exists_finset_irreducible
+    ⟨zeroLocus (I : Set R), isClosed_zeroLocus (I : Set R)⟩
+  let t : Finset (Set (PrimeSpectrum R)) := s.image (↑)
+  have ht : ∀ c ∈ t, IsClosed c := by
+    intro c hc
+    obtain ⟨c, -, rfl⟩ := Finset.mem_image.mp hc
+    exact c.2
+  let u : Finset (Ideal R) := t.image vanishingIdeal
+  suffices ∀ p ∈ I.minimalPrimes, p ∈ u from u.finite_toSet.subset this
+  rintro p ⟨⟨hp, hIp⟩, h⟩
+  have h2 : IsIrreducible (zeroLocus (p : Set R)) := by
+    rwa [isIrreducible_zeroLocus_iff, hp.radical]
+  have key := isIrreducible_iff_sUnion_isClosed.mp h2 t ht
+  have : ((s.sup id : Closeds (PrimeSpectrum R)) : Set (PrimeSpectrum R)) = ⋃₀ t := by
+    sorry
+  rw [← this, ← hs] at key
+  obtain ⟨c, hct, hpc⟩ := key (zeroLocus_anti_mono hIp)
+  refine Finset.mem_image.mpr ⟨c, hct, ?_⟩
+  sorry
+
 
 end IsNoetherianRing
 
