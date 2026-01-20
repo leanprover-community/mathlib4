@@ -1,10 +1,16 @@
+/-
+Copyright (c) 2026 Jonathan Washburn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Matteo Cipollina, Jonathan Washburn
+-/
+
 import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.WeierstrassFactor
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
-# Canonical products (sequence-based, no padding)
+# Canonical products
 
 This file defines the canonical product attached to a sequence `a : ℕ → ℂ` of **nonzero** points:
 
