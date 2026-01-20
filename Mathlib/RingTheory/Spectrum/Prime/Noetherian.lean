@@ -42,30 +42,32 @@ lemma finite_setOf_isMin :
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
 
+lemma _root_.TopologicalSpace.NoetherianSpace.exists_finset_isClosed_irreducible {α : Type*}
+    [TopologicalSpace α] [NoetherianSpace α]
+    {s : Set α} (hs : IsClosed s) : ∃ S : Finset (Set α),
+    (∀ c ∈ S, IsClosed c) ∧ (∀ c ∈ S, IsIrreducible c) ∧ s = S.sup id := by
+  obtain ⟨S, hS, _⟩ := NoetherianSpace.exists_finite_set_isClosed_irreducible hs
+  exact ⟨hS.toFinset, by simpa [← Set.sUnion_eq_biUnion]⟩
+
 lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
     I.minimalPrimes.Finite := by
   classical
-  obtain ⟨s, hs1, hs⟩ := NoetherianSpace.exists_finset_irreducible
-    ⟨zeroLocus (I : Set R), isClosed_zeroLocus (I : Set R)⟩
-  let t : Finset (Set (PrimeSpectrum R)) := s.image (↑)
-  have ht : ∀ c ∈ t, IsClosed c := by
-    intro c hc
-    obtain ⟨c, -, rfl⟩ := Finset.mem_image.mp hc
-    exact c.2
-  let u : Finset (Ideal R) := t.image vanishingIdeal
-  suffices ∀ p ∈ I.minimalPrimes, p ∈ u from u.finite_toSet.subset this
+  obtain ⟨t, ht, ht', hs⟩ :=
+    NoetherianSpace.exists_finset_isClosed_irreducible (isClosed_zeroLocus (I : Set R))
+  suffices ∀ p ∈ I.minimalPrimes, p ∈ t.image vanishingIdeal from
+    (t.image vanishingIdeal).finite_toSet.subset this
   rintro p ⟨⟨hp, hIp⟩, h⟩
-  have h2 : IsIrreducible (zeroLocus (p : Set R)) := by
-    rwa [isIrreducible_zeroLocus_iff, hp.radical]
-  have key := isIrreducible_iff_sUnion_isClosed.mp h2 t ht
-  have : ((s.sup id : Closeds (PrimeSpectrum R)) : Set (PrimeSpectrum R)) = ⋃₀ t := by simp [t]
-  rw [← this, ← hs] at key
+  have key := isIrreducible_iff_sUnion_isClosed.mp
+    ((isIrreducible_zeroLocus_iff_of_radical p hp.isRadical).mpr hp) t ht
+  rw [← Finset.sup_id_set_eq_sUnion, ← hs] at key
   obtain ⟨c, hct, hpc⟩ := key (zeroLocus_anti_mono hIp)
-  refine Finset.mem_image.mpr ⟨c, hct, ?_⟩
-  suffices c = zeroLocus p by
-    rw [this, vanishingIdeal_zeroLocus_eq_radical, hp.radical]
-  refine Set.Subset.antisymm ?_ hpc
-  sorry
+  suffices vanishingIdeal c ≤ p by
+    refine Finset.mem_image.mpr ⟨c, hct, le_antisymm this
+      (h ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp (ht' c hct), ?_⟩ this)⟩
+    rw [← subset_zeroLocus_iff_le_vanishingIdeal, hs]
+    exact Finset.le_sup_of_le hct le_rfl
+  rw [← hp.radical, ← vanishingIdeal_zeroLocus_eq_radical]
+  exact vanishingIdeal_anti_mono hpc
 
 
 end IsNoetherianRing
