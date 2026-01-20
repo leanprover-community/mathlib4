@@ -397,6 +397,10 @@ theorem mem_omega : x ∈ omega ↔ ∃ n : ℕ, x = n := by
   induction x using Quotient.inductionOn
   simp [omega, PSet.mem_omega, Nat.cast, NatCast.natCast, eq]
 
+theorem coe_omega : (omega : Set ZFSet) = Set.range ((↑) : ℕ → ZFSet) := by
+  ext
+  simpa [mem_omega] using exists_congr fun _ => Eq.comm
+
 @[simp]
 theorem natCast_mem_omega (n : ℕ) : ↑n ∈ omega := by
   simp [mem_omega]
@@ -419,13 +423,12 @@ theorem omega_induction_on {motive : ∀ x ∈ omega, Prop} (hx : x ∈ omega)
   rcases mem_omega.1 hx with ⟨n, rfl⟩
   induction n with simp [*]
 
-theorem omega_subset : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
-  intro _ _ _ h
-  induction h using omega_induction_on with simp [*]
-
 /-- `omega` is the smallest inductive set. -/
-theorem isLeast_inductive_omega : IsLeast {x | ∅ ∈ x ∧ ∀ y ∈ x, insert y y ∈ x} omega := by
-  simp +contextual [IsLeast, mem_lowerBounds, omega_subset]
+theorem isLeast_inductive_omega : IsLeast {x | ∅ ∈ x ∧ ∀ y ∈ x, insert y y ∈ x} omega :=
+  ⟨by simp +contextual, by
+    simp only [mem_lowerBounds, Set.mem_setOf_eq, le_def, and_imp]
+    intro _ _ _ _ h
+    induction h using omega_induction_on with simp [*]⟩
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
