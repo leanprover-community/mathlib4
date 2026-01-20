@@ -719,16 +719,16 @@ lemma mem_interior_face_iff_sbtw [IsDomain R] [IsTorsionFree R V] {n : ℕ}
     · exact (Finset.max'_pair i j).symm
     · lia
 
--- For a given simplex, a point strictly between a point in its closed interior
+/-- For a given simplex, a point strictly between a point in its closed interior
 and a point in its interior lies in its interior. -/
-lemma mem_interior_of_lineMap_closedInterior_interior [IsStrictOrderedRing k] {n : ℕ}
-    (s : Simplex k P n) {p q : P} (hp : p ∈ s.closedInterior) (hq : q ∈ s.interior) {t : k}
+lemma mem_interior_of_lineMap_closedInterior_interior [IsStrictOrderedRing R] {n : ℕ}
+    (s : Simplex R P n) {p q : P} (hp : p ∈ s.closedInterior) (hq : q ∈ s.interior) {t : R}
     (ht : t ∈ Set.Ioo 0 1) :
     AffineMap.lineMap p q t ∈ s.interior := by
   set o := AffineMap.lineMap p q t with ho
-  have ho_mem : o ∈ affineSpan k (Set.range s.points) := by
+  have ho_mem : o ∈ affineSpan R (Set.range s.points) := by
     have ho_line := AffineMap.lineMap_mem_affineSpan_pair t p q
-    have : affineSpan k {p, q} ≤ affineSpan k (Set.range s.points) := by
+    have : affineSpan R {p, q} ≤ affineSpan R (Set.range s.points) := by
       refine affineSpan_pair_le_of_mem_of_mem ?_ ?_
       · exact Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
       · have := Set.mem_of_mem_of_subset hq s.interior_subset_closedInterior
@@ -761,34 +761,34 @@ lemma mem_interior_of_lineMap_closedInterior_interior [IsStrictOrderedRing k] {n
 
 /-- For a given simplex, a point strictly between a vertex and a point in the interior of
 the opposite face lies in its interior. -/
-lemma mem_interior_of_lineMap_point_faceOpposite_interior [IsStrictOrderedRing k] {n : ℕ}
-    [NeZero n] (s : Simplex k P n) {i : Fin (n + 1)} {q : P} (hq : q ∈ (s.faceOpposite i).interior)
-    {t : k} (ht : t ∈ Set.Ioo 0 1) :
+lemma mem_interior_of_lineMap_point_faceOpposite_interior [IsStrictOrderedRing R] {n : ℕ}
+    [NeZero n] (s : Simplex R P n) {i : Fin (n + 1)} {q : P} (hq : q ∈ (s.faceOpposite i).interior)
+    {t : R} (ht : t ∈ Set.Ioo 0 1) :
     AffineMap.lineMap (s.points i) q t ∈ s.interior := by
   set p := s.points i with p_def
   set o := AffineMap.lineMap p q t with o_def
-  have hq_mem : q ∈ affineSpan k (Set.range s.points) := by
+  have hq_mem : q ∈ affineSpan R (Set.range s.points) := by
     apply Set.mem_of_mem_of_subset hq
     suffices h: Set.range (s.faceOpposite i).points ⊆ Set.range s.points by
-      have : (s.faceOpposite i).interior ⊆ affineSpan k (Set.range (s.faceOpposite i).points) := by
+      have : (s.faceOpposite i).interior ⊆ affineSpan R (Set.range (s.faceOpposite i).points) := by
         grind [Simplex.interior, setInterior_subset_affineSpan]
       apply subset_trans this ?_
       apply affineSpan_mono
       exact h
     grind [Affine.Simplex.range_faceOpposite_points]
-  have hp_mem : p ∈ affineSpan k (Set.range s.points) := by simp [p_def ,mem_affineSpan]
-  have ho_mem : o ∈ affineSpan k (Set.range s.points) := by
+  have hp_mem : p ∈ affineSpan R (Set.range s.points) := by simp [p_def ,mem_affineSpan]
+  have ho_mem : o ∈ affineSpan R (Set.range s.points) := by
     have ho_line := AffineMap.lineMap_mem_affineSpan_pair t p q
-    have : affineSpan k {p, q} ≤ affineSpan k (Set.range s.points) := by
+    have : affineSpan R {p, q} ≤ affineSpan R (Set.range s.points) := by
       grind [affineSpan_pair_le_of_mem_of_mem]
     grind [AffineSubspace.le_def']
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype ho_mem with ⟨w_o, hw_o, h_comb_o⟩
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hq_mem with ⟨w_q, hw_q, h_comb_q⟩
   have hmem: i ∈ Finset.univ := by simp
-  have h_comb_p := (Finset.affineCombination_affineCombinationSingleWeights k _ s.points hmem).symm
+  have h_comb_p := (Finset.affineCombination_affineCombinationSingleWeights R _ s.points hmem).symm
   rw [← p_def] at h_comb_p
-  set w_p := Finset.affineCombinationSingleWeights k i with wp_def
-  let hw_p := Finset.sum_affineCombinationSingleWeights k _ hmem
+  set w_p := Finset.affineCombinationSingleWeights R i with wp_def
+  let hw_p := Finset.sum_affineCombinationSingleWeights R _ hmem
   simp_rw [← wp_def] at hw_p
   rw [h_comb_o, affineCombination_mem_interior_iff hw_o]
   rw [h_comb_p, h_comb_o, h_comb_q,
@@ -813,29 +813,29 @@ lemma mem_interior_of_lineMap_point_faceOpposite_interior [IsStrictOrderedRing k
 
 /-- For a given simplex, a point strictly between a point in the interior of one face and a point
 in the interior of its complementary face lies in its interior. -/
-lemma mem_interior_of_lineMap_face_interior_face_interior_compl [IsStrictOrderedRing k]
-    {n mf mg : ℕ} (s : Simplex k P n) {fs gs : Finset (Fin (n + 1))} (hfs : #fs = mf + 1)
-    (hgs : #gs = mg + 1) (hcompl : IsCompl fs gs) {p q : P} (hp : p ∈ (s.face hfs).interior)
-    (hq : q ∈ (s.face hgs).interior) {t : k} (ht : t ∈ Set.Ioo 0 1) :
+lemma mem_interior_of_lineMap_face_interior_face_interior_compl [IsStrictOrderedRing R]
+    {n mf mg : ℕ} (s : Simplex R P n) {fs gs : Finset (Fin (n + 1))} (hfs : fs.card = mf + 1)
+    (hgs : gs.card = mg + 1) (hcompl : IsCompl fs gs) {p q : P} (hp : p ∈ (s.face hfs).interior)
+    (hq : q ∈ (s.face hgs).interior) {t : R} (ht : t ∈ Set.Ioo 0 1) :
     AffineMap.lineMap p q t ∈ s.interior := by
   set o := AffineMap.lineMap p q t with o_def
-  have hp_mem : p ∈ affineSpan k (Set.range s.points) := by
+  have hp_mem : p ∈ affineSpan R (Set.range s.points) := by
     apply Set.mem_of_mem_of_subset hp
-    have h : (s.face hfs).interior ⊆ affineSpan k (Set.range (s.face hfs).points) := by
+    have h : (s.face hfs).interior ⊆ affineSpan R (Set.range (s.face hfs).points) := by
       grind [Simplex.interior, setInterior_subset_affineSpan]
     refine subset_trans h ?_
     apply affineSpan_mono
     grind [range_face_points]
-  have hq_mem : q ∈ affineSpan k (Set.range s.points) := by
+  have hq_mem : q ∈ affineSpan R (Set.range s.points) := by
     apply Set.mem_of_mem_of_subset hq
-    have h : (s.face hgs).interior ⊆ affineSpan k (Set.range (s.face hgs).points) := by
+    have h : (s.face hgs).interior ⊆ affineSpan R (Set.range (s.face hgs).points) := by
       grind [Simplex.interior, setInterior_subset_affineSpan]
     refine subset_trans h ?_
     apply affineSpan_mono
     grind [range_face_points]
-  have ho_mem : o ∈ affineSpan k (Set.range s.points) := by
+  have ho_mem : o ∈ affineSpan R (Set.range s.points) := by
     have ho_line := AffineMap.lineMap_mem_affineSpan_pair t p q
-    have : affineSpan k {p, q} ≤ affineSpan k (Set.range s.points) :=
+    have : affineSpan R {p, q} ≤ affineSpan R (Set.range s.points) :=
       affineSpan_pair_le_of_mem_of_mem hp_mem hq_mem
     grind [AffineSubspace.le_def']
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype ho_mem with ⟨w_o, hw_o, h_comb_o⟩
