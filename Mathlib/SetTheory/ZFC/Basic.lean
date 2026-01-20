@@ -409,7 +409,6 @@ theorem natCast_mem_omega (n : ℕ) : ↑n ∈ omega := by
 theorem omega_zero : ∅ ∈ omega := by
   simp [← natCast_zero]
 
-@[simp]
 theorem omega_succ : x ∈ omega → insert x x ∈ omega := by
   simp only [mem_omega, forall_exists_index]
   rintro n rfl
@@ -425,7 +424,7 @@ theorem omega_induction_on {motive : ∀ x ∈ omega, Prop} (hx : x ∈ omega)
 
 /-- `omega` is the smallest inductive set. -/
 theorem isLeast_inductive_omega : IsLeast {x | ∅ ∈ x ∧ ∀ y ∈ x, insert y y ∈ x} omega :=
-  ⟨by simp +contextual, by
+  ⟨by simp +contextual [omega_succ], by
     simp only [mem_lowerBounds, Set.mem_setOf_eq, le_def, and_imp]
     intro _ _ _ _ h
     induction h using omega_induction_on with simp [*]⟩
