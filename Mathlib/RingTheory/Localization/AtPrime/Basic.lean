@@ -361,7 +361,7 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
     (disj : Disjoint (T : Set S) (P : Set S)) :
     (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
   suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
-      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+      Ideal.map (algebraMap R R') p from ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
   rw [under_under, ← under_under (B := S), under_def, under_def,
     IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]

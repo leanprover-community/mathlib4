@@ -130,6 +130,14 @@ theorem coe_top [CompactSpace α] : (↑(⊤ : Compacts α) : Set α) = univ :=
 theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
+  SetLike.coe_injective.eq_iff' rfl
+
+@[simp]
+theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
+  nonempty_iff_ne_empty.trans coe_eq_empty.not
+
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
     (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
@@ -331,6 +339,14 @@ theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
 
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
+
+@[simp]
+theorem range_toCompacts : range (toCompacts (α := α)) = {⊥}ᶜ := by
+  ext K
+  rw [mem_compl_singleton_iff, ← Compacts.coe_nonempty]
+  refine ⟨?_, fun h => ⟨⟨K, h⟩, rfl⟩⟩
+  rintro ⟨K, rfl⟩
+  exact K.nonempty
 
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
