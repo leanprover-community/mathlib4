@@ -6,7 +6,7 @@ Authors: Joseph Hua
 module
 
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
-public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Localization.Predicate
 

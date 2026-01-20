@@ -51,7 +51,7 @@ lemma Submodule.finite_quotient_smul [Finite (R ⧸ I)] [Finite (M ⧸ N)] (hN :
       N.injective_subtype (by simp [Submodule.smul_le_right])) ≪≫ₗ
         (quotTensorEquivQuotSMul N I).symm
   rw [Nat.card_congr e.toEquiv]
-  have : Module.Finite R N := Module.Finite.iff_fg.mpr hN
+  have : Module.Finite R N := .of_fg hN
   have : Finite ((R ⧸ I) ⊗[R] N) := Module.finite_of_finite (R ⧸ I)
   exact Nat.card_pos.ne'
 
