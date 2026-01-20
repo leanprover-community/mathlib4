@@ -6354,6 +6354,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.IntegralClosure
 public import Mathlib.RingTheory.Smooth.Kaehler
