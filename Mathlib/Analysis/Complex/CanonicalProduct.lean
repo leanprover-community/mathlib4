@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
 
-import PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.WeierstrassFactor
+import Mathlib.Analysis.Complex.WeierstrassFactor
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 import Mathlib.Analysis.Analytic.IsolatedZeros
@@ -12,12 +12,21 @@ import Mathlib.Analysis.Analytic.IsolatedZeros
 /-!
 # Canonical products
 
-This file defines the canonical product attached to a sequence `a : ℕ → ℂ` of **nonzero** points:
+This file defines canonical products attached to a sequence `a : ℕ → ℂ` of points:
 
-`G m a z := ∏' n, weierstrassFactor m (z / a n)`
+`canonicalProduct m a z := ∏' n, weierstrassFactor m (z / a n)`.
 
 and proves uniform convergence on compact sets assuming the standard summability hypothesis
 `Summable (fun n => ‖a n‖⁻¹ ^ (m+1))`.
+
+## Main definitions
+
+- `Complex.canonicalProduct`: the infinite product `∏' n, E_m(z / a n)`
+
+## Main results
+
+- `Complex.canonicalProduct_converges_uniformOn_compact`: uniform convergence on compact sets under
+  the standard summability hypothesis and `a n ≠ 0`
 
 -/
 
@@ -26,7 +35,7 @@ noncomputable section
 open Complex Real Set Filter Topology
 open scoped BigOperators Topology
 
-namespace Complex.Hadamard
+namespace Complex
 
 /-! ## Canonical product definition -/
 
@@ -84,9 +93,9 @@ theorem canonicalProduct_converges_uniformOn_compact
       pow_le_pow_left₀ (by positivity) hinv (m + 1)
     exact (not_lt_of_ge hinv_pow) (by simpa [one_div] using hn)
   have hBoundK : ∀ᶠ n in atTop, ∀ z ∈ K, ‖f n z‖ ≤ u n := by
-    filter_upwards [hLarge] with n hn z hzU
+    filter_upwards [hLarge] with n hn z hzK
     have hzU' : ‖z‖ < R + 1 := by
-      have : z ∈ U := hKU hzU
+      have : z ∈ U := hKU hzK
       simpa [U, Metric.mem_ball, dist_zero_right] using this
     have hz_div : ‖z / a n‖ ≤ (1 / 2 : ℝ) := by
       have ha_pos : 0 < ‖a n‖ := norm_pos_iff.mpr (h_nonzero n)
@@ -152,4 +161,4 @@ theorem canonicalProduct_converges_uniformOn_compact
   refine htendK'.congr_right (fun z hzK => ?_)
   simp [f, canonicalProduct]
 
-end Complex.Hadamard
+end Complex
