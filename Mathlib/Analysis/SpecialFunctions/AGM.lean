@@ -198,12 +198,40 @@ lemma agm_zero_left : agm 0 x = 0 := by
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
 
-/-- The AGM is unchanged if `x` and `y` are replaced by their geometric and arithmetic means. -/
-lemma agm_eq_agm_geometric_arithmetic_means : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
-  sorry
+lemma agm_eq_agm_agmSequences_fst_agmSequences_snd :
+    agm x y = agm ((agmSequences x y).1 n) ((agmSequences x y).2 n) := by
+  refine tendsto_nhds_unique ?_ <|
+    tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
+  have key : Tendsto (fun n ↦ (agmSequences x y).2 (n + 1)) atTop (𝓝 (agm x y)) :=
+    tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
+  rw [← tendsto_add_atTop_iff_nat n] at key
+  convert key using 2 with m
+  simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, Prod.mk.eta, ← iterate_add_apply,
+    add_right_comm]
 
-lemma agm_mem_uIoo_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (h : x ≠ y) : agm x y ∈ Set.uIoo x y := by
-  sorry
+lemma agm_eq_agm_means : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
+  simpa using @agm_eq_agm_agmSequences_fst_agmSequences_snd x y 1
+
+lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y < agm x y := by
+  wlog hl : x < y generalizing x y
+  · replace hl : y < x := by grind
+    specialize this hy hx hn.symm hl
+    rwa [agm_comm, min_comm]
+  rw [min_eq_left hl.le]
+  refine lt_of_lt_of_le (?_ : x < sqrt (x * y)) (@agmSequences_fst_le_agm x y 0)
+  nth_rw 1 [← mul_self_sqrt x, sqrt_mul]
+  gcongr
+
+lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
+  wlog hl : x < y generalizing x y
+  · replace hl : y < x := by grind
+    specialize this hn.symm hl
+    rwa [agm_comm, max_comm]
+  rw [max_eq_right hl.le]
+  refine (@agm_le_agmSequences_snd x y 0).trans_lt (?_ : (x + y) / 2 < y)
+  nth_rw 2 [← add_halves y]
+  rw [add_div]
+  gcongr
 
 /-- The AGM distributes over multiplication. -/
 lemma agm_mul_distrib {k : ℝ≥0} : agm (k * x) (k * y) = k * agm x y := by
