@@ -7,6 +7,8 @@ public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory

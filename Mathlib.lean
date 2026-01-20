@@ -1458,6 +1458,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma18
+public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma19
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.SolutionSetCondition
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
