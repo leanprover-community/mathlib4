@@ -30,7 +30,7 @@ many units (e.g. `ℤ`, `Ideal (ring_of_integers K)`), it has finitely many divi
 noncomputable def fintypeSubtypeDvd {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Fintype Mˣ] (y : M) (hy : y ≠ 0) : Fintype { x // x ∣ y } := by
   haveI : Nontrivial M := ⟨⟨y, 0, hy⟩⟩
-  haveI : NormalizationMonoid M := UniqueFactorizationMonoid.normalizationMonoid
+  haveI : StrongNormalizationMonoid M := UniqueFactorizationMonoid.strongNormalizationMonoid
   haveI := Classical.decEq M
   haveI := Classical.decEq (Associates M)
   -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
