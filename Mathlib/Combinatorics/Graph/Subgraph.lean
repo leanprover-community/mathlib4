@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
-import Mathlib.Combinatorics.Graph.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Subgraphs of multigraphs
@@ -39,6 +41,8 @@ uniformly and to express the subgraph order directly as a partial order on `Grap
 
 graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph, component
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {x y z u v w : α} {e f : β} {G H K : Graph α β} {F F₁ F₂ : Set β}
     {X Y : Set α}

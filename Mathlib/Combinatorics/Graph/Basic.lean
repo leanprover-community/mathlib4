@@ -309,10 +309,11 @@ lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonlo
 /-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
+@[symm]
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
   ⟨_, h.choose_spec.symm⟩
 
-instance : IsSymm _ G.Adj where
+instance : Std.Symm G.Adj where
   symm _ _ := Adj.symm
 
 lemma adj_comm (x y) : G.Adj x y ↔ G.Adj y x :=
