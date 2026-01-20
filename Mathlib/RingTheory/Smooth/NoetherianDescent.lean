@@ -201,6 +201,13 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
 
+@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
+public theorem exists_subalgebra_finiteType [Smooth A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
+  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
+
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
