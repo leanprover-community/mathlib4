@@ -32,7 +32,7 @@ variable {L : Language} {T : L.Theory} {α : Type*}
 
 public instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
 
-public lemma IsTopologicalBasis_range_typesWith :
+public lemma isTopologicalBasis_range_typesWith :
     IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
   exists_subset_inter := by
     intro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
