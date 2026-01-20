@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Derivation.Lie
 # Lie-Rinehart algebras
 This file defines Lie-Rinehart algebras and their morphisms. It also shows that the derivations of
 a commutative algebra over a commutative Ring form such a Lie-Rinehart algebra.
-Lie Rinehart algebras appear in differential geometry as section spaces of Lie algebroids and
+Lie-Rinehart algebras appear in differential geometry as section spaces of Lie algebroids and
 singular foliations. The typical Cartan calculus of differential geometry can be restated fully in
 terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
@@ -106,14 +106,14 @@ def Hom.toLieHom (f : L →ₗ⁅σ⁆ L') : L →ₗ⁅R⁆ L' where
   map_smul' _ _ := by simp [← IsScalarTower.algebraMap_smul A]
 
 
-/-- The module homomorphism and the Lie algebra homomorphism undelying a Lie Rinehart homomorphism
+/-- The module homomorphism and the Lie algebra homomorphism undelying a Lie-Rinehart homomorphism
 are the same function
 -/
 @[simp]
 lemma linearMap_eq_lieHom (f : L →ₗ⁅σ⁆ L') (x : L) : f.toLinearMap x = (f.toLieHom) x := rfl
 
 
-/-- The composition of Lie Rinehart algebra homomorphisms is again a homomorphism
+/-- The composition of Lie-Rinehart algebra homomorphisms is again a homomorphism
 -/
 def Hom.comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ⁅(AlgHom.comp σ' σ)⁆ L'' where
   toLinearMap := g.toLinearMap.comp f.toLinearMap
@@ -125,6 +125,9 @@ def Hom.comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ�
     dsimp
     repeat rw [← anchor_comp]
 
+/-- The identity morphism of a Lie-Rinehart algebra over the identity algebra homomorphism of the
+underlying algebra.
+-/
 def Hom.id : L →ₗ⁅AlgHom.id R A⁆ L where
   __ := LinearMap.id
   map_lie' _ _ := rfl
@@ -132,8 +135,8 @@ def Hom.id : L →ₗ⁅AlgHom.id R A⁆ L where
 
 
 variable (R A L) in
-/-- The anchor of a given LieRinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism to
-the module of derivations of `A`.
+/-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
+to the module of derivations of `A`.
 -/
 def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
     [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L] :
