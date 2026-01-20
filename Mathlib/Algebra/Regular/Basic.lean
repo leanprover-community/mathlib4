@@ -25,7 +25,7 @@ by adding one further `0`.
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

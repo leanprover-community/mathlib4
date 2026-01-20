@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

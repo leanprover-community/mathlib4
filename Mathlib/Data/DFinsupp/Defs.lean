@@ -530,7 +530,6 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
-  ext i'
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
 section SingleAndZipWith
@@ -880,7 +879,6 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
-  ext
   grind
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=

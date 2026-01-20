@@ -17,7 +17,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
-@[expose] public section
+public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
@@ -198,8 +198,7 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
     rw [one_div, mul_inv_cancel₀ hq_ne_zero]
-  · have : ‖c‖ₑ ≠ 0 := by simp [hc_ne_zero]
-    finiteness
+  · finiteness [show ‖c‖ₑ ≠ 0 by simp [hc_ne_zero]]
 
 theorem eLpNormEssSup_const (c : ε) (hμ : μ ≠ 0) : eLpNormEssSup (fun _ : α => c) μ = ‖c‖ₑ := by
   rw [eLpNormEssSup_eq_essSup_enorm, essSup_const _ hμ]

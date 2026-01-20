@@ -10,7 +10,7 @@ public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Interval
 public import Mathlib.Tactic.NormNum
-public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`

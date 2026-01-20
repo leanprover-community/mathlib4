@@ -994,9 +994,9 @@ variable (σ M) in
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}
-  add_mem' := by simp+contextual [add_mem]
+  add_mem' := by simp +contextual [add_mem]
   zero_mem' := by simp
-  smul_mem' := by simp+contextual [Submodule.smul_mem]
+  smul_mem' := by simp +contextual [Submodule.smul_mem]
 
 lemma mem_coeffsIn : p ∈ coeffsIn σ M ↔ ∀ i, p.coeff i ∈ M := .rfl
 

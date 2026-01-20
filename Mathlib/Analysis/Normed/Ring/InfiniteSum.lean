@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Ring.Lemmas
 /-! # Multiplying two infinite sums in a normed ring
 
 In this file, we prove various results about `(∑' x : ι, f x) * (∑' y : ι', g y)` in a normed
-ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum.lean` (e.g.
+ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum/Ring.lean` (e.g.
 `tsum_mul_tsum`), but in a normed ring we get summability results which aren't true in general.
 
 We first establish results about arbitrary index types, `ι` and `ι'`, and then we specialize to
@@ -20,7 +20,7 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]

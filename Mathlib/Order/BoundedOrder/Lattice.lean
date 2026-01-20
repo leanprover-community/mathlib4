@@ -22,7 +22,7 @@ This file contains miscellaneous lemmas about lattices with top or bottom elemen
   Typical examples include `Prop` and `Set α`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual
 

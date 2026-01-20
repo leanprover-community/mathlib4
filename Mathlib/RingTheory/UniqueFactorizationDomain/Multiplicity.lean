@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   occurs in the `normalizedFactors`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

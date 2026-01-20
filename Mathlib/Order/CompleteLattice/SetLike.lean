@@ -13,7 +13,7 @@ public import Mathlib.Order.CompleteSublattice
 This file provides lemmas for the `SetLike` instance for elements of `CompleteSublattice (Set X)`
 -/
 
-@[expose] public section
+public section
 
 attribute [local instance] SetLike.instSubtypeSet
 

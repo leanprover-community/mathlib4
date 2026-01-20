@@ -37,11 +37,16 @@ variable (G k) in
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
 def IsEdgeConnected : Prop := ∀ u v, G.IsEdgeReachable k u v
 
-@[simp] lemma IsEdgeReachable.rfl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
+@[refl, simp] lemma IsEdgeReachable.refl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
+
+@[deprecated (since := "2026-01-06")] alias IsEdgeReachable.rfl := IsEdgeReachable.refl
 
 @[symm]
 lemma IsEdgeReachable.symm (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
   fun _ hk ↦ (h hk).symm
+
+lemma isEdgeReachable_comm : G.IsEdgeReachable k u v ↔ G.IsEdgeReachable k v u :=
+  ⟨.symm, .symm⟩
 
 @[trans]
 lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachable k v w) :

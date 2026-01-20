@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.List.OffDiag
 
 /-!
 # Finsets in product types
@@ -156,7 +157,6 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
   classical
   rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_of_disjoint]
   · apply congr_arg
-    ext
     grind
   · apply Finset.disjoint_filter_filter'
     exact (disjoint_compl_right.inf_left _).inf_right _
@@ -236,43 +236,50 @@ end Prod
 
 section Diag
 
-variable [DecidableEq α] (s t : Finset α)
+variable (s t : Finset α)
 
 /-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
-def diag :=
-  (s ×ˢ s).filter fun a : α × α => a.fst = a.snd
+def diag : Finset (α × α) :=
+  s.map ⟨fun a ↦ (a, a), by simp [Function.Injective]⟩
 
+-- TODO: define `Multiset.offDiag`, provide basic API, use it here
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
 for `a, b ∈ s`. -/
-def offDiag :=
-  (s ×ˢ s).filter fun a : α × α => a.fst ≠ a.snd
+def offDiag : Finset (α × α) :=
+  .mk (Quotient.map List.offDiag (fun _ _ ↦ List.Perm.offDiag) s.1) <| by
+    rcases s with ⟨⟨s⟩, hs⟩
+    exact hs.offDiag
 
 variable {s} {x : α × α}
 
 @[simp, grind =]
 theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  simp +contextual [diag]
+  aesop (add simp diag)
 
 @[simp, grind =]
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
-  simp [offDiag, and_assoc]
+  rcases s with ⟨⟨s⟩, hs⟩
+  exact hs.mem_offDiag
 
 @[simp, grind =]
 theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
-  simp [Finset.Nonempty]
+  simp [diag]
 
 @[simp, grind =]
 theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
-  contrapose!; exact diag_nonempty
+  simp [diag]
+
+theorem diag_eq_filter [DecidableEq α] :
+    s.diag = (s ×ˢ s).filter fun a : α × α => a.fst = a.snd := by
+  ext; simp +contextual
 
 variable (s)
 
 @[simp]
 theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
     s.diag.image f = s.image fun x ↦ f (x, x) := by
-  ext y
-  aesop
+  grind
 
 @[simp, norm_cast]
 theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
@@ -280,21 +287,16 @@ theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
 
 @[simp]
 theorem diag_card : (diag s).card = s.card := by
-  suffices diag s = s.image fun a => (a, a) by
-    rw [this]
-    apply card_image_of_injOn
-    exact fun x1 _ x2 _ h3 => (Prod.mk.inj h3).1
-  grind
+  simp [diag]
 
 @[simp]
-theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; lia
-  by rw [← card_product, diag, offDiag]
-     conv_rhs => rw [← card_filter_add_card_filter_not (fun a => a.1 = a.2)]
+theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card := by
+  rw [← sq]
+  rcases s with ⟨⟨s⟩, hs⟩
+  apply List.length_offDiag
 
 @[mono]
-theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
-  mem_diag.2 <| And.imp_left (@h _) <| mem_diag.1 hx
+theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ ↦ by simp [diag]
 
 @[mono]
 theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
@@ -309,48 +311,49 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
   rfl
 
 @[simp]
-theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
+theorem diag_union_offDiag [DecidableEq α] : s.diag ∪ s.offDiag = s ×ˢ s := by
   grind
 
 @[simp]
-theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_not (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
+theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag := by simp [disjoint_left]
 
-theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
+theorem product_sdiff_diag [DecidableEq α] : s ×ˢ s \ s.diag = s.offDiag := by grind
 
-theorem product_sdiff_offDiag : s ×ˢ s \ s.offDiag = s.diag := by grind
+theorem product_sdiff_offDiag [DecidableEq α] : s ×ˢ s \ s.offDiag = s.diag := by grind
 
-theorem diag_inter : (s ∩ t).diag = s.diag ∩ t.diag := by grind
+theorem diag_inter [DecidableEq α] : (s ∩ t).diag = s.diag ∩ t.diag := by
+  grind
 
-theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
+theorem offDiag_inter [DecidableEq α] : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
   coe_injective <| by
     push_cast
     exact Set.offDiag_inter _ _
 
-theorem diag_union : (s ∪ t).diag = s.diag ∪ t.diag := by grind
+theorem diag_union [DecidableEq α] : (s ∪ t).diag = s.diag ∪ t.diag := by
+  grind
 
 variable {s t}
 
-theorem offDiag_union (h : Disjoint s t) :
+theorem offDiag_union [DecidableEq α] (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s :=
   coe_injective <| by
     push_cast
     exact Set.offDiag_union (disjoint_coe.2 h)
 
-variable (a : α)
-
 @[simp]
-theorem offDiag_singleton : ({a} : Finset α).offDiag = ∅ := by simp [← Finset.card_eq_zero]
+theorem offDiag_singleton (a : α) : ({a} : Finset α).offDiag = ∅ := by simp [← Finset.card_eq_zero]
 
-theorem diag_singleton : ({a} : Finset α).diag = {(a, a)} := by grind
+theorem diag_singleton (a : α) : ({a} : Finset α).diag = {(a, a)} := by grind
 
-theorem diag_insert : (insert a s).diag = insert (a, a) s.diag := by grind
+theorem diag_insert [DecidableEq α] (a : α) :
+    (insert a s).diag = insert (a, a) s.diag := by grind
 
-theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
+theorem offDiag_insert [DecidableEq α] {a : α} (has : a ∉ s) :
+    (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
 
-theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι]
-    [DecidableEq ι] [DecidableLE ι] [DecidableLT ι] (s : Finset ι) :
+theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [DecidableLT ι]
+    (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm

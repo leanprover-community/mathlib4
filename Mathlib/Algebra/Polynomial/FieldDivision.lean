@@ -308,7 +308,6 @@ def div (p q : R[X]) :=
 def mod (p q : R[X]) :=
   p %ₘ (q * C (leadingCoeff q)⁻¹)
 
-set_option backward.privateInPublic true in
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
@@ -317,7 +316,6 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
     rw [div, mod, add_comm, mul_assoc]
 
-set_option backward.privateInPublic true in
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
   rw [← degree_mul_leadingCoeff_inv q hq]
   exact degree_modByMonic_lt p (monic_mul_leadingCoeff_inv hq)
@@ -349,8 +347,6 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
@@ -359,8 +355,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     remainder := (· % ·)
     r := _
     r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
     mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
@@ -637,10 +633,6 @@ theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
-
-@[deprecated (since := "2025-07-08")]
-alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
-divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
 
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
