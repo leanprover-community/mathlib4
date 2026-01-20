@@ -385,7 +385,6 @@ lemma log_norm_weierstrassFactor_ge_log_norm_one_sub_sub
     have : ∑ _k ∈ Finset.range m, max 1 (‖z‖ ^ m) = (m : ℝ) * max 1 (‖z‖ ^ m) := by
       simp [Finset.sum_const]
     exact hsum.trans (hsum_le.trans_eq this)
-  -- finish via `hlog` and `Re(S) ≥ -‖S‖`
   have : Real.log ‖weierstrassFactor m z‖ ≥ Real.log ‖1 - z‖ - ‖S‖ := by
     linarith [hlog, hre]
   linarith [this, hnormS]
