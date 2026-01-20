@@ -53,7 +53,7 @@ represented by `perm`.
 private def permList {α : Type*} (vec : List α) (perm : List Nat) : List α :=
   perm.foldr (init := []) fun head current ↦
     match vec[head]? with
-    | some entry =>  entry :: current
+    | some entry => entry :: current
     | none => current
 
 /-- Given an expression representing a vector `perm : Fin n → Fin n`, computes the corresponding
@@ -69,6 +69,7 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
         let idxQ := mkNatLitQ idx
         let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
         let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
+        -- TODO: try to evaluate using the compiler?
         let outIdxExpr : Q(Nat) ← whnf outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
@@ -76,7 +77,6 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     -- TODO(Paul-Lez): support the `n = 0` case correctly
     catch _ =>
       return none
-
 
 /--
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
@@ -88,11 +88,10 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
 -/
 simproc_decl vecPerm (_ ∘ _) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q($v ∘ $p)⟩ ← inferTypeQ' e | return .continue
-  let ⟨_, ~q(Fin $n → $α), ~q($v)⟩ ← inferTypeQ' v| return .continue
+  let ⟨_, ~q(Fin $n → $α), ~q($v)⟩ ← inferTypeQ' v | return .continue
   let some qp ← Qq.checkTypeQ p q(Fin $n → Fin $n) | return .continue
-  let some unpermList ← listOfVecQ (α := α) (n:= n) v | return .continue
-  let vn := unpermList.length
-  let some permAsList ← listOfVecFinQ n vn qp | return .continue
+  let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
+  let some permAsList ← listOfVecFinQ n unpermList.length qp | return .continue
   let outAsList := permList unpermList permAsList
   let outAsListQ := outAsList.foldr (fun head list  ↦ q($head :: $list)) q(([] : List $α))
   let out ← vecOfListQ n outAsListQ
