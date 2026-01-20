@@ -995,12 +995,12 @@ theorem iterate_derivative_U_field_eval_one {𝔽} [Field 𝔽] [CharZero 𝔽] 
   rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
     mul_comm, iterate_derivative_U_eval_one]
 
-theorem iterate_derivative_T_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
+theorem iterate_derivative_T_field_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
     ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣
     (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
   dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
 
-theorem iterate_derivative_U_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
+theorem iterate_derivative_U_field_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
     ((∏ l ∈ Finset.range k, (2 * l + 3) : ℕ) : 𝔽) ∣
       ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) :=
   dvd_of_mul_right_eq _ <| iterate_derivative_U_eval_one n k
@@ -1009,7 +1009,7 @@ theorem derivative_U_field_eval_one {𝔽} [Field 𝔽] [neZero3 : NeZero (3 : �
     (derivative (U 𝔽 n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
   eq_div_of_mul_eq neZero3.ne ((mul_comm ..).trans (derivative_U_eval_one n))
 
-theorem derivative_U_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) :
+theorem derivative_U_field_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) :
     (3 : 𝔽) ∣ (n + 2) * (n + 1) * n :=
   dvd_of_mul_right_eq _ (derivative_U_eval_one n)
 
