@@ -991,19 +991,20 @@ lemma tendsto_exp_sub_one_div :
 /-- The Taylor remainder h(t) = exp(t) - 1 - t - t²/2 satisfies h(t)/t³ → 1/6 as t → 0. -/
 lemma tendsto_exp_taylor3_div_cube :
     Tendsto (fun t => (Real.exp t - 1 - t - t^2/2) / t^3) (𝓝[>] 0) (𝓝 (1/6 : ℝ)) := by
-  have h_taylor : (fun x => Real.exp x - ∑ i ∈ Finset.range 4, x ^ i / Nat.factorial i) =o[𝓝 0] (· ^ 3) :=
-    Real.exp_sub_sum_range_succ_isLittleO_pow 3
+  have h_taylor : (fun x => Real.exp x - ∑ i ∈ Finset.range 4, x ^ i / Nat.factorial i) =o[𝓝 0]
+    (· ^ 3) :=
+      Real.exp_sub_sum_range_succ_isLittleO_pow 3
   have h_sum : ∀ x : ℝ, ∑ i ∈ Finset.range 4, x ^ i / Nat.factorial i = 1 + x + x^2/2 + x^3/6 := by
     intro x; simp [Finset.sum_range_succ]; ring
   have h_decomp : ∀ t : ℝ, Real.exp t - 1 - t - t^2/2 =
       (Real.exp t - ∑ i ∈ Finset.range 4, t ^ i / Nat.factorial i) + t^3/6 := by
     intro t; rw [h_sum]; ring
-  have h_zero : Tendsto (fun t => (Real.exp t - ∑ i ∈ Finset.range 4, t ^ i / Nat.factorial i) / t^3)
-      (𝓝[>] 0) (𝓝 0) := by
-    have := h_taylor.tendsto_div_nhds_zero
-    exact tendsto_nhdsWithin_of_tendsto_nhds this
-  have h_add : Tendsto (fun t => (Real.exp t - ∑ i ∈ Finset.range 4, t ^ i / Nat.factorial i) / t^3 + 1/6)
-      (𝓝[>] 0) (𝓝 (0 + 1/6)) := h_zero.add tendsto_const_nhds
+  have h_zero : Tendsto (fun t => (Real.exp t - ∑ i ∈ Finset.range 4, t ^ i / Nat.factorial i) /
+    t^3) (𝓝[>] 0) (𝓝 0) := by
+      have := h_taylor.tendsto_div_nhds_zero
+      exact tendsto_nhdsWithin_of_tendsto_nhds this
+  have h_add : Tendsto (fun t => (Real.exp t - ∑ i ∈ Finset.range 4, t ^ i / Nat.factorial i) /
+    t^3 + 1/6)  (𝓝[>] 0) (𝓝 (0 + 1/6)) := h_zero.add tendsto_const_nhds
   simp only [zero_add] at h_add
   refine h_add.congr' ?_
   filter_upwards [self_mem_nhdsWithin] with t ht
