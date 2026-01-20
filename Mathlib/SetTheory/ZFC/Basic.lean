@@ -393,7 +393,7 @@ theorem natCast_succ {n : ℕ} : ((n + 1 : ℕ) : ZFSet) = insert (n : ZFSet) (n
 def omega : ZFSet :=
   mk PSet.omega
 
-theorem mem_omega : x ∈ omega ↔ ∃ (n : ℕ), x = n := by
+theorem mem_omega : x ∈ omega ↔ ∃ n : ℕ, x = n := by
   induction x using Quotient.inductionOn
   simp [omega, PSet.mem_omega, Nat.cast, NatCast.natCast, eq]
 
