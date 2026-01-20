@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecialFunctions.Stirling
 import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.Analysis.SpecialFunctions.Gamma.BinetKernel
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 1900
 
 /-!
 # Binet's Formula for log Γ and Stirling Series with Error Bounds
@@ -19,7 +19,7 @@ and derives sharp error bounds for the Stirling asymptotic series.
 
 ## Main Definitions
 
-* `Binet.J`: the Binet integral `J z = ∫ t in Ioi (0 : ℝ), K̃(t) * exp (-t*z)` (for `0 < z.re`)
+* `Binet.J`: the Binet integral (defined for `0 < z.re`)
 * `Binet.R`: the real correction term in Stirling's formula
 * `Binet.stirlingSeries`, `Binet.stirlingRemainder`: the Stirling series (via Bernoulli numbers) and
    its remainder
@@ -38,17 +38,15 @@ and derives sharp error bounds for the Stirling asymptotic series.
 
 ## Implementation Notes
 
-We use the normalized kernel `BinetKernel.Ktilde`, defined from `BinetKernel.K` by
-  `K̃(t) = K(t) / t`
-on `(0, ∞)` (with a continuous extension at `t = 0`). This satisfies `K̃(t) → 1 / 12` as `t → 0⁺`
-  and `0 ≤ K̃(t) ≤ 1 / 12` for `t ≥ 0`.
+We use the normalized kernel `BinetKernel.Ktilde` (from `BinetKernel.K`), which satisfies
+`BinetKernel.Ktilde t → 1 / 12` as `t → 0⁺` and `0 ≤ BinetKernel.Ktilde t ≤ 1 / 12` for `0 ≤ t`.
 -/
 
 open Real Complex Set MeasureTheory Filter Topology BinetKernel
 open scoped BigOperators Nat
 
 
-lemma one_div_cast_sub_le_two_div_cast (n : ℕ) (hn2 : 2 ≤ n) :
+private lemma one_div_cast_sub_le_two_div_cast (n : ℕ) (hn2 : 2 ≤ n) :
     (1 : ℝ) / ((n - 1 : ℕ) : ℝ) ≤ (2 : ℝ) / (n : ℝ) := by
   have hn_pos : 0 < (n : ℝ) := by
     exact_mod_cast (Nat.succ_le_of_lt (Nat.lt_of_lt_of_le (by decide : (0 : ℕ) < 2) hn2))
@@ -64,15 +62,13 @@ lemma one_div_cast_sub_le_two_div_cast (n : ℕ) (hn2 : 2 ≤ n) :
   have hcast : (n : ℝ) = ((n - 1 : ℕ) : ℝ) + 1 := by
     exact_mod_cast hnat.symm
   nlinarith [hn1_ge1, hcast]
-#find_home one_div_cast_sub_le_two_div_cast
 noncomputable section
 
 namespace Binet
 
 /-! ## The Binet integral J(z) -/
 
-/-- The Binet integral: J(z) = ∫₀^∞ K̃(t) e^{-tz} dt for Re(z) > 0.
-This is the correction term in log Γ(z) = (z-1/2)log z - z + log(2π)/2 + J(z). -/
+/-- The Binet integral term in Binet's formula (defined for `0 < z.re`). -/
 def J (z : ℂ) : ℂ :=
   if 0 < z.re then
     ∫ t in Set.Ioi (0 : ℝ), (Ktilde t : ℂ) * Complex.exp (-t * z)
@@ -120,7 +116,8 @@ lemma integral_exp_neg_mul_Ioi {x : ℝ} (hx : 0 < x) :
   rw [heq, h]
   field_simp
 
-/-- The fundamental bound: |J(z)| ≤ 1/(12·Re(z)) for Re(z) > 0.
+/-- The fundamental bound `‖J z‖ ≤ 1 / (12 * z.re)` for `0 < z.re`.
+
 This is the key estimate for the Stirling remainder. -/
 theorem J_norm_le_re {z : ℂ} (hz : 0 < z.re) : ‖J z‖ ≤ 1 / (12 * z.re) := by
   rw [J_eq_integral hz]
@@ -147,8 +144,9 @@ theorem J_norm_le_re {z : ℂ} (hz : 0 < z.re) : ‖J z‖ ≤ 1 / (12 * z.re) :
         rw [integral_exp_neg_mul_Ioi hz]
     _ = 1 / (12 * z.re) := by ring
 
-/-- For real positive x, the bound simplifies to |J(x)| ≤ 1/(12x).
-This is a special case of J_norm_le_re since for real x > 0, ‖x‖ = x = x.re. -/
+/-- For real `x > 0`, the bound simplifies to `‖J (x : ℂ)‖ ≤ 1 / (12 * x)`.
+
+This is a special case of `J_norm_le_re`. -/
 theorem J_norm_le_real {x : ℝ} (hx : 0 < x) : ‖J (x : ℂ)‖ ≤ 1 / (12 * x) := by
   have hre : (0 : ℝ) < (x : ℂ).re := by simp [hx]
   have h := J_norm_le_re hre
@@ -233,6 +231,16 @@ def stirlingMainReal (x : ℝ) : ℝ :=
 `R(x) := log Γ(x) - ((x - 1/2) log x - x + log(2π)/2)`. -/
 def R (x : ℝ) : ℝ :=
   Real.log (Real.Gamma x) - stirlingMainReal x
+
+lemma log_Gamma_real_eq_of_R_eq_re_J {x : ℝ} (hx : 0 < x) (hR : R x = (Binet.J (x : ℂ)).re) :
+    Real.log (Real.Gamma x) =
+      (x - 1 / 2) * Real.log x - x + Real.log (2 * Real.pi) / 2 + (J x).re := by
+  have hR' := hR
+  dsimp [R] at hR'
+  have hmain : Real.log (Real.Gamma x) = stirlingMainReal x + (Binet.J (x : ℂ)).re := by
+    linarith
+  -- rewrite `stirlingMainReal`, and rewrite `(Binet.J (x : ℂ)).re` as `(J x).re`
+  simpa [stirlingMainReal] using hmain
 
 lemma stirlingMainReal_add_one_sub {x : ℝ} (hx : 0 < x) :
     stirlingMainReal (x + 1) - stirlingMainReal x =
@@ -898,8 +906,9 @@ theorem re_J_sub_re_J_add_one {x : ℝ} (hx : 0 < x) :
             rw [hadd, hconst, hmul_shift]
     _ = (x + (1 / 2 : ℝ)) * Real.log (1 + 1 / x) - 1 := by ring
 
---set_option maxHeartbeats 0 in
--- Heartbeat-heavy: `log_Gamma_real_eq` is a long automation-driven proof (integrals + inequalities).
+set_option maxHeartbeats 320000 in
+-- Heartbeat-heavy: `log_Gamma_real_eq` is a long automation-driven proof
+-- (integrals + inequalities).
 /-- Binet's formula for real arguments. -/
 theorem log_Gamma_real_eq {x : ℝ} (hx : 0 < x) :
     Real.log (Real.Gamma x) =
@@ -1097,7 +1106,7 @@ theorem log_Gamma_real_eq {x : ℝ} (hx : 0 < x) :
         by_cases hy_eq : y = (n : ℝ)
         · have hy_sub : y - n = 0 := by linarith [hy_eq]
           simp [hy_eq]
-        · -have hn_1_mem : ((n - 1 : ℕ) : ℝ) ∈ Set.Ioi (0 : ℝ) := by
+        · have hn_1_mem : ((n - 1 : ℕ) : ℝ) ∈ Set.Ioi (0 : ℝ) := by
             have : (0 : ℝ) < (n - 1 : ℕ) := by exact_mod_cast hn1_pos
             simpa using this
           have hn_mem : (n : ℝ) ∈ Set.Ioi (0 : ℝ) := hn_pos
@@ -1300,9 +1309,9 @@ theorem log_Gamma_real_eq {x : ℝ} (hx : 0 < x) :
         have hlogGamma_lb : Real.log (Real.Gamma y) ≥ Real.log (Real.Gamma (n : ℝ)) +
             (y - (n : ℝ)) * Real.log ((n - 1 : ℕ) : ℝ) := by
           exact h_lower
-        have hmain : stirlingMainReal (n : ℝ) + (y - (n : ℝ)) * Real.log ((n - 1 : ℕ) : ℝ) -
+        have hmain :
             stirlingMainReal (n : ℝ) + (y - (n : ℝ)) * Real.log ((n - 1 : ℕ) : ℝ) -
-                stirlingMainReal y ≥
+              stirlingMainReal y ≥
               - (3 / (n : ℝ)) := by
           unfold stirlingMainReal
           have hlogy_mul :
@@ -1370,7 +1379,6 @@ theorem log_Gamma_real_eq {x : ℝ} (hx : 0 < x) :
                   = (a * (1 / 2 - a) - 2 * a) / (n : ℝ) := hrew
               _ ≥ (-3 : ℝ) / (n : ℝ) := hdiv
               _ = - (3 / (n : ℝ)) := by simp [neg_div]
-          -- Put it all together.
           calc
             ( (n - 1 / 2) * Real.log (n : ℝ) - (n : ℝ) + Real.log (2 * π) / 2
               + (y - (n : ℝ)) * Real.log ((n - 1 : ℕ) : ℝ)
@@ -1438,27 +1446,14 @@ theorem log_Gamma_real_eq {x : ℝ} (hx : 0 < x) :
       eq_of_tendsto_atTop_of_add_one (h := h) (x := x) (l := 0) hx h_periodic hlim
     dsimp [h] at hx0'
     linarith
-  have hmain : Real.log (Real.Gamma x) = stirlingMainReal x + (Binet.J (x : ℂ)).re := by
-    have hR' : R x + stirlingMainReal x = (Binet.J (x : ℂ)).re + stirlingMainReal x :=
-      congrArg (fun r : ℝ => r + stirlingMainReal x) hR
-    have hlog : Real.log (Real.Gamma x) = (Binet.J (x : ℂ)).re + stirlingMainReal x := by
-      have hR'' := hR'
-      dsimp [R] at hR''
-      rw [sub_add_cancel] at hR''
-      exact hR''
-    have hlog' := hlog
-    rw [add_comm] at hlog'
-    exact hlog'
-  have hmain' := hmain
-  dsimp [stirlingMainReal] at hmain'
-  exact hmain'
+  exact log_Gamma_real_eq_of_R_eq_re_J (x := x) hx hR
 
 lemma R_eq_re_J {x : ℝ} (hx : 0 < x) : R x = (Binet.J (x : ℂ)).re := by
   have h := log_Gamma_real_eq (x := x) hx
   unfold R stirlingMainReal
   linarith [h]
 
-/-! ## Section 3: Stirling series with Bernoulli numbers -/
+/-! ## Stirling series with Bernoulli numbers -/
 
 /-- The Bernoulli number B_n as a real number. -/
 def bernoulliReal (n : ℕ) : ℝ :=
@@ -1482,22 +1477,21 @@ theorem J_eq_stirlingSeries_add_remainder (z : ℂ) (n : ℕ) :
     J z = stirlingSeries n z + stirlingRemainder n z := by
   simp only [stirlingRemainder, add_sub_cancel]
 
-/-- Simplified bound for n = 0: |R₀(z)| ≤ 1/(12·Re(z)).
-This follows from J_norm_le_re since R₀(z) = J(z). -/
+/-- Simplified bound for `n = 0`: `‖stirlingRemainder 0 z‖ ≤ 1 / (12 * z.re)` (for `0 < z.re`). -/
 theorem stirlingRemainder_zero_bound {z : ℂ} (hz : 0 < z.re) :
     ‖stirlingRemainder 0 z‖ ≤ 1 / (12 * z.re) := by
   simp only [stirlingRemainder, stirlingSeries, Finset.range_zero, Finset.sum_empty]
   simp only [sub_zero]
   exact J_norm_le_re hz
 
-/-- For real positive x: |R₀(x)| ≤ 1/(12x). -/
+/-- For real `x > 0`: `‖stirlingRemainder 0 (x : ℂ)‖ ≤ 1 / (12 * x)`. -/
 theorem stirlingRemainder_zero_bound_real {x : ℝ} (hx : 0 < x) :
     ‖stirlingRemainder 0 (x : ℂ)‖ ≤ 1 / (12 * x) := by
   simp only [stirlingRemainder, stirlingSeries, Finset.range_zero, Finset.sum_empty]
   simp only [sub_zero]
   exact J_norm_le_real hx
 
-/-! ## Section 4: Gamma function bounds -/
+/-! ## Gamma function bounds -/
 
 /-- For x ∈ [1, 2], Γ(x) ≤ 1 since Γ(1) = Γ(2) = 1 and the function is convex. -/
 theorem Gamma_le_one_of_mem_Icc {x : ℝ} (hlo : 1 ≤ x) (hhi : x ≤ 2) :
@@ -1546,7 +1540,7 @@ theorem norm_Gamma_le_one {z : ℂ} (hlo : 1 ≤ z.re) (hhi : z.re ≤ 2) :
 
 end Binet
 
-/-! ## Section 6: Connection to Stirling.GammaAux -/
+/-! ## Connection to Stirling.GammaAux -/
 
 namespace Stirling.GammaAux
 
@@ -1565,7 +1559,7 @@ The core development lives in `namespace Binet`; we provide thin wrappers here t
 namespace stable while we progressively centralize the Gamma/Stirling API.
 -/
 
-namespace Binet
+namespace BinetFormula
 
 open Real Complex Set MeasureTheory Filter Topology BinetKernel
 open scoped BigOperators
@@ -1579,7 +1573,7 @@ theorem re_J_eq_integral_Ktilde {x : ℝ} (hx : 0 < x) :
 /-- Integrability of the real Binet integrand `K̃(t) * exp(-t*x)` on `(0,∞)` for `x > 0`. -/
 theorem integrable_Ktilde_mul_exp_neg_mul {x : ℝ} (hx : 0 < x) :
     IntegrableOn (fun t : ℝ => BinetKernel.Ktilde t * Real.exp (-t * x)) (Set.Ioi 0) := by
-  simpa using (Binet.BinetKernel.integrable_Ktilde_exp (x := x) hx)
+  simpa using (BinetKernel.integrable_Ktilde_exp (x := x) hx)
 
 /-- **Positivity of the Binet integral (real part).**
 
@@ -1618,9 +1612,8 @@ theorem re_J_pos {x : ℝ} (hx : 0 < x) : 0 < (Binet.J (x : ℂ)).re := by
         (μ := volume) (s := Set.Ioi (0 : ℝ)) hf_nonneg hf_int).2 hμ_support
   simpa [hJ, f] using hf_pos
 
-/-- **Upper bound for the Binet integral (real part).**
-
-For `x > 0`, we have `(Binet.J x).re ≤ 1/(12x)`. -/
+/-- **Upper bound for the Binet integral (real part).** For `x > 0`, we have
+`(Binet.J (x : ℂ)).re ≤ 1 / (12 * x)`. -/
 theorem re_J_le_one_div_twelve {x : ℝ} (hx : 0 < x) :
     (Binet.J (x : ℂ)).re ≤ 1 / (12 * x) := by
   have h₁ : (Binet.J (x : ℂ)).re ≤ |(Binet.J (x : ℂ)).re| := le_abs_self _
@@ -1704,10 +1697,10 @@ theorem re_J_lt_one_div_twelve {x : ℝ} (hx : 0 < x) :
     simpa [hJ, f] using this
   exact this
 
-/-- Compatibility: real Binet formula for `log Γ(x)` on `x > 0`. -/
+/-- Compatibility: real Binet formula for `Real.log (Real.Gamma x)` on `x > 0`. -/
 theorem Real_log_Gamma_eq_Binet {x : ℝ} (hx : 0 < x) :
     Real.log (Real.Gamma x) =
       (x - 1 / 2) * Real.log x - x + Real.log (2 * Real.pi) / 2 + (Binet.J x).re := by
   simpa using (Binet.log_Gamma_real_eq (x := x) hx)
 
-end Binet
+end BinetFormula
